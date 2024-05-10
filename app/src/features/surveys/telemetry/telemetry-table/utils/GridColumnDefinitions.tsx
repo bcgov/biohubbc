@@ -11,7 +11,6 @@ export const TelemetryTypeColDef = (): GridColDef<IManualTelemetryTableRow> => {
     headerName: 'Vendor',
     editable: false,
     hideable: true,
-    flex: 1,
     minWidth: 120,
     disableColumnMenu: true,
     headerAlign: 'left',
@@ -30,13 +29,13 @@ export const DeploymentColDef = (props: {
     headerName: 'Deployment',
     editable: true,
     hideable: true,
-    flex: 1,
     minWidth: 120,
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',
     type: 'string',
     renderCell: (params) => {
+      const error = props.hasError(params);
       return (
         <AutocompleteDataGridViewCell<IManualTelemetryTableRow, string>
           dataGridProps={params}
@@ -46,6 +45,7 @@ export const DeploymentColDef = (props: {
               value: item.deployment.deployment_id
             };
           })}
+          error={error}
         />
       );
     },

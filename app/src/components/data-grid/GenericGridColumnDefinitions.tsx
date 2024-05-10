@@ -2,11 +2,12 @@ import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { GridCellParams, GridColDef, GridValidRowModel } from '@mui/x-data-grid';
+import { GridCellParams, GridColDef, GridRowParams, GridValidRowModel } from '@mui/x-data-grid';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
+import { round } from 'lodash-es';
 import { getFormattedDate } from 'utils/Utils';
 
 export const GenericDateColDef = <T extends GridValidRowModel>(props: {
@@ -23,7 +24,7 @@ export const GenericDateColDef = <T extends GridValidRowModel>(props: {
     hideable: true,
     type: 'date',
     minWidth: 150,
-    valueGetter: (params) => (params.row.observation_date ? dayjs(params.row.observation_date).toDate() : null),
+    valueGetter: (params) => (params.row[field] ? dayjs(params.row[field]).toDate() : null),
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',
@@ -75,8 +76,8 @@ export const GenericTimeColDef = <T extends GridValidRowModel>(props: {
     type: 'string',
     width: 150,
     disableColumnMenu: true,
-    headerAlign: 'right',
-    align: 'right',
+    headerAlign: 'left',
+    align: 'left',
     valueSetter: (params) => {
       return { ...params.row, observation_time: params.value };
     },
@@ -150,7 +151,7 @@ export const GenericLatitudeColDef = <T extends GridValidRowModel>(props: {
     },
     renderCell: (params) => (
       <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-        {params.value}
+        {round(params.value, 5)}
       </Typography>
     ),
     renderEditCell: (params) => {
@@ -209,7 +210,7 @@ export const GenericLongitudeColDef = <T extends GridValidRowModel>(props: {
     },
     renderCell: (params) => (
       <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-        {params.value}
+        {round(params.value, 5)}
       </Typography>
     ),
     renderEditCell: (params) => {
@@ -241,7 +242,7 @@ export const GenericLongitudeColDef = <T extends GridValidRowModel>(props: {
 };
 
 export const GenericActionsColDef = <T extends GridValidRowModel>(props: {
-  disabled: boolean;
+  disabled: boolean | ((params: GridRowParams<T>) => boolean);
   onDelete: (records: T[]) => void;
 }): GridColDef<T> => {
   return {
@@ -250,6 +251,7 @@ export const GenericActionsColDef = <T extends GridValidRowModel>(props: {
     type: 'actions',
     width: 70,
     disableColumnMenu: true,
+    align: 'right',
     resizable: false,
     cellClassName: 'pinnedColumn',
     getActions: (params) => [
@@ -257,7 +259,7 @@ export const GenericActionsColDef = <T extends GridValidRowModel>(props: {
         onClick={() => {
           props.onDelete([params.row]);
         }}
-        disabled={props.disabled}
+        disabled={typeof props.disabled === 'function' ? props.disabled(params) : props.disabled}
         key={`actions[${params.id}].handleDeleteRow`}>
         <Icon path={mdiTrashCanOutline} size={1} />
       </IconButton>

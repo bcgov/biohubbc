@@ -1,6 +1,7 @@
 import Typography from '@mui/material/Typography';
 import {
   GridCellParams,
+  GridColumnVisibilityModel,
   GridRowId,
   GridRowModes,
   GridRowModesModel,
@@ -10,10 +11,12 @@ import {
 } from '@mui/x-data-grid';
 import { GridApiCommunity, GridStateColDef } from '@mui/x-data-grid/internals';
 import { TelemetryTableI18N } from 'constants/i18n';
+import { SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
-import { ICreateManualTelemetry, IUpdateManualTelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
+import { usePersistentState } from 'hooks/usePersistentState';
+import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import {
   createContext,
   PropsWithChildren,
@@ -59,9 +62,29 @@ export type ITelemetryTableContext = {
    */
   setRows: React.Dispatch<React.SetStateAction<IManualTelemetryTableRow[]>>;
   /**
+   * Indicates if the data is in the process of being persisted to the server.
+   */
+  isSaving: boolean;
+  /**
+   * Indicates whether or not content in the telemetry table is loading.
+   */
+  isLoading: boolean;
+  /**
+   * Indicates whether the telemetry table has any unsaved changes
+   */
+  hasUnsavedChanges: boolean;
+  /**
+   * TODO: I think this needs to be added back for pagination
+   *
+   * Reflects the total count of telemetry records for the survey
+   */
+  recordCount: number;
+
+  hiddenColumns: string[];
+  /**
    * Returns all columns belonging to the telemetry table
    */
-  getColumns: () => GridStateColDef[];
+  getColumns: (config?: { hideable: boolean }) => GridStateColDef[];
   /**
    * Appends a new blank record to the telemetry rows
    */
@@ -87,18 +110,6 @@ export type ITelemetryTableContext = {
    */
   refreshRecords: () => Promise<void>;
   /**
-   * Returns all of the telemetry table records that have been selected
-   */
-  //_getSelectedRecords: () => IManualTelemetryTableRow[];
-  /**
-   * Indicates whether the telemetry table has any unsaved changes
-   */
-  hasUnsavedChanges: boolean;
-  /**
-   * Callback that should be called when a row enters edit mode.
-   */
-  //onRowEditStart: (id: GridRowId) => void;
-  /**
    * The IDs of the selected telemetry table rows
    */
   rowSelectionModel: GridRowSelectionModel;
@@ -111,37 +122,25 @@ export type ITelemetryTableContext = {
    */
   rowModesModel: GridRowModesModel;
   /**
-   * Indicates if the data is in the process of being persisted to the server.
+   * Callback when row model changes ie: 'Edit' -> 'View'
+   *
    */
-  isSaving: boolean;
-  /**
-   * Indicates whether or not content in the telemetry table is loading.
-   */
-  isLoading: boolean;
+  onRowModesModelChange: (model: GridRowModesModel) => void;
   /**
    * The state of the validation model
    */
   validationModel: TelemetryTableValidationModel;
-  /**
-   * Reflects the total count of telemetry records for the survey
-   */
-  recordCount: number;
-  /**
-   * Updates the total telemetry count for the survey
-   */
-  //setRecordCount: (count: number) => void;
-
   /**
    * Indicates whether the cell has an error.
    *
    */
   hasError: (params: GridCellParams) => boolean;
 
-  /**
-   * Callback when row model changes ie: 'Edit' -> 'View'
-   *
-   */
-  onRowModesModelChange: (model: GridRowModesModel) => void;
+  columnVisibilityModel: GridColumnVisibilityModel;
+
+  onColumnVisibilityModelChange: (model: GridColumnVisibilityModel) => void;
+
+  toggleColumnsVisibility: (config?: { columns: string[] }) => void;
 };
 
 export const TelemetryTableContext = createContext<ITelemetryTableContext | undefined>(undefined);
@@ -172,6 +171,12 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   // Stores the current validation state of the table
   const [validationModel, setValidationModel] = useState<TelemetryTableValidationModel>({});
 
+  // Stores the column visibility state in local storage
+  const [columnVisibilityModel, setColumnVisibilityModel] = usePersistentState<GridColumnVisibilityModel>(
+    SIMS_TELEMETRY_HIDDEN_COLUMNS,
+    {}
+  );
+
   // New rows (regardless of mode)
   const _stagedRowIds = useRef<string[]>([]);
 
@@ -190,11 +195,155 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   // True if table has unsaved changes, deferring value to prevent ui issue with controls rendering
   const hasUnsavedChanges = useDeferredValue(_modifiedRowIds.current.length > 0 || _stagedRowIds.current.length > 0);
 
-  const getMutatedIds = useCallback(
+  // Columns hidden from table view
+  const hiddenColumns = useMemo(() => {
+    const columns = Object.keys(columnVisibilityModel);
+    return columns.filter((column) => !columnVisibilityModel[column]);
+  }, [columnVisibilityModel]);
+
+  /**
+   * Get ids that have been edited, staged or modified
+   *
+   * @returns {string[]} Row ids
+   */
+  const _getEditedIds = useCallback(
     () => [..._modifiedRowIds.current, ..._stagedRowIds.current],
     [_modifiedRowIds, _stagedRowIds]
   );
 
+  /**
+   * Get all table columns or hideable columns
+   *
+   * @param {{hideable: boolean}} [config] Only return hideable columns
+   * @returns {GridStateColDef[]} Table columns
+   */
+  const getColumns = useCallback(
+    (config?: { hideable: boolean }) => {
+      const nonHideableColumns = ['actions', '__check__'];
+      const columns = _muiDataGridApiRef.current.getAllColumns?.() ?? [];
+      return config?.hideable ? columns.filter((column) => !nonHideableColumns.includes(column.field)) : columns;
+    },
+    [_muiDataGridApiRef]
+  );
+
+  /**
+   * Gets all rows from the table that have been edited
+   *
+   * @returns {IManualTelemetryTableRow[]} Edited rows.
+   */
+  const _getEditedRows = useCallback(
+    (rowIds?: string[]): IManualTelemetryTableRow[] => {
+      const editRows: IManualTelemetryTableRow[] = [];
+      const idsToSave = rowIds ?? _getEditedIds();
+
+      for (const id of idsToSave) {
+        const editRow = _muiDataGridApiRef.current.state.editRows[id];
+
+        if (editRow) {
+          // Using map to get around typing annoyances
+          const newRowMap = new Map();
+          newRowMap.set('id', id);
+
+          for (const property in editRow) {
+            newRowMap.set(property, editRow[property]);
+          }
+          editRows.push(Object.fromEntries(newRowMap));
+        }
+      }
+
+      return editRows;
+    },
+    [_getEditedIds, _muiDataGridApiRef]
+  );
+
+  /**
+   * Get selected records via individual selection or bulk
+   *
+   * @returns {IManualTelemetryTableRow[]} Table rows.
+   */
+  const _getSelectedRows: () => IManualTelemetryTableRow[] = useCallback(() => {
+    if (!_muiDataGridApiRef?.current?.getRowModels) {
+      // Data grid is not fully initialized
+      return [];
+    }
+
+    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels(), ([_, value]) => value);
+    return rowValues.filter((row): row is IManualTelemetryTableRow =>
+      rowSelectionModel.includes((row as IManualTelemetryTableRow).id)
+    );
+  }, [_muiDataGridApiRef, rowSelectionModel]);
+
+  /**
+   * Toggle the table columns visibility
+   * Passing no columns in config will toggle ALL columns visibility
+   *
+   * @param {{columns: string[]}} [config] - Array of columns to hide
+   * @returns {void}
+   */
+  const toggleColumnsVisibility = useCallback(
+    (config?: { columns: string[] }) => {
+      let updatedVisibilityModel = { ...columnVisibilityModel };
+
+      const tableColumns = getColumns({ hideable: true }).map((column) => column.field);
+
+      // If specific columns are passed to hide, toggle their visibility
+      if (config?.columns) {
+        config.columns.forEach((column) => {
+          updatedVisibilityModel[column] = !updatedVisibilityModel[column];
+        });
+      } else {
+        // If no specific columns are passed, toggle visibility of all columns
+        const areAllColumnsVisible = Object.values(columnVisibilityModel).every((isVisible) => isVisible);
+        updatedVisibilityModel = Object.fromEntries(tableColumns.map((column) => [column, !areAllColumnsVisible]));
+      }
+      setColumnVisibilityModel(updatedVisibilityModel);
+    },
+    [columnVisibilityModel, getColumns, setColumnVisibilityModel]
+  );
+
+  /**
+   * Update edit or view state of table rows
+   *
+   * @param {string[]} rowIds - Row ids to modify
+   * @param {GirdRowModes} mode - Mode to change to ie: View or Edit
+   * @param {boolean} keepChanges - Indicator to keep or remove changes
+   * @returns {void}
+   */
+  const _updateRowsMode = useCallback(
+    (rowIds: string[], mode: GridRowModes, keepChanges: boolean) => {
+      setRowModesModel(() => {
+        const newModel: GridRowModesModel = {};
+        for (const id of rowIds) {
+          newModel[id] = { mode, ignoreModifications: !keepChanges };
+        }
+        return newModel;
+      });
+    },
+    [setRowModesModel]
+  );
+
+  /**
+   * Checks if the cell has error.
+   *
+   * @returns {boolean}
+   */
+  const hasError = useCallback(
+    (params: GridCellParams): boolean => {
+      return Boolean(
+        validationModel[params.row.id]?.some((error) => {
+          return error.field === params.field;
+        })
+      );
+    },
+    [validationModel]
+  );
+
+  /**
+   * Refresh the telemetry records and pre-parse to table date format
+   *
+   * @async
+   * @returns {Promise<void>}
+   */
   const refreshRecords = useCallback(async () => {
     const telemetry = (await telemetryDataContext.telemetryDataLoader.refresh(deployment_ids)) ?? [];
 
@@ -216,93 +365,12 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   }, [deployment_ids]);
 
   /**
-   * Get table columns
-   *
-   * @returns {string[]} Table columns
-   */
-  const getColumns = useCallback(() => {
-    return _muiDataGridApiRef.current.getAllColumns?.() ?? [];
-  }, [_muiDataGridApiRef]);
-
-  /**
-   * Gets all rows from the table that are being edited
-   *
-   * @returns {IManualTelemetryTableRow[]} Edited rows.
-   */
-  const _getModifiedRows = useCallback((): IManualTelemetryTableRow[] => {
-    const editRows: IManualTelemetryTableRow[] = [];
-    const idsToSave = getMutatedIds();
-
-    for (const id of idsToSave) {
-      const editRow = _muiDataGridApiRef.current.state.editRows[id];
-      if (editRow) {
-        const newRow = Object.entries(editRow).reduce(
-          (newRow, entry) => ({
-            ..._muiDataGridApiRef.current.getRow(id),
-            ...newRow,
-            [entry[0]]: entry[1].value
-          }),
-          {}
-        ) as IManualTelemetryTableRow;
-        editRows.push(newRow);
-      }
-    }
-
-    return editRows;
-  }, [_muiDataGridApiRef]);
-
-  const _updateRowsMode = useCallback(
-    (rowIds: string[], mode: GridRowModes, keepChanges: boolean) => {
-      setRowModesModel(() => {
-        const newModel: GridRowModesModel = {};
-        for (const id of rowIds) {
-          newModel[id] = { mode, ignoreModifications: !keepChanges };
-        }
-        return newModel;
-      });
-    },
-    [setRowModesModel]
-  );
-
-  /**
-   * Get selected records via individual selection or bulk
-   *
-   * @returns {IManualTelemetryTableRow[]} Table rows.
-   */
-  const _getSelectedRecords: () => IManualTelemetryTableRow[] = useCallback(() => {
-    if (!_muiDataGridApiRef?.current?.getRowModels) {
-      // Data grid is not fully initialized
-      return [];
-    }
-
-    const rowValues = Array.from(_muiDataGridApiRef.current.getRowModels(), ([_, value]) => value);
-    return rowValues.filter((row): row is IManualTelemetryTableRow =>
-      rowSelectionModel.includes((row as IManualTelemetryTableRow).id)
-    );
-  }, [_muiDataGridApiRef, rowSelectionModel]);
-
-  /**
-   * Checks if the cell has error.
-   *
-   */
-  const hasError = useCallback(
-    (params: GridCellParams): boolean => {
-      return Boolean(
-        validationModel[params.row.id]?.some((error) => {
-          return error.field === params.field;
-        })
-      );
-    },
-    [validationModel]
-  );
-
-  /**
    * Validates all rows belonging to the table. Returns null if validation passes, otherwise
    * returns the validation model
    */
   const _validateRows = useCallback((): TelemetryTableValidationModel | null => {
     const tableColumns = getColumns();
-    const rowValues = _getModifiedRows();
+    const rowValues = _getEditedRows();
 
     const requiredColumns: (keyof IManualTelemetryTableRow)[] = [
       'deployment_id',
@@ -345,7 +413,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     setValidationModel(validation);
 
     return Object.keys(validation).length > 0 ? validation : null;
-  }, [getColumns, _getModifiedRows]);
+  }, [getColumns, _getEditedRows]);
 
   const _commitDeleteRecords = useCallback(
     async (telemetryRecords: IManualTelemetryTableRow[]): Promise<void> => {
@@ -451,16 +519,18 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   );
 
   const deleteSelectedRecords = useCallback(() => {
-    const selectedRecords = _getSelectedRecords();
+    const selectedRecords = _getSelectedRows();
     if (!selectedRecords.length) {
       return;
     }
 
     deleteRecords(selectedRecords);
-  }, [deleteRecords, _getSelectedRecords]);
+  }, [deleteRecords, _getSelectedRows]);
 
   /**
-   * Add a new empty record to the data grid.
+   * Stage a new empty record to the data grid
+   *
+   * @returns {void}
    */
   const addRecord = useCallback(() => {
     const id = uuidv4();
@@ -500,42 +570,30 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   }, [rows, _updateRowsMode, _modifiedRowIds]);
 
   /**
-   * Send all telemetry rows to the backend.
+   * Dispatches update and create requests to BCTW
+   *
+   * @param {GridValidRowModel[]} createRows - Rows to create
+   * @param {GridValidRowModel[]} updateRows - Rows to update
+   * @returns {Promise<void>}
    */
   const _saveRecords = useCallback(
-    async (rowsToSave: GridValidRowModel[]) => {
+    async (createRows: GridValidRowModel[], updateRows: GridValidRowModel[]) => {
       try {
-        const createData: ICreateManualTelemetry[] = [];
-        const updateData: IUpdateManualTelemetry[] = [];
-        // loop through records and decide based on initial data loaded if a record should be created or updated
-        (rowsToSave as IManualTelemetryTableRow[]).forEach((item) => {
-          if (item.telemetry_type === 'MANUAL') {
-            const found = telemetryDataContext.telemetryDataLoader.data?.find(
-              (search) => search.telemetry_manual_id === item.id
-            );
-            if (found) {
-              // existing ID found, update record
-              updateData.push({
-                telemetry_manual_id: String(item.id),
-                latitude: Number(item.latitude),
-                longitude: Number(item.longitude),
-                acquisition_date: dayjs(`${dayjs(item.date).format('YYYY-MM-DD')} ${item.time}`).format(
-                  'YYYY-MM-DD HH:mm:ss'
-                )
-              });
-            } else {
-              // nothing found, create a new record
-              createData.push({
-                deployment_id: String(item.deployment_id),
-                latitude: Number(item.latitude),
-                longitude: Number(item.longitude),
-                acquisition_date: dayjs(`${dayjs(item.date).format('YYYY-MM-DD')} ${item.time}`).format(
-                  'YYYY-MM-DD HH:mm:ss'
-                )
-              });
-            }
-          }
-        });
+        // create a new records
+        const createData = createRows.map((row) => ({
+          deployment_id: String(row.deployment_id),
+          latitude: Number(row.latitude),
+          longitude: Number(row.longitude),
+          acquisition_date: dayjs(`${dayjs(row.date).format('YYYY-MM-DD')} ${row.time}`).format('YYYY-MM-DD HH:mm:ss')
+        }));
+
+        // update existing records
+        const updateData = updateRows.map((row) => ({
+          telemetry_manual_id: String(row.id),
+          latitude: Number(row.latitude),
+          longitude: Number(row.longitude),
+          acquisition_date: dayjs(`${dayjs(row.date).format('YYYY-MM-DD')} ${row.time}`).format('YYYY-MM-DD HH:mm:ss')
+        }));
 
         if (createData.length) {
           await telemetryApi.createManualTelemetry(createData);
@@ -576,7 +634,10 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   );
 
   /**
-   * Transition all editable rows from edit mode to view mode.
+   * Callback to save the edited and staged records
+   *
+   * @async
+   * @returns {Promise<void>}
    */
   const saveRecords = useCallback(async () => {
     _isSavingData.current = true;
@@ -589,7 +650,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       return;
     }
 
-    const idsToSave = getMutatedIds();
+    const idsToSave = _getEditedIds();
 
     if (!idsToSave) {
       // No rows in edit mode, nothing to stop or save
@@ -597,11 +658,16 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       return;
     }
 
-    const rowsToSave = _getModifiedRows();
+    const newRows = _getEditedRows(_stagedRowIds.current);
+    const updateRows = _getEditedRows(_modifiedRowIds.current);
 
-    await _saveRecords(rowsToSave);
-  }, [_validateRows, getMutatedIds, _getModifiedRows, _saveRecords]);
+    await _saveRecords(newRows, updateRows);
+  }, [_validateRows, _getEditedIds, _getEditedRows, _saveRecords]);
 
+  /**
+   * Refetch the telemetry when the deployment ids change
+   *
+   */
   useEffect(() => {
     // Begin fetching telemetry once we have deployments ids
     if (deployment_ids.length) {
@@ -609,41 +675,6 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     }
   }, [deployment_ids, refreshRecords]);
 
-  // /**
-  //  * Runs when row records are being saved and transitioned from Edit mode to View mode.
-  //  */
-  // useEffect(() => {
-  //   // Data grid is not fully initialized
-  //   if (!_muiDataGridApiRef?.current?.getRowModels) return;
-  //
-  //   // Stop edit mode not in progress, cannot save yet
-  //   if (!_isStoppingEdit.current) return;
-  //
-  //   // Modified row ids
-  //   const modifiedRowIds = _modifiedRowIds.current;
-  //
-  //   // No rows to save
-  //   if (!modifiedRowIds.length) return;
-  //
-  //   // Saving already in progress
-  //   if (_isSavingData.current) return;
-  //
-  //   // Not all rows have transitioned to view mode, cannot save yet
-  //   if (modifiedRowIds.some((id) => _muiDataGridApiRef.current.getRowMode(id) === 'edit')) return;
-  //
-  //   // Start saving records
-  //   _isSavingData.current = true;
-  //
-  //   // All rows have transitioned to view mode
-  //   _isStoppingEdit.current = false;
-  //
-  //   const rowModels = _muiDataGridApiRef.current.getRowModels();
-  //   const rowValues = Array.from(rowModels, ([_, value]) => value);
-  //
-  //   _saveRecords(rowValues);
-  // }, [_muiDataGridApiRef, _saveRecords, _modifiedRowIds, _isSavingData, _isStoppingEdit]);
-
-  //}, [_muiDataGridApiRef, _saveRecords, _isSavingData, _isStoppingEdit, _modifiedRowIds]);
   const telemetryTableContext: ITelemetryTableContext = useMemo(
     () => ({
       _muiDataGridApiRef,
@@ -662,19 +693,21 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       onRowSelectionModelChange: setRowSelectionModel,
       rowModesModel,
       onRowModesModelChange: setRowModesModel,
+      columnVisibilityModel,
+      onColumnVisibilityModelChange: setColumnVisibilityModel,
       isLoading,
       isSaving: _isSavingData.current,
       validationModel,
-      recordCount
-      //setRecordCount
+      recordCount,
+      toggleColumnsVisibility,
+      hiddenColumns
     }),
     [
       _muiDataGridApiRef,
       rows,
-      rowModesModel,
-      hasError,
       getColumns,
       addRecord,
+      hasError,
       saveRecords,
       deleteRecords,
       deleteSelectedRecords,
@@ -682,9 +715,14 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       refreshRecords,
       hasUnsavedChanges,
       rowSelectionModel,
+      rowModesModel,
       isLoading,
       validationModel,
-      recordCount
+      recordCount,
+      columnVisibilityModel,
+      setColumnVisibilityModel,
+      toggleColumnsVisibility,
+      hiddenColumns
     ]
   );
 

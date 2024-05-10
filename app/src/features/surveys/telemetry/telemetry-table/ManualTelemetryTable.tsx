@@ -1,7 +1,7 @@
 import { cyan, grey } from '@mui/material/colors';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { useOnMount } from '@mui/x-data-grid/hooks/utils/useOnMount';
+import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
 import {
+  GenericActionsColDef,
   GenericDateColDef,
   GenericLatitudeColDef,
   GenericLongitudeColDef,
@@ -19,29 +19,22 @@ interface IManualTelemetryTableProps {
   isLoading: boolean;
 }
 
-/**
- * TODO:
- * 1. Adding a record after successfully saving, nothing happens
- * 2. Selecting all records should not select records without select action
- * 3. Selecting record state will persist after discard changes selected
- *
- */
 const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
   const telemetryTableContext = useTelemetryTableContext();
   const surveyContext = useContext(SurveyContext);
 
-  useOnMount(() => {
-    surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-  });
-
-  const isManualTelemetry = (row: IManualTelemetryTableRow) => row.telemetry_type === 'MANUAL';
+  surveyContext.deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+  surveyContext.critterDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
 
   const critterDeployments: ICritterDeployment[] = useMemo(() => {
     const data: ICritterDeployment[] = [];
 
     const critters = surveyContext.critterDataLoader.data ?? [];
     const deployments = surveyContext.deploymentDataLoader.data ?? [];
+
+    if (!critters.length || !deployments.length) {
+      return data;
+    }
 
     const critterMap = new Map(critters.map((critter) => [critter.critter_id, critter]));
 
@@ -55,13 +48,20 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
     return data;
   }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
 
+  const isManualTelemetry = (row: IManualTelemetryTableRow) => row.telemetry_type === 'MANUAL';
+
+  // Disable the delete action when record is 'Manual' telemetry
+  const actionsDisabled = (params: GridRowParams<IManualTelemetryTableRow>) =>
+    telemetryTableContext.isSaving || !isManualTelemetry(params.row);
+
   const columns: GridColDef<IManualTelemetryTableRow>[] = [
     DeploymentColDef({ critterDeployments, hasError: telemetryTableContext.hasError }),
     TelemetryTypeColDef(),
+    GenericDateColDef({ field: 'date', headerName: 'Date', hasError: telemetryTableContext.hasError }),
+    GenericTimeColDef({ field: 'time', headerName: 'Time', hasError: telemetryTableContext.hasError }),
     GenericLatitudeColDef({ field: 'latitude', headerName: 'Latitude', hasError: telemetryTableContext.hasError }),
     GenericLongitudeColDef({ field: 'longitude', headerName: 'Longitude', hasError: telemetryTableContext.hasError }),
-    GenericDateColDef({ field: 'date', headerName: 'Date', hasError: telemetryTableContext.hasError }),
-    GenericTimeColDef({ field: 'time', headerName: 'Time', hasError: telemetryTableContext.hasError })
+    GenericActionsColDef({ disabled: actionsDisabled, onDelete: telemetryTableContext.deleteRecords })
   ];
 
   return (
@@ -69,27 +69,26 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       // Ref
       apiRef={telemetryTableContext._muiDataGridApiRef}
       // Columns
-      columns={columns}
+      columns={columns.map((column) => ({ ...column, flex: 1 }))}
       // Rows
       rows={telemetryTableContext.rows}
+      // DataGrid Models
+      rowModesModel={telemetryTableContext.rowModesModel}
+      onRowModesModelChange={telemetryTableContext.onRowModesModelChange}
+      rowSelectionModel={telemetryTableContext.rowSelectionModel}
+      onRowSelectionModelChange={telemetryTableContext.onRowSelectionModelChange}
+      columnVisibilityModel={telemetryTableContext.columnVisibilityModel}
       // Select rows
       checkboxSelection
       disableRowSelectionOnClick
       isRowSelectable={(params) => isManualTelemetry(params.row)}
       loading={props.isLoading}
-      // Row modes
-      rowModesModel={telemetryTableContext.rowModesModel}
-      onRowModesModelChange={telemetryTableContext.onRowModesModelChange}
       // Row edit
       editMode="row"
       isCellEditable={(params) => isManualTelemetry(params.row)}
-      //onRowEditStart={(params) => telemetryTableContext.onRowEditStart(params.id)}
       onRowEditStop={(_params, event) => {
         event.defaultMuiPrevented = true;
       }}
-      // Row selection
-      onRowSelectionModelChange={telemetryTableContext.onRowSelectionModelChange}
-      rowSelectionModel={telemetryTableContext.rowSelectionModel}
       // Styling
       rowHeight={56}
       localeText={{
