@@ -28,7 +28,11 @@ export async function up(knex: Knex): Promise<void> {
       'gram',
       'kilogram',
       'percent',
-      'celsius'
+      'celsius',
+      'ppt',
+      'SCF',
+      'degrees',
+      'pH'
     );
 
     ----------------------------------------------------------------------------------------
