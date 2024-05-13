@@ -150,9 +150,9 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
                   <em>{renderOption.itis_tsn}</em>
                 </Typography>
                 {/* <Typography variant="body2">
-                  {renderOption.commonName ? (
+                  {renderOption.commonNames ? (
                     <>
-                      <span>{renderOption.commonName}</span>&nbsp;
+                      <span>{renderOption.commonNames}</span>&nbsp;
                       <span>
                         (<em>{renderOption.scientificName}</em>)
                       </span>
