@@ -268,7 +268,6 @@ export function add_survey() {
   cy.get("#mui-component-select-purpose_and_methodology\\.field_method_id").focus().type("{downArrow}{enter}");
   cy.get("#mui-component-select-purpose_and_methodology\\.ecological_season_id").focus().type("{downArrow}{enter}");
   cy.get("#purpose_and_methodology\\.vantage_code_ids").focus().type("{downArrow}{enter}");
-  cy.get('input[name="purpose_and_methodology\\.surveyed_all_areas"]').first().click({force: true});
   cy.get("#location\\.survey_area_name").clear().type(faker.lorem.words());
 
   cy.get('[data-testid="boundary_file-upload"]').click();
