@@ -116,13 +116,8 @@ GET.apiDoc = {
                     'latitude',
                     'longitude',
                     'count',
-                    'observation_time',
                     'observation_date',
-                    'create_date',
-                    'create_user',
-                    'update_date',
-                    'update_user',
-                    'revision_count',
+                    'observation_time',
                     'survey_sample_site_name',
                     'survey_sample_method_name',
                     'survey_sample_period_start_datetime'
@@ -167,33 +162,11 @@ GET.apiDoc = {
                     count: {
                       type: 'integer'
                     },
-                    observation_time: {
-                      type: 'string'
-                    },
                     observation_date: {
                       type: 'string'
                     },
-                    create_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      description: 'ISO 8601 date string for the project start date'
-                    },
-                    create_user: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    update_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      description: 'ISO 8601 date string for the project start date',
-                      nullable: true
-                    },
-                    update_user: {
-                      type: 'integer',
-                      minimum: 1,
-                      nullable: true
-                    },
-                    revision_count: {
-                      type: 'integer',
-                      minimum: 0
+                    observation_time: {
+                      type: 'string'
                     },
                     survey_sample_site_name: {
                       type: 'string',

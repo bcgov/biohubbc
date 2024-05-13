@@ -1,5 +1,5 @@
 import { SurveyContext } from 'contexts/surveyContext';
-import { SurveySectionFullPageLayout } from 'features/surveys/components/SurveySectionFullPageLayout';
+import { SurveySectionFullPageLayout } from 'features/surveys/components/layout/SurveySectionFullPageLayout';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';

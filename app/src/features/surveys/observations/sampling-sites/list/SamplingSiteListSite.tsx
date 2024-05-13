@@ -14,8 +14,8 @@ import Typography from '@mui/material/Typography';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
 import { SamplingSiteListMethod } from 'features/surveys/observations/sampling-sites/list/SamplingSiteListMethod';
 import SurveyMap from 'features/surveys/view/SurveyMap';
-import { IGetSampleLocationDetails } from 'interfaces/useSurveyApi.interface';
-import SamplingStratumChips from '../edit/components/SamplingStratumChips';
+import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
+import SamplingStratumChips from '../edit/form/SamplingStratumChips';
 
 export interface ISamplingSiteListSiteProps {
   sampleSite: IGetSampleLocationDetails;
@@ -137,7 +137,7 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
           pl: 1,
           pr: 0
         }}>
-        {sampleSite.sample_stratums && sampleSite.sample_stratums?.length > 0 && (
+        {sampleSite.stratums && sampleSite.stratums.length > 0 && (
           <Box display="flex" alignItems="center" color="textSecondary" py={1} px={1}>
             <SamplingStratumChips sampleSite={sampleSite} />
           </Box>

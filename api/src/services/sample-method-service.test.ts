@@ -154,7 +154,7 @@ describe('SampleMethodService', () => {
         method_lookup_id: 3,
         method_response_metric_id: 1,
         description: 'description',
-        periods: [
+        sample_periods: [
           {
             end_date: '2023-01-02',
             start_date: '2023-10-02',
@@ -177,17 +177,17 @@ describe('SampleMethodService', () => {
       expect(insertSampleMethodStub).to.be.calledOnceWith(sampleMethod);
       expect(insertSamplePeriodStub).to.be.calledWith({
         survey_sample_method_id: mockSampleMethodRecord.survey_sample_method_id,
-        start_date: sampleMethod.periods[0].start_date,
-        end_date: sampleMethod.periods[0].end_date,
-        start_time: sampleMethod.periods[0].start_time,
-        end_time: sampleMethod.periods[0].end_time
+        start_date: sampleMethod.sample_periods[0].start_date,
+        end_date: sampleMethod.sample_periods[0].end_date,
+        start_time: sampleMethod.sample_periods[0].start_time,
+        end_time: sampleMethod.sample_periods[0].end_time
       });
       expect(insertSamplePeriodStub).to.be.calledWith({
         survey_sample_method_id: mockSampleMethodRecord.survey_sample_method_id,
-        start_date: sampleMethod.periods[1].start_date,
-        end_date: sampleMethod.periods[1].end_date,
-        start_time: sampleMethod.periods[1].start_time,
-        end_time: sampleMethod.periods[1].end_time
+        start_date: sampleMethod.sample_periods[1].start_date,
+        end_date: sampleMethod.sample_periods[1].end_date,
+        start_time: sampleMethod.sample_periods[1].start_time,
+        end_time: sampleMethod.sample_periods[1].end_time
       });
       expect(response).to.eql(mockSampleMethodRecord);
     });
@@ -228,7 +228,7 @@ describe('SampleMethodService', () => {
         method_lookup_id: 3,
         method_response_metric_id: 1,
         description: 'description',
-        periods: [
+        sample_periods: [
           {
             end_date: '2023-01-02',
             start_date: '2023-10-02',

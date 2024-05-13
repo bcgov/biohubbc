@@ -69,17 +69,20 @@ export class SampleStratumRepository extends BaseRepository {
    * Gets all survey Sample Stratums.
    *
    * @param {number} surveyStratumId
-   * @return {*}  {Promise<SampleStratumRecord[]>}
+   * @return {*}  {Promise<number>}
    * @memberof sampleStratumRepository
    */
   async getSampleStratumsCountForSurveyStratumId(surveyStratumId: number): Promise<number> {
     const sql = SQL`
-      SELECT COUNT(*)
-      FROM survey_sample_stratum
-      WHERE survey_stratum_id = ${surveyStratumId};
+      SELECT 
+        COUNT(*)::integer AS count
+      FROM 
+        survey_sample_stratum
+      WHERE 
+        survey_stratum_id = ${surveyStratumId};
     `;
 
-    const response = await this.connection.sql(sql, z.object({ sample_stratums_count: z.string().transform(Number) }));
+    const response = await this.connection.sql(sql, z.object({ count: z.number() }));
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to count sample stratums', [
@@ -88,7 +91,7 @@ export class SampleStratumRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].sample_stratums_count;
+    return response.rows[0].count;
   }
 
   /**

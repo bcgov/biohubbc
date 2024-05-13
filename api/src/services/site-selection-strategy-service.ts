@@ -90,8 +90,8 @@ export class SiteSelectionStrategyService extends DBService {
     );
 
     stratums.forEach((stratum) => {
-      if ('survey_stratum_id' in stratum) {
-        updateStratums.push(stratum);
+      if ((stratum as SurveyStratumRecord).survey_stratum_id) {
+        updateStratums.push(stratum as SurveyStratumRecord);
       } else {
         insertStratums.push(stratum);
       }
@@ -100,9 +100,10 @@ export class SiteSelectionStrategyService extends DBService {
     const removeStratums = existingSiteSelectionStrategies.stratums
       .filter(
         (stratum) =>
+          stratum.survey_stratum_id !== null &&
           !updateStratums.some((updateStratum) => updateStratum.survey_stratum_id === stratum.survey_stratum_id)
       )
-      .map((stratum) => stratum.survey_stratum_id);
+      .map((stratum) => stratum.survey_stratum_id) as number[];
 
     if (removeStratums.length) {
       await this.deleteSurveyStratums(removeStratums);
