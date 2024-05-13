@@ -370,36 +370,34 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     const tableColumns = getColumns();
     const rowValues = _getEditedRows();
 
-    const requiredColumns: (keyof IManualTelemetryTableRow)[] = [
+    const requiredColumnsSet: Set<keyof IManualTelemetryTableRow> = new Set([
       'deployment_id',
       'latitude',
       'longitude',
       'date',
       'time'
-    ];
+    ]);
 
     const validation = rowValues.reduce((tableModel: TelemetryTableValidationModel, row: IManualTelemetryTableRow) => {
       const rowErrors: TelemetryRowValidationError[] = [];
 
-      // Validate missing columns
-      const missingColumns: Set<keyof IManualTelemetryTableRow> = new Set(
-        requiredColumns.filter((column) => !row[column])
-      );
-
-      Array.from(missingColumns).forEach((field: keyof IManualTelemetryTableRow) => {
-        const columnName = tableColumns.find((column) => column.field === field)?.headerName ?? field;
-        rowErrors.push({ field, message: `Missing column: ${columnName}` });
+      // Validate missing required fields
+      tableColumns.forEach((column) => {
+        const field = column.field as keyof IManualTelemetryTableRow;
+        if (requiredColumnsSet.has(field) && !row[field]) {
+          rowErrors.push({ field, message: `Missing column: ${column.headerName ?? field}` });
+        }
       });
 
       // Validate date value
-      // if (row.date && !dayjs(row.date).isValid()) {
-      //   rowErrors.push({ field: 'date', message: 'Invalid date' });
-      // }
+      if (row.date && !dayjs(row.date).isValid()) {
+        rowErrors.push({ field: 'date', message: 'Invalid date' });
+      }
 
       // Validate time value
-      // if (row.time === 'Invalid date') {
-      //   rowErrors.push({ field: 'time', message: 'Invalid time' });
-      // }
+      if (row.time === 'Invalid date') {
+        rowErrors.push({ field: 'time', message: 'Invalid time' });
+      }
 
       if (rowErrors.length > 0) {
         tableModel[row.id] = rowErrors;

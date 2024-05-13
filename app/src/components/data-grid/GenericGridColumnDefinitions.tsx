@@ -24,12 +24,9 @@ export const GenericDateColDef = <T extends GridValidRowModel>(props: {
     hideable: true,
     type: 'date',
     minWidth: 150,
-    valueParser: (value) => dayjs(value, 'YYYY-MM-DD').format('YYYY-MM-DD'),
-    //valueFormatter: (params) => dayjs(params.value).format(DATE_FORMAT.ShortDateFormatMonthFirst),
     valueGetter: (params) => {
       return params.value ? dayjs(params.value).toDate() : null;
     },
-    //valueSetter: (params) => ({ ...params.row, [field]: dayjs(params.row[field]).toDate() }),
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',
