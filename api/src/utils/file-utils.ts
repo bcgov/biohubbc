@@ -285,7 +285,8 @@ export function generateS3SurveyExportKey(options: { surveyId: number; fileName:
  *
  * @export
  * @param {Express.Multer.File} file
- * @return {*}  {Promise<boolean>}
+ * @return {*}  {Promise<boolean>} `true` if the file is safe, `false` if the file is a virus or contains malicious
+ * content.
  */
 export async function scanFileForVirus(file: Express.Multer.File): Promise<boolean> {
   if (process.env.ENABLE_FILE_VIRUS_SCAN !== 'true' || !process.env.CLAMAV_HOST || !process.env.CLAMAV_PORT) {
