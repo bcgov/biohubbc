@@ -132,7 +132,6 @@ export type ITelemetryTableContext = {
   validationModel: TelemetryTableValidationModel;
   /**
    * Indicates whether the cell has an error.
-   *
    */
   hasError: (params: GridCellParams) => boolean;
 
@@ -240,14 +239,12 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
         const editRow = _muiDataGridApiRef.current.state.editRows[id];
 
         if (editRow) {
-          // Using map to get around typing annoyances
-          const newRowMap = new Map();
-          newRowMap.set('id', id);
-
-          for (const property in editRow) {
-            newRowMap.set(property, editRow[property]);
+          const newRow: Record<string, any> = { id };
+          for (const [key, value] of Object.entries(editRow)) {
+            newRow[key] = value.value;
           }
-          editRows.push(Object.fromEntries(newRowMap));
+
+          editRows.push(newRow as IManualTelemetryTableRow);
         }
       }
 
@@ -365,8 +362,9 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   }, [deployment_ids]);
 
   /**
-   * Validates all rows belonging to the table. Returns null if validation passes, otherwise
-   * returns the validation model
+   * Validates all edited rows of table.
+   *
+   * @returns {TelemetryTableValidationModel | null} Validation model or null (if passes validation)
    */
   const _validateRows = useCallback((): TelemetryTableValidationModel | null => {
     const tableColumns = getColumns();
@@ -394,14 +392,14 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       });
 
       // Validate date value
-      if (row.date && !dayjs(row.date).isValid()) {
-        rowErrors.push({ field: 'date', message: 'Invalid date' });
-      }
+      // if (row.date && !dayjs(row.date).isValid()) {
+      //   rowErrors.push({ field: 'date', message: 'Invalid date' });
+      // }
 
       // Validate time value
-      if (row.time === 'Invalid date') {
-        rowErrors.push({ field: 'time', message: 'Invalid time' });
-      }
+      // if (row.time === 'Invalid date') {
+      //   rowErrors.push({ field: 'time', message: 'Invalid time' });
+      // }
 
       if (rowErrors.length > 0) {
         tableModel[row.id] = rowErrors;
@@ -482,6 +480,12 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     [dialogContext, telemetryApi]
   );
 
+  /**
+   * Delete records from table
+   *
+   * @param {IManualTelemetryTableRow[]} telemetryRecords - Records to delete
+   * @returns {void}
+   */
   const deleteRecords = useCallback(
     (telemetryRecords: IManualTelemetryTableRow[]) => {
       if (!telemetryRecords.length) {
@@ -518,6 +522,11 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     [_commitDeleteRecords, dialogContext]
   );
 
+  /**
+   * Delete the selected records
+   *
+   * @returns {void}
+   */
   const deleteSelectedRecords = useCallback(() => {
     const selectedRecords = _getSelectedRows();
     if (!selectedRecords.length) {
@@ -538,7 +547,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     const newRecord: IManualTelemetryTableRow = {
       id,
       deployment_id: '',
-      latitude: '' as unknown as number,
+      latitude: '' as unknown as number, // empty strings to satisfy text fields
       longitude: '' as unknown as number,
       date: '',
       time: '',
@@ -554,6 +563,11 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     _updateRowsMode([id], GridRowModes.Edit, false);
   }, [rows, _updateRowsMode]);
 
+  /**
+   * Revert all table changes
+   *
+   * @returns {void}
+   */
   const revertRecords = useCallback(() => {
     // Revert any current edits
     _updateRowsMode(_modifiedRowIds.current, GridRowModes.View, false);
@@ -669,7 +683,6 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
    *
    */
   useEffect(() => {
-    // Begin fetching telemetry once we have deployments ids
     if (deployment_ids.length) {
       refreshRecords();
     }

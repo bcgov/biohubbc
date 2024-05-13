@@ -45,7 +45,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       // Ref
       apiRef={telemetryTableContext._muiDataGridApiRef}
       // Columns
-      columns={columns.map((column) => ({ ...column, flex: 1 }))}
+      columns={columns.map((column) => ({ ...column, flex: 1, minWidth: 120 }))}
       // Rows
       rows={telemetryTableContext.rows}
       // DataGrid Models

@@ -15,7 +15,7 @@ export const GenericDateColDef = <T extends GridValidRowModel>(props: {
   headerName: string;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<T> => {
-  const { hasError, field, headerName } = props;
+  const { field, headerName, hasError } = props;
 
   return {
     field,
@@ -24,13 +24,18 @@ export const GenericDateColDef = <T extends GridValidRowModel>(props: {
     hideable: true,
     type: 'date',
     minWidth: 150,
-    valueGetter: (params) => (params.row[field] ? dayjs(params.row[field]).toDate() : null),
+    valueParser: (value) => dayjs(value, 'YYYY-MM-DD').format('YYYY-MM-DD'),
+    //valueFormatter: (params) => dayjs(params.value).format(DATE_FORMAT.ShortDateFormatMonthFirst),
+    valueGetter: (params) => {
+      return params.value ? dayjs(params.value).toDate() : null;
+    },
+    //valueSetter: (params) => ({ ...params.row, [field]: dayjs(params.row[field]).toDate() }),
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',
     renderCell: (params) => (
       <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-        {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}
+        {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.row[field])}
       </Typography>
     ),
     renderEditCell: (params) => {
@@ -42,17 +47,13 @@ export const GenericDateColDef = <T extends GridValidRowModel>(props: {
           textFieldProps={{
             name: params.field,
             type: 'date',
-            value: params.value ? dayjs(params.value).format('YYYY-MM-DD') : '',
             onChange: (event) => {
-              const value = dayjs(event.target.value).toDate();
-
               params.api.setEditCellValue({
                 id: params.id,
                 field: params.field,
-                value
+                value: event.target.value
               });
             },
-
             error
           }}
         />
@@ -79,7 +80,7 @@ export const GenericTimeColDef = <T extends GridValidRowModel>(props: {
     headerAlign: 'left',
     align: 'left',
     valueSetter: (params) => {
-      return { ...params.row, observation_time: params.value };
+      return { ...params.row, [field]: params.value };
     },
     valueParser: (value) => {
       if (!value) {

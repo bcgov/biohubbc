@@ -29,22 +29,19 @@ import { pluralize as p } from 'utils/Utils';
 import ManualTelemetryTable from './ManualTelemetryTable';
 
 const ManualTelemetryTableContainer = () => {
-  // Api
   const telemetryApi = useTelemetryApi();
 
-  // State
+  const dialogContext = useContext(DialogContext);
+  const telemetryTableContext = useTelemetryTableContext();
+  const surveyContext = useContext(SurveyContext);
+
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [processingRecords, setProcessingRecords] = useState(false);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState(false);
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState<Element | null>(null);
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
 
-  // Contexts
-  const dialogContext = useContext(DialogContext);
-  const telemetryTableContext = useTelemetryTableContext();
-  const surveyContext = useContext(SurveyContext);
-
-  const { projectId, surveyId } = surveyContext;
+  const numSelectedRows = telemetryTableContext.rowSelectionModel.length;
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
@@ -59,7 +56,7 @@ const ManualTelemetryTableContainer = () => {
   };
 
   const handleFileImport = async (file: File) => {
-    telemetryApi.uploadCsvForImport(projectId, surveyId, file).then((response) => {
+    telemetryApi.uploadCsvForImport(surveyContext.projectId, surveyContext.surveyId, file).then((response) => {
       setShowImportDialog(false);
       setProcessingRecords(true);
       telemetryApi
@@ -88,8 +85,6 @@ const ManualTelemetryTableContainer = () => {
         });
     });
   };
-
-  const numSelectedRows = telemetryTableContext.rowSelectionModel.length;
 
   return (
     <>
