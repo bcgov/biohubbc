@@ -51,7 +51,7 @@ const EnvironmentStandardCard = (props: IEnvironmentStandardCard) => {
               sx={{
                 p: small ? 1 : 2,
                 px: 2,
-                bgcolor: grey[300],
+                bgcolor: grey[200],
                 '&::first-letter': {
                   textTransform: 'capitalize'
                 }
@@ -61,7 +61,7 @@ const EnvironmentStandardCard = (props: IEnvironmentStandardCard) => {
               <Typography variant="body1" fontWeight={700}>
                 {option.name}
               </Typography>
-              <Typography variant="body2" fontWeight={700}>
+              <Typography variant="body2" color="textSecondary">
                 {option?.description}
               </Typography>
             </Card>

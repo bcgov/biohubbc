@@ -159,11 +159,6 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
             data-testid="environments-autocomplete-option">
             <Stack gap={0.75} mt={-0.25}>
               <Box>
-                <Typography variant="body2">
-                  <em>{renderOption.name}</em>
-                </Typography>
-              </Box>
-              <Box>
                 <Typography component="div" variant="body1" fontWeight={700}>
                   {renderOption.name}
                 </Typography>
