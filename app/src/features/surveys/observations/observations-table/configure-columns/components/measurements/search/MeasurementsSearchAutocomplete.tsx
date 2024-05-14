@@ -125,6 +125,18 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
                 <Typography variant="body2">
                   <em>{renderOption.itis_tsn}</em>
                 </Typography>
+                {/* <Typography variant="body2">
+                  {renderOption.commonNames ? (
+                    <>
+                      <span>{renderOption.commonNames}</span>&nbsp;
+                      <span>
+                        (<em>{renderOption.scientificName}</em>)
+                      </span>
+                    </>
+                  ) : (
+                    <em>{renderOption.scientificName}</em>
+                  )}
+                </Typography> */}
               </Box>
               <Box>
                 <Typography component="div" variant="body1" fontWeight={700}>

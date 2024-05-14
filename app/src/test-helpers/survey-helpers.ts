@@ -57,8 +57,24 @@ export const surveyObject: SurveyViewObject = {
     stakeholder_partnerships: ['partner 3', 'partner 4']
   },
   species: {
-    focal_species: [{ tsn: 1, commonName: 'focal species 1', scientificName: 'scientific name 1' }],
-    ancillary_species: [{ tsn: 2, commonName: 'focal species 2', scientificName: 'scientific name 2' }]
+    focal_species: [
+      {
+        tsn: 1,
+        commonNames: ['focal species 1'],
+        scientificName: 'scientific name 1',
+        rank: 'species',
+        kingdom: 'animalia'
+      }
+    ],
+    ancillary_species: [
+      {
+        tsn: 2,
+        commonNames: ['focal species 2'],
+        scientificName: 'scientific name 2',
+        rank: 'species',
+        kingdom: 'animalia'
+      }
+    ]
   },
   site_selection: {
     strategies: [],
