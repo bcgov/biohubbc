@@ -25,7 +25,7 @@ const ancillaryTaxonIdOptions = [
   { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
 ];
 
-const projectRegions = ['Peace', 'Skeena', 'Cariboo', 'Thompson', 'Omineca', 'Kootenay'];
+const projectRegions = ['Peace', 'Skeena', 'Cariboo', 'Cariboo'] as const; // Duplicate cariboo to test project UI list
 
 /**
  * Add spatial transform
@@ -65,6 +65,11 @@ export async function seed(knex: Knex): Promise<void> {
         ${insertProjectParticipationData(projectId)}
         ${insertProjectProgramData(projectId)}
       `);
+
+      // Insert project regions
+      for (const region of projectRegions) {
+        await knex.raw(`${insertProjectRegionData(projectId, region)}`);
+      }
 
       // Insert survey data
       for (let j = 0; j < NUM_SEED_SURVEYS_PER_PROJECT; j++) {
@@ -746,16 +751,21 @@ const insertProjectData = (projectName?: string) => `
   RETURNING project_id;
 `;
 
-const insertProjectRegionData = (projectId: string, regionName) => `
+/**
+ * SQL to insert project regions
+ *
+ */
+const insertProjectRegionData = (projectId: string, region: typeof projectRegions[number]) => `
   INSERT INTO project_region
   (
     project_id,
     region_id
   )
   SELECT
+    $$${projectId}$$,
     region_id
   FROM
     region_lookup
-
-
+  WHERE
+    region_name = $$${region}$$;
 `;
