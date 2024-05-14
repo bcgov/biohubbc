@@ -24,6 +24,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
 
   const { critterDeployments } = surveyContext;
 
+  // Check if table row is 'Manual' telemetry - Only manual telemetry records can be mutated
   const isManualTelemetry = (row: IManualTelemetryTableRow) => row.telemetry_type === 'MANUAL';
 
   // Disable the delete action when record is 'Manual' telemetry
