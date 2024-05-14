@@ -755,7 +755,7 @@ const insertProjectData = (projectName?: string) => `
  * SQL to insert project regions
  *
  */
-const insertProjectRegionData = (projectId: string, region: typeof projectRegions[number]) => `
+const insertProjectRegionData = (projectId: string, region: (typeof projectRegions)[number]) => `
   INSERT INTO project_region
   (
     project_id,
