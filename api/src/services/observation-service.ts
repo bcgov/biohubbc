@@ -502,7 +502,7 @@ export class ObservationService extends DBService {
     // Get all measurement columns names from the worksheet, that match a measurement in the TSN measurements
     const measurementColumnNames = getMeasurementColumnNames(nonStandardColumnNames, tsnMeasurementTypeDefinitionMap);
 
-    const measurementsToValidate: IMeasurementDataToValidate[] = worksheetRowObjects.flatMap((row, index) => {
+    const measurementsToValidate: IMeasurementDataToValidate[] = worksheetRowObjects.flatMap((row) => {
       return measurementColumnNames.map((columnName) => ({
         tsn: String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
         key: columnName,
