@@ -5,8 +5,8 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { Formik, FormikProps } from 'formik';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import yup from 'utils/YupSchema';
-import EcologicalUnitsForm from './ecological-units/EcologicalUnitsForm';
-import AnimalGeneralInformationForm from './general-information/AnimalGeneralInformationForm';
+import { EcologicalUnitsForm } from './ecological-units/EcologicalUnitsForm';
+import { AnimalGeneralInformationForm } from './general-information/AnimalGeneralInformationForm';
 
 export interface IAnimalFormProps {
   initialAnimalData: ICreateEditAnimalRequest;
@@ -14,39 +14,43 @@ export interface IAnimalFormProps {
   formikRef: React.RefObject<FormikProps<ICreateEditAnimalRequest>>;
 }
 
+const AnimalFormYupSchema = yup.object({
+  nickname: yup.string().min(3, 'Nickname must be at least 3 letters').required('Nickname is required'),
+  species: yup
+    .object()
+    .shape({
+      scientificName: yup.string().required('Species is required').min(1),
+      commonNames: yup.array(yup.string()).nullable(),
+      tsn: yup.number().required('Species is required').min(1),
+      rank: yup.string().nullable(),
+      kingdom: yup.string().nullable()
+    })
+    .default(undefined)
+    .nullable()
+    .required('Species is required'),
+  critter_comment: yup.string().nullable(),
+  ecological_units: yup.array(yup.object({ value: yup.string(), ecological_collection_category_id: yup.string() })),
+  wildlife_health_id: yup.string().nullable()
+});
+
 /**
  * Returns the Formik form for creating and editing animals
  *
- * @param props
- * @returns
+ * @param {IAnimalFormProps} props
+ * @return {*}
  */
-const AnimalForm = (props: IAnimalFormProps) => {
-  const animalEditYupSchemas = yup.object({
-    nickname: yup.string().min(3, 'Nickname must be at least 3 letters').required('Nickname is required'),
-    species: yup
-      .object()
-      .shape({
-        scientificName: yup.string().required('Species is required').min(1),
-        commonName: yup.string().nullable(),
-        tsn: yup.number().required('Species is required').min(1)
-      })
-      .default(undefined)
-      .nullable()
-      .required('Species is required'),
-    critter_comment: yup.string().nullable(),
-    ecological_units: yup.array(yup.object({ value: yup.string(), ecological_collection_category_id: yup.string() })),
-    wildlife_health_id: yup.string().nullable()
-  });
+export const AnimalFormContainer = (props: IAnimalFormProps) => {
+  const { initialAnimalData, handleSubmit, formikRef } = props;
 
   return (
     <Formik
       enableReinitialize
-      innerRef={props.formikRef}
-      initialValues={props.initialAnimalData as ICreateEditAnimalRequest}
-      validationSchema={animalEditYupSchemas}
+      innerRef={formikRef}
+      initialValues={initialAnimalData}
+      validationSchema={AnimalFormYupSchema}
       validateOnBlur={false}
       validateOnChange={false}
-      onSubmit={props.handleSubmit}>
+      onSubmit={handleSubmit}>
       <Stack gap={5}>
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
@@ -64,5 +68,3 @@ const AnimalForm = (props: IAnimalFormProps) => {
     </Formik>
   );
 };
-
-export default AnimalForm;

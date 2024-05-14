@@ -218,7 +218,7 @@ export type ICreateCritter = InferType<typeof CreateCritterSchema>;
 
 export type ICreateCritterMarking = InferType<typeof CreateCritterMarkingSchema>;
 export type ICreateCritterMeasurement = InferType<typeof CreateCritterMeasurementSchema>;
-export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollectionUnitSchema> & {key?: string};
+export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollectionUnitSchema> & { key?: string };
 export type ICreateCritterCapture = InferType<typeof CreateCritterCaptureSchema>;
 export type ICreateCritterFamily = InferType<typeof CreateCritterFamilySchema>;
 export type ICreateCritterMortality = InferType<typeof CreateCritterMortalitySchema>;

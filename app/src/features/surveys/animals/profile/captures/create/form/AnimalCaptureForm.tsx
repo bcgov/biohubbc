@@ -36,7 +36,10 @@ const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
         .shape({
           type: yup.string(),
           // Points may have 3 coords for [lon, lat, elevation]
-          geometry: yup.object({ type: yup.string().required(), coordinates: yup.array().of(yup.number()).min(2).max(3) }),
+          geometry: yup.object({
+            type: yup.string().required(),
+            coordinates: yup.array().of(yup.number()).min(2).max(3)
+          }),
           properties: yup.object().optional()
         })
         .nullable()

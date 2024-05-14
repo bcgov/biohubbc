@@ -14,7 +14,7 @@ interface IAnimalAttributeItemProps {
  * @param props
  * @returns
  */
-const AnimalAttributeItem = (props: IAnimalAttributeItemProps) => {
+export const AnimalAttributeItem = (props: IAnimalAttributeItemProps) => {
   return (
     <Box display="flex" alignItems="center">
       {props.startIcon && <Icon path={props.startIcon} size={0.8} color={grey[500]} />}
@@ -24,5 +24,3 @@ const AnimalAttributeItem = (props: IAnimalAttributeItemProps) => {
     </Box>
   );
 };
-
-export default AnimalAttributeItem;

@@ -9,6 +9,7 @@ import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { CreateAnimalI18N } from 'constants/i18n';
+import { AnimalFormContainer } from 'features/surveys/animals/components/AnimalFormContainer';
 import { AnimalSex } from 'features/surveys/view/survey-animals/animal';
 import { FormikProps } from 'formik';
 import * as History from 'history';
@@ -20,7 +21,6 @@ import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import AnimalForm from './form/AnimalForm';
 
 export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
   nickname: '',
@@ -31,7 +31,7 @@ export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
 };
 
 /**
- * Returns the page for creatig new animals (critters) and inserting them into the current survey
+ * Returns the page for creating new animals (critters) and inserting them into the current survey.
  *
  * @returns
  */
@@ -219,7 +219,7 @@ const CreateAnimalPage = () => {
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
-          <AnimalForm
+          <AnimalFormContainer
             initialAnimalData={defaultAnimalDataFormValues}
             handleSubmit={(formikData) => handleSubmit(formikData as ICreateEditAnimalRequest)}
             formikRef={formikRef}

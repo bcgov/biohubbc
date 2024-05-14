@@ -63,15 +63,34 @@ export interface ICreateCaptureRequest {
   measurements?: IMeasurementPostData;
 }
 
-export interface ICollectionUnitResponse {
-  category_name: string;
-  unit_name: string;
-  collection_unit_id: string;
+export interface ICollectionCategory {
   collection_category_id: string;
+  category_name: string;
+  description: string | null;
+  itis_tsn: number;
 }
 
-export interface ICritterCollectionUnitResponse extends ICollectionUnitResponse {
+export interface ICollectionUnit {
+  collection_unit_id: string;
+  collection_category_id: string;
+  unit_name: string;
+  description: string | null;
+}
+
+export interface ICreateUpdateCritterCollectionUnitResponse {
   critter_collection_unit_id: string;
+  critter_id: string;
+  collection_unit_id: string;
+  unit_name: string | null;
+  unit_description: string | null;
+}
+
+export interface ICritterCollectionUnitResponse {
+  critter_collection_unit_id: string;
+  collection_category_id: string;
+  collection_unit_id: string;
+  unit_name: string;
+  category_name: string;
 }
 
 type ILocationResponse = {

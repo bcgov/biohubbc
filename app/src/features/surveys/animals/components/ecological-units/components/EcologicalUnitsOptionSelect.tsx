@@ -8,12 +8,16 @@ interface IEcologicalUnitsOptionSelectProps {
   options: IAutocompleteFieldOption<string>[];
 }
 
-const EcologicalUnitsOptionSelect = (props: IEcologicalUnitsOptionSelectProps) => {
+/**
+ * Returns a component for selecting ecological (ie. collection) unit options for a given ecological unit.
+ *
+ * @param {IEcologicalUnitsOptionSelectProps} props
+ * @return {*}
+ */
+export const EcologicalUnitsOptionSelect = (props: IEcologicalUnitsOptionSelectProps) => {
   const { index, options, label } = props;
 
   const { values, setFieldValue } = useFormikContext<ICreateEditAnimalRequest>();
-
-  console.log(label)
 
   return (
     <AutocompleteField
@@ -34,5 +38,3 @@ const EcologicalUnitsOptionSelect = (props: IEcologicalUnitsOptionSelectProps) =
     />
   );
 };
-
-export default EcologicalUnitsOptionSelect;

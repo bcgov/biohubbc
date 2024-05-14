@@ -39,11 +39,11 @@ export const CollectionUnitAnimalForm = (props: AnimalFormProps<ICritterCollecti
     setLoading(true);
     try {
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-        await cbApi.collectionUnit.createCollectionUnit(values);
+        await cbApi.collectionUnit.createCritterCollectionUnit(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created ecological unit.` });
       }
       if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-        await cbApi.collectionUnit.updateCollectionUnit(values);
+        await cbApi.collectionUnit.updateCritterCollectionUnit(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited ecological unit.` });
       }
     } catch (err) {

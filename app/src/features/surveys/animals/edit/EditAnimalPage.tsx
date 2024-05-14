@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { EditAnimalI18N } from 'constants/i18n';
+import { AnimalFormContainer } from 'features/surveys/animals/components/AnimalFormContainer';
 import { AnimalSex } from 'features/surveys/view/survey-animals/animal';
 import { FormikProps } from 'formik';
 import * as History from 'history';
@@ -20,7 +21,6 @@ import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import AnimalForm from '../create/form/AnimalForm';
 
 /**
  * Returns the page for editing an existing animal within a Survey
@@ -226,12 +226,18 @@ const EditAnimalPage = () => {
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
-          <AnimalForm
+          <AnimalFormContainer
             initialAnimalData={
               {
                 critter_id: critter.critter_id,
                 nickname: critter.animal_id,
-                species: { tsn: critter.itis_tsn, scientificName: critter.itis_scientific_name, commonName: '' },
+                species: {
+                  tsn: critter.itis_tsn,
+                  commonNames: [''],
+                  scientificName: critter.itis_scientific_name,
+                  rank: '',
+                  kingdom: ''
+                },
                 ecological_units: critter.collection_units.map((unit) => ({ ...unit, critter_id: critter.critter_id })),
                 wildlife_health_id: critter.wlh_id,
                 critter_comment: ''

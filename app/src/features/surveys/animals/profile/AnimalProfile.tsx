@@ -12,7 +12,7 @@ import Typography from '@mui/material/Typography';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { useAnimalPageContext, useDialogContext } from 'hooks/useContext';
 import { setMessageSnackbar } from 'utils/Utils';
-import AnimalAttributeItem from './AnimalAttributeItem';
+import { AnimalAttributeItem } from './AnimalAttributeItem';
 import AnimalCaptureContainer from './captures/AnimalCaptureContainer';
 import ScientificNameTypography from './ScientificNameTypography';
 
@@ -21,7 +21,7 @@ import ScientificNameTypography from './ScientificNameTypography';
  *
  * @returns
  */
-const AnimalProfile = () => {
+export const AnimalProfile = () => {
   const animalPageContext = useAnimalPageContext();
   const dialogContext = useDialogContext();
 
@@ -128,5 +128,3 @@ const AnimalProfile = () => {
     </Stack>
   );
 };
-
-export default AnimalProfile;

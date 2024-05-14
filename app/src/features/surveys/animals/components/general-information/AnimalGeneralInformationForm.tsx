@@ -12,7 +12,7 @@ import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
  *
  * @returns
  */
-const AnimalGeneralInformationForm = () => {
+export const AnimalGeneralInformationForm = () => {
   const { values, errors, setFieldValue } = useFormikContext<ICreateEditAnimalRequest>();
 
   return (
@@ -25,7 +25,7 @@ const AnimalGeneralInformationForm = () => {
             required={false}
             handleSpecies={(species) => {
               setFieldValue('species', species);
-              setFieldValue('ecological_units', [])
+              setFieldValue('ecological_units', []);
             }}
             clearOnSelect={true}
             error={errors.species}
@@ -63,5 +63,3 @@ const AnimalGeneralInformationForm = () => {
     </Box>
   );
 };
-
-export default AnimalGeneralInformationForm;

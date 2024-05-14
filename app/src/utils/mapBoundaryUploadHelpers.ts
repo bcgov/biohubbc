@@ -288,7 +288,7 @@ export const calculateUpdatedMapBounds = (features: Feature[] | undefined): LatL
   if (!features || !features.length) {
     return;
   }
-  
+
   if (features?.every((feature) => feature.geometry.type === 'Point')) {
     return calculateBoundingBoxFromPoints(features);
   }

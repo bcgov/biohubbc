@@ -215,7 +215,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 onClickDelete={async () => {
                   handleDelete(
                     'ecological unit',
-                    cbApi.collectionUnit.deleteCollectionUnit,
+                    cbApi.collectionUnit.deleteCritterCollectionUnit,
                     unit.critter_collection_unit_id
                   );
                 }}

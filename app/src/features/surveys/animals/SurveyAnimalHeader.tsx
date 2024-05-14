@@ -17,7 +17,7 @@ export interface SurveyAnimalHeaderProps {
  * @param props
  * @returns
  */
-const SurveyAnimalHeader = (props: SurveyAnimalHeaderProps) => {
+export const SurveyAnimalHeader = (props: SurveyAnimalHeaderProps) => {
   const { project_id, project_name, survey_id, survey_name } = props;
   return (
     <PageHeader
@@ -41,5 +41,3 @@ const SurveyAnimalHeader = (props: SurveyAnimalHeaderProps) => {
     />
   );
 };
-
-export default SurveyAnimalHeader;
