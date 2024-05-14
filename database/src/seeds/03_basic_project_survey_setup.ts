@@ -25,6 +25,8 @@ const ancillaryTaxonIdOptions = [
   { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
 ];
 
+const projectRegions = ['Peace', 'Skeena', 'Cariboo', 'Thompson', 'Omineca', 'Kootenay'];
+
 /**
  * Add spatial transform
  *
@@ -742,4 +744,18 @@ const insertProjectData = (projectName?: string) => `
     ]'
   )
   RETURNING project_id;
+`;
+
+const insertProjectRegionData = (projectId: string, regionName) => `
+  INSERT INTO project_region
+  (
+    project_id,
+    region_id
+  )
+  SELECT
+    region_id
+  FROM
+    region_lookup
+
+
 `;
