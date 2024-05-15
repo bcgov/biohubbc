@@ -75,7 +75,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE environment_qualitative (
       environment_qualitative_id           uuid               DEFAULT public.gen_random_uuid(),
       name                                 varchar(100)       NOT NULL,
-      description                          varchar(250),
+      description                          varchar(400),
       record_end_date                      date,
       create_date                          timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                          integer            NOT NULL,
@@ -105,7 +105,7 @@ export async function up(knex: Knex): Promise<void> {
       environment_qualitative_option_id    uuid               DEFAULT public.gen_random_uuid(),
       environment_qualitative_id           uuid               NOT NULL,
       name                                 varchar(100)       NOT NULL,
-      description                          varchar(250),
+      description                          varchar(400),
       record_end_date                      date,
       create_date                          timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                          integer            NOT NULL,
