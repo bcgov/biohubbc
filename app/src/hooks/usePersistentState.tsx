@@ -43,21 +43,21 @@ export const usePersistentState = <T,>(key: string, initialValue: T): [T, (newVa
     }
   }, [initialValue, prefixedKey]);
 
-  const [value, setStateValue] = useState<T>(getInitialState());
+  const [value, setValue] = useState<T>(getInitialState());
 
   /**
    * Set the value in local storage and state.
    *
    * @param {T} newValue - Updated value.
    */
-  const setValue = (newValue: T) => {
+  const setPersistentValue = (newValue: T) => {
     // only parse if newValue is not a string
     const parsedValue = typeof newValue === 'string' ? newValue : JSON.stringify(newValue);
     // set local storage value
     localStorage.setItem(prefixedKey, parsedValue);
     // set state value
-    setStateValue(newValue);
+    setValue(newValue);
   };
 
-  return [value, setValue];
+  return [value, setPersistentValue];
 };
