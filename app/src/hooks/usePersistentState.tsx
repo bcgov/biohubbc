@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 
 /**
  * Save state between refreshes, windows and sessions.
@@ -16,12 +16,8 @@ export const usePersistentState = <T,>(key: string, initialValue: T): [T, (newVa
   // local storage key - used to access the stored value
   const prefixedKey = `USE_PERSISTENT_STATE_${key}`;
 
-  /**
-   * Retrieve the intial state.
-   *
-   * @returns {T} The initial value.
-   */
-  const getInitialState = useCallback((): T => {
+  const [value, setValue] = useState<T>(() => {
+    // attempt to retrieve value from local storage
     const storageValue = localStorage.getItem(prefixedKey);
 
     // if local storage does not contain value (undefined or null), default to initialValue
@@ -41,9 +37,7 @@ export const usePersistentState = <T,>(key: string, initialValue: T): [T, (newVa
       // reset back to intialValue if error caught
       return initialValue;
     }
-  }, [initialValue, prefixedKey]);
-
-  const [value, setValue] = useState<T>(getInitialState());
+  });
 
   /**
    * Set the value in local storage and state.
