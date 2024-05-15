@@ -25,7 +25,8 @@ const ancillaryTaxonIdOptions = [
   { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
 ];
 
-const projectRegions = ['Peace', 'Skeena', 'Cariboo', 'Cariboo'] as const; // Duplicate cariboo to test project UI list
+const surveyRegionsA = ['Peace', 'Skeena', 'Cariboo'];
+const surveyRegionsB = ['Cariboo Natural Resource Region', 'South Coast Natural Resource Region'];
 
 /**
  * Add spatial transform
@@ -66,11 +67,6 @@ export async function seed(knex: Knex): Promise<void> {
         ${insertProjectProgramData(projectId)}
       `);
 
-      // Insert project regions
-      for (const region of projectRegions) {
-        await knex.raw(`${insertProjectRegionData(projectId, region)}`);
-      }
-
       // Insert survey data
       for (let j = 0; j < NUM_SEED_SURVEYS_PER_PROJECT; j++) {
         const createSurveyResponse = await knex.raw(insertSurveyData(projectId, `Seed Survey ${j + 1}`));
@@ -94,6 +90,19 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveySamplingMethodData(surveyId)}
           ${insertSurveySamplePeriodData(surveyId)}
         `);
+
+        // Insert regions into surveys
+        if (projectId % 2 === 0) {
+          // Insert survey regions A
+          for (const region of surveyRegionsA) {
+            await knex.raw(`${insertSurveyRegionData(surveyId, region)}`);
+          }
+        } else {
+          // Insert survey regions B
+          for (const region of surveyRegionsB) {
+            await knex.raw(`${insertSurveyRegionData(surveyId, region)}`);
+          }
+        }
 
         const response1 = await knex.raw(insertSurveyObservationData(surveyId, 20));
         await knex.raw(insertObservationSubCount(response1.rows[0].survey_observation_id));
@@ -752,17 +761,17 @@ const insertProjectData = (projectName?: string) => `
 `;
 
 /**
- * SQL to insert project regions
+ * SQL to insert survey regions
  *
  */
-const insertProjectRegionData = (projectId: string, region: (typeof projectRegions)[number]) => `
-  INSERT INTO project_region
+const insertSurveyRegionData = (surveyId: string, region: string) => `
+  INSERT INTO survey_region
   (
-    project_id,
+    survey_id,
     region_id
   )
   SELECT
-    $$${projectId}$$,
+    $$${surveyId}$$,
     region_id
   FROM
     region_lookup

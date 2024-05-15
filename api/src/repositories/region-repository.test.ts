@@ -14,38 +14,6 @@ describe('RegionRepository', () => {
     sinon.restore();
   });
 
-  describe('addRegionsToAProject', () => {
-    it('should return early when no regions passed in', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const repo = new RegionRepository(mockDBConnection);
-      const insertSQL = sinon.stub(mockDBConnection, 'sql').returns({} as unknown as any);
-
-      await repo.addRegionsToProject(1, []);
-      expect(insertSQL).to.not.be.called;
-    });
-
-    it('should throw issue when SQL fails', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const repo = new RegionRepository(mockDBConnection);
-      sinon.stub(mockDBConnection, 'sql').throws('SQL FAILED');
-
-      try {
-        await repo.addRegionsToProject(1, [1]);
-        expect.fail();
-      } catch (error) {
-        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to execute insert SQL for project_region');
-      }
-    });
-
-    it('should run without issue', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const repo = new RegionRepository(mockDBConnection);
-      const insertSQL = sinon.stub(mockDBConnection, 'sql').returns({} as unknown as any);
-
-      await repo.addRegionsToProject(1, [1]);
-      expect(insertSQL).to.be.called;
-    });
-  });
 
   describe('addRegionsToASurvey', () => {
     it('should return early when no regions passed in', async () => {
@@ -80,29 +48,6 @@ describe('RegionRepository', () => {
     });
   });
 
-  describe('deleteRegionsForProject', () => {
-    it('should run without issue', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const repo = new RegionRepository(mockDBConnection);
-      const sqlStub = sinon.stub(mockDBConnection, 'sql').returns({} as unknown as any);
-
-      await repo.deleteRegionsForProject(1);
-      expect(sqlStub).to.be.called;
-    });
-
-    it('should throw an error when SQL fails', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const repo = new RegionRepository(mockDBConnection);
-      sinon.stub(mockDBConnection, 'sql').throws();
-
-      try {
-        await repo.deleteRegionsForProject(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to execute delete SQL for project_regions');
-      }
-    });
-  });
 
   describe('deleteRegionsForSurvey', () => {
     it('should run without issue', async () => {
