@@ -9,9 +9,33 @@ import { EcologicalUnitsForm } from './ecological-units/EcologicalUnitsForm';
 import { AnimalGeneralInformationForm } from './general-information/AnimalGeneralInformationForm';
 
 export interface IAnimalFormProps {
-  initialAnimalData: ICreateEditAnimalRequest;
-  handleSubmit: (formikData: ICreateEditAnimalRequest) => void;
+  /**
+   * The Formik ref object.
+   *
+   * @type {React.RefObject<FormikProps<ICreateEditAnimalRequest>>}
+   * @memberof IAnimalFormProps
+   */
   formikRef: React.RefObject<FormikProps<ICreateEditAnimalRequest>>;
+  /**
+   * The initial data to populate the form with.
+   *
+   * @type {ICreateEditAnimalRequest}
+   * @memberof IAnimalFormProps
+   */
+  initialAnimalData: ICreateEditAnimalRequest;
+  /**
+   * Callback to handle form submission.
+   *
+   * @memberof IAnimalFormProps
+   */
+  handleSubmit: (formikData: ICreateEditAnimalRequest) => void;
+  /**
+   * Flag to determine if the form is in edit mode. Defaults to false if not provided.
+   *
+   * @type {boolean}
+   * @memberof IAnimalFormProps
+   */
+  isEdit?: boolean;
 }
 
 const AnimalFormYupSchema = yup.object({
@@ -69,7 +93,7 @@ const AnimalFormYupSchema = yup.object({
  * @return {*}
  */
 export const AnimalFormContainer = (props: IAnimalFormProps) => {
-  const { initialAnimalData, handleSubmit, formikRef } = props;
+  const { initialAnimalData, handleSubmit, formikRef, isEdit } = props;
 
   return (
     <Formik
@@ -85,7 +109,7 @@ export const AnimalFormContainer = (props: IAnimalFormProps) => {
         <HorizontalSplitFormComponent
           title="General Information"
           summary="Enter information to identify the animal"
-          component={<AnimalGeneralInformationForm />}
+          component={<AnimalGeneralInformationForm isEdit={isEdit} />}
         />
         <HorizontalSplitFormComponent
           title="Ecological Units"

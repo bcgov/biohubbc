@@ -7,12 +7,18 @@ import SpeciesAutocompleteField from 'components/species/components/SpeciesAutoc
 import { useFormikContext } from 'formik';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 
+export interface IAnimalGeneralInformationFormProps {
+  isEdit?: boolean;
+}
+
 /**
  * Returns components for setting general information fields when creating or editing an animal
  *
  * @returns
  */
-export const AnimalGeneralInformationForm = () => {
+export const AnimalGeneralInformationForm = (props: IAnimalGeneralInformationFormProps) => {
+  const { isEdit } = props;
+
   const { values, errors, setFieldValue } = useFormikContext<ICreateEditAnimalRequest>();
 
   return (
@@ -23,6 +29,7 @@ export const AnimalGeneralInformationForm = () => {
             formikFieldName={'species'}
             label={'Species'}
             required={false}
+            disabled={isEdit}
             handleSpecies={(species) => {
               setFieldValue('species', species);
               setFieldValue('ecological_units', []);
@@ -34,9 +41,13 @@ export const AnimalGeneralInformationForm = () => {
             <Collapse in={Boolean(values.species)}>
               <SelectedSpecies
                 selectedSpecies={[values.species]}
-                handleRemoveSpecies={() => {
-                  setFieldValue('species', null);
-                }}
+                handleRemoveSpecies={
+                  isEdit
+                    ? undefined
+                    : () => {
+                        setFieldValue('species', null);
+                      }
+                }
               />
             </Collapse>
           )}

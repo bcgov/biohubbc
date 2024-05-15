@@ -3,9 +3,27 @@ import { useFormikContext } from 'formik';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 
 interface IEcologicalUnitsOptionSelectProps {
-  index: number;
+  /**
+   * The label to display for the select field.
+   *
+   * @type {string}
+   * @memberof IEcologicalUnitsOptionSelectProps
+   */
   label: string;
+  /**
+   * List of options to display in the select field.
+   *
+   * @type {IAutocompleteFieldOption<string>[]}
+   * @memberof IEcologicalUnitsOptionSelectProps
+   */
   options: IAutocompleteFieldOption<string>[];
+  /**
+   * The index of the component in the list.
+   *
+   * @type {number}
+   * @memberof IEcologicalUnitsOptionSelectProps
+   */
+  index: number;
 }
 
 /**
@@ -15,7 +33,7 @@ interface IEcologicalUnitsOptionSelectProps {
  * @return {*}
  */
 export const EcologicalUnitsOptionSelect = (props: IEcologicalUnitsOptionSelectProps) => {
-  const { index, options, label } = props;
+  const { label, options, index } = props;
 
   const { values, setFieldValue } = useFormikContext<ICreateEditAnimalRequest>();
 
