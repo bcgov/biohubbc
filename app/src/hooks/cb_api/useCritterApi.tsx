@@ -28,10 +28,10 @@ const useCritterApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Create a critter with data
+   * Create a critter with bulk data
    *
    * @async
-   * @param {ICreateCritter} payload - Create critter payload.
+   * @param {IBulkCreate} payload - Create critter payload.
    * @returns {Promise<ICritterSimpleResponse>} Simple critterbase critter.
    */
   const bulkCreate = async (payload: IBulkCreate): Promise<ICritterSimpleResponse> => {

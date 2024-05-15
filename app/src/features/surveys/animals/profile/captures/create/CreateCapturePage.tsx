@@ -142,6 +142,8 @@ const CreateCapturePage = () => {
    */
   const handleSubmit = async (values: ICreateCaptureRequest) => {
     setIsSaving(true);
+    setEnableCancelCheck(false);
+
     try {
       const critterbaseCritterId = selectedAnimal?.critterbase_critter_id;
 
@@ -221,8 +223,6 @@ const CreateCapturePage = () => {
         });
         return;
       }
-
-      setEnableCancelCheck(false);
 
       // Refresh page
       critterDataLoader.refresh(critterbaseCritterId);

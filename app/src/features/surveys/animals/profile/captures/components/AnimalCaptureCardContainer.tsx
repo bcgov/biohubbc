@@ -13,47 +13,37 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import YesNoDialog from 'components/dialog/YesNoDialog';
-import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
-import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { ISurveyCritter } from 'contexts/animalPageContext';
+import { useSurveyContext } from 'hooks/useContext';
+import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
 import CaptureCardDetails from './CaptureCardDetails';
 
+interface IAnimalCaptureCardContainer {
+  captures: ICaptureResponse[];
+  selectedAnimal: ISurveyCritter;
+  handleDelete: (selectedCapture: string, critterbase_critter_id: string) => Promise<void>;
+}
 /**
  * Returns accordian cards for displaying animal capture details on the animal profile page
  *
  * @returns
  */
-const AnimalCaptureCardContainer = () => {
-  const critterbaseApi = useCritterbaseApi();
+const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
+  const { captures, selectedAnimal, handleDelete } = props;
 
-  const { critterDataLoader } = useAnimalPageContext();
   const [selectedCapture, setSelectedCapture] = useState<string | null>(null);
   const [captureAnchorEl, setCaptureAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [captureForDelete, setCaptureForDelete] = useState<boolean>();
 
   const { projectId, surveyId } = useSurveyContext();
-  const { selectedAnimal } = useAnimalPageContext();
-
-  if (!critterDataLoader.data) {
-    return <SkeletonList />;
-  }
-
-  const captures = critterDataLoader.data.captures;
 
   const handleCaptureMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, captureId: string) => {
     setCaptureAnchorEl(event.currentTarget);
     setSelectedCapture(captureId);
-  };
-
-  const handleDelete = async () => {
-    if (selectedCapture && selectedAnimal) {
-      await critterbaseApi.capture.deleteCapture(selectedCapture);
-      critterDataLoader.refresh(selectedAnimal.critterbase_critter_id);
-    }
   };
 
   return (
@@ -109,7 +99,7 @@ const AnimalCaptureCardContainer = () => {
       )}
 
       {/* DELETE CONFIRMATION DIALOG */}
-      {captureForDelete && (
+      {captureForDelete && selectedCapture && (
         <YesNoDialog
           dialogTitle={'Delete capture event?'}
           dialogText={`Are you sure you want to permanently delete this capture? All information associated with
@@ -121,7 +111,7 @@ const AnimalCaptureCardContainer = () => {
           open={Boolean(captureForDelete)}
           onYes={() => {
             setCaptureForDelete(false);
-            handleDelete();
+            handleDelete(selectedCapture, selectedAnimal.critterbase_critter_id);
           }}
           onClose={() => setCaptureForDelete(false)}
           onNo={() => setCaptureForDelete(false)}

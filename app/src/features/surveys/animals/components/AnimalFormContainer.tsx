@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { Formik, FormikProps } from 'formik';
-import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateEditAnimalRequest, ICritterCollectionUnitResponse } from 'interfaces/useCritterApi.interface';
 import yup from 'utils/YupSchema';
 import { EcologicalUnitsForm } from './ecological-units/EcologicalUnitsForm';
 import { AnimalGeneralInformationForm } from './general-information/AnimalGeneralInformationForm';
@@ -29,7 +29,36 @@ const AnimalFormYupSchema = yup.object({
     .nullable()
     .required('Species is required'),
   critter_comment: yup.string().nullable(),
-  ecological_units: yup.array(yup.object({ value: yup.string(), ecological_collection_category_id: yup.string() })),
+  ecological_units: yup.array(
+    yup
+      .object()
+      .shape({
+        collection_category_id: yup
+          .string()
+          .test('is-unique-ecological-unit', 'Ecological unit must be unique', function (collection_category_id) {
+            const formValues = this.options.context;
+
+            if (!formValues?.ecological_units?.length) {
+              return true;
+            }
+
+            return (
+              formValues.ecological_units.filter(
+                (ecologicalUnit: ICritterCollectionUnitResponse) =>
+                  ecologicalUnit.collection_category_id === collection_category_id
+              ).length <= 1
+            );
+          })
+          .default(null)
+          .nullable(),
+        collection_unit_id: yup.string().when('collection_category_id', {
+          is: (collection_category_id: string | null) => collection_category_id !== null,
+          then: yup.string().required('Ecological unit is required').min(1, 'Ecological unit is required'),
+          otherwise: yup.string().nullable() // Allows null when collection_category_id is null
+        })
+      })
+      .nullable()
+  ),
   wildlife_health_id: yup.string().nullable()
 });
 

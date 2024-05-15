@@ -172,6 +172,8 @@ const EditCapturePage = () => {
    */
   const handleSubmit = async (values: ICreateCaptureRequest) => {
     setIsSaving(true);
+    setEnableCancelCheck(false);
+
     try {
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
       if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {

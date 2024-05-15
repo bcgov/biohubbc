@@ -77,11 +77,12 @@ describe('addCritterToSurvey', () => {
   });
 
   const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
+  const mockSurveyCritter = { survey_critter_id: 123, critterbase_critter_id: 'critterbase1' };
   const mockCBCritter = { critter_id: 'critterbase1' };
 
   it('does not create a new critter', async () => {
     const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-    const mockAddCritterToSurvey = sinon.stub(SurveyCritterService.prototype, 'addCritterToSurvey').resolves();
+    const mockAddCritterToSurvey = sinon.stub(SurveyCritterService.prototype, 'addCritterToSurvey').resolves(mockSurveyCritter.survey_critter_id);
     const mockCreateCritter = sinon.stub(CritterbaseService.prototype, 'createCritter').resolves();
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -94,12 +95,12 @@ describe('addCritterToSurvey', () => {
     expect(mockAddCritterToSurvey.calledOnce).to.be.true;
     expect(mockCreateCritter.notCalled).to.be.true;
     expect(mockRes.status).to.have.been.calledWith(201);
-    expect(mockRes.json).to.have.been.calledWith(mockCBCritter);
+    expect(mockRes.json).to.have.been.calledWith(mockSurveyCritter);
   });
 
   it('returns critters from survey', async () => {
     const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-    const mockAddCritterToSurvey = sinon.stub(SurveyCritterService.prototype, 'addCritterToSurvey').resolves();
+    const mockAddCritterToSurvey = sinon.stub(SurveyCritterService.prototype, 'addCritterToSurvey').resolves(mockSurveyCritter.survey_critter_id);
     const mockCreateCritter = sinon.stub(CritterbaseService.prototype, 'createCritter').resolves(mockCBCritter);
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -110,7 +111,7 @@ describe('addCritterToSurvey', () => {
     expect(mockAddCritterToSurvey.calledOnce).to.be.true;
     expect(mockCreateCritter.calledOnce).to.be.true;
     expect(mockRes.status).to.have.been.calledWith(201);
-    expect(mockRes.json).to.have.been.calledWith(mockCBCritter);
+    expect(mockRes.json).to.have.been.calledWith(mockSurveyCritter);
   });
 
   it('catches and re-throws errors', async () => {

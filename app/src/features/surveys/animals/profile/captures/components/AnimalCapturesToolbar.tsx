@@ -4,22 +4,20 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import { Link as RouterLink } from 'react-router-dom';
+
+interface IAnimalCapturesToolbarProps {
+  capturesCount: number;
+  createCaptureRoute: string;
+}
 
 /**
  * Toolbar for actions affecting an animal's captures, ie. add a new capture
  *
  * @returns
  */
-const AnimalCapturesToolbar = () => {
-  const { critterDataLoader, selectedAnimal } = useAnimalPageContext();
-
-  const { projectId, surveyId } = useSurveyContext();
-
-  if (!critterDataLoader.data || !selectedAnimal) {
-    return <></>;
-  }
+const AnimalCapturesToolbar = (props: IAnimalCapturesToolbarProps) => {
+  const { capturesCount, createCaptureRoute } = props;
 
   return (
     <Toolbar
@@ -36,7 +34,7 @@ const AnimalCapturesToolbar = () => {
         }}>
         Captures
         <Typography component="span" color="textSecondary" sx={{ ml: 0.5, flex: '1 1 auto' }}>
-          ({critterDataLoader.data?.captures.length ?? 0})
+          ({capturesCount})
         </Typography>
       </Typography>
       <Box display="flex">
@@ -44,7 +42,7 @@ const AnimalCapturesToolbar = () => {
           variant="contained"
           color="primary"
           component={RouterLink}
-          to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/capture/create`}
+          to={createCaptureRoute}
           startIcon={<Icon path={mdiPlus} size={1} />}>
           Add
         </Button>

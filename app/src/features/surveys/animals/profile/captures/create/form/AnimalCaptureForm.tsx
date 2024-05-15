@@ -37,7 +37,7 @@ const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
           type: yup.string(),
           // Points may have 3 coords for [lon, lat, elevation]
           geometry: yup.object({
-            type: yup.string().required(),
+            type: yup.string(),
             coordinates: yup.array().of(yup.number()).min(2).max(3)
           }),
           properties: yup.object().optional()
@@ -48,10 +48,7 @@ const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
       release_location: yup
         .array(
           yup.object({
-            geojson: yup
-              .array()
-              .min(1, 'Release location is required if it is different from the capture location')
-              .required('Release location is required if it is different from the capture location')
+            geojson: yup.array().min(1, 'Release location is required if it is different from the capture location')
           })
         )
         .min(1, 'Release location is required if it is different from the capture location')

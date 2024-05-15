@@ -222,6 +222,10 @@ export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollect
 export type ICreateCritterCapture = InferType<typeof CreateCritterCaptureSchema>;
 export type ICreateCritterFamily = InferType<typeof CreateCritterFamilySchema>;
 export type ICreateCritterMortality = InferType<typeof CreateCritterMortalitySchema>;
+
+/**
+ * Adding data to a critter in bulk
+ */
 export type IBulkCreate = {
   critter?: ICritterSimpleResponse;
   measurements?: ICreateCritterMeasurement[];
@@ -230,6 +234,10 @@ export type IBulkCreate = {
   marking?: ICreateCritterMarking[];
   collections?: ICreateCritterCollectionUnit[];
 };
+
+/**
+ * Editing data for a critter in bulk
+ */
 export type IBulkUpdate = {
   critter?: ICritterSimpleResponse;
   measurements?: ICreateCritterMeasurement[];

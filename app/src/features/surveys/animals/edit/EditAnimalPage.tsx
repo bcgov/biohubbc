@@ -127,6 +127,8 @@ const EditAnimalPage = () => {
    */
   const handleSubmit = async (values: ICreateEditAnimalRequest) => {
     setIsSaving(true);
+    setEnableCancelCheck(false);
+
     try {
       if (!values.species) {
         return;
@@ -140,26 +142,39 @@ const EditAnimalPage = () => {
         itis_tsn: values.species.tsn
       });
 
-      // Insert collection units through bulk create
-      await critterbaseApi.critters.bulkUpdate({
-        collections: values.ecological_units
-          .filter((unit) => unit.collection_category_id !== null && unit.collection_unit_id !== null)
-          .map((unit) => ({
-            critter_collection_unit_id: unit.critter_collection_unit_id,
+      // Find collection units to delete
+      const collectionsForDelete = critter.collection_units.filter(
+        (existing) =>
+          !values.ecological_units.some(
+            (incoming) => incoming.collection_category_id === existing.collection_category_id
+          )
+      );
+
+      // Patch collection units in bulk
+      const bulkResponse = await critterbaseApi.critters.bulkUpdate({
+        collections: [
+          ...values.ecological_units
+            .filter((unit) => unit.collection_category_id !== null && unit.collection_unit_id !== null)
+            .map((unit) => ({
+              critter_collection_unit_id: unit.critter_collection_unit_id,
+              critter_id: critter.critter_id,
+              collection_category_id: unit.collection_category_id as string,
+              collection_unit_id: unit.collection_unit_id as string
+            })),
+          ...collectionsForDelete.map((collection) => ({
+            ...collection,
             critter_id: critter.critter_id,
-            collection_category_id: unit.collection_category_id as string,
-            collection_unit_id: unit.collection_unit_id as string
+            _delete: true
           }))
+        ]
       });
 
-      if (!response) {
+      if (!response || !bulkResponse) {
         showCreateErrorDialog({
           dialogError: 'The response from the server was null, or did not contain a survey ID.'
         });
         return;
       }
-
-      setEnableCancelCheck(false);
 
       // Refresh the context, so the next page loads with the latest data
       surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);

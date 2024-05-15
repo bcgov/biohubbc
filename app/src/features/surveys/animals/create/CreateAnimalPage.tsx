@@ -121,6 +121,7 @@ const CreateAnimalPage = () => {
    */
   const handleSubmit = async (values: ICreateEditAnimalRequest) => {
     setIsSaving(true);
+    setEnableCancelCheck(false);
 
     try {
       if (!values.species) {
@@ -136,21 +137,18 @@ const CreateAnimalPage = () => {
       });
 
       // Insert collection units through bulk create
-      await critterbaseApi.critters.bulkCreate({
-        collections: values.ecological_units
-          .filter((unit) => unit.collection_category_id !== null && unit.collection_unit_id !== null)
-          .map((unit) => ({
-            critter_collection_unit_id: undefined,
-            critter_id: response.critterbase_critter_id,
-            collection_category_id: unit.collection_category_id as string,
-            collection_unit_id: unit.collection_unit_id as string
-          }))
-      });
-
-      setSelectedAnimal({
-        critterbase_critter_id: response.critterbase_critter_id,
-        survey_critter_id: response.survey_critter_id
-      });
+      if (values.ecological_units.length > 0) {
+        await critterbaseApi.critters.bulkCreate({
+          collections: values.ecological_units
+            .filter((unit) => unit.collection_category_id !== null && unit.collection_unit_id !== null)
+            .map((unit) => ({
+              critter_collection_unit_id: undefined,
+              critter_id: response.critterbase_critter_id,
+              collection_category_id: unit.collection_category_id as string,
+              collection_unit_id: unit.collection_unit_id as string
+            }))
+        });
+      }
 
       if (!response) {
         showCreateErrorDialog({
@@ -159,7 +157,10 @@ const CreateAnimalPage = () => {
         return;
       }
 
-      setEnableCancelCheck(false);
+      setSelectedAnimal({
+        critterbase_critter_id: response.critterbase_critter_id,
+        survey_critter_id: response.survey_critter_id
+      });
 
       // Refresh the context, so the next page loads with the latest data
       surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);

@@ -33,10 +33,7 @@ const SurveyAnimalPage = () => {
     projectContext.projectDataLoader.load(surveyContext.projectId);
   }
 
-  if (!projectContext.projectDataLoader.data) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
-  if (!surveyContext.surveyDataLoader.data) {
+  if (!projectContext.projectDataLoader.data || !surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -72,7 +69,7 @@ const SurveyAnimalPage = () => {
         </Box>
 
         {selectedAnimal && (
-          <Box maxWidth="75%" flex="1 1 auto">
+          <Box maxWidth="75%" flex="1 1 auto" height="100%">
             <AnimalProfile />
           </Box>
         )}

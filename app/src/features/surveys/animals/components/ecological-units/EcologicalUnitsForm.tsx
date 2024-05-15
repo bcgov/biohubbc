@@ -20,7 +20,10 @@ const initialEcologicalUnitValues = {
  * @returns
  */
 export const EcologicalUnitsForm = () => {
-  const { values } = useFormikContext<ICreateEditAnimalRequest>();
+  const { values, errors } = useFormikContext<ICreateEditAnimalRequest>();
+
+  console.log(errors);
+  console.log(values);
 
   const critterbaseApi = useCritterbaseApi();
 
@@ -39,9 +42,9 @@ export const EcologicalUnitsForm = () => {
       name="ecological_units"
       render={(arrayHelpers: FieldArrayRenderProps) => (
         <>
-          <Stack mb={3} spacing={1}>
-            {values.species?.tsn &&
-              values.ecological_units.map((ecological_unit, index) => (
+          {values.ecological_units.length > 0 && (
+            <Stack mb={3} spacing={1}>
+              {values.ecological_units.map((ecological_unit, index) => (
                 <EcologicalUnitsSelect
                   key={ecological_unit.collection_category_id ?? index}
                   ecologicalUnits={ecologicalUnitsDataLoader.data ?? []}
@@ -49,7 +52,8 @@ export const EcologicalUnitsForm = () => {
                   index={index}
                 />
               ))}
-          </Stack>
+            </Stack>
+          )}
           <Button
             color="primary"
             variant="outlined"
@@ -62,7 +66,9 @@ export const EcologicalUnitsForm = () => {
               Boolean(!values.species) ||
               // Disable the button if the number of ecological units is greater than or equal to the number of available categories
               (ecologicalUnitsDataLoader.data &&
-                values.ecological_units.length >= ecologicalUnitsDataLoader.data?.length)
+                values.ecological_units.length >= ecologicalUnitsDataLoader.data?.length) ||
+              // Disable the button if the data loader is loading
+              ecologicalUnitsDataLoader.isLoading
             }
             sx={{ textTransform: 'uppercase' }}>
             Add Ecological Unit
