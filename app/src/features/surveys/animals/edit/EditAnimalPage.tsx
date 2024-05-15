@@ -23,9 +23,9 @@ import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
 /**
- * Returns the page for editing an existing animal within a Survey
+ * Returns the page for editing an existing animal (critter) within a Survey
  *
- * @returns
+ * @return {*}
  */
 const EditAnimalPage = () => {
   const critterbaseApi = useCritterbaseApi();
@@ -59,24 +59,22 @@ const EditAnimalPage = () => {
   }
 
   const handleCancel = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
+    dialogContext.setYesNoDialog({
+      dialogTitle: EditAnimalI18N.cancelTitle,
+      dialogText: EditAnimalI18N.cancelText,
+      open: false,
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onYes: () => {
+        dialogContext.setYesNoDialog({ open: false });
+        history.push(`/admin/projects/${projectId}`);
+      }
+    });
     history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
-  };
-
-  const defaultCancelDialogProps = {
-    dialogTitle: EditAnimalI18N.cancelTitle,
-    dialogText: EditAnimalI18N.cancelText,
-    open: false,
-    onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onYes: () => {
-      dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectId}`);
-    }
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -106,7 +104,14 @@ const EditAnimalPage = () => {
     if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
       dialogContext.setYesNoDialog({
-        ...defaultCancelDialogProps,
+        dialogTitle: EditAnimalI18N.cancelTitle,
+        dialogText: EditAnimalI18N.cancelText,
+        onClose: () => {
+          dialogContext.setYesNoDialog({ open: false });
+        },
+        onNo: () => {
+          dialogContext.setYesNoDialog({ open: false });
+        },
         onYes: () => {
           dialogContext.setYesNoDialog({ open: false });
           history.push(location.pathname);
@@ -260,6 +265,7 @@ const EditAnimalPage = () => {
             }
             handleSubmit={(formikData) => handleSubmit(formikData as ICreateEditAnimalRequest)}
             formikRef={formikRef}
+            isEdit={true}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
             <LoadingButton

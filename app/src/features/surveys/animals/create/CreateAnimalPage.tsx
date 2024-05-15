@@ -33,7 +33,7 @@ export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
 /**
  * Returns the page for creating new animals (critters) and inserting them into the current survey.
  *
- * @returns
+ * @return {*}
  */
 const CreateAnimalPage = () => {
   const biohubApi = useBiohubApi();

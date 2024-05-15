@@ -10,7 +10,7 @@ import { FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICollectionCategory, ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { EcologicalUnitsOptionSelect } from './EcologicalUnitsOptionSelect';
 
 interface IEcologicalUnitsSelect {
@@ -48,35 +48,41 @@ export const EcologicalUnitsSelect = (props: IEcologicalUnitsSelect) => {
   }
 
   // Set the label for the ecological unit options autocomplete field
-  const [ecologicalUnitOptionLabel] = useState<string>(
+  const [ecologicalUnitOptionLabel, setEcologicalUnitOptionLabel] = useState<string>(
     ecologicalUnits.find((ecologicalUnit) => ecologicalUnit.collection_category_id === selectedEcologicalUnitId)
       ?.category_name ?? ''
   );
 
   // Filter out the categories that are already selected so they can't be selected again
-  const filteredCategories =
-    ecologicalUnits
-      .filter(
-        (ecologicalUnit) =>
-          !values.ecological_units.some(
-            (existing) =>
-              existing.collection_category_id === ecologicalUnit.collection_category_id &&
-              existing.collection_category_id !== selectedEcologicalUnitId
-          )
-      )
-      .map((option) => {
-        return {
-          value: option.collection_category_id,
-          label: option.category_name
-        };
-      }) ?? [];
+  const filteredCategories = useMemo(
+    () =>
+      ecologicalUnits
+        .filter(
+          (ecologicalUnit) =>
+            !values.ecological_units.some(
+              (existing) =>
+                existing.collection_category_id === ecologicalUnit.collection_category_id &&
+                existing.collection_category_id !== selectedEcologicalUnitId
+            )
+        )
+        .map((option) => {
+          return {
+            value: option.collection_category_id,
+            label: option.category_name
+          };
+        }) ?? [],
+    [ecologicalUnits, selectedEcologicalUnitId, values.ecological_units]
+  );
 
   // Map the collection unit options to the format required by the AutocompleteField
-  const ecologicalUnitOptions =
-    ecologicalUnitOptionDataLoader.data?.map((option) => ({
-      value: option.collection_unit_id,
-      label: option.unit_name
-    })) ?? [];
+  const ecologicalUnitOptions = useMemo(
+    () =>
+      ecologicalUnitOptionDataLoader.data?.map((option) => ({
+        value: option.collection_unit_id,
+        label: option.unit_name
+      })) ?? [],
+    [ecologicalUnitOptionDataLoader.data]
+  );
 
   return (
     <Collapse in={Boolean(values.species)} role="listitem">
@@ -100,6 +106,7 @@ export const EcologicalUnitsSelect = (props: IEcologicalUnitsSelect) => {
           onChange={(_, option) => {
             if (option?.value) {
               setFieldValue(`ecological_units.[${index}].collection_category_id`, option.value);
+              setEcologicalUnitOptionLabel(option.label);
             }
           }}
           required
@@ -120,11 +127,3 @@ export const EcologicalUnitsSelect = (props: IEcologicalUnitsSelect) => {
     </Collapse>
   );
 };
-
-// /**
-//  * Return a memoized component for selecting ecological (ie. collection) units for a given species.
-//  */
-// export const MemoizedEcologicalUnitsSelect = React.memo(EcologicalUnitsSelect, (prevProps, nextProps) => {
-//   // Only re-render if the categories or index have changed
-//   return isEqual(prevProps.categories, nextProps.categories) && prevProps.index === nextProps.index;
-// });

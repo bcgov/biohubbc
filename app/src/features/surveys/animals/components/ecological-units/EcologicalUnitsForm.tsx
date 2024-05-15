@@ -17,13 +17,10 @@ const initialEcologicalUnitValues = {
 /**
  * Returns component for adding ecological units to an animal within the AnimalFormContainer.
  *
- * @returns
+ * @return {*}
  */
 export const EcologicalUnitsForm = () => {
-  const { values, errors } = useFormikContext<ICreateEditAnimalRequest>();
-
-  console.log(errors);
-  console.log(values);
+  const { values } = useFormikContext<ICreateEditAnimalRequest>();
 
   const critterbaseApi = useCritterbaseApi();
 
