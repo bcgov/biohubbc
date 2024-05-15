@@ -1,35 +1,49 @@
-import { ISurveyCritter } from 'contexts/animalPageContext';
+import Box from '@mui/material/Box';
+import Skeleton from '@mui/material/Skeleton';
+import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
+import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
 import AnimalCaptureCardContainer from './components/AnimalCaptureCardContainer';
 import AnimalCapturesMap from './components/AnimalCapturesMap';
 import AnimalCapturesToolbar from './components/AnimalCapturesToolbar';
-
-interface IAnimalCaptureContainerProps {
-  isLoading: boolean;
-  captures: ICaptureResponse[];
-  createCaptureRoute: string;
-  selectedAnimal: ISurveyCritter;
-  handleRefresh: (critterbase_critter_id: string) => void;
-}
 
 /**
  * Container for the animal captures map component within the animal profile page
  *
  * @returns
  */
-const AnimalCaptureContainer = (props: IAnimalCaptureContainerProps) => {
-  const { captures, createCaptureRoute, selectedAnimal, handleRefresh } = props;
+const AnimalCaptureContainer = () => {
   const critterbaseApi = useCritterbaseApi();
+
+  const { selectedAnimal, critterDataLoader } = useAnimalPageContext();
+
+  const { projectId, surveyId } = useSurveyContext();
 
   const handleDelete = async (selectedCapture: string, critterbase_critter_id: string) => {
     await critterbaseApi.capture.deleteCapture(selectedCapture);
-    handleRefresh(critterbase_critter_id);
+    critterDataLoader.refresh(critterbase_critter_id);
   };
+
+  if (!selectedAnimal || !critterDataLoader.data) {
+    return (
+      <Box p={2}>
+        <SkeletonHorizontalStack numberOfLines={2} />
+        <Skeleton width="100%" height="200px" />
+        <Skeleton width="100%" height="50px" />
+        <Skeleton width="100%" height="50px" />
+        <Skeleton width="100%" height="50px" />
+      </Box>
+    );
+  }
+
+  const captures = critterDataLoader.data.captures;
 
   return (
     <>
-      <AnimalCapturesToolbar capturesCount={captures.length} createCaptureRoute={createCaptureRoute} />
+      <AnimalCapturesToolbar
+        capturesCount={captures.length}
+        createCaptureRoute={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/capture/create`}
+      />
       <AnimalCapturesMap captures={captures} isLoading={false} />
       <AnimalCaptureCardContainer captures={captures} selectedAnimal={selectedAnimal} handleDelete={handleDelete} />
     </>

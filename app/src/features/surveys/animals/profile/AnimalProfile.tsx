@@ -1,7 +1,5 @@
-import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import AnimalProfileHeader from './AnimalProfileHeader';
 import AnimalCaptureContainer from './captures/AnimalCaptureContainer';
 
@@ -11,42 +9,14 @@ import AnimalCaptureContainer from './captures/AnimalCaptureContainer';
  * @returns
  */
 export const AnimalProfile = () => {
-  const animalPageContext = useAnimalPageContext();
-
-  const { surveyId, projectId } = useSurveyContext();
-
-  const { critterDataLoader, selectedAnimal } = animalPageContext;
-
-  const critter = critterDataLoader.data;
-
-  if (!critter || critterDataLoader.isLoading) {
-    return (
-      <Box flex="1 1 auto" display="flex" justifyContent="center" alignItems="center" height="100%">
-        {/* <CircularProgress size={40} sx={{ flex: '1 1 auto', position: 'absolute' }} /> */}
-      </Box>
-    );
-  }
-
   return (
-    <>
-      {selectedAnimal && (
-        <Stack spacing={1.5} flexDirection="column" height="100%" maxWidth="100%" flex="1 1 auto">
-          <Paper sx={{ p: 2, flex: '1 1 auto', maxWidth: '100%', width: '100%' }}>
-            <AnimalProfileHeader critter={critter} />
-          </Paper>
-          <Paper>
-            <AnimalCaptureContainer
-              selectedAnimal={selectedAnimal}
-              captures={critterDataLoader.data?.captures ?? []}
-              isLoading={critterDataLoader.isLoading}
-              handleRefresh={() => {
-                critterDataLoader.refresh(selectedAnimal.critterbase_critter_id);
-              }}
-              createCaptureRoute={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/capture/create`}
-            />
-          </Paper>
-        </Stack>
-      )}
-    </>
+    <Stack spacing={1.5} flexDirection="column">
+      <Paper sx={{ p: 2, flex: '1 1 auto', maxWidth: '100%', width: '100%' }}>
+        <AnimalProfileHeader />
+      </Paper>
+      <Paper>
+        <AnimalCaptureContainer />
+      </Paper>
+    </Stack>
   );
 };

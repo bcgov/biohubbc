@@ -10,10 +10,11 @@ import { useAnimalPageContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICreateCaptureRequest, IMarkingPostData } from 'interfaces/useCritterApi.interface';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import yup from 'utils/YupSchema';
-import MarkingCardContainer from './MarkingCardContainer';
 
+import { TransitionGroup } from 'react-transition-group';
+import MarkingCard from './MarkingCard';
 /**
  * Returns the control for applying markings to an animal on the animal capture form
  *
@@ -27,31 +28,40 @@ const CaptureMarkingsForm = () => {
 
   const { values, setFieldValue } = useFormikContext<ICreateCaptureRequest>();
 
-  const index = values.markings.length;
-
-  // TODO: consolidate lookups into a single endpoint in critterbase
+  // Get available marking types
   const markingTypesDataLoader = useDataLoader(() => critterbaseApi.marking.getMarkingTypeOptions());
+
+  // Get available marking body positions
   const markingBodyLocationDataLoader = useDataLoader((tsn: number) =>
     critterbaseApi.marking.getMarkingBodyLocationOptions(tsn)
   );
+
+  // Get available marking colours
   const markingColoursDataLoader = useDataLoader(() => critterbaseApi.marking.getMarkingColourOptions());
 
-  if (!markingTypesDataLoader.data) {
-    markingTypesDataLoader.load();
-  }
+  // Load marking types
+  useEffect(() => {
+    if (!markingTypesDataLoader.data) {
+      markingTypesDataLoader.load();
+    }
+  }, [markingTypesDataLoader.data]);
 
-  if (!markingColoursDataLoader.data) {
-    markingColoursDataLoader.load();
-  }
+  // Load marking colours
+  useEffect(() => {
+    if (!markingColoursDataLoader.data) {
+      markingColoursDataLoader.load();
+    }
+  }, [markingColoursDataLoader.data]);
 
-  if (!markingBodyLocationDataLoader.data) {
-    if (critterDataLoader.data) {
+  // Load marking body locations
+  useEffect(() => {
+    if (!markingBodyLocationDataLoader.data && critterDataLoader.data) {
       markingBodyLocationDataLoader.load(critterDataLoader.data.itis_tsn);
     }
-  }
+  }, [markingBodyLocationDataLoader.data, critterDataLoader.data]);
 
   const handleSave = (data: IMarkingPostData) => {
-    setFieldValue(`markings.[${index}]`, data);
+    setFieldValue(`markings.[${values.markings.length}]`, data);
     setIsDialogOpen(false);
   };
 
@@ -77,7 +87,7 @@ const CaptureMarkingsForm = () => {
             secondary_colour_id: null,
             comment: ''
           },
-          validationSchema: yup.object({ marking_id: yup.string().optional() }), //CreateCritterMarkingSchema,
+          validationSchema: yup.object({ marking_id: yup.string().optional() }),
           element: (
             <Stack gap={2}>
               <AutocompleteField
@@ -97,7 +107,7 @@ const CaptureMarkingsForm = () => {
               <AutocompleteField
                 id="marking-location-autocomplete-field"
                 label="Marking placement"
-                name={`body_location_id`}
+                name={`taxon_marking_body_location_id`}
                 required
                 loading={markingBodyLocationDataLoader.isLoading}
                 options={
@@ -132,9 +142,44 @@ const CaptureMarkingsForm = () => {
           )
         }}
       />
+      <Stack gap={3}>
+        <TransitionGroup>
+          {values.markings.map((marking) => {
+            console.log(markingBodyLocationDataLoader.data);
+            console.log(marking.taxon_marking_body_location_id)
+            console.log(
+              markingBodyLocationDataLoader.data?.find(
+                (body_location) =>
+                  body_location.taxon_marking_body_location_id == marking.taxon_marking_body_location_id
+              )
+            );
 
-      <MarkingCardContainer />
-
+            return (
+              <MarkingCard
+                key={`${marking.taxon_marking_body_location_id}-${marking.marking_type_id}`}
+                identifier={marking.identifier}
+                comment={marking.comment}
+                primary_colour_label={
+                  markingColoursDataLoader.data?.find((colour) => colour.id == marking.primary_colour_id)?.value
+                }
+                secondary_colour_label={
+                  markingColoursDataLoader.data?.find((colour) => colour.id == marking.secondary_colour_id)?.value
+                }
+                marking_type_label={
+                  markingTypesDataLoader.data?.find((type) => type.marking_type_id == marking.marking_type_id)?.name ??
+                  ''
+                }
+                marking_body_location_label={
+                  markingBodyLocationDataLoader.data?.find(
+                    (body_location) =>
+                      body_location.taxon_marking_body_location_id == marking.taxon_marking_body_location_id
+                  )?.body_location ?? ''
+                }
+              />
+            );
+          })}
+        </TransitionGroup>
+      </Stack>
       <Button
         color="primary"
         variant="outlined"

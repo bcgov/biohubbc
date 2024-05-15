@@ -9,24 +9,32 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import { useDialogContext } from 'hooks/useContext';
-import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
+import { SkeletonListStack } from 'components/loading/SkeletonLoaders';
+import { useAnimalPageContext, useDialogContext } from 'hooks/useContext';
 import { setMessageSnackbar } from 'utils/Utils';
 import { AnimalAttributeItem } from './AnimalAttributeItem';
 import ScientificNameTypography from './ScientificNameTypography';
-
-interface IAnimalProfileHeaderProps {
-  critter: ICritterDetailedResponse;
-}
 
 /**
  * Returns header component for an animal's profile, displayed after selecting an animal
  * @param props
  * @returns
  */
-const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
-  const { critter } = props;
+const AnimalProfileHeader = () => {
   const dialogContext = useDialogContext();
+  const animalPageContext = useAnimalPageContext();
+
+  const { critterDataLoader } = animalPageContext;
+
+  const critter = critterDataLoader.data;
+
+  if (!critter || critterDataLoader.isLoading) {
+    return (
+      <Box>
+        <SkeletonListStack numberOfLines={1}/>
+      </Box>
+    );
+  }
 
   const handleCopy = (text: string) => {
     if (!text) {
