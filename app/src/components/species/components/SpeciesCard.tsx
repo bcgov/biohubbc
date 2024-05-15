@@ -1,47 +1,85 @@
+import { mdiCircle } from '@mdi/js';
+import Icon from '@mdi/react';
 import Chip from '@mui/material/Chip';
+import { grey } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { taxonRankColours } from 'constants/taxon';
+import React from 'react';
 
 interface ISpeciesCard {
-  commonName: string | null;
+  commonNames: string[];
   scientificName: string;
   tsn: number;
+  rank: string;
+  kingdom: string;
 }
 
 const SpeciesCard = (props: ISpeciesCard) => {
   return (
     <Stack flexDirection="row" justifyContent="space-between" width="100%">
       <Typography component="span" variant="body1">
-        {props.commonName ? (
-          <>
-            <Typography
-              component="strong"
+        <Typography
+          component="strong"
+          sx={{
+            display: 'inline-block',
+            fontWeight: 700,
+            whiteSpace: 'nowrap',
+            '&::first-letter': {
+              textTransform: 'capitalize'
+            }
+          }}>
+          {props.scientificName.split(' ').length > 1 ? <em>{props.scientificName}</em> : <>{props.scientificName}</>}
+          {props.rank && (
+            <Chip
+              title="Taxonomic rank"
+              label={props.rank}
+              size="small"
               sx={{
-                display: 'inline-block',
-                fontWeight: 700,
-                whiteSpace: 'nowrap',
-                '&::first-letter': {
-                  textTransform: 'capitalize'
+                minWidth: '0.4rem',
+                padding: '0.8px 0.8px',
+                margin: '0 10px 3px 10px',
+                opacity: 0.6,
+                backgroundColor: taxonRankColours.find((color) => color.ranks.includes(props.rank))?.color || grey[800],
+                '& .MuiChip-label': {
+                  letterSpacing: '0.03rem',
+                  color: '#fff',
+                  fontWeight: 100,
+                  fontSize: '0.6rem'
                 }
-              }}>
-              {props.commonName}
-            </Typography>
-            &nbsp;(<em>{props.scientificName}</em>)
-          </>
-        ) : (
-          <em>{props.scientificName}</em>
-        )}
+              }}
+            />
+          )}
+        </Typography>
+        <Stack direction="row" alignItems="center">
+          {props.commonNames?.length > 0 &&
+            props.commonNames.map((name, index) => (
+              <React.Fragment key={`${name}-${index}`}>
+                {index > 0 && <Icon path={mdiCircle} size={0.15} color={grey[500]} style={{ margin: '0 5px' }} />}
+                <Typography
+                  variant="body2"
+                  color="textSecondary"
+                  sx={{
+                    textTransform: 'capitalize'
+                  }}>
+                  {name}
+                </Typography>
+              </React.Fragment>
+            ))}
+        </Stack>
       </Typography>
-      <Chip
-        title="Taxonomic serial number"
-        label={'TSN:' + props.tsn}
-        size="small"
-        sx={{
-          '& .MuiChip-label': {
-            mt: '1px',
-            letterSpacing: '0.03rem'
-          }
-        }}></Chip>
+      <Stack spacing={1} direction="row">
+        <Chip
+          title="Taxonomic serial number (ID)"
+          label={'ID: ' + props.tsn}
+          size="small"
+          sx={{
+            '& .MuiChip-label': {
+              letterSpacing: '0.03rem'
+            }
+          }}
+        />
+      </Stack>
     </Stack>
   );
 };
