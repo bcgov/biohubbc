@@ -86,7 +86,7 @@ describe('useSurveyApi', () => {
     it('should remove a critter from survey', async () => {
       mock.onDelete(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`).reply(200, 1);
 
-      const result = await useSurveyApi(axios).removeCritterFromSurvey(projectId, surveyId, critterId);
+      const result = await useSurveyApi(axios).removeCrittersFromSurvey(projectId, surveyId, [critterId]);
 
       expect(result).toBe(1);
     });

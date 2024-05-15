@@ -2,16 +2,13 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { HTTPError, HTTPErrorType } from '../../../../../../errors/http-error';
-import { bulkUpdateResponse, critterBulkRequestObject } from '../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters/{critterId}');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters/delete');
 
-export const PATCH: Operation = [
+export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
       or: [
@@ -27,11 +24,11 @@ export const PATCH: Operation = [
       ]
     };
   }),
-  updateSurveyCritter()
+  removeCrittersFromSurvey()
 ];
 
-PATCH.apiDoc = {
-  description: 'Patches a critter in critterbase, also capable of deleting relevant rows if marked with _delete.',
+POST.apiDoc = {
+  description: 'Removes association of these critters to this survey.',
   tags: ['critterbase'],
   security: [
     {
@@ -49,21 +46,28 @@ PATCH.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Critterbase bulk patch request object',
+    description: 'Array of survey critter Ids to be deleted',
     content: {
       'application/json': {
-        schema: critterBulkRequestObject
+        schema: {
+          type: 'object',
+          additionalProperties: false,
+          properties: {
+            critterIds: {
+              type: 'array',
+              items: {
+                type: 'integer',
+                description: 'Survey critter Id'
+              }
+            }
+          }
+        }
       }
     }
   },
   responses: {
     200: {
-      description: 'Responds with counts of objects created in critterbase.',
-      content: {
-        'application/json': {
-          schema: bulkUpdateResponse
-        }
-      }
+      description: 'Critter was removed from survey'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -100,43 +104,6 @@ export function removeCrittersFromSurvey(): RequestHandler {
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'removeCritterFromSurvey', message: 'error', error });
-      await connection.rollback();
-      throw error;
-    } finally {
-      connection.release();
-    }
-  };
-}
-
-export function updateSurveyCritter(): RequestHandler {
-  return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
-
-    const critterId = Number(req.params.critterId);
-    const connection = getDBConnection(req['keycloak_token']);
-    const surveyService = new SurveyCritterService(connection);
-    const cb = new CritterbaseService(user);
-    try {
-      await connection.open();
-      const critterbaseCritterId = req.body.update.critter_id;
-      if (!critterbaseCritterId) {
-        throw new HTTPError(HTTPErrorType.BAD_REQUEST, 400, 'No external critter ID was found.');
-      }
-      await surveyService.updateCritter(critterId, critterbaseCritterId);
-      let createResult, updateResult;
-      if (req.body.update) {
-        updateResult = await cb.updateCritter(req.body.update);
-      }
-      if (req.body.create) {
-        createResult = await cb.createCritter(req.body.create);
-      }
-      await connection.commit();
-      return res.status(200).json({ ...createResult, ...updateResult });
-    } catch (error) {
-      defaultLog.error({ label: 'updateCritter', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

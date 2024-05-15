@@ -91,7 +91,7 @@ const SurveyAnimals: React.FC = () => {
         setPopup('Failed to remove critter from survey.');
         return;
       }
-      await bhApi.survey.removeCritterFromSurvey(projectId, surveyId, selectedCritterId);
+      await bhApi.survey.removeCrittersFromSurvey(projectId, surveyId, [selectedCritterId]);
     } catch (e) {
       setPopup('Failed to remove critter from survey.');
     }

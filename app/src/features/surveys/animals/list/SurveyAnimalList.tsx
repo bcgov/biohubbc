@@ -17,6 +17,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { ISurveyCritter } from 'contexts/animalPageContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -33,20 +34,22 @@ const SurveyAnimalList = () => {
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
   const [critterAnchorEl, setCritterAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [headerAnchorEl, setHeaderAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [selectedCritterMenu, setSelectedMenuCritter] = useState<ISurveyCritter | null>(null);
+  const [selectedCritterMenu, setSelectedMenuCritter] = useState<ISurveyCritter>();
 
   const codesContext = useCodesContext();
   const surveyContext = useSurveyContext();
   const dialogContext = useDialogContext();
 
+  const biohubApi = useBiohubApi();
+
   const { projectId, surveyId } = useSurveyContext();
 
-  const { setSelectedAnimal } = useAnimalPageContext();
+  const { setSelectedAnimal, selectedAnimal } = useAnimalPageContext();
 
   const critters = surveyContext.critterDataLoader.data;
 
   if (!critters) {
-    return <CircularProgress size={40} className="pageProgress" />;
+    return <CircularProgress size={40} />;
   }
 
   const crittersCount = critters.length;
@@ -70,77 +73,85 @@ const SurveyAnimalList = () => {
    * Handle the deletion of a critter
    *
    */
-  const handleDeleteCritter = async () => {
-    // await biohubApi.critter
-    //   .deleteCritter(surveyContext.projectId, surveyContext.surveyId, Number(selectedAnimal))
-    //   .then(() => {
-    //     dialogContext.setYesNoDialog({ open: false });
-    //     setCritterAnchorEl(null);
-    //     surveyContext.CritterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    //   })
-    //   .catch((error: any) => {
-    //     dialogContext.setYesNoDialog({ open: false });
-    //     setCritterAnchorEl(null);
-    //     dialogContext.setSnackbar({
-    //       snackbarMessage: (
-    //         <>
-    //           <Typography variant="body2" component="div">
-    //             <strong>Error Deleting Sampling Site</strong>
-    //           </Typography>
-    //           <Typography variant="body2" component="div">
-    //             {String(error)}
-    //           </Typography>
-    //         </>
-    //       ),
-    //       open: true
-    //     });
-    //   });
-    console.log('Cannot delete critters');
-  };
-
-  const handleBulkDeleteCritters = async () => {
-    // await biohubApi.critters
-    //   .deleteCritters(surveyContext.projectId, surveyContext.surveyId, checkboxSelectedIds)
-    //   .then(() => {
-    //     dialogContext.setYesNoDialog({ open: false });
-    //     setCheckboxSelectedIds([]);
-    //     setHeaderAnchorEl(null);
-    //     surveyContext.CritterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    //   })
-    //   .catch((error: any) => {
-    //     dialogContext.setYesNoDialog({ open: false });
-    //     setCheckboxSelectedIds([]);
-    //     setHeaderAnchorEl(null);
-    //     dialogContext.setSnackbar({
-    //       snackbarMessage: (
-    //         <>
-    //           <Typography variant="body2" component="div">
-    //             <strong>Error Deleting Sampling Sites</strong>
-    //           </Typography>
-    //           <Typography variant="body2" component="div">
-    //             {String(error)}
-    //           </Typography>
-    //         </>
-    //       ),
-    //       open: true
-    //     });
-    //   });
-    console.log('Cannot delete critters');
+  const handleDeleteCritter = async (surveyCritterId: number) => {
+    await biohubApi.survey
+      .removeCrittersFromSurvey(surveyContext.projectId, surveyContext.surveyId, [surveyCritterId])
+      .then(() => {
+        dialogContext.setYesNoDialog({ open: false });
+        setCritterAnchorEl(null);
+        surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      })
+      .catch((error: any) => {
+        dialogContext.setYesNoDialog({ open: false });
+        setCritterAnchorEl(null);
+        dialogContext.setSnackbar({
+          snackbarMessage: (
+            <>
+              <Typography variant="body2" component="div">
+                <strong>Error Deleting Animal</strong>
+              </Typography>
+              <Typography variant="body2" component="div">
+                {String(error)}
+              </Typography>
+            </>
+          ),
+          open: true
+        });
+      });
   };
 
   /**
-   * Display the delete sampling site dialog.
+   * Handle the deletion of multiple critters
+   *
+   */
+  const handleBulkDeleteCritters = async () => {
+    await biohubApi.survey
+      .removeCrittersFromSurvey(surveyContext.projectId, surveyContext.surveyId, checkboxSelectedIds)
+      .then(() => {
+        dialogContext.setYesNoDialog({ open: false });
+
+        // If the selected animal is the deleted animal, unset the selected animal
+        if (checkboxSelectedIds.some((id) => id == selectedAnimal?.survey_critter_id)) {
+          setSelectedAnimal(null);
+        }
+
+        setCheckboxSelectedIds([]);
+        setHeaderAnchorEl(null);
+        surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      })
+      .catch((error: any) => {
+        dialogContext.setYesNoDialog({ open: false });
+        setCheckboxSelectedIds([]);
+        setHeaderAnchorEl(null);
+        dialogContext.setSnackbar({
+          snackbarMessage: (
+            <>
+              <Typography variant="body2" component="div">
+                <strong>Error Deleting Animals</strong>
+              </Typography>
+              <Typography variant="body2" component="div">
+                {String(error)}
+              </Typography>
+            </>
+          ),
+          open: true
+        });
+      });
+  };
+
+  /**
+   * Display the delete Animal dialog.
    *
    */
   const deleteCritterDialog = () => {
     dialogContext.setYesNoDialog({
-      dialogTitle: 'Delete Sampling Site?',
+      dialogTitle: 'Delete Animal?',
       dialogContent: (
         <Typography variant="body1" component="div" color="textSecondary">
-          Are you sure you want to delete this sampling site?
+          Are you sure you want to delete this Animal?
         </Typography>
       ),
-      yesButtonLabel: 'Delete Sampling Site',
+      yesButtonLabel: 'Delete Animal',
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'error' },
       onClose: () => {
@@ -151,20 +162,26 @@ const SurveyAnimalList = () => {
       },
       open: true,
       onYes: () => {
-        handleDeleteCritter();
+        if (selectedCritterMenu?.survey_critter_id) {
+          handleDeleteCritter(selectedCritterMenu?.survey_critter_id);
+        }
+        // If the selected animal is the deleted animal, unset the selected animal
+        if (selectedCritterMenu?.survey_critter_id == selectedAnimal?.survey_critter_id) {
+          setSelectedAnimal(null);
+        }
       }
     });
   };
 
   const handlePromptConfirmBulkDelete = () => {
     dialogContext.setYesNoDialog({
-      dialogTitle: 'Delete Sampling Sites?',
+      dialogTitle: 'Delete Animals?',
       dialogContent: (
         <Typography variant="body1" component="div" color="textSecondary">
-          Are you sure you want to delete the selected sampling sites?
+          Are you sure you want to delete the selected Animals?
         </Typography>
       ),
-      yesButtonLabel: 'Delete Sampling Sites',
+      yesButtonLabel: 'Delete Animals',
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'error' },
       onClose: () => {
@@ -178,6 +195,10 @@ const SurveyAnimalList = () => {
         handleBulkDeleteCritters();
       }
     });
+  };
+
+  const handleHeaderMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    setHeaderAnchorEl(event.currentTarget);
   };
 
   return (
@@ -258,7 +279,11 @@ const SurveyAnimalList = () => {
         sx={{
           overflow: 'hidden'
         }}>
-        <SurveyAnimalListToolbar animalCount={critters.length} checkboxSelectedIdsLength={checkboxSelectedIds.length} />
+        <SurveyAnimalListToolbar
+          handleHeaderMenuClick={handleHeaderMenuClick}
+          animalCount={critters.length}
+          checkboxSelectedIdsLength={checkboxSelectedIds.length}
+        />
         <Divider flexItem />
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
           <Box position="absolute" top="0" right="0" bottom="0" left="0" flex="1 1 auto">

@@ -19,7 +19,7 @@ interface IAnimalCaptureContainerProps {
  * @returns
  */
 const AnimalCaptureContainer = (props: IAnimalCaptureContainerProps) => {
-  const { isLoading, captures, createCaptureRoute, selectedAnimal, handleRefresh } = props;
+  const { captures, createCaptureRoute, selectedAnimal, handleRefresh } = props;
   const critterbaseApi = useCritterbaseApi();
 
   const handleDelete = async (selectedCapture: string, critterbase_critter_id: string) => {
@@ -30,7 +30,7 @@ const AnimalCaptureContainer = (props: IAnimalCaptureContainerProps) => {
   return (
     <>
       <AnimalCapturesToolbar capturesCount={captures.length} createCaptureRoute={createCaptureRoute} />
-      <AnimalCapturesMap captures={captures} isLoading={isLoading} />
+      <AnimalCapturesMap captures={captures} isLoading={false} />
       <AnimalCaptureCardContainer captures={captures} selectedAnimal={selectedAnimal} handleDelete={handleDelete} />
     </>
   );

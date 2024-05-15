@@ -56,20 +56,20 @@ export class SurveyCritterRepository extends BaseRepository {
   }
 
   /**
-   * Removes a critter from the survey.
+   * Removes critters from the survey.
    *
    * @param surveyId
    * @param critterId
    * @returns {*}
    * @member SurveyRepository
    */
-  async removeCritterFromSurvey(surveyId: number, critterId: number): Promise<void> {
-    defaultLog.debug({ label: 'removeCritterFromSurvey', critterId });
+  async removeCrittersFromSurvey(surveyId: number, critterIds: number[]): Promise<void> {
+    defaultLog.debug({ label: 'removeCrittersFromSurvey', critterIds });
 
     const queryBuilder = getKnex()
       .delete()
       .from('critter')
-      .where({ critter_id: critterId })
+      .whereIn('critter_id', critterIds)
       .andWhere({ survey_id: surveyId });
 
     await this.connection.knex(queryBuilder);

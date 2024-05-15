@@ -395,15 +395,15 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Remove a critter from the survey. Will not delete critter in critterbase.
+   * Remove critters from the survey. Will not delete critters in critterbase.
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} critterId
    * @returns {*}
    */
-  const removeCritterFromSurvey = async (projectId: number, surveyId: number, critterId: number): Promise<number> => {
-    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`);
+  const removeCrittersFromSurvey = async (projectId: number, surveyId: number, critterIds: number[]): Promise<number> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/delete`, {critterIds: critterIds});
     return data;
   };
 
@@ -537,7 +537,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurvey,
     getSurveyCritters,
     createCritterAndAddToSurvey,
-    removeCritterFromSurvey,
+    removeCrittersFromSurvey,
     addDeployment,
     getDeploymentsInSurvey,
     updateDeployment,

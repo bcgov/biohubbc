@@ -10,6 +10,7 @@ import { Link as RouterLink } from 'react-router-dom';
 interface ISurveyAnimalListToolbarProps {
   animalCount: number;
   checkboxSelectedIdsLength: number;
+  handleHeaderMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
 }
 
 /**
@@ -49,7 +50,7 @@ const SurveyAnimalListToolbar = (props: ISurveyAnimalListToolbarProps) => {
         }}
         aria-label="header-settings"
         disabled={!props.checkboxSelectedIdsLength}
-        // onClick={handleHeaderMenuClick}
+        onClick={props.handleHeaderMenuClick}
         title="Bulk Actions">
         <Icon path={mdiDotsVertical} size={1} />
       </IconButton>

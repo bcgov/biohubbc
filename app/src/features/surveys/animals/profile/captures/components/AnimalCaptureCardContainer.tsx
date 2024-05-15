@@ -78,7 +78,7 @@ const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
               }
             }}>
             <RouterLink
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal?.survey_critter_id}/capture/${selectedCapture}/edit`}>
+              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/capture/${selectedCapture}/edit`}>
               <ListItemIcon>
                 <Icon path={mdiPencilOutline} size={1} />
               </ListItemIcon>
@@ -119,14 +119,14 @@ const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
       )}
 
       {captures.length ? (
-        captures.map((capture, index) => {
+        captures.map((capture) => {
           return (
             <Accordion
               component={Paper}
               variant="outlined"
               disableGutters
               elevation={1}
-              key={`${capture.capture_id}-${index}`}
+              key={`${capture.capture_id}`}
               sx={{
                 margin: '15px',
                 boxShadow: 'none',
