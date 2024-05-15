@@ -22,6 +22,25 @@ The objectives for the SIMS project are:
 
 - https://git-scm.com/downloads
 
+### Note on line endings
+
+The majority of repos prefer unix style line endings (`lf`) over windows style line endings (`crlf`).
+
+It is therefore recommended to set `core.autocrlf=input` in your `.gitconfig`.
+
+```
+[core]
+	autocrlf = input
+```
+
+You can update this after installing Git via the `.gitconfig` and/or during initial Git installation by selecting the matching option during the Git setup wizard.
+
+This will ensure that when cloning a repo, Git honours the line-endings of the remote repo (otherwise it will change every line-ending to match your local machines default line-endings, which can result in failed linting and conflicts later on).
+
+If you update this setting after cloning a repo, you may need to delete and re-clone the repo to ensure Git checks it out with the correct line-endings.
+
+One way to find your `.gitconfig` is to echo the `$HOME` variable in a git-bash terminal.
+
 ### Clone the repo
 
 - `git clone https://github.com/bcgov/biohubbc.git`
