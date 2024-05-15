@@ -14,7 +14,6 @@ describe('RegionRepository', () => {
     sinon.restore();
   });
 
-
   describe('addRegionsToASurvey', () => {
     it('should return early when no regions passed in', async () => {
       const mockDBConnection = getMockDBConnection();
@@ -47,7 +46,6 @@ describe('RegionRepository', () => {
       expect(insertSQL).to.be.called;
     });
   });
-
 
   describe('deleteRegionsForSurvey', () => {
     it('should run without issue', async () => {

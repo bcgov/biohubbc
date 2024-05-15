@@ -74,8 +74,6 @@ export type ITelemetryTableContext = {
    */
   hasUnsavedChanges: boolean;
   /**
-   * TODO: I think this needs to be added back for pagination
-   *
    * Reflects the total count of telemetry records for the survey
    */
   recordCount: number;
@@ -134,11 +132,17 @@ export type ITelemetryTableContext = {
    * Indicates whether the cell has an error.
    */
   hasError: (params: GridCellParams) => boolean;
-
+  /**
+   * The column visibility model, which defines which columns are visible
+   */
   columnVisibilityModel: GridColumnVisibilityModel;
-
+  /**
+   * Callback fired when column visibility model changes
+   */
   onColumnVisibilityModelChange: (model: GridColumnVisibilityModel) => void;
-
+  /**
+   * Toggle columns visibility - no config will toggle all columns
+   */
   toggleColumnsVisibility: (config?: { columns: string[] }) => void;
 };
 
