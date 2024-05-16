@@ -19,11 +19,6 @@ const AnimalCaptureContainer = () => {
 
   const { projectId, surveyId } = useSurveyContext();
 
-  const handleDelete = async (selectedCapture: string, critterbase_critter_id: string) => {
-    await critterbaseApi.capture.deleteCapture(selectedCapture);
-    critterDataLoader.refresh(critterbase_critter_id);
-  };
-
   if (!selectedAnimal || !critterDataLoader.data) {
     return (
       <Box p={2}>
@@ -35,6 +30,25 @@ const AnimalCaptureContainer = () => {
       </Box>
     );
   }
+
+  const handleDelete = async (selectedCapture: string, critterbase_critter_id: string) => {
+    // Find markings associated with the capture and delete those
+    await critterbaseApi.critters.bulkUpdate({
+      markings: critterDataLoader.data?.markings
+        .filter((marking) => marking.capture_id === selectedCapture)
+        .map((marking) => ({
+          ...marking,
+          critter_id: selectedAnimal.critterbase_critter_id,
+          _delete: true
+        }))
+    });
+
+    // Delete the actual capture
+    await critterbaseApi.capture.deleteCapture(selectedCapture);
+
+    // Refresh capture container
+    critterDataLoader.refresh(critterbase_critter_id);
+  };
 
   const captures = critterDataLoader.data.captures;
 

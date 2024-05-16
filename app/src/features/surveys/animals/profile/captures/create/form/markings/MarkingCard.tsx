@@ -35,13 +35,17 @@ const MarkingCard = (props: IMarkingCardProps) => {
 
   return (
     <Stack component={Card} sx={{ px: 3, py: 2, mb: 2, bgcolor: grey[100] }} flex="1 1 auto" spacing={1}>
-      <Box justifyContent="space-between" display="flex">
+      <Box justifyContent="space-between" display="flex" m={0} p={0} position="relative">
         <Typography fontWeight={700}>{identifier}</Typography>
-        <IconButton edge="end" onClick={handleMarkingMenuClick} aria-label="marking-card">
+        <IconButton
+          edge="end"
+          onClick={handleMarkingMenuClick}
+          aria-label="marking-card"
+          sx={{ position: 'absolute', right: '0' }}>
           <Icon path={mdiDotsVertical} size={1}></Icon>
         </IconButton>
       </Box>
-      <Stack direction="row" spacing={2}>
+      <Stack direction="row" spacing={2} m={0}>
         <Box>
           <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
             Type

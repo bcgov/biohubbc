@@ -24,7 +24,7 @@ import MarkingCard from './MarkingCard';
 const CaptureMarkingsForm = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-  const [selectedMarking, setSelectedMarking] = useState<number>();
+  const [selectedMarking, setSelectedMarking] = useState<number | null>(null);
   const [markingAnchorEl, setMarkingAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const { values, setFieldValue } = useFormikContext<ICreateCaptureRequest>();
 
@@ -64,6 +64,8 @@ const CaptureMarkingsForm = () => {
     }
   }, [markingBodyLocationDataLoader.data, critterDataLoader.data]);
 
+  console.log(selectedMarking);
+
   return (
     <>
       {/* CONTEXT MENU ACTIONS ON MARKING */}
@@ -71,7 +73,10 @@ const CaptureMarkingsForm = () => {
         <Menu
           sx={{ pb: 2 }}
           open={Boolean(markingAnchorEl)}
-          onClose={() => setMarkingAnchorEl(null)}
+          onClose={() => {
+            setMarkingAnchorEl(null);
+            setSelectedMarking(null);
+          }}
           anchorEl={markingAnchorEl}
           anchorOrigin={{
             vertical: 'top',
@@ -94,10 +99,12 @@ const CaptureMarkingsForm = () => {
           <MenuItem
             onClick={() => {
               setMarkingAnchorEl(null);
+              console.log(selectedMarking)
               setFieldValue(
                 'markings',
                 values.markings.filter((_, index) => index !== selectedMarking)
               );
+              setSelectedMarking(null)
             }}>
             <ListItemIcon>
               <Icon path={mdiTrashCanOutline} size={1} />
@@ -109,17 +116,27 @@ const CaptureMarkingsForm = () => {
 
       {/* ADD/EDIT MARKING DIALOG */}
       <CaptureMarkingsDialog
-        initialValues={selectedMarking ? values.markings[selectedMarking] : undefined}
+        initialValues={selectedMarking !== null ? values.markings[selectedMarking] : undefined}
         markingBodyLocations={markingBodyLocationDataLoader.data ?? []}
         markingColours={markingColoursDataLoader.data ?? []}
         markingTypes={markingTypesDataLoader.data ?? []}
-        isDialogOpen={Boolean(isDialogOpen)}
+        isDialogOpen={isDialogOpen}
         handleSave={(data) => {
-          setFieldValue(`markings.[${selectedMarking ?? values.markings.length}]`, data);
+          if (selectedMarking !== null) {
+            // If selectedMarking is not null, we're editing an existing marking
+            const updatedMarkings = [...values.markings];
+            updatedMarkings[selectedMarking] = data;
+            setFieldValue('markings', updatedMarkings);
+          } else {
+            // If selectedMarking is null, we're adding a new marking
+            setFieldValue('markings', [...values.markings, data]);
+          }
           setIsDialogOpen(false);
+          setSelectedMarking(null);
         }}
         handleClose={() => {
           setIsDialogOpen(false);
+          setSelectedMarking(null);
         }}
       />
 
