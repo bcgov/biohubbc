@@ -936,17 +936,17 @@ export async function up(knex: Knex): Promise<void> {
       ),
       (
         (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Moisture Regime'),
-        'Hydric',
+        'Hygric',
         'Water removed slowly enough to keep soil wet for most of growing season; permanent seepage and mottling; gleyed colours common.'
       ),
       (
         (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Moisture Regime'),
-        'duplicate Subhydric',
+        'Subhydric',
         'Water removed slowly enough to keep water table at or near surface for most of year; gleyed mineral or organic soils; permanent seepage < 30 cm below surface.'
       ),
       (
         (SELECT environment_qualitative_id FROM environment_qualitative WHERE name = 'Soil Moisture Regime'),
-        'duplicate Hydric',
+        'Hydric',
         'Water removed so slowly that water table is at or above soil surface all year; gleyed mineral or organic soils.'
       ),
       (
