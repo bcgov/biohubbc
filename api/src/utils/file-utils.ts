@@ -8,7 +8,7 @@ import {
   Metadata
 } from 'aws-sdk/clients/s3';
 import NodeClam from 'clamscan';
-import { Readable } from 'stream';
+import { Readable, Transform } from 'stream';
 import { getLogger } from './logger';
 
 const defaultLog = getLogger('/api/src/utils/file-utils');
@@ -143,6 +143,20 @@ export async function uploadBufferToS3(
     .upload({
       Bucket: _getObjectStoreBucketName(),
       Body: buffer,
+      ContentType: mimetype,
+      Key: key,
+      Metadata: metadata
+    })
+    .promise();
+}
+
+export async function uploadStreamToS3(transform: Transform, mimetype: string, key: string, metadata: Metadata = {}) {
+  const s3Client = _getS3Client();
+
+  return s3Client
+    .upload({
+      Bucket: _getObjectStoreBucketName(),
+      Body: transform,
       ContentType: mimetype,
       Key: key,
       Metadata: metadata

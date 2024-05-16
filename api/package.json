@@ -54,6 +54,7 @@
     "mime": "^3.0.0",
     "multer": "^1.4.3",
     "pg": "^8.7.1",
+    "pg-query-stream": "^4.5.5",
     "qs": "^6.10.1",
     "sql-template-strings": "^2.2.2",
     "swagger-ui-express": "^4.3.0",

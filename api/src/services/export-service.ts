@@ -1,7 +1,10 @@
 import AdmZip from 'adm-zip';
 import { Metadata } from 'aws-sdk/clients/s3';
-import { IDBConnection } from '../database/db';
-import { generateS3SurveyExportKey, getS3SignedURL, uploadBufferToS3 } from '../utils/file-utils';
+import * as pg from 'pg';
+import SQL from 'sql-template-strings';
+import { PassThrough, Transform } from 'stream';
+import { getDBPool, IDBConnection } from '../database/db';
+import { generateS3SurveyExportKey, getS3SignedURL, uploadBufferToS3, uploadStreamToS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
 import { ObservationService } from './observation-service';
@@ -41,6 +44,9 @@ export class ExportService extends DBService {
   surveyCritterService: SurveyCritterService;
   //   critterbaseService: CritterbaseService;
 
+  transform = new Transform();
+  passthrough = new PassThrough();
+
   constructor(connection: IDBConnection) {
     super(connection);
 
@@ -50,6 +56,75 @@ export class ExportService extends DBService {
     this.telemetryService = new TelemetryService(connection);
     this.surveyCritterService = new SurveyCritterService(connection);
     // this.critterbaseService = new CritterbaseService({});
+
+    this.transform.pipe(this.passthrough);
+  }
+
+  async exportSurveyStream(surveyId: number, _config: SurveyExportConfig) {
+    const sqlStatement = SQL`
+      SELECT
+        *
+      FROM
+        survey
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    const dbPool = await getDBPool();
+
+    if (!dbPool) {
+      throw new Error('Failed to get database connection.');
+    }
+
+    const client = await dbPool.connect();
+
+    const query = new pg.Query(sqlStatement.text, sqlStatement.values);
+
+    const stream = client.query(query);
+
+    stream
+      .on('row', (row, result) => {
+        console.log('Stream row', row);
+        console.log('Stream result', result);
+        this.transform.push(row);
+      })
+      .on('error', (error: Error) => {
+        console.error('Stream error', error);
+        client.release();
+        this.transform.push(error);
+      })
+      .on('end', (result) => {
+        console.log('Stream end', result);
+        client.release();
+        this.transform.push(null);
+      });
+
+    const result = await uploadStreamToS3(this.transform, 'application/json', 'test_stream.json');
+
+    console.log('Stream upload result', result);
+
+    // dbPool.connect((error, client, done) => {
+    //   if (error) {
+    //     defaultLog.error({ label: 'exportSurveyStream', message: 'Error', error });
+    //     throw error;
+    //   }
+
+    //   const query = new QueryStream(sqlStatement.text, sqlStatement.values);
+
+    //   const stream = client.query(query);
+
+    //   stream.on('end', done);
+    // });
+
+    // const client = await dbPool.connect();
+
+    // const query = new QueryStream(sqlStatement.text, sqlStatement.values);
+
+    // const stream = client.query(query);
+
+    // stream.on('end', dbPool.end);
+
+    // this.connection.sql(sqlStatement.text, sqlStatement.values);
   }
 
   async exportSurvey(surveyId: number, config: SurveyExportConfig): Promise<string[]> {
