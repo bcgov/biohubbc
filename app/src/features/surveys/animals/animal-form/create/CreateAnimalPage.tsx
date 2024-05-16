@@ -48,7 +48,7 @@ const CreateAnimalPage = () => {
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
-  const { setSelectedAnimal } = useAnimalPageContext();
+  const animalPageContext = useAnimalPageContext();
 
   const { projectId, surveyId } = surveyContext;
 
@@ -157,7 +157,7 @@ const CreateAnimalPage = () => {
         return;
       }
 
-      setSelectedAnimal({
+      animalPageContext.setSelectedAnimal({
         critterbase_critter_id: response.critterbase_critter_id,
         survey_critter_id: response.survey_critter_id
       });

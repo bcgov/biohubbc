@@ -3,7 +3,8 @@ import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
-import { createContext, PropsWithChildren, useCallback, useMemo, useRef } from 'react';
+import isEqual from 'lodash-es/isEqual';
+import { createContext, PropsWithChildren, useCallback, useMemo, useState } from 'react';
 
 export interface ISurveyCritter {
   survey_critter_id: number;
@@ -48,53 +49,29 @@ export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never,
   }
 
   // The currently selected animal
-  const selectedAnimal = useRef<ISurveyCritter | undefined>();
-
-  /**
-   * Used to set selectedAnimal from just surveyCritterId. When set, it triggers a query for the animal's
-   * Critterbase ID to then update selectedAnimal and subsequently refresh the critterDataLoader.
-   *
-   * This is included so that selectedAnimal can be set by only knowing the Survey Critter ID from the URL params.
-   *
-   */
-  //   const [selectedAnimalFromSurveyCritterId, setSelectedAnimalFromSurveyCritterId] = useState<number | null>(null);
-
-  //   useEffect(() => {
-  //     if (surveyCrittersDataLoader.data) {
-  //       const critter = surveyCrittersDataLoader.data.find(
-  //         (critter) => critter.survey_critter_id === selectedAnimalFromSurveyCritterId
-  //       );
-
-  //       if (critter?.critter_id && selectedAnimalFromSurveyCritterId) {
-  //         animalPageContext.setSelectedAnimal({
-  //           survey_critter_id: selectedAnimalFromSurveyCritterId,
-  //           critterbase_critter_id: critter?.critter_id
-  //         });
-  //       }
-  //     }
-  //   }, [selectedAnimalFromSurveyCritterId, surveyCrittersDataLoader.data]);
+  const [_selectedAnimal, _setSelectedAnimal] = useState<ISurveyCritter | undefined>();
 
   const setSelectedAnimal = useCallback(
     (animal?: ISurveyCritter) => {
-      if (animal === selectedAnimal.current) {
+      if (isEqual(animal, _selectedAnimal)) {
         // No change
         return;
       }
 
       // Update the selected animal
-      selectedAnimal.current = animal;
+      _setSelectedAnimal(animal);
 
       if (animal) {
         // Load the critter data for the new animal
         critterDataLoader.refresh(animal.critterbase_critter_id);
       }
     },
-    [critterDataLoader]
+    [_selectedAnimal, critterDataLoader]
   );
 
   const setSelectedAnimalFromSurveyCritterId = useCallback(
     (surveyCritterId: number) => {
-      if (selectedAnimal.current?.survey_critter_id === surveyCritterId) {
+      if (_selectedAnimal?.survey_critter_id === surveyCritterId) {
         // No change
         return;
       }
@@ -108,17 +85,17 @@ export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never,
         });
       }
     },
-    [surveyCrittersDataLoader.data, setSelectedAnimal]
+    [_selectedAnimal?.survey_critter_id, surveyCrittersDataLoader.data, setSelectedAnimal]
   );
 
   const animalPageContext: IAnimalPageContext = useMemo(
     () => ({
-      selectedAnimal: selectedAnimal.current,
+      selectedAnimal: _selectedAnimal,
       setSelectedAnimal,
       critterDataLoader,
       setSelectedAnimalFromSurveyCritterId
     }),
-    [setSelectedAnimal, critterDataLoader, setSelectedAnimalFromSurveyCritterId]
+    [_selectedAnimal, setSelectedAnimal, critterDataLoader, setSelectedAnimalFromSurveyCritterId]
   );
 
   return <AnimalPageContext.Provider value={animalPageContext}>{props.children}</AnimalPageContext.Provider>;
