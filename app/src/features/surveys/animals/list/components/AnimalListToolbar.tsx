@@ -10,15 +10,16 @@ import { Link as RouterLink } from 'react-router-dom';
 interface ISurveyAnimalListToolbarProps {
   animalCount: number;
   checkboxSelectedIdsLength: number;
-  handleHeaderMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+  handleHeaderMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 /**
  * Toolbar for actions affecting animals with a survey, ie. delete an animal from a Survey
- * @param props
- * @returns
+ *
+ * @param {ISurveyAnimalListToolbarProps} props
+ * @return {*}
  */
-const SurveyAnimalListToolbar = (props: ISurveyAnimalListToolbarProps) => {
+const AnimalListToolbar = (props: ISurveyAnimalListToolbarProps) => {
   const { surveyId, projectId } = useSurveyContext();
 
   return (
@@ -58,4 +59,4 @@ const SurveyAnimalListToolbar = (props: ISurveyAnimalListToolbarProps) => {
   );
 };
 
-export default SurveyAnimalListToolbar;
+export default AnimalListToolbar;

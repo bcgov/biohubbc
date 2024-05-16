@@ -2,7 +2,7 @@ import { mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import { EcologicalUnitsSelect } from 'features/surveys/animals/components/ecological-units/components/EcologicalUnitsSelect';
+import { EcologicalUnitsSelect } from 'features/surveys/animals/animal-form/components/ecological-units/components/EcologicalUnitsSelect';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';

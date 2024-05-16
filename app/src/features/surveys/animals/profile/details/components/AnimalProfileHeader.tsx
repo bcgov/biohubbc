@@ -9,47 +9,30 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import { SkeletonListStack } from 'components/loading/SkeletonLoaders';
-import { useAnimalPageContext, useDialogContext } from 'hooks/useContext';
+import { useDialogContext } from 'hooks/useContext';
+import { useCopyToClipboard } from 'hooks/useCopyToClipboard';
+import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { setMessageSnackbar } from 'utils/Utils';
+import ScientificNameTypography from '../../../components/ScientificNameTypography';
 import { AnimalAttributeItem } from './AnimalAttributeItem';
-import ScientificNameTypography from './ScientificNameTypography';
+
+interface IAnimalProfileHeaderProps {
+  critter: ICritterDetailedResponse;
+}
 
 /**
  * Returns header component for an animal's profile, displayed after selecting an animal
- * @param props
- * @returns
+ *
+ * @param {IAnimalProfileHeaderProps} props
+ * @return {*}
  */
-const AnimalProfileHeader = () => {
+const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
+  const { critter } = props;
+
   const dialogContext = useDialogContext();
-  const animalPageContext = useAnimalPageContext();
 
-  const { critterDataLoader } = animalPageContext;
+  const { copyToClipboard } = useCopyToClipboard();
 
-  const critter = critterDataLoader.data;
-
-  if (!critter || critterDataLoader.isLoading) {
-    return (
-      <Box>
-        <SkeletonListStack numberOfLines={1}/>
-      </Box>
-    );
-  }
-
-  const handleCopy = (text: string) => {
-    if (!text) {
-      return;
-    }
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
-        // Show snackbar for successful copy
-        setMessageSnackbar('Unique ID copied to clipboard', dialogContext);
-      })
-      .catch((error) => {
-        console.error('Could not copy text: ', error);
-      });
-  };
   return (
     <>
       <Typography
@@ -93,7 +76,15 @@ const AnimalProfileHeader = () => {
           <IconButton
             sx={{ borderRadius: '5px', p: 0.5, ml: 0.5 }}
             onClick={() => {
-              handleCopy(critter?.critter_id ?? '');
+              if (!critter.critter_id) {
+                return;
+              }
+
+              copyToClipboard(critter.critter_id, () =>
+                setMessageSnackbar('Unique ID copied to clipboard', dialogContext)
+              ).catch((error) => {
+                console.error('Could not copy text: ', error);
+              });
             }}>
             <Icon color={grey[600]} path={mdiCheckboxMultipleBlankOutline} size={0.75} />
           </IconButton>

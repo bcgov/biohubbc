@@ -3,6 +3,7 @@ import Skeleton from '@mui/material/Skeleton';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { useHistory } from 'react-router';
 import AnimalCaptureCardContainer from './components/AnimalCaptureCardContainer';
 import AnimalCapturesMap from './components/AnimalCapturesMap';
 import AnimalCapturesToolbar from './components/AnimalCapturesToolbar';
@@ -10,21 +11,22 @@ import AnimalCapturesToolbar from './components/AnimalCapturesToolbar';
 /**
  * Container for the animal captures map component within the animal profile page
  *
- * @returns
+ * @return {*}
  */
-const AnimalCaptureContainer = () => {
+export const AnimalCaptureContainer = () => {
   const critterbaseApi = useCritterbaseApi();
 
-  const { selectedAnimal, critterDataLoader } = useAnimalPageContext();
+  const history = useHistory();
 
   const { projectId, surveyId } = useSurveyContext();
+  const animalPageContext = useAnimalPageContext();
 
   const handleDelete = async (selectedCapture: string, critterbase_critter_id: string) => {
     await critterbaseApi.capture.deleteCapture(selectedCapture);
-    critterDataLoader.refresh(critterbase_critter_id);
+    animalPageContext.critterDataLoader.refresh(critterbase_critter_id);
   };
 
-  if (!selectedAnimal || !critterDataLoader.data) {
+  if (!animalPageContext.selectedAnimal || !animalPageContext.critterDataLoader.data) {
     return (
       <Box p={2}>
         <SkeletonHorizontalStack numberOfLines={2} />
@@ -36,18 +38,25 @@ const AnimalCaptureContainer = () => {
     );
   }
 
-  const captures = critterDataLoader.data.captures;
+  const captures = animalPageContext.critterDataLoader.data.captures;
+  const selectedAnimal = animalPageContext.selectedAnimal;
+
+  if (!selectedAnimal) {
+    return null;
+  }
 
   return (
     <>
       <AnimalCapturesToolbar
         capturesCount={captures.length}
-        createCaptureRoute={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/capture/create`}
+        onAddAnimalCapture={() => {
+          history.push(
+            `/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/capture/create`
+          );
+        }}
       />
       <AnimalCapturesMap captures={captures} isLoading={false} />
       <AnimalCaptureCardContainer captures={captures} selectedAnimal={selectedAnimal} handleDelete={handleDelete} />
     </>
   );
 };
-
-export default AnimalCaptureContainer;

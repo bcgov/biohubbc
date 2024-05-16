@@ -4,11 +4,10 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { Link as RouterLink } from 'react-router-dom';
 
 interface IAnimalCapturesToolbarProps {
   capturesCount: number;
-  createCaptureRoute: string;
+  onAddAnimalCapture: () => void;
 }
 
 /**
@@ -17,7 +16,7 @@ interface IAnimalCapturesToolbarProps {
  * @returns
  */
 const AnimalCapturesToolbar = (props: IAnimalCapturesToolbarProps) => {
-  const { capturesCount, createCaptureRoute } = props;
+  const { capturesCount, onAddAnimalCapture } = props;
 
   return (
     <Toolbar
@@ -41,8 +40,7 @@ const AnimalCapturesToolbar = (props: IAnimalCapturesToolbarProps) => {
         <Button
           variant="contained"
           color="primary"
-          component={RouterLink}
-          to={createCaptureRoute}
+          onClick={onAddAnimalCapture}
           startIcon={<Icon path={mdiPlus} size={1} />}>
           Add
         </Button>

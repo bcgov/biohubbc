@@ -21,16 +21,15 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import CritterListItem from './components/CritterListItem';
-import SurveyAnimalListToolbar from './components/SurveyAnimalListToolbar';
+import AnimalListToolbar from './AnimalListToolbar';
+import CritterListItem from './CritterListItem';
 
 /**
  * Returns a list of all animals (critters) in the survey
  *
- * @returns
- *
+ * @return {*}
  */
-const SurveyAnimalList = () => {
+export const AnimalList = () => {
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
   const [critterAnchorEl, setCritterAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [headerAnchorEl, setHeaderAnchorEl] = useState<MenuProps['anchorEl']>(null);
@@ -112,7 +111,7 @@ const SurveyAnimalList = () => {
 
         // If the selected animal is the deleted animal, unset the selected animal
         if (checkboxSelectedIds.some((id) => id == selectedAnimal?.survey_critter_id)) {
-          setSelectedAnimal(null);
+          setSelectedAnimal();
         }
 
         setCheckboxSelectedIds([]);
@@ -167,7 +166,7 @@ const SurveyAnimalList = () => {
         }
         // If the selected animal is the deleted animal, unset the selected animal
         if (selectedCritterMenu?.survey_critter_id == selectedAnimal?.survey_critter_id) {
-          setSelectedAnimal(null);
+          setSelectedAnimal();
         }
       }
     });
@@ -279,7 +278,7 @@ const SurveyAnimalList = () => {
         sx={{
           overflow: 'hidden'
         }}>
-        <SurveyAnimalListToolbar
+        <AnimalListToolbar
           handleHeaderMenuClick={handleHeaderMenuClick}
           animalCount={critters.length}
           checkboxSelectedIdsLength={checkboxSelectedIds.length}
@@ -388,5 +387,3 @@ const SurveyAnimalList = () => {
     </>
   );
 };
-
-export default SurveyAnimalList;

@@ -5,11 +5,11 @@ import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
-import CreateAnimalPage from './create/CreateAnimalPage';
-import EditAnimalPage from './edit/EditAnimalPage';
+import CreateAnimalPage from './animal-form/create/CreateAnimalPage';
+import EditAnimalPage from './animal-form/edit/EditAnimalPage';
+import SurveyAnimalPage from './AnimalPage';
 import CreateCapturePage from './profile/captures/create/CreateCapturePage';
 import EditCapturePage from './profile/captures/edit/EditCapturePage';
-import SurveyAnimalPage from './SurveyAnimalPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/animals/*` pages.

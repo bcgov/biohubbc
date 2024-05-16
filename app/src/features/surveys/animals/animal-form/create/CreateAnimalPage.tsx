@@ -9,7 +9,7 @@ import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { CreateAnimalI18N } from 'constants/i18n';
-import { AnimalFormContainer } from 'features/surveys/animals/components/AnimalFormContainer';
+import { AnimalFormContainer } from 'features/surveys/animals/animal-form/components/AnimalFormContainer';
 import { AnimalSex } from 'features/surveys/view/survey-animals/animal';
 import { FormikProps } from 'formik';
 import * as History from 'history';

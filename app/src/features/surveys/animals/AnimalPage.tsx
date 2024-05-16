@@ -4,9 +4,9 @@ import Box from '@mui/system/Box';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import SurveyAnimalList from './list/SurveyAnimalList';
-import { AnimalProfile } from './profile/AnimalProfile';
-import { SurveyAnimalHeader } from './SurveyAnimalHeader';
+import { SurveyAnimalHeader } from './AnimalHeader';
+import { AnimalListContainer } from './list/AnimalListContainer';
+import { AnimalProfileContainer } from './profile/AnimalProfileContainer';
 
 /**
  * Returns the page for managing Animals
@@ -65,12 +65,12 @@ const SurveyAnimalPage = () => {
           mr: 1
         }}>
         <Box minWidth="400px" maxWidth="30%">
-          <SurveyAnimalList />
+          <AnimalListContainer />
         </Box>
 
         {selectedAnimal && (
           <Box maxWidth="75%" flex="1 1 auto" height="100%">
-            <AnimalProfile />
+            <AnimalProfileContainer />
           </Box>
         )}
       </Stack>
