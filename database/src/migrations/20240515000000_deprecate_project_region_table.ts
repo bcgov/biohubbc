@@ -9,8 +9,8 @@ import { Knex } from 'knex';
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`--sql
-    DROP VIEW biohub_dapi_v1.project_region;
-    DROP TABLE biohub.project_region;
+    DROP VIEW IF EXISTS biohub_dapi_v1.project_region;
+    DROP TABLE IF EXISTS biohub.project_region;
   `);
 }
 

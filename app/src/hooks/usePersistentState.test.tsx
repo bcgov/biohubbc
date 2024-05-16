@@ -27,7 +27,7 @@ describe('usePersistentState', () => {
     it('when local storage value exists return stored value', () => {
       lsGetItemMock.mockReturnValue('STORAGE');
 
-      const { result } = renderHook(() => usePersistentState(KEY, VALUE));
+      const { result } = renderHook(() => usePersistentState(KEY, 'STORAGE'));
       const [value] = result.current;
 
       expect(value).toBe('STORAGE');
@@ -36,7 +36,7 @@ describe('usePersistentState', () => {
     it('handles objects', () => {
       lsGetItemMock.mockReturnValue({ hello: 'world' });
 
-      const { result } = renderHook(() => usePersistentState(KEY, VALUE));
+      const { result } = renderHook(() => usePersistentState(KEY, { hello: 'world' }));
       const [value] = result.current;
 
       expect(value).toStrictEqual({ hello: 'world' });
@@ -45,7 +45,7 @@ describe('usePersistentState', () => {
     it('handles 0', () => {
       lsGetItemMock.mockReturnValue(0);
 
-      const { result } = renderHook(() => usePersistentState(KEY, VALUE));
+      const { result } = renderHook(() => usePersistentState(KEY, 0));
       const [value] = result.current;
 
       expect(value).toBe(0);
@@ -54,7 +54,7 @@ describe('usePersistentState', () => {
     it('handles 1', () => {
       lsGetItemMock.mockReturnValue(1);
 
-      const { result } = renderHook(() => usePersistentState(KEY, VALUE));
+      const { result } = renderHook(() => usePersistentState(KEY, 1));
       const [value] = result.current;
 
       expect(value).toBe(1);
@@ -63,14 +63,33 @@ describe('usePersistentState', () => {
     it('handles arrays', () => {
       lsGetItemMock.mockReturnValue([0, 1]);
 
-      const { result } = renderHook(() => usePersistentState(KEY, VALUE));
+      const { result } = renderHook(() => usePersistentState(KEY, [0, 1]));
       const [value] = result.current;
 
       expect(value).toStrictEqual([0, 1]);
     });
+
+    it('handles undefined', () => {
+      lsGetItemMock.mockReturnValue(undefined);
+
+      const { result } = renderHook(() => usePersistentState(KEY, undefined));
+      const [value] = result.current;
+
+      expect(value).toStrictEqual(undefined);
+    });
+
+    it('handles null', () => {
+      lsGetItemMock.mockReturnValue(null);
+
+      const { result } = renderHook(() => usePersistentState(KEY, null));
+      const [value] = result.current;
+
+      expect(value).toStrictEqual(null);
+    });
   });
   describe('setValue', () => {
     it('also sets local storage', async () => {
+      lsGetItemMock.mockReturnValue(VALUE);
       const { result } = renderHook(() => usePersistentState(KEY, VALUE));
       const [value, setValue] = result.current;
 
@@ -85,6 +104,7 @@ describe('usePersistentState', () => {
     });
 
     it('sanity checking it works with objects', async () => {
+      lsGetItemMock.mockReturnValue(VALUE);
       const { result } = renderHook(() => usePersistentState(KEY, VALUE));
       const [value, setValue] = result.current;
 
