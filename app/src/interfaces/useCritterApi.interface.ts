@@ -12,12 +12,13 @@ export interface ICreateEditAnimalRequest {
 }
 
 export interface IMarkingPostData {
+  marking_id?: string;
   marking_type_id: string;
   taxon_marking_body_location_id: string;
   identifier: string | number | null;
   primary_colour_id: string | null;
   secondary_colour_id: string | null;
-  comment: string;
+  comment: string | null;
 }
 
 export interface IQualitativeMeasurementPostData {

@@ -198,10 +198,11 @@ const CreateCapturePage = () => {
       });
 
       const bulkResponse = await critterbaseApi.critters.bulkCreate({
-        marking: values.markings.map((marking) => ({
+        markings: values.markings.map((marking) => ({
           ...marking,
           marking_id: undefined,
-          critter_id: critterbaseCritterId
+          critter_id: critterbaseCritterId,
+          capture_id: captureResponse.capture_id
         }))
         // measurements: [
         //   ...(values.measurements?.qualitative || []).map((measurement) => ({

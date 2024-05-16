@@ -1,8 +1,11 @@
 import { AxiosInstance } from 'axios';
 import { ICreateCritterMarking } from 'features/surveys/view/survey-animals/animal';
 import { IMarkingResponse } from 'interfaces/useCritterApi.interface';
-import { IMarkingBodyLocationResponse, IMarkingTypeResponse } from 'interfaces/useMarkingApi.interface';
-import { ICbSelectRows } from './useLookupApi';
+import {
+  IMarkingBodyLocationResponse,
+  IMarkingColourOption,
+  IMarkingTypeResponse
+} from 'interfaces/useMarkingApi.interface';
 
 const useMarkingApi = (axios: AxiosInstance) => {
   /**
@@ -32,12 +35,11 @@ const useMarkingApi = (axios: AxiosInstance) => {
    * Get possible marking colour options
    *
    * @async
-   * @returns {Promise<ICbSelectRows[]>} - The created marking.
+   * @returns {Promise<IMarkingColourOption[]>} - The created marking.
    */
-  const getMarkingColourOptions = async (): Promise<ICbSelectRows[]> => {
-    const { data } = await axios.get('api/critterbase/lookups/colours', {
-      params: { format: 'asSelect' }
-    });
+  const getMarkingColourOptions = async (): Promise<IMarkingColourOption[]> => {
+    const { data } = await axios.get('api/critterbase/lookups/colours');
+    console.log(data);
     return data;
   };
 

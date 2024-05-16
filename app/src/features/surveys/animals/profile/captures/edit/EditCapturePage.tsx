@@ -45,12 +45,18 @@ const EditCapturePage = () => {
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
-  const animalPageContext = useAnimalPageContext();
+  const { critterDataLoader, selectedAnimal, setSelectedAnimalFromSurveyCritterId } = useAnimalPageContext();
 
   const captureDataLoader = useDataLoader(() => critterbaseApi.capture.getCapture(captureId));
 
   if (!captureDataLoader.data) {
     captureDataLoader.load();
+  }
+
+  // If the user has refreshed the page and cleared the context, or come to this page externally from a link,
+  // use the url params to set the select animal in the context. The context then requests critter data from critterbase.
+  if (!selectedAnimal) {
+    setSelectedAnimalFromSurveyCritterId(surveyCritterId);
   }
 
   const capture = captureDataLoader.data;
@@ -59,49 +65,7 @@ const EditCapturePage = () => {
     return <CircularProgress size={40} className="pageProgress" />;
   }
 
-  const [captureDate, captureTimeTz] = capture.capture_timestamp.split('T');
-  const [captureTime, captureTimeOffset] = captureTimeTz.split('-');
-
-  const initialFormikValues: ICreateCaptureRequest = {
-    capture: {
-      capture_id: capture.capture_id,
-      capture_comment: capture.capture_comment ?? '',
-      capture_timestamp: capture.capture_timestamp,
-      capture_date: captureDate,
-      capture_time: captureTime + captureTimeOffset,
-      capture_location: {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [capture.capture_location.longitude, capture.capture_location.latitude]
-        },
-        properties: {}
-      },
-      release_location: {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [capture.release_location?.longitude ?? 0, capture.release_location?.latitude ?? 0]
-        },
-        properties: {}
-      },
-      release_timestamp: capture.release_timestamp ?? '',
-      release_comment: capture.release_comment ?? ''
-    },
-    markings: [],
-    measurements: {
-      quantitative: [],
-      qualitative: []
-    }
-  };
-
   const { projectId, surveyId } = surveyContext;
-
-  // If the user has refreshed the page and cleared the context, or come to this page externally from a link,
-  // use the url params to set the select animal in the context. The context then requests critter data from critterbase.
-  if (!animalPageContext.selectedAnimal) {
-    animalPageContext.setSelectedAnimalFromSurveyCritterId(surveyCritterId);
-  }
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
@@ -175,7 +139,7 @@ const EditCapturePage = () => {
     setEnableCancelCheck(false);
 
     try {
-      const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
+      const critterbaseCritterId = selectedAnimal?.critterbase_critter_id;
       if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
         return;
       }
@@ -216,15 +180,25 @@ const EditCapturePage = () => {
             }`
       ).toDate();
 
-      const response = await critterbaseApi.capture.updateCapture({
-        capture_id: values.capture.capture_id,
-        capture_timestamp: captureTimestamp,
-        release_timestamp: releaseTimestamp,
-        capture_comment: values.capture.capture_comment ?? '',
-        release_comment: values.capture.release_comment ?? '',
-        capture_location: captureLocation,
-        release_location: releaseLocation ?? captureLocation,
-        critter_id: critterbaseCritterId
+      const response = await critterbaseApi.critters.bulkUpdate({
+        markings: values.markings.map((marking) => ({
+          ...marking,
+          marking_id: marking.marking_id,
+          critter_id: critterbaseCritterId,
+          capture_id: values.capture.capture_id
+        })),
+        captures: [
+          {
+            capture_id: values.capture.capture_id,
+            capture_timestamp: captureTimestamp,
+            release_timestamp: releaseTimestamp,
+            capture_comment: values.capture.capture_comment ?? '',
+            release_comment: values.capture.release_comment ?? '',
+            capture_location: captureLocation,
+            release_location: releaseLocation ?? captureLocation,
+            critter_id: critterbaseCritterId
+          }
+        ]
       });
 
       if (!response) {
@@ -237,7 +211,7 @@ const EditCapturePage = () => {
       setEnableCancelCheck(false);
 
       // Refresh page
-      animalPageContext.critterDataLoader.refresh(critterbaseCritterId);
+      critterDataLoader.refresh(critterbaseCritterId);
 
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
     } catch (error) {
@@ -252,7 +226,55 @@ const EditCapturePage = () => {
     }
   };
 
-  const animalId = animalPageContext.critterDataLoader.data?.animal_id;
+  const animalId = critterDataLoader.data?.animal_id;
+
+  const [captureDate, captureTimeTz] = capture.capture_timestamp.split('T');
+  const [captureTime, captureTimeOffset] = captureTimeTz.split('-');
+
+  const initialFormikValues: ICreateCaptureRequest = {
+    capture: {
+      capture_id: capture.capture_id,
+      capture_comment: capture.capture_comment ?? '',
+      capture_timestamp: capture.capture_timestamp,
+      capture_date: captureDate,
+      capture_time: captureTime + captureTimeOffset,
+      capture_location: {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [capture.capture_location.longitude, capture.capture_location.latitude]
+        },
+        properties: {}
+      },
+      release_location: {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [capture.release_location?.longitude ?? 0, capture.release_location?.latitude ?? 0]
+        },
+        properties: {}
+      },
+      release_timestamp: capture.release_timestamp ?? '',
+      release_comment: capture.release_comment ?? ''
+    },
+    markings:
+      critterDataLoader.data?.markings
+        .filter((marking) => marking.capture_id === capture.capture_id)
+        .map((marking) => ({
+          marking_id: marking.marking_id,
+          identifier: marking.identifier,
+          comment: marking.comment,
+          capture_id: marking.capture_id,
+          taxon_marking_body_location_id: marking.taxon_marking_body_location_id,
+          marking_type_id: marking.marking_type_id,
+          primary_colour_id: marking.primary_colour_id,
+          secondary_colour_id: marking.secondary_colour_id
+        })) ?? [],
+    measurements: {
+      quantitative: [],
+      qualitative: []
+    }
+  };
 
   return (
     <>

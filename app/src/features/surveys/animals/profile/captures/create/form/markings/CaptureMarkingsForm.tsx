@@ -1,20 +1,21 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Button from '@mui/material/Button';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu, { MenuProps } from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import { Stack } from '@mui/system';
-import EditDialog from 'components/dialog/EditDialog';
-import AutocompleteField from 'components/fields/AutocompleteField';
-import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import { useAnimalPageContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ICreateCaptureRequest, IMarkingPostData } from 'interfaces/useCritterApi.interface';
+import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useState } from 'react';
-import yup from 'utils/YupSchema';
-
 import { TransitionGroup } from 'react-transition-group';
+import CaptureMarkingsDialog from './CaptureMarkingsDialog';
 import MarkingCard from './MarkingCard';
+
 /**
  * Returns the control for applying markings to an animal on the animal capture form
  *
@@ -22,11 +23,14 @@ import MarkingCard from './MarkingCard';
  */
 const CaptureMarkingsForm = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+  const [selectedMarking, setSelectedMarking] = useState<number>();
+  const [markingAnchorEl, setMarkingAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  const { values, setFieldValue } = useFormikContext<ICreateCaptureRequest>();
+
   const critterbaseApi = useCritterbaseApi();
 
   const { critterDataLoader } = useAnimalPageContext();
-
-  const { values, setFieldValue } = useFormikContext<ICreateCaptureRequest>();
 
   // Get available marking types
   const markingTypesDataLoader = useDataLoader(() => critterbaseApi.marking.getMarkingTypeOptions());
@@ -60,124 +64,94 @@ const CaptureMarkingsForm = () => {
     }
   }, [markingBodyLocationDataLoader.data, critterDataLoader.data]);
 
-  const handleSave = (data: IMarkingPostData) => {
-    setFieldValue(`markings.[${values.markings.length}]`, data);
-    setIsDialogOpen(false);
-  };
-
-  const handleClose = () => {
-    setIsDialogOpen(false);
-  };
-
   return (
     <>
-      <EditDialog
-        dialogTitle={'Add Marking'}
-        open={isDialogOpen}
-        onCancel={handleClose}
-        onSave={handleSave}
-        size="md"
-        // dialogLoading={loading}
-        component={{
-          initialValues: {
-            marking_type_id: '',
-            taxon_marking_body_location_id: '',
-            identifier: '',
-            primary_colour_id: '',
-            secondary_colour_id: null,
-            comment: ''
-          },
-          validationSchema: yup.object({ marking_id: yup.string().optional() }),
-          element: (
-            <Stack gap={2}>
-              <AutocompleteField
-                id="marking-type-autocomplete-field"
-                label="Marking type"
-                loading={markingTypesDataLoader.isLoading}
-                name={`marking_type_id`}
-                required
-                options={
-                  markingTypesDataLoader.data?.map((item) => ({
-                    value: item.marking_type_id,
-                    label: item.name
-                  })) ?? []
-                }
-              />
+      {/* CONTEXT MENU ACTIONS ON MARKING */}
+      {selectedMarking !== null && (
+        <Menu
+          sx={{ pb: 2 }}
+          open={Boolean(markingAnchorEl)}
+          onClose={() => setMarkingAnchorEl(null)}
+          anchorEl={markingAnchorEl}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right'
+          }}>
+          <MenuItem
+            onClick={() => {
+              setMarkingAnchorEl(null);
+              setIsDialogOpen(true);
+            }}>
+            <ListItemIcon>
+              <Icon path={mdiPencilOutline} size={1} />
+            </ListItemIcon>
+            <ListItemText>Edit</ListItemText>
+          </MenuItem>
+          <MenuItem
+            onClick={() => {
+              setMarkingAnchorEl(null);
+              setFieldValue(
+                'markings',
+                values.markings.filter((_, index) => index !== selectedMarking)
+              );
+            }}>
+            <ListItemIcon>
+              <Icon path={mdiTrashCanOutline} size={1} />
+            </ListItemIcon>
+            <ListItemText>Delete</ListItemText>
+          </MenuItem>
+        </Menu>
+      )}
 
-              <AutocompleteField
-                id="marking-location-autocomplete-field"
-                label="Marking placement"
-                name={`taxon_marking_body_location_id`}
-                required
-                loading={markingBodyLocationDataLoader.isLoading}
-                options={
-                  markingBodyLocationDataLoader.data?.map((item) => ({
-                    value: item.taxon_marking_body_location_id,
-                    label: item.body_location
-                  })) ?? []
-                }
-              />
-              <CustomTextField
-                name={`identifier`}
-                aria-label="Unique marking ID"
-                label="Identifier"
-                other={{ rows: 1, autoComplete: 'off' }}
-              />
-              <AutocompleteField
-                id="marking-primary-colour-autocomplete-field"
-                label="Primary colour"
-                name={`primary_colour_id`}
-                loading={markingColoursDataLoader.isLoading}
-                options={markingColoursDataLoader.data?.map((item) => ({ value: item.id, label: item.value })) ?? []}
-              />
-              <AutocompleteField
-                id="marking-secondary-colour-autocomplete-field"
-                label="Secondary colour"
-                name={`secondary_colour_id`}
-                loading={markingColoursDataLoader.isLoading}
-                options={markingColoursDataLoader.data?.map((item) => ({ value: item.id, label: item.value })) ?? []}
-              />
-              <CustomTextField name={`comment`} label="Comment" other={{ multiline: true, rows: 4 }} />
-            </Stack>
-          )
+      {/* ADD/EDIT MARKING DIALOG */}
+      <CaptureMarkingsDialog
+        initialValues={selectedMarking ? values.markings[selectedMarking] : undefined}
+        markingBodyLocations={markingBodyLocationDataLoader.data ?? []}
+        markingColours={markingColoursDataLoader.data ?? []}
+        markingTypes={markingTypesDataLoader.data ?? []}
+        isDialogOpen={Boolean(isDialogOpen)}
+        handleSave={(data) => {
+          setFieldValue(`markings.[${selectedMarking ?? values.markings.length}]`, data);
+          setIsDialogOpen(false);
+        }}
+        handleClose={() => {
+          setIsDialogOpen(false);
         }}
       />
+
+      {/* MARKING CARDS */}
       <Stack gap={3}>
         <TransitionGroup>
-          {values.markings.map((marking) => {
-            console.log(markingBodyLocationDataLoader.data);
-            console.log(marking.taxon_marking_body_location_id)
-            console.log(
-              markingBodyLocationDataLoader.data?.find(
-                (body_location) =>
-                  body_location.taxon_marking_body_location_id == marking.taxon_marking_body_location_id
-              )
-            );
-
-            return (
-              <MarkingCard
-                key={`${marking.taxon_marking_body_location_id}-${marking.marking_type_id}`}
-                identifier={marking.identifier}
-                comment={marking.comment}
-                primary_colour_label={
-                  markingColoursDataLoader.data?.find((colour) => colour.id == marking.primary_colour_id)?.value
-                }
-                secondary_colour_label={
-                  markingColoursDataLoader.data?.find((colour) => colour.id == marking.secondary_colour_id)?.value
-                }
-                marking_type_label={
-                  markingTypesDataLoader.data?.find((type) => type.marking_type_id == marking.marking_type_id)?.name ??
-                  ''
-                }
-                marking_body_location_label={
-                  markingBodyLocationDataLoader.data?.find(
-                    (body_location) =>
-                      body_location.taxon_marking_body_location_id == marking.taxon_marking_body_location_id
-                  )?.body_location ?? ''
-                }
-              />
-            );
-          })}
+          {values.markings.map((marking, index) => (
+            <MarkingCard
+              key={`${marking.taxon_marking_body_location_id}-${marking.marking_type_id}-${index}`}
+              identifier={marking.identifier}
+              comment={marking.comment}
+              primary_colour_label={
+                markingColoursDataLoader.data?.find((colour) => colour.colour_id == marking.primary_colour_id)?.colour
+              }
+              secondary_colour_label={
+                markingColoursDataLoader.data?.find((colour) => colour.colour_id == marking.secondary_colour_id)?.colour
+              }
+              marking_type_label={
+                markingTypesDataLoader.data?.find((type) => type.marking_type_id == marking.marking_type_id)?.name ?? ''
+              }
+              marking_body_location_label={
+                markingBodyLocationDataLoader.data?.find(
+                  (body_location) =>
+                    body_location.taxon_marking_body_location_id == marking.taxon_marking_body_location_id
+                )?.body_location ?? ''
+              }
+              handleMarkingMenuClick={(event) => {
+                setMarkingAnchorEl(event.currentTarget);
+                setSelectedMarking(index);
+              }}
+            />
+          ))}
         </TransitionGroup>
       </Stack>
       <Button
