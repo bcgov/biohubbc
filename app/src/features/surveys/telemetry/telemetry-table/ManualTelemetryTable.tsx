@@ -27,7 +27,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
   // Check if table row is 'Manual' telemetry - Only manual telemetry records can be mutated
   const isManualTelemetry = (row: IManualTelemetryTableRow) => row.telemetry_type === 'MANUAL';
 
-  // Disable the delete action when record is 'Manual' telemetry
+  // Disable the delete action when record is 'Manual' telemetry or saving
   const actionsDisabled = (params: GridRowParams<IManualTelemetryTableRow>) =>
     telemetryTableContext.isSaving || !isManualTelemetry(params.row);
 
@@ -55,6 +55,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       rowSelectionModel={telemetryTableContext.rowSelectionModel}
       onRowSelectionModelChange={telemetryTableContext.onRowSelectionModelChange}
       columnVisibilityModel={telemetryTableContext.columnVisibilityModel}
+      onRowEditStart={(params) => telemetryTableContext.onRowEditStart(params.id)}
       // Select rows
       checkboxSelection
       disableRowSelectionOnClick

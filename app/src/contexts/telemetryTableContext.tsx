@@ -17,17 +17,7 @@ import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { usePersistentState } from 'hooks/usePersistentState';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import {
-  createContext,
-  PropsWithChildren,
-  useCallback,
-  useContext,
-  useDeferredValue,
-  useEffect,
-  useMemo,
-  useRef,
-  useState
-} from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { TelemetryDataContext } from './telemetryDataContext';
@@ -144,6 +134,10 @@ export type ITelemetryTableContext = {
    * Toggle columns visibility - no config will toggle all columns
    */
   toggleColumnsVisibility: (config?: { columns: string[] }) => void;
+  /**
+   * Callback fired when row goes into edit mode.
+   */
+  onRowEditStart: (id: GridRowId) => void;
 };
 
 export const TelemetryTableContext = createContext<ITelemetryTableContext | undefined>(undefined);
@@ -196,7 +190,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   const isLoading = telemetryDataContext.telemetryDataLoader.isLoading;
 
   // True if table has unsaved changes, deferring value to prevent ui issue with controls rendering
-  const hasUnsavedChanges = useDeferredValue(_modifiedRowIds.current.length > 0 || _stagedRowIds.current.length > 0);
+  const hasUnsavedChanges = _modifiedRowIds.current.length > 0 || _stagedRowIds.current.length > 0;
 
   // Columns hidden from table view
   const hiddenColumns = useMemo(() => {
@@ -312,8 +306,8 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
    */
   const _updateRowsMode = useCallback(
     (rowIds: string[], mode: GridRowModes, keepChanges: boolean) => {
-      setRowModesModel(() => {
-        const newModel: GridRowModesModel = {};
+      setRowModesModel((prevModel) => {
+        const newModel: GridRowModesModel = { ...prevModel };
         for (const id of rowIds) {
           newModel[id] = { mode, ignoreModifications: !keepChanges };
         }
@@ -338,6 +332,16 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     },
     [validationModel]
   );
+
+  /**
+   * Puts the specified row into edit mode, and adds the row id to the array of modified rows.
+   *
+   * @param {GridRowId} id
+   */
+  const onRowEditStart = useCallback((id: GridRowId) => {
+    // Add row to modified rows array
+    _modifiedRowIds.current = Array.from(new Set([..._modifiedRowIds.current, String(id)]));
+  }, []);
 
   /**
    * Refresh the telemetry records and pre-parse to table date format
@@ -431,16 +435,17 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
 
       try {
         if (modifiedRowIdsToDelete.length) {
-          await telemetryApi.deleteManualTelemetry(modifiedRowIdsToDelete);
+          await telemetryApi.deleteManualTelemetry(_modifiedRowIds.current);
         }
 
         // Remove row IDs from validation model
-        setValidationModel((prevValidationModel) =>
-          allRowIdsToDelete.reduce((newValidationModel, rowId) => {
-            delete newValidationModel[rowId];
-            return newValidationModel;
-          }, prevValidationModel)
-        );
+        setValidationModel((prevValidationModel) => {
+          const newValidationModel = { ...prevValidationModel };
+          for (const id of allRowIdsToDelete) {
+            delete newValidationModel[id];
+          }
+          return newValidationModel;
+        });
 
         // Update all rows, removing deleted rows
         setRows((current) => current.filter((item) => !allRowIdsToDelete.includes(String(item.id))));
@@ -563,6 +568,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
 
     // Set edit mode for the new row
     _updateRowsMode([id], GridRowModes.Edit, false);
+
   }, [rows, _updateRowsMode]);
 
   /**
@@ -571,14 +577,14 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
    * @returns {void}
    */
   const revertRecords = useCallback(() => {
-    // Revert any current edits
-    _updateRowsMode(_modifiedRowIds.current, GridRowModes.View, false);
-
     // Remove any rows that are newly created
     setRows(rows.filter((row) => !_stagedRowIds.current.includes(String(row.id))));
 
     // Clear the validation from the table
     setValidationModel({});
+
+    // Revert any current edits
+    _updateRowsMode(_modifiedRowIds.current, GridRowModes.View, false);
 
     // Reset the refs
     _modifiedRowIds.current = [];
@@ -715,7 +721,8 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       validationModel,
       recordCount,
       toggleColumnsVisibility,
-      hiddenColumns
+      hiddenColumns,
+      onRowEditStart
     }),
     [
       _muiDataGridApiRef,
@@ -737,7 +744,8 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       columnVisibilityModel,
       setColumnVisibilityModel,
       toggleColumnsVisibility,
-      hiddenColumns
+      hiddenColumns,
+      onRowEditStart
     ]
   );
 

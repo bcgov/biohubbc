@@ -24,7 +24,7 @@ import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { useContext, useState } from 'react';
+import { useContext, useDeferredValue, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
 import ManualTelemetryTable from './ManualTelemetryTable';
 
@@ -40,6 +40,8 @@ const ManualTelemetryTableContainer = () => {
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState(false);
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState<Element | null>(null);
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
+
+  const deferredUnsavedChanges = useDeferredValue(telemetryTableContext.hasUnsavedChanges);
 
   const numSelectedRows = telemetryTableContext.rowSelectionModel.length;
 
@@ -145,7 +147,7 @@ const ManualTelemetryTableContainer = () => {
               disabled={telemetryTableContext.isSaving}>
               Add Record
             </Button>
-            <Collapse in={telemetryTableContext.hasUnsavedChanges} orientation="horizontal">
+            <Collapse in={deferredUnsavedChanges} orientation="horizontal">
               <Stack flexDirection="row" whiteSpace="nowrap" gap={1}>
                 <LoadingButton
                   loading={telemetryTableContext.isSaving}
