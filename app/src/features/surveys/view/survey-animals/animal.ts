@@ -231,7 +231,7 @@ export type IBulkCreate = {
   measurements?: ICreateCritterMeasurement[];
   capture?: ICreateCritterCapture[];
   mortality?: ICreateCritterMortality;
-  marking?: ICreateCritterMarking[];
+  markings?: ICreateCritterMarking[];
   collections?: ICreateCritterCollectionUnit[];
 };
 
@@ -241,8 +241,8 @@ export type IBulkCreate = {
 export type IBulkUpdate = {
   critter?: ICritterSimpleResponse;
   measurements?: ICreateCritterMeasurement[];
-  capture?: ICreateCritterCapture[];
+  captures?: ICreateCritterCapture[];
   mortality?: ICreateCritterMortality;
-  marking?: ICreateCritterMarking[];
+  markings?: ICreateCritterMarking[];
   collections?: ICreateCritterCollectionUnit[];
 };

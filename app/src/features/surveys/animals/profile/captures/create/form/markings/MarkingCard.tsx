@@ -1,16 +1,20 @@
+import { mdiDotsVertical } from '@mdi/js';
+import { Icon } from '@mdi/react';
+import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
+import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 interface IMarkingCardProps {
   primary_colour_label?: string;
   secondary_colour_label?: string;
-  identifier?: string | number | null;
-  comment?: string;
+  identifier: string | number | null;
+  comment: string | null;
   marking_type_label: string;
   marking_body_location_label: string;
+  handleMarkingMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 /**
@@ -25,31 +29,71 @@ const MarkingCard = (props: IMarkingCardProps) => {
     comment,
     identifier,
     marking_body_location_label,
-    marking_type_label
+    marking_type_label,
+    handleMarkingMenuClick
   } = props;
 
   return (
-    <Collapse in>
-      <Card sx={{ px: 3, py: 2, mb: 2, bgcolor: grey[100] }}>
-        <Stack spacing={1} direction="row" alignItems='center'>
-          <Typography fontWeight={700}>{identifier}</Typography>
-          <Typography color="textSecondary" variant='body2'>
-            {marking_type_label} on {marking_body_location_label}
+    <Stack component={Card} sx={{ px: 3, py: 2, mb: 2, bgcolor: grey[100] }} flex="1 1 auto" spacing={1}>
+      <Box justifyContent="space-between" display="flex" m={0} p={0} position="relative">
+        <Typography fontWeight={700}>{identifier}</Typography>
+        <IconButton
+          edge="end"
+          onClick={handleMarkingMenuClick}
+          aria-label="marking-card"
+          sx={{ position: 'absolute', right: '0' }}>
+          <Icon path={mdiDotsVertical} size={1}></Icon>
+        </IconButton>
+      </Box>
+      <Stack direction="row" spacing={2} m={0}>
+        <Box>
+          <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
+            Type
           </Typography>
-        </Stack>
-        <Stack
-          spacing={1}
-          direction="row"
-          justifyContent="start"
-          sx={{ '& .MuiTypography-root': { fontSize: '0.9rem' } }}>
-          <Typography color="textSecondary">{primary_colour_label}</Typography>
-          <Typography color="textSecondary">{secondary_colour_label}</Typography>
-        </Stack>
-        <Typography sx={{ fontSize: '0.9rem' }} color="textSecondary">
-          {comment}
-        </Typography>
-      </Card>
-    </Collapse>
+          <Typography component="dd" variant="body2">
+            {marking_type_label}
+          </Typography>
+        </Box>
+        <Box>
+          <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
+            Position
+          </Typography>
+          <Typography component="dd" variant="body2">
+            {marking_body_location_label}
+          </Typography>
+        </Box>
+        {primary_colour_label && (
+          <Box>
+            <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
+              Primary colour
+            </Typography>
+            <Typography component="dd" variant="body2">
+              {primary_colour_label}
+            </Typography>
+          </Box>
+        )}
+        {secondary_colour_label && (
+          <Box>
+            <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
+              Secondary colour
+            </Typography>
+            <Typography component="dd" variant="body2">
+              {secondary_colour_label}
+            </Typography>
+          </Box>
+        )}
+      </Stack>
+      {comment && (
+        <Box>
+          <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
+            Comment
+          </Typography>
+          <Typography component="dd" variant="body2" sx={{ whiteSpace: 'normal', overflowWrap: 'break-word' }}>
+            {comment}
+          </Typography>
+        </Box>
+      )}
+    </Stack>
   );
 };
 

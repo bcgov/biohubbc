@@ -19,12 +19,8 @@ export const AnimalCaptureContainer = () => {
   const history = useHistory();
 
   const { projectId, surveyId } = useSurveyContext();
-  const animalPageContext = useAnimalPageContext();
 
-  const handleDelete = async (selectedCapture: string, critterbase_critter_id: string) => {
-    await critterbaseApi.capture.deleteCapture(selectedCapture);
-    animalPageContext.critterDataLoader.refresh(critterbase_critter_id);
-  };
+  const animalPageContext = useAnimalPageContext();
 
   if (!animalPageContext.selectedAnimal || !animalPageContext.critterDataLoader.data) {
     return (
@@ -40,6 +36,25 @@ export const AnimalCaptureContainer = () => {
 
   const captures = animalPageContext.critterDataLoader.data.captures;
   const selectedAnimal = animalPageContext.selectedAnimal;
+
+  const handleDelete = async (selectedCapture: string, critterbase_critter_id: string) => {
+    // Find markings associated with the capture and delete those
+    await critterbaseApi.critters.bulkUpdate({
+      markings: animalPageContext.critterDataLoader.data?.markings
+        .filter((marking) => marking.capture_id === selectedCapture)
+        .map((marking) => ({
+          ...marking,
+          critter_id: selectedAnimal.critterbase_critter_id,
+          _delete: true
+        }))
+    });
+
+    // Delete the actual capture
+    await critterbaseApi.capture.deleteCapture(selectedCapture);
+
+    // Refresh capture container
+    animalPageContext.critterDataLoader.refresh(critterbase_critter_id);
+  };
 
   if (!selectedAnimal) {
     return null;
