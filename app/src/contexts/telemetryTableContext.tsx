@@ -67,7 +67,10 @@ export type ITelemetryTableContext = {
    * Reflects the total count of telemetry records for the survey
    */
   recordCount: number;
-
+  /**
+   * Columns hidden from table view
+   *
+   */
   hiddenColumns: string[];
   /**
    * Returns all columns belonging to the telemetry table
