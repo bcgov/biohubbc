@@ -91,14 +91,23 @@ export class RegionRepository extends BaseRepository {
    */
   async searchRegionsWithDetails(details: RegionDetails[]): Promise<IRegion[]> {
     const knex = getKnex();
-    const qb = knex.queryBuilder().select().from('region_lookup');
+    const qb = knex
+      .queryBuilder()
+      .select()
+      .from('region_lookup')
+      .whereIn(
+        'region_name',
+        details.map((detail) => detail.regionName)
+      );
 
-    for (const detail of details) {
-      qb.orWhere((qb1) => {
-        qb1.andWhereRaw("geojson::json->'properties'->>'REGION_NAME' = ?", detail.regionName);
-        qb1.andWhereRaw("geojson::json->'properties'->>'fme_feature_type' = ?", detail.sourceLayer);
-      });
-    }
+    // // TODO: does this need to search through the geoJson object? Or is looking at region_name enough?
+    //
+    // for (const detail of details) {
+    //   qb.orWhere((qb1) => {
+    //     qb1.andWhereRaw("geojson::json->'properties'->>'REGION_NAME' = ?", detail.regionName);
+    //     qb1.andWhereRaw("geojson::json->'properties'->>'fme_feature_type' = ?", detail.sourceLayer);
+    //   });
+    // }
 
     try {
       const response = await this.connection.knex<IRegion>(qb);
