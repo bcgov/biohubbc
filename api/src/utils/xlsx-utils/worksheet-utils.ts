@@ -210,7 +210,7 @@ export const validateWorksheetHeaders = (worksheet: xlsx.WorkSheet, columnValida
  *
  * @export
  * @param {xlsx.WorkSheet} worksheet
- * @param {string[]} rowValueTypes
+ * @param {IXLSXCSVValidator[]} columnValidator
  * @return {*}  {boolean}
  */
 export const validateWorksheetColumnTypes = (
@@ -225,10 +225,17 @@ export const validateWorksheetColumnTypes = (
       const value = row[index];
       const type = typeof value;
       if (rowValueTypes[index] === 'date') {
+        console.log('date');
         return dayjs(value).isValid();
       }
 
-      return rowValueTypes[index] === type;
+      if (rowValueTypes[index] === type) {
+        return true;
+      }
+
+      console.log(value);
+
+      return false;
     });
   });
 };
@@ -296,7 +303,8 @@ export const prepareWorksheetCells = (worksheet: xlsx.WorkSheet) => {
 /**
  * Validates the given CSV file against the given column validator
  *
- * @param {MediaFile} file
+ * @param {xlsx.WorkSheet} xlsxWorksheets
+ * @param {IXLSXCSVValidator} columnValidator
  * @return {*}  {boolean}
  * @memberof ObservationService
  */
