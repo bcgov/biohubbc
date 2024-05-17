@@ -18,7 +18,7 @@ import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { FormikContextType, useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
@@ -50,7 +50,7 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
 
   const { mapId } = props;
 
-  const { values, setFieldValue, setFieldError, errors } = useFormikContext<ICreateCaptureRequest>();
+  const { values, setFieldValue, setFieldError, errors } = useFormikContext<ICreateEditCaptureRequest>();
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 
@@ -90,13 +90,13 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
   return (
     <Grid item xs={12}>
       {get(errors, name) && !Array.isArray(get(errors, name)) && (
-        <Alert severity="error" variant="outlined">
+        <Alert severity="error" variant="outlined" sx={{ mb: 2 }}>
           <AlertTitle>Capture location missing</AlertTitle>
           {get(errors, name) as string}
         </Alert>
       )}
 
-      <Box component="fieldset" mt={2}>
+      <Box component="fieldset">
         <Paper variant="outlined">
           <ImportBoundaryDialog
             isOpen={isOpen}
@@ -197,7 +197,7 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
                     layers={[
                       {
                         layerName: 'Capture Location',
-                        features: get(values, name) ? [{ geoJSON: get(values, name), key: 1 }] : []
+                        features: get(values, name) ? [{ geoJSON: get(values, name), key: Math.random() }] : []
                       }
                     ]}
                   />

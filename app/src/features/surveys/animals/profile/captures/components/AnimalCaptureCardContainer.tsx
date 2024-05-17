@@ -1,4 +1,4 @@
-import { mdiChevronDown, mdiDotsVertical, mdiPencilOutline, mdiTrashCan } from '@mdi/js';
+import { mdiChevronDown, mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -91,7 +91,7 @@ const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
               setCaptureForDelete(true);
             }}>
             <ListItemIcon>
-              <Icon path={mdiTrashCan} size={1} />
+              <Icon path={mdiTrashCanOutline} size={1} />
             </ListItemIcon>
             <ListItemText>Delete</ListItemText>
           </MenuItem>

@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { Formik, FormikProps } from 'formik';
-import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import yup from 'utils/YupSchema';
 import CaptureGeneralInformationForm from './general-information/CaptureGeneralInformationForm';
 import CaptureLocationForm from './location/CaptureLocationForm';
@@ -12,9 +12,9 @@ import CaptureMarkingsForm from './markings/CaptureMarkingsForm';
 import CaptureMeasurementsForm from './measurements/CaptureMeasurementsForm';
 
 export interface IAnimalCaptureFormProps {
-  initialCaptureData: ICreateCaptureRequest;
-  handleSubmit: (formikData: ICreateCaptureRequest) => void;
-  formikRef: React.RefObject<FormikProps<ICreateCaptureRequest>>;
+  initialCaptureData: ICreateEditCaptureRequest;
+  handleSubmit: (formikData: ICreateEditCaptureRequest) => void;
+  formikRef: React.RefObject<FormikProps<ICreateEditCaptureRequest>>;
 }
 
 /**
@@ -54,7 +54,7 @@ const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
         .min(1, 'Release location is required if it is different from the capture location')
         .nullable()
     }),
-    measurements: yup.object({ qualitative: yup.array(yup.object()), quantitative: yup.array(yup.object()) }),
+    measurements: yup.array(yup.object()),
     markings: yup.array(
       yup.object({
         marking_type_id: yup.string(),

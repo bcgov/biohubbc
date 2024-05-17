@@ -1,4 +1,4 @@
-import { ICreateCritterCollectionUnit } from 'features/surveys/view/survey-animals/animal';
+import { ICreateCritterCollectionUnit, ICreateCritterMeasurement } from 'features/surveys/view/survey-animals/animal';
 import { Feature } from 'geojson';
 import { ITaxonomy } from './useTaxonomyApi.interface';
 
@@ -12,6 +12,14 @@ export interface ICreateEditAnimalRequest {
 }
 
 export interface IMarkingPostData {
+  /**
+   * Internal id used to satisfy react key requirements. Not sent to the API
+   */
+  _id?: string;
+
+  /**
+   * Critterbase primary key for a marking attached to an animal
+   */
   marking_id?: string;
   marking_type_id: string;
   taxon_marking_body_location_id: string;
@@ -19,21 +27,6 @@ export interface IMarkingPostData {
   primary_colour_id: string | null;
   secondary_colour_id: string | null;
   comment: string | null;
-}
-
-export interface IQualitativeMeasurementPostData {
-  measurement_id: string;
-  value: string;
-}
-
-export interface IQuantitativeMeasurementPostData {
-  measurement_id: string;
-  value: number;
-}
-
-export interface IMeasurementPostData {
-  qualitative: CBQualitativeMeasurement[];
-  quantitative: CBQuantitativeMeasurement[];
 }
 
 export interface ICapturePostData {
@@ -58,10 +51,10 @@ export interface ILocationPostData {
   coordinate_uncertainty_unit: string;
 }
 
-export interface ICreateCaptureRequest {
+export interface ICreateEditCaptureRequest {
   capture: ICapturePostData;
   markings: IMarkingPostData[];
-  measurements?: IMeasurementPostData;
+  measurements: ICreateCritterMeasurement[];
 }
 
 export interface ICollectionCategory {
@@ -139,6 +132,26 @@ export type IMarkingResponse = {
   secondary_colour: string | null;
   text_colour: string | null;
   comment: string | null;
+};
+
+export type IQualitativeMeasurementUpdate = {
+  measurement_qualitative_id: string | null;
+  taxon_measurement_id: string;
+  capture_id: string | null;
+  mortality_id: string | null;
+  qualitative_option_id: string | null;
+  measurement_comment: string | null;
+  measured_timestamp: string | null;
+};
+
+export type IQuantitativeMeasurementUpdate = {
+  measurement_quantitative_id: string | null;
+  taxon_measurement_id: string;
+  capture_id: string | null;
+  mortality_id: string | null;
+  measurement_comment: string | null;
+  measured_timestamp: string | null;
+  value: number;
 };
 
 export type IQualitativeMeasurementResponse = {

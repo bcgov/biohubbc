@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { useFormikContext } from 'formik';
-import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import CaptureLocationMapControl from './CaptureLocationMapControl';
 
 /**
@@ -10,7 +10,7 @@ import CaptureLocationMapControl from './CaptureLocationMapControl';
  * @returns
  */
 const CaptureLocationForm = () => {
-  const formikProps = useFormikContext<ICreateCaptureRequest>();
+  const formikProps = useFormikContext<ICreateEditCaptureRequest>();
 
   return (
     <Box component="fieldset">

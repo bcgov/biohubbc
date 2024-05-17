@@ -16,13 +16,13 @@ import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import AnimalCaptureForm from './form/AnimalCaptureForm';
 
-export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
+export const defaultAnimalCaptureFormValues: ICreateEditCaptureRequest = {
   capture: {
     capture_id: '',
     capture_timestamp: '',
@@ -37,10 +37,7 @@ export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
     release_location: null
   },
   markings: [],
-  measurements: {
-    quantitative: [],
-    qualitative: []
-  }
+  measurements: []
 };
 
 /**
@@ -58,7 +55,7 @@ const CreateCapturePage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const history = useHistory();
 
-  const formikRef = useRef<FormikProps<ICreateCaptureRequest>>(null);
+  const formikRef = useRef<FormikProps<ICreateEditCaptureRequest>>(null);
 
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
@@ -140,7 +137,7 @@ const CreateCapturePage = () => {
    *
    * @return {*}
    */
-  const handleSubmit = async (values: ICreateCaptureRequest) => {
+  const handleSubmit = async (values: ICreateEditCaptureRequest) => {
     setIsSaving(true);
     setEnableCancelCheck(false);
 
@@ -201,21 +198,23 @@ const CreateCapturePage = () => {
         markings: values.markings.map((marking) => ({
           ...marking,
           marking_id: undefined,
+          capture_id: captureResponse.capture_id,
           critter_id: critterbaseCritterId,
-          capture_id: captureResponse.capture_id
-        }))
-        // measurements: [
-        //   ...(values.measurements?.qualitative || []).map((measurement) => ({
-        //     ...measurement,
-        //     measurement_qualitative_id: undefined,
-        //     critter_id: critterbaseCritterId
-        //   })),
-        //   ...(values.measurements?.quantitative || []).map((measurement) => ({
-        //     ...measurement,
-        //     measurement_quantitative_id: undefined,
-        //     critter_id: critterbaseCritterId
-        //   }))
-        // ]
+        })),
+        qualitative_measurements: values.measurements
+          .filter((measurement) => measurement.qualitative_option_id)
+          .map((measurement) => ({
+            ...measurement,
+            capture_id: captureResponse.capture_id,
+            critter_id: critterbaseCritterId
+          })),
+        quantitative_measurements: values.measurements
+          .filter((measurement) => measurement.value)
+          .map((measurement) => ({
+            ...measurement,
+            capture_id: captureResponse.capture_id,
+            critter_id: critterbaseCritterId
+          }))
       });
 
       if (!captureResponse || !bulkResponse) {
@@ -297,7 +296,7 @@ const CreateCapturePage = () => {
         <Paper sx={{ p: 5 }}>
           <AnimalCaptureForm
             initialCaptureData={defaultAnimalCaptureFormValues}
-            handleSubmit={(formikData) => handleSubmit(formikData as ICreateCaptureRequest)}
+            handleSubmit={(formikData) => handleSubmit(formikData as ICreateEditCaptureRequest)}
             formikRef={formikRef}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>

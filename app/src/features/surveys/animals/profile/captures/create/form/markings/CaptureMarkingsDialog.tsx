@@ -9,6 +9,8 @@ import {
   IMarkingTypeResponse
 } from 'interfaces/useMarkingApi.interface';
 import yup from 'utils/YupSchema';
+import { v4 } from 'uuid';
+
 
 interface ICaptureMarkingsDialogProps {
   initialValues?: IMarkingPostData;
@@ -33,11 +35,12 @@ const CaptureMarkingsDialog = (props: ICaptureMarkingsDialogProps) => {
       size="md"
       component={{
         initialValues: initialValues ?? {
+          _id: v4(),
           marking_type_id: '',
           taxon_marking_body_location_id: '',
           identifier: '',
           primary_colour_id: '',
-          secondary_colour_id: null,
+          secondary_colour_id: '',
           comment: ''
         },
         validationSchema: yup.object({ marking_id: yup.string().optional() }),

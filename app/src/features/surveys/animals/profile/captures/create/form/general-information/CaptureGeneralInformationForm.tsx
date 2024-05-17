@@ -5,7 +5,7 @@ import Box from '@mui/system/Box';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { useFormikContext } from 'formik';
-import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 
 /**
  * Returns the controls for general information fields relating to the capture on the animal capture form
@@ -13,7 +13,7 @@ import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
  * @returns
  */
 const CaptureGeneralInformationForm = () => {
-  const formikProps = useFormikContext<ICreateCaptureRequest>();
+  const formikProps = useFormikContext<ICreateEditCaptureRequest>();
 
   return (
     <>

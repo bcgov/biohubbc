@@ -43,7 +43,7 @@ const useCritterApi = (axios: AxiosInstance) => {
    * Update a critter with data.
    *
    * @async
-   * @param {ICreateCritter} payload - Update critter payload.
+   * @param {IBulkUpdate} payload - Update critter payload.
    * @returns {Promise<ICritterSimpleResponse>} Simple critterbase critter.
    */
   const bulkUpdate = async (payload: IBulkUpdate): Promise<ICritterSimpleResponse> => {

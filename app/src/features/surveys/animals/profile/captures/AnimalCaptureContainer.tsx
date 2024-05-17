@@ -38,7 +38,7 @@ export const AnimalCaptureContainer = () => {
   const selectedAnimal = animalPageContext.selectedAnimal;
 
   const handleDelete = async (selectedCapture: string, critterbase_critter_id: string) => {
-    // Find markings associated with the capture and delete those
+    // Delete markings and measurements associated with the capture to avoid foreign key constraint error
     await critterbaseApi.critters.bulkUpdate({
       markings: animalPageContext.critterDataLoader.data?.markings
         .filter((marking) => marking.capture_id === selectedCapture)
@@ -46,7 +46,34 @@ export const AnimalCaptureContainer = () => {
           ...marking,
           critter_id: selectedAnimal.critterbase_critter_id,
           _delete: true
-        }))
+        })),
+      qualitative_measurements:
+        animalPageContext.critterDataLoader.data?.measurements.qualitative
+          .filter((measurement) => measurement.capture_id === selectedCapture)
+          .map((measurement) => ({
+            ...measurement,
+            measurement_qualitative_id: measurement.measurement_qualitative_id,
+            measurement_quantitative_id: undefined,
+            measured_timestamp: undefined,
+            measurement_comment: undefined,
+            value: undefined,
+            critter_id: selectedAnimal.critterbase_critter_id,
+            _delete: true
+          })) ?? [],
+      quantitative_measurements:
+        animalPageContext.critterDataLoader.data?.measurements.quantitative
+          .filter((measurement) => measurement.capture_id === selectedCapture)
+          .map((measurement) => ({
+            ...measurement,
+            measurement_qualitative_id: undefined,
+            measurement_quantitative_id: measurement.measurement_quantitative_id,
+            measured_timestamp: undefined,
+            qualitative_option_id: undefined,
+            measurement_comment: undefined,
+            value: measurement.value,
+            critter_id: selectedAnimal.critterbase_critter_id,
+            _delete: true
+          })) ?? []
     });
 
     // Delete the actual capture

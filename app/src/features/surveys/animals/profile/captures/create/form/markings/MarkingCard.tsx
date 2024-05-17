@@ -34,9 +34,11 @@ const MarkingCard = (props: IMarkingCardProps) => {
   } = props;
 
   return (
-    <Stack component={Card} sx={{ px: 3, py: 2, mb: 2, bgcolor: grey[100] }} flex="1 1 auto" spacing={1}>
-      <Box justifyContent="space-between" display="flex" m={0} p={0} position="relative">
-        <Typography fontWeight={700}>{identifier}</Typography>
+    <Card sx={{ px: 3, py: 2, mb: 2, bgcolor: grey[100] }}>
+      <Box position="relative" display="flex">
+        <Typography component="dd" fontWeight={700} mb={0.5}>
+          {marking_type_label}
+        </Typography>
         <IconButton
           edge="end"
           onClick={handleMarkingMenuClick}
@@ -47,24 +49,26 @@ const MarkingCard = (props: IMarkingCardProps) => {
       </Box>
       <Stack direction="row" spacing={2} m={0}>
         <Box>
-          <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
-            Type
-          </Typography>
-          <Typography component="dd" variant="body2">
-            {marking_type_label}
-          </Typography>
-        </Box>
-        <Box>
-          <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
+          <Typography component="dt" variant="body2" color="textSecondary">
             Position
           </Typography>
           <Typography component="dd" variant="body2">
             {marking_body_location_label}
           </Typography>
         </Box>
+        {identifier && (
+          <Box>
+            <Typography component="dt" variant="body2" color="textSecondary">
+              Identifier
+            </Typography>
+            <Typography component="dd" variant="body2">
+              {identifier}
+            </Typography>
+          </Box>
+        )}
         {primary_colour_label && (
           <Box>
-            <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
+            <Typography component="dt" variant="body2" color="textSecondary">
               Primary colour
             </Typography>
             <Typography component="dd" variant="body2">
@@ -74,7 +78,7 @@ const MarkingCard = (props: IMarkingCardProps) => {
         )}
         {secondary_colour_label && (
           <Box>
-            <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
+            <Typography component="dt" variant="body2" color="textSecondary">
               Secondary colour
             </Typography>
             <Typography component="dd" variant="body2">
@@ -84,16 +88,15 @@ const MarkingCard = (props: IMarkingCardProps) => {
         )}
       </Stack>
       {comment && (
-        <Box>
-          <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
-            Comment
-          </Typography>
-          <Typography component="dd" variant="body2" sx={{ whiteSpace: 'normal', overflowWrap: 'break-word' }}>
-            {comment}
-          </Typography>
-        </Box>
+        <Typography
+          component="dd"
+          color="textSecondary"
+          variant="body2"
+          sx={{ whiteSpace: 'normal', overflowWrap: 'break-word', mt: 1 }}>
+          {comment}
+        </Typography>
       )}
-    </Stack>
+    </Card>
   );
 };
 

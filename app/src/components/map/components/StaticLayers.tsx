@@ -46,11 +46,14 @@ const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
     () =>
       props.layers
         .filter((layer) => Boolean(layer.features?.length))
-        .map((layer) => {
+        .map((layer, index) => {
           const layerColors = layer.layerColors || { color: '#1f7dff', fillColor: '#1f7dff' };
           return (
-            <LayersControl.Overlay checked={true} name={layer.layerName} key={`static-layer-${layer.layerName}`}>
-              <FeatureGroup key={`static-feature-group-${layer.layerName}`}>
+            <LayersControl.Overlay
+              checked={true}
+              name={layer.layerName}
+              key={`static-layer-${layer.layerName}-${index}`}>
+              <FeatureGroup key={`static-feature-group-${layer.layerName}-${index}`}>
                 {layer.features.map((item, index) => {
                   const id = item.key || item.geoJSON.id || index;
 
