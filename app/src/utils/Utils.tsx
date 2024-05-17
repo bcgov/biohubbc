@@ -4,6 +4,12 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
 import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import {
+  ICritterDetailedResponse,
+  IMarkingPostData,
+  IQualitativeMeasurementUpdate,
+  IQuantitativeMeasurementUpdate
+} from 'interfaces/useCritterApi.interface';
 import _ from 'lodash';
 import { IDialogContext } from '../contexts/dialogContext';
 
@@ -451,4 +457,169 @@ export const getRandomHexColor = (seed: number, min = 100, max = 170): string =>
   };
 
   return `#${randomChannel()}${randomChannel()}${randomChannel()}`;
+};
+/**
+ * Formats a location object into the required structure.
+ *
+ * @param {Feature} location - The location object to be formatted.
+ * @returns {Object} The formatted location object.
+ */
+export const formatLocation = (location: Feature) => {
+  if (location && location.geometry && location.geometry.type === 'Point')
+    return {
+      longitude: location.geometry.coordinates[0],
+      latitude: location.geometry.coordinates[1],
+      coordinate_uncertainty: 0,
+      coordinate_uncertainty_units: 'm'
+    };
+};
+
+/**
+ * Formats critter details for bulk update, including markings and measurements.
+ *
+ * @param {Object} critter - The critter object containing existing details.
+ * @param {IMarkingPostData[]} markings - Array of markings for the critter.
+ * @param {(IQuantitativeMeasurementUpdate | IQualitativeMeasurementUpdate)[]} measurements - Array of measurements for the critter.
+ * @param {Object} capture - The capture object containing capture details.
+ * @returns {Object} Formatted critter details for bulk update.
+ */
+export const formatCritterDetailsForBulkUpdate = (
+  critter: ICritterDetailedResponse,
+  markings: IMarkingPostData[],
+  measurements: (IQuantitativeMeasurementUpdate | IQualitativeMeasurementUpdate)[],
+  captureId?: string
+) => {
+  // Find qualitative measurements to delete
+  const qualitativeMeasurementsForDelete =
+    critter.measurements.qualitative
+      .filter(
+        (existing) =>
+          !measurements.some(
+            (incoming) =>
+              'measurement_qualitative_id' in incoming &&
+              incoming.measurement_qualitative_id === existing.measurement_qualitative_id
+          )
+      )
+      .map((item) => ({ ...item, _delete: true })) ?? [];
+
+  // Find quantitative measurements to delete
+  const quantitativeMeasurementsForDelete =
+    critter.measurements.quantitative
+      .filter(
+        (existing) =>
+          !measurements.some(
+            (incoming) =>
+              'measurement_quantitative_id' in incoming &&
+              incoming.measurement_quantitative_id === existing.measurement_quantitative_id
+          )
+      )
+      .map((item) => ({ ...item, _delete: true })) ?? [];
+
+  // Find markings to delete
+  const markingsForDelete = critter.markings
+    .filter((existing) => markings.some((incoming) => incoming.marking_id === existing.marking_id))
+    .map((item) => ({ ...item, critter_id: critter.critter_id, _delete: true }));
+
+  // Find markings for create
+  const markingsForCreate = markings
+    .filter((marking) => !marking.marking_id)
+    .map((marking) => ({
+      ...marking,
+      marking_id: marking.marking_id,
+      critter_id: critter.critter_id,
+      capture_id: captureId
+    }));
+
+  // Find markings for update
+  const markingsForUpdate = markings
+    .filter((marking) => critter.markings.some((existing) => marking.marking_id === existing.marking_id))
+    .map((marking) => ({
+      ...marking,
+      marking_id: marking.marking_id,
+      critter_id: critter.critter_id,
+      capture_id: captureId
+    }));
+
+  // Find qualitative measurements for create
+  const qualitativeMeasurementsForCreate = measurements
+    .filter(
+      (measurement) =>
+        'qualitative_option_id' in measurement &&
+        measurement.qualitative_option_id &&
+        !measurement.measurement_qualitative_id
+    )
+    .map((measurement) => ({
+      critter_id: critter.critter_id,
+      taxon_measurement_id: measurement.taxon_measurement_id,
+      measured_timestamp: measurement.measured_timestamp,
+      capture_id: captureId,
+      measurement_qualitative_id:
+        'measurement_qualitative_id' in measurement ? measurement.measurement_qualitative_id : null,
+      mortality_id: measurement.mortality_id,
+      qualitative_option_id: 'qualitative_option_id' in measurement ? measurement.qualitative_option_id : null,
+      measurement_comment: measurement.measurement_comment
+    }));
+
+  // Find quantitative measurements for create
+  const quantitativeMeasurementsForCreate = measurements
+    .filter(
+      (measurement) =>
+        'value' in measurement &&
+        measurement.taxon_measurement_id &&
+        measurement.value &&
+        !measurement.measurement_quantitative_id
+    )
+    .map((measurement) => ({
+      critter_id: critter.critter_id,
+      taxon_measurement_id: measurement.taxon_measurement_id,
+      measured_timestamp: measurement.measured_timestamp,
+      capture_id: captureId,
+      measurement_quantitative_id:
+        'measurement_quantitative_id' in measurement ? measurement.measurement_quantitative_id : null,
+      mortality_id: measurement.mortality_id,
+      value: 'value' in measurement ? measurement.value : 0,
+      measurement_comment: measurement.measurement_comment
+    }));
+
+  // Find qualitative measurements for update
+  const qualitativeMeasurementsForUpdate: IQualitativeMeasurementUpdate[] = measurements
+    .filter((measurement) => 'measurement_qualitative_id' in measurement && measurement.measurement_qualitative_id)
+    .map((measurement) => ({
+      critter_id: critter.critter_id,
+      taxon_measurement_id: measurement.taxon_measurement_id,
+      measured_timestamp: measurement.measured_timestamp,
+      capture_id: captureId,
+      measurement_qualitative_id:
+        'measurement_qualitative_id' in measurement ? measurement.measurement_qualitative_id : null,
+      mortality_id: measurement.mortality_id,
+      qualitative_option_id: 'qualitative_option_id' in measurement ? measurement.qualitative_option_id : null,
+      measurement_comment: measurement.measurement_comment
+    }));
+
+  // Find quantitative measurements for update
+  const quantitativeMeasurementsForUpdate = measurements
+    .filter((measurement) => 'measurement_quantitative_id' in measurement && measurement.measurement_quantitative_id)
+    .map((measurement) => ({
+      critter_id: critter.critter_id,
+      taxon_measurement_id: measurement.taxon_measurement_id,
+      measured_timestamp: measurement.measured_timestamp,
+      capture_id: captureId,
+      measurement_quantitative_id:
+        'measurement_quantitative_id' in measurement ? measurement.measurement_quantitative_id : null,
+      mortality_id: measurement.mortality_id,
+      value: 'value' in measurement ? measurement.value : 0,
+      measurement_comment: measurement.measurement_comment
+    }));
+
+  return {
+    qualitativeMeasurementsForDelete,
+    quantitativeMeasurementsForDelete,
+    markingsForDelete,
+    markingsForCreate,
+    markingsForUpdate,
+    qualitativeMeasurementsForCreate,
+    quantitativeMeasurementsForCreate,
+    qualitativeMeasurementsForUpdate,
+    quantitativeMeasurementsForUpdate
+  };
 };

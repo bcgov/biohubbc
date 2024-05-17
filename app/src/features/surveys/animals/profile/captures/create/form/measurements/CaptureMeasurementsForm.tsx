@@ -1,8 +1,8 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
-import Stack from '@mui/material/Stack';
 import { ICreateCritterMeasurement } from 'features/surveys/view/survey-animals/animal';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useAnimalPageContext } from 'hooks/useContext';
@@ -45,32 +45,34 @@ const CaptureMeasurementsForm = () => {
     capture_id: undefined
   };
 
-  console.log(values);
-
   return (
     <>
       <FieldArray
         name="measurements"
         render={(arrayHelpers: FieldArrayRenderProps) => (
           <>
-            {values.measurements.length > 0 && (
-              <Stack mb={3} gap={2}>
-                <TransitionGroup>
-                  {values.measurements.map((measurement, index) => (
-                    <Collapse in key={measurement.taxon_measurement_id ?? index}>
-                      <CaptureMeasurementSelect
-                        measurements={[
-                          ...(measurementsDataLoader.data?.quantitative ?? []),
-                          ...(measurementsDataLoader.data?.qualitative ?? [])
-                        ]}
-                        arrayHelpers={arrayHelpers}
-                        index={index}
-                      />
-                    </Collapse>
-                  ))}
-                </TransitionGroup>
-              </Stack>
-            )}
+            <TransitionGroup>
+              {values.measurements.map((measurement, index) => (
+                <Collapse
+                  in={true}
+                  key={
+                    ('measurement_quantitative_id' in measurement && measurement.measurement_quantitative_id) ||
+                    ('measurement_qualitative_id' in measurement && measurement.measurement_qualitative_id) ||
+                    index
+                  }>
+                  <Box mb={2}>
+                    <CaptureMeasurementSelect
+                      measurements={[
+                        ...(measurementsDataLoader.data?.quantitative ?? []),
+                        ...(measurementsDataLoader.data?.qualitative ?? [])
+                      ]}
+                      arrayHelpers={arrayHelpers}
+                      index={index}
+                    />
+                  </Box>
+                </Collapse>
+              ))}
+            </TransitionGroup>
 
             <Button
               color="primary"

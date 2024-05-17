@@ -39,7 +39,7 @@ export const CaptureMeasurementSelect = (props: ICaptureMeasurementSelectProps) 
 
   const selectedTaxonMeasurement =
     measurements.find(
-      (measurement) => measurement.taxon_measurement_id === values.measurements[index].taxon_measurement_id
+      (measurement) => measurement.taxon_measurement_id === values.measurements[index]?.taxon_measurement_id
     ) ?? null;
 
   // Filter out the categories that are already selected so they can't be selected again

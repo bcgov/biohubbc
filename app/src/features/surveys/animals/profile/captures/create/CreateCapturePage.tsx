@@ -16,7 +16,7 @@ import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { ICreateEditCaptureRequest, IQualitativeMeasurementUpdate, IQuantitativeMeasurementUpdate } from 'interfaces/useCritterApi.interface';
+import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
@@ -183,6 +183,8 @@ const CreateCapturePage = () => {
             }`
       ).toDate();
 
+      // Must create capture first to avoid foreign key constraints. Can't guarantee that the capture is 
+      // inserted before the measurements/markings.
       const captureResponse = await critterbaseApi.capture.createCapture({
         capture_id: undefined,
         capture_timestamp: captureTimestamp,
@@ -194,25 +196,28 @@ const CreateCapturePage = () => {
         critter_id: critterbaseCritterId
       });
 
+      // Create new measurements added while editing the capture
       const bulkResponse = await critterbaseApi.critters.bulkCreate({
-        markings: values.markings.map((marking) => ({
-          ...marking,
-          marking_id: undefined,
-          capture_id: captureResponse.capture_id,
-          critter_id: critterbaseCritterId,
-        })),
         qualitative_measurements: values.measurements
-          .filter((measurement) => 'qualitative_option_id' in measurement)
+          .filter((measurement) => 'qualitative_option_id' in measurement && measurement.qualitative_option_id)
+          // Format qualitative measurements for create
           .map((measurement) => ({
             ...measurement,
             capture_id: captureResponse.capture_id,
-          } as IQualitativeMeasurementUpdate)),
+            measurement_qualitative_id:
+              'measurement_qualitative_id' in measurement ? measurement.measurement_qualitative_id : null,
+            qualitative_option_id: 'qualitative_option_id' in measurement ? measurement.qualitative_option_id : null
+          })),
         quantitative_measurements: values.measurements
-          .filter((measurement) => 'value' in measurement)
+          .filter((measurement) => 'value' in measurement && measurement.taxon_measurement_id && measurement.value)
+          // Format quantitative measurements for create
           .map((measurement) => ({
             ...measurement,
             capture_id: captureResponse.capture_id,
-          } as IQuantitativeMeasurementUpdate))
+            measurement_quantitative_id:
+              'measurement_quantitative_id' in measurement ? measurement.measurement_quantitative_id : null,
+            value: 'value' in measurement ? measurement.value : 0
+          }))
       });
 
       if (!captureResponse || !bulkResponse) {

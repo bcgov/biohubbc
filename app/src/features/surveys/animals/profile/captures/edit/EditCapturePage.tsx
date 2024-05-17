@@ -22,6 +22,7 @@ import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
+import { formatCritterDetailsForBulkUpdate, formatLocation } from 'utils/Utils';
 import AnimalCaptureForm from '../create/form/AnimalCaptureForm';
 
 /**
@@ -147,26 +148,14 @@ const EditCapturePage = () => {
       }
 
       // Format capture location
-      const captureLocation = {
-        longitude: values.capture.capture_location.geometry.coordinates[0],
-        latitude: values.capture.capture_location.geometry.coordinates[1],
-        coordinate_uncertainty: 0,
-        coordinate_uncertainty_units: 'm'
-      };
+      const captureLocation = formatLocation(values.capture.capture_location);
 
-      // if release location is null, use the capture location, otherwise format release location
-      const releaseLocation =
-        values.capture.release_location &&
-        values.capture.release_location.geometry &&
-        values.capture.release_location.geometry.type === 'Point'
-          ? {
-              longitude: values.capture.release_location.geometry.coordinates[0],
-              latitude: values.capture.release_location.geometry.coordinates[1],
-              coordinate_uncertainty: 0,
-              coordinate_uncertainty_units: 'm'
-            }
-          : values.capture.capture_location;
+      // If release location is null, use the capture location, otherwise format release location
+      const releaseLocation = values.capture.release_location
+        ? formatLocation(values.capture.release_location)
+        : values.capture.capture_location;
 
+      // Format capture timestamp
       const captureTimestamp = dayjs(
         values.capture.capture_timestamp ??
           `${values.capture.capture_date}${
@@ -174,7 +163,7 @@ const EditCapturePage = () => {
           }`
       ).toDate();
 
-      // if release timestamp is null, use the capture timestamp, otherwise format release location
+      // If release timestamp is null, use the capture timestamp, otherwise format release location
       const releaseTimestamp = dayjs(
         values.capture.release_date
           ? captureTimestamp
@@ -183,49 +172,28 @@ const EditCapturePage = () => {
             }`
       ).toDate();
 
-      // Find qualitative measurements to delete
-      const qualitativeMeasurementsForDelete =
-        critter.measurements.qualitative.filter(
-          (existing) =>
-            !values.measurements.some((incoming) => incoming.taxon_measurement_id === existing.taxon_measurement_id)
-        ) ?? [];
+      const {
+        qualitativeMeasurementsForDelete,
+        quantitativeMeasurementsForDelete,
+        markingsForDelete,
+        markingsForCreate,
+        markingsForUpdate,
+        qualitativeMeasurementsForCreate,
+        quantitativeMeasurementsForCreate,
+        qualitativeMeasurementsForUpdate,
+        quantitativeMeasurementsForUpdate
+      } = formatCritterDetailsForBulkUpdate(critter, values.markings, values.measurements, values.capture.capture_id);
 
-      // Find quantitative measurements to delete
-      const quantitativeMeasurementsForDelete =
-        critter.measurements.quantitative.filter(
-          (existing) =>
-            !values.measurements.some((incoming) => incoming.taxon_measurement_id === existing.taxon_measurement_id)
-        ) ?? [];
+      // Create new measurements added while editing the capture
+      if (qualitativeMeasurementsForCreate.length || quantitativeMeasurementsForCreate.length || markingsForCreate.length) {
+        await critterbaseApi.critters.bulkCreate({
+          qualitative_measurements: qualitativeMeasurementsForCreate,
+          quantitative_measurements: quantitativeMeasurementsForCreate,
+          markings: markingsForCreate
+        });
+      }
 
-      console.log(values.measurements);
-
-      // Create request
-      await critterbaseApi.critters.bulkCreate({
-        qualitative_measurements: values.measurements
-          .filter(
-            (measurement) =>
-              'qualitative_option_id' in measurement &&
-              measurement.taxon_measurement_id &&
-              measurement.measurement_qualitative_id
-          )
-          .map((measurement) => ({
-            ...measurement,
-            capture_id: capture.capture_id,
-            measurement_qualitative_id: undefined
-          })),
-        quantitative_measurements: values.measurements
-          .filter(
-            (measurement) =>
-              !measurement.measurement_quantitative_id && measurement.taxon_measurement_id && measurement.value
-          )
-          .map((measurement) => ({
-            ...measurement,
-            capture_id: capture.capture_id,
-            measurement_quantitative_id: undefined
-          }))
-      });
-
-      // Update request
+      // Update existing critter information
       const response = await critterbaseApi.critters.bulkUpdate({
         captures: [
           {
@@ -239,57 +207,9 @@ const EditCapturePage = () => {
             critter_id: critterbaseCritterId
           }
         ],
-        markings: values.markings.map((marking) => ({
-          ...marking,
-          marking_id: marking.marking_id,
-          critter_id: critterbaseCritterId,
-          capture_id: values.capture.capture_id
-        })),
-        qualitative_measurements: [
-          ...values.measurements
-            .filter(
-              (measurement) =>
-                measurement.measurement_qualitative_id &&
-                measurement.taxon_measurement_id &&
-                measurement.qualitative_option_id
-            )
-            .map((measurement) => ({
-              ...measurement,
-              capture_id: capture.capture_id,
-              qualitative_option_id: measurement.qualitative_option_id
-            })),
-          ...qualitativeMeasurementsForDelete.map((measurement) => ({
-            ...measurement,
-            capture_id: capture.capture_id,
-            measurement_quantitative_id: measurement.measurement_qualitative_id,
-            measured_timestamp: undefined,
-            measurement_comment: undefined,
-            value: undefined,
-            critter_id: critter.critter_id,
-            _delete: true
-          }))
-        ],
-        quantitative_measurements: [
-          ...values.measurements
-            .filter(
-              (measurement) =>
-                measurement.measurement_quantitative_id && measurement.taxon_measurement_id && measurement.value
-            )
-            .map((measurement) => ({
-              ...measurement,
-              capture_id: capture.capture_id
-            })),
-          ...quantitativeMeasurementsForDelete.map((measurement) => ({
-            ...measurement,
-            measurement_qualitative_id: measurement.measurement_quantitative_id,
-            measured_timestamp: undefined,
-            qualitative_option_id: undefined,
-            measurement_comment: undefined,
-            value: measurement.value,
-            critter_id: critter.critter_id,
-            _delete: true
-          }))
-        ]
+        markings: [...markingsForUpdate, ...markingsForDelete],
+        qualitative_measurements: [...qualitativeMeasurementsForUpdate, ...qualitativeMeasurementsForDelete],
+        quantitative_measurements: [...quantitativeMeasurementsForUpdate, ...quantitativeMeasurementsForDelete]
       });
 
       if (!response) {
@@ -366,31 +286,24 @@ const EditCapturePage = () => {
       ...(critterDataLoader.data?.measurements.qualitative
         .filter((measurement) => measurement.capture_id === capture.capture_id)
         .map((measurement) => ({
-          critter_id: critter.critter_id,
           measurement_qualitative_id: measurement.measurement_qualitative_id,
-          measurement_quantitative_id: undefined,
-          value: undefined,
           taxon_measurement_id: measurement.taxon_measurement_id,
+          capture_id: measurement.capture_id,
+          mortality_id: measurement.mortality_id,
           qualitative_option_id: measurement.qualitative_option_id,
           measurement_comment: measurement.measurement_comment,
-          measured_timestamp: undefined,
-          capture_id: capture.capture_id,
-          mortality_id: undefined
+          measured_timestamp: measurement.measured_timestamp
         })) ?? []),
       ...(critterDataLoader.data?.measurements.quantitative
         .filter((measurement) => measurement.capture_id === capture.capture_id)
         .map((measurement) => ({
-          critter_id: critter.critter_id,
           measurement_quantitative_id: measurement.measurement_quantitative_id,
-          measurement_qualitative_id: undefined,
-          qualitative_option_id: undefined,
-          value: measurement.value,
           taxon_measurement_id: measurement.taxon_measurement_id,
-          quantitative_option_id: undefined,
+          capture_id: measurement.capture_id,
+          mortality_id: measurement.mortality_id,
           measurement_comment: measurement.measurement_comment,
-          measured_timestamp: undefined,
-          capture_id: capture.capture_id,
-          mortality_id: undefined
+          measured_timestamp: measurement.measured_timestamp,
+          value: measurement.value
         })) ?? [])
     ]
   };

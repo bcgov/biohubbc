@@ -137,7 +137,7 @@ export type IMarkingResponse = {
 export type IQualitativeMeasurementUpdate = {
   measurement_qualitative_id: string | null;
   taxon_measurement_id: string;
-  capture_id: string | null;
+  capture_id?: string | null;
   mortality_id: string | null;
   qualitative_option_id: string | null;
   measurement_comment: string | null;
@@ -147,7 +147,7 @@ export type IQualitativeMeasurementUpdate = {
 export type IQuantitativeMeasurementUpdate = {
   measurement_quantitative_id: string | null;
   taxon_measurement_id: string;
-  capture_id: string | null;
+  capture_id?: string | null;
   mortality_id: string | null;
   measurement_comment: string | null;
   measured_timestamp: string | null;
@@ -157,7 +157,7 @@ export type IQuantitativeMeasurementUpdate = {
 export type IQualitativeMeasurementResponse = {
   measurement_qualitative_id: string;
   taxon_measurement_id: string;
-  capture_id: string | null;
+  capture_id?: string | null;
   mortality_id: string | null;
   qualitative_option_id: string;
   measurement_comment: string | null;

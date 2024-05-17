@@ -39,7 +39,6 @@ const useMarkingApi = (axios: AxiosInstance) => {
    */
   const getMarkingColourOptions = async (): Promise<IMarkingColourOption[]> => {
     const { data } = await axios.get('api/critterbase/lookups/colours');
-    console.log(data);
     return data;
   };
 
