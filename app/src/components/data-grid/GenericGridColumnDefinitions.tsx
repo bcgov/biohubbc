@@ -24,9 +24,7 @@ export const GenericDateColDef = <T extends GridValidRowModel>(props: {
     hideable: true,
     type: 'date',
     minWidth: 150,
-    valueGetter: (params) => {
-      return params.value ? dayjs(params.value).toDate() : null;
-    },
+    valueFormatter: (params) => dayjs(params.value).format('YYYY-MM-DD'),
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',
@@ -44,6 +42,7 @@ export const GenericDateColDef = <T extends GridValidRowModel>(props: {
           textFieldProps={{
             name: params.field,
             type: 'date',
+            value: params.row[field],
             onChange: (event) => {
               params.api.setEditCellValue({
                 id: params.id,

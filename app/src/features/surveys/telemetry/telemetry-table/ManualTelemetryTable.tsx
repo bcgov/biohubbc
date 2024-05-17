@@ -11,8 +11,10 @@ import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
 import { useTelemetryTableContext } from 'hooks/useContext';
-import { useContext } from 'react';
+import { useCallback, useContext } from 'react';
 import { DeploymentColDef, TelemetryTypeColDef } from './utils/GridColumnDefinitions';
+
+const MANUAL_TELEMETRY_TYPE = 'MANUAL';
 
 interface IManualTelemetryTableProps {
   isLoading: boolean;
@@ -24,12 +26,13 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
 
   const { critterDeployments } = surveyContext;
 
-  // Check if table row is 'Manual' telemetry - Only manual telemetry records can be mutated
-  const isManualTelemetry = (row: IManualTelemetryTableRow) => row.telemetry_type === 'MANUAL';
-
   // Disable the delete action when record is 'Manual' telemetry or saving
-  const actionsDisabled = (params: GridRowParams<IManualTelemetryTableRow>) =>
-    telemetryTableContext.isSaving || !isManualTelemetry(params.row);
+  const actionsDisabled = useCallback(
+    (params: GridRowParams<IManualTelemetryTableRow>) => {
+      return telemetryTableContext.isSaving || params.row.telemetry_type !== MANUAL_TELEMETRY_TYPE;
+    },
+    [telemetryTableContext.isSaving]
+  );
 
   const columns: GridColDef<IManualTelemetryTableRow>[] = [
     DeploymentColDef({ critterDeployments, hasError: telemetryTableContext.hasError }),
@@ -59,11 +62,11 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
       // Select rows
       checkboxSelection
       disableRowSelectionOnClick
-      isRowSelectable={(params) => isManualTelemetry(params.row)}
+      isRowSelectable={(params) => params.row.telemetry_type === MANUAL_TELEMETRY_TYPE}
       loading={props.isLoading}
       // Row edit
       editMode="row"
-      isCellEditable={(params) => isManualTelemetry(params.row)}
+      isCellEditable={(params) => params.row.telemetry_type === MANUAL_TELEMETRY_TYPE}
       onRowEditStop={(_params, event) => {
         event.defaultMuiPrevented = true;
       }}

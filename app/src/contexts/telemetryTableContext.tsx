@@ -568,7 +568,6 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
 
     // Set edit mode for the new row
     _updateRowsMode([id], GridRowModes.Edit, false);
-
   }, [rows, _updateRowsMode]);
 
   /**

@@ -22,7 +22,7 @@ const TextFieldDataGrid = <DataGridType extends GridValidRowModel>({
     <TextField
       fullWidth
       inputRef={ref}
-      value={dataGridProps.value ?? ''}
+      value={dataGridProps.value ?? dataGridProps[dataGridProps.field].value ?? ''}
       variant="outlined"
       type="text"
       {...textFieldProps}
