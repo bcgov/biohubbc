@@ -1,4 +1,4 @@
-import { ICreateCritterCollectionUnit, ICreateCritterMeasurement } from 'features/surveys/view/survey-animals/animal';
+import { ICreateCritterCollectionUnit } from 'features/surveys/view/survey-animals/animal';
 import { Feature } from 'geojson';
 import { ITaxonomy } from './useTaxonomyApi.interface';
 
@@ -54,7 +54,7 @@ export interface ILocationPostData {
 export interface ICreateEditCaptureRequest {
   capture: ICapturePostData;
   markings: IMarkingPostData[];
-  measurements: ICreateCritterMeasurement[];
+  measurements: (IQuantitativeMeasurementUpdate | IQualitativeMeasurementUpdate)[];
 }
 
 export interface ICollectionCategory {

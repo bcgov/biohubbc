@@ -1,6 +1,7 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
 import Stack from '@mui/material/Stack';
 import { ICreateCritterMeasurement } from 'features/surveys/view/survey-animals/animal';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
@@ -8,6 +9,7 @@ import { useAnimalPageContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { TransitionGroup } from 'react-transition-group';
 import { CaptureMeasurementSelect } from './components/CaptureMeasurementSelect';
 
 /**
@@ -43,6 +45,8 @@ const CaptureMeasurementsForm = () => {
     capture_id: undefined
   };
 
+  console.log(values);
+
   return (
     <>
       <FieldArray
@@ -50,18 +54,21 @@ const CaptureMeasurementsForm = () => {
         render={(arrayHelpers: FieldArrayRenderProps) => (
           <>
             {values.measurements.length > 0 && (
-              <Stack mb={3} spacing={1}>
-                {values.measurements.map((measurement, index) => (
-                  <CaptureMeasurementSelect
-                    key={measurement.taxon_measurement_id ?? index}
-                    measurements={[
-                      ...(measurementsDataLoader.data?.quantitative ?? []),
-                      ...(measurementsDataLoader.data?.qualitative ?? [])
-                    ]}
-                    arrayHelpers={arrayHelpers}
-                    index={index}
-                  />
-                ))}
+              <Stack mb={3} gap={2}>
+                <TransitionGroup>
+                  {values.measurements.map((measurement, index) => (
+                    <Collapse in key={measurement.taxon_measurement_id ?? index}>
+                      <CaptureMeasurementSelect
+                        measurements={[
+                          ...(measurementsDataLoader.data?.quantitative ?? []),
+                          ...(measurementsDataLoader.data?.qualitative ?? [])
+                        ]}
+                        arrayHelpers={arrayHelpers}
+                        index={index}
+                      />
+                    </Collapse>
+                  ))}
+                </TransitionGroup>
               </Stack>
             )}
 

@@ -127,7 +127,7 @@ export const MeasurementAnimalForm = (
             ? props.formObject?.measurement_comment
             : undefined,
           capture_id: props.formObject?.capture_id,
-          mortality_id: props.formObject?.mortality_id
+          mortality_id: props.formObject?.mortality_id,
         },
         validationSchema: CreateCritterMeasurementSchema,
         element: (

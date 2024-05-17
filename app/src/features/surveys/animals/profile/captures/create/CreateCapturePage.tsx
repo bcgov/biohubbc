@@ -16,7 +16,7 @@ import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateEditCaptureRequest, IQualitativeMeasurementUpdate, IQuantitativeMeasurementUpdate } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
@@ -202,19 +202,17 @@ const CreateCapturePage = () => {
           critter_id: critterbaseCritterId,
         })),
         qualitative_measurements: values.measurements
-          .filter((measurement) => measurement.qualitative_option_id)
+          .filter((measurement) => 'qualitative_option_id' in measurement)
           .map((measurement) => ({
             ...measurement,
             capture_id: captureResponse.capture_id,
-            critter_id: critterbaseCritterId
-          })),
+          } as IQualitativeMeasurementUpdate)),
         quantitative_measurements: values.measurements
-          .filter((measurement) => measurement.value)
+          .filter((measurement) => 'value' in measurement)
           .map((measurement) => ({
             ...measurement,
             capture_id: captureResponse.capture_id,
-            critter_id: critterbaseCritterId
-          }))
+          } as IQuantitativeMeasurementUpdate))
       });
 
       if (!captureResponse || !bulkResponse) {

@@ -1,6 +1,11 @@
 import { DATE_LIMIT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
-import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
+import {
+  ICritterDetailedResponse,
+  ICritterSimpleResponse,
+  IQualitativeMeasurementUpdate,
+  IQuantitativeMeasurementUpdate
+} from 'interfaces/useCritterApi.interface';
 import { PROJECTION_MODE } from 'utils/mapProjectionHelpers';
 import yup from 'utils/YupSchema';
 import { AnyObjectSchema, InferType } from 'yup';
@@ -230,8 +235,8 @@ export type ICreateCritterMortality = InferType<typeof CreateCritterMortalitySch
  */
 export type IBulkCreate = {
   critter?: ICritterSimpleResponse;
-  qualitative_measurements?: ICreateCritterMeasurement[];
-  quantitative_measurements?: ICreateCritterMeasurement[];
+  qualitative_measurements?: IQualitativeMeasurementUpdate[];
+  quantitative_measurements?: IQuantitativeMeasurementUpdate[];
   capture?: ICreateCritterCapture[];
   mortality?: ICreateCritterMortality;
   markings?: ICreateCritterMarking[];
@@ -243,8 +248,8 @@ export type IBulkCreate = {
  */
 export type IBulkUpdate = {
   critter?: ICritterSimpleResponse;
-  qualitative_measurements?: ICreateCritterMeasurement[];
-  quantitative_measurements?: ICreateCritterMeasurement[];
+  qualitative_measurements?: IQualitativeMeasurementUpdate[];
+  quantitative_measurements?: IQuantitativeMeasurementUpdate[];
   captures?: ICreateCritterCapture[];
   mortality?: ICreateCritterMortality;
   markings?: ICreateCritterMarking[];

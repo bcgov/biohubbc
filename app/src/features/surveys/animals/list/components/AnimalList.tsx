@@ -2,7 +2,6 @@ import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
-import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -48,7 +47,11 @@ export const AnimalList = () => {
   const critters = surveyContext.critterDataLoader.data;
 
   if (!critters) {
-    return <CircularProgress size={40} />;
+    return (
+      <Box flex="1 1 auto">
+        <SkeletonList numberOfLines={8} />
+      </Box>
+    );
   }
 
   const crittersCount = critters.length;

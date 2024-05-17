@@ -4,7 +4,7 @@ import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
 import { Link as RouterLink } from 'react-router-dom';
 
-export interface SurveyAnimalHeaderProps {
+export interface IAnimalHeaderProps {
   project_id: number;
   project_name: string;
   survey_id: number;
@@ -17,7 +17,7 @@ export interface SurveyAnimalHeaderProps {
  * @param props
  * @returns
  */
-export const SurveyAnimalHeader = (props: SurveyAnimalHeaderProps) => {
+export const AnimalHeader = (props: IAnimalHeaderProps) => {
   const { project_id, project_name, survey_id, survey_name } = props;
   return (
     <PageHeader

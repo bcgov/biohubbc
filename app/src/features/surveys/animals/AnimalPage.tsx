@@ -4,7 +4,7 @@ import Box from '@mui/system/Box';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { SurveyAnimalHeader } from './AnimalHeader';
+import { AnimalHeader } from './AnimalHeader';
 import { AnimalListContainer } from './list/AnimalListContainer';
 import { AnimalProfileContainer } from './profile/AnimalProfileContainer';
 
@@ -50,7 +50,7 @@ const SurveyAnimalPage = () => {
           maxWidth: 'none'
         }
       }}>
-      <SurveyAnimalHeader
+      <AnimalHeader
         project_id={surveyContext.projectId}
         project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
         survey_id={surveyContext.surveyId}

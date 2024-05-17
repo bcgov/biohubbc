@@ -204,9 +204,9 @@ const EditCapturePage = () => {
         qualitative_measurements: values.measurements
           .filter(
             (measurement) =>
-              !measurement.measurement_quantitative_id &&
+              'qualitative_option_id' in measurement &&
               measurement.taxon_measurement_id &&
-              measurement.qualitative_option_id
+              measurement.measurement_qualitative_id
           )
           .map((measurement) => ({
             ...measurement,
@@ -245,26 +245,51 @@ const EditCapturePage = () => {
           critter_id: critterbaseCritterId,
           capture_id: values.capture.capture_id
         })),
-        qualitative_measurements: qualitativeMeasurementsForDelete.map((measurement) => ({
-          ...measurement,
-          capture_id: capture.capture_id,
-          measurement_quantitative_id: measurement.measurement_qualitative_id,
-          measured_timestamp: undefined,
-          measurement_comment: undefined,
-          value: undefined,
-          critter_id: critter.critter_id,
-          _delete: true
-        })),
-        quantitative_measurements: quantitativeMeasurementsForDelete.map((measurement) => ({
-          ...measurement,
-          measurement_qualitative_id: measurement.measurement_quantitative_id,
-          measured_timestamp: undefined,
-          qualitative_option_id: undefined,
-          measurement_comment: undefined,
-          value: measurement.value,
-          critter_id: critter.critter_id,
-          _delete: true
-        }))
+        qualitative_measurements: [
+          ...values.measurements
+            .filter(
+              (measurement) =>
+                measurement.measurement_qualitative_id &&
+                measurement.taxon_measurement_id &&
+                measurement.qualitative_option_id
+            )
+            .map((measurement) => ({
+              ...measurement,
+              capture_id: capture.capture_id,
+              qualitative_option_id: measurement.qualitative_option_id
+            })),
+          ...qualitativeMeasurementsForDelete.map((measurement) => ({
+            ...measurement,
+            capture_id: capture.capture_id,
+            measurement_quantitative_id: measurement.measurement_qualitative_id,
+            measured_timestamp: undefined,
+            measurement_comment: undefined,
+            value: undefined,
+            critter_id: critter.critter_id,
+            _delete: true
+          }))
+        ],
+        quantitative_measurements: [
+          ...values.measurements
+            .filter(
+              (measurement) =>
+                measurement.measurement_quantitative_id && measurement.taxon_measurement_id && measurement.value
+            )
+            .map((measurement) => ({
+              ...measurement,
+              capture_id: capture.capture_id
+            })),
+          ...quantitativeMeasurementsForDelete.map((measurement) => ({
+            ...measurement,
+            measurement_qualitative_id: measurement.measurement_quantitative_id,
+            measured_timestamp: undefined,
+            qualitative_option_id: undefined,
+            measurement_comment: undefined,
+            value: measurement.value,
+            critter_id: critter.critter_id,
+            _delete: true
+          }))
+        ]
       });
 
       if (!response) {

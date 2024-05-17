@@ -38,10 +38,10 @@ const CaptureMarkingsDialog = (props: ICaptureMarkingsDialogProps) => {
           _id: v4(),
           marking_type_id: '',
           taxon_marking_body_location_id: '',
-          identifier: '',
-          primary_colour_id: '',
-          secondary_colour_id: '',
-          comment: ''
+          identifier: null,
+          primary_colour_id: null,
+          secondary_colour_id: null,
+          comment: null
         },
         validationSchema: yup.object({ marking_id: yup.string().optional() }),
         element: (
