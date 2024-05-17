@@ -402,8 +402,14 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} critterId
    * @returns {*}
    */
-  const removeCrittersFromSurvey = async (projectId: number, surveyId: number, critterIds: number[]): Promise<number> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/delete`, {critterIds: critterIds});
+  const removeCrittersFromSurvey = async (
+    projectId: number,
+    surveyId: number,
+    critterIds: number[]
+  ): Promise<number> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/delete`, {
+      critterIds: critterIds
+    });
     return data;
   };
 

@@ -62,7 +62,7 @@ const SkeletonListStack = (props: IMultipleSkeletonProps) => (
 );
 
 const SkeletonHorizontalStack = (props: IMultipleSkeletonProps) => (
-  <Stack direction="row" spacing={1} flex='1 1 auto'>
+  <Stack direction="row" spacing={1} flex="1 1 auto">
     {Array.from(Array(props.numberOfLines ?? 3).keys()).map((key: number) => (
       <Skeleton key={key} sx={{ flex: '0.1 0 auto' }} />
     ))}

@@ -18,5 +18,5 @@ export type IMarkingColourOption = {
   description: string | null;
   hex_code: string | null;
   update_timestamp: string | null;
-  update_user: string | null
+  update_user: string | null;
 };

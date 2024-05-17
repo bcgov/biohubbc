@@ -183,7 +183,7 @@ const CreateCapturePage = () => {
             }`
       ).toDate();
 
-      // Must create capture first to avoid foreign key constraints. Can't guarantee that the capture is 
+      // Must create capture first to avoid foreign key constraints. Can't guarantee that the capture is
       // inserted before the measurements/markings.
       const captureResponse = await critterbaseApi.capture.createCapture({
         capture_id: undefined,
@@ -198,6 +198,12 @@ const CreateCapturePage = () => {
 
       // Create new measurements added while editing the capture
       const bulkResponse = await critterbaseApi.critters.bulkCreate({
+        markings: values.markings.map((marking) => ({
+          ...marking,
+          marking_id: marking.marking_id,
+          critter_id: critterbaseCritterId,
+          capture_id: captureResponse.capture_id
+        })),
         qualitative_measurements: values.measurements
           .filter((measurement) => 'qualitative_option_id' in measurement && measurement.qualitative_option_id)
           // Format qualitative measurements for create

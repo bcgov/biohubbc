@@ -11,7 +11,6 @@ import {
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 
-
 interface ICaptureMarkingsDialogProps {
   initialValues?: IMarkingPostData;
   markingColours: IMarkingColourOption[];

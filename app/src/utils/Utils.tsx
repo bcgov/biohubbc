@@ -517,7 +517,7 @@ export const formatCritterDetailsForBulkUpdate = (
 
   // Find markings to delete
   const markingsForDelete = critter.markings
-    .filter((existing) => markings.some((incoming) => incoming.marking_id === existing.marking_id))
+    .filter((existing) => !markings.some((incoming) => incoming.marking_id === existing.marking_id))
     .map((item) => ({ ...item, critter_id: critter.critter_id, _delete: true }));
 
   // Find markings for create
@@ -532,7 +532,7 @@ export const formatCritterDetailsForBulkUpdate = (
 
   // Find markings for update
   const markingsForUpdate = markings
-    .filter((marking) => critter.markings.some((existing) => marking.marking_id === existing.marking_id))
+    .filter((marking) => marking.marking_id)
     .map((marking) => ({
       ...marking,
       marking_id: marking.marking_id,

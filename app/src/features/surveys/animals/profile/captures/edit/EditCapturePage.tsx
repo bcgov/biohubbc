@@ -185,7 +185,11 @@ const EditCapturePage = () => {
       } = formatCritterDetailsForBulkUpdate(critter, values.markings, values.measurements, values.capture.capture_id);
 
       // Create new measurements added while editing the capture
-      if (qualitativeMeasurementsForCreate.length || quantitativeMeasurementsForCreate.length || markingsForCreate.length) {
+      if (
+        qualitativeMeasurementsForCreate.length ||
+        quantitativeMeasurementsForCreate.length ||
+        markingsForCreate.length
+      ) {
         await critterbaseApi.critters.bulkCreate({
           qualitative_measurements: qualitativeMeasurementsForCreate,
           quantitative_measurements: quantitativeMeasurementsForCreate,
