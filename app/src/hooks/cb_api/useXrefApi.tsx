@@ -2,7 +2,8 @@ import { AxiosInstance } from 'axios';
 import {
   CBMeasurementSearchByTermResponse,
   CBMeasurementSearchByTsnResponse,
-  ICollectionUnitResponse
+  ICollectionCategory,
+  ICollectionUnit
 } from 'interfaces/useCritterApi.interface';
 
 export const useXrefApi = (axios: AxiosInstance) => {
@@ -33,18 +34,29 @@ export const useXrefApi = (axios: AxiosInstance) => {
   /**
    * Get collection (ie. ecological) units that are available for a given taxon
    *
-   * @param {string} searchTerm
-   * @return {*}  {Promise<CBMeasurementSearchByTermResponse>}
+   * @param {number} tsn
+   * @return {*}  {Promise<ICollectionCategory[]>}
    */
-  const getCollectionUnits = async (tsn: number): Promise<ICollectionUnitResponse[]> => {
+  const getCollectionCategories = async (tsn: number): Promise<ICollectionCategory[]> => {
     const { data } = await axios.get(`/api/critterbase/xref/taxon-collection-categories?tsn=${tsn}`);
-    console.log(data)
+    return data;
+  };
+
+  /**
+   * Get collection (ie. ecological) units that are available for a given taxon
+   *
+   * @param {string} unit_id
+   * @return {*}  {Promise<ICollectionUnit[]>}
+   */
+  const getCollectionUnits = async (unit_id: string): Promise<ICollectionUnit[]> => {
+    const { data } = await axios.get(`/api/critterbase/xref/collection-units/${unit_id}`);
     return data;
   };
 
   return {
     getTaxonMeasurements,
     getMeasurementTypeDefinitionsBySearchTerm,
+    getCollectionCategories,
     getCollectionUnits
   };
 };

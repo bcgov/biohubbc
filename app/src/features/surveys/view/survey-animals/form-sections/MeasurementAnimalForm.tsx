@@ -123,7 +123,11 @@ export const MeasurementAnimalForm = (
           qualitative_option_id: props?.formObject?.qualitative_option_id,
           value: props?.formObject?.measurement_quantitative_id ? props.formObject?.value : ('' as unknown as number),
           measured_timestamp: props.formObject?.measured_timestamp as unknown as Date,
-          measurement_comment: props.formObject?.measurement_comment ? props.formObject?.measurement_comment : undefined
+          measurement_comment: props.formObject?.measurement_comment
+            ? props.formObject?.measurement_comment
+            : undefined,
+          capture_id: props.formObject?.capture_id,
+          mortality_id: props.formObject?.mortality_id
         },
         validationSchema: CreateCritterMeasurementSchema,
         element: (

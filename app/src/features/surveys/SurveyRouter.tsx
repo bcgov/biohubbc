@@ -8,10 +8,9 @@ import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 import AnimalRouter from './animals/AnimalRouter';
-import { SurveyLocationPage } from './components/locations/SurveyLocationPage';
 import EditSurveyPage from './edit/EditSurveyPage';
+import SamplingSitePage from './observations/sampling-sites/create/SamplingSitePage';
 import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
-import SamplingSitePage from './observations/sampling-sites/SamplingSitePage';
 import { SurveyObservationPage } from './observations/SurveyObservationPage';
 import ManualTelemetryPage from './telemetry/ManualTelemetryPage';
 
@@ -96,13 +95,6 @@ const SurveyRouter: React.FC = () => {
             <SamplingSiteEditPage />
           </DialogContextProvider>
         </ProjectRoleRouteGuard>
-      </RouteWithTitle>
-
-      {/* Survey Locations TODO: Remove unused path and page */}
-      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/locations" title={getTitle('Survey Area')}>
-        <DialogContextProvider>
-          <SurveyLocationPage />
-        </DialogContextProvider>
       </RouteWithTitle>
 
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/edit" title={getTitle('Edit Survey')}>

@@ -3,7 +3,8 @@ import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
-import { createContext, PropsWithChildren, useEffect, useMemo, useState } from 'react';
+import isEqual from 'lodash-es/isEqual';
+import { createContext, PropsWithChildren, useCallback, useMemo, useState } from 'react';
 
 export interface ISurveyCritter {
   survey_critter_id: number;
@@ -19,84 +20,82 @@ export interface ISurveyCritter {
  * @interface IAnimalPageContext
  */
 export type IAnimalPageContext = {
-  isLoading: boolean;
-  setIsLoading: (isLoading: boolean) => void;
-  isDisabled: boolean;
-  setIsDisabled: (isDisabled: boolean) => void;
-  selectedAnimal: ISurveyCritter | null;
-  setSelectedAnimal: (selectedAnimal: ISurveyCritter | null) => void;
+  selectedAnimal: ISurveyCritter | undefined;
+  setSelectedAnimal: (selectedAnimal?: ISurveyCritter) => void;
   critterDataLoader: DataLoader<[critterbase_critter_id: string], ICritterDetailedResponse, unknown>;
-  selectedAnimalFromSurveyCritterId: number | null;
   setSelectedAnimalFromSurveyCritterId: (selectedAnimalFromSurveyCritterId: number) => void;
 };
 
+/**
+ * Context for the Manage Animals page
+ *
+ */
 export const AnimalPageContext = createContext<IAnimalPageContext | undefined>(undefined);
 
 export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isDisabled, setIsDisabled] = useState<boolean>(false);
+  const biohubApi = useBiohubApi();
 
   const critterbaseApi = useCritterbaseApi();
-  const biohubApi = useBiohubApi();
 
   const { surveyId, projectId } = useSurveyContext();
 
-  const critterDataLoader = useDataLoader(critterbaseApi.critters.getDetailedCritter);
   const surveyCrittersDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCritters(projectId, surveyId));
 
+  const critterDataLoader = useDataLoader((critterId: string) => critterbaseApi.critters.getDetailedCritter(critterId));
+
   if (!surveyCrittersDataLoader.data) {
+    // Load basic data for all critters in the survey
     surveyCrittersDataLoader.load();
   }
 
-  /**
-   * Keeps track of which animal has been selected in the side panel of the animal page
-   */
-  const [selectedAnimal, setSelectedAnimal] = useState<ISurveyCritter | null>(null);
+  // The currently selected animal
+  const [_selectedAnimal, _setSelectedAnimal] = useState<ISurveyCritter | undefined>();
 
-  /**
-   * Used to set selectedAnimal from just surveyCritterId. Triggers a query for an
-   * animal's Critterbase ID to update selectedAnimal.
-   */
-  const [selectedAnimalFromSurveyCritterId, setSelectedAnimalFromSurveyCritterId] = useState<number | null>(null);
+  const setSelectedAnimal = useCallback(
+    (animal?: ISurveyCritter) => {
+      if (isEqual(animal, _selectedAnimal)) {
+        // No change
+        return;
+      }
 
-  useEffect(() => {
-    // Only run if there is no selectedAnimal
-    if (surveyCrittersDataLoader.data && !selectedAnimal) {
-      const critter = surveyCrittersDataLoader.data.find(
-        (critter) => critter.survey_critter_id === selectedAnimalFromSurveyCritterId
-      );
+      // Update the selected animal
+      _setSelectedAnimal(animal);
 
-      if (critter?.critter_id && selectedAnimalFromSurveyCritterId) {
-        animalPageContext.setSelectedAnimal({
-          survey_critter_id: selectedAnimalFromSurveyCritterId,
-          critterbase_critter_id: critter?.critter_id
+      if (animal) {
+        // Load the critter data for the new animal
+        critterDataLoader.refresh(animal.critterbase_critter_id);
+      }
+    },
+    [_selectedAnimal, critterDataLoader]
+  );
+
+  const setSelectedAnimalFromSurveyCritterId = useCallback(
+    (surveyCritterId: number) => {
+      if (_selectedAnimal?.survey_critter_id === surveyCritterId) {
+        // No change
+        return;
+      }
+
+      const critter = surveyCrittersDataLoader.data?.find((critter) => critter.survey_critter_id === surveyCritterId);
+
+      if (critter) {
+        setSelectedAnimal({
+          survey_critter_id: critter.survey_critter_id,
+          critterbase_critter_id: critter.critter_id
         });
       }
-    }
-  }, [selectedAnimalFromSurveyCritterId, surveyCrittersDataLoader.data]);
-
-  /**
-   * Refreshes the current profile whenever the selected critter changes
-   */
-  useEffect(() => {
-    if (selectedAnimal) {
-      critterDataLoader.refresh(selectedAnimal.critterbase_critter_id);
-    }
-  }, [selectedAnimal]);
+    },
+    [_selectedAnimal?.survey_critter_id, surveyCrittersDataLoader.data, setSelectedAnimal]
+  );
 
   const animalPageContext: IAnimalPageContext = useMemo(
     () => ({
-      isLoading,
-      setIsLoading,
-      isDisabled,
-      setIsDisabled,
-      selectedAnimal,
+      selectedAnimal: _selectedAnimal,
       setSelectedAnimal,
       critterDataLoader,
-      selectedAnimalFromSurveyCritterId,
       setSelectedAnimalFromSurveyCritterId
     }),
-    [selectedAnimal, isLoading, isDisabled, critterDataLoader, selectedAnimalFromSurveyCritterId]
+    [_selectedAnimal, setSelectedAnimal, critterDataLoader, setSelectedAnimalFromSurveyCritterId]
   );
 
   return <AnimalPageContext.Provider value={animalPageContext}>{props.children}</AnimalPageContext.Provider>;

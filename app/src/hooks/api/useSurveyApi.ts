@@ -1,6 +1,7 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import { ISurveyCritter } from 'contexts/animalPageContext';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import {
   IAnimalDeployment,
@@ -8,7 +9,6 @@ import {
   IDeploymentTimespan,
   ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
-import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
   ICreateSurveyRequest,
@@ -389,21 +389,27 @@ const useSurveyApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     critter: ICreateCritter
-  ): Promise<ICritterSimpleResponse> => {
+  ): Promise<ISurveyCritter> => {
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters`, critter);
     return data;
   };
 
   /**
-   * Remove a critter from the survey. Will not delete critter in critterbase.
+   * Remove critters from the survey. Will not delete critters in critterbase.
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} critterId
    * @returns {*}
    */
-  const removeCritterFromSurvey = async (projectId: number, surveyId: number, critterId: number): Promise<number> => {
-    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`);
+  const removeCrittersFromSurvey = async (
+    projectId: number,
+    surveyId: number,
+    critterIds: number[]
+  ): Promise<number> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/delete`, {
+      critterIds: critterIds
+    });
     return data;
   };
 
@@ -537,7 +543,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurvey,
     getSurveyCritters,
     createCritterAndAddToSurvey,
-    removeCritterFromSurvey,
+    removeCrittersFromSurvey,
     addDeployment,
     getDeploymentsInSurvey,
     updateDeployment,

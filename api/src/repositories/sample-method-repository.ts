@@ -10,7 +10,7 @@ import { InsertSamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-per
 export type InsertSampleMethodRecord = Pick<
   SampleMethodRecord,
   'survey_sample_site_id' | 'method_lookup_id' | 'description' | 'method_response_metric_id'
-> & { periods: InsertSamplePeriodRecord[] };
+> & { sample_periods: InsertSamplePeriodRecord[] };
 
 /**
  * Update object for a single sample method record.
@@ -18,7 +18,7 @@ export type InsertSampleMethodRecord = Pick<
 export type UpdateSampleMethodRecord = Pick<
   SampleMethodRecord,
   'survey_sample_method_id' | 'survey_sample_site_id' | 'method_lookup_id' | 'description' | 'method_response_metric_id'
-> & { periods: UpdateSamplePeriodRecord[] };
+> & { sample_periods: UpdateSamplePeriodRecord[] };
 
 /**
  * A survey_sample_method record.
@@ -169,7 +169,7 @@ export class SampleMethodRepository extends BaseRepository {
           survey_sample_method.survey_sample_site_id = sss.survey_sample_site_id
           AND survey_sample_method_id = ${surveySampleMethodId}
           AND survey_id = ${surveyId}
-      RETURNING *;
+      RETURNING survey_sample_method.*;
     `;
 
     const response = await this.connection.sql(sqlStatement, SampleMethodRecord);

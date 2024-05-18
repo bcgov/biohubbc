@@ -1,15 +1,22 @@
-import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import AnimalProfile from './AnimalProfile';
+import { AnimalDetailsContainer } from 'features/surveys/animals/profile/details/AnimalDetailsContainer';
+import { AnimalCaptureContainer } from './captures/AnimalCaptureContainer';
 
-const AnimalProfileContainer = () => {
-  // const { setSelectedAnimal } = useAnimalPageContext();
-
+/**
+ * Component for displaying an animal's details within the Manage Animals page
+ *
+ * @returns
+ */
+export const AnimalProfileContainer = () => {
   return (
-    <Box component={Stack} spacing={1.5} flexDirection="column" flex="1 1 auto" height='100%'>
-      <AnimalProfile />
-    </Box>
+    <Stack spacing={1.5} flexDirection="column" height="100%" maxWidth="100%" flex="1 1 auto">
+      <Paper sx={{ p: 2 }}>
+        <AnimalDetailsContainer />
+      </Paper>
+      <Paper>
+        <AnimalCaptureContainer />
+      </Paper>
+    </Stack>
   );
 };
-
-export default AnimalProfileContainer;

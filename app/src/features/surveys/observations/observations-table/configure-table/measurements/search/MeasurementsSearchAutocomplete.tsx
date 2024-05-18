@@ -35,7 +35,7 @@ export interface IMeasurementsSearchAutocompleteProps {
    * @memberof IMeasurementsSearchAutocompleteProps
    */
   onSelectOptions: (measurements: CBMeasurementType[]) => void;
-   /**
+  /**
    * The species to filter measurement options for
    *
    * @type {number[]}
@@ -150,9 +150,9 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
                   <em>{renderOption.itis_tsn}</em>
                 </Typography>
                 {/* <Typography variant="body2">
-                  {renderOption.commonName ? (
+                  {renderOption.commonNames ? (
                     <>
-                      <span>{renderOption.commonName}</span>&nbsp;
+                      <span>{renderOption.commonNames}</span>&nbsp;
                       <span>
                         (<em>{renderOption.scientificName}</em>)
                       </span>

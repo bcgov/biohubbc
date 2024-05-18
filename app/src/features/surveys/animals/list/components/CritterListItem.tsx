@@ -6,7 +6,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import ScientificNameTypography from '../../profile/ScientificNameTypography';
+import ScientificNameTypography from '../../components/ScientificNameTypography';
 
 interface ICritterListItemProps {
   critter: ISimpleCritterWithInternalId;
@@ -14,6 +14,12 @@ interface ICritterListItemProps {
   handleCheckboxChange: (surveyCritterId: number) => void;
 }
 
+/**
+ * Component for displaying and selecting an animal within the AnimalListContainer
+ *
+ * @param {ICritterListItemProps} props
+ * @return {*}
+ */
 const CritterListItem = (props: ICritterListItemProps) => {
   const surveyContext = useSurveyContext();
   const critters = surveyContext.critterDataLoader.data;
@@ -35,11 +41,10 @@ const CritterListItem = (props: ICritterListItemProps) => {
   return (
     <Stack
       sx={{
-        flex: '1 1 auto',
+        width: '100%'
       }}>
       <IconButton
         onClick={() => {
-          // Avoid unnecessary reloads
           if (critter.survey_critter_id !== selectedAnimal?.survey_critter_id)
             setSelectedAnimal({
               survey_critter_id: critter.survey_critter_id,
@@ -47,6 +52,8 @@ const CritterListItem = (props: ICritterListItemProps) => {
             });
         }}
         sx={{
+          pt: 0.5,
+          pb: 1.5,
           borderRadius: 0,
           flex: '1 1 auto',
           justifyContent: 'flex-start',
@@ -63,7 +70,8 @@ const CritterListItem = (props: ICritterListItemProps) => {
           alignItems="flex-start"
           sx={{
             px: 1.25,
-            flex: '1 1 auto'
+            flex: '1 1 auto',
+            maxWidth: '100%'
           }}>
           <Checkbox
             sx={{ mr: 0.5 }}
@@ -77,35 +85,42 @@ const CritterListItem = (props: ICritterListItemProps) => {
           />
           <Typography
             sx={{
-              display: 'block',
               whiteSpace: 'nowrap',
               textOverflow: 'ellipsis',
               overflow: 'hidden',
               textAlign: 'left',
-              flex: '0.7',
+              flex: '0.9',
               mt: 1
             }}>
             <Typography
               component="span"
-              textAlign="left"
               variant="body2"
+              textAlign="left"
               sx={{
                 mr: 1,
                 fontWeight: 700,
+                whiteSpace: 'nowrap',
                 display: 'block',
                 textOverflow: 'ellipsis',
                 overflow: 'hidden',
                 textAlign: 'left',
-                flex: '1 1 auto'
+                width: '90%'
               }}>
               {critter.animal_id}
             </Typography>
             <ScientificNameTypography
+              variant="body2"
               component="span"
               name={critter.itis_scientific_name}
               sx={{
-                color: `${grey[600]} !important`,
-                flex: '1 1 auto'
+                mr: 1,
+                whiteSpace: 'nowrap',
+                display: 'block',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                textAlign: 'left',
+                width: '85%',
+                color: `${grey[600]} !important`
               }}
             />
           </Typography>

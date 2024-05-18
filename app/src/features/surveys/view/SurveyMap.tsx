@@ -82,8 +82,6 @@ const SurveyMap = (props: ISurveyMapProps) => {
     }
   }, [props.supplementaryLayers, props.staticLayers]);
 
-  console.log(bounds)
-
   return (
     <>
       {props.isLoading ? (

@@ -1,16 +1,17 @@
 import { AxiosInstance } from 'axios';
 import { ICreateCritterCollectionUnit } from 'features/surveys/view/survey-animals/animal';
-import { ICollectionUnitResponse } from 'interfaces/useCritterApi.interface';
+import { ICreateUpdateCritterCollectionUnitResponse } from 'interfaces/useCritterApi.interface';
 
 const useCollectionUnitApi = (axios: AxiosInstance) => {
   /**
    * Create a critter collection-unit.
    *
-   * @async
    * @param {ICreateCritterCollectionUnit} payload
-   * @returns {Promise<ICollectionUnitResponse>} The created collection-unit.
+   * @return {*}  {Promise<ICreateUpdateCritterCollectionUnitResponse>} The created collection-unit.
    */
-  const createCollectionUnit = async (payload: ICreateCritterCollectionUnit): Promise<ICollectionUnitResponse> => {
+  const createCritterCollectionUnit = async (
+    payload: ICreateCritterCollectionUnit
+  ): Promise<ICreateUpdateCritterCollectionUnitResponse> => {
     const { data } = await axios.post(`/api/critterbase/collection-units/create`, payload);
     return data;
   };
@@ -18,11 +19,12 @@ const useCollectionUnitApi = (axios: AxiosInstance) => {
   /**
    * Update a critter collection-unit.
    *
-   * @async
    * @param {ICreateCritterCollectionUnit} payload
-   * @returns {Promise<ICollectionUnitResponse>} The updated collection-unit.
+   * @return {*}  {Promise<ICreateUpdateCritterCollectionUnitResponse>} The updated collection-unit.
    */
-  const updateCollectionUnit = async (payload: ICreateCritterCollectionUnit): Promise<ICollectionUnitResponse> => {
+  const updateCritterCollectionUnit = async (
+    payload: ICreateCritterCollectionUnit
+  ): Promise<ICreateUpdateCritterCollectionUnitResponse> => {
     const { data } = await axios.patch(
       `/api/critterbase/collection-units/${payload.critter_collection_unit_id}`,
       payload
@@ -35,15 +37,15 @@ const useCollectionUnitApi = (axios: AxiosInstance) => {
    *
    * @async
    * @param {string} collectionUnitId - critter_collection_unit_id.
-   * @returns {Promise<ICollectionUnitResponse>} The deleted collection-unit.
+   * @returns {Promise<void>}
    */
-  const deleteCollectionUnit = async (collectionUnitId: string): Promise<ICollectionUnitResponse> => {
+  const deleteCritterCollectionUnit = async (collectionUnitId: string): Promise<void> => {
     const { data } = await axios.delete(`/api/critterbase/collection-units/${collectionUnitId}`);
 
     return data;
   };
 
-  return { createCollectionUnit, updateCollectionUnit, deleteCollectionUnit };
+  return { createCritterCollectionUnit, updateCritterCollectionUnit, deleteCritterCollectionUnit };
 };
 
 export { useCollectionUnitApi };

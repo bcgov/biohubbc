@@ -2,7 +2,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { useCodesContext, useObservationsContext, useObservationsPageContext } from 'hooks/useContext';
-import { IGetSampleMethodRecord } from 'interfaces/useSurveyApi.interface';
+import { IGetSampleMethodRecord } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect } from 'react';
 import { getCodesName } from 'utils/Utils';
 import SamplingSiteListPeriod from './SamplingSiteListPeriod';
@@ -48,7 +48,7 @@ export const SamplingSiteListMethod = (props: ISamplingSiteListMethodProps) => {
         title="Sampling Method"
         primary={getCodesName(codesContext.codesDataLoader.data, 'sample_methods', sampleMethod.method_lookup_id)}
       />
-      {sampleMethod.sample_periods?.length && (
+      {sampleMethod.sample_periods.length > 0 && (
         <List disablePadding sx={{ ml: 0.5 }}>
           <SamplingSiteListPeriod
             samplePeriods={sampleMethod.sample_periods}

@@ -1,278 +1,167 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu, { MenuProps } from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import { Stack } from '@mui/system';
-import EditDialog from 'components/dialog/EditDialog';
-import AutocompleteField from 'components/fields/AutocompleteField';
-import CustomTextField from 'components/fields/CustomTextField';
-import { useFormikContext } from 'formik';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useAnimalPageContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ICreateCaptureRequest, IMarkingPostData } from 'interfaces/useCritterApi.interface';
+import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
-import yup from 'utils/YupSchema';
-import MarkingCardContainer from './MarkingCardContainer';
+import { TransitionGroup } from 'react-transition-group';
+import CaptureMarkingsDialog from './CaptureMarkingsDialog';
+import MarkingCard from './MarkingCard';
 
+/**
+ * Returns the control for applying markings to an animal on the animal capture form
+ *
+ * @returns
+ */
 const CaptureMarkingsForm = () => {
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
+  const [selectedMarking, setSelectedMarking] = useState<number | null>(null);
+  const [markingAnchorEl, setMarkingAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  const { values } = useFormikContext<ICreateEditCaptureRequest>();
+
   const critterbaseApi = useCritterbaseApi();
 
   const { critterDataLoader } = useAnimalPageContext();
 
-  const { values, setFieldValue } = useFormikContext<ICreateCaptureRequest>();
-
-  const index = values.markings.length;
-
-  // TODO: consolidate lookups into a single endpoint in critterbase
+  // Get available marking types
   const markingTypesDataLoader = useDataLoader(() => critterbaseApi.marking.getMarkingTypeOptions());
+
+  // Get available marking body positions
   const markingBodyLocationDataLoader = useDataLoader((tsn: number) =>
     critterbaseApi.marking.getMarkingBodyLocationOptions(tsn)
   );
+
+  // Get available marking colours
   const markingColoursDataLoader = useDataLoader(() => critterbaseApi.marking.getMarkingColourOptions());
 
-  if (!markingTypesDataLoader.data) {
-    markingTypesDataLoader.load();
+  markingTypesDataLoader.load();
+  markingColoursDataLoader.load();
+  if (critterDataLoader.data) {
+    markingBodyLocationDataLoader.load(critterDataLoader.data.itis_tsn);
   }
-
-  if (!markingColoursDataLoader.data) {
-    markingColoursDataLoader.load();
-  }
-
-  if (!markingBodyLocationDataLoader.data) {
-    if (critterDataLoader.data) {
-      markingBodyLocationDataLoader.load(critterDataLoader.data.itis_tsn);
-    }
-  }
-
-  const handleSave = (data: IMarkingPostData) => {
-    setFieldValue(`markings.[${index}]`, data);
-    setIsDialogOpen(false);
-  };
-
-  const handleClose = () => {
-    setIsDialogOpen(false);
-  };
 
   return (
-    <>
-      <EditDialog
-        dialogTitle={'Add Marking'}
-        open={isDialogOpen}
-        onCancel={handleClose}
-        onSave={handleSave}
-        size="md"
-        // dialogLoading={loading}
-        component={{
-          initialValues: {
-            marking_type_id: '',
-            taxon_marking_body_location_id: '',
-            identifier: '',
-            primary_colour_id: '',
-            secondary_colour_id: null,
-            comment: ''
-          },
-          validationSchema: yup.object({ marking_id: yup.string().optional() }), //CreateCritterMarkingSchema,
-          element: (
-            <Stack gap={2}>
-              <AutocompleteField
-                id="marking-type-autocomplete-field"
-                label="Marking Type"
-                loading={markingTypesDataLoader.isLoading}
-                name={`marking_type_id`}
-                options={
-                  markingTypesDataLoader.data?.map((item) => ({
-                    value: item.marking_type_id,
-                    label: item.name
-                  })) ?? []
-                }
-              />
-              <AutocompleteField
-                id="marking-location-autocomplete-field"
-                label="Marking Placement"
-                name={`body_location_id`}
-                loading={markingBodyLocationDataLoader.isLoading}
-                options={
-                  markingBodyLocationDataLoader.data?.map((item) => ({
-                    value: item.taxon_marking_body_location_id,
-                    label: item.body_location
-                  })) ?? []
-                }
-              />
-              <AutocompleteField
-                id="marking-primary-colour-autocomplete-field"
-                label="Primary colour"
-                name={`primary_colour_id`}
-                loading={markingColoursDataLoader.isLoading}
-                options={markingColoursDataLoader.data?.map((item) => ({ value: item.id, label: item.value })) ?? []}
-              />
-              <AutocompleteField
-                id="marking-secondary-colour-autocomplete-field"
-                label="Secondary colour"
-                name={`secondary_colour_id`}
-                loading={markingColoursDataLoader.isLoading}
-                options={markingColoursDataLoader.data?.map((item) => ({ value: item.id, label: item.value })) ?? []}
-              />
-              <CustomTextField
-                name={`comment`}
-                label="Description"
-                other={{ multiline: true, required: true, rows: 4 }}
-              />
-            </Stack>
-          )
-        }}
-      />
+    <FieldArray
+      name="markings"
+      render={(arrayHelpers: FieldArrayRenderProps) => (
+        <>
+          {/* CONTEXT MENU ACTIONS ON MARKING */}
+          {selectedMarking !== null && (
+            <Menu
+              sx={{ pb: 2 }}
+              open={Boolean(markingAnchorEl)}
+              onClose={() => {
+                setMarkingAnchorEl(null);
+                setSelectedMarking(null);
+              }}
+              anchorEl={markingAnchorEl}
+              anchorOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}>
+              <MenuItem
+                onClick={() => {
+                  setMarkingAnchorEl(null);
+                  setIsDialogOpen(true);
+                }}>
+                <ListItemIcon>
+                  <Icon path={mdiPencilOutline} size={1} />
+                </ListItemIcon>
+                <ListItemText>Edit</ListItemText>
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  arrayHelpers.remove(selectedMarking);
+                  setMarkingAnchorEl(null);
+                  setSelectedMarking(null);
+                }}>
+                <ListItemIcon>
+                  <Icon path={mdiTrashCanOutline} size={1} />
+                </ListItemIcon>
+                <ListItemText>Delete</ListItemText>
+              </MenuItem>
+            </Menu>
+          )}
 
-      <MarkingCardContainer />
+          {/* ADD/EDIT MARKING DIALOG */}
+          <CaptureMarkingsDialog
+            initialValues={selectedMarking !== null ? values.markings[selectedMarking] : undefined}
+            markingBodyLocations={markingBodyLocationDataLoader.data ?? []}
+            markingColours={markingColoursDataLoader.data ?? []}
+            markingTypes={markingTypesDataLoader.data ?? []}
+            isDialogOpen={isDialogOpen}
+            handleSave={(data) => {
+              selectedMarking !== null ? arrayHelpers.replace(selectedMarking, data) : arrayHelpers.push(data);
+              setIsDialogOpen(false);
+              setSelectedMarking(null);
+            }}
+            handleClose={() => {
+              setIsDialogOpen(false);
+              setSelectedMarking(null);
+            }}
+          />
 
-      <Button
-        color="primary"
-        variant="outlined"
-        startIcon={<Icon path={mdiPlus} size={1} />}
-        aria-label="add marking"
-        onClick={() => setIsDialogOpen(true)}>
-        Add Marking
-      </Button>
-    </>
+          {/* MARKING CARDS */}
+          <Stack gap={3}>
+            <TransitionGroup>
+              {values.markings.map((marking, index) => (
+                <Collapse key={marking.marking_id ?? marking._id}>
+                  <MarkingCard
+                    identifier={marking.identifier}
+                    comment={marking.comment}
+                    primary_colour_label={
+                      markingColoursDataLoader.data?.find((colour) => colour.colour_id == marking.primary_colour_id)
+                        ?.colour
+                    }
+                    secondary_colour_label={
+                      markingColoursDataLoader.data?.find((colour) => colour.colour_id == marking.secondary_colour_id)
+                        ?.colour
+                    }
+                    marking_type_label={
+                      markingTypesDataLoader.data?.find((type) => type.marking_type_id == marking.marking_type_id)
+                        ?.name ?? ''
+                    }
+                    marking_body_location_label={
+                      markingBodyLocationDataLoader.data?.find(
+                        (body_location) =>
+                          body_location.taxon_marking_body_location_id == marking.taxon_marking_body_location_id
+                      )?.body_location ?? ''
+                    }
+                    handleMarkingMenuClick={(event) => {
+                      setMarkingAnchorEl(event.currentTarget);
+                      setSelectedMarking(index);
+                    }}
+                  />
+                </Collapse>
+              ))}
+            </TransitionGroup>
+          </Stack>
+          <Button
+            color="primary"
+            variant="outlined"
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            aria-label="add marking"
+            onClick={() => setIsDialogOpen(true)}>
+            Add Marking
+          </Button>
+        </>
+      )}
+    />
   );
 };
 
 export default CaptureMarkingsForm;
-
-// import Grid from '@mui/material/Grid';
-// import EditDialog from 'components/dialog/EditDialog';
-// import CbSelectField from 'components/fields/CbSelectField';
-// import CustomTextField from 'components/fields/CustomTextField';
-// import FormikDevDebugger from 'components/formik/FormikDevDebugger';
-// import { useDialogContext } from 'hooks/useContext';
-// import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-// import { IMarkingResponse } from 'interfaces/useCritterApi.interface';
-// import { useState } from 'react';
-// import {
-//   AnimalFormProps,
-//   ANIMAL_FORM_MODE,
-//   CreateCritterMarkingSchema,
-//   ICreateCritterMarking,
-//   isRequiredInSchema
-// } from '../animal';
-
-// /**
-//  * This component renders a 'critter marking' create / edit dialog.
-//  *
-//  * @param {AnimalFormProps<IMarkingResponse>} props - Generic AnimalFormProps.
-//  * @returns {*}
-//  */
-// export const MarkingAnimalForm = (props: AnimalFormProps<IMarkingResponse>) => {
-//   const cbApi = useCritterbaseApi();
-//   const dialog = useDialogContext();
-
-//   const [loading, setLoading] = useState(false);
-
-//   const handleSave = async (values: ICreateCritterMarking) => {
-//     setLoading(true);
-//     try {
-//       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-//         await cbApi.marking.createMarking(values);
-//         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created marking.` });
-//       }
-//       if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-//         await cbApi.marking.updateMarking(values);
-//         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited marking.` });
-//       }
-//     } catch (err) {
-//       dialog.setSnackbar({ open: true, snackbarMessage: `Critter marking request failed.` });
-//     } finally {
-//       props.handleClose();
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <EditDialog
-//       dialogTitle={props.formMode === ANIMAL_FORM_MODE.ADD ? 'Add Marking' : 'Edit Marking'}
-//       open={props.open}
-//       onCancel={props.handleClose}
-//       onSave={handleSave}
-//       size="md"
-//       dialogLoading={loading}
-//       component={{
-//         initialValues: {
-//           marking_id: props?.formObject?.marking_id,
-//           critter_id: props?.critter.critter_id,
-//           marking_type_id: props?.formObject?.marking_type_id ?? '',
-//           taxon_marking_body_location_id: props?.formObject?.taxon_marking_body_location_id ?? '',
-//           primary_colour_id: props?.formObject?.primary_colour_id,
-//           secondary_colour_id: props?.formObject?.secondary_colour_id,
-//           comment: props?.formObject?.comment
-//         },
-//         validationSchema: CreateCritterMarkingSchema,
-//         element: (
-//           <Grid container spacing={3}>
-//             <Grid item xs={12}>
-//               <CbSelectField
-//                 label="Type"
-//                 name={'marking_type_id'}
-//                 id="marking_type"
-//                 route="lookups/marking-types"
-//                 controlProps={{
-//                   size: 'medium',
-//                   required: isRequiredInSchema(CreateCritterMarkingSchema, 'marking_type_id')
-//                 }}
-//               />
-//             </Grid>
-//             <Grid item xs={12}>
-//               <CbSelectField
-//                 label="Body Location"
-//                 name={'taxon_marking_body_location_id'}
-//                 id="marking_body_location"
-//                 route="xref/taxon-marking-body-locations"
-//                 query={{ tsn: props.critter.itis_tsn }}
-//                 controlProps={{
-//                   size: 'medium',
-//                   required: isRequiredInSchema(CreateCritterMarkingSchema, 'taxon_marking_body_location_id')
-//                 }}
-//               />
-//             </Grid>
-//             <Grid item xs={12} sm={6}>
-//               <CbSelectField
-//                 label="Primary Colour"
-//                 name={'primary_colour_id'}
-//                 id="primary_colour_id"
-//                 route="lookups/colours"
-//                 controlProps={{
-//                   size: 'medium',
-//                   required: isRequiredInSchema(CreateCritterMarkingSchema, 'primary_colour_id')
-//                 }}
-//               />
-//             </Grid>
-//             <Grid item xs={12} sm={6}>
-//               <CbSelectField
-//                 label="Secondary Colour"
-//                 name={'secondary_colour_id'}
-//                 id="secondary_colour_id"
-//                 route="lookups/colours"
-//                 controlProps={{
-//                   size: 'medium',
-//                   required: isRequiredInSchema(CreateCritterMarkingSchema, 'secondary_colour_id')
-//                 }}
-//               />
-//             </Grid>
-//             <Grid item xs={12}>
-//               <CustomTextField
-//                 label="Comments"
-//                 name={'comment'}
-//                 other={{
-//                   size: 'medium',
-//                   multiline: true,
-//                   minRows: 3,
-//                   required: isRequiredInSchema(CreateCritterMarkingSchema, 'comment')
-//                 }}
-//               />
-//             </Grid>
-//             <FormikDevDebugger />
-//           </Grid>
-//         )
-//       }}
-//     />
-//   );
-// };

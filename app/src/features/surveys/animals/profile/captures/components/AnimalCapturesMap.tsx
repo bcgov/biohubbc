@@ -1,56 +1,42 @@
-import { CircularProgress } from '@mui/material';
 import Box from '@mui/system/Box';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
 import SurveyMap from 'features/surveys/view/SurveyMap';
 import { Feature } from 'geojson';
-import { useAnimalPageContext } from 'hooks/useContext';
+import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
 
-const AnimalCapturesMap = () => {
-  const { critterDataLoader } = useAnimalPageContext();
+interface IAnimalCapturesMapProps {
+  captures: ICaptureResponse[];
+  isLoading: boolean;
+}
 
-  if (critterDataLoader.isLoading || !critterDataLoader.data) {
-    return <CircularProgress size={40} />;
-  }
+/**
+ * Wrapper around the Survey Map component for displaying the selected animal's captures on the map
+ *
+ * @returns
+ */
+const AnimalCapturesMap = (props: IAnimalCapturesMapProps) => {
+  const { captures, isLoading } = props;
 
-  const captureMapFeatures = critterDataLoader.data.captures.map((capture) => ({
+  const captureMapFeatures = captures.map((capture) => ({
     type: 'Feature',
     geometry: { type: 'Point', coordinates: [capture.capture_location.longitude, capture.capture_location.latitude] },
     properties: { captureId: capture.capture_id, date: capture.capture_timestamp }
   })) as Feature[];
-
-  // const captureMapFeatures = [
-  //   {
-  //     type: 'Feature',
-  //     geometry: { type: 'Point', coordinates: [-120.4, 51.3] },
-  //     properties: { captureId: 1 }
-  //   }
-  // ] as Feature[];
 
   const staticLayers: IStaticLayer[] = captureMapFeatures.map((feature, index) => ({
     layerName: 'Captures',
     popupRecordTitle: 'Capture Location',
     features: [
       {
-        key: `${feature.id}-${index}`,
+        key: `${feature.geometry}-${index}`,
         geoJSON: feature
-
-        // popup: (
-        //   <SurveyMapPopup
-        //     // isLoading={isLoading}
-        //     title={feature.properties.date}
-        //     metadata={featureMetadata[feature.]}
-        //   />
-        // ),
-        // tooltip: <SurveyMapTooltip label="Observation" />
       }
     ]
   }));
 
-  console.log(staticLayers)
-
   return (
-    <Box height={{ sm: 300, md: 500 }} position="relative">
-      <SurveyMap isLoading={critterDataLoader.isLoading} staticLayers={staticLayers} supplementaryLayers={[]} />
+    <Box height={{ sm: 250, md: 400 }} position="relative">
+      <SurveyMap isLoading={isLoading} staticLayers={staticLayers} supplementaryLayers={[]} />
     </Box>
   );
 };

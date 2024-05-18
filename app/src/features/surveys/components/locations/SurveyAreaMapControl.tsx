@@ -23,7 +23,7 @@ import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
 import { v4 } from 'uuid';
-import { ISurveyLocation, ISurveyLocationForm } from '../StudyAreaForm';
+import { ISurveyLocation, ISurveyLocationForm } from './StudyAreaForm';
 
 export interface ISurveyAreMapControlProps {
   map_id: string;
@@ -41,7 +41,9 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
   const [selectedRegion, setSelectedRegion] = useState<IRegionOption | null>(null);
 
   useEffect(() => {
-    setUpdatedBounds(calculateUpdatedMapBounds(formik_props.values.locations.map((item) => item.geojson[0])));
+    if (formik_props.values.locations.length) {
+      setUpdatedBounds(calculateUpdatedMapBounds(formik_props.values.locations.map((item) => item.geojson[0])));
+    }
   }, [formik_props.values.locations]);
 
   return (

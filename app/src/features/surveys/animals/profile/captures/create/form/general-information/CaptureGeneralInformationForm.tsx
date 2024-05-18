@@ -5,10 +5,15 @@ import Box from '@mui/system/Box';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { useFormikContext } from 'formik';
-import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 
+/**
+ * Returns the controls for general information fields relating to the capture on the animal capture form
+ *
+ * @returns
+ */
 const CaptureGeneralInformationForm = () => {
-  const formikProps = useFormikContext<ICreateCaptureRequest>();
+  const formikProps = useFormikContext<ICreateEditCaptureRequest>();
 
   return (
     <>
@@ -24,8 +29,8 @@ const CaptureGeneralInformationForm = () => {
                 parentName="capture"
                 date={{
                   dateLabel: 'Capture date',
-                  dateName: 'capture.capture_timestamp',
-                  dateId: 'capture.capture_timestamp',
+                  dateName: 'capture.capture_date',
+                  dateId: 'capture.capture_date',
                   dateRequired: true,
                   dateHelperText: '',
                   dateIcon: mdiCalendar
@@ -34,7 +39,7 @@ const CaptureGeneralInformationForm = () => {
                   timeLabel: 'Capture time',
                   timeName: 'capture.capture_time',
                   timeId: 'capture.capture_time',
-                  timeRequired: true,
+                  timeRequired: false,
                   timeHelperText: '',
                   timeIcon: mdiCalendar
                 }}
@@ -46,7 +51,7 @@ const CaptureGeneralInformationForm = () => {
               name="capture.capture_comment"
               label="Capture comments"
               maxLength={1000}
-              other={{ multiline: true, rows: 4 }}
+              other={{ multiline: true, rows: 4, required: true }}
             />
           </Grid>
           <Grid item xs={12} mt={2}>
@@ -59,8 +64,8 @@ const CaptureGeneralInformationForm = () => {
                 parentName="capture"
                 date={{
                   dateLabel: 'Release date',
-                  dateName: 'capture.release_timestamp',
-                  dateId: 'capture.release_timestamp',
+                  dateName: 'capture.release_date',
+                  dateId: 'capture.release_date',
                   dateRequired: false,
                   dateHelperText: '',
                   dateIcon: mdiCalendar

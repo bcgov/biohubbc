@@ -1,49 +1,46 @@
+import { ICreateCritterCollectionUnit } from 'features/surveys/view/survey-animals/animal';
 import { Feature } from 'geojson';
 import { ITaxonomy } from './useTaxonomyApi.interface';
 
 export interface ICreateEditAnimalRequest {
+  critter_id?: string;
   nickname: string;
-  description: string;
   species: ITaxonomy | null;
-  ecological_units: {
-    value: number;
-    ecological_unit_id: string;
-  }[],
+  ecological_units: ICreateCritterCollectionUnit[];
   wildlife_health_id: string;
+  critter_comment: string | null;
 }
 
 export interface IMarkingPostData {
+  /**
+   * Internal id used to satisfy react key requirements. Not sent to the API
+   */
+  _id?: string;
+
+  /**
+   * Critterbase primary key for a marking attached to an animal
+   */
+  marking_id?: string;
   marking_type_id: string;
   taxon_marking_body_location_id: string;
   identifier: string | number | null;
   primary_colour_id: string | null;
   secondary_colour_id: string | null;
-  comment: string;
-}
-
-export interface IQualitativeMeasurementPostData {
-  measurement_id: string;
-  value: string;
-}
-
-export interface IQuantitativeMeasurementPostData {
-  measurement_id: string;
-  value: number;
-}
-
-export interface IMeasurementPostData {
-  qualitative: IQualitativeMeasurementPostData[];
-  quantitative: IQuantitativeMeasurementPostData[];
+  comment: string | null;
 }
 
 export interface ICapturePostData {
   capture_id?: string;
   capture_timestamp: string;
+  capture_date?: string;
+  capture_time?: string;
   release_timestamp: string;
-  capture_comment: string;
-  release_comment: string;
-  capture_location: Feature;
-  release_location: Feature;
+  release_date?: string;
+  release_time?: string;
+  capture_comment: string | null;
+  release_comment: string | null;
+  capture_location: Feature | null;
+  release_location: Feature | null;
 }
 
 export interface ILocationPostData {
@@ -54,39 +51,41 @@ export interface ILocationPostData {
   coordinate_uncertainty_unit: string;
 }
 
-export interface ICreateCaptureRequest {
+export interface ICreateEditCaptureRequest {
   capture: ICapturePostData;
   markings: IMarkingPostData[];
-  measurements?: IMeasurementPostData;
+  measurements: (IQuantitativeMeasurementUpdate | IQualitativeMeasurementUpdate)[];
 }
 
-export interface ICreateMortalityRequest {
-  markings: IMarkingPostData[];
-  measurements: IMeasurementPostData;
-  mortality_id: string;
-  location_id: string | null;
-  mortality_timestamp: string;
-  mortality_location: Feature;
-  proximate_cause_of_death_id: string | null;
-  proximate_cause_of_death_confidence: string;
-  proximate_predated_by_itis_tsn: number | null;
-  ultimate_cause_of_death_id: string | null;
-  ultimate_cause_of_death_confidence: string;
-  ultimate_predated_by_itis_tsn: number | null;
-  mortality_comment: string | null;
-}
-
-// export interface IAnimalUpdateObject {
-//   name: string
-// }
-
-export type ICollectionUnitResponse = {
-  critter_collection_unit_id: string;
+export interface ICollectionCategory {
+  collection_category_id: string;
   category_name: string;
-  unit_name: string;
+  description: string | null;
+  itis_tsn: number;
+}
+
+export interface ICollectionUnit {
   collection_unit_id: string;
   collection_category_id: string;
-};
+  unit_name: string;
+  description: string | null;
+}
+
+export interface ICreateUpdateCritterCollectionUnitResponse {
+  critter_collection_unit_id: string;
+  critter_id: string;
+  collection_unit_id: string;
+  unit_name: string | null;
+  unit_description: string | null;
+}
+
+export interface ICritterCollectionUnitResponse {
+  critter_collection_unit_id: string;
+  collection_category_id: string;
+  collection_unit_id: string;
+  unit_name: string;
+  category_name: string;
+}
 
 type ILocationResponse = {
   location_id: string;
@@ -135,10 +134,30 @@ export type IMarkingResponse = {
   comment: string | null;
 };
 
+export type IQualitativeMeasurementUpdate = {
+  measurement_qualitative_id: string | null;
+  taxon_measurement_id: string;
+  capture_id?: string | null;
+  mortality_id: string | null;
+  qualitative_option_id: string | null;
+  measurement_comment: string | null;
+  measured_timestamp: string | null;
+};
+
+export type IQuantitativeMeasurementUpdate = {
+  measurement_quantitative_id: string | null;
+  taxon_measurement_id: string;
+  capture_id?: string | null;
+  mortality_id: string | null;
+  measurement_comment: string | null;
+  measured_timestamp: string | null;
+  value: number;
+};
+
 export type IQualitativeMeasurementResponse = {
   measurement_qualitative_id: string;
   taxon_measurement_id: string;
-  capture_id: string | null;
+  capture_id?: string | null;
   mortality_id: string | null;
   qualitative_option_id: string;
   measurement_comment: string | null;
@@ -192,7 +211,7 @@ export type ICritterDetailedResponse = {
   animal_id: string | null;
   sex: string;
   responsible_region_nr_id: string;
-  collection_units: ICollectionUnitResponse[];
+  collection_units: ICritterCollectionUnitResponse[];
   mortality: IMortalityResponse[];
   captures: ICaptureResponse[];
   markings: IMarkingResponse[];

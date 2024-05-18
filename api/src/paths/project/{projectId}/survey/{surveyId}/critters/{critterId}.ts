@@ -10,24 +10,6 @@ import { SurveyCritterService } from '../../../../../../services/survey-critter-
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters/{critterId}');
-export const DELETE: Operation = [
-  authorizeRequestHandler((req) => {
-    return {
-      or: [
-        {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
-          surveyId: Number(req.params.surveyId),
-          discriminator: 'ProjectPermission'
-        },
-        {
-          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          discriminator: 'SystemRole'
-        }
-      ]
-    };
-  }),
-  removeCritterFromSurvey()
-];
 
 export const PATCH: Operation = [
   authorizeRequestHandler((req) => {
@@ -47,54 +29,6 @@ export const PATCH: Operation = [
   }),
   updateSurveyCritter()
 ];
-
-DELETE.apiDoc = {
-  description: 'Removes association of this critter to this survey.',
-  tags: ['critterbase'],
-  security: [
-    {
-      Bearer: []
-    }
-  ],
-  parameters: [
-    {
-      in: 'path',
-      name: 'surveyId',
-      schema: {
-        type: 'number'
-      },
-      required: true
-    },
-    {
-      in: 'path',
-      name: 'critterId',
-      schema: {
-        type: 'string'
-      },
-      required: true
-    }
-  ],
-  responses: {
-    200: {
-      description: 'Critter was removed from survey'
-    },
-    400: {
-      $ref: '#/components/responses/400'
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    403: {
-      $ref: '#/components/responses/403'
-    },
-    500: {
-      $ref: '#/components/responses/500'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
-};
 
 PATCH.apiDoc = {
   description: 'Patches a critter in critterbase, also capable of deleting relevant rows if marked with _delete.',
@@ -149,9 +83,9 @@ PATCH.apiDoc = {
   }
 };
 
-export function removeCritterFromSurvey(): RequestHandler {
+export function removeCrittersFromSurvey(): RequestHandler {
   return async (req, res) => {
-    const critterId = Number(req.params.critterId);
+    const critterIds = req.body.critterIds;
     const surveyId = Number(req.params.surveyId);
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -160,7 +94,7 @@ export function removeCritterFromSurvey(): RequestHandler {
     try {
       await connection.open();
 
-      const result = await surveyCritterService.removeCritterFromSurvey(surveyId, critterId);
+      const result = await surveyCritterService.removeCrittersFromSurvey(surveyId, critterIds);
       await connection.commit();
 
       return res.status(200).json(result);

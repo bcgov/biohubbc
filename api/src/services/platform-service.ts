@@ -44,13 +44,13 @@ export interface IArtifact {
 
 export interface IItisSearchResult {
   tsn: string;
-  commonName?: string;
+  commonNames?: string[];
   scientificName: string;
 }
 
 export interface ITaxonomy {
   tsn: number;
-  commonName?: string;
+  commonNames?: string[];
   scientificName: string;
 }
 
@@ -74,7 +74,7 @@ export class PlatformService extends DBService {
   /**
    * Get taxonomic data from BioHub.
    *
-   * @param {(string | number)[]} ids
+   * @param {(string | number)[]} tsns
    * @return {*}  {Promise<IItisSearchResult[]>}
    * @memberof PlatformService
    */

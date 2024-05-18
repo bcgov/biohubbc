@@ -75,6 +75,11 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
 
         setFieldValue(props.name, option?.value);
       }}
+      onInputChange={(_event, _value, reason) => {
+        if (reason === 'clear') {
+          setFieldValue(props.name, '');
+        }
+      }}
       renderInput={(params) => (
         <TextField
           {...params}

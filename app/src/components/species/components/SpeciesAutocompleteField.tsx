@@ -80,7 +80,9 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   const biohubApi = useBiohubApi();
   const isMounted = useIsMounted();
 
+  // The input field value
   const [inputValue, setInputValue] = useState(defaultSpecies?.scientificName ?? '');
+  // The array of options to choose from
   const [options, setOptions] = useState<ITaxonomy[]>(defaultSpecies ? [defaultSpecies] : []);
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
@@ -139,7 +141,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       onChange={(_, option) => {
         if (option) {
           handleSpecies(option);
-          setInputValue(startCase(option.commonName ?? option.scientificName));
+          setInputValue(startCase(option?.commonNames ? option.commonNames[0] : option.scientificName));
         }
       }}
       renderOption={(renderProps, renderOption) => {
@@ -151,13 +153,15 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
                 borderTop: '1px solid' + grey[300]
               }
             }}
-            {...renderProps}
-            key={renderOption.tsn}>
+            key={`${renderOption.tsn}-${renderOption.scientificName}`}
+            {...renderProps}>
             <Box py={1} width="100%">
               <SpeciesCard
-                commonName={renderOption.commonName}
+                commonNames={renderOption.commonNames}
                 scientificName={renderOption.scientificName}
                 tsn={renderOption.tsn}
+                rank={renderOption.rank}
+                kingdom={renderOption.kingdom}
               />
             </Box>
           </Box>
