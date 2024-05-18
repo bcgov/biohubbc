@@ -1,20 +1,20 @@
 import Grid from '@mui/material/Grid';
 import Box from '@mui/system/Box';
 import { useFormikContext } from 'formik';
-import { ICreateMortalityRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import MortalityLocationMapControl from './MortalityLocationMapControl';
 
 const MortalityLocationForm = () => {
-  const formikProps = useFormikContext<ICreateMortalityRequest>();
+  const formikProps = useFormikContext<ICreateEditMortalityRequest>();
 
   return (
     <Box component="fieldset">
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <MortalityLocationMapControl
-            mapId="mortality_location_map"
+            mapId="location_map"
             title="Mortality Location"
-            name="mortality_location"
+            name="location"
             formikProps={formikProps}
           />
         </Grid>

@@ -5,10 +5,10 @@ import Box from '@mui/system/Box';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { useFormikContext } from 'formik';
-import { ICreateMortalityRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 
 const MortalityGeneralInformationForm = () => {
-  const formikProps = useFormikContext<ICreateMortalityRequest>();
+  const formikProps = useFormikContext<ICreateEditMortalityRequest>();
 
   return (
     

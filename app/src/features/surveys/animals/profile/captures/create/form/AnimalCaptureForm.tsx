@@ -9,7 +9,7 @@ import CaptureGeneralInformationForm from './general-information/CaptureGeneralI
 import CaptureLocationForm from './location/CaptureLocationForm';
 import ReleaseLocationForm from './location/ReleaseLocationForm';
 import CaptureMarkingsForm from './markings/CaptureMarkingsForm';
-import CaptureMeasurementsForm from './measurements/CaptureMeasurementsForm';
+import AnimalMeasurementsForm from './measurements/CaptureMeasurementsForm';
 
 export interface IAnimalCaptureFormProps {
   initialCaptureData: ICreateEditCaptureRequest;
@@ -98,7 +98,7 @@ const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
         <HorizontalSplitFormComponent
           title="Measurements"
           summary="Enter measurements recorded during the capture"
-          component={<CaptureMeasurementsForm />}
+          component={<AnimalMeasurementsForm formikName="measurements" />}
         />
         <Divider />
         <HorizontalSplitFormComponent

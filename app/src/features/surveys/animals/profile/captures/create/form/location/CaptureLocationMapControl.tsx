@@ -54,7 +54,7 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 
-  //   Array of sampling site features
+  //   Array of capture location features
   const captureLocationGeoJson: Feature | undefined = useMemo(() => {
     const location: { latitude: number; longitude: number } | Feature = get(values, name);
 

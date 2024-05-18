@@ -43,6 +43,19 @@ export interface ICapturePostData {
   release_location: Feature | null;
 }
 
+export type IMortalityPostData = {
+  mortality_id: string;
+  location: Feature | null;
+  mortality_timestamp: string;
+  proximate_cause_of_death_id?: string | null;
+  proximate_cause_of_death_confidence?: string | null;
+  proximate_predated_by_itis_tsn?: number | null;
+  ultimate_cause_of_death_id?: string | null;
+  ultimate_cause_of_death_confidence?: string | null;
+  ultimate_predated_by_itis_tsn?: number | null;
+  mortality_comment: string | null;
+};
+
 export interface ILocationPostData {
   location_id?: number;
   latitude: number;
@@ -53,6 +66,12 @@ export interface ILocationPostData {
 
 export interface ICreateEditCaptureRequest {
   capture: ICapturePostData;
+  markings: IMarkingPostData[];
+  measurements: (IQuantitativeMeasurementUpdate | IQualitativeMeasurementUpdate)[];
+}
+
+export interface ICreateEditMortalityRequest {
+  mortality: IMortalityPostData;
   markings: IMarkingPostData[];
   measurements: (IQuantitativeMeasurementUpdate | IQualitativeMeasurementUpdate)[];
 }
@@ -175,6 +194,12 @@ export type IQuantitativeMeasurementResponse = {
   measurement_comment: string | null;
   measured_timestamp: string | null;
   measurement_name: string;
+};
+
+export type ICauseOfDeathOption = {
+  key: string;
+  id: string;
+  value: string;
 };
 
 export type IMortalityResponse = {

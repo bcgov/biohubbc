@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { ICreateCritterMortality } from 'features/surveys/view/survey-animals/animal';
-import { IMortalityResponse } from 'interfaces/useCritterApi.interface';
+import { ICauseOfDeathOption, IMortalityResponse } from 'interfaces/useCritterApi.interface';
 
 const useMortalityApi = (axios: AxiosInstance) => {
   /**
@@ -40,7 +40,18 @@ const useMortalityApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  return { createMortality, updateMortality, deleteMortality };
+  /**
+   * Get cause of death options for creating a mortality
+   *
+   * @async
+   * @returns {*} Cause of death options
+   */
+  const getCauseOfDeathOptions = async (): Promise<ICauseOfDeathOption[]> => {
+    const { data } = await axios.get(`/api/critterbase/lookups/cods?format=asSelect`);
+    return data;
+  };
+
+  return { createMortality, updateMortality, deleteMortality, getCauseOfDeathOptions };
 };
 
 export { useMortalityApi };

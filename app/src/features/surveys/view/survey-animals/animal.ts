@@ -198,16 +198,17 @@ export const CreateCritterCollectionUnitSchema = yup.object({
 });
 
 export const CreateCritterMortalitySchema = yup.object({
-  mortality_id: yup.string().optional(),
+  critter_id: yup.string().required(req),
+  mortality_id: yup.string().optional().nullable(),
   location: LocationSchema.required(),
   mortality_timestamp: dateSchema.required('Mortality Date is required'),
-  mortality_comment: yup.string().optional(),
-  proximate_cause_of_death_id: yup.string().uuid().required(req),
-  proximate_cause_of_death_confidence: yup.string().nullable(),
-  proximate_predated_by_itis_tsn: yup.number().optional(),
-  ultimate_cause_of_death_id: yup.string().uuid().optional(),
-  ultimate_cause_of_death_confidence: yup.string().optional(),
-  ultimate_predated_by_itis_tsn: yup.number().optional()
+  mortality_comment: yup.string().optional().nullable(),
+  proximate_cause_of_death_id: yup.string().uuid().optional().nullable(),
+  proximate_cause_of_death_confidence: yup.string().optional().nullable(),
+  proximate_predated_by_itis_tsn: yup.number().optional().nullable(),
+  ultimate_cause_of_death_id: yup.string().uuid().optional().nullable(),
+  ultimate_cause_of_death_confidence: yup.string().optional().nullable(),
+  ultimate_predated_by_itis_tsn: yup.number().optional().nullable()
 });
 
 export const CreateCritterFamilySchema = yup.object({

@@ -24,6 +24,8 @@ interface ICaptureMeasurementSelectProps {
   arrayHelpers: FieldArrayRenderProps;
   // The index of the field array for these controls
   index: number;
+  // Formik property name
+  formikName: string;
 }
 
 /**
@@ -33,7 +35,7 @@ interface ICaptureMeasurementSelectProps {
  * @return {*}
  */
 export const CaptureMeasurementSelect = (props: ICaptureMeasurementSelectProps) => {
-  const { index, measurements } = props;
+  const { index, measurements, formikName, arrayHelpers } = props;
 
   const { values, setFieldValue } = useFormikContext<ICreateEditCaptureRequest>();
 
@@ -80,14 +82,13 @@ export const CaptureMeasurementSelect = (props: ICaptureMeasurementSelectProps) 
           backgroundColor: grey[100]
         }}>
         <AutocompleteField
-          id={`measurements.[${index}].taxon_measurement_id`}
-          name={`measurements.[${index}].taxon_measurement_id`}
+          id={`${formikName}.[${index}].taxon_measurement_id`}
+          name={`${formikName}.[${index}].taxon_measurement_id`}
           label="Measurement"
           options={filteredCategories}
-          //   loading={ecologicalUnitOptionDataLoader.isLoading}
           onChange={(_, option) => {
             if (option?.value) {
-              setFieldValue(`measurements.[${index}].taxon_measurement_id`, option.value);
+              setFieldValue(`${formikName}.[${index}].taxon_measurement_id`, option.value);
             }
           }}
           required
@@ -100,6 +101,7 @@ export const CaptureMeasurementSelect = (props: ICaptureMeasurementSelectProps) 
           {/* Qualitative measurement option select */}
           {selectedTaxonMeasurement && 'options' in selectedTaxonMeasurement ? (
             <CaptureQualitativeMeasurementsOptionSelect
+              formikName={formikName}
               index={index}
               options={selectedTaxonMeasurement.options.map((option) => ({
                 label: option.option_label,
@@ -109,7 +111,7 @@ export const CaptureMeasurementSelect = (props: ICaptureMeasurementSelectProps) 
             />
           ) : (
             <CustomTextField
-              name={`measurements.[${index}].value`}
+              name={`${formikName}.[${index}].value`}
               label={`Value ${selectedTaxonMeasurement?.unit ? `(${selectedTaxonMeasurement.unit})` : ''}`}
               other={{
                 required: true,
@@ -124,7 +126,7 @@ export const CaptureMeasurementSelect = (props: ICaptureMeasurementSelectProps) 
           data-testid={`measurement-delete-button-${index}`}
           title="Remove Measurement"
           aria-label="Remove Measurement"
-          onClick={() => props.arrayHelpers.remove(index)}
+          onClick={() => arrayHelpers.remove(index)}
           sx={{ mt: 1.125 }}>
           <Icon path={mdiClose} size={1} />
         </IconButton>

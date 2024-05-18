@@ -15,33 +15,29 @@ import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { ICreateMortalityRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import AnimalMortalityForm from './form/AnimalMortalityForm';
 
-export const defaultAnimalMortalityFormValues: ICreateMortalityRequest = {
+export const defaultAnimalMortalityFormValues: ICreateEditMortalityRequest = {
+  mortality: {
+    mortality_id: '',
+    mortality_timestamp: '',
+    location: {
+      type: 'Feature',
+      geometry: { type: 'Point', coordinates: [0, 0] },
+      properties: { coordinate_uncertainty: 'm' }
+    },
+    proximate_predated_by_itis_tsn: null,
+    ultimate_predated_by_itis_tsn: null,
+    ultimate_cause_of_death_id: null,
+    mortality_comment: '',
+    proximate_cause_of_death_id: null
+  },
   markings: [],
-  measurements: {
-    quantitative: [],
-    qualitative: []
-  },
-  mortality_id: '',
-  location_id: null,
-  mortality_timestamp: '',
-  mortality_location: {
-    type: 'Feature',
-    geometry: { type: 'Point', coordinates: [0, 0] },
-    properties: { coordinate_uncertainty: 'm' }
-  },
-  proximate_cause_of_death_id: null,
-  proximate_cause_of_death_confidence: '',
-  proximate_predated_by_itis_tsn: null,
-  ultimate_cause_of_death_id: null,
-  ultimate_cause_of_death_confidence: '',
-  ultimate_predated_by_itis_tsn: null,
-  mortality_comment: null
+  measurements: []
 };
 
 const CreateMortalityPage = () => {
@@ -54,7 +50,7 @@ const CreateMortalityPage = () => {
   const [isSaving, setIsSaving] = useState(false);
   const history = useHistory();
 
-  const formikRef = useRef<FormikProps<ICreateMortalityRequest>>(null);
+  const formikRef = useRef<FormikProps<ICreateEditMortalityRequest>>(null);
 
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
@@ -136,30 +132,27 @@ const CreateMortalityPage = () => {
    *
    * @return {*}
    */
-  const handleSubmit = async (values: ICreateMortalityRequest) => {
+  const handleSubmit = async (values: ICreateEditMortalityRequest) => {
     setIsSaving(true);
+    setEnableCancelCheck(false);
+
     try {
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
-      if (!values || !critterbaseCritterId || values.mortality_location.geometry.type !== 'Point') {
+      if (!values || !critterbaseCritterId || values.mortality.location?.geometry.type !== 'Point') {
         return;
       }
 
       const response = await critterbaseApi.mortality.createMortality({
+        ...values.mortality,
         mortality_id: undefined,
-        mortality_timestamp: new Date(values.mortality_timestamp),
-        mortality_comment: values.mortality_comment ?? '',
-        location: {
-          longitude: values.mortality_location.geometry.coordinates[0],
-          latitude: values.mortality_location.geometry.coordinates[1],
-          coordinate_uncertainty: 0,
-          coordinate_uncertainty_units: 'm'
-        },
-        proximate_cause_of_death_confidence: '',
-        ultimate_cause_of_death_confidence: '',
-        proximate_cause_of_death_id: '',
-        proximate_predated_by_itis_tsn: undefined,
-        ultimate_predated_by_itis_tsn: undefined,
-        ultimate_cause_of_death_id: ''
+        critter_id: critterbaseCritterId,
+        mortality_timestamp: new Date(values.mortality.mortality_timestamp),
+        proximate_cause_of_death_id: values.mortality.proximate_cause_of_death_id,
+        proximate_cause_of_death_confidence: values.mortality.proximate_cause_of_death_confidence,
+        proximate_predated_by_itis_tsn: values.mortality.proximate_predated_by_itis_tsn,
+        ultimate_cause_of_death_id: values.mortality.ultimate_cause_of_death_id,
+        ultimate_cause_of_death_confidence: values.mortality.ultimate_cause_of_death_confidence,
+        ultimate_predated_by_itis_tsn: values.mortality.ultimate_predated_by_itis_tsn
       });
 
       if (!response) {
@@ -168,8 +161,6 @@ const CreateMortalityPage = () => {
         });
         return;
       }
-
-      setEnableCancelCheck(false);
 
       // Refresh page
       animalPageContext.critterDataLoader.refresh(critterbaseCritterId);
@@ -243,7 +234,7 @@ const CreateMortalityPage = () => {
         <Paper sx={{ p: 5 }}>
           <AnimalMortalityForm
             initialMortalityData={defaultAnimalMortalityFormValues}
-            handleSubmit={(formikData) => handleSubmit(formikData as ICreateMortalityRequest)}
+            handleSubmit={(formikData) => handleSubmit(formikData as ICreateEditMortalityRequest)}
             formikRef={formikRef}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>

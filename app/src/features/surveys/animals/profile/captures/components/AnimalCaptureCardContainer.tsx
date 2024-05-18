@@ -4,6 +4,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
+import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -194,7 +195,7 @@ const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
           display="flex"
           alignItems="center"
           justifyContent="center"
-          bgcolor="#fff">
+          bgcolor={grey[50]}>
           <Typography variant="body2" color="textSecondary">
             This animal has no captures
           </Typography>

@@ -16,7 +16,7 @@ import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { FormikContextType, useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import { ICreateMortalityRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
@@ -48,13 +48,18 @@ const MortalityLocationMapControl = (props: IMortalityLocationMapControlProps) =
 
   const { mapId } = props;
 
-  const { values, setFieldValue } = useFormikContext<ICreateMortalityRequest>();
+  const { values, setFieldValue } = useFormikContext<ICreateEditMortalityRequest>();
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 
-  //   Array of sampling site features
+ //   Array of mortality location features. Should only be one.
   const mortalityLocationGeoJson: Feature | undefined = useMemo(() => {
     const location: { latitude: number; longitude: number } | Feature = get(values, name);
+
+    if (!location) {
+      return;
+    }
+
     if ('latitude' in location && location.latitude !== 0) {
       return {
         type: 'Feature',

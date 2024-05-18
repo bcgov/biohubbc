@@ -3,16 +3,18 @@ import Stack from '@mui/material/Stack';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { Formik, FormikProps } from 'formik';
-import { ICreateMortalityRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import yup from 'utils/YupSchema';
+import CaptureMarkingsForm from '../../../captures/create/form/markings/CaptureMarkingsForm';
+import AnimalMeasurementsForm from '../../../captures/create/form/measurements/CaptureMeasurementsForm';
+import CauseOfDeathForm from './cause-of-death/CauseOfDeathForm';
 import MortalityGeneralInformationForm from './general-information/MortalityGeneralInformationForm';
 import MortalityLocationForm from './location/MortalityLocationForm';
-import CauseOfDeathForm from './cause-of-death/CauseOfDeathForm';
 
 export interface IAnimalMortalityFormProps {
-  initialMortalityData: ICreateMortalityRequest;
-  handleSubmit: (formikData: ICreateMortalityRequest) => void;
-  formikRef: React.RefObject<FormikProps<ICreateMortalityRequest>>;
+  initialMortalityData: ICreateEditMortalityRequest;
+  handleSubmit: (formikData: ICreateEditMortalityRequest) => void;
+  formikRef: React.RefObject<FormikProps<ICreateEditMortalityRequest>>;
 }
 
 const AnimalMortalityForm = (props: IAnimalMortalityFormProps) => {
@@ -45,24 +47,19 @@ const AnimalMortalityForm = (props: IAnimalMortalityFormProps) => {
           summary="Enter where the animal was mortalityd"
           component={<MortalityLocationForm />}
         />
-        {/* <Divider />
+        <Divider />
         <HorizontalSplitFormComponent
           title="Measurements"
           summary="Enter measurements recorded during the mortality"
-          component={<MortalityMeasurementsForm />}
+          component={<AnimalMeasurementsForm formikName="measurements" />}
         />
         <Divider />
         <HorizontalSplitFormComponent
           title="Markings"
           summary="Enter markings applied to the animal during the mortality"
-          component={<MortalityMarkingsForm />}
+          component={<CaptureMarkingsForm />}
         />
         <Divider />
-        <HorizontalSplitFormComponent
-          title="Release Location"
-          summary="Enter where the animal was released"
-          component={<ReleaseLocationForm />}
-        />  */}
       </Stack>
     </Formik>
   );

@@ -52,14 +52,6 @@ export const AnimalCaptureContainer = () => {
           .filter((measurement) => measurement.capture_id === selectedCapture)
           .map((measurement) => ({
             ...measurement,
-            // taxon_measurement_id: measurement.taxon_measurement_id,
-            // qualitative_option_id: measurement.qualitative_option_id,
-            // capture_id: selectedCapture,
-            // mortality_id: measurement.capture_id,
-            // measurement_qualitative_id: measurement.measurement_qualitative_id,
-            // measured_timestamp: measurement.measured_timestamp,
-            // measurement_comment: measurement.measurement_comment,
-            // critter_id: selectedAnimal.critterbase_critter_id,
             _delete: true
           })) ?? [],
       quantitative_measurements:
@@ -67,14 +59,6 @@ export const AnimalCaptureContainer = () => {
           .filter((measurement) => measurement.capture_id === selectedCapture)
           .map((measurement) => ({
             ...measurement,
-            // taxon_measurement_id: measurement.taxon_measurement_id,
-            // capture_id: selectedCapture,
-            // mortality_id: measurement.mortality_id,
-            // measurement_quantitative_id: measurement.measurement_quantitative_id,
-            // measured_timestamp: measurement.measured_timestamp,
-            // measurement_comment: measurement.measurement_comment,
-            // value: measurement.value,
-            // critter_id: selectedAnimal.critterbase_critter_id,
             _delete: true
           })) ?? []
     });

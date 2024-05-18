@@ -2,6 +2,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { AnimalDetailsContainer } from 'features/surveys/animals/profile/details/AnimalDetailsContainer';
 import { AnimalCaptureContainer } from './captures/AnimalCaptureContainer';
+import AnimalMortalityContainer from './mortality/AnimalMortalityContainer';
 
 /**
  * Component for displaying an animal's details within the Manage Animals page
@@ -16,6 +17,9 @@ export const AnimalProfileContainer = () => {
       </Paper>
       <Paper>
         <AnimalCaptureContainer />
+      </Paper>
+      <Paper>
+        <AnimalMortalityContainer />
       </Paper>
     </Stack>
   );
