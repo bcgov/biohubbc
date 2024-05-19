@@ -4,13 +4,15 @@ import Stack from '@mui/material/Stack';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SurveyContext } from 'contexts/surveyContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { useContext } from 'react';
 
 // Set height so we the skeleton loader will match table rows
 const rowHeight = 52;
 
 interface IAnimalData {
-  id: number;
+  id: string;
   animal_id: string;
   scientificName: string;
 }
@@ -54,20 +56,44 @@ const SkeletonRow = () => (
 
 const SurveyAnimalsDataTable = (props: ISurveySpatialTelemetryDataTableProps) => {
   const surveyContext = useContext(SurveyContext);
+  const critterbaseApi = useCritterbaseApi();
 
   const animals = surveyContext.critterDataLoader.data ?? [];
 
-  const tableData: IAnimalData[] = animals.map((item) => ({
-    id: item.survey_critter_id,
+  console.log(animals)
+
+  const animalsDataLoader = useDataLoader(() =>
+    critterbaseApi.critters.getMultipleCrittersByIds(animals.map((animal) => animal.critter_id))
+  );
+
+  if (animals.length) {
+    animalsDataLoader.load();
+  }
+
+  console.log(animalsDataLoader.data);
+
+  if (!animalsDataLoader.data) {
+    return <></>;
+  }
+
+  const tableData: IAnimalData[] = animalsDataLoader.data.map((item) => ({
+    id: item.critter_id,
     animal_id: item.animal_id ?? '',
-    scientificName: item.itis_scientific_name
+    scientificName: item.itis_scientific_name,
+    status: item.mortality.length ? true : false
   }));
 
   const columns: GridColDef<IAnimalData>[] = [
     {
       field: 'scientificName',
       headerName: 'Species',
-      flex: 1
+      flex: 1,
+      renderCell: (params) =>
+        params.value.split(' ').length > 1 ? (
+          <span style={{ fontStyle: 'italic' }}>{params.value}</span>
+        ) : (
+          <span>{params.value}</span>
+        )
     },
     {
       field: 'animal_id',

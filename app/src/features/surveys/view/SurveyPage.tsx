@@ -9,7 +9,6 @@ import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import React, { useContext, useEffect } from 'react';
 import SurveySpatialData from './components/spatial-data/SurveySpatialData';
 import SurveyStudyArea from './components/SurveyStudyArea';
-import SurveyAnimals from './SurveyAnimals';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
 
@@ -40,10 +39,6 @@ const SurveyPage: React.FC = () => {
           <TaxonomyContextProvider>
             <SurveySpatialData />
           </TaxonomyContextProvider>
-
-          <Paper>
-            <SurveyAnimals />
-          </Paper>
 
           <Paper>
             <SurveyAttachments />

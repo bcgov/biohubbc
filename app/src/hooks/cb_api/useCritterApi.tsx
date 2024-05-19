@@ -44,10 +44,10 @@ const useCritterApi = (axios: AxiosInstance) => {
    *
    * @async
    * @param {string[]} critter_ids - Critter identifiers.
-   * @returns {Promise<ICritterSimpleResponse>}
+   * @returns {Promise<ICritterDetailedResponse>}
    */
-  const getMultipleCrittersByIds = async (critter_ids: string[]): Promise<ICritterSimpleResponse[]> => {
-    const { data } = await axios.post(`/api/critterbase/critters`, { critter_ids });
+  const getMultipleCrittersByIds = async (critter_ids: string[]): Promise<ICritterDetailedResponse[]> => {
+    const { data } = await axios.post(`/api/critterbase/critters?format=detailed`, { critter_ids });
     return data;
   };
 
