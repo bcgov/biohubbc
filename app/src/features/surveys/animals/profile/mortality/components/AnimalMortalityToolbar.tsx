@@ -1,12 +1,14 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiDotsVertical, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
 interface IAnimalMortalityToolbarProps {
   onAddAnimalMortality: () => void;
+  isDeceased: boolean
 }
 
 /**
@@ -15,7 +17,7 @@ interface IAnimalMortalityToolbarProps {
  * @returns
  */
 const AnimalMortalityToolbar = (props: IAnimalMortalityToolbarProps) => {
-  const { onAddAnimalMortality } = props;
+  const { onAddAnimalMortality, isDeceased } = props;
 
   return (
     <Toolbar
@@ -32,15 +34,17 @@ const AnimalMortalityToolbar = (props: IAnimalMortalityToolbarProps) => {
         }}>
         Mortality
       </Typography>
-      <Box display="flex">
+      {isDeceased ? <IconButton onClick={onAddAnimalMortality}>
+          <Icon path={mdiDotsVertical} size={1} />
+        </IconButton> : <Box display="flex">
         <Button
           variant="outlined"
           color="error"
           onClick={onAddAnimalMortality}
           startIcon={<Icon path={mdiPlus} size={1} />}>
           Report Mortality
-        </Button>
-      </Box>
+        </Button></Box>
+}
     </Toolbar>
   );
 };

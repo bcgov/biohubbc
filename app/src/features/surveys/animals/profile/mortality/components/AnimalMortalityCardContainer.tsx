@@ -17,44 +17,42 @@ import YesNoDialog from 'components/dialog/YesNoDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ISurveyCritter } from 'contexts/animalPageContext';
 import { useSurveyContext } from 'hooks/useContext';
-import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
+import { IMortalityResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
-import CaptureCardDetails from './CaptureCardDetails';
 
-interface IAnimalCaptureCardContainer {
-  captures: ICaptureResponse[];
+interface IAnimalMortalityCardContainer {
+  mortality: IMortalityResponse[];
   selectedAnimal: ISurveyCritter;
-  handleDelete: (selectedCapture: string, critterbase_critter_id: string) => Promise<void>;
 }
 /**
- * Returns accordian cards for displaying animal capture details on the animal profile page
+ * Returns accordian cards for displaying animal mortality details on the animal profile page
  *
  * @returns
  */
-const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
-  const { captures, selectedAnimal, handleDelete } = props;
+const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContainer) => {
+  const { mortality, selectedAnimal } = props;
 
-  const [selectedCapture, setSelectedCapture] = useState<string | null>(null);
-  const [captureAnchorEl, setCaptureAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [captureForDelete, setCaptureForDelete] = useState<boolean>();
+  const [selectedMortality, setSelectedMortality] = useState<string | null>(null);
+  const [mortalityAnchorEl, setMortalityAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  const [mortalityForDelete, setMortalityForDelete] = useState<boolean>();
 
   const { projectId, surveyId } = useSurveyContext();
 
-  const handleCaptureMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, captureId: string) => {
-    setCaptureAnchorEl(event.currentTarget);
-    setSelectedCapture(captureId);
+  const handleMortalityMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, mortalityId: string) => {
+    setMortalityAnchorEl(event.currentTarget);
+    setSelectedMortality(mortalityId);
   };
 
   return (
     <>
-      {selectedCapture && (
+      {selectedMortality && (
         <Menu
           sx={{ pb: 2 }}
-          open={Boolean(captureAnchorEl)}
-          onClose={() => setCaptureAnchorEl(null)}
-          anchorEl={captureAnchorEl}
+          open={Boolean(mortalityAnchorEl)}
+          onClose={() => setMortalityAnchorEl(null)}
+          anchorEl={mortalityAnchorEl}
           anchorOrigin={{
             vertical: 'top',
             horizontal: 'right'
@@ -79,7 +77,7 @@ const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
               }
             }}>
             <RouterLink
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/capture/${selectedCapture}/edit`}>
+              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/mortality/${selectedMortality}/edit`}>
               <ListItemIcon>
                 <Icon path={mdiPencilOutline} size={1} />
               </ListItemIcon>
@@ -88,8 +86,8 @@ const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
           </MenuItem>
           <MenuItem
             onClick={() => {
-              setCaptureAnchorEl(null);
-              setCaptureForDelete(true);
+              setMortalityAnchorEl(null);
+              setMortalityForDelete(true);
             }}>
             <ListItemIcon>
               <Icon path={mdiTrashCanOutline} size={1} />
@@ -100,34 +98,34 @@ const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
       )}
 
       {/* DELETE CONFIRMATION DIALOG */}
-      {captureForDelete && selectedCapture && (
+      {mortalityForDelete && selectedMortality && (
         <YesNoDialog
-          dialogTitle={'Delete capture event?'}
-          dialogText={`Are you sure you want to permanently delete this capture? All information associated with
-          the capture will be deleted.`}
+          dialogTitle={'Delete mortality event?'}
+          dialogText={`Are you sure you want to permanently delete this mortality? All information associated with
+          the mortality will be deleted.`}
           yesButtonProps={{ color: 'error' }}
           yesButtonLabel={'Delete'}
           noButtonProps={{ color: 'primary', variant: 'outlined' }}
           noButtonLabel={'Cancel'}
-          open={Boolean(captureForDelete)}
+          open={Boolean(mortalityForDelete)}
           onYes={() => {
-            setCaptureForDelete(false);
-            handleDelete(selectedCapture, selectedAnimal.critterbase_critter_id);
+            setMortalityForDelete(false);
+            // handleDelete(selectedMortality, selectedAnimal.critterbase_critter_id);
           }}
-          onClose={() => setCaptureForDelete(false)}
-          onNo={() => setCaptureForDelete(false)}
+          onClose={() => setMortalityForDelete(false)}
+          onNo={() => setMortalityForDelete(false)}
         />
       )}
 
-      {captures.length ? (
-        captures.map((capture) => {
+      {mortality.length ? (
+        mortality.map((mortality) => {
           return (
             <Accordion
               component={Paper}
               variant="outlined"
               disableGutters
               elevation={1}
-              key={`${capture.capture_id}`}
+              key={`${mortality.mortality_id}`}
               sx={{
                 margin: '15px',
                 boxShadow: 'none',
@@ -161,12 +159,12 @@ const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
                   }}>
                   <Stack gap={0.5} display="flex">
                     <Typography fontWeight={700}>
-                      {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, capture.capture_timestamp)}&nbsp;
+                      {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, mortality.mortality_timestamp)}&nbsp;
                     </Typography>
                     <Box>
                       <Typography color="textSecondary" variant="body2">
-                        {capture.capture_location.longitude},&nbsp;
-                        {capture.capture_location.latitude}
+                        {mortality.location.longitude},&nbsp;
+                        {mortality.location.latitude}
                       </Typography>
                     </Box>
                   </Stack>
@@ -175,15 +173,13 @@ const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
                   sx={{ position: 'absolute', right: '24px' }}
                   edge="end"
                   onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                    handleCaptureMenuClick(event, capture.capture_id)
+                    handleMortalityMenuClick(event, mortality.mortality_id)
                   }
                   aria-label="sample-site-settings">
                   <Icon path={mdiDotsVertical} size={1}></Icon>
                 </IconButton>
               </Box>
-              <AccordionDetails>
-                <CaptureCardDetails capture={capture} />
-              </AccordionDetails>
+              <AccordionDetails>{/* <MortalityCardDetails mortality={mortality} /> */}</AccordionDetails>
             </Accordion>
           );
         })
@@ -197,7 +193,7 @@ const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
           justifyContent="center"
           bgcolor={grey[50]}>
           <Typography variant="body2" color="textSecondary">
-            This animal has no captures
+            This animal has not been reported as deceased
           </Typography>
         </Box>
       )}
@@ -205,4 +201,4 @@ const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
   );
 };
 
-export default AnimalCaptureCardContainer;
+export default AnimalMortalityCardContainer;

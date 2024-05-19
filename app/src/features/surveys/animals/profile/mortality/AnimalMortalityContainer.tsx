@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import Skeleton from '@mui/material/Skeleton';
 import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import { useHistory } from 'react-router';
+import AnimalMortalityCardContainer from './components/AnimalMortalityCardContainer';
 import AnimalMortalityMap from './components/AnimalMortalityMap';
 import AnimalMortalityToolbar from './components/AnimalMortalityToolbar';
 
@@ -29,6 +30,7 @@ const AnimalMortalityContainer = () => {
   return (
     <>
       <AnimalMortalityToolbar
+        isDeceased={Boolean(mortality?.length)}
         onAddAnimalMortality={() => {
           history.push(
             `/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/mortality/create`
@@ -36,7 +38,7 @@ const AnimalMortalityContainer = () => {
         }}
       />
       {mortality && mortality.length > 0 && <AnimalMortalityMap mortality={mortality} isLoading={false} />}
-      {/* <AnimalmortalityCardContainer mortalitys={mortalitys} selectedAnimal={selectedAnimal} handleDelete={handleDelete} /> */}
+      <AnimalMortalityCardContainer mortality={mortality ?? []} selectedAnimal={selectedAnimal} />
     </>
   );
 };
