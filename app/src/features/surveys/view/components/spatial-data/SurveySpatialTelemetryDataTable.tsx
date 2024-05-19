@@ -83,7 +83,7 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
 
   const columns: GridColDef<ITelemetryData>[] = [
     {
-      field: 'critter_id',
+      field: 'animal_id',
       headerName: 'Alias',
       flex: 1
     },

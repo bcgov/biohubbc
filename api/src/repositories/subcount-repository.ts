@@ -7,6 +7,7 @@ export const ObservationSubCountRecord = z.object({
   observation_subcount_id: z.number(),
   survey_observation_id: z.number(),
   subcount: z.number().nullable(),
+  observation_subcount_sign_id: z.number().nullable(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),

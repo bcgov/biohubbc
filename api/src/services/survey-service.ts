@@ -291,7 +291,7 @@ export class SurveyService extends DBService {
     for (const survey of surveys) {
       const matchingFocalSpeciesNames = focalSpecies
         .filter((item) => survey.focal_species.includes(Number(item.tsn)))
-        .map((item) => [item.commonName, `(${item.scientificName})`].filter(Boolean).join(' '));
+        .map((item) => [item.commonNames, `(${item.scientificName})`].filter(Boolean).join(' '));
 
       decoratedSurveys.push({ ...survey, focal_species_names: matchingFocalSpeciesNames });
     }

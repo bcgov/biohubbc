@@ -80,7 +80,7 @@ describe('ProjectRepository', () => {
 
   describe('getProjectCount', () => {
     it('should return a project count', async () => {
-      const mockResponse = { rows: [{ project_count: 69 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [{ count: 69 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new ProjectRepository(dbConnection);

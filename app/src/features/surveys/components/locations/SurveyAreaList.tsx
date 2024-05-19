@@ -13,7 +13,7 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useState } from 'react';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
-import { ISurveyLocation } from '../StudyAreaForm';
+import { ISurveyLocation } from './StudyAreaForm';
 
 export interface ISurveyAreaListProps {
   data: ISurveyLocation[];

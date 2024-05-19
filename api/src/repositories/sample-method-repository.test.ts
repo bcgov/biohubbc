@@ -57,7 +57,7 @@ describe('SampleMethodRepository', () => {
         method_response_metric_id: 1,
         method_lookup_id: 3,
         description: 'description',
-        periods: [
+        sample_periods: [
           {
             end_date: '2023-01-02',
             start_date: '2023-10-02',
@@ -94,7 +94,7 @@ describe('SampleMethodRepository', () => {
         method_lookup_id: 3,
         method_response_metric_id: 1,
         description: 'description',
-        periods: [
+        sample_periods: [
           {
             end_date: '2023-01-02',
             start_date: '2023-10-02',
@@ -135,7 +135,7 @@ describe('SampleMethodRepository', () => {
         method_lookup_id: 3,
         method_response_metric_id: 1,
         description: 'description',
-        periods: [
+        sample_periods: [
           {
             end_date: '2023-01-02',
             start_date: '2023-10-02',
@@ -168,7 +168,7 @@ describe('SampleMethodRepository', () => {
         method_response_metric_id: 1,
         method_lookup_id: 3,
         description: 'description',
-        periods: [
+        sample_periods: [
           {
             end_date: '2023-01-02',
             start_date: '2023-10-02',
