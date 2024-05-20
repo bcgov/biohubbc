@@ -20,8 +20,7 @@ import { IAnimalDeployment } from '../../survey-animals/telemetry-device/device'
 import SurveyMap, { ISurveyMapPoint, ISurveyMapPointMetadata, ISurveyMapSupplementaryLayer } from '../../SurveyMap';
 import SurveyMapPopup from '../../SurveyMapPopup';
 import SurveyMapTooltip from '../../SurveyMapTooltip';
-import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
-import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
+import SurveySpatialDataContainer from '../data-container/SurveyDataContainer';
 import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
 
 const SurveySpatialData = () => {
@@ -361,14 +360,8 @@ const SurveySpatialData = () => {
         <SurveyMap staticLayers={staticLayers} supplementaryLayers={supplementaryLayers} isLoading={isLoading} />
       </Box>
 
-      <Box p={2} position="relative">
-        {activeView === SurveySpatialDatasetViewEnum.OBSERVATIONS && (
-          <SurveySpatialObservationDataTable isLoading={isLoading} />
-        )}
-
-        {activeView === SurveySpatialDatasetViewEnum.TELEMETRY && (
-          <SurveySpatialTelemetryDataTable isLoading={isLoading} />
-        )}
+      <Box position="relative">
+        <SurveySpatialDataContainer isLoading={isLoading} />
       </Box>
     </Paper>
   );
