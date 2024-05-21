@@ -143,7 +143,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             top: 0,
             right: 0,
             width: 100,
-            height: 55,
+            height: 55
           },
           '& .pinnedColumn': {
             position: 'sticky',

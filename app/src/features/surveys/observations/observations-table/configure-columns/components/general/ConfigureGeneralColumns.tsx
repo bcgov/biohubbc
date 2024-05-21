@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import grey from '@mui/material/colors/grey';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -8,7 +9,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/system/Box';
 import { GridColDef } from '@mui/x-data-grid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { GeneralColumnsSecondaryAction } from 'features/surveys/observations/observations-table/configure-columns/components/general/ConfigureGeneralColumnsSecondaryAction';
@@ -67,7 +67,7 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
   return (
     <Box>
       <Typography variant="h5" mb={2}>
-        Configure Columns
+        Select Columns to Show
       </Typography>
       <Stack
         flexDirection="row"
@@ -87,7 +87,7 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
             />
           }
           label={
-            <Typography variant="body2" sx={{ ml: 1 }}>
+            <Typography variant="body2" sx={{ ml: 1 }} color="textSecondary" textTransform="uppercase" fontWeight={700}>
               Show/Hide all
             </Typography>
           }

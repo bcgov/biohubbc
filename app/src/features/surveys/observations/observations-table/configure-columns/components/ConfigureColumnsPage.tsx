@@ -81,7 +81,7 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
 
   return (
     <Grid container justifyContent="space-between" pr={2}>
-      <Grid item xs={3}>
+      <Grid item>
         <ToggleButtonGroup
           value={activeView}
           onChange={(_, view) => {
@@ -140,7 +140,7 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
         </ToggleButtonGroup>
       </Grid>
       <Divider orientation="vertical" flexItem />
-      <Grid item xs={8}>
+      <Grid item xs={9.5}>
         {activeView === ConfigureColumnsViewEnum.GENERAL && (
           <ConfigureGeneralColumns
             key={ConfigureColumnsViewEnum.GENERAL}
