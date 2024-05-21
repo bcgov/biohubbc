@@ -410,6 +410,16 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
         rowErrors.push({ field: 'time', message: 'Invalid time' });
       }
 
+      // Validate latitude
+      if (String(row.latitude) === String(0)) {
+        rowErrors.push({ field: 'latitude', message: 'Invalid latitude' });
+      }
+
+      // Validate longitude
+      if (String(row.longitude) === String(0)) {
+        rowErrors.push({ field: 'longitude', message: 'Invalid longitude' });
+      }
+
       if (rowErrors.length > 0) {
         tableModel[row.id] = rowErrors;
       }

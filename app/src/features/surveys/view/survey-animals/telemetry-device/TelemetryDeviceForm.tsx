@@ -22,21 +22,18 @@ const TelemetryDeviceForm = (props: ITelemetryDeviceFormProps) => {
   const { mode } = props;
 
   const telemetryApi = useTelemetryApi();
-  const { values } = useFormikContext<IAnimalTelemetryDevice>();
+  const { values: device } = useFormikContext<IAnimalTelemetryDevice>();
 
-  const device = values;
+  const { data: deviceDetails, refresh, isReady } = useDataLoader(telemetryApi.devices.getDeviceDetails);
 
-  const { data: deviceDetails, refresh } = useDataLoader(() =>
-    telemetryApi.devices.getDeviceDetails(Number(device.device_id), device.device_make)
-  );
+  const canRenderFileUpload =
+    isReady && ((device.device_make === 'Vectronic' && !deviceDetails?.keyXStatus) || device.device_make === 'Lotek');
 
   useEffect(() => {
-    if (!device.device_id || !device.device_make) {
-      return;
+    if (device.device_id && device.device_make) {
+      refresh(device.device_id, device.device_make);
     }
-    refresh();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [device.device_id, device.device_make, deviceDetails?.device?.device_make]);
+  }, [device.device_id, device.device_make]);
 
   if (!device) {
     return <></>;
@@ -107,7 +104,7 @@ const TelemetryDeviceForm = (props: ITelemetryDeviceFormProps) => {
           </Grid>
         </Grid>
       </Box>
-      {((device.device_make === 'Vectronic' && !deviceDetails?.keyXStatus) || device.device_make === 'Lotek') && (
+      {canRenderFileUpload && (
         <Box sx={{ mt: 3 }}>
           <Typography component="legend" variant="body2">
             Upload Attachment
