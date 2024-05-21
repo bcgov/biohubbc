@@ -14,21 +14,6 @@ export class RegionService extends DBService {
   }
 
   /**
-   * Adds regions to a given project based on a list of features.
-   * This function will fist find a unique list of region details and use that list of details
-   * to search the region lookup table for corresponding regions, then links regions to the project
-   *
-   * @param {number} projectId
-   * @param {Feature[]} features
-   */
-  async addRegionsToProjectFromFeatures(projectId: number, features: Feature[]): Promise<void> {
-    const regionDetails = await this.getUniqueRegionsForFeatures(features);
-    const regions: IRegion[] = await this.searchRegionWithDetails(regionDetails);
-
-    await this.addRegionsToProject(projectId, regions);
-  }
-
-  /**
    * Adds regions to a given survey based on a list of features.
    * This function will fist find a unique list of region details and use that list of details
    * to search the region lookup table for corresponding regions, then links regions to the survey
@@ -41,21 +26,6 @@ export class RegionService extends DBService {
     const regions: IRegion[] = await this.searchRegionWithDetails(regionDetails);
 
     await this.addRegionsToSurvey(surveyId, regions);
-  }
-
-  /**
-   * Links a given project to a list of given regions. To avoid conflict
-   * all currently linked regions are removed before regions are linked
-   *
-   * @param {number} projectId
-   * @param {IRegion[]} regions
-   */
-  async addRegionsToProject(projectId: number, regions: IRegion[]): Promise<void> {
-    // remove existing regions from a project
-    await this.regionRepository.deleteRegionsForProject(projectId);
-
-    const regionIds = regions.map((item) => item.region_id);
-    await this.regionRepository.addRegionsToProject(projectId, regionIds);
   }
 
   /**
