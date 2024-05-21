@@ -499,28 +499,4 @@ export class BcgwLayerService {
 
     return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwWildlifeManagementUnitsLayer }));
   }
-
-  /**
-   * For a given GeoJSON Feature, find all regions that intersect a specific BCGW layer.
-   * Example: For a list of features, return all NRM regions that the features intersect.
-   *
-   * @param {Feature} feature
-   * @param {IDBConnection} connection
-   * @param {(geometryWktString) => Promise<RegionDetails[]>} getRegionDetails ie: getNrmRegionDetails
-   * @return {*}
-   * @memberof BcgwLayerService
-   */
-  async getBcgwRegionsForFeature(
-    feature: Feature,
-    getRegionDetails: (geometryWktString: string) => Promise<RegionDetails[]>,
-    connection: IDBConnection
-  ): Promise<RegionDetails[]> {
-    const postgisService = new PostgisService(connection);
-
-    // Convert the feature geometry to WKT format
-    const geometryWKTString = await postgisService.getGeoJsonGeometryAsWkt(feature.geometry, Srid3005);
-
-    // Retrieve intersecting BCGW region details
-    return await getRegionDetails(geometryWKTString);
-  }
 }

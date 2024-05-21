@@ -91,23 +91,36 @@ export class RegionRepository extends BaseRepository {
    */
   async searchRegionsWithDetails(details: RegionDetails[]): Promise<IRegion[]> {
     const knex = getKnex();
-    const qb = knex
-      .queryBuilder()
-      .select()
-      .from('region_lookup')
-      .whereIn(
-        'region_name',
-        details.map((detail) => detail.regionName)
-      );
+    const qb = knex.queryBuilder().select().from('region_lookup');
 
-    // // TODO: does this need to search through the geoJson object? Or is looking at region_name enough?
-    //
-    // for (const detail of details) {
-    //   qb.orWhere((qb1) => {
-    //     qb1.andWhereRaw("geojson::json->'properties'->>'REGION_NAME' = ?", detail.regionName);
-    //     qb1.andWhereRaw("geojson::json->'properties'->>'fme_feature_type' = ?", detail.sourceLayer);
-    //   });
-    // }
+    for (const detail of details) {
+      qb.orWhere((qb1) => {
+        qb1.andWhereRaw("geojson::json->'properties'->>'REGION_NAME' = ?", detail.regionName);
+        qb1.andWhereRaw("geojson::json->'properties'->>'fme_feature_type' = ?", detail.sourceLayer);
+      });
+    }
+
+    try {
+      const response = await this.connection.knex<IRegion>(qb);
+
+      return response.rows;
+    } catch (error) {
+      throw new ApiExecuteSQLError('Failed to execute search region SQL', [
+        'RegionRepository->searchRegionsWithDetails'
+      ]);
+    }
+  }
+
+  /**
+   * Get region lookup values by region names.
+   *
+   * @async
+   * @param {string[]} regionNames - Name of regions
+   * @returns {Promise<IRegion[]>} - List of regions
+   */
+  async getRegionsByNames(regionNames: string[]): Promise<IRegion[]> {
+    const knex = getKnex();
+    const qb = knex.queryBuilder().select().from('region_lookup').whereIn('region_name', regionNames);
 
     try {
       const response = await this.connection.knex<IRegion>(qb);

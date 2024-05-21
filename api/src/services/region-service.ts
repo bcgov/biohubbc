@@ -4,6 +4,8 @@ import { IDBConnection } from '../database/db';
 import { IRegion, RegionRepository } from '../repositories/region-repository';
 import { BcgwLayerService, RegionDetails } from './bcgw-layer-service';
 import { DBService } from './db-service';
+import { Srid3005 } from './geo-service';
+import { PostgisService } from './postgis-service';
 
 export class RegionService extends DBService {
   regionRepository: RegionRepository;
@@ -17,30 +19,33 @@ export class RegionService extends DBService {
   }
 
   /**
-   * Adds regions to a given survey based on a list of features.
-   * This function will first find a unique list of region details and use that list of details
-   * to search the region lookup table for corresponding regions, then links regions to the survey
+   * Adds NRM regions to a given survey based on a list of features.
+   * Business requires all features to be mapped to intersecting NRM regions.
    *
    * @param {number} surveyId
    * @param {Feature[]} features
    */
   async addRegionsToSurveyFromFeatures(surveyId: number, features: Feature[]): Promise<void> {
-    // Bind 'this' from bcgwLayserService so method can be passed correctly to getBcgwRegionsForFeature
-    const getNrmRegionDetails = this.bcgwLayerService.getNrmRegionDetails.bind(this.bcgwLayerService);
+    const postgisService = new PostgisService(this.connection);
 
-    // Generate list of RegionDetails[] promises
-    const regionPromises = features.map((feature) =>
-      this.bcgwLayerService.getBcgwRegionsForFeature(feature, getNrmRegionDetails, this.connection)
+    // Generate list of PostGIS geometry strings
+    const geometryWKTStringArr = await Promise.all(
+      features.map((feature) => postgisService.getGeoJsonGeometryAsWkt(feature.geometry, Srid3005))
     );
 
-    // Flatten the RegionDetails[] into a single list
-    const flattenedRegions = flatten(await Promise.all(regionPromises));
+    // Get NRM region details from PostGIS geometry strings
+    const nrmRegionDetailsPromises = await Promise.all(
+      geometryWKTStringArr.map((geometryString) => this.bcgwLayerService.getNrmRegionDetails(geometryString))
+    );
+
+    // Flatten the RegionDetails[][] into a single list -> RegionDetails[]
+    const flattenedRegions = flatten(await Promise.all(nrmRegionDetailsPromises));
 
     // Remove duplicates
     const uniqueRegionDetails = Array.from(new Set(flattenedRegions));
 
     // Search for matching regions in the regions_lookup table
-    const regions = await this.searchRegionWithDetails(uniqueRegionDetails);
+    const regions = await this.getRegionsByNames(uniqueRegionDetails.map((regionDetail) => regionDetail.regionName));
 
     console.log({ uniqueRegionDetails, regionsToInsert: regions });
 
@@ -81,5 +86,15 @@ export class RegionService extends DBService {
    */
   async searchRegionWithDetails(details: RegionDetails[]): Promise<IRegion[]> {
     return this.regionRepository.searchRegionsWithDetails(details);
+  }
+
+  /**
+   * Searches for regions based on a given list of `RegionDetails`
+   *
+   * @param {string[]} regionNames - Names of regions
+   * @returns {IRegion[]} - List of regions
+   */
+  async getRegionsByNames(regionNames: string[]): Promise<IRegion[]> {
+    return this.regionRepository.getRegionsByNames(regionNames);
   }
 }

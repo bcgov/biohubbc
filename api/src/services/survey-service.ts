@@ -1,4 +1,5 @@
 import { Feature } from 'geojson';
+import { flatten } from 'lodash';
 import { IDBConnection } from '../database/db';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PostSurveyLocationData, PutPartnershipsData, PutSurveyObject } from '../models/survey-update';
@@ -724,14 +725,21 @@ export class SurveyService extends DBService {
     const updates = data.filter((item) => item.survey_location_id);
     const updatePromises = updates.map((item) => this.updateSurveyLocation(item));
 
+    const features = flatten(data.map((item) => item.geojson));
+
     // Patch survey locations
     await Promise.all([insertPromises, updatePromises, deletePromises]);
 
+    // Delete all regions
+
+    // Insert all regions
+    await this.insertRegion(surveyId, features);
+
     // Patch survey regions
-    await Promise.all([
-      ...inserts.map((item) => this.insertRegion(surveyId, item.geojson)),
-      ...updates.map((item) => this.insertRegion(surveyId, item.geojson))
-    ]);
+    // await Promise.all([
+    //   ...inserts.map((item) => this.insertRegion(surveyId, item.geojson)),
+    //   ...updates.map((item) => this.insertRegion(surveyId, item.geojson))
+    // ]);
   }
 
   /**
