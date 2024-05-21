@@ -121,6 +121,7 @@ const CaptureMarkingsForm = () => {
               {values.markings.map((marking, index) => (
                 <Collapse key={marking.marking_id ?? marking._id}>
                   <MarkingCard
+                    editable
                     identifier={marking.identifier}
                     comment={marking.comment}
                     primary_colour_label={

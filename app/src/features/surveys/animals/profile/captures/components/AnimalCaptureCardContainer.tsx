@@ -16,14 +16,14 @@ import YesNoDialog from 'components/dialog/YesNoDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ISurveyCritter } from 'contexts/animalPageContext';
 import { useSurveyContext } from 'hooks/useContext';
-import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
+import { ICapturesWithSupplementaryData } from '../AnimalCaptureContainer';
 import CaptureCardDetails from './CaptureCardDetails';
 
 interface IAnimalCaptureCardContainer {
-  captures: ICaptureResponse[];
+  captures: ICapturesWithSupplementaryData[];
   selectedAnimal: ISurveyCritter;
   handleDelete: (selectedCapture: string, critterbase_critter_id: string) => Promise<void>;
 }

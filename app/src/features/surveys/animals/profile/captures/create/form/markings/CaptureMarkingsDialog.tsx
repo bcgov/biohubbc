@@ -42,52 +42,67 @@ const CaptureMarkingsDialog = (props: ICaptureMarkingsDialogProps) => {
           secondary_colour_id: null,
           comment: null
         },
-        validationSchema: yup.object({ marking_id: yup.string().optional() }),
+        validationSchema: yup.object({
+          marking_type_id: yup.string().required('Marking type is required.'),
+          taxon_marking_body_location_id: yup.string().required('Marking body location is required.'),
+          identifier: yup.string().nullable(),
+          primary_colour_id: yup.string().nullable(),
+          secondary_colour_id: yup.string().nullable(),
+          comment: yup.string().nullable()
+        }),
         element: (
           <Stack gap={2}>
-            <AutocompleteField
-              id="marking-type-autocomplete-field"
-              label="Marking type"
-              name={`marking_type_id`}
-              required
-              options={
-                markingTypes.map((item) => ({
-                  value: item.marking_type_id,
-                  label: item.name
-                })) ?? []
-              }
-            />
+            <Stack gap={1} direction="row">
+              <AutocompleteField
+                sx={{ flex: '0.5' }}
+                id="marking-type-autocomplete-field"
+                label="Marking type"
+                name={`marking_type_id`}
+                required
+                options={
+                  markingTypes.map((item) => ({
+                    value: item.marking_type_id,
+                    label: item.name
+                  })) ?? []
+                }
+              />
 
-            <AutocompleteField
-              id="marking-location-autocomplete-field"
-              label="Marking placement"
-              name={`taxon_marking_body_location_id`}
-              required
-              options={
-                markingBodyLocations?.map((item) => ({
-                  value: item.taxon_marking_body_location_id,
-                  label: item.body_location
-                })) ?? []
-              }
-            />
+              <AutocompleteField
+                sx={{ flex: '0.5' }}
+                id="marking-location-autocomplete-field"
+                label="Marking placement"
+                name={`taxon_marking_body_location_id`}
+                required
+                options={
+                  markingBodyLocations?.map((item) => ({
+                    value: item.taxon_marking_body_location_id,
+                    label: item.body_location
+                  })) ?? []
+                }
+              />
+            </Stack>
             <CustomTextField
               name={`identifier`}
               aria-label="Unique marking ID"
               label="Identifier"
               other={{ rows: 1, autoComplete: 'off' }}
             />
-            <AutocompleteField
-              id="marking-primary-colour-autocomplete-field"
-              label="Primary colour"
-              name={`primary_colour_id`}
-              options={markingColours?.map((item) => ({ value: item.colour_id, label: item.colour })) ?? []}
-            />
-            <AutocompleteField
-              id="marking-secondary-colour-autocomplete-field"
-              label="Secondary colour"
-              name={`secondary_colour_id`}
-              options={markingColours.map((item) => ({ value: item.colour_id, label: item.colour })) ?? []}
-            />
+            <Stack gap={1} direction="row">
+              <AutocompleteField
+                sx={{ flex: '0.5' }}
+                id="marking-primary-colour-autocomplete-field"
+                label="Primary colour"
+                name={`primary_colour_id`}
+                options={markingColours?.map((item) => ({ value: item.colour_id, label: item.colour })) ?? []}
+              />
+              <AutocompleteField
+                sx={{ flex: '0.5' }}
+                id="marking-secondary-colour-autocomplete-field"
+                label="Secondary colour"
+                name={`secondary_colour_id`}
+                options={markingColours.map((item) => ({ value: item.colour_id, label: item.colour })) ?? []}
+              />
+            </Stack>
             <CustomTextField name={`comment`} label="Comment" other={{ multiline: true, rows: 4 }} />
           </Stack>
         )

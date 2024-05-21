@@ -157,19 +157,18 @@ const EditCapturePage = () => {
 
       // Format capture timestamp
       const captureTimestamp = dayjs(
-        values.capture.capture_timestamp ??
-          `${values.capture.capture_date}${
-            values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00'
-          }`
+        `${values.capture.capture_date}${
+          values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00'
+        }`
       ).toDate();
 
       // If release timestamp is null, use the capture timestamp, otherwise format release location
       const releaseTimestamp = dayjs(
         values.capture.release_date
-          ? captureTimestamp
-          : `${values.capture.release_date}${
+          ? `${values.capture.release_date}${
               values.capture.release_time ? ` ${values.capture.release_time}-07:00` : 'T00:00:00-07:00'
             }`
+          : captureTimestamp
       ).toDate();
 
       const {
@@ -243,8 +242,8 @@ const EditCapturePage = () => {
 
   const animalId = critterDataLoader.data?.animal_id;
 
-  const [captureDate, captureTimeTz] = capture.capture_timestamp.split('T');
-  const [captureTime, captureTimeOffset] = captureTimeTz.split('-');
+  const [captureDate, captureTime] = dayjs(capture.capture_timestamp).format('YYYY-MM-DD HH:mm:ss').split(' ');
+  const [releaseDate, releaseTime] = dayjs(capture.release_timestamp).format('YYYY-MM-DD HH:mm:ss').split(' ');
 
   // Initial formik values
   const initialFormikValues: ICreateEditCaptureRequest = {
@@ -253,7 +252,7 @@ const EditCapturePage = () => {
       capture_comment: capture.capture_comment ?? '',
       capture_timestamp: capture.capture_timestamp,
       capture_date: captureDate,
-      capture_time: captureTime + captureTimeOffset,
+      capture_time: captureTime,
       capture_location: {
         type: 'Feature',
         geometry: {
@@ -271,6 +270,8 @@ const EditCapturePage = () => {
         properties: {}
       },
       release_timestamp: capture.release_timestamp ?? '',
+      release_date: releaseDate,
+      release_time: releaseTime,
       release_comment: capture.release_comment ?? ''
     },
     markings:

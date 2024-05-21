@@ -36,7 +36,7 @@ export const EcologicalUnitsSelect = (props: IEcologicalUnitsSelect) => {
   const critterbaseApi = useCritterbaseApi();
 
   // Get the collection category ID for the selected ecological unit
-  const selectedEcologicalUnitId: string | undefined = values.ecological_units[index].collection_category_id;
+  const selectedEcologicalUnitId: string | undefined = values.ecological_units[index]?.collection_category_id;
 
   const ecologicalUnitOptionDataLoader = useDataLoader((collection_category_id: string) =>
     critterbaseApi.xref.getCollectionUnits(collection_category_id)

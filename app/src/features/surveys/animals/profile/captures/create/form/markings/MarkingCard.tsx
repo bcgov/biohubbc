@@ -8,13 +8,14 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 interface IMarkingCardProps {
+  editable: boolean;
   primary_colour_label?: string;
   secondary_colour_label?: string;
   identifier: string | number | null;
   comment: string | null;
   marking_type_label: string;
   marking_body_location_label: string;
-  handleMarkingMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  handleMarkingMenuClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 /**
@@ -24,6 +25,7 @@ interface IMarkingCardProps {
  */
 const MarkingCard = (props: IMarkingCardProps) => {
   const {
+    editable,
     primary_colour_label,
     secondary_colour_label,
     comment,
@@ -36,17 +38,22 @@ const MarkingCard = (props: IMarkingCardProps) => {
   return (
     <Card sx={{ px: 3, py: 2, mb: 2, bgcolor: grey[100] }}>
       <Box position="relative" display="flex">
-        <Typography component="dd" fontWeight={700} mb={0.5}>
+        <Typography component="dd" fontWeight={700}>
           {marking_type_label}
         </Typography>
-        <IconButton
-          edge="end"
-          onClick={handleMarkingMenuClick}
-          aria-label="marking-card"
-          sx={{ position: 'absolute', right: '0' }}>
-          <Icon path={mdiDotsVertical} size={1}></Icon>
-        </IconButton>
+        {editable && (
+          <IconButton
+            edge="end"
+            onClick={handleMarkingMenuClick}
+            aria-label="marking-card"
+            sx={{ position: 'absolute', right: '0' }}>
+            <Icon path={mdiDotsVertical} size={1}></Icon>
+          </IconButton>
+        )}
       </Box>
+      <Typography component="dd" variant="body2" sx={{ whiteSpace: 'normal', overflowWrap: 'break-word', my: 1 }}>
+        {comment}
+      </Typography>
       <Stack direction="row" spacing={2} m={0}>
         <Box>
           <Typography component="dt" variant="body2" color="textSecondary">
@@ -87,15 +94,6 @@ const MarkingCard = (props: IMarkingCardProps) => {
           </Box>
         )}
       </Stack>
-      {comment && (
-        <Typography
-          component="dd"
-          color="textSecondary"
-          variant="body2"
-          sx={{ whiteSpace: 'normal', overflowWrap: 'break-word', mt: 1 }}>
-          {comment}
-        </Typography>
-      )}
     </Card>
   );
 };

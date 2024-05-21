@@ -244,7 +244,11 @@ export const AnimalList = () => {
               <ListItemText>Edit Details</ListItemText>
             </RouterLink>
           </MenuItem>
-          <MenuItem onClick={deleteCritterDialog}>
+          <MenuItem
+            onClick={() => {
+              deleteCritterDialog();
+              setCritterAnchorEl(null);
+            }}>
             <ListItemIcon>
               <Icon path={mdiTrashCanOutline} size={1} />
             </ListItemIcon>
