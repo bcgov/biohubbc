@@ -122,7 +122,7 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
                 dense
                 onClick={() => onToggleColumnVisibility(column.field)}
                 disabled={disabled}
-                sx={{ background: grey[50] }}>
+                sx={{ background: grey[50], borderRadius: '5px' }}>
                 <ListItemIcon>
                   <Checkbox edge="start" checked={!hiddenFields.includes(column.field)} />
                 </ListItemIcon>

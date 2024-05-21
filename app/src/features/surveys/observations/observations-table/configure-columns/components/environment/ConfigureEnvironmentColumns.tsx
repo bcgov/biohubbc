@@ -84,7 +84,7 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
           </>
         ) : (
           <Box mt={5} height={100} display="flex" justifyContent="center" alignItems="center">
-            <Typography color="textSecondary">No environments selected</Typography>
+            <Typography color="textSecondary">No environmental variables selected</Typography>
           </Box>
         )}
       </Box>

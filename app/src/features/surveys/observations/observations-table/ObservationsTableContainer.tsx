@@ -16,10 +16,10 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
 import { DiscardChangesButton } from 'features/surveys/observations/observations-table/discard-changes/DiscardChangesButton';
 import {
+  EmptyLastColumnColDef,
   ISampleMethodOption,
   ISamplePeriodOption,
   ISampleSiteOption,
-  ObservationActionsColDef,
   ObservationCountColDef,
   ObservationDateColDef,
   ObservationLatitudeColDef,
@@ -106,11 +106,7 @@ const ObservationComponent = () => {
     ...getMeasurementColumnDefinitions(observationsTableContext.measurementColumns, observationsTableContext.hasError),
     // Add environment columns to the table
     ...getEnvironmentColumnDefinitions(observationsTableContext.environmentColumns, observationsTableContext.hasError),
-    // Add row actions column to the table
-    ObservationActionsColDef({
-      disabled: observationsTableContext.isSaving,
-      onDelete: observationsTableContext.deleteObservationRecords
-    })
+    EmptyLastColumnColDef()
   ];
 
   return (

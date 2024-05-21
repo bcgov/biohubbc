@@ -1,6 +1,3 @@
-import { mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { GridCellParams, GridColDef } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
@@ -493,28 +490,12 @@ export const ObservationLongitudeColDef = (props: {
   };
 };
 
-export const ObservationActionsColDef = (props: {
-  disabled: boolean;
-  onDelete: (observationRecords: IObservationTableRow[]) => void;
-}): GridColDef<IObservationTableRow> => {
+export const EmptyLastColumnColDef = (): GridColDef<IObservationTableRow> => {
   return {
-    field: 'actions',
+    field: `last-column`,
     headerName: '',
-    type: 'actions',
-    width: 70,
-    disableColumnMenu: true,
-    resizable: false,
-    cellClassName: 'pinnedColumn',
-    getActions: (params) => [
-      <IconButton
-        onClick={() => {
-          props.onDelete([params.row]);
-        }}
-        disabled={props.disabled}
-        key={`actions[${params.id}].handleDeleteRow`}>
-        <Icon path={mdiTrashCanOutline} size={1} />
-      </IconButton>
-    ]
+    width: 30,
+    disableColumnMenu: true
   };
 };
 
