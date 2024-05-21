@@ -1,11 +1,8 @@
 import { Feature } from 'geojson';
-import { flatten } from 'lodash';
 import { IDBConnection } from '../database/db';
 import { IRegion, RegionRepository } from '../repositories/region-repository';
 import { BcgwLayerService, RegionDetails } from './bcgw-layer-service';
 import { DBService } from './db-service';
-import { Srid3005 } from './geo-service';
-import { PostgisService } from './postgis-service';
 
 export class RegionService extends DBService {
   regionRepository: RegionRepository;
@@ -25,32 +22,20 @@ export class RegionService extends DBService {
    * @param {number} surveyId
    * @param {Feature[]} features
    */
-  async addRegionsToSurveyFromFeatures(surveyId: number, features: Feature[]): Promise<void> {
-    const postgisService = new PostgisService(this.connection);
-
-    // Generate list of PostGIS geometry strings
-    const geometryWKTStringArr = await Promise.all(
-      features.map((feature) => postgisService.getGeoJsonGeometryAsWkt(feature.geometry, Srid3005))
+  async insertRegionsIntoSurvey(surveyId: number, features: Feature[]): Promise<void> {
+    const regionDetails = await this.bcgwLayerService.getUniqueBcgwRegionDetailsFromFeatures(
+      features,
+      this.bcgwLayerService.getNrmRegionDetails.bind(this.bcgwLayerService),
+      this.connection
     );
-
-    // Get NRM region details from PostGIS geometry strings
-    const nrmRegionDetailsPromises = await Promise.all(
-      geometryWKTStringArr.map((geometryString) => this.bcgwLayerService.getNrmRegionDetails(geometryString))
-    );
-
-    // Flatten the RegionDetails[][] into a single list -> RegionDetails[]
-    const flattenedRegions = flatten(await Promise.all(nrmRegionDetailsPromises));
-
-    // Remove duplicates
-    const uniqueRegionDetails = Array.from(new Set(flattenedRegions));
 
     // Search for matching regions in the regions_lookup table
-    const regions = await this.getRegionsByNames(uniqueRegionDetails.map((regionDetail) => regionDetail.regionName));
+    const regions = await this.getRegionsByNames(regionDetails.map((regionDetail) => regionDetail.regionName));
 
-    console.log({ uniqueRegionDetails, regionsToInsert: regions });
+    console.log({ regionDetails, regionsToInsert: regions });
 
-    // Add the regions to the survey
-    await this.addRegionsToSurvey(surveyId, regions);
+    // Delete the previous regions and insert new
+    await this.refreshSurveyRegions(surveyId, regions);
   }
 
   /**
@@ -69,8 +54,9 @@ export class RegionService extends DBService {
    *
    * @param {number} surveyId
    * @param {IRegion[]} regions
+   * @returns {Promise<void>}
    */
-  async addRegionsToSurvey(surveyId: number, regions: IRegion[]): Promise<void> {
+  async refreshSurveyRegions(surveyId: number, regions: IRegion[]): Promise<void> {
     // remove existing regions from a survey
     await this.regionRepository.deleteRegionsForSurvey(surveyId);
 
@@ -92,7 +78,7 @@ export class RegionService extends DBService {
    * Searches for regions based on a given list of `RegionDetails`
    *
    * @param {string[]} regionNames - Names of regions
-   * @returns {IRegion[]} - List of regions
+   * @returns {IRegion[]}
    */
   async getRegionsByNames(regionNames: string[]): Promise<IRegion[]> {
     return this.regionRepository.getRegionsByNames(regionNames);

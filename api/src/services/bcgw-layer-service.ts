@@ -1,5 +1,6 @@
 import { XMLParser } from 'fast-xml-parser';
 import { Feature } from 'geojson';
+import { flatten } from 'lodash';
 import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import { getLogger } from '../utils/logger';
@@ -81,7 +82,6 @@ const envToNrmRegionsMapping = {
 };
 
 export type RegionDetails = { regionName: string; sourceLayer: string };
-export type GetBcgwRegionDetails = (geometryWktString: string) => Promise<RegionDetails>;
 
 const defaultLog = getLogger('services/bcgw-layer-service');
 /**
@@ -498,5 +498,41 @@ export class BcgwLayerService {
     const regionNames = await this.getWildlifeManagementUnitRegionNames(geometryWktString);
 
     return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwWildlifeManagementUnitsLayer }));
+  }
+
+  /**
+   * Get array of unique region details of a specific BCGW layer.
+   * For a list of features finds the intersecting regions of a BCGW layer.
+   *
+   * @async
+   * @param {Feature[]} features - Array of geojson features
+   * @param {(geometryWktString: string) => Promise<RegionDetails[]>} getRegionDetails - ie: getNrmRegionDetails
+   * @param {IDBConnection} connection - Database connection
+   * @returns {Promise<RegionDetails[]>} Unique region details
+   */
+  async getUniqueBcgwRegionDetailsFromFeatures(
+    features: Feature[],
+    getRegionDetails: (geometryWktString: string) => Promise<RegionDetails[]>,
+    connection: IDBConnection
+  ) {
+    const postgisService = new PostgisService(connection);
+
+    // Generate list of PostGIS geometry strings
+    const geometryWKTStringArr = await Promise.all(
+      features.map((feature) => postgisService.getGeoJsonGeometryAsWkt(feature.geometry, Srid3005))
+    );
+
+    // Get NRM region details from PostGIS geometry strings
+    const nrmRegionDetailsPromises = await Promise.all(
+      geometryWKTStringArr.map((geometryString) => getRegionDetails(geometryString))
+    );
+
+    // Flatten the RegionDetails[][] into a single list -> RegionDetails[]
+    const flattenedRegions = flatten(await Promise.all(nrmRegionDetailsPromises));
+
+    // Remove duplicates
+    const uniqueRegionDetails = Array.from(new Set(flattenedRegions));
+
+    return uniqueRegionDetails;
   }
 }

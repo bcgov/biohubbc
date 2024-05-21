@@ -1,4 +1,3 @@
-import { Feature } from 'geojson';
 import { flatten } from 'lodash';
 import { IDBConnection } from '../database/db';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
@@ -41,6 +40,7 @@ export class SurveyService extends DBService {
   fundingSourceService: FundingSourceService;
   siteSelectionStrategyService: SiteSelectionStrategyService;
   surveyParticipationService: SurveyParticipationService;
+  regionService: RegionService;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -52,6 +52,7 @@ export class SurveyService extends DBService {
     this.fundingSourceService = new FundingSourceService(connection);
     this.siteSelectionStrategyService = new SiteSelectionStrategyService(connection);
     this.surveyParticipationService = new SurveyParticipationService(connection);
+    this.regionService = new RegionService(connection);
   }
 
   /**
@@ -426,7 +427,8 @@ export class SurveyService extends DBService {
       // Insert survey locations
       promises.push(Promise.all(postSurveyData.locations.map((item) => this.insertSurveyLocations(surveyId, item))));
       // Insert survey regions
-      promises.push(Promise.all(postSurveyData.locations.map((item) => this.insertRegion(surveyId, item.geojson))));
+      const features = flatten(postSurveyData.locations.map((location) => location.geojson));
+      promises.push(this.regionService.insertRegionsIntoSurvey(surveyId, features));
     }
 
     // Handle site selection strategies
@@ -481,19 +483,6 @@ export class SurveyService extends DBService {
   async upsertBlocks(surveyId: number, blocks: PostSurveyBlock[]): Promise<void> {
     const service = new SurveyBlockService(this.connection);
     return service.upsertSurveyBlocks(surveyId, blocks);
-  }
-
-  /**
-   * Insert region data.
-   *
-   * @param {number} surveyId
-   * @param {Feature[]} features
-   * @return {*}  {Promise<void>}
-   * @memberof SurveyService
-   */
-  async insertRegion(surveyId: number, features: Feature[]): Promise<void> {
-    const regionService = new RegionService(this.connection);
-    return regionService.addRegionsToSurveyFromFeatures(surveyId, features);
   }
 
   /**
@@ -730,16 +719,8 @@ export class SurveyService extends DBService {
     // Patch survey locations
     await Promise.all([insertPromises, updatePromises, deletePromises]);
 
-    // Delete all regions
-
-    // Insert all regions
-    await this.insertRegion(surveyId, features);
-
-    // Patch survey regions
-    // await Promise.all([
-    //   ...inserts.map((item) => this.insertRegion(surveyId, item.geojson)),
-    //   ...updates.map((item) => this.insertRegion(surveyId, item.geojson))
-    // ]);
+    // Insert regions into survey - maps to NRM regions
+    await this.regionService.insertRegionsIntoSurvey(surveyId, features);
   }
 
   /**

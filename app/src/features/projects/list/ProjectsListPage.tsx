@@ -9,7 +9,7 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortModel, GridValueFormatterParams } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import PageHeader from 'components/layout/PageHeader';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
@@ -28,6 +28,12 @@ import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
+/**
+ * `Natural Resource Regions` appended text
+ * ie: `Cariboo Natural Resource Region`
+ *
+ */
+export const NRM_REGION_APPENDED_TEXT = ' Natural Resource Region';
 
 interface IProjectsListTableRow extends Omit<IProjectsListItemData, 'project_programs'> {
   project_programs: string;
@@ -115,8 +121,11 @@ const ProjectsListPage = () => {
     },
     {
       field: 'regions',
-      headerName: 'Regions',
-      flex: 1
+      headerName: 'Natural Resource Regions',
+      type: 'string',
+      flex: 1,
+      valueFormatter: (params: GridValueFormatterParams<string[]>) =>
+        params.value.length ? params.value.map((value) => value.replace(NRM_REGION_APPENDED_TEXT, '')) : undefined
     },
     {
       field: 'start_date',
