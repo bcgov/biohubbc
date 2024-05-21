@@ -37,11 +37,43 @@ export interface IConfigureGeneralColumnsProps {
    * @memberof IConfigureColumnsProps
    */
   hideableColumns: GridColDef<IObservationTableRow>[];
+  /**
+   * Callback fired on toggling the visibility of all columns.
+   *
+   * @memberof IConfigureGeneralColumnsProps
+   */
   onToggleShowHideAll: () => void;
+  /**
+   * Callback fired on toggling the visibility of a column.
+   *
+   * @memberof IConfigureGeneralColumnsProps
+   */
   onToggleColumnVisibility: (field: string) => void;
+  /**
+   * Callback fired on removing measurements.
+   *
+   * @memberof IConfigureGeneralColumnsProps
+   */
   onRemoveMeasurements: (measurementColumnsToRemove: string[]) => void;
+  /**
+   * The measurement columns.
+   *
+   * @type {CBMeasurementType[]}
+   * @memberof IConfigureGeneralColumnsProps
+   */
   measurementColumns: CBMeasurementType[];
+  /**
+   * Callback fired on removing environment columns.
+   *
+   * @memberof IConfigureGeneralColumnsProps
+   */
   onRemoveEnvironmentColumns: (environmentColumnIds: EnvironmentTypeIds) => void;
+  /**
+   * The environment columns.
+   *
+   * @type {EnvironmentType}
+   * @memberof IConfigureGeneralColumnsProps
+   */
   environmentColumns: EnvironmentType;
 }
 

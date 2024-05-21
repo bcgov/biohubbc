@@ -16,6 +16,15 @@ export interface IEnvironmentDataToValidate {
   value: string | number;
 }
 
+/**
+ * Given a list of column names, fetches the environment type definitions for each column (if the column has a matching
+ * environment type definition).
+ *
+ * @export
+ * @param {string[]} columnNames
+ * @param {ObservationSubCountEnvironmentService} observationSubCountEnvironmentService
+ * @return {*}  {Promise<EnvironmentType>}
+ */
 export async function getEnvironmentTypeDefinitionsFromColumnNames(
   columnNames: string[],
   observationSubCountEnvironmentService: ObservationSubCountEnvironmentService
@@ -28,8 +37,17 @@ export async function getEnvironmentTypeDefinitionsFromColumnNames(
   return { qualitative_environments, quantitative_environments };
 }
 
+/**
+ * Given a list of column names and the environment type definitions, creates a map of column names to their respective
+ * environment type definitions.
+ *
+ * @export
+ * @param {string[]} columnNames
+ * @param {EnvironmentType} environmentTypeDefinitions
+ * @return {*}  {EnvironmentNameTypeDefinitionMap}
+ */
 export function getEnvironmentColumnsTypeDefinitionMap(
-  environmentColumns: string[],
+  columnNames: string[],
   environmentTypeDefinitions: EnvironmentType
 ): EnvironmentNameTypeDefinitionMap {
   const columnNameDefinitionMap = new Map<
@@ -38,7 +56,7 @@ export function getEnvironmentColumnsTypeDefinitionMap(
   >();
 
   // Map column names to their respective environment type definitions
-  for (const columnName of environmentColumns) {
+  for (const columnName of columnNames) {
     const qualitativeEnvironment = environmentTypeDefinitions.qualitative_environments.find(
       (item) => item.name.toLowerCase() === columnName.toLowerCase()
     );

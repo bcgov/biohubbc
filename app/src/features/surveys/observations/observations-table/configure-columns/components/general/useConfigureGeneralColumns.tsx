@@ -10,6 +10,7 @@ export interface IUseConfigureGeneralColumnsProps {
 /**
  * Functions for general column configuration.
  *
+ * @param {IUseConfigureGeneralColumnsProps} props
  * @return {*}
  */
 export const useConfigureGeneralColumns = (props: IUseConfigureGeneralColumnsProps) => {

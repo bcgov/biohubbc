@@ -6,11 +6,33 @@ import { EnvironmentType, EnvironmentTypeIds } from 'interfaces/useReferenceApi.
 import { EnvironmentsSearch } from './search/EnvironmentsSearch';
 
 export interface IConfigureEnvironmentColumnsProps {
+  /**
+   * The environment columns.
+   *
+   * @type {EnvironmentType}
+   * @memberof IConfigureEnvironmentColumnsProps
+   */
   environmentColumns: EnvironmentType;
+  /**
+   * Callback fired on adding environment columns.
+   *
+   * @memberof IConfigureEnvironmentColumnsProps
+   */
   onAddEnvironmentColumns: (environmentColumns: EnvironmentType) => void;
+  /**
+   * Callback fired on removing environment columns.
+   *
+   * @memberof IConfigureEnvironmentColumnsProps
+   */
   onRemoveEnvironmentColumns: (environmentColumnIds: EnvironmentTypeIds) => void;
 }
 
+/**
+ * Renders a component to configure the environment columns of the observations table.
+ *
+ * @param {IConfigureEnvironmentColumnsProps} props
+ * @return {*}
+ */
 export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsProps) => {
   const { environmentColumns, onAddEnvironmentColumns, onRemoveEnvironmentColumns } = props;
 

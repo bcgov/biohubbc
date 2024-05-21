@@ -6,11 +6,33 @@ import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { MeasurementsSearch } from './search/MeasurementsSearch';
 
 export interface IConfigureMeasurementColumnsProps {
+  /**
+   * The measurement columns.
+   *
+   * @type {CBMeasurementType[]}
+   * @memberof IConfigureMeasurementColumnsProps
+   */
   measurementColumns: CBMeasurementType[];
+  /**
+   * Callback fired on adding measurement columns.
+   *
+   * @memberof IConfigureMeasurementColumnsProps
+   */
   onAddMeasurementColumns: (measurementColumns: CBMeasurementType[]) => void;
+  /**
+   * Callback fired on removing measurement columns.
+   *
+   * @memberof IConfigureMeasurementColumnsProps
+   */
   onRemoveMeasurementColumns: (fields: string[]) => void;
 }
 
+/**
+ * Renders a component to configure the measurement columns of the observations table.
+ *
+ * @param {IConfigureMeasurementColumnsProps} props
+ * @return {*}
+ */
 export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsProps) => {
   const { measurementColumns, onAddMeasurementColumns, onRemoveMeasurementColumns } = props;
 

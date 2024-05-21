@@ -18,12 +18,26 @@ export class ObservationSubCountEnvironmentService extends DBService {
     this.observationSubCountEnvironmentRepository = new ObservationSubCountEnvironmentRepository(connection);
   }
 
+  /**
+   * Insert qualitative environment records.
+   *
+   * @param {InsertObservationSubCountQualitativeEnvironmentRecord[]} data
+   * @return {*}  {Promise<ObservationSubCountQualitativeEnvironmentRecord[]>}
+   * @memberof ObservationSubCountEnvironmentService
+   */
   async insertObservationSubCountQualitativeEnvironment(
     data: InsertObservationSubCountQualitativeEnvironmentRecord[]
   ): Promise<ObservationSubCountQualitativeEnvironmentRecord[]> {
     return this.observationSubCountEnvironmentRepository.insertObservationQualitativeEnvironmentRecords(data);
   }
 
+  /**
+   * Insert quantitative environment records.
+   *
+   * @param {InsertObservationSubCountQuantitativeEnvironmentRecord[]} data
+   * @return {*}  {Promise<ObservationSubCountQuantitativeEnvironmentRecord[]>}
+   * @memberof ObservationSubCountEnvironmentService
+   */
   async insertObservationSubCountQuantitativeEnvironment(
     data: InsertObservationSubCountQuantitativeEnvironmentRecord[]
   ): Promise<ObservationSubCountQuantitativeEnvironmentRecord[]> {

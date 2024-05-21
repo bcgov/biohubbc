@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
 
+// Environment unit type definition.
 export const EnvironmentUnit = z.enum([
   // Should be kept in sync with the database table `environment_unit`
   'millimeter',
@@ -12,10 +13,15 @@ export const EnvironmentUnit = z.enum([
   'gram',
   'kilogram',
   'percent',
-  'celsius'
+  'celsius',
+  'ppt',
+  'SCF',
+  'degrees',
+  'pH'
 ]);
 export type EnvironmentUnit = z.infer<typeof EnvironmentUnit>;
 
+// Qualitative environment option type definition.
 const QualitativeEnvironmentOption = z.object({
   environment_qualitative_option_id: z.string().uuid(),
   environment_qualitative_id: z.string().uuid(),
@@ -24,6 +30,7 @@ const QualitativeEnvironmentOption = z.object({
 });
 export type QualitativeEnvironmentOption = z.infer<typeof QualitativeEnvironmentOption>;
 
+// Qualitative environment type definition.
 export const QualitativeEnvironmentTypeDefinition = z.object({
   environment_qualitative_id: z.string().uuid(),
   name: z.string(),
@@ -32,6 +39,7 @@ export const QualitativeEnvironmentTypeDefinition = z.object({
 });
 export type QualitativeEnvironmentTypeDefinition = z.infer<typeof QualitativeEnvironmentTypeDefinition>;
 
+// Quantitative environment type definition.
 const QuantitativeEnvironmentTypeDefinition = z.object({
   environment_quantitative_id: z.string().uuid(),
   name: z.string(),

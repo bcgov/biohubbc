@@ -16,12 +16,26 @@ export class ObservationSubCountMeasurementService extends DBService {
     this.observationSubCountMeasurementRepository = new ObservationSubCountMeasurementRepository(connection);
   }
 
+  /**
+   * Insert qualitative measurement records.
+   *
+   * @param {InsertObservationSubCountQualitativeMeasurementRecord[]} data
+   * @return {*}  {Promise<ObservationSubCountQualitativeMeasurementRecord[]>}
+   * @memberof ObservationSubCountMeasurementService
+   */
   async insertObservationSubCountQualitativeMeasurement(
     data: InsertObservationSubCountQualitativeMeasurementRecord[]
   ): Promise<ObservationSubCountQualitativeMeasurementRecord[]> {
     return this.observationSubCountMeasurementRepository.insertObservationQualitativeMeasurementRecords(data);
   }
 
+  /**
+   * Insert quantitative measurement records.
+   *
+   * @param {InsertObservationSubCountQuantitativeMeasurementRecord[]} data
+   * @return {*}  {Promise<ObservationSubCountQuantitativeMeasurementRecord[]>}
+   * @memberof ObservationSubCountMeasurementService
+   */
   async insertObservationSubCountQuantitativeMeasurement(
     data: InsertObservationSubCountQuantitativeMeasurementRecord[]
   ): Promise<ObservationSubCountQuantitativeMeasurementRecord[]> {

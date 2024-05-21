@@ -30,14 +30,61 @@ interface IConfigureColumnsDialogProps {
    * @memberof IConfigureColumnsProps
    */
   hideableColumns: GridColDef<IObservationTableRow>[];
+  /**
+   * Callback fired on toggling the visibility of all columns.
+   *
+   * @memberof IConfigureColumnsDialogProps
+   */
   onToggleShowHideAll: () => void;
+  /**
+   * Callback fired on toggling the visibility of a column.
+   *
+   * @memberof IConfigureColumnsDialogProps
+   */
   onToggleColumnVisibility: (field: string) => void;
+  /**
+   * Callback fired on removing measurements.
+   *
+   * @memberof IConfigureColumnsDialogProps
+   */
   onRemoveMeasurements: (measurementColumnsToRemove: string[]) => void;
+  /**
+   * The measurement columns.
+   *
+   * @type {CBMeasurementType[]}
+   * @memberof IConfigureColumnsDialogProps
+   */
   measurementColumns: CBMeasurementType[];
+  /**
+   * Callback fired on adding measurement columns.
+   *
+   * @memberof IConfigureColumnsDialogProps
+   */
   onAddMeasurementColumns: (measurementColumns: CBMeasurementType[]) => void;
+  /**
+   * Callback fired on removing measurement columns.
+   *
+   * @memberof IConfigureColumnsDialogProps
+   */
   onRemoveMeasurementColumns: (fields: string[]) => void;
+  /**
+   * The environment columns.
+   *
+   * @type {EnvironmentType}
+   * @memberof IConfigureColumnsDialogProps
+   */
   environmentColumns: EnvironmentType;
+  /**
+   * Callback fired on adding environment columns.
+   *
+   * @memberof IConfigureColumnsDialogProps
+   */
   onAddEnvironmentColumns: (environmentColumns: EnvironmentType) => void;
+  /**
+   * Callback fired on removing environment columns.
+   *
+   * @memberof IConfigureColumnsDialogProps
+   */
   onRemoveEnvironmentColumns: (environmentColumnIds: EnvironmentTypeIds) => void;
 }
 

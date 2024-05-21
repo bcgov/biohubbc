@@ -12,13 +12,47 @@ export interface IGeneralColumnsSecondaryActionProps {
    * @memberof IConfigureColumnsProps
    */
   disabled: boolean;
+  /**
+   * The field name of the column.
+   *
+   * @type {string}
+   * @memberof IGeneralColumnsSecondaryActionProps
+   */
   field: string;
+  /**
+   * Callback fired on removing measurements.
+   *
+   * @memberof IGeneralColumnsSecondaryActionProps
+   */
   onRemoveMeasurements: (measurementColumnsToRemove: string[]) => void;
+  /**
+   * The measurement columns.
+   *
+   * @type {CBMeasurementType[]}
+   * @memberof IGeneralColumnsSecondaryActionProps
+   */
   measurementColumns: CBMeasurementType[];
+  /**
+   * Callback fired on removing environment columns.
+   *
+   * @memberof IGeneralColumnsSecondaryActionProps
+   */
   onRemoveEnvironmentColumns: (environmentColumnIds: EnvironmentTypeIds) => void;
+  /**
+   * The environment columns.
+   *
+   * @type {EnvironmentType}
+   * @memberof IGeneralColumnsSecondaryActionProps
+   */
   environmentColumns: EnvironmentType;
 }
 
+/**
+ * Renders a secondary action for the general columns.
+ *
+ * @param {IGeneralColumnsSecondaryActionProps} props
+ * @return {*}
+ */
 export const GeneralColumnsSecondaryAction = (props: IGeneralColumnsSecondaryActionProps) => {
   const { field, disabled, measurementColumns, onRemoveMeasurements, environmentColumns, onRemoveEnvironmentColumns } =
     props;

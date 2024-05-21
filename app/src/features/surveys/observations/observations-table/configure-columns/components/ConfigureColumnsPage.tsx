@@ -42,14 +42,61 @@ export interface IConfigureColumnsPageProps {
    * @memberof IConfigureColumnsProps
    */
   hideableColumns: GridColDef<IObservationTableRow>[];
+  /**
+   * Callback fired on toggling the visibility of all columns.
+   *
+   * @memberof IConfigureColumnsPageProps
+   */
   onToggleShowHideAll: () => void;
+  /**
+   * Callback fired on toggling the visibility of a column.
+   *
+   * @memberof IConfigureColumnsPageProps
+   */
   onToggleColumnVisibility: (field: string) => void;
+  /**
+   * Callback fired on removing measurements.
+   *
+   * @memberof IConfigureColumnsPageProps
+   */
   onRemoveMeasurements: (measurementColumnsToRemove: string[]) => void;
+  /**
+   * The measurement columns.
+   *
+   * @type {CBMeasurementType[]}
+   * @memberof IConfigureColumnsPageProps
+   */
   measurementColumns: CBMeasurementType[];
+  /**
+   * Callback fired on adding measurement columns.
+   *
+   * @memberof IConfigureColumnsPageProps
+   */
   onAddMeasurementColumns: (measurementColumns: CBMeasurementType[]) => void;
+  /**
+   * Callback fired on removing measurement columns.
+   *
+   * @memberof IConfigureColumnsPageProps
+   */
   onRemoveMeasurementColumns: (fields: string[]) => void;
+  /**
+   * The environment columns.
+   *
+   * @type {EnvironmentType}
+   * @memberof IConfigureColumnsPageProps
+   */
   environmentColumns: EnvironmentType;
+  /**
+   * Callback fired on adding environment columns.
+   *
+   * @memberof IConfigureColumnsPageProps
+   */
   onAddEnvironmentColumns: (environmentColumns: EnvironmentType) => void;
+  /**
+   * Callback fired on removing environment columns.
+   *
+   * @memberof IConfigureColumnsPageProps
+   */
   onRemoveEnvironmentColumns: (environmentColumnIds: EnvironmentTypeIds) => void;
 }
 
