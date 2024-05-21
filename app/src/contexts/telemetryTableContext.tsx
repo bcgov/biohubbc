@@ -608,7 +608,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
           deployment_id: String(row.deployment_id),
           latitude: Number(row.latitude),
           longitude: Number(row.longitude),
-          acquisition_date: dayjs(`${dayjs(row.date).format('YYYY-MM-DD')} ${row.time}`).format('YYYY-MM-DD HH:mm:ss')
+          acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString()
         }));
 
         // update existing records
@@ -616,7 +616,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
           telemetry_manual_id: String(row.id),
           latitude: Number(row.latitude),
           longitude: Number(row.longitude),
-          acquisition_date: dayjs(`${dayjs(row.date).format('YYYY-MM-DD')} ${row.time}`).format('YYYY-MM-DD HH:mm:ss')
+          acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString()
         }));
 
         if (createData.length) {
