@@ -52,7 +52,7 @@ GET.apiDoc = {
     },
     {
       in: 'query',
-      name: 'groupBy',
+      name: 'groupByColumns',
       schema: {
         type: 'array',
         items: {
@@ -60,6 +60,30 @@ GET.apiDoc = {
         }
       },
       required: true,
+      style: 'simple', // Indicates comma separated values
+      explode: false
+    },
+    {
+      in: 'query',
+      name: 'groupByQuantitativeMeasurements',
+      schema: {
+        type: 'array',
+        items: {
+          type: 'string'
+        }
+      },
+      style: 'simple', // Indicates comma separated values
+      explode: false
+    },
+    {
+      in: 'query',
+      name: 'groupByQualitativeMeasurements',
+      schema: {
+        type: 'array',
+        items: {
+          type: 'string'
+        }
+      },
       style: 'simple', // Indicates comma separated values
       explode: false
     }
@@ -73,13 +97,14 @@ GET.apiDoc = {
             title: 'Observation analytics response object',
             type: 'array',
             items: {
-            type: 'object',
-            required: ['count'],
-            properties: {
-              count: {
-                type: 'number'
+              type: 'object',
+              required: ['count'],
+              properties: {
+                count: {
+                  type: 'number'
+                }
               }
-            }}
+            }
           }
         }
       }
@@ -103,6 +128,8 @@ GET.apiDoc = {
 };
 
 export function getObservationCountByGroup(): RequestHandler {
+  defaultLog.debug({ label: 'getObservationCountByGroup' });
+
   return async (req, res) => {
     if (!req.query.surveyIds) {
       throw new HTTP400('Missing required param `surveyIds`');
@@ -112,27 +139,53 @@ export function getObservationCountByGroup(): RequestHandler {
       throw new HTTP400('Param `surveyIds` is not an array, as required');
     }
 
-    if (!req.query.groupBy) {
-      throw new HTTP400('Missing required param `groupBy`');
+    if (!req.query.groupByColumns) {
+      throw new HTTP400('Missing required param `groupByColumns`');
     }
 
-    if (!Array.isArray(req.query.groupBy)) {
-      throw new HTTP400('Param `groupBy` is not an array, as required');
+    if (!Array.isArray(req.query.groupByColumns)) {
+      throw new HTTP400('Param `groupByColumns` is not an array, as required');
     }
 
-    defaultLog.debug({ label: 'getObservationCountByGroup' });
+    if (req.query.groupByQualitativeMeasurements) {
+      if (!Array.isArray(req.query.groupByQualitativeMeasurements)) {
+        throw new HTTP400('Param `groupByQualitativeMeasurements` is not an array, as required');
+      }
+    }
+
+    if (req.query.groupByQuantitativeMeasurements) {
+      if (!Array.isArray(req.query.groupByQuantitativeMeasurements)) {
+        throw new HTTP400('Param `groupByQuantitativeMeasurements` is not an array, as required');
+      }
+    }
 
     const connection = getDBConnection(req['keycloak_token']);
 
+    console.log(req.query.groupByQuantitativeMeasurements);
+    console.log(req.query.groupByQualitativeMeasurements);
+
     try {
       const surveyIds = req.query.surveyIds.map((id) => Number(id));
-      const groupBy = req.query.groupBy.map((id) => String(id));
+      const groupByColumns = Array.isArray(req.query.groupByColumns)
+        ? req.query.groupByColumns.map((id) => String(id)).filter((id) => id && id.trim() !== '')
+        : [];
+      const groupByQualitativeMeasurements = Array.isArray(req.query.groupByQualitativeMeasurements)
+        ? req.query.groupByQualitativeMeasurements.map((id) => String(id)).filter((id) => id && id.trim() !== '')
+        : [];
+      const groupByQuantitativeMeasurements = Array.isArray(req.query.groupByQuantitativeMeasurements)
+        ? req.query.groupByQuantitativeMeasurements.map((id) => String(id)).filter((id) => id && id.trim() !== '')
+        : [];
 
       await connection.open();
 
       const analyticsService = new AnalyticsService(connection);
 
-      const count = await analyticsService.getObservationCountByGroup(surveyIds, groupBy);
+      const count = await analyticsService.getObservationCountByGroup(
+        surveyIds,
+        groupByColumns,
+        groupByQuantitativeMeasurements,
+        groupByQualitativeMeasurements
+      );
 
       await connection.commit();
 

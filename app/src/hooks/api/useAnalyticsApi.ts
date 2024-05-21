@@ -11,17 +11,32 @@ const useAnalyticsApi = (axios: AxiosInstance) => {
   /**
    * Create a new project survey
    *
-   * @param {ICreateSurveyRequest} survey
-   * @return {*}  {Promise<ICreateSurveyResponse>}
+   * @param {number[]} surveyIds
+   * @param {string[]} groupByColumns
+   * @param {string[]} groupByQualitativeMeasurements
+   * @param {string[]} groupByQuantitativeMeasurements
+   * @return {*}
    */
   const getObservationCountByGroup = async (
     surveyIds: number[],
-    groupBy: string[]
-  ): Promise<IObservationCountByGroup> => {
-    const { data } = await axios.get(
-      `/api/analytics/observations?surveyIds=${surveyIds.join(',')}&groupBy=${groupBy.join(',')}`
-    );
+    groupByColumns: string[],
+    groupByQuantitativeMeasurements: string[],
+    groupByQualitativeMeasurements: string[]
+  ): Promise<IObservationCountByGroup[]> => {
+    let url = `/api/analytics/observations?surveyIds=${surveyIds.join(',')}&groupByColumns=${groupByColumns.join(',')}`;
 
+    if (groupByQualitativeMeasurements.length) {
+      url =
+        url +
+        `&groupByQualitativeMeasurements=${groupByQualitativeMeasurements.join(',')}
+    `;
+    }
+
+    if (groupByQuantitativeMeasurements.length) {
+      url = url + `&groupByQuantitativeMeasurements=${groupByQuantitativeMeasurements.join(',')}`;
+    }
+
+    const { data } = await axios.get(url);
     return data;
   };
 

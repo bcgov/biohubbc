@@ -19,7 +19,6 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
   return (
     <DataGrid<R>
       {...props}
-      autoHeight
       slots={{
         loadingOverlay: StyledLoadingOverlay,
         noRowsOverlay: noRowsOverlay
@@ -30,7 +29,7 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
           outline: 'none !important'
         },
         '& .MuiDataGrid-columnHeaders': {
-          background: grey[50]
+          background: grey[50],
         },
         '& .MuiDataGrid-columnHeaderTitle': {
           textTransform: 'uppercase',

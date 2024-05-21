@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useState } from 'react';
@@ -54,11 +55,11 @@ const SurveyDataContainer = (props: ISurveyDataContainerProps) => {
           ))}
         </ToggleButtonGroup>
       </Box>
+      <Divider sx={{ mt: 2 }} />
       <Box p={2}>
         {activeDataView === SurveyDataContainerViewEnum.RAW && (
           <SurveySpatialObservationDataTable isLoading={isLoading} />
         )}
-
         {activeDataView === SurveyDataContainerViewEnum.ANALYTICS && <SurveyObservationAnalytics />}
       </Box>
     </>
