@@ -7,7 +7,18 @@ import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { EnvironmentType, EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 
 interface IConfigureColumnsDialogProps {
+  /**
+   * Controls the visibility of the dialog.
+   *
+   * @type {boolean}
+   * @memberof IConfigureColumnsDialogProps
+   */
   open: boolean;
+  /**
+   * Callback fired on closing the dialog.
+   *
+   * @memberof IConfigureColumnsDialogProps
+   */
   onClose: () => void;
   /**
    * Controls the disabled state of the component controls.
