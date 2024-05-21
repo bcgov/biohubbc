@@ -33,6 +33,7 @@ const TelemetryDeviceForm = (props: ITelemetryDeviceFormProps) => {
     if (device.device_id && device.device_make) {
       refresh(device.device_id, device.device_make);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [device.device_id, device.device_make]);
 
   if (!device) {

@@ -370,6 +370,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
 
     // Set initial rows for the table context
     setRows(rows);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deployment_ids]);
 
   /**
@@ -664,7 +665,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
         _isSavingData.current = false;
       }
     },
-    [dialogContext, _updateRowsMode, _isSavingData, revertRecords, refreshRecords]
+    [dialogContext, _updateRowsMode, _isSavingData, revertRecords, refreshRecords, telemetryApi]
   );
 
   /**

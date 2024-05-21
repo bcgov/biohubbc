@@ -20,7 +20,7 @@ export const usePersistentState = <T,>(localStorageId: string, initialValue: T):
     // attempt to retrieve value from local storage
     const storageValue = localStorage.getItem(prefixedKey);
 
-    // if local storage does not contain value (undefined or null), default to initialValue
+    // if local storage is null, default to initialValue
     if (storageValue === null) {
       return initialValue;
     }

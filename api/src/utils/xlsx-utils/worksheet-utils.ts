@@ -225,15 +225,12 @@ export const validateWorksheetColumnTypes = (
       const value = row[index];
       const type = typeof value;
       if (rowValueTypes[index] === 'date') {
-        console.log('date');
         return dayjs(value).isValid();
       }
 
       if (rowValueTypes[index] === type) {
         return true;
       }
-
-      console.log(value);
 
       return false;
     });
