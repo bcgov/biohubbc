@@ -23,16 +23,11 @@ export class RegionService extends DBService {
    * @param {Feature[]} features
    */
   async insertRegionsIntoSurvey(surveyId: number, features: Feature[]): Promise<void> {
-    const regionDetails = await this.bcgwLayerService.getUniqueBcgwRegionDetailsFromFeatures(
-      features,
-      this.bcgwLayerService.getNrmRegionDetails.bind(this.bcgwLayerService),
-      this.connection
-    );
+    // Get intersecting region details of the `Natural Resource Region` BCGW layer
+    const regionDetails = await this.bcgwLayerService.getIntersectingNrmRegionsFromFeatures(features, this.connection);
 
     // Search for matching regions in the regions_lookup table
     const regions = await this.getRegionsByNames(regionDetails.map((regionDetail) => regionDetail.regionName));
-
-    console.log({ regionDetails, regionsToInsert: regions });
 
     // Delete the previous regions and insert new
     await this.refreshSurveyRegions(surveyId, regions);

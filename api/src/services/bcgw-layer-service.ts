@@ -535,4 +535,16 @@ export class BcgwLayerService {
 
     return uniqueRegionDetails;
   }
+
+  /**
+   * Get intersecting NRM regions from a list of features
+   *
+   * @async
+   * @param {Feature[]} features - Array of geojson features
+   * @param {IDBConnection} connection - Database connection
+   * @returns {Promise<RegionDetails[]>} Array of unique region details
+   */
+  async getIntersectingNrmRegionsFromFeatures(features: Feature[], connection: IDBConnection) {
+    return this.getUniqueBcgwRegionDetailsFromFeatures(features, this.getNrmRegionDetails.bind(this), connection);
+  }
 }
