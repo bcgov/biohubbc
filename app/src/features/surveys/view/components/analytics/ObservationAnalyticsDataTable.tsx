@@ -25,13 +25,7 @@ interface IObservationAnalyticsRow {
 }
 
 const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProps) => {
-  const {
-    groupByColumns,
-    groupByQuantitativeMeasurements,
-    groupByQualitativeMeasurements,
-    qualitativeMeasurementDefinitions,
-    quantitativeMeasurementDefinitions
-  } = props;
+  const { groupByColumns, groupByQuantitativeMeasurements, groupByQualitativeMeasurements } = props;
   const biohubApi = useBiohubApi();
 
   const { surveyId } = useSurveyContext();
@@ -68,24 +62,33 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
     );
   }
 
-  const rows: IObservationAnalyticsRow[] = analyticsDataLoader.data.map((item, index) => ({
-    id: index,
-    ...item
-  }));
+  const rows = analyticsDataLoader.data.map((row, index) => {
+    const { quantitative_measurements, qualitative_measurements, ...nonMeasurementRows } = row;
 
-  const columns: GridColDef<IObservationAnalyticsRow>[] = Object.keys(analyticsDataLoader.data[0]).map((field) => {
-    return {
+    const newRow: IObservationAnalyticsRow = {
+      id: index,
+      ...nonMeasurementRows
+    };
+
+    qualitative_measurements.forEach((measurement) => {
+      newRow[measurement.measurement_name] = measurement.option.option_label;
+    });
+
+    quantitative_measurements.forEach((measurement) => {
+      newRow[measurement.measurement_name] = measurement.value;
+    });
+
+    return newRow;
+  });
+
+  const columns: GridColDef<IObservationAnalyticsRow>[] = Object.keys(rows[0])
+    .filter((field) => field !== 'id')
+    .map((field) => ({
       field,
-      headerName:
-        qualitativeMeasurementDefinitions.find((measurement) => measurement.taxon_measurement_id === field)
-          ?.measurement_name ??
-        quantitativeMeasurementDefinitions.find((measurement) => measurement.taxon_measurement_id === field)
-          ?.measurement_name ??
-        field,
+      headerName: field,
       flex: 1,
       minWidth: 200
-    };
-  });
+    }));
 
   const rowHeight = 50;
 

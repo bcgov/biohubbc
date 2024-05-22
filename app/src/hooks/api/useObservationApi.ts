@@ -5,6 +5,10 @@ import {
   SupplementaryObservationCountData
 } from 'contexts/observationsTableContext';
 import {
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition
+} from 'interfaces/useCritterApi.interface';
+import {
   IGetSurveyObservationsGeometryResponse,
   IGetSurveyObservationsResponse
 } from 'interfaces/useObservationApi.interface';
@@ -84,6 +88,28 @@ const useObservationApi = (axios: AxiosInstance) => {
     const { data } = await axios.get<IGetSurveyObservationsResponse>(
       `/api/project/${projectId}/survey/${surveyId}/observations${urlParamsString}`
     );
+
+    return data;
+  };
+
+  /**
+   * Retrieves all measurements associated with all observation records
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<IObservationTableRow[]>}
+   */
+  const getObservationMeasurementDefinitions = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<{
+    qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+    quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+  }> => {
+    const { data } = await axios.get<{
+      qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+      quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+    }>(`/api/project/${projectId}/survey/${surveyId}/observations/measurements`);
 
     return data;
   };
@@ -239,6 +265,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     getObservationRecords,
     getObservationRecord,
     getObservationsGeometry,
+    getObservationMeasurementDefinitions,
     deleteObservationRecords,
     deleteObservationMeasurements,
     uploadCsvForImport,

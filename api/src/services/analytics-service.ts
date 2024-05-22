@@ -3,9 +3,26 @@ import { AnalyticsRepository } from '../repositories/analytics-repository';
 import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
 
+interface IQualitativeMeasurementGroup {
+  option: {
+    option_id: string;
+    option_label: string;
+  };
+  taxon_measurement_id: string;
+  measurement_name: string;
+}
+
+interface IQuantitativeMeasurementGroup {
+  value: number;
+  taxon_measurement_id: string;
+  measurement_name: string;
+}
+
 export interface IObservationCountByGroup {
   count: number;
   percentage: number;
+  qualitative_measurement: IQualitativeMeasurementGroup[];
+  quantitative_measurement: IQuantitativeMeasurementGroup[];
 }
 
 export class AnalyticsService extends DBService {
@@ -45,8 +62,8 @@ export class AnalyticsService extends DBService {
     );
 
     // all objects are identical so get keys using the first object of the arrya
-    const quant_taxon_measurement_ids = Object.keys(counts[0].qualitative_measurements);
-    const qual_taxon_measurement_ids = Object.keys(counts[0].quantitative_measurements);
+    const quant_taxon_measurement_ids = Object.keys(counts[0].qual_measurements);
+    const qual_taxon_measurement_ids = Object.keys(counts[0].quant_measurements);
 
     const qualitativeMeasurementPromise =
       critterbaseService.getQualitativeMeasurementTypeDefinition(quant_taxon_measurement_ids);
@@ -59,51 +76,51 @@ export class AnalyticsService extends DBService {
     ]);
 
     // Update qualitative measurements for each row
-    counts.forEach((row) => {
-      row['qualitative'] = []; // Initialize the 'qualitative' array
-      Object.keys(row.qualitative_measurements).forEach((measurementId) => {
-        const measurement = row.qualitative_measurements[measurementId];
-        if (measurement) {
-          const qualitativeMeasurement = qualitativeMeasurementDefinitions.find(
-            (def) => def.taxon_measurement_id === measurementId
-          );
-          if (qualitativeMeasurement) {
-            row['qualitative'].push({
-              // Push the new item to the 'qualitative' array
-              option: {
-                option_id: measurement,
-                option_label: qualitativeMeasurement.options.find((option) => option.qualitative_option_id === measurement)
-                  ?.option_label
-              },
-              taxon_measurement_id: measurementId,
-              measurement_name: qualitativeMeasurement.measurement_name
-            });
-          }
+    const newCounts = counts.map((row) => {
+      row['qualitative_measurements'] = []; // Initialize the 'qualitative' array
+      Object.keys(row.qual_measurements).map((measurementId) => {
+        const option_id = row.qual_measurements[measurementId];
+
+        const qualitativeMeasurement = qualitativeMeasurementDefinitions.find(
+          (def) => def.taxon_measurement_id === measurementId
+        );
+        if (qualitativeMeasurement) {
+          row['qualitative_measurements'].push({
+            // Push the new item to the 'qualitative' array
+            option: {
+              option_id: option_id,
+              option_label:
+                qualitativeMeasurement?.options.find((option) => option.qualitative_option_id === option_id)
+                  ?.option_label ?? ''
+            },
+            taxon_measurement_id: measurementId,
+            measurement_name: qualitativeMeasurement?.measurement_name
+          });
         }
       });
-    });
 
-    // Update quantitative measurements for each row
-    counts.forEach((row) => {
-      row['quantitative'] = []; // Initialize the 'quantitative' array
-      Object.keys(row.quantitative_measurements).forEach((measurementId) => {
-        const measurement = row.quantitative_measurements[measurementId];
-        if (measurement) {
-          const quantitativeMeasurement = quantitativeMeasurementDefinitions.find(
-            (def) => def.taxon_measurement_id === measurementId
-          );
-          if (quantitativeMeasurement) {
-            row['quantitative'].push({
-              // Push the new item to the 'quantitative' array
-              value: measurement.value,
-              taxon_measurement_id: measurementId,
-              measurement_name: quantitativeMeasurement.measurement_name
-            });
-          }
+      row['quantitative_measurements'] = []; // Initialize the 'quantitative' array
+      Object.keys(row.quant_measurements).map((measurementId) => {
+        const value = row.quant_measurements[measurementId];
+
+        const quantitativeMeasurement = quantitativeMeasurementDefinitions.find(
+          (def) => def.taxon_measurement_id === measurementId
+        );
+        if (quantitativeMeasurement) {
+          row['quantitative_measurements'].push({
+            // Push the new item to the 'quantitative' array
+            value: value,
+            taxon_measurement_id: measurementId,
+            measurement_name: quantitativeMeasurement?.measurement_name
+          });
         }
       });
+
+      const { quant_measurements, qual_measurements, ...newRow } = row;
+
+      return newRow;
     });
 
-    return counts;
+    return newCounts;
   }
 }

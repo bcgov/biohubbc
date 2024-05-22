@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IObservationCountByGroup } from 'interfaces/useAnalyticsApi';
+import { IObservationCountByGroup } from 'interfaces/useAnalyticsApi.interface';
 
 /**
  * Returns a set of supported api methods for working with survey analytics

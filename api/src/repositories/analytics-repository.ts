@@ -17,8 +17,8 @@ import { BaseRepository } from './base-repository';
 // });
 
 export interface IObservationCountByGroupWithMeasurements extends IObservationCountByGroup {
-  quantitative_measurements: { value: number; critterbase_taxon_measurement_id: string }[];
-  qualitative_measurements: { option_id: string; critterbase_taxon_measurement_id: string }[];
+  quant_measurements: { value: number; critterbase_taxon_measurement_id: string }[];
+  qual_measurements: { option_id: string; critterbase_taxon_measurement_id: string }[];
 }
 
 export class AnalyticsRepository extends BaseRepository {
@@ -95,14 +95,14 @@ export class AnalyticsRepository extends BaseRepository {
         knex.raw(
           `jsonb_build_object(
         ${groupByQuantitativeMeasurements.map((column) => `'${column}', "${column}"`).join(', ')}
-      ) as quantitative_measurements`
+      ) as quant_measurements`
         )
       )
       .select(
         knex.raw(
           `jsonb_build_object(
         ${groupByQualitativeMeasurements.map((column) => `'${column}', "${column}"`).join(', ')}
-      ) as qualitative_measurements`
+      ) as qual_measurements`
         )
       )
       .from('temp_observations as os')
@@ -111,7 +111,7 @@ export class AnalyticsRepository extends BaseRepository {
 
     const response = await this.connection.knex(sqlStatement);
 
-    console.log(response.rows);
+    console.log(response)
 
     if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get observation count by group', [

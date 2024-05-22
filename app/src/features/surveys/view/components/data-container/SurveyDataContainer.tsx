@@ -58,7 +58,6 @@ const SurveyDataContainer = (props: ISurveyDataContainerProps) => {
         {activeDataView === SurveyDataContainerViewEnum.RAW && (
           <SurveySpatialObservationDataTable isLoading={isLoading} />
         )}
-
         {activeDataView === SurveyDataContainerViewEnum.GROUP_BY && <SurveyObservationAnalytics />}
       </Box>
     </>
