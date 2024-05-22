@@ -233,8 +233,6 @@ export const validateWorksheetColumnTypes = (
         return true;
       }
 
-      console.log(value);
-
       return false;
     });
   });

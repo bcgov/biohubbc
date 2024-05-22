@@ -148,7 +148,7 @@ export const GenericLatitudeColDef = <T extends GridValidRowModel>(props: {
     },
     renderCell: (params) => (
       <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-        {params.value ? round(params.value, 5) : ''}
+        {isNaN(parseFloat(params.value)) ? null : round(params.value, 5)}
       </Typography>
     ),
     renderEditCell: (params) => {
@@ -207,7 +207,7 @@ export const GenericLongitudeColDef = <T extends GridValidRowModel>(props: {
     },
     renderCell: (params) => (
       <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-        {params.value ? round(params.value, 5) : ''}
+        {isNaN(parseFloat(params.value)) ? null : round(params.value, 5)}
       </Typography>
     ),
     renderEditCell: (params) => {

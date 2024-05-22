@@ -370,6 +370,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
 
     // Set initial rows for the table context
     setRows(rows);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deployment_ids]);
 
   /**
@@ -408,6 +409,16 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
       // Validate time value
       if (row.time === 'Invalid date') {
         rowErrors.push({ field: 'time', message: 'Invalid time' });
+      }
+
+      // Validate latitude
+      if (String(row.latitude) === String(0)) {
+        rowErrors.push({ field: 'latitude', message: 'Invalid latitude' });
+      }
+
+      // Validate longitude
+      if (String(row.longitude) === String(0)) {
+        rowErrors.push({ field: 'longitude', message: 'Invalid longitude' });
       }
 
       if (rowErrors.length > 0) {
@@ -608,7 +619,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
           deployment_id: String(row.deployment_id),
           latitude: Number(row.latitude),
           longitude: Number(row.longitude),
-          acquisition_date: dayjs(`${dayjs(row.date).format('YYYY-MM-DD')} ${row.time}`).format('YYYY-MM-DD HH:mm:ss')
+          acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString()
         }));
 
         // update existing records
@@ -616,7 +627,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
           telemetry_manual_id: String(row.id),
           latitude: Number(row.latitude),
           longitude: Number(row.longitude),
-          acquisition_date: dayjs(`${dayjs(row.date).format('YYYY-MM-DD')} ${row.time}`).format('YYYY-MM-DD HH:mm:ss')
+          acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString()
         }));
 
         if (createData.length) {
@@ -654,7 +665,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
         _isSavingData.current = false;
       }
     },
-    [dialogContext, _updateRowsMode, _isSavingData, revertRecords, refreshRecords]
+    [dialogContext, _updateRowsMode, _isSavingData, revertRecords, refreshRecords, telemetryApi]
   );
 
   /**
