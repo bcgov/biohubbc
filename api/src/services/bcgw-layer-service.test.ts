@@ -11,7 +11,7 @@ import {
   BcgwWildlifeManagementUnitsLayer,
   RegionDetails
 } from './bcgw-layer-service';
-import { WebFeatureService } from './geo-service';
+import { Srid3005, WebFeatureService } from './geo-service';
 import { PostgisService } from './postgis-service';
 
 chai.use(sinonChai);
@@ -644,35 +644,54 @@ describe('BcgwLayerService', () => {
     });
   });
 
-  describe('getUniqueBcgwRegionDetailsFromFeatures', () => {
-    it('returns unique regions', async () => {
-      const bcgwService = new BcgwLayerService();
+  describe('getIntersectingNrmRegionsFromFeatures', () => {
+    it.only('should return unique list of NRM region names', async () => {
+      const mockDbConnection = getMockDBConnection();
+      const service = new BcgwLayerService();
 
-      const features = [{ geometry: {} }, { geometry: {} }, { geometry: {} }] as Feature[];
+      const featureA: Feature = {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [0, 0],
+              [1, 0],
+              [1, 1],
+              [0, 1],
+              [0, 0]
+            ]
+          ]
+        },
+        properties: {}
+      };
 
-      const getGeoJsonGeometryAsWkt = sinon.stub(PostgisService.prototype, 'getGeoJsonGeometryAsWkt');
-      getGeoJsonGeometryAsWkt.onFirstCall().resolves('Region 1');
-      getGeoJsonGeometryAsWkt.onSecondCall().resolves('Region 2');
-      getGeoJsonGeometryAsWkt.onThirdCall().resolves('Region 2');
+      const featureB: Feature = {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[[0, 0]]]
+        },
+        properties: {}
+      };
 
-      const getRegionDetailsMock = sinon.stub();
-      getRegionDetailsMock.onFirstCall().resolves({ regionName: 'REGION 1', sourceLayer: 'LAYER 1' });
-      getRegionDetailsMock.onSecondCall().resolves({ regionName: 'REGION 2', sourceLayer: 'LAYER 2' });
-      getRegionDetailsMock.onSecondCall().resolves({ regionName: 'REGION 2', sourceLayer: 'LAYER 2' });
+      const mockGetGeoJsonString = sinon.stub(PostgisService.prototype, 'getGeoJsonGeometryAsWkt');
+      const mockGetNrmRegionNames = sinon.stub(service, 'getNrmRegionNames');
 
-      const uniqueRegionDetails = await bcgwService.getUniqueBcgwRegionDetailsFromFeatures(
-        features,
-        getRegionDetailsMock,
-        getMockDBConnection()
-      );
+      mockGetGeoJsonString.onFirstCall().resolves('A');
+      mockGetGeoJsonString.onSecondCall().resolves('B');
+      mockGetNrmRegionNames.onFirstCall().resolves(['Cariboo']);
+      mockGetNrmRegionNames.onSecondCall().resolves(['South', 'Cariboo']);
 
-      // Assertions
-      expect(getGeoJsonGeometryAsWkt.callCount).to.equal(3);
-      expect(getRegionDetailsMock.callCount).to.equal(3);
-      expect(uniqueRegionDetails).to.deep.equal([
-        { regionName: 'REGION 1', sourceLayer: 'LAYER 1' },
-        { regionName: 'REGION 2', sourceLayer: 'LAYER 2' }
-      ]);
+      const regions = await service.getIntersectingNrmRegionNamesFromFeatures([featureA, featureB], mockDbConnection);
+
+      expect(mockGetGeoJsonString.firstCall.calledWithExactly(featureA.geometry, Srid3005)).to.be.true;
+      expect(mockGetGeoJsonString.secondCall.calledWithExactly(featureB.geometry, Srid3005)).to.be.true;
+
+      expect(mockGetNrmRegionNames.firstCall.calledWithExactly('A')).to.be.true;
+      expect(mockGetNrmRegionNames.secondCall.calledWithExactly('B')).to.be.true;
+
+      expect(regions).to.eqls(['Cariboo', 'South']);
     });
   });
 });

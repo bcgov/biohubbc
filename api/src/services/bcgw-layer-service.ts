@@ -501,53 +501,30 @@ export class BcgwLayerService {
   }
 
   /**
-   * Get array of unique region details of a specific BCGW layer.
-   * For a list of features finds the intersecting regions of a BCGW layer.
+   * Get intersecting NRM region names from a list of features
    *
    * @async
    * @param {Feature[]} features - Array of geojson features
-   * @param {(geometryWktString: string) => Promise<RegionDetails[]>} getRegionDetails - ie: getNrmRegionDetails
    * @param {IDBConnection} connection - Database connection
-   * @returns {Promise<RegionDetails[]>} Unique region details
+   * @returns {Promise<string[]>} Array of unique region names
    */
-  async getUniqueBcgwRegionDetailsFromFeatures(
-    features: Feature[],
-    getRegionDetails: (geometryWktString: string) => Promise<RegionDetails[]>,
-    connection: IDBConnection
-  ): Promise<RegionDetails[]> {
+  async getIntersectingNrmRegionNamesFromFeatures(features: Feature[], connection: IDBConnection): Promise<string[]> {
     const postgisService = new PostgisService(connection);
 
-    // Generate list of PostGIS geometry strings
-    const geometryWKTStringArr = await Promise.all(
+    // Generate list of PostGIS geometry strings from features
+    const wktStringArr = await Promise.all(
       features.map((feature) => postgisService.getGeoJsonGeometryAsWkt(feature.geometry, Srid3005))
     );
 
-    // Get NRM region details from PostGIS geometry strings
-    const nrmRegionDetailsPromises = await Promise.all(
-      geometryWKTStringArr.map((geometryString) => getRegionDetails(geometryString))
-    );
+    // Get NRM region names from Postgis geometry strings
+    const nrmRegionNames = await Promise.all(wktStringArr.map((wkt) => this.getNrmRegionNames(wkt)));
 
-    // Flatten the RegionDetails[][] into a single list -> RegionDetails[]
-    const flattenedRegions = flatten(await Promise.all(nrmRegionDetailsPromises)).filter((item) => item);
+    // Flatten nested arrays and filter out undefined values
+    const flattenedRegionNames = flatten(nrmRegionNames).filter((item) => item);
 
     // Remove duplicates
-    const uniqueRegionDetails = Array.from(new Set(flattenedRegions));
+    const uniqueNrmRegionNames = Array.from(new Set(flattenedRegionNames));
 
-    return uniqueRegionDetails;
-  }
-
-  /**
-   * Get intersecting NRM regions from a list of features
-   *
-   * @async
-   * @param {Feature[]} features - Array of geojson features
-   * @param {IDBConnection} connection - Database connection
-   * @returns {Promise<RegionDetails[]>} Array of unique region details
-   */
-  async getIntersectingNrmRegionsFromFeatures(
-    features: Feature[],
-    connection: IDBConnection
-  ): Promise<RegionDetails[]> {
-    return this.getUniqueBcgwRegionDetailsFromFeatures(features, this.getNrmRegionDetails.bind(this), connection);
+    return uniqueNrmRegionNames;
   }
 }

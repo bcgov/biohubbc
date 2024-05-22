@@ -85,11 +85,10 @@ describe('RegionRepository', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const service = new RegionService(mockDBConnection);
-      const regionDetails = { regionName: 'REGION', sourceLayer: 'LAYER' };
 
       const intersectingRegionsStub = sinon
-        .stub(BcgwLayerService.prototype, 'getIntersectingNrmRegionsFromFeatures')
-        .resolves([regionDetails]);
+        .stub(BcgwLayerService.prototype, 'getIntersectingNrmRegionNamesFromFeatures')
+        .resolves(['REGION']);
       const getRegionsByNamesStub = sinon
         .stub(RegionService.prototype, 'getRegionsByNames')
         .resolves([{ region_id: 1 }] as unknown as IRegion[]);

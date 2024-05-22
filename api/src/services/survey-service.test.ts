@@ -987,7 +987,7 @@ describe('SurveyService', () => {
       sinon.restore();
     });
 
-    it.only('passes correct data to insert, update, and delete methods', async () => {
+    it('passes correct data to insert, update, and delete methods', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
