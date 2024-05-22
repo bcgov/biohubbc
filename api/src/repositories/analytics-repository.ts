@@ -58,7 +58,7 @@ export class AnalyticsRepository extends BaseRepository {
     // Turns subcount qualitative measurements into columns that are included in the group by clause
     const qualColumns = groupByQualitativeMeasurements.map((id) =>
       knex.raw(
-        `STRING_AGG(CASE WHEN qual.critterbase_taxon_measurement_id = ? THEN qual.critterbase_measurement_qualitative_option_id::text END, ',') as "${id}"`,
+        `STRING_AGG(DISTINCT CASE WHEN qual.critterbase_taxon_measurement_id = ? THEN qual.critterbase_measurement_qualitative_option_id::text END, ',') as "${id}"`,
         [id]
       )
     );
@@ -90,12 +90,28 @@ export class AnalyticsRepository extends BaseRepository {
       })
       .select(knex.raw('SUM(subcount)::NUMERIC as count'))
       .select(knex.raw(`ROUND(SUM(os.subcount)::NUMERIC / (${totalCountSubquery}) * 100, 2) as percentage`))
-      .select(combinedColumns.map((column) => knex.raw(`?? as ??`, [column, column])))
+      .select(groupByColumns.map((column) => knex.raw(`?? as ??`, [column, column])))
+      .select(
+        knex.raw(
+          `jsonb_build_object(
+        ${groupByQuantitativeMeasurements.map((column) => `'${column}', "${column}"`).join(', ')}
+      ) as quantitative_measurements`
+        )
+      )
+      .select(
+        knex.raw(
+          `jsonb_build_object(
+        ${groupByQualitativeMeasurements.map((column) => `'${column}', "${column}"`).join(', ')}
+      ) as qualitative_measurements`
+        )
+      )
       .from('temp_observations as os')
       .groupBy(combinedColumns)
       .orderBy('count', 'desc');
 
     const response = await this.connection.knex(sqlStatement);
+
+    console.log(response.rows);
 
     if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get observation count by group', [
