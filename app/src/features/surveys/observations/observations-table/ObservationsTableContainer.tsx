@@ -11,17 +11,12 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
-import {
-  GenericActionsColDef,
-  GenericDateColDef,
-  GenericTimeColDef
-} from 'components/data-grid/GenericGridColumnDefinitions';
+import { GenericDateColDef, GenericTimeColDef } from 'components/data-grid/GenericGridColumnDefinitions';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
 import { DiscardChangesButton } from 'features/surveys/observations/observations-table/discard-changes/DiscardChangesButton';
 import {
-  EmptyLastColumnColDef,
   ISampleMethodOption,
   ISamplePeriodOption,
   ISampleSiteOption,
@@ -106,12 +101,7 @@ const ObservationComponent = () => {
     // Add measurement columns to the table
     ...getMeasurementColumnDefinitions(observationsTableContext.measurementColumns, observationsTableContext.hasError),
     // Add environment columns to the table
-    ...getEnvironmentColumnDefinitions(observationsTableContext.environmentColumns, observationsTableContext.hasError),
-    GenericActionsColDef({
-      disabled: observationsTableContext.isSaving,
-      onDelete: observationsTableContext.deleteObservationRecords
-    }),
-    EmptyLastColumnColDef()
+    ...getEnvironmentColumnDefinitions(observationsTableContext.environmentColumns, observationsTableContext.hasError)
   ];
 
   return (

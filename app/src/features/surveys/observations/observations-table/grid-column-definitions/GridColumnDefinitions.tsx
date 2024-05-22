@@ -13,7 +13,6 @@ import {
   EnvironmentQualitativeTypeDefinition,
   EnvironmentQuantitativeTypeDefinition
 } from 'interfaces/useReferenceApi.interface';
-import { getFormattedDate } from 'utils/Utils';
 
 export type ISampleSiteOption = {
   survey_sample_site_id: number;
@@ -261,15 +260,6 @@ export const ObservationCountColDef = (props: {
         />
       );
     }
-  };
-};
-
-export const EmptyLastColumnColDef = (): GridColDef<IObservationTableRow> => {
-  return {
-    field: `last-column`,
-    headerName: '',
-    width: 30,
-    disableColumnMenu: true
   };
 };
 
