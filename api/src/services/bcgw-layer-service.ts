@@ -522,9 +522,7 @@ export class BcgwLayerService {
     // Flatten nested arrays and filter out undefined values
     const flattenedRegionNames = flatten(nrmRegionNames).filter((item) => item);
 
-    // Remove duplicates
-    const uniqueNrmRegionNames = Array.from(new Set(flattenedRegionNames));
-
-    return uniqueNrmRegionNames;
+    // Remove de-duped array
+    return Array.from(new Set(flattenedRegionNames));
   }
 }

@@ -16,8 +16,9 @@ export class RegionService extends DBService {
   }
 
   /**
-   * Adds NRM regions to a given survey based on a list of features.
-   * Business requires all features to be mapped to intersecting NRM regions.
+   * Adds NRM regions to a given survey based on a list of features,
+   * business requires all features to be mapped to intersecting NRM regions.
+   * Note: This method will delete all regions in the survey before adding the new regions.
    *
    * @param {number} surveyId
    * @param {Feature[]} features

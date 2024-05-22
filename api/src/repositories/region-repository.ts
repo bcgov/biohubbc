@@ -112,10 +112,10 @@ export class RegionRepository extends BaseRepository {
   }
 
   /**
-   * Get region lookup values by region names.
+   * Get region lookup values from region names
    *
    * @async
-   * @param {string[]} regionNames - Name of regions
+   * @param {string[]} regionNames - Names of regions
    * @returns {Promise<IRegion[]>} - List of regions
    */
   async getRegionsByNames(regionNames: string[]): Promise<IRegion[]> {
@@ -127,9 +127,7 @@ export class RegionRepository extends BaseRepository {
 
       return response.rows;
     } catch (error) {
-      throw new ApiExecuteSQLError('Failed to execute search region SQL', [
-        'RegionRepository->searchRegionsWithDetails'
-      ]);
+      throw new ApiExecuteSQLError('Failed to execute search region SQL', ['RegionRepository->getRegionsByNames']);
     }
   }
 }
