@@ -197,7 +197,7 @@ export const validateWorksheetHeaders = (worksheet: xlsx.WorkSheet, columnValida
  *
  * @export
  * @param {xlsx.WorkSheet} worksheet
- * @param {string[]} rowValueTypes
+ * @param {IXLSXCSVValidator[]} columnValidator
  * @return {*}  {boolean}
  */
 export const validateWorksheetColumnTypes = (
@@ -215,7 +215,11 @@ export const validateWorksheetColumnTypes = (
         return dayjs(value).isValid();
       }
 
-      return rowValueTypes[index] === type;
+      if (rowValueTypes[index] === type) {
+        return true;
+      }
+
+      return false;
     });
   });
 };
