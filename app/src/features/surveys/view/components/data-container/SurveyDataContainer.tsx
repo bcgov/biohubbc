@@ -26,8 +26,6 @@ const SurveyDataContainer = (props: ISurveyDataContainerProps) => {
     { label: 'Analytics', value: 'ANALYTICS' }
   ];
 
-  console.log(activeDataView);
-
   return (
     <>
       <Box px={2} pt={2} display="flex" justifyContent="space-between">
@@ -55,11 +53,12 @@ const SurveyDataContainer = (props: ISurveyDataContainerProps) => {
           ))}
         </ToggleButtonGroup>
       </Box>
-      <Divider sx={{ mt: 2 }} />
+      <Divider sx={{ mt: 2, mb: 1 }} />
       <Box p={2}>
         {activeDataView === SurveyDataContainerViewEnum.RAW && (
           <SurveySpatialObservationDataTable isLoading={isLoading} />
         )}
+
         {activeDataView === SurveyDataContainerViewEnum.ANALYTICS && <SurveyObservationAnalytics />}
       </Box>
     </>

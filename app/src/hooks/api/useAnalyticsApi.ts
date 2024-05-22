@@ -26,14 +26,11 @@ const useAnalyticsApi = (axios: AxiosInstance) => {
     let url = `/api/analytics/observations?surveyIds=${surveyIds.join(',')}&groupByColumns=${groupByColumns.join(',')}`;
 
     if (groupByQualitativeMeasurements.length) {
-      url =
-        url +
-        `&groupByQualitativeMeasurements=${groupByQualitativeMeasurements.join(',')}
-    `;
+      url = `${url}&groupByQualitativeMeasurements=${groupByQualitativeMeasurements.join(',').trim()}`;
     }
 
     if (groupByQuantitativeMeasurements.length) {
-      url = url + `&groupByQuantitativeMeasurements=${groupByQuantitativeMeasurements.join(',')}`;
+      url = `${url}&groupByQuantitativeMeasurements=${groupByQuantitativeMeasurements.join(',').trim()}`;
     }
 
     const { data } = await axios.get(url);

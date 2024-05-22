@@ -31,47 +31,11 @@ export class AnalyticsService extends DBService {
     groupByQuantitativeMeasurements: string[],
     groupByQualitativeMeasurements: string[]
   ): Promise<IObservationCountByGroup[]> {
-    console.log(groupByQuantitativeMeasurements);
-    const analytics = await this.analyticsRepository.getObservationCountByGroup(
+    return this.analyticsRepository.getObservationCountByGroup(
       surveyIds,
       groupByColumns,
       groupByQuantitativeMeasurements,
       groupByQualitativeMeasurements
     );
-
-    console.log(analytics);
-
-    // transform measurements into columns
-    const transformedData = analytics.map((item) => {
-      const result = {
-        count: item.count,
-        percentage: item.percentage
-      };
-
-      // include properties from groupBy array
-      groupByColumns.forEach((prop) => {
-        result[prop] = item[prop];
-      });
-
-      // transform quantitative measurements into properties
-      item.quantitative_measurements?.forEach((qm) => {
-        // if (groupByQuantitativeMeasurements.includes(qm.critterbase_taxon_measurement_id)) {
-        result[qm.critterbase_taxon_measurement_id] = qm.value;
-        // }
-      });
-
-      // transform qualitative measurements into properties
-      item.qualitative_measurements?.forEach((qm) => {
-        // if (groupByQualitativeMeasurements.includes(qm.critterbase_taxon_measurement_id)) {
-        result[qm.critterbase_taxon_measurement_id] = qm.option_id;
-        // }
-      });
-
-      return result;
-    });
-
-    console.log(transformedData);
-
-    return transformedData;
   }
 }

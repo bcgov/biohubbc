@@ -1,15 +1,22 @@
 import Box from '@mui/material/Box';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import {
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition
+} from 'interfaces/useCritterApi.interface';
 import { useEffect } from 'react';
 
 interface IObservationAnalyticsDataTableProps {
   groupByColumns: string[];
   groupByQuantitativeMeasurements: string[];
   groupByQualitativeMeasurements: string[];
+  qualitativeMeasurementDefinitions: CBQualitativeMeasurementTypeDefinition[];
+  quantitativeMeasurementDefinitions: CBQuantitativeMeasurementTypeDefinition[];
 }
 
 interface IObservationAnalyticsRow {
@@ -18,7 +25,13 @@ interface IObservationAnalyticsRow {
 }
 
 const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProps) => {
-  const { groupByColumns, groupByQuantitativeMeasurements, groupByQualitativeMeasurements } = props;
+  const {
+    groupByColumns,
+    groupByQuantitativeMeasurements,
+    groupByQualitativeMeasurements,
+    qualitativeMeasurementDefinitions,
+    quantitativeMeasurementDefinitions
+  } = props;
   const biohubApi = useBiohubApi();
 
   const { surveyId } = useSurveyContext();
@@ -28,7 +41,7 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
       surveyId: number,
       groupByColumns: string[],
       groupByQuantitativeMeasurements: string[],
-      groupByQualitativeMeasurements: string[],
+      groupByQualitativeMeasurements: string[]
     ) =>
       biohubApi.analytics.getObservationCountByGroup(
         [surveyId],
@@ -48,7 +61,11 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
   }, [groupByColumns, groupByQuantitativeMeasurements, groupByQualitativeMeasurements]);
 
   if (!analyticsDataLoader.data?.length) {
-    return <></>;
+    return (
+      <Box position="relative" flex="1 1 auto">
+        <SkeletonTable numberOfLines={5} />
+      </Box>
+    );
   }
 
   const rows: IObservationAnalyticsRow[] = analyticsDataLoader.data.map((item, index) => ({
@@ -56,14 +73,19 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
     ...item
   }));
 
-  const columns: GridColDef<IObservationAnalyticsRow>[] = Object.keys(analyticsDataLoader.data[0]).map((field) => ({
-    field,
-    headerName: field.charAt(0).toUpperCase() + field.slice(1),
-    flex: 1,
-    minWidth: 200
-  }));
-
-  // const columns: GridColDef<IObservationAnalyticsRow>[] = analyticsDataLoader.data.map((field) => ({field.})
+  const columns: GridColDef<IObservationAnalyticsRow>[] = Object.keys(analyticsDataLoader.data[0]).map((field) => {
+    return {
+      field,
+      headerName:
+        qualitativeMeasurementDefinitions.find((measurement) => measurement.taxon_measurement_id === field)
+          ?.measurement_name ??
+        quantitativeMeasurementDefinitions.find((measurement) => measurement.taxon_measurement_id === field)
+          ?.measurement_name ??
+        field,
+      flex: 1,
+      minWidth: 200
+    };
+  });
 
   const rowHeight = 50;
 

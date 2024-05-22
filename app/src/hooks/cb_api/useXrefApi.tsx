@@ -1,7 +1,9 @@
 import { AxiosInstance } from 'axios';
 import {
   CBMeasurementSearchByTermResponse,
-  CBMeasurementSearchByTsnResponse
+  CBMeasurementSearchByTsnResponse,
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
 
 export const useXrefApi = (axios: AxiosInstance) => {
@@ -29,8 +31,42 @@ export const useXrefApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Gets quantitative measurement definitions by taxon_measurement_id
+   *
+   * @async
+   * @param {CreateQualitativeMeasurement} taxon_measurement_id - Get measurement by taxon_measurement_id.
+   * @returns {Promise<IQualitativeMeasurementResponse>} The created qualitative measurement.
+   */
+  const getQuantitativeMeasurementsById = async (
+    taxon_measurement_ids: string[]
+  ): Promise<CBQuantitativeMeasurementTypeDefinition[]> => {
+    const { data } = await axios.post(`/api/critterbase/xref/taxon-quantitative-measurements `, {
+      taxon_measurement_ids
+    });
+    return data;
+  };
+
+  /**
+   * Gets qualitative measurement definitions by taxon_measurement_id
+   *
+   * @async
+   * @param {CreateQualitativeMeasurement} taxon_measurement_id - Get measurement by taxon_measurement_id.
+   * @returns {Promise<IQualitativeMeasurementResponse>} The created qualitative measurement.
+   */
+  const getQualitativeMeasurementsById = async (
+    taxon_measurement_ids: string[]
+  ): Promise<CBQualitativeMeasurementTypeDefinition[]> => {
+    const { data } = await axios.post(`/api/critterbase/xref/taxon-qualitative-measurements `, {
+      taxon_measurement_ids
+    });
+    return data;
+  };
+
   return {
     getTaxonMeasurements,
-    getMeasurementTypeDefinitionsBySearchTerm
+    getMeasurementTypeDefinitionsBySearchTerm,
+    getQualitativeMeasurementsById,
+    getQuantitativeMeasurementsById
   };
 };

@@ -161,9 +161,6 @@ export function getObservationCountByGroup(): RequestHandler {
 
     const connection = getDBConnection(req['keycloak_token']);
 
-    console.log(req.query.groupByQuantitativeMeasurements);
-    console.log(req.query.groupByQualitativeMeasurements);
-
     try {
       const surveyIds = req.query.surveyIds.map((id) => Number(id));
       const groupByColumns = Array.isArray(req.query.groupByColumns)

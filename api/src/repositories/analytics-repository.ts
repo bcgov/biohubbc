@@ -40,85 +40,62 @@ export class AnalyticsRepository extends BaseRepository {
   ): Promise<IObservationCountByGroupWithMeasurements[]> {
     const knex = getKnex();
 
-    const totalSubquery = knex('observation_subcount as os')
+    const combinedColumns = [...groupByColumns, ...groupByQuantitativeMeasurements, ...groupByQualitativeMeasurements];
+
+    // subquery to get total count, used for calculating ratios
+    const totalCountSubquery = knex('observation_subcount as os')
       .sum('os.subcount as total')
       .leftJoin('survey_observation as so', 'so.survey_observation_id', 'os.survey_observation_id')
-      // The main query below duplicates subcount values by joining on subcounts measurements,
-      // so we join on measurements here to correctly calculate the total
-      .leftJoin(
-        'observation_subcount_quantitative_measurement as quant',
-        'quant.observation_subcount_id',
-        'os.observation_subcount_id'
-      )
-      .leftJoin(
-        'observation_subcount_qualitative_measurement as qual',
-        'qual.observation_subcount_id',
-        'os.observation_subcount_id'
-      )
       .whereIn('so.survey_id', surveyIds)
       .first()
       .toString();
 
+    // Turns subcount quantitative measurements into columns that are included in the group by clause
+    const quantColumns = groupByQuantitativeMeasurements.map((id) =>
+      knex.raw(`MAX(CASE WHEN quant.critterbase_taxon_measurement_id = ? THEN quant.value END) as "${id}"`, [id])
+    );
+
+    // Turns subcount qualitative measurements into columns that are included in the group by clause
+    const qualColumns = groupByQualitativeMeasurements.map((id) =>
+      knex.raw(
+        `STRING_AGG(CASE WHEN qual.critterbase_taxon_measurement_id = ? THEN qual.critterbase_measurement_qualitative_option_id::text END, ',') as "${id}"`,
+        [id]
+      )
+    );
+
     const sqlStatement = knex
-      .queryBuilder()
+      .with('temp_observations', (qb) => {
+        qb.select(
+          'os.subcount',
+          'os.observation_subcount_id',
+          'so.survey_id',
+          ...groupByColumns.map((column) => knex.raw(`?? as ??`, [column, column])),
+          ...quantColumns,
+          ...qualColumns
+        )
+          .from('observation_subcount as os')
+          .leftJoin('survey_observation as so', 'so.survey_observation_id', 'os.survey_observation_id')
+          .leftJoin(
+            'observation_subcount_qualitative_measurement as qual',
+            'qual.observation_subcount_id',
+            'os.observation_subcount_id'
+          )
+          .leftJoin(
+            'observation_subcount_quantitative_measurement as quant',
+            'quant.observation_subcount_id',
+            'os.observation_subcount_id'
+          )
+          .whereIn('so.survey_id', surveyIds)
+          .groupBy('os.subcount', 'os.observation_subcount_id', 'so.survey_id', ...groupByColumns);
+      })
       .select(knex.raw('SUM(subcount)::NUMERIC as count'))
-      .select(
-        groupByQuantitativeMeasurements.length > 0
-          ? knex.raw(
-              `jsonb_agg(
-                jsonb_build_object(
-                    'critterbase_taxon_measurement_id', quant.critterbase_taxon_measurement_id,
-                    'value', value
-                )
-                ) FILTER (WHERE quant.critterbase_taxon_measurement_id IN (${groupByQuantitativeMeasurements
-                  .map(() => '?')
-                  .join(', ')})) AS quantitative_measurements`,
-              groupByQuantitativeMeasurements
-            )
-          : knex.raw(`'[]'::jsonb as quantitative_measurements`)
-      )
-      .select(
-        groupByQualitativeMeasurements.length > 0
-          ? knex.raw(
-              `jsonb_agg(
-                jsonb_build_object(
-                    'critterbase_taxon_measurement_id', qual.critterbase_taxon_measurement_id,
-                    'option_id', critterbase_measurement_qualitative_option_id
-                )
-                ) FILTER (WHERE quant.critterbase_taxon_measurement_id IN (${groupByQualitativeMeasurements
-                  .map(() => '?')
-                  .join(', ')})) AS qualitative_measurements`,
-              groupByQualitativeMeasurements
-            )
-          : knex.raw(`'[]'::jsonb as qualitative_measurements`)
-      )
-      .select(knex.raw(`ROUND(SUM(os.subcount)::NUMERIC / (${totalSubquery}) * 100, 2) as percentage`))
-      .select(groupByColumns.map((column) => knex.raw(`?? as ??`, [column, column])))
-      .from('observation_subcount as os')
-      .leftJoin('survey_observation as so', 'so.survey_observation_id', 'os.survey_observation_id')
-      .leftJoin(
-        'observation_subcount_qualitative_measurement as qual',
-        'qual.observation_subcount_id',
-        'os.observation_subcount_id'
-      )
-      .leftJoin(
-        'observation_subcount_quantitative_measurement as quant',
-        'quant.observation_subcount_id',
-        'os.observation_subcount_id'
-      )
-      .whereIn('so.survey_id', surveyIds)
-      .groupBy(groupByColumns)
-      .groupBy(
-        groupByQualitativeMeasurements.length ||
-          (groupByQuantitativeMeasurements && 'qual.critterbase_taxon_measurement_id')
-      )
-      .groupBy(groupByQualitativeMeasurements && 'critterbase_measurement_qualitative_option_id')
-      .groupBy(groupByQuantitativeMeasurements && 'value')
+      .select(knex.raw(`ROUND(SUM(os.subcount)::NUMERIC / (${totalCountSubquery}) * 100, 2) as percentage`))
+      .select(combinedColumns.map((column) => knex.raw(`?? as ??`, [column, column])))
+      .from('temp_observations as os')
+      .groupBy(combinedColumns)
       .orderBy('count', 'desc');
 
     const response = await this.connection.knex(sqlStatement);
-
-    console.log(response.rows[0].quantitative_measurements);
 
     if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get observation count by group', [
