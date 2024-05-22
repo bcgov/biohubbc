@@ -127,7 +127,9 @@ export class RegionRepository extends BaseRepository {
 
       return response.rows;
     } catch (error) {
-      throw new ApiExecuteSQLError('Failed to execute search region SQL', ['RegionRepository->getRegionsByNames']);
+      throw new ApiExecuteSQLError('Failed to execute get regions by names SQL', [
+        'RegionRepository->getRegionsByNames'
+      ]);
     }
   }
 }

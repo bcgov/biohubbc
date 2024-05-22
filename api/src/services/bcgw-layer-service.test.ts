@@ -645,7 +645,7 @@ describe('BcgwLayerService', () => {
   });
 
   describe('getIntersectingNrmRegionsFromFeatures', () => {
-    it.only('should return unique list of NRM region names', async () => {
+    it('should return unique list of NRM region names', async () => {
       const mockDbConnection = getMockDBConnection();
       const service = new BcgwLayerService();
 
