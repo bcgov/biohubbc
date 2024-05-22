@@ -514,7 +514,7 @@ export class BcgwLayerService {
     features: Feature[],
     getRegionDetails: (geometryWktString: string) => Promise<RegionDetails[]>,
     connection: IDBConnection
-  ) {
+  ): Promise<RegionDetails[]> {
     const postgisService = new PostgisService(connection);
 
     // Generate list of PostGIS geometry strings
@@ -528,7 +528,7 @@ export class BcgwLayerService {
     );
 
     // Flatten the RegionDetails[][] into a single list -> RegionDetails[]
-    const flattenedRegions = flatten(await Promise.all(nrmRegionDetailsPromises));
+    const flattenedRegions = flatten(await Promise.all(nrmRegionDetailsPromises)).filter((item) => item);
 
     // Remove duplicates
     const uniqueRegionDetails = Array.from(new Set(flattenedRegions));
@@ -544,7 +544,10 @@ export class BcgwLayerService {
    * @param {IDBConnection} connection - Database connection
    * @returns {Promise<RegionDetails[]>} Array of unique region details
    */
-  async getIntersectingNrmRegionsFromFeatures(features: Feature[], connection: IDBConnection) {
+  async getIntersectingNrmRegionsFromFeatures(
+    features: Feature[],
+    connection: IDBConnection
+  ): Promise<RegionDetails[]> {
     return this.getUniqueBcgwRegionDetailsFromFeatures(features, this.getNrmRegionDetails.bind(this), connection);
   }
 }

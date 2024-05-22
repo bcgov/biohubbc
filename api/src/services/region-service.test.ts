@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { RegionRepository } from '../repositories/region-repository';
+import { IRegion, RegionRepository } from '../repositories/region-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { BcgwLayerService } from './bcgw-layer-service';
 import { RegionService } from './region-service';
@@ -56,7 +56,7 @@ describe('RegionRepository', () => {
       const service = new RegionService(mockDBConnection);
       const addStub = sinon.stub(RegionRepository.prototype, 'addRegionsToSurvey').resolves();
 
-      await service.addRegionsToSurvey(1, []);
+      await service.refreshSurveyRegions(1, []);
       expect(addStub).to.be.called;
     });
   });
@@ -81,19 +81,25 @@ describe('RegionRepository', () => {
     });
   });
 
-  describe('addRegionsToSurveyFromFeatures', () => {
+  describe('insertRegionsIntoSurveyFromFeatures', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const service = new RegionService(mockDBConnection);
-      const getUniqueStub = sinon.stub(RegionService.prototype, 'getUniqueRegionsForFeatures').resolves();
-      const searchStub = sinon.stub(RegionService.prototype, 'searchRegionWithDetails').resolves();
-      const addRegionStub = sinon.stub(RegionService.prototype, 'addRegionsToSurvey').resolves();
+      const regionDetails = { regionName: 'REGION', sourceLayer: 'LAYER' };
 
-      await service.addRegionsToSurveyFromFeatures(1, []);
+      const intersectingRegionsStub = sinon
+        .stub(BcgwLayerService.prototype, 'getIntersectingNrmRegionsFromFeatures')
+        .resolves([regionDetails]);
+      const getRegionsByNamesStub = sinon
+        .stub(RegionService.prototype, 'getRegionsByNames')
+        .resolves([{ region_id: 1 }] as unknown as IRegion[]);
+      const refreshSurveyRegionsStub = sinon.stub(RegionService.prototype, 'refreshSurveyRegions').resolves();
 
-      expect(getUniqueStub).to.be.called;
-      expect(searchStub).to.be.called;
-      expect(addRegionStub).to.be.called;
+      await service.insertRegionsIntoSurveyFromFeatures(1, []);
+
+      expect(intersectingRegionsStub).to.be.calledWith([], mockDBConnection);
+      expect(getRegionsByNamesStub).to.be.calledWith(['REGION']);
+      expect(refreshSurveyRegionsStub).to.be.calledWith(1, [{ region_id: 1 }]);
     });
   });
 });

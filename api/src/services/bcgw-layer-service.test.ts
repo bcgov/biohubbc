@@ -643,4 +643,36 @@ describe('BcgwLayerService', () => {
       ]);
     });
   });
+
+  describe('getUniqueBcgwRegionDetailsFromFeatures', () => {
+    it('returns unique regions', async () => {
+      const bcgwService = new BcgwLayerService();
+
+      const features = [{ geometry: {} }, { geometry: {} }, { geometry: {} }] as Feature[];
+
+      const getGeoJsonGeometryAsWkt = sinon.stub(PostgisService.prototype, 'getGeoJsonGeometryAsWkt');
+      getGeoJsonGeometryAsWkt.onFirstCall().resolves('Region 1');
+      getGeoJsonGeometryAsWkt.onSecondCall().resolves('Region 2');
+      getGeoJsonGeometryAsWkt.onThirdCall().resolves('Region 2');
+
+      const getRegionDetailsMock = sinon.stub();
+      getRegionDetailsMock.onFirstCall().resolves({ regionName: 'REGION 1', sourceLayer: 'LAYER 1' });
+      getRegionDetailsMock.onSecondCall().resolves({ regionName: 'REGION 2', sourceLayer: 'LAYER 2' });
+      getRegionDetailsMock.onSecondCall().resolves({ regionName: 'REGION 2', sourceLayer: 'LAYER 2' });
+
+      const uniqueRegionDetails = await bcgwService.getUniqueBcgwRegionDetailsFromFeatures(
+        features,
+        getRegionDetailsMock,
+        getMockDBConnection()
+      );
+
+      // Assertions
+      expect(getGeoJsonGeometryAsWkt.callCount).to.equal(3);
+      expect(getRegionDetailsMock.callCount).to.equal(3);
+      expect(uniqueRegionDetails).to.deep.equal([
+        { regionName: 'REGION 1', sourceLayer: 'LAYER 1' },
+        { regionName: 'REGION 2', sourceLayer: 'LAYER 2' }
+      ]);
+    });
+  });
 });

@@ -428,7 +428,7 @@ export class SurveyService extends DBService {
       promises.push(Promise.all(postSurveyData.locations.map((item) => this.insertSurveyLocations(surveyId, item))));
       // Insert survey regions
       const features = flatten(postSurveyData.locations.map((location) => location.geojson));
-      promises.push(this.regionService.insertRegionsIntoSurvey(surveyId, features));
+      promises.push(this.regionService.insertRegionsIntoSurveyFromFeatures(surveyId, features));
     }
 
     // Handle site selection strategies
@@ -716,11 +716,14 @@ export class SurveyService extends DBService {
 
     const features = flatten(data.map((item) => item.geojson));
 
-    // Patch survey locations
-    await Promise.all([insertPromises, updatePromises, deletePromises]);
-
-    // Insert regions into survey - maps to NRM regions
-    await this.regionService.insertRegionsIntoSurvey(surveyId, features);
+    await Promise.all([
+      // Patch survey locations
+      insertPromises,
+      updatePromises,
+      deletePromises,
+      // Insert regions into survey - maps to NRM regions
+      this.regionService.insertRegionsIntoSurveyFromFeatures(surveyId, features)
+    ]);
   }
 
   /**
