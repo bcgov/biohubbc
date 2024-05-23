@@ -3,7 +3,8 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ExportService, SurveyExportConfig } from '../../../../../../services/export-service';
+import { SurveyExportConfig } from '../../../../../../services/export-service';
+import { SurveyExportService } from '../../../../../../services/survey-export-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/export/index.ts');
@@ -149,7 +150,7 @@ export function exportData(): RequestHandler {
     try {
       await connection.open();
 
-      const exportService = new ExportService(connection);
+      const exportService = new SurveyExportService(connection);
       const response = await exportService.exportSurvey(surveyId, config);
 
       await connection.commit();
