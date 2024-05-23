@@ -29,7 +29,7 @@ import FormLocationPreview from './LocationEntryForm';
  * @returns {*}
  */
 const MortalityAnimalForm = (props: AnimalFormProps<IMortalityResponse>) => {
-  const cbApi = useCritterbaseApi();
+  const critterbaseApi = useCritterbaseApi();
   const dialog = useDialogContext();
 
   const [loading, setLoading] = useState(false);
@@ -41,11 +41,11 @@ const MortalityAnimalForm = (props: AnimalFormProps<IMortalityResponse>) => {
 
     try {
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-        await cbApi.mortality.createMortality(patchedValues);
+        await critterbaseApi.mortality.createMortality(patchedValues);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created mortality.` });
       }
       if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-        await cbApi.mortality.updateMortality(patchedValues);
+        await critterbaseApi.mortality.updateMortality(patchedValues);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited mortality.` });
       }
     } catch (err) {

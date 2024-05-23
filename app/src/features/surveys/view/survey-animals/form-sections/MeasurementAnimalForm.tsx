@@ -34,14 +34,14 @@ import {
 export const MeasurementAnimalForm = (
   props: AnimalFormProps<IQuantitativeMeasurementResponse & IQualitativeMeasurementResponse>
 ) => {
-  const cbApi = useCritterbaseApi();
+  const critterbaseApi = useCritterbaseApi();
   const dialog = useDialogContext();
 
   const [loading, setLoading] = useState(false);
   const [measurementTypeDef, setMeasurementTypeDef] = useState<CBMeasurementType | undefined>();
 
   const { data: measurements, load: loadMeasurements } = useDataLoader(() =>
-    cbApi.xref.getTaxonMeasurements(props.critter.itis_tsn)
+    critterbaseApi.xref.getTaxonMeasurements(props.critter.itis_tsn)
   );
   loadMeasurements();
 
@@ -66,16 +66,16 @@ export const MeasurementAnimalForm = (
         delete values.value;
 
         props.formMode === ANIMAL_FORM_MODE.ADD
-          ? await cbApi.measurement.createQualitativeMeasurement(values)
-          : await cbApi.measurement.updateQualitativeMeasurement(values);
+          ? await critterbaseApi.measurement.createQualitativeMeasurement(values)
+          : await critterbaseApi.measurement.updateQualitativeMeasurement(values);
       } else {
         delete values.measurement_qualitative_id;
         delete values.qualitative_option_id;
         values = { ...values, value: Number(values.value) };
 
         props.formMode === ANIMAL_FORM_MODE.ADD
-          ? await cbApi.measurement.createQuantitativeMeasurement(values)
-          : await cbApi.measurement.updateQuantitativeMeasurement(values);
+          ? await critterbaseApi.measurement.createQuantitativeMeasurement(values)
+          : await critterbaseApi.measurement.updateQuantitativeMeasurement(values);
       }
       dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created measurement.` });
     } catch (err) {

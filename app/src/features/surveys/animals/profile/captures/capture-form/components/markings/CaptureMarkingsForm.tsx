@@ -12,26 +12,26 @@ import { useAnimalPageContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
-import CaptureMarkingsDialog from './CaptureMarkingsDialog';
-import MarkingCard from './MarkingCard';
+import { CaptureMarkingsDialog } from './CaptureMarkingsDialog';
+import { MarkingCard } from './MarkingCard';
 
 /**
  * Returns the control for applying markings to an animal on the animal capture form
  *
  * @returns
  */
-const CaptureMarkingsForm = () => {
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
-
-  const [selectedMarking, setSelectedMarking] = useState<number | null>(null);
-  const [markingAnchorEl, setMarkingAnchorEl] = useState<MenuProps['anchorEl']>(null);
+export const CaptureMarkingsForm = () => {
   const { values } = useFormikContext<ICreateEditCaptureRequest>();
+
+  const animalPageContext = useAnimalPageContext();
 
   const critterbaseApi = useCritterbaseApi();
 
-  const { critterDataLoader } = useAnimalPageContext();
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [selectedMarking, setSelectedMarking] = useState<number | null>(null);
+  const [markingAnchorEl, setMarkingAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   // Get available marking types
   const markingTypesDataLoader = useDataLoader(() => critterbaseApi.marking.getMarkingTypeOptions());
@@ -44,11 +44,21 @@ const CaptureMarkingsForm = () => {
   // Get available marking colours
   const markingColoursDataLoader = useDataLoader(() => critterbaseApi.marking.getMarkingColourOptions());
 
-  markingTypesDataLoader.load();
-  markingColoursDataLoader.load();
-  if (critterDataLoader.data) {
-    markingBodyLocationDataLoader.load(critterDataLoader.data.itis_tsn);
-  }
+  useEffect(() => {
+    markingTypesDataLoader.load();
+  }, [markingTypesDataLoader]);
+
+  useEffect(() => {
+    markingColoursDataLoader.load();
+  }, [markingColoursDataLoader]);
+
+  useEffect(() => {
+    if (!animalPageContext.critterDataLoader.data) {
+      return;
+    }
+
+    markingBodyLocationDataLoader.load(animalPageContext.critterDataLoader.data.itis_tsn);
+  }, [animalPageContext.critterDataLoader.data, markingBodyLocationDataLoader]);
 
   return (
     <FieldArray
@@ -164,5 +174,3 @@ const CaptureMarkingsForm = () => {
     />
   );
 };
-
-export default CaptureMarkingsForm;

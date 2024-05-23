@@ -29,7 +29,7 @@ interface ICaptureQualitativeMeasurementOptionSelectProps {
 /**
  * Returns a component for selecting ecological (ie. collection) unit options for a given ecological unit.
  *
- * @param {IMeasurementsOptionSelectProps} props
+ * @param {ICaptureQualitativeMeasurementOptionSelectProps} props
  * @return {*}
  */
 export const CaptureQualitativeMeasurementOptionSelect = (props: ICaptureQualitativeMeasurementOptionSelectProps) => {
@@ -56,5 +56,3 @@ export const CaptureQualitativeMeasurementOptionSelect = (props: ICaptureQualita
     />
   );
 };
-
-export default CaptureQualitativeMeasurementOptionSelect;

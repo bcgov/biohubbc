@@ -15,7 +15,7 @@ import {
   ICreateEditCaptureRequest
 } from 'interfaces/useCritterApi.interface';
 import { useMemo } from 'react';
-import CaptureQualitativeMeasurementsOptionSelect from './CaptureQualitativeMeasurementsOptionSelect';
+import { CaptureQualitativeMeasurementOptionSelect } from './CaptureQualitativeMeasurementsOptionSelect';
 
 interface ICaptureMeasurementSelectProps {
   // The collection units (categories) available to select from
@@ -29,7 +29,7 @@ interface ICaptureMeasurementSelectProps {
 /**
  * Returns a component for selecting ecological (ie. collection) units for a given species.
  *
- * @param {ICaptureMeasurementsSelect} props
+ * @param {ICaptureMeasurementSelectProps} props
  * @return {*}
  */
 export const CaptureMeasurementSelect = (props: ICaptureMeasurementSelectProps) => {
@@ -63,7 +63,7 @@ export const CaptureMeasurementSelect = (props: ICaptureMeasurementSelectProps) 
                 ?.measurement_name
           };
         }) ?? [],
-    [measurements, values.measurements]
+    [measurements, selectedTaxonMeasurement?.taxon_measurement_id, values.measurements]
   );
 
   return (
@@ -99,7 +99,7 @@ export const CaptureMeasurementSelect = (props: ICaptureMeasurementSelectProps) 
         <Box flex="0.5">
           {/* Qualitative measurement option select */}
           {selectedTaxonMeasurement && 'options' in selectedTaxonMeasurement ? (
-            <CaptureQualitativeMeasurementsOptionSelect
+            <CaptureQualitativeMeasurementOptionSelect
               index={index}
               options={selectedTaxonMeasurement.options.map((option) => ({
                 label: option.option_label,
@@ -132,5 +132,3 @@ export const CaptureMeasurementSelect = (props: ICaptureMeasurementSelectProps) 
     </Collapse>
   );
 };
-
-export default CaptureMeasurementSelect;

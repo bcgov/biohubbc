@@ -41,7 +41,7 @@ export interface ICaptureLocationMapControlProps {
  * @param {ICaptureLocationMapControlProps} props
  * @return {*}
  */
-const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
+export const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
   const { name, title } = props;
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [lastDrawn, setLastDrawn] = useState<null | number>(null);
@@ -211,5 +211,3 @@ const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
     </Grid>
   );
 };
-
-export default CaptureLocationMapControl;

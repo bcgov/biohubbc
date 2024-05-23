@@ -20,8 +20,8 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import AnimalListToolbar from './AnimalListToolbar';
-import CritterListItem from './CritterListItem';
+import { AnimalListToolbar } from './AnimalListToolbar';
+import { CritterListItem } from './CritterListItem';
 
 /**
  * Returns a list of all animals (critters) in the survey

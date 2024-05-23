@@ -13,7 +13,7 @@ import { useDialogContext } from 'hooks/useContext';
 import { useCopyToClipboard } from 'hooks/useCopyToClipboard';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { setMessageSnackbar } from 'utils/Utils';
-import ScientificNameTypography from '../../../components/ScientificNameTypography';
+import { ScientificNameTypography } from '../../../components/ScientificNameTypography';
 import { AnimalAttributeItem } from './AnimalAttributeItem';
 
 interface IAnimalProfileHeaderProps {
@@ -26,7 +26,7 @@ interface IAnimalProfileHeaderProps {
  * @param {IAnimalProfileHeaderProps} props
  * @return {*}
  */
-const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
+export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
   const { critter } = props;
 
   const dialogContext = useDialogContext();
@@ -114,5 +114,3 @@ const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
     </>
   );
 };
-
-export default AnimalProfileHeader;

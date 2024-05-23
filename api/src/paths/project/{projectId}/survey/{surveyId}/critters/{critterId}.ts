@@ -83,60 +83,44 @@ PATCH.apiDoc = {
   }
 };
 
-export function removeCrittersFromSurvey(): RequestHandler {
-  return async (req, res) => {
-    const critterIds = req.body.critterIds;
-    const surveyId = Number(req.params.surveyId);
-
-    const connection = getDBConnection(req['keycloak_token']);
-    const surveyCritterService = new SurveyCritterService(connection);
-
-    try {
-      await connection.open();
-
-      const result = await surveyCritterService.removeCrittersFromSurvey(surveyId, critterIds);
-      await connection.commit();
-
-      return res.status(200).json(result);
-    } catch (error) {
-      defaultLog.error({ label: 'removeCritterFromSurvey', message: 'error', error });
-      await connection.rollback();
-      throw error;
-    } finally {
-      connection.release();
-    }
-  };
-}
-
 export function updateSurveyCritter(): RequestHandler {
   return async (req, res) => {
     const user: ICritterbaseUser = {
       keycloak_guid: req['system_user']?.user_guid,
       username: req['system_user']?.user_identifier
     };
+    const critterbaseCritterId = req.body.update.critter_id;
 
     const critterId = Number(req.params.critterId);
+
     const connection = getDBConnection(req['keycloak_token']);
-    const surveyService = new SurveyCritterService(connection);
-    const cb = new CritterbaseService(user);
     try {
       await connection.open();
-      const critterbaseCritterId = req.body.update.critter_id;
+
       if (!critterbaseCritterId) {
         throw new HTTPError(HTTPErrorType.BAD_REQUEST, 400, 'No external critter ID was found.');
       }
+
+      const surveyService = new SurveyCritterService(connection);
       await surveyService.updateCritter(critterId, critterbaseCritterId);
+
+      const critterbaseService = new CritterbaseService(user);
+
       let createResult, updateResult;
+
       if (req.body.update) {
-        updateResult = await cb.updateCritter(req.body.update);
+        updateResult = await critterbaseService.updateCritter(req.body.update);
       }
+
       if (req.body.create) {
-        createResult = await cb.createCritter(req.body.create);
+        createResult = await critterbaseService.createCritter(req.body.create);
       }
+
       await connection.commit();
+
       return res.status(200).json({ ...createResult, ...updateResult });
     } catch (error) {
-      defaultLog.error({ label: 'updateCritter', message: 'error', error });
+      defaultLog.error({ label: 'updateSurveyCritter', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

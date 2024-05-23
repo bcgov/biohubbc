@@ -10,9 +10,9 @@ import {
   IQuantitativeMeasurementResponse
 } from 'interfaces/useCritterApi.interface';
 import { useHistory } from 'react-router';
-import AnimalCaptureCardContainer from './components/AnimalCaptureCardContainer';
-import AnimalCapturesMap from './components/AnimalCapturesMap';
-import AnimalCapturesToolbar from './components/AnimalCapturesToolbar';
+import { AnimalCaptureCardContainer } from './components/AnimalCaptureCardContainer';
+import { AnimalCapturesMap } from './components/AnimalCapturesMap';
+import { AnimalCapturesToolbar } from './components/AnimalCapturesToolbar';
 
 export interface ICapturesWithSupplementaryData extends ICaptureResponse {
   markings: IMarkingResponse[];

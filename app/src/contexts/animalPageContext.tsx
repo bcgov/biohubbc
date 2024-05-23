@@ -28,10 +28,15 @@ export type IAnimalPageContext = {
 
 /**
  * Context for the Manage Animals page
- *
  */
 export const AnimalPageContext = createContext<IAnimalPageContext | undefined>(undefined);
 
+/**
+ * Provider for the AnimalPageContext
+ *
+ * @param {PropsWithChildren<Record<never, any>>} props
+ * @return {*}
+ */
 export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const biohubApi = useBiohubApi();
 

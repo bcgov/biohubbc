@@ -40,7 +40,7 @@ const EditSurveyPage = () => {
   const formikRef = useRef<FormikProps<IEditSurveyRequest>>(null);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
-  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+  const enableCancelCheck = useRef(true);
   const [isSaving, setIsSaving] = useState(false);
 
   const dialogContext = useContext(DialogContext);
@@ -147,7 +147,7 @@ const EditSurveyPage = () => {
         return;
       }
 
-      setEnableCancelCheck(false);
+      enableCancelCheck.current = false;
 
       surveyContext.surveyDataLoader.refresh(projectContext.projectId, surveyContext.surveyId);
 
@@ -173,6 +173,11 @@ const EditSurveyPage = () => {
    * @return {*}
    */
   const handleLocationChange = (location: History.Location) => {
+    if (!enableCancelCheck.current) {
+      // If the cancel check is disabled: allow the navigation
+      return true;
+    }
+
     if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
       dialogContext.setYesNoDialog({
@@ -196,7 +201,7 @@ const EditSurveyPage = () => {
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={enableCancelCheck.current} message={handleLocationChange} />
       <PageHeader
         title="Edit Survey Details"
         breadCrumbJSX={

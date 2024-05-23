@@ -6,7 +6,7 @@ import { AnimalCaptureContainer } from './captures/AnimalCaptureContainer';
 /**
  * Component for displaying an animal's details within the Manage Animals page
  *
- * @returns
+ * @return {*}
  */
 export const AnimalProfileContainer = () => {
   return (

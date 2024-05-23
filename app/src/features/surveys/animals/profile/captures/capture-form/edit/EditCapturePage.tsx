@@ -12,6 +12,7 @@ import PageHeader from 'components/layout/PageHeader';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { EditCaptureI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
+import { AnimalCaptureForm } from 'features/surveys/animals/profile/captures/capture-form/components/AnimalCaptureForm';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
@@ -23,14 +24,13 @@ import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { formatCritterDetailsForBulkUpdate, formatLocation } from 'utils/Utils';
-import AnimalCaptureForm from '../create/form/AnimalCaptureForm';
 
 /**
  * Returns the page for editing an animal capture
  *
- * @returns
+ * @return {*}
  */
-const EditCapturePage = () => {
+export const EditCapturePage = () => {
   const critterbaseApi = useCritterbaseApi();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
@@ -390,5 +390,3 @@ const EditCapturePage = () => {
     </>
   );
 };
-
-export default EditCapturePage;

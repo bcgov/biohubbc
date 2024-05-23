@@ -4,9 +4,9 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { MarkingCard } from 'features/surveys/animals/profile/captures/capture-form/components/markings/MarkingCard';
 import { getFormattedDate } from 'utils/Utils';
 import { ICapturesWithSupplementaryData } from '../AnimalCaptureContainer';
-import MarkingCard from '../create/form/markings/MarkingCard';
 
 interface ICaptureCardDetails {
   capture: ICapturesWithSupplementaryData;
@@ -14,10 +14,11 @@ interface ICaptureCardDetails {
 
 /**
  * Details displayed with the accordion component displaying an animal capture
- * @param props
- * @returns
+ *
+ * @param {ICaptureCardDetails} props
+ * @return {*}
  */
-const CaptureCardDetails = (props: ICaptureCardDetails) => {
+export const CaptureCardDetails = (props: ICaptureCardDetails) => {
   const { capture } = props;
 
   const measurements = [...capture.measurements.quantitative, ...capture.measurements.qualitative];
@@ -106,25 +107,22 @@ const CaptureCardDetails = (props: ICaptureCardDetails) => {
         </Box>
       )}
 
-      {capture.measurements.qualitative.length ||
-        (capture.measurements.quantitative.length > 0 && (
-          <Box>
-            <Typography color="textSecondary" fontWeight={700} fontSize="0.75rem" sx={{ textTransform: 'uppercase' }}>
-              Measurements
-            </Typography>
-            <Box maxHeight="300px" sx={{ overflow: 'auto', pr: 1, pb: 1 }}>
-              {measurements.map((measurement) => (
-                <Paper sx={{ px: 3, py: 2, bgcolor: grey[100], mt: 1 }}>
-                  <Typography fontWeight={700}>
-                    {measurement.measurement_name}: <Typography component="span">{measurement.value}</Typography>
-                  </Typography>
-                </Paper>
-              ))}
-            </Box>
+      {capture.measurements.quantitative.length > 0 && (
+        <Box>
+          <Typography color="textSecondary" fontWeight={700} fontSize="0.75rem" sx={{ textTransform: 'uppercase' }}>
+            Measurements
+          </Typography>
+          <Box maxHeight="300px" sx={{ overflow: 'auto', pr: 1, pb: 1 }}>
+            {measurements.map((measurement) => (
+              <Paper sx={{ px: 3, py: 2, bgcolor: grey[100], mt: 1 }}>
+                <Typography fontWeight={700}>
+                  {measurement.measurement_name}: <Typography component="span">{measurement.value}</Typography>
+                </Typography>
+              </Paper>
+            ))}
           </Box>
-        ))}
+        </Box>
+      )}
     </Stack>
   );
 };
-
-export default CaptureCardDetails;

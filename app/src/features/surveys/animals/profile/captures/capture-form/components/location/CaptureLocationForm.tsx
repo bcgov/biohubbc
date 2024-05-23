@@ -2,14 +2,14 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { useFormikContext } from 'formik';
 import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
-import CaptureLocationMapControl from './CaptureLocationMapControl';
+import { CaptureLocationMapControl } from './CaptureLocationMapControl';
 
 /**
  * Returns the control for capture location on the animal capture form, wrapping around the actual map control.
  *
- * @returns
+ * @return {*}
  */
-const CaptureLocationForm = () => {
+export const CaptureLocationForm = () => {
   const formikProps = useFormikContext<ICreateEditCaptureRequest>();
 
   return (
@@ -27,5 +27,3 @@ const CaptureLocationForm = () => {
     </Box>
   );
 };
-
-export default CaptureLocationForm;

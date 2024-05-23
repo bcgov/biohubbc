@@ -14,7 +14,7 @@ interface IAnimalCapturesMapProps {
  *
  * @returns
  */
-const AnimalCapturesMap = (props: IAnimalCapturesMapProps) => {
+export const AnimalCapturesMap = (props: IAnimalCapturesMapProps) => {
   const { captures, isLoading } = props;
 
   const captureMapFeatures = captures.map((capture) => ({
@@ -40,5 +40,3 @@ const AnimalCapturesMap = (props: IAnimalCapturesMapProps) => {
     </Box>
   );
 };
-
-export default AnimalCapturesMap;

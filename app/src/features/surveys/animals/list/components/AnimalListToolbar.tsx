@@ -19,7 +19,7 @@ interface IAnimaListToolbarProps {
  * @param {IAnimaListToolbarProps} props
  * @return {*}
  */
-const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
+export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
   const { surveyId, projectId } = useSurveyContext();
 
   return (
@@ -58,5 +58,3 @@ const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
     </Toolbar>
   );
 };
-
-export default AnimalListToolbar;

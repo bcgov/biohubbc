@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
-import AnimalProfileHeader from 'features/surveys/animals/profile/details/components/AnimalProfileHeader';
+import { AnimalProfileHeader } from 'features/surveys/animals/profile/details/components/AnimalProfileHeader';
 import { useAnimalPageContext } from 'hooks/useContext';
 
 /**

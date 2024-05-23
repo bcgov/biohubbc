@@ -5,11 +5,11 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { Formik, FormikProps } from 'formik';
 import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import yup from 'utils/YupSchema';
-import CaptureGeneralInformationForm from './general-information/CaptureGeneralInformationForm';
-import CaptureLocationForm from './location/CaptureLocationForm';
-import ReleaseLocationForm from './location/ReleaseLocationForm';
-import CaptureMarkingsForm from './markings/CaptureMarkingsForm';
-import CaptureMeasurementsForm from './measurements/CaptureMeasurementsForm';
+import { CaptureGeneralInformationForm } from './general-information/CaptureGeneralInformationForm';
+import { CaptureLocationForm } from './location/CaptureLocationForm';
+import { ReleaseLocationForm } from './location/ReleaseLocationForm';
+import { CaptureMarkingsForm } from './markings/CaptureMarkingsForm';
+import { CaptureMeasurementsForm } from './measurements/CaptureMeasurementsForm';
 
 export interface IAnimalCaptureFormProps {
   initialCaptureData: ICreateEditCaptureRequest;
@@ -23,7 +23,7 @@ export interface IAnimalCaptureFormProps {
  * @param props
  * @returns
  */
-const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
+export const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
   const animalCaptureYupSchema = yup.object({
     capture: yup.object({
       capture_id: yup.string().nullable(),
@@ -110,5 +110,3 @@ const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
     </Formik>
   );
 };
-
-export default AnimalCaptureForm;

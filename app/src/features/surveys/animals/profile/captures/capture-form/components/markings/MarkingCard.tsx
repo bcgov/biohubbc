@@ -21,9 +21,10 @@ interface IMarkingCardProps {
 /**
  * Card for displaying information about markings on the animal capture form
  *
- * @returns
+ * @param {IMarkingCardProps} props
+ * @return {*}
  */
-const MarkingCard = (props: IMarkingCardProps) => {
+export const MarkingCard = (props: IMarkingCardProps) => {
   const {
     editable,
     primary_colour_label,
@@ -97,5 +98,3 @@ const MarkingCard = (props: IMarkingCardProps) => {
     </Card>
   );
 };
-
-export default MarkingCard;

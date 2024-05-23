@@ -6,15 +6,16 @@ import Box from '@mui/system/Box';
 import { useFormikContext } from 'formik';
 import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
-import CaptureLocationMapControl from './CaptureLocationMapControl';
+import { CaptureLocationMapControl } from './CaptureLocationMapControl';
 
 /**
  * Returns the control for release location on the animal capture form, wrapping around the actual map control.
  *
- * @returns
+ * @return {*}
  */
-const ReleaseLocationForm = () => {
+export const ReleaseLocationForm = () => {
   const formikProps = useFormikContext<ICreateEditCaptureRequest>();
+
   const [isReleaseSameAsCapture, setIsReleaseSameAsCapture] = useState<boolean>(true);
 
   return (
@@ -48,5 +49,3 @@ const ReleaseLocationForm = () => {
     </>
   );
 };
-
-export default ReleaseLocationForm;

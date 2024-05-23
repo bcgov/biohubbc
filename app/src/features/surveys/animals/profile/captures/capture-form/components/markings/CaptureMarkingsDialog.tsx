@@ -21,7 +21,13 @@ interface ICaptureMarkingsDialogProps {
   handleSave: (data: IMarkingPostData) => void;
 }
 
-const CaptureMarkingsDialog = (props: ICaptureMarkingsDialogProps) => {
+/**
+ * Capture markings dialog.
+ *
+ * @param {ICaptureMarkingsDialogProps} props
+ * @return {*}
+ */
+export const CaptureMarkingsDialog = (props: ICaptureMarkingsDialogProps) => {
   const { initialValues, isDialogOpen, handleSave, handleClose, markingBodyLocations, markingColours, markingTypes } =
     props;
 
@@ -110,5 +116,3 @@ const CaptureMarkingsDialog = (props: ICaptureMarkingsDialogProps) => {
     />
   );
 };
-
-export default CaptureMarkingsDialog;

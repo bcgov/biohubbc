@@ -32,19 +32,19 @@ import {
  * @returns {*}
  */
 export const FamilyAnimalForm = (props: AnimalFormProps<IFamilyParentResponse | IFamilyChildResponse>) => {
-  const cbApi = useCritterbaseApi();
+  const critterbaseApi = useCritterbaseApi();
   const dialog = useDialogContext();
 
   const [showFamilyStructure, setShowFamilyStructure] = useState(false);
   const [createNewFamily, setCreateNewFamily] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const { data: familyHierarchy, load: loadHierarchy } = useDataLoader(cbApi.family.getImmediateFamily);
+  const { data: familyHierarchy, load: loadHierarchy } = useDataLoader(critterbaseApi.family.getImmediateFamily);
   const {
     data: allFamilies,
     load: loadFamilies,
     refresh: refreshFamilies
-  } = useDataLoader(cbApi.family.getAllFamilies);
+  } = useDataLoader(critterbaseApi.family.getAllFamilies);
 
   loadFamilies();
 
@@ -62,10 +62,10 @@ export const FamilyAnimalForm = (props: AnimalFormProps<IFamilyParentResponse | 
     try {
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
         if (values.family_label) {
-          const family = await cbApi.family.createFamily(values.family_label);
+          const family = await critterbaseApi.family.createFamily(values.family_label);
           values.family_id = family.family_id;
         }
-        await cbApi.family.createFamilyRelationship(values);
+        await critterbaseApi.family.createFamilyRelationship(values);
 
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created family relationship.` });
       }
@@ -75,16 +75,16 @@ export const FamilyAnimalForm = (props: AnimalFormProps<IFamilyParentResponse | 
         }
 
         if (values.family_label) {
-          await cbApi.family.editFamily(initialValues.family_id, values.family_label);
+          await critterbaseApi.family.editFamily(initialValues.family_id, values.family_label);
         }
 
-        await cbApi.family.deleteRelationship({
+        await critterbaseApi.family.deleteRelationship({
           family_id: initialValues.family_id,
           critter_id: initialValues.critter_id,
           relationship: initialValues.relationship
         });
 
-        await cbApi.family.createFamilyRelationship({
+        await critterbaseApi.family.createFamilyRelationship({
           family_id: values.family_id,
           critter_id: values.critter_id,
           relationship: values.relationship

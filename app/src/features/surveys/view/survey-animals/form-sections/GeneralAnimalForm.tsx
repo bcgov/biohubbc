@@ -41,8 +41,8 @@ export type GeneralAnimalFormProps<T> =
  * @returns {*}
  */
 const GeneralAnimalForm = (props: GeneralAnimalFormProps<ICreateCritter>) => {
-  const cbApi = useCritterbaseApi();
-  const bhApi = useBiohubApi();
+  const critterbaseApi = useCritterbaseApi();
+  const biohubApi = useBiohubApi();
   const dialog = useDialogContext();
 
   const [loading, setLoading] = useState(false);
@@ -51,11 +51,11 @@ const GeneralAnimalForm = (props: GeneralAnimalFormProps<ICreateCritter>) => {
     setLoading(true);
     try {
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-        await bhApi.survey.createCritterAndAddToSurvey(props.projectId, props.surveyId, values);
+        await biohubApi.survey.createCritterAndAddToSurvey(props.projectId, props.surveyId, values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created critter.` });
       }
       if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-        await cbApi.critters.updateCritter(values);
+        await critterbaseApi.critters.updateCritter(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited critter.` });
       }
     } catch (err) {

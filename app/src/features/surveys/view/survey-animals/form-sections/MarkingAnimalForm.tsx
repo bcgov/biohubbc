@@ -22,7 +22,7 @@ import {
  * @returns {*}
  */
 export const MarkingAnimalForm = (props: AnimalFormProps<IMarkingResponse>) => {
-  const cbApi = useCritterbaseApi();
+  const critterbaseApi = useCritterbaseApi();
   const dialog = useDialogContext();
 
   const [loading, setLoading] = useState(false);
@@ -31,11 +31,11 @@ export const MarkingAnimalForm = (props: AnimalFormProps<IMarkingResponse>) => {
     setLoading(true);
     try {
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-        await cbApi.marking.createMarking(values);
+        await critterbaseApi.marking.createMarking(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created marking.` });
       }
       if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-        await cbApi.marking.updateMarking(values);
+        await critterbaseApi.marking.updateMarking(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited marking.` });
       }
     } catch (err) {

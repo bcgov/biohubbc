@@ -3,34 +3,38 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
+import { CaptureMeasurementSelect } from 'features/surveys/animals/profile/captures/capture-form/components/measurements/CaptureMeasurementSelect';
 import { ICreateCritterMeasurement } from 'features/surveys/view/survey-animals/animal';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useAnimalPageContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { useEffect } from 'react';
 import { TransitionGroup } from 'react-transition-group';
-import { CaptureMeasurementSelect } from './components/CaptureMeasurementSelect';
 
 /**
  * Returns the control for applying measurements to an animal on the animal capture form
  *
- * @returns
+ * @return {*}
  */
-const CaptureMeasurementsForm = () => {
-  const critterbaseApi = useCritterbaseApi();
-  const { critterDataLoader, selectedAnimal } = useAnimalPageContext();
-
+export const CaptureMeasurementsForm = () => {
   const { values } = useFormikContext<ICreateEditCaptureRequest>();
+
+  const critterbaseApi = useCritterbaseApi();
+  const animalPageContext = useAnimalPageContext();
 
   const measurementsDataLoader = useDataLoader((tsn: number) => critterbaseApi.xref.getTaxonMeasurements(tsn));
 
-  if (!measurementsDataLoader.data) {
-    const tsn = critterDataLoader.data?.itis_tsn;
-    if (tsn) {
-      measurementsDataLoader.load(tsn);
+  useEffect(() => {
+    const tsn = animalPageContext.critterDataLoader.data?.itis_tsn;
+
+    if (!tsn) {
+      return;
     }
-  }
+
+    measurementsDataLoader.load(tsn);
+  }, [animalPageContext.critterDataLoader.data, measurementsDataLoader]);
 
   const initialMeasurementValues: ICreateCritterMeasurement = {
     taxon_measurement_id: '',
@@ -40,7 +44,7 @@ const CaptureMeasurementsForm = () => {
     qualitative_option_id: undefined,
     measurement_comment: undefined,
     value: undefined,
-    critter_id: selectedAnimal?.critterbase_critter_id ?? '',
+    critter_id: animalPageContext.selectedAnimal?.critterbase_critter_id ?? '',
     mortality_id: undefined,
     capture_id: undefined
   };
@@ -90,5 +94,3 @@ const CaptureMeasurementsForm = () => {
     </>
   );
 };
-
-export default CaptureMeasurementsForm;

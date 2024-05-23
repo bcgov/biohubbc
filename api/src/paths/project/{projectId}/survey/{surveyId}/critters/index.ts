@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { critterCreateRequestObject } from '../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
@@ -133,7 +132,29 @@ POST.apiDoc = {
     description: 'Critterbase create critter request object',
     content: {
       'application/json': {
-        schema: critterCreateRequestObject
+        schema: {
+          title: 'Create critter request object',
+          type: 'object',
+          properties: {
+            critter_id: {
+              type: 'string',
+              format: 'uuid'
+            },
+            animal_id: {
+              type: 'string'
+            },
+            wlh_id: {
+              type: 'string'
+            },
+            itis_tsn: {
+              type: 'integer'
+            },
+            sex: {
+              type: 'string'
+            }
+          },
+          additionalProperties: false
+        }
       }
     }
   },

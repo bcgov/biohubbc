@@ -12,7 +12,7 @@ import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
  *
  * @returns
  */
-const CaptureGeneralInformationForm = () => {
+export const CaptureGeneralInformationForm = () => {
   const formikProps = useFormikContext<ICreateEditCaptureRequest>();
 
   return (
@@ -94,5 +94,3 @@ const CaptureGeneralInformationForm = () => {
     </>
   );
 };
-
-export default CaptureGeneralInformationForm;

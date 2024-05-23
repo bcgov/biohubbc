@@ -20,7 +20,7 @@ import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
 import { ICapturesWithSupplementaryData } from '../AnimalCaptureContainer';
-import CaptureCardDetails from './CaptureCardDetails';
+import { CaptureCardDetails } from './CaptureCardDetails';
 
 interface IAnimalCaptureCardContainer {
   captures: ICapturesWithSupplementaryData[];
@@ -32,7 +32,7 @@ interface IAnimalCaptureCardContainer {
  *
  * @returns
  */
-const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
+export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
   const { captures, selectedAnimal, handleDelete } = props;
 
   const [selectedCapture, setSelectedCapture] = useState<string | null>(null);
@@ -203,5 +203,3 @@ const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
     </>
   );
 };
-
-export default AnimalCaptureCardContainer;

@@ -34,7 +34,7 @@ import FormLocationPreview from './LocationEntryForm';
  * @returns {*}
  */
 export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
-  const cbApi = useCritterbaseApi();
+  const critterbaseApi = useCritterbaseApi();
   const dialog = useDialogContext();
 
   const [loading, setLoading] = useState(false);
@@ -58,11 +58,11 @@ export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
         values = { ...values, capture_location: { ...values.capture_location, latitude, longitude } };
       }
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-        await cbApi.capture.createCapture(values);
+        await critterbaseApi.capture.createCapture(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created capture.` });
       }
       if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-        await cbApi.capture.updateCapture(values);
+        await critterbaseApi.capture.updateCapture(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited capture.` });
       }
     } catch (err) {
