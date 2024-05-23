@@ -449,7 +449,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
 
       try {
         if (modifiedRowIdsToDelete.length) {
-          await telemetryApi.deleteManualTelemetry(_modifiedRowIds.current);
+          await telemetryApi.deleteManualTelemetry(modifiedRowIdsToDelete);
         }
 
         // Remove row IDs from validation model
