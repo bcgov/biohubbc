@@ -8,7 +8,7 @@ import * as worksheet_utils from './worksheet-utils';
 describe('worksheet-utils', () => {
   describe('getHeadersUpperCase', () => {
     it('returns the column headers in UPPERCASE', () => {
-      const xlsxWorksheets: xlsx.WorkSheet = {
+      const xlsxWorksheet: xlsx.WorkSheet = {
         A1: { t: 's', v: 'Species' },
         B1: { t: 's', v: 'Count' },
         C1: { t: 's', v: 'Date' },
@@ -42,7 +42,7 @@ describe('worksheet-utils', () => {
         '!ref': 'A1:H9'
       };
 
-      const result = worksheet_utils.getHeadersUpperCase(xlsxWorksheets);
+      const result = worksheet_utils.getHeadersUpperCase(xlsxWorksheet);
 
       expect(result).to.eql([
         'SPECIES',

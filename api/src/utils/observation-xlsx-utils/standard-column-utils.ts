@@ -1,5 +1,4 @@
 import xlsx from 'xlsx';
-import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
 import { getHeadersUpperCase, IXLSXCSVValidator } from '../xlsx-utils/worksheet-utils';
 
 // Observation CSV standard column names and aliases
@@ -39,14 +38,10 @@ export const observationStandardColumnValidator: IXLSXCSVValidator = {
  * This function pulls out any non-standard columns from a CSV so they can be processed separately.
  *
  * @param {xlsx.WorkSheet} xlsxWorksheets The worksheet to pull the columns from
- * @param {string} sheet The sheet to work on
  * @returns {*} string[] The list of non-standard columns found in the CSV
  */
-export function getNonStandardColumnNamesFromWorksheet(
-  xlsxWorksheets: xlsx.WorkSheet,
-  sheet = DEFAULT_XLSX_SHEET_NAME
-): string[] {
-  const columns = getHeadersUpperCase(xlsxWorksheets[sheet]);
+export function getNonStandardColumnNamesFromWorksheet(xlsxWorksheet: xlsx.WorkSheet): string[] {
+  const columns = getHeadersUpperCase(xlsxWorksheet);
 
   let aliasColumns: string[] = [];
   // Create a list of all column names and aliases

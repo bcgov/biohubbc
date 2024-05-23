@@ -186,7 +186,7 @@ export const EnvironmentsSearchAutocomplete = (props: IEnvironmentsSearchAutocom
           name="environments-autocomplete-input"
           variant="outlined"
           fullWidth
-          placeholder="Enter Environment name"
+          placeholder="Enter environment name"
           InputProps={{
             ...params.InputProps,
             startAdornment: (

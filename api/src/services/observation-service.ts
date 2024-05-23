@@ -1,4 +1,3 @@
-import xlsx from 'xlsx';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
 import {
@@ -24,7 +23,6 @@ import { SamplePeriodHierarchyIds } from '../repositories/sample-period-reposito
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { parseS3File } from '../utils/media/media-utils';
-import { DEFAULT_XLSX_SHEET_NAME } from '../utils/media/xlsx/xlsx-file';
 import {
   EnvironmentNameTypeDefinitionMap,
   getEnvironmentColumnsTypeDefinitionMap,
@@ -54,11 +52,9 @@ import {
 } from '../utils/observation-xlsx-utils/standard-column-utils';
 import {
   constructXLSXWorkbook,
+  getDefaultWorksheet,
   getWorksheetRowObjects,
-  IXLSXCSVValidator,
-  validateCsvFile,
-  validateWorksheetColumnTypes,
-  validateWorksheetHeaders
+  validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import {
@@ -121,28 +117,6 @@ export class ObservationService extends DBService {
   constructor(connection: IDBConnection) {
     super(connection);
     this.observationRepository = new ObservationRepository(connection);
-  }
-
-  /**
-   * Validates the given CSV file against the given column validator
-   *
-   * @param {xlsx.WorkSheet} xlsxWorksheets
-   * @param {IXLSXCSVValidator} columnValidator
-   * @return {*}  {boolean}
-   * @memberof ObservationService
-   */
-  validateCsvFile(xlsxWorksheets: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean {
-    // Validate the worksheet names (headers)
-    if (!validateWorksheetHeaders(xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME], columnValidator)) {
-      return false;
-    }
-
-    // Validate the worksheet column types
-    if (!validateWorksheetColumnTypes(xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME], columnValidator)) {
-      return false;
-    }
-
-    return true;
   }
 
   /**
@@ -471,7 +445,7 @@ export class ObservationService extends DBService {
     const xlsxWorkBook = constructXLSXWorkbook(mediaFile);
 
     // Get the default XLSX worksheet
-    const xlsxWorksheet = xlsxWorkBook.Sheets[DEFAULT_XLSX_SHEET_NAME];
+    const xlsxWorksheet = getDefaultWorksheet(xlsxWorkBook);
 
     // Validate the standard columns in the CSV file
     if (!validateCsvFile(xlsxWorksheet, observationStandardColumnValidator)) {

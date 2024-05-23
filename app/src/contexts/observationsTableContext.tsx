@@ -49,6 +49,7 @@ import {
 import { firstOrNull } from 'utils/Utils';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
+import { SIMS_OBSERVATIONS_HIDDEN_COLUMNS } from '../constants/session-storage';
 import { SurveyContext } from './surveyContext';
 
 export type TsnMeasurementTypeDefinitionMap = Record<
@@ -97,17 +98,17 @@ export type IObservationsTableContext = {
    */
   rowModesModel: GridRowModesModel;
   /**
-   * Sets the row modes model.
+   * Callback that must be provided to the MUI DataGrid component to handle row modes changes.
    */
-  setRowModesModel: React.Dispatch<React.SetStateAction<GridRowModesModel>>;
+  onRowModesModelChange: (model: GridRowModesModel) => void;
   /**
    * The column visibility model, which defines which columns are visible or hidden.
    */
   columnVisibilityModel: GridColumnVisibilityModel;
   /**
-   * Sets the column visibility model.
+   * Callback that must be provided to the MUI DataGrid component to handle column visibility changes.
    */
-  setColumnVisibilityModel: React.Dispatch<React.SetStateAction<GridColumnVisibilityModel>>;
+  onColumnVisibilityModelChange: (model: GridColumnVisibilityModel) => void;
   /**
    * Appends a new blank record to the observation rows
    */
@@ -159,6 +160,10 @@ export type IObservationsTableContext = {
    * Callback that should be called when a row enters edit mode.
    */
   onRowEditStart: (id: GridRowId) => void;
+  /**
+   * Callback that must be provided to the MUI DataGrid component to handle row updates.
+   */
+  processRowUpdate: (newRow: IObservationTableRow) => IObservationTableRow;
   /**
    * The IDs of the selected observation table rows
    */
@@ -305,7 +310,18 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   }, [_isDisabled, observationsPageContext.isDisabled]);
 
   // Column visibility model
-  const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>({});
+  const [columnVisibilityModel, setColumnVisibilityModel] = useState<GridColumnVisibilityModel>(() => {
+    // Get initial column visibility model from session storage
+    const measurementDefinitionsStringified = sessionStorage.getItem(
+      getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_HIDDEN_COLUMNS)
+    );
+
+    if (measurementDefinitionsStringified) {
+      return JSON.parse(measurementDefinitionsStringified);
+    }
+
+    return {};
+  });
 
   // Pagination model
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
@@ -353,6 +369,60 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       page: paginationModel.page + 1
     });
   }, [paginationModel.page, paginationModel.pageSize, refreshObservationsData, sortModel]);
+
+  /**
+   * Callback fired when the column visibility model changes.
+   *
+   * Note: Any column not included in the model will default to being visible.
+   *
+   * @param {GridColumnVisibilityModel} model
+   */
+  const onColumnVisibilityModelChange = useCallback(
+    (model: GridColumnVisibilityModel) => {
+      // Store current visibility model in session storage
+      sessionStorage.setItem(
+        getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_HIDDEN_COLUMNS),
+        JSON.stringify(model)
+      );
+
+      // Update the column visibility model in the context
+      setColumnVisibilityModel(model);
+    },
+    [surveyId]
+  );
+
+  /**
+   * Callback fired when the row modes model changes.
+   * The row modes model stores the `view` vs `edit` state of the rows.
+   *
+   * Note: Any row not included in the model will default to `view` mode.
+   *
+   * @param {GridRowModesModel} model
+   */
+  const onRowModesModelChange = useCallback((model: GridRowModesModel) => {
+    setRowModesModel(() => model);
+  }, []);
+
+  /**
+   * Callback fired when a row transitions from `view` mode to `edit` mode.
+   *
+   * @param {IObservationTableRow} newRow
+   * @return {*}
+   */
+  const processRowUpdate = useCallback(
+    (newRow: IObservationTableRow) => {
+      if (savedRows.find((row) => row.id === newRow.id)) {
+        // Update savedRows
+        setSavedRows((currentSavedRows) => currentSavedRows.map((row) => (row.id === newRow.id ? newRow : row)));
+      } else {
+        // Update stagedRows
+        setStagedRows((currentStagedRows) => currentStagedRows.map((row) => (row.id === newRow.id ? newRow : row)));
+      }
+
+      return newRow;
+    },
+    [savedRows]
+  );
 
   /**
    * Gets all rows from the table, including values that have been edited in the table.
@@ -1416,9 +1486,9 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       stagedRows,
       setStagedRows,
       rowModesModel,
-      setRowModesModel,
+      onRowModesModelChange,
       columnVisibilityModel,
-      setColumnVisibilityModel,
+      onColumnVisibilityModelChange,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
@@ -1429,6 +1499,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       getSelectedObservationRecords,
       hasUnsavedChanges,
       onRowEditStart,
+      processRowUpdate,
       rowSelectionModel,
       onRowSelectionModelChange: setRowSelectionModel,
       isLoading,
@@ -1452,7 +1523,9 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       savedRows,
       stagedRows,
       rowModesModel,
+      onRowModesModelChange,
       columnVisibilityModel,
+      onColumnVisibilityModelChange,
       addObservationRecord,
       saveObservationRecords,
       deleteObservationRecords,
@@ -1462,6 +1535,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       refreshObservationRecords,
       getSelectedObservationRecords,
       hasUnsavedChanges,
+      processRowUpdate,
       rowSelectionModel,
       isLoading,
       isSaving,

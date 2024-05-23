@@ -2,49 +2,46 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import xlsx from 'xlsx';
 
-import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
 import * as standard_column_utils from './standard-column-utils';
 
 describe('standard-column-utils', () => {
   describe('getNonStandardColumnNamesFromWorksheet', () => {
     it('returns the non-standard column headers in UPPERCASE', () => {
-      const xlsxWorksheets: xlsx.WorkSheet = {
-        [DEFAULT_XLSX_SHEET_NAME]: {
-          A1: { t: 's', v: 'Species' },
-          B1: { t: 's', v: 'Count' },
-          C1: { t: 's', v: 'Date' },
-          D1: { t: 's', v: 'Time' },
-          E1: { t: 's', v: 'Latitude' },
-          F1: { t: 's', v: 'Longitude' },
-          G1: { t: 's', v: 'Antler Configuration' },
-          H1: { t: 's', v: 'Wind Direction' },
-          A2: { t: 'n', w: '180703', v: 180703 },
-          B2: { t: 'n', w: '1', v: 1 },
-          C2: { z: 'm/d/yy', t: 'd', v: '1970-01-01T08:00:00.000Z', w: '1/1/70' },
-          D2: { t: 's', v: '9:01' },
-          E2: { t: 'n', w: '-58', v: -58 },
-          F2: { t: 'n', w: '-123', v: -123 },
-          G2: { t: 's', v: 'more than 3 points' },
-          H2: { t: 's', v: 'North' },
-          A3: { t: 'n', w: '180596', v: 180596 },
-          B3: { t: 'n', w: '2', v: 2 },
-          C3: { z: 'm/d/yy', t: 'd', v: '1970-01-01T08:00:00.000Z', w: '1/1/70' },
-          D3: { t: 's', v: '9:02' },
-          E3: { t: 'n', w: '-57', v: -57 },
-          F3: { t: 'n', w: '-122', v: -122 },
-          H3: { t: 's', v: 'North' },
-          A4: { t: 'n', w: '180713', v: 180713 },
-          B4: { t: 'n', w: '3', v: 3 },
-          C4: { z: 'm/d/yy', t: 'd', v: '1970-01-01T08:00:00.000Z', w: '1/1/70' },
-          D4: { t: 's', v: '9:03' },
-          E4: { t: 'n', w: '-56', v: -56 },
-          F4: { t: 'n', w: '-121', v: -121 },
-          H4: { t: 's', v: 'North' },
-          '!ref': 'A1:H9'
-        }
+      const xlsxWorksheet: xlsx.WorkSheet = {
+        A1: { t: 's', v: 'Species' },
+        B1: { t: 's', v: 'Count' },
+        C1: { t: 's', v: 'Date' },
+        D1: { t: 's', v: 'Time' },
+        E1: { t: 's', v: 'Latitude' },
+        F1: { t: 's', v: 'Longitude' },
+        G1: { t: 's', v: 'Antler Configuration' },
+        H1: { t: 's', v: 'Wind Direction' },
+        A2: { t: 'n', w: '180703', v: 180703 },
+        B2: { t: 'n', w: '1', v: 1 },
+        C2: { z: 'm/d/yy', t: 'd', v: '1970-01-01T08:00:00.000Z', w: '1/1/70' },
+        D2: { t: 's', v: '9:01' },
+        E2: { t: 'n', w: '-58', v: -58 },
+        F2: { t: 'n', w: '-123', v: -123 },
+        G2: { t: 's', v: 'more than 3 points' },
+        H2: { t: 's', v: 'North' },
+        A3: { t: 'n', w: '180596', v: 180596 },
+        B3: { t: 'n', w: '2', v: 2 },
+        C3: { z: 'm/d/yy', t: 'd', v: '1970-01-01T08:00:00.000Z', w: '1/1/70' },
+        D3: { t: 's', v: '9:02' },
+        E3: { t: 'n', w: '-57', v: -57 },
+        F3: { t: 'n', w: '-122', v: -122 },
+        H3: { t: 's', v: 'North' },
+        A4: { t: 'n', w: '180713', v: 180713 },
+        B4: { t: 'n', w: '3', v: 3 },
+        C4: { z: 'm/d/yy', t: 'd', v: '1970-01-01T08:00:00.000Z', w: '1/1/70' },
+        D4: { t: 's', v: '9:03' },
+        E4: { t: 'n', w: '-56', v: -56 },
+        F4: { t: 'n', w: '-121', v: -121 },
+        H4: { t: 's', v: 'North' },
+        '!ref': 'A1:H9'
       };
 
-      const result = standard_column_utils.getNonStandardColumnNamesFromWorksheet(xlsxWorksheets);
+      const result = standard_column_utils.getNonStandardColumnNamesFromWorksheet(xlsxWorksheet);
 
       expect(result).to.eql(['ANTLER CONFIGURATION', 'WIND DIRECTION']);
     });

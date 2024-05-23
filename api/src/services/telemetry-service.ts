@@ -4,9 +4,9 @@ import { ApiGeneralError } from '../errors/api-error';
 import { TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { parseS3File } from '../utils/media/media-utils';
-import { DEFAULT_XLSX_SHEET_NAME } from '../utils/media/xlsx/xlsx-file';
 import {
   constructXLSXWorkbook,
+  getDefaultWorksheet,
   getWorksheetRowObjects,
   IXLSXCSVValidator,
   validateCsvFile
@@ -78,7 +78,7 @@ export class TelemetryService extends DBService {
     // step 5 construct workbook/ setup
     const xlsxWorkBook = constructXLSXWorkbook(mediaFile);
     // Get the default XLSX worksheet
-    const xlsxWorksheet = xlsxWorkBook.Sheets[DEFAULT_XLSX_SHEET_NAME];
+    const xlsxWorksheet = getDefaultWorksheet(xlsxWorkBook);
 
     // step 6 validate columns
     if (!validateCsvFile(xlsxWorksheet, telemetryCSVColumnValidator)) {

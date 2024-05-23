@@ -11,7 +11,12 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
-import { GenericDateColDef, GenericTimeColDef } from 'components/data-grid/GenericGridColumnDefinitions';
+import {
+  GenericDateColDef,
+  GenericLatitudeColDef,
+  GenericLongitudeColDef,
+  GenericTimeColDef
+} from 'components/data-grid/GenericGridColumnDefinitions';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
@@ -96,8 +101,8 @@ const ObservationComponent = () => {
     ObservationCountColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
     GenericDateColDef({ field: 'observation_date', headerName: 'Date', hasError: observationsTableContext.hasError }),
     GenericTimeColDef({ field: 'observation_time', headerName: 'Time', hasError: observationsTableContext.hasError }),
-    GenericDateColDef({ field: 'latitude', headerName: 'Lat', hasError: observationsTableContext.hasError }),
-    GenericDateColDef({ field: 'longitude', headerName: 'Long', hasError: observationsTableContext.hasError }),
+    GenericLatitudeColDef({ field: 'latitude', headerName: 'Lat', hasError: observationsTableContext.hasError }),
+    GenericLongitudeColDef({ field: 'longitude', headerName: 'Long', hasError: observationsTableContext.hasError }),
     // Add measurement columns to the table
     ...getMeasurementColumnDefinitions(observationsTableContext.measurementColumns, observationsTableContext.hasError),
     // Add environment columns to the table

@@ -254,14 +254,24 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
         'environment_qualitative.environment_qualitative_id',
         'environment_qualitative.name',
         'environment_qualitative.description',
-        knex.raw(
-          'json_agg(json_build_object(' +
-            "'environment_qualitative_option_id', environment_qualitative_option.environment_qualitative_option_id," +
-            "'environment_qualitative_id', environment_qualitative.environment_qualitative_id," +
-            "'name', environment_qualitative_option.name," +
-            "'description', environment_qualitative_option.description" +
-            ')) as options'
-        )
+        knex.raw(`
+          COALESCE(
+            json_agg(
+              CASE 
+                WHEN environment_qualitative_option.environment_qualitative_option_id IS NOT NULL THEN 
+                  json_build_object(
+                    'environment_qualitative_option_id', environment_qualitative_option.environment_qualitative_option_id, 
+                    'environment_qualitative_id', environment_qualitative.environment_qualitative_id, 
+                    'name', environment_qualitative_option.name, 
+                    'description', environment_qualitative_option.description
+                  )
+              END
+            ) FILTER (
+              WHERE environment_qualitative_option.environment_qualitative_option_id IS NOT NULL
+            ), 
+            '[]'::json
+          ) AS options 
+        `)
       )
       .from('environment_qualitative')
       .leftJoin(

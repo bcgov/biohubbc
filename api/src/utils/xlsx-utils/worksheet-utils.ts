@@ -2,6 +2,7 @@ import { default as dayjs } from 'dayjs';
 import xlsx, { CellObject } from 'xlsx';
 import { getLogger } from '../logger';
 import { MediaFile } from '../media/media-file';
+import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
 import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
 
@@ -222,6 +223,19 @@ export const validateWorksheetColumnTypes = (
       return false;
     });
   });
+};
+
+/**
+ * Attempt to get the default worksheet. If the default worksheet is not found, returns the first worksheet.
+ *
+ * @param {xlsx.WorkBook} workbook
+ * @param {string} [defaultSheetNameOverride] Optional override for the default sheet name.
+ * @return {*}  {xlsx.WorkSheet}
+ */
+export const getDefaultWorksheet = (workbook: xlsx.WorkBook, defaultSheetNameOverride?: string): xlsx.WorkSheet => {
+  return (
+    workbook.Sheets[defaultSheetNameOverride ?? DEFAULT_XLSX_SHEET_NAME] || workbook.Sheets[workbook.SheetNames[0]]
+  );
 };
 
 /**

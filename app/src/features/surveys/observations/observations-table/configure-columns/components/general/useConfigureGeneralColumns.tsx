@@ -1,7 +1,6 @@
 import { GridColDef, GridColumnVisibilityModel } from '@mui/x-data-grid';
-import { getSurveySessionStorageKey, SIMS_OBSERVATIONS_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
-import { useObservationsTableContext, useSurveyContext } from 'hooks/useContext';
+import { useObservationsTableContext } from 'hooks/useContext';
 
 export interface IUseConfigureGeneralColumnsProps {
   hideableColumns: GridColDef<IObservationTableRow>[];
@@ -16,7 +15,6 @@ export interface IUseConfigureGeneralColumnsProps {
 export const useConfigureGeneralColumns = (props: IUseConfigureGeneralColumnsProps) => {
   const { hideableColumns } = props;
 
-  const surveyContext = useSurveyContext();
   const observationsTableContext = useObservationsTableContext();
 
   /**
@@ -40,27 +38,21 @@ export const useConfigureGeneralColumns = (props: IUseConfigureGeneralColumnsPro
    */
   const onToggleShowHideAll = () => {
     const hasHiddenColumns = Object.values(observationsTableContext.columnVisibilityModel).some(
-      (item) => item === true
+      (item) => item === false
     );
 
     let model: GridColumnVisibilityModel = {};
 
     if (hasHiddenColumns) {
       // Some columns currently hidden, show all columns
-      model = { ...Object.fromEntries(hideableColumns.map((column) => [column.field, false])) };
+      model = { ...Object.fromEntries(hideableColumns.map((column) => [column.field, true])) };
     } else {
       // No columns currently hidden, hide all columns
-      model = { ...Object.fromEntries(hideableColumns.map((column) => [column.field, true])) };
+      model = { ...Object.fromEntries(hideableColumns.map((column) => [column.field, false])) };
     }
 
-    // Store current visibility model in session storage
-    sessionStorage.setItem(
-      getSurveySessionStorageKey(surveyContext.surveyId, SIMS_OBSERVATIONS_HIDDEN_COLUMNS),
-      JSON.stringify(model)
-    );
-
-    // Update the column visibility model in the context
-    observationsTableContext.setColumnVisibilityModel(model);
+    // Update the column visibility model
+    observationsTableContext._muiDataGridApiRef.current.setColumnVisibilityModel(model);
   };
 
   return {
