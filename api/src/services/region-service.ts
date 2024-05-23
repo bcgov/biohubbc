@@ -1,6 +1,6 @@
 import { Feature } from 'geojson';
 import { IDBConnection } from '../database/db';
-import { IRegion, RegionRepository } from '../repositories/region-repository';
+import { IRegion, RegionRepository, REGION_FEATURE_CODE } from '../repositories/region-repository';
 import { BcgwLayerService, RegionDetails } from './bcgw-layer-service';
 import { DBService } from './db-service';
 
@@ -24,14 +24,10 @@ export class RegionService extends DBService {
    * @param {Feature[]} features
    */
   async insertRegionsIntoSurveyFromFeatures(surveyId: number, features: Feature[]): Promise<void> {
-    // Get intersecting region names of the `Natural Resource Region` BCGW layer
-    const nrmRegionNames = await this.bcgwLayerService.getIntersectingNrmRegionNamesFromFeatures(
+    const regions = await this.regionRepository.getIntersectingRegionsFromFeatures(
       features,
-      this.connection
+      REGION_FEATURE_CODE.NATURAL_RESOURCE_REGION
     );
-
-    // Search for matching regions in the regions_lookup table
-    const regions = await this.getRegionsByNames(nrmRegionNames);
 
     // Delete the previous regions and insert new
     await this.refreshSurveyRegions(surveyId, regions);
@@ -71,15 +67,5 @@ export class RegionService extends DBService {
    */
   async searchRegionWithDetails(details: RegionDetails[]): Promise<IRegion[]> {
     return this.regionRepository.searchRegionsWithDetails(details);
-  }
-
-  /**
-   * Searches for regions based on a given list of region names
-   *
-   * @param {string[]} regionNames - Names of regions
-   * @returns {IRegion[]}
-   */
-  async getRegionsByNames(regionNames: string[]): Promise<IRegion[]> {
-    return this.regionRepository.getRegionsByNames(regionNames);
   }
 }
