@@ -102,44 +102,12 @@ describe('useSurveyApi', () => {
         device_model: 'E',
         frequency: 1,
         frequency_unit: 'Hz',
-        deployments: [
-          {
-            deployment_id: '',
-            attachment_start: '2023-01-01',
-            attachment_end: undefined
-          }
-        ],
+        attachment_start: '2023-01-01',
+        attachment_end: undefined,
         critter_id: v4()
       });
 
       expect(result).toBe(1);
-    });
-
-    it('should fail to add deployment to survey critter', async () => {
-      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`).reply(201, 1);
-
-      const result = useSurveyApi(axios).addDeployment(projectId, surveyId, critterId, {
-        device_id: 1,
-        device_make: 'ATS',
-        device_model: 'E',
-        frequency: 1,
-        frequency_unit: 'Hz',
-        deployments: [
-          {
-            deployment_id: '',
-            attachment_start: '2023-01-01',
-            attachment_end: undefined
-          },
-          {
-            deployment_id: '',
-            attachment_start: '2023-01-01',
-            attachment_end: undefined
-          }
-        ],
-        critter_id: v4()
-      });
-
-      await expect(result).rejects.toThrow();
     });
   });
 

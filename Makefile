@@ -64,9 +64,9 @@ prune: ## Deletes ALL docker artifacts (even those not associated to this projec
 
 check-env: ## Check for missing env vars
 	@echo "==============================================="
-	@echo "Make: check-env - check for missing env vars"
+	@echo "Make: check-env - checking for missing env vars"
 	@echo "==============================================="
-	@awk_output=$$(awk -F= 'NR==FNR{a[$$1]; next} !($$1 in a)' .env env_config/env.docker); if [ -z "$$awk_output" ]; then echo "Up to date"; else echo "Missing ENV variables!\n$$awk_output"; fi
+	@awk -F '=' 'NR==FNR && !/^#/ && NF {a[$$1]; next} !/^#/ && NF && !($$1 in a)' .env env_config/env.docker
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Postgres DB Commands
