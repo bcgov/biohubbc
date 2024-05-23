@@ -20,7 +20,7 @@ import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyCon
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { formatCritterDetailsForBulkUpdate, formatLocation } from 'utils/Utils';
@@ -46,20 +46,20 @@ export const EditCapturePage = () => {
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
-  const { critterDataLoader, selectedAnimal, setSelectedAnimalFromSurveyCritterId } = useAnimalPageContext();
+  const animalPageContext = useAnimalPageContext();
+
+  const critter = animalPageContext.critterDataLoader.data;
 
   const captureDataLoader = useDataLoader(() => critterbaseApi.capture.getCapture(captureId));
 
-  const critter = critterDataLoader.data;
-
-  if (!captureDataLoader.data) {
+  useEffect(() => {
     captureDataLoader.load();
-  }
+  }, [captureDataLoader]);
 
   // If the user has refreshed the page and cleared the context, or come to this page externally from a link,
   // use the url params to set the select animal in the context. The context then requests critter data from critterbase.
-  if (!selectedAnimal) {
-    setSelectedAnimalFromSurveyCritterId(surveyCritterId);
+  if (!animalPageContext.selectedAnimal) {
+    animalPageContext.setSelectedAnimalFromSurveyCritterId(surveyCritterId);
   }
 
   const capture = captureDataLoader.data;
@@ -142,7 +142,7 @@ export const EditCapturePage = () => {
     setEnableCancelCheck(false);
 
     try {
-      const critterbaseCritterId = selectedAnimal?.critterbase_critter_id;
+      const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
       if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
         return;
       }
@@ -225,7 +225,7 @@ export const EditCapturePage = () => {
       setEnableCancelCheck(false);
 
       // Refresh page
-      critterDataLoader.refresh(critterbaseCritterId);
+      animalPageContext.critterDataLoader.refresh(critterbaseCritterId);
 
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
     } catch (error) {
@@ -240,7 +240,7 @@ export const EditCapturePage = () => {
     }
   };
 
-  const animalId = critterDataLoader.data?.animal_id;
+  const animalId = animalPageContext.critterDataLoader.data?.animal_id;
 
   const [captureDate, captureTime] = dayjs(capture.capture_timestamp).format('YYYY-MM-DD HH:mm:ss').split(' ');
   const [releaseDate, releaseTime] = dayjs(capture.release_timestamp).format('YYYY-MM-DD HH:mm:ss').split(' ');
@@ -275,7 +275,7 @@ export const EditCapturePage = () => {
       release_comment: capture.release_comment ?? ''
     },
     markings:
-      critterDataLoader.data?.markings
+      animalPageContext.critterDataLoader.data?.markings
         .filter((marking) => marking.capture_id === capture.capture_id)
         .map((marking) => ({
           marking_id: marking.marking_id,
@@ -288,7 +288,7 @@ export const EditCapturePage = () => {
           secondary_colour_id: marking.secondary_colour_id
         })) ?? [],
     measurements: [
-      ...(critterDataLoader.data?.measurements.qualitative
+      ...(animalPageContext.critterDataLoader.data?.measurements.qualitative
         .filter((measurement) => measurement.capture_id === capture.capture_id)
         .map((measurement) => ({
           measurement_qualitative_id: measurement.measurement_qualitative_id,
@@ -299,7 +299,7 @@ export const EditCapturePage = () => {
           measurement_comment: measurement.measurement_comment,
           measured_timestamp: measurement.measured_timestamp
         })) ?? []),
-      ...(critterDataLoader.data?.measurements.quantitative
+      ...(animalPageContext.critterDataLoader.data?.measurements.quantitative
         .filter((measurement) => measurement.capture_id === capture.capture_id)
         .map((measurement) => ({
           measurement_quantitative_id: measurement.measurement_quantitative_id,

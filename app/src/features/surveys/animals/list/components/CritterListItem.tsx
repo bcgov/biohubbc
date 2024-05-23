@@ -6,6 +6,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { useEffect } from 'react';
 import { ScientificNameTypography } from '../../components/ScientificNameTypography';
 
 interface ICritterListItemProps {
@@ -29,12 +30,11 @@ export const CritterListItem = (props: ICritterListItemProps) => {
 
   const { projectId, surveyId } = surveyContext;
 
-  if (!critters) {
+  useEffect(() => {
     surveyContext.critterDataLoader.load(projectId, surveyId);
-    return <CircularProgress size={40} />;
-  }
+  }, [projectId, surveyContext.critterDataLoader, surveyId]);
 
-  if (!critters.length) {
+  if (!critters?.length) {
     return <CircularProgress size={40} />;
   }
 
