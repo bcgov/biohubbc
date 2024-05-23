@@ -77,15 +77,17 @@ export class AnalyticsService extends DBService {
 
     // Update qualitative measurements for each row
     const newCounts = counts.map((row) => {
-      row['qualitative_measurements'] = []; // Initialize the 'qualitative' array
-      Object.keys(row.qual_measurements).map((measurementId) => {
-        const option_id = row.qual_measurements[measurementId];
+      const { quant_measurements, qual_measurements, ...newRow } = row;
+
+      newRow['qualitative_measurements'] = []; // Initialize the 'qualitative' array
+      Object.keys(qual_measurements).map((measurementId) => {
+        const option_id = qual_measurements[measurementId];
 
         const qualitativeMeasurement = qualitativeMeasurementDefinitions.find(
           (def) => def.taxon_measurement_id === measurementId
         );
         if (qualitativeMeasurement) {
-          row['qualitative_measurements'].push({
+          newRow['qualitative_measurements'].push({
             // Push the new item to the 'qualitative' array
             option: {
               option_id: option_id,
@@ -94,29 +96,27 @@ export class AnalyticsService extends DBService {
                   ?.option_label ?? ''
             },
             taxon_measurement_id: measurementId,
-            measurement_name: qualitativeMeasurement?.measurement_name
+            measurement_name: qualitativeMeasurement.measurement_name
           });
         }
       });
 
-      row['quantitative_measurements'] = []; // Initialize the 'quantitative' array
-      Object.keys(row.quant_measurements).map((measurementId) => {
-        const value = row.quant_measurements[measurementId];
+      newRow['quantitative_measurements'] = []; // Initialize the 'quantitative' array
+      Object.keys(quant_measurements).map((measurementId) => {
+        const value = quant_measurements[measurementId];
 
         const quantitativeMeasurement = quantitativeMeasurementDefinitions.find(
           (def) => def.taxon_measurement_id === measurementId
         );
         if (quantitativeMeasurement) {
-          row['quantitative_measurements'].push({
+          newRow['quantitative_measurements'].push({
             // Push the new item to the 'quantitative' array
             value: value,
             taxon_measurement_id: measurementId,
-            measurement_name: quantitativeMeasurement?.measurement_name
+            measurement_name: quantitativeMeasurement.measurement_name
           });
         }
       });
-
-      const { quant_measurements, qual_measurements, ...newRow } = row;
 
       return newRow;
     });

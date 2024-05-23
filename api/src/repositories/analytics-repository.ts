@@ -111,8 +111,6 @@ export class AnalyticsRepository extends BaseRepository {
 
     const response = await this.connection.knex(sqlStatement);
 
-    console.log(response);
-
     if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get observation count by group', [
         'AnalyticsRepository->getObservationCountByGroup',

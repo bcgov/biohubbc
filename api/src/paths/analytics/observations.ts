@@ -10,7 +10,7 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('paths/analytics/observations');
 
 export const GET: Operation = [
-  authorizeRequestHandler((req) => {
+  authorizeRequestHandler(() => {
     return {
       or: [
         {

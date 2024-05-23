@@ -44,8 +44,6 @@ const SurveyObservationAnalytics = () => {
   );
   measurementDefinitionsDataLoader.load();
 
-  console.log(measurementDefinitionsDataLoader.data)
-
   const groupByOptions: IGroupByOption[] = [
     ...groupByColumnOptions,
     ...(measurementDefinitionsDataLoader.data?.qualitative_measurements.map(
