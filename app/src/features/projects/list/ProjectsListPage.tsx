@@ -3,19 +3,23 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
+import blueGrey from '@mui/material/colors/blueGrey';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridPaginationModel, GridSortModel, GridValueFormatterParams } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import PageHeader from 'components/layout/PageHeader';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ListProjectsI18N } from 'constants/i18n';
+import { REGION_COLOURS } from 'constants/regions';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -121,11 +125,22 @@ const ProjectsListPage = () => {
     },
     {
       field: 'regions',
-      headerName: 'Natural Resource Regions',
+      headerName: 'Regions',
       type: 'string',
       flex: 1,
-      valueFormatter: (params: GridValueFormatterParams<string[]>) =>
-        params.value.length ? params.value.map((value) => value.replace(NRM_REGION_APPENDED_TEXT, '')) : undefined
+      renderCell: (params) => (
+        <Stack direction="row" gap={1} flexWrap="wrap">
+          {params.row.regions.map((region) => {
+            const label = region.replace(NRM_REGION_APPENDED_TEXT, '');
+            return (
+              <ColouredRectangleChip
+                colour={REGION_COLOURS.find((colour) => colour.region === label)?.color ?? blueGrey}
+                label={label}
+              />
+            );
+          })}{' '}
+        </Stack>
+      )
     },
     {
       field: 'start_date',
@@ -216,6 +231,9 @@ const ProjectsListPage = () => {
             <StyledDataGrid
               noRowsMessage="No projects found"
               autoHeight
+              rowHeight={70}
+              getRowHeight={() => 'auto'}
+              getEstimatedRowHeight={() => 500}
               rows={projectRows}
               rowCount={projectsDataLoader.data?.pagination.total ?? 0}
               getRowId={(row) => row.project_id}
