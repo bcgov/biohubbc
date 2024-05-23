@@ -131,6 +131,8 @@ export function getObservationCountByGroup(): RequestHandler {
   defaultLog.debug({ label: 'getObservationCountByGroup' });
 
   return async (req, res) => {
+    res.setHeader('Cache-Control', 'max-age=180');
+
     if (!req.query.surveyIds) {
       throw new HTTP400('Missing required param `surveyIds`');
     }
