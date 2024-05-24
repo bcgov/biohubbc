@@ -23,7 +23,7 @@ import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { formatCritterDetailsForBulkUpdate, formatLocation } from 'utils/animal-utils';
+import { formatCritterDetailsForBulkUpdate, formatLocation } from './utils';
 
 /**
  * Returns the page for editing an animal capture
@@ -60,11 +60,15 @@ export const EditCapturePage = () => {
 
   const capture = captureDataLoader.data;
 
-  // If the user has refreshed the page and cleared the context, or come to this page externally from a link,
-  // use the url params to set the select animal in the context. The context then requests critter data from critterbase.
-  if (!animalPageContext.selectedAnimal) {
+  // If the user has refreshed the page and cleared the context, or come to this page externally from a link, use the
+  // url params to set the selected animal in the context. The context then requests critter data from Critterbase.
+  useEffect(() => {
+    if (animalPageContext.selectedAnimal || !surveyCritterId) {
+      return;
+    }
+
     animalPageContext.setSelectedAnimalFromSurveyCritterId(surveyCritterId);
-  }
+  }, [animalPageContext, surveyCritterId]);
 
   if (!capture || !critter) {
     return <CircularProgress size={40} className="pageProgress" />;
@@ -176,13 +180,6 @@ export const EditCapturePage = () => {
           : captureTimestamp
       ).toDate();
 
-      const x = formatCritterDetailsForBulkUpdate(
-        critter,
-        values.markings,
-        values.measurements,
-        values.capture.capture_id
-      );
-
       const {
         qualitativeMeasurementsForDelete,
         quantitativeMeasurementsForDelete,
@@ -193,7 +190,7 @@ export const EditCapturePage = () => {
         quantitativeMeasurementsForCreate,
         qualitativeMeasurementsForUpdate,
         quantitativeMeasurementsForUpdate
-      } = x;
+      } = formatCritterDetailsForBulkUpdate(critter, values.markings, values.measurements, values.capture.capture_id);
 
       // Create new measurements added while editing the capture
       if (

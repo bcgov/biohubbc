@@ -57,9 +57,9 @@ export const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
     measurements: yup.array(yup.object()),
     markings: yup.array(
       yup.object({
-        marking_type_id: yup.string(),
-        taxon_marking_body_location_id: yup.string(),
-        identifier: yup.string(),
+        marking_type_id: yup.string().required('Marking type is required.'),
+        taxon_marking_body_location_id: yup.string().required('Marking body location is required.'),
+        identifier: yup.string().nullable(),
         primary_colour_id: yup.string().nullable(),
         secondary_colour_id: yup.string().nullable(),
         comment: yup.string().nullable()
