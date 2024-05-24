@@ -24,6 +24,7 @@ export class RegionService extends DBService {
    * @param {Feature[]} features
    */
   async insertRegionsIntoSurveyFromFeatures(surveyId: number, features: Feature[]): Promise<void> {
+    // Find intersecting NRM regions from list of features
     const regions = await this.regionRepository.getIntersectingRegionsFromFeatures(
       features,
       REGION_FEATURE_CODE.NATURAL_RESOURCE_REGION

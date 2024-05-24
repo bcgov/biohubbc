@@ -149,19 +149,19 @@ export class RegionRepository extends BaseRepository {
       queryBuilder.where({ feature_code: featureCode });
     }
 
-    // Postgis find intersecting regions
+    // With list of features return intersecting regions via PostGis
     queryBuilder.andWhere((query) => {
+      console.log('calling');
       for (const feature of features) {
-        query.orWhereRaw(
-          `NOT public.ST_IsEmpty(public.ST_AsText(public.ST_Intersection(ST_GeomFromGeoJSON(?), geography)))`,
-          [JSON.stringify(feature.geometry)]
-        );
+        // Row geography is actually a 'geometry' object
+        query.orWhereRaw(`public.ST_Intersects(ST_GeomFromGeoJSON(?), geography)`, [JSON.stringify(feature.geometry)]);
       }
     });
+    console.log(queryBuilder.toSQL().toNative().sql);
+    console.log(queryBuilder.toSQL().toNative().bindings);
 
     try {
-      const response = await this.connection.knex<IRegion>(queryBuilder, IRegion);
-      console.log(queryBuilder.toSQL().toNative().sql);
+      const response = await this.connection.knex<IRegion>(queryBuilder);
 
       return response.rows;
     } catch (error) {
