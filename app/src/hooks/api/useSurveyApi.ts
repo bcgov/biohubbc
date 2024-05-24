@@ -4,7 +4,7 @@ import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import {
   IAnimalDeployment,
-  IAnimalTelemetryDevice,
+  ICreateAnimalDeployment,
   IDeploymentTimespan,
   ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
@@ -420,26 +420,12 @@ const useSurveyApi = (axios: AxiosInstance) => {
   const addDeployment = async (
     projectId: number,
     surveyId: number,
-    critterId: number,
-    body: IAnimalTelemetryDevice & { critter_id: string }
+    critterId: number, // Survey critter_id
+    body: ICreateAnimalDeployment // Critterbase critter_id
   ): Promise<number> => {
-    body.device_id = Number(body.device_id); //Turn this into validation class soon
-    body.frequency = body.frequency != null ? Number(body.frequency) : undefined;
-    body.frequency_unit = body.frequency_unit?.length ? body.frequency_unit : undefined;
-    if (!body.deployments || body.deployments.length !== 1) {
-      throw Error('Calling this with any amount other than 1 deployments currently unsupported.');
-    }
-    const flattened = { ...body, ...body.deployments[0] };
-
-    delete flattened.deployment_id;
-    delete flattened.deployments;
-    if (!flattened.device_model) {
-      delete flattened.device_model;
-    }
-
     const { data } = await axios.post(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
-      flattened
+      body
     );
     return data;
   };

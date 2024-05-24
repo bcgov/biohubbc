@@ -1,5 +1,4 @@
 import { default as dayjs } from 'dayjs';
-import { Feature } from 'geojson';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
 import { IPostIUCN, PostProjectObject } from '../models/project-create';
@@ -25,7 +24,6 @@ import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
-import { RegionService } from './region-service';
 import { SurveyService } from './survey-service';
 
 /**
@@ -259,19 +257,6 @@ export class ProjectService extends DBService {
    */
   async postProjectParticipant(projectId: number, systemUserId: number, projectParticipantRole: string): Promise<void> {
     return this.projectParticipationService.postProjectParticipant(projectId, systemUserId, projectParticipantRole);
-  }
-
-  /**
-   * Insert region data.
-   *
-   * @param {number} projectId
-   * @param {Feature[]} features
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectService
-   */
-  async insertRegion(projectId: number, features: Feature[]): Promise<void> {
-    const regionService = new RegionService(this.connection);
-    return regionService.addRegionsToProjectFromFeatures(projectId, features);
   }
 
   /**
