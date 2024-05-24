@@ -10,7 +10,7 @@ import { FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICollectionCategory, ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { EcologicalUnitsOptionSelect } from './EcologicalUnitsOptionSelect';
 
 interface IEcologicalUnitsSelect {
@@ -36,16 +36,20 @@ export const EcologicalUnitsSelect = (props: IEcologicalUnitsSelect) => {
   const critterbaseApi = useCritterbaseApi();
 
   // Get the collection category ID for the selected ecological unit
-  const selectedEcologicalUnitId: string | undefined = values.ecological_units[index].collection_category_id;
+  const selectedEcologicalUnitId: string | undefined = values.ecological_units[index]?.collection_category_id;
 
   const ecologicalUnitOptionDataLoader = useDataLoader((collection_category_id: string) =>
     critterbaseApi.xref.getCollectionUnits(collection_category_id)
   );
 
-  if (selectedEcologicalUnitId) {
+  useEffect(() => {
     // If a collection category is already selected, load the collection units for that category
+    if (!selectedEcologicalUnitId) {
+      return;
+    }
+
     ecologicalUnitOptionDataLoader.load(selectedEcologicalUnitId);
-  }
+  }, [ecologicalUnitOptionDataLoader, selectedEcologicalUnitId]);
 
   // Set the label for the ecological unit options autocomplete field
   const [ecologicalUnitOptionLabel, setEcologicalUnitOptionLabel] = useState<string>(

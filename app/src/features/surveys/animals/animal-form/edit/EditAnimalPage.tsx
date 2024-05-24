@@ -27,7 +27,7 @@ import { Link as RouterLink } from 'react-router-dom';
  *
  * @return {*}
  */
-const EditAnimalPage = () => {
+export const EditAnimalPage = () => {
   const critterbaseApi = useCritterbaseApi();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
@@ -287,5 +287,3 @@ const EditAnimalPage = () => {
     </>
   );
 };
-
-export default EditAnimalPage;

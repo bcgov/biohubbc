@@ -12,10 +12,10 @@ export interface IAnimalHeaderProps {
 }
 
 /**
- * Returns the header for the Survey Animals page
+ * Returns the header for the Survey Animals page.
  *
- * @param props
- * @returns
+ * @param {IAnimalHeaderProps} props
+ * @return {*}
  */
 export const AnimalHeader = (props: IAnimalHeaderProps) => {
   const { project_id, project_name, survey_id, survey_name } = props;

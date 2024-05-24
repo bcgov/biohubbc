@@ -4,6 +4,7 @@ import Box from '@mui/system/Box';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { useEffect } from 'react';
 import { AnimalHeader } from './AnimalHeader';
 import { AnimalListContainer } from './list/AnimalListContainer';
 import { AnimalProfileContainer } from './profile/AnimalProfileContainer';
@@ -11,27 +12,26 @@ import { AnimalProfileContainer } from './profile/AnimalProfileContainer';
 /**
  * Returns the page for managing Animals
  *
- * @returns
+ * @return {*}
  */
-const SurveyAnimalPage = () => {
+export const SurveyAnimalPage = () => {
   const biohubApi = useBiohubApi();
 
-  const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
-
-  const { selectedAnimal } = useAnimalPageContext();
+  const surveyContext = useSurveyContext();
+  const animalPageContext = useAnimalPageContext();
 
   const crittersDataLoader = useDataLoader(() =>
     biohubApi.survey.getSurveyCritters(surveyContext.projectId, surveyContext.surveyId)
   );
 
-  if (!crittersDataLoader.data) {
+  useEffect(() => {
     crittersDataLoader.load();
-  }
+  }, [crittersDataLoader]);
 
-  if (!projectContext.projectDataLoader.data) {
+  useEffect(() => {
     projectContext.projectDataLoader.load(surveyContext.projectId);
-  }
+  }, [projectContext.projectDataLoader, surveyContext.projectId]);
 
   if (!projectContext.projectDataLoader.data || !surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -68,7 +68,7 @@ const SurveyAnimalPage = () => {
           <AnimalListContainer />
         </Box>
 
-        {selectedAnimal && (
+        {animalPageContext.selectedAnimal && (
           <Box maxWidth="75%" flex="1 1 auto" height="100%">
             <AnimalProfileContainer />
           </Box>
@@ -77,5 +77,3 @@ const SurveyAnimalPage = () => {
     </Stack>
   );
 };
-
-export default SurveyAnimalPage;

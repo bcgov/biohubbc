@@ -17,14 +17,14 @@ import YesNoDialog from 'components/dialog/YesNoDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ISurveyCritter } from 'contexts/animalPageContext';
 import { useSurveyContext } from 'hooks/useContext';
-import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
-import CaptureCardDetails from './CaptureCardDetails';
+import { ICapturesWithSupplementaryData } from '../AnimalCaptureContainer';
+import { CaptureCardDetails } from './CaptureCardDetails';
 
 interface IAnimalCaptureCardContainer {
-  captures: ICaptureResponse[];
+  captures: ICapturesWithSupplementaryData[];
   selectedAnimal: ISurveyCritter;
   handleDelete: (selectedCapture: string, critterbase_critter_id: string) => Promise<void>;
 }
@@ -33,7 +33,7 @@ interface IAnimalCaptureCardContainer {
  *
  * @returns
  */
-const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
+export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
   const { captures, selectedAnimal, handleDelete } = props;
 
   const [selectedCapture, setSelectedCapture] = useState<string | null>(null);
@@ -103,8 +103,9 @@ const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
       {captureForDelete && selectedCapture && (
         <YesNoDialog
           dialogTitle={'Delete capture event?'}
-          dialogText={`Are you sure you want to permanently delete this capture? All information associated with
-          the capture will be deleted.`}
+          dialogText={
+            'Are you sure you want to permanently delete this capture? All information associated with the capture will be deleted.'
+          }
           yesButtonProps={{ color: 'error' }}
           yesButtonLabel={'Delete'}
           noButtonProps={{ color: 'primary', variant: 'outlined' }}
@@ -126,8 +127,7 @@ const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
               component={Paper}
               variant="outlined"
               disableGutters
-              elevation={1}
-              key={`${capture.capture_id}`}
+              key={capture.capture_id}
               sx={{
                 margin: '15px',
                 boxShadow: 'none',
@@ -204,5 +204,3 @@ const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
     </>
   );
 };
-
-export default AnimalCaptureCardContainer;

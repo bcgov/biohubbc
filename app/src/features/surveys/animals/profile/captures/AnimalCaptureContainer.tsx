@@ -3,11 +3,21 @@ import Skeleton from '@mui/material/Skeleton';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import {
+  ICaptureResponse,
+  IMarkingResponse,
+  IQualitativeMeasurementResponse,
+  IQuantitativeMeasurementResponse
+} from 'interfaces/useCritterApi.interface';
 import { useHistory } from 'react-router';
-import AnimalCaptureCardContainer from './components/AnimalCaptureCardContainer';
-import AnimalCapturesMap from './components/AnimalCapturesMap';
-import AnimalCapturesToolbar from './components/AnimalCapturesToolbar';
+import { AnimalCaptureCardContainer } from './components/AnimalCaptureCardContainer';
+import { AnimalCapturesMap } from './components/AnimalCapturesMap';
+import { AnimalCapturesToolbar } from './components/AnimalCapturesToolbar';
 
+export interface ICapturesWithSupplementaryData extends ICaptureResponse {
+  markings: IMarkingResponse[];
+  measurements: { qualitative: IQualitativeMeasurementResponse[]; quantitative: IQuantitativeMeasurementResponse[] };
+}
 /**
  * Container for the animal captures map component within the animal profile page
  *
@@ -22,7 +32,9 @@ export const AnimalCaptureContainer = () => {
 
   const animalPageContext = useAnimalPageContext();
 
-  if (!animalPageContext.selectedAnimal || !animalPageContext.critterDataLoader.data) {
+  const data = animalPageContext.critterDataLoader.data;
+
+  if (!animalPageContext.selectedAnimal || !data) {
     return (
       <Box p={2}>
         <SkeletonHorizontalStack numberOfLines={2} />
@@ -34,13 +46,22 @@ export const AnimalCaptureContainer = () => {
     );
   }
 
-  const captures = animalPageContext.critterDataLoader.data.captures;
+  const captures: ICapturesWithSupplementaryData[] = data.captures.map((capture) => ({
+    ...capture,
+    markings: data?.markings.filter((marking) => marking.capture_id === capture.capture_id),
+    measurements: {
+      qualitative: data.measurements.qualitative.filter((measurement) => measurement.capture_id === capture.capture_id),
+      quantitative: data.measurements.quantitative.filter(
+        (measurement) => measurement.capture_id === capture.capture_id
+      )
+    }
+  }));
   const selectedAnimal = animalPageContext.selectedAnimal;
 
   const handleDelete = async (selectedCapture: string, critterbase_critter_id: string) => {
     // Delete markings and measurements associated with the capture to avoid foreign key constraint error
     await critterbaseApi.critters.bulkUpdate({
-      markings: animalPageContext.critterDataLoader.data?.markings
+      markings: data?.markings
         .filter((marking) => marking.capture_id === selectedCapture)
         .map((marking) => ({
           ...marking,
@@ -48,14 +69,14 @@ export const AnimalCaptureContainer = () => {
           _delete: true
         })),
       qualitative_measurements:
-        animalPageContext.critterDataLoader.data?.measurements.qualitative
+        data?.measurements.qualitative
           .filter((measurement) => measurement.capture_id === selectedCapture)
           .map((measurement) => ({
             ...measurement,
             _delete: true
           })) ?? [],
       quantitative_measurements:
-        animalPageContext.critterDataLoader.data?.measurements.quantitative
+        data?.measurements.quantitative
           .filter((measurement) => measurement.capture_id === selectedCapture)
           .map((measurement) => ({
             ...measurement,

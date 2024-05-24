@@ -11,7 +11,7 @@ interface IScientificNameTypographyProps extends TypographyProps {
  * @param props
  * @returns
  */
-const ScientificNameTypography = (props: IScientificNameTypographyProps) => {
+export const ScientificNameTypography = (props: IScientificNameTypographyProps) => {
   const terms = props.name.split(' ');
 
   if (terms.length > 1) {
@@ -24,5 +24,3 @@ const ScientificNameTypography = (props: IScientificNameTypographyProps) => {
     return <Typography {...props}>{props.name}</Typography>;
   }
 };
-
-export default ScientificNameTypography;

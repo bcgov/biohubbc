@@ -59,8 +59,8 @@ export class ProjectRepository extends BaseRepository {
       .leftJoin('survey as s', 's.project_id', 'p.project_id')
       .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
       .leftJoin('program as prog', 'prog.program_id', 'pp.program_id')
-      .leftJoin('project_region as pr', 'p.project_id', 'pr.project_id')
-      .leftJoin('region_lookup as rl', 'pr.region_id', 'rl.region_id')
+      .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
+      .leftJoin('region_lookup as rl', 'sr.region_id', 'rl.region_id')
 
       .groupBy(['p.project_id', 'p.name', 'p.objectives', 'p.start_date', 'p.end_date']);
 

@@ -199,7 +199,7 @@ export class CSVWorksheet {
       const headers = this.getHeaders();
 
       rows.forEach((row: string[]) => {
-        const rowObject = {};
+        const rowObject: Record<string, any> = {};
 
         headers.forEach((header: string, index: number) => {
           rowObject[header] = row[index];

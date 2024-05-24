@@ -6,7 +6,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import ScientificNameTypography from '../../components/ScientificNameTypography';
+import { useEffect } from 'react';
+import { ScientificNameTypography } from '../../components/ScientificNameTypography';
 
 interface ICritterListItemProps {
   critter: ISimpleCritterWithInternalId;
@@ -20,7 +21,7 @@ interface ICritterListItemProps {
  * @param {ICritterListItemProps} props
  * @return {*}
  */
-const CritterListItem = (props: ICritterListItemProps) => {
+export const CritterListItem = (props: ICritterListItemProps) => {
   const surveyContext = useSurveyContext();
   const critters = surveyContext.critterDataLoader.data;
   const { critter, isChecked, handleCheckboxChange } = props;
@@ -29,12 +30,11 @@ const CritterListItem = (props: ICritterListItemProps) => {
 
   const { projectId, surveyId } = surveyContext;
 
-  if (!critters) {
+  useEffect(() => {
     surveyContext.critterDataLoader.load(projectId, surveyId);
-    return <CircularProgress size={40} />;
-  }
+  }, [projectId, surveyContext.critterDataLoader, surveyId]);
 
-  if (!critters.length) {
+  if (!critters?.length) {
     return <CircularProgress size={40} />;
   }
 
@@ -129,5 +129,3 @@ const CritterListItem = (props: ICritterListItemProps) => {
     </Stack>
   );
 };
-
-export default CritterListItem;

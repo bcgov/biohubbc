@@ -1,13 +1,15 @@
 import { mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
+import Collapse from '@mui/material/Collapse';
 import { EcologicalUnitsSelect } from 'features/surveys/animals/animal-form/components/ecological-units/components/EcologicalUnitsSelect';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect } from 'react';
+import { TransitionGroup } from 'react-transition-group';
 
 const initialEcologicalUnitValues = {
   collection_category_id: null,
@@ -39,18 +41,19 @@ export const EcologicalUnitsForm = () => {
       name="ecological_units"
       render={(arrayHelpers: FieldArrayRenderProps) => (
         <>
-          {values.ecological_units.length > 0 && (
-            <Stack mb={3} spacing={1}>
-              {values.ecological_units.map((ecological_unit, index) => (
-                <EcologicalUnitsSelect
-                  key={ecological_unit.collection_category_id ?? index}
-                  ecologicalUnits={ecologicalUnitsDataLoader.data ?? []}
-                  arrayHelpers={arrayHelpers}
-                  index={index}
-                />
-              ))}
-            </Stack>
-          )}
+          <TransitionGroup>
+            {values.ecological_units.map((ecological_unit, index) => (
+              <Collapse in={true} key={ecological_unit.critter_collection_unit_id ?? index}>
+                <Box mb={2}>
+                  <EcologicalUnitsSelect
+                    ecologicalUnits={ecologicalUnitsDataLoader.data ?? []}
+                    arrayHelpers={arrayHelpers}
+                    index={index}
+                  />
+                </Box>
+              </Collapse>
+            ))}
+          </TransitionGroup>
           <Button
             color="primary"
             variant="outlined"

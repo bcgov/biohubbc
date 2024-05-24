@@ -28,7 +28,7 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Removes association of these critters to this survey.',
+  description: 'Removes association of critters from this survey.',
   tags: ['critterbase'],
   security: [
     {
@@ -46,18 +46,20 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Array of survey critter Ids to be deleted',
+    description: 'Array of survey critter Ids to be deleted.',
     content: {
       'application/json': {
         schema: {
           type: 'object',
           additionalProperties: false,
+          required: ['critterIds'],
           properties: {
             critterIds: {
               type: 'array',
               items: {
                 type: 'integer',
-                description: 'Survey critter Id'
+                minimum: 1,
+                description: 'Survey critter Id.'
               }
             }
           }
@@ -93,12 +95,13 @@ export function removeCrittersFromSurvey(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
 
     const connection = getDBConnection(req['keycloak_token']);
-    const surveyCritterService = new SurveyCritterService(connection);
 
     try {
       await connection.open();
 
+      const surveyCritterService = new SurveyCritterService(connection);
       const result = await surveyCritterService.removeCrittersFromSurvey(surveyId, critterIds);
+
       await connection.commit();
 
       return res.status(200).json(result);

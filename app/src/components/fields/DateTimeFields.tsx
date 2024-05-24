@@ -8,7 +8,7 @@ import { default as dayjs } from 'dayjs';
 import { FormikContextType } from 'formik';
 import get from 'lodash-es/get';
 
-interface IDateTimeFieldsProps<T> {
+interface IDateTimeFieldsProps<FormikPropsType> {
   date: {
     dateLabel: string;
     dateName: string;
@@ -27,10 +27,10 @@ interface IDateTimeFieldsProps<T> {
     timeIcon: string;
   };
   parentName: string;
-  formikProps: FormikContextType<T>;
+  formikProps: FormikContextType<FormikPropsType>;
 }
 
-export const DateTimeFields = <T,>(props: IDateTimeFieldsProps<T>) => {
+export const DateTimeFields = <FormikPropsType,>(props: IDateTimeFieldsProps<FormikPropsType>) => {
   const {
     formikProps: { values, errors, touched, setFieldValue },
     date: { dateLabel, dateName, dateId, dateRequired, dateHelperText, dateIcon },

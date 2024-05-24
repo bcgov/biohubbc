@@ -54,11 +54,9 @@ describe('RegionRepository', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const service = new RegionService(mockDBConnection);
-      const deleteStub = sinon.stub(RegionRepository.prototype, 'deleteRegionsForSurvey').resolves();
       const addStub = sinon.stub(RegionRepository.prototype, 'addRegionsToSurvey').resolves();
 
       await service.addRegionsToSurvey(1, []);
-      expect(deleteStub).to.be.called;
       expect(addStub).to.be.called;
     });
   });
@@ -83,19 +81,6 @@ describe('RegionRepository', () => {
     });
   });
 
-  describe('addRegionsToProject', () => {
-    it('should run without issue', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const service = new RegionService(mockDBConnection);
-      const deleteStub = sinon.stub(RegionRepository.prototype, 'deleteRegionsForProject').resolves();
-      const addStub = sinon.stub(RegionRepository.prototype, 'addRegionsToProject').resolves();
-
-      await service.addRegionsToProject(1, []);
-      expect(deleteStub).to.be.called;
-      expect(addStub).to.be.called;
-    });
-  });
-
   describe('addRegionsToSurveyFromFeatures', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
@@ -105,22 +90,6 @@ describe('RegionRepository', () => {
       const addRegionStub = sinon.stub(RegionService.prototype, 'addRegionsToSurvey').resolves();
 
       await service.addRegionsToSurveyFromFeatures(1, []);
-
-      expect(getUniqueStub).to.be.called;
-      expect(searchStub).to.be.called;
-      expect(addRegionStub).to.be.called;
-    });
-  });
-
-  describe('addRegionsToProjectFromFeatures', () => {
-    it('should run without issue', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const service = new RegionService(mockDBConnection);
-      const getUniqueStub = sinon.stub(RegionService.prototype, 'getUniqueRegionsForFeatures').resolves();
-      const searchStub = sinon.stub(RegionService.prototype, 'searchRegionWithDetails').resolves();
-      const addRegionStub = sinon.stub(RegionService.prototype, 'addRegionsToProject').resolves();
-
-      await service.addRegionsToProjectFromFeatures(1, []);
 
       expect(getUniqueStub).to.be.called;
       expect(searchStub).to.be.called;

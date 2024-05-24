@@ -13,9 +13,9 @@ interface IAnimalCapturesToolbarProps {
 /**
  * Toolbar for actions affecting an animal's captures, ie. add a new capture
  *
- * @returns
+ * @returns {*}
  */
-const AnimalCapturesToolbar = (props: IAnimalCapturesToolbarProps) => {
+export const AnimalCapturesToolbar = (props: IAnimalCapturesToolbarProps) => {
   const { capturesCount, onAddAnimalCapture } = props;
 
   return (
@@ -48,5 +48,3 @@ const AnimalCapturesToolbar = (props: IAnimalCapturesToolbarProps) => {
     </Toolbar>
   );
 };
-
-export default AnimalCapturesToolbar;

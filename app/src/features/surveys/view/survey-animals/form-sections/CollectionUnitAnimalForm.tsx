@@ -22,7 +22,7 @@ import {
  * @returns {*}
  */
 export const CollectionUnitAnimalForm = (props: AnimalFormProps<ICritterCollectionUnitResponse>) => {
-  const cbApi = useCritterbaseApi();
+  const critterbaseApi = useCritterbaseApi();
   const dialog = useDialogContext();
   //Animals may have multiple collection units, but only one instance of each category.
   //We use this and pass to the select component to ensure categories already used in the form can't be selected again.
@@ -39,11 +39,11 @@ export const CollectionUnitAnimalForm = (props: AnimalFormProps<ICritterCollecti
     setLoading(true);
     try {
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-        await cbApi.collectionUnit.createCritterCollectionUnit(values);
+        await critterbaseApi.collectionUnit.createCritterCollectionUnit(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created ecological unit.` });
       }
       if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-        await cbApi.collectionUnit.updateCritterCollectionUnit(values);
+        await critterbaseApi.collectionUnit.updateCritterCollectionUnit(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited ecological unit.` });
       }
     } catch (err) {

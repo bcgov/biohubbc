@@ -48,7 +48,7 @@ export const EcologicalUnitsOptionSelect = (props: IEcologicalUnitsOptionSelectP
           setFieldValue(`ecological_units.[${index}].collection_unit_id`, option.value);
         }
       }}
-      disabled={Boolean(!values.ecological_units[index].collection_category_id)}
+      disabled={Boolean(!values.ecological_units[index]?.collection_category_id)}
       required
       sx={{
         flex: '1 1 auto'

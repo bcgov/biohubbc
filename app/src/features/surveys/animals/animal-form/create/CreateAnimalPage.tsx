@@ -35,7 +35,7 @@ export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
  *
  * @return {*}
  */
-const CreateAnimalPage = () => {
+export const CreateAnimalPage = () => {
   const biohubApi = useBiohubApi();
   const critterbaseApi = useCritterbaseApi();
 
@@ -245,5 +245,3 @@ const CreateAnimalPage = () => {
     </>
   );
 };
-
-export default CreateAnimalPage;

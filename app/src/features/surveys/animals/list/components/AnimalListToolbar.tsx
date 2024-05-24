@@ -7,7 +7,7 @@ import Typography from '@mui/material/Typography';
 import { useSurveyContext } from 'hooks/useContext';
 import { Link as RouterLink } from 'react-router-dom';
 
-interface ISurveyAnimalListToolbarProps {
+interface IAnimaListToolbarProps {
   animalCount: number;
   checkboxSelectedIdsLength: number;
   handleHeaderMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
@@ -16,10 +16,10 @@ interface ISurveyAnimalListToolbarProps {
 /**
  * Toolbar for actions affecting animals with a survey, ie. delete an animal from a Survey
  *
- * @param {ISurveyAnimalListToolbarProps} props
+ * @param {IAnimaListToolbarProps} props
  * @return {*}
  */
-const AnimalListToolbar = (props: ISurveyAnimalListToolbarProps) => {
+export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
   const { surveyId, projectId } = useSurveyContext();
 
   return (
@@ -58,5 +58,3 @@ const AnimalListToolbar = (props: ISurveyAnimalListToolbarProps) => {
     </Toolbar>
   );
 };
-
-export default AnimalListToolbar;
