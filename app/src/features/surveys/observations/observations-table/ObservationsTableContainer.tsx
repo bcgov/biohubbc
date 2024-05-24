@@ -12,8 +12,9 @@ import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
 import {
-  GenericActionsColDef,
   GenericDateColDef,
+  GenericLatitudeColDef,
+  GenericLongitudeColDef,
   GenericTimeColDef
 } from 'components/data-grid/GenericGridColumnDefinitions';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
@@ -40,9 +41,12 @@ import {
 } from 'interfaces/useSamplingSiteApi.interface';
 import { useContext } from 'react';
 import { getCodesName } from 'utils/Utils';
-import { ConfigureColumnsContainer } from './configure-table/ConfigureColumnsContainer';
+import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
-import { getMeasurementColumnDefinitions } from './grid-column-definitions/GridColumnDefinitionsUtils';
+import {
+  getEnvironmentColumnDefinitions,
+  getMeasurementColumnDefinitions
+} from './grid-column-definitions/GridColumnDefinitionsUtils';
 
 const ObservationComponent = () => {
   const codesContext = useCodesContext();
@@ -89,6 +93,7 @@ const ObservationComponent = () => {
 
   // The column definitions of the columns to render in the observations table
   const columns: GridColDef<IObservationTableRow>[] = [
+    // Add standard observation columns to the table
     TaxonomyColDef({ hasError: observationsTableContext.hasError }),
     SampleSiteColDef({ sampleSiteOptions, hasError: observationsTableContext.hasError }),
     SampleMethodColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
@@ -96,14 +101,12 @@ const ObservationComponent = () => {
     ObservationCountColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
     GenericDateColDef({ field: 'observation_date', headerName: 'Date', hasError: observationsTableContext.hasError }),
     GenericTimeColDef({ field: 'observation_time', headerName: 'Time', hasError: observationsTableContext.hasError }),
-    GenericDateColDef({ field: 'latitude', headerName: 'Lat', hasError: observationsTableContext.hasError }),
-    GenericDateColDef({ field: 'longitude', headerName: 'Long', hasError: observationsTableContext.hasError }),
+    GenericLatitudeColDef({ field: 'latitude', headerName: 'Lat', hasError: observationsTableContext.hasError }),
+    GenericLongitudeColDef({ field: 'longitude', headerName: 'Long', hasError: observationsTableContext.hasError }),
     // Add measurement columns to the table
     ...getMeasurementColumnDefinitions(observationsTableContext.measurementColumns, observationsTableContext.hasError),
-    GenericActionsColDef({
-      disabled: observationsTableContext.isSaving,
-      onDelete: observationsTableContext.deleteObservationRecords
-    })
+    // Add environment columns to the table
+    ...getEnvironmentColumnDefinitions(observationsTableContext.environmentColumns, observationsTableContext.hasError)
   ];
 
   return (
@@ -157,11 +160,11 @@ const ObservationComponent = () => {
               />
             </Box>
           </Collapse>
-          <ExportHeadersButton />
-          <ConfigureColumnsContainer
+          <ConfigureColumnsButton
             disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
             columns={columns}
           />
+          <ExportHeadersButton />
           <BulkActionsButton disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled} />
         </Stack>
       </Toolbar>

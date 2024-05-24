@@ -1,6 +1,3 @@
-import { mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { GridCellParams, GridColDef } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
@@ -12,6 +9,10 @@ import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyData
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { CBMeasurementType, CBQualitativeOption } from 'interfaces/useCritterApi.interface';
+import {
+  EnvironmentQualitativeTypeDefinition,
+  EnvironmentQuantitativeTypeDefinition
+} from 'interfaces/useReferenceApi.interface';
 
 export type ISampleSiteOption = {
   survey_sample_site_id: number;
@@ -42,7 +43,7 @@ export const TaxonomyColDef = (props: {
     editable: true,
     hideable: true,
     flex: 1,
-    minWidth: 250,
+    minWidth: 200,
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',
@@ -66,11 +67,11 @@ export const SampleSiteColDef = (props: {
 
   return {
     field: 'survey_sample_site_id',
-    headerName: 'Sampling Site',
+    headerName: 'Site',
     editable: true,
     hideable: true,
     flex: 1,
-    minWidth: 250,
+    minWidth: 180,
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',
@@ -109,11 +110,11 @@ export const SampleMethodColDef = (props: {
 
   return {
     field: 'survey_sample_method_id',
-    headerName: 'Sampling Method',
+    headerName: 'Method',
     editable: true,
     hideable: true,
     flex: 1,
-    minWidth: 250,
+    minWidth: 180,
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',
@@ -156,11 +157,11 @@ export const SamplePeriodColDef = (props: {
 
   return {
     field: 'survey_sample_period_id',
-    headerName: 'Sampling Period',
+    headerName: 'Period',
     editable: true,
     hideable: true,
     flex: 0,
-    width: 250,
+    minWidth: 180,
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',
@@ -262,31 +263,6 @@ export const ObservationCountColDef = (props: {
   };
 };
 
-export const ObservationActionsColDef = (props: {
-  disabled: boolean;
-  onDelete: (observationRecords: IObservationTableRow[]) => void;
-}): GridColDef<IObservationTableRow> => {
-  return {
-    field: 'actions',
-    headerName: '',
-    type: 'actions',
-    width: 70,
-    disableColumnMenu: true,
-    resizable: false,
-    cellClassName: 'pinnedColumn',
-    getActions: (params) => [
-      <IconButton
-        onClick={() => {
-          props.onDelete([params.row]);
-        }}
-        disabled={props.disabled}
-        key={`actions[${params.id}].handleDeleteRow`}>
-        <Icon path={mdiTrashCanOutline} size={1} />
-      </IconButton>
-    ]
-  };
-};
-
 export const ObservationQuantitativeMeasurementColDef = (props: {
   measurement: CBMeasurementType;
   hasError: (params: GridCellParams) => boolean;
@@ -354,7 +330,90 @@ export const ObservationQualitativeMeasurementColDef = (props: {
     hideable: true,
     sortable: false,
     flex: 1,
-    minWidth: Math.min(300, Math.max(250, measurement.measurement_name.length * 10 + 20)),
+    minWidth: Math.min(300, Math.max(180, measurement.measurement_name.length * 10 + 20)),
+    disableColumnMenu: true,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => {
+      return (
+        <AutocompleteDataGridViewCell dataGridProps={params} options={qualitativeOptions} error={hasError(params)} />
+      );
+    },
+    renderEditCell: (params) => {
+      return (
+        <AutocompleteDataGridEditCell dataGridProps={params} options={qualitativeOptions} error={hasError(params)} />
+      );
+    }
+  };
+};
+
+export const ObservationQuantitativeEnvironmentColDef = (props: {
+  environment: EnvironmentQuantitativeTypeDefinition;
+  hasError: (params: GridCellParams) => boolean;
+}): GridColDef<IObservationTableRow> => {
+  const { environment, hasError } = props;
+  return {
+    field: String(environment.environment_quantitative_id),
+    headerName: environment.name,
+    editable: true,
+    hideable: true,
+    sortable: false,
+    type: 'number',
+    minWidth: Math.min(300, Math.max(110, environment.name.length * 10 + 20)),
+    disableColumnMenu: true,
+    headerAlign: 'right',
+    align: 'right',
+    renderCell: (params) => (
+      <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
+        {params.value}
+      </Typography>
+    ),
+    renderEditCell: (params) => {
+      const error = hasError(params);
+
+      return (
+        <TextFieldDataGrid
+          dataGridProps={params}
+          textFieldProps={{
+            name: params.field,
+            onChange: (event) => {
+              if (!/^\d{0,7}$/.test(event.target.value)) {
+                // If the value is not a number, return
+                return;
+              }
+
+              params.api.setEditCellValue({
+                id: params.id,
+                field: params.field,
+                value: event.target.value
+              });
+            },
+            error
+          }}
+        />
+      );
+    }
+  };
+};
+
+export const ObservationQualitativeEnvironmentColDef = (props: {
+  environment: EnvironmentQualitativeTypeDefinition;
+  hasError: (params: GridCellParams) => boolean;
+}): GridColDef<IObservationTableRow> => {
+  const { environment, hasError } = props;
+
+  const qualitativeOptions = environment.options.map((item) => ({
+    label: item.name,
+    value: item.environment_qualitative_option_id
+  }));
+  return {
+    field: String(environment.environment_qualitative_id),
+    headerName: environment.name,
+    editable: true,
+    hideable: true,
+    sortable: false,
+    flex: 1,
+    minWidth: Math.min(300, Math.max(180, environment.name.length * 10 + 20)),
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',

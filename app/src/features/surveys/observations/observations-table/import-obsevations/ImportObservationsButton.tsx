@@ -42,6 +42,14 @@ export interface IImportObservationsButtonProps {
    * @memberof IImportObservationsButtonProps
    */
   onFinish?: () => void;
+  /**
+   * Options to pass to the process csv submission endpoint.
+   *
+   * @type {{
+   *     surveySamplePeriodId?: number;
+   *   }}
+   * @memberof IImportObservationsButtonProps
+   */
 }
 
 export const ImportObservationsButton = (props: IImportObservationsButtonProps) => {

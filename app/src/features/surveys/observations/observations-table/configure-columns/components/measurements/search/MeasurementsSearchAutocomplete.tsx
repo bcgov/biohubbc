@@ -1,10 +1,7 @@
 import { mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
-import CheckBox from '@mui/icons-material/CheckBox';
-import CheckBoxOutlineBlank from '@mui/icons-material/CheckBoxOutlineBlank';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
 import ListItem from '@mui/material/ListItem';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -34,7 +31,7 @@ export interface IMeasurementsSearchAutocompleteProps {
    *
    * @memberof IMeasurementsSearchAutocompleteProps
    */
-  onSelectOptions: (measurements: CBMeasurementType[]) => void;
+  onAddMeasurementColumn: (measurementColumn: CBMeasurementType) => void;
 }
 
 /**
@@ -43,13 +40,11 @@ export interface IMeasurementsSearchAutocompleteProps {
  * @param {IMeasurementsSearchAutocompleteProps} props
  * @return {*}
  */
-const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompleteProps) => {
-  const { selectedOptions, getOptions, onSelectOptions } = props;
+export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompleteProps) => {
+  const { selectedOptions, getOptions, onAddMeasurementColumn } = props;
 
   const [inputValue, setInputValue] = useState('');
   const [options, setOptions] = useState<CBMeasurementType[]>([]);
-
-  const [pendingSelectedOptions, setPendingSelectedOptions] = useState<CBMeasurementType[]>([]);
 
   const handleSearch = useMemo(
     () =>
@@ -67,10 +62,9 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
       noOptionsText="No matching options"
       autoHighlight={true}
       options={options}
-      multiple={true}
       disableCloseOnSelect={true}
-      blurOnSelect={false}
-      clearOnBlur={false}
+      blurOnSelect={true}
+      clearOnBlur={true}
       getOptionLabel={(option) => option.measurement_name}
       isOptionEqualToValue={(option, value) => {
         return option.taxon_measurement_id === value.taxon_measurement_id;
@@ -106,15 +100,13 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
           setOptions(() => newOptions);
         });
       }}
-      value={[]} // The selected value is not displayed in the input field or tracked by this component
-      onChange={(_, option) => {
-        setPendingSelectedOptions((currentPendingOptions) => {
-          return [...currentPendingOptions, ...option];
-        });
-      }}
-      onClose={() => {
-        onSelectOptions(pendingSelectedOptions);
-        setPendingSelectedOptions([]);
+      value={null} // The selected value is not displayed in the input field or tracked by this component
+      onChange={(_, value) => {
+        if (value) {
+          onAddMeasurementColumn(value);
+          setInputValue('');
+          setOptions([]);
+        }
       }}
       renderOption={(renderProps, renderOption) => {
         return (
@@ -128,15 +120,6 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
             {...renderProps}
             key={renderOption.taxon_measurement_id}
             data-testid="measurements-autocomplete-option">
-            <Checkbox
-              icon={<CheckBoxOutlineBlank fontSize="small" />}
-              checkedIcon={<CheckBox fontSize="small" />}
-              checked={pendingSelectedOptions.some(
-                (option) => option.taxon_measurement_id === renderOption.taxon_measurement_id
-              )}
-              value={renderOption.taxon_measurement_id}
-              color="default"
-            />
             <Stack gap={0.75} mt={-0.25}>
               <Box>
                 <Typography variant="body2">
@@ -199,5 +182,3 @@ const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompletePr
     />
   );
 };
-
-export default MeasurementsSearchAutocomplete;

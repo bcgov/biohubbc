@@ -30,7 +30,7 @@ export const GenericDateColDef = <T extends GridValidRowModel>(props: {
     align: 'left',
     renderCell: (params) => (
       <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-        {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.row[field])}
+        {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, params.value)}
       </Typography>
     ),
     renderEditCell: (params) => {
@@ -42,7 +42,8 @@ export const GenericDateColDef = <T extends GridValidRowModel>(props: {
           textFieldProps={{
             name: params.field,
             type: 'date',
-            value: params.row[field],
+            value: params.value ?? '',
+            inputProps: { max: '9999-12-31', min: '0001-01-01' },
             onChange: (event) => {
               params.api.setEditCellValue({
                 id: params.id,
