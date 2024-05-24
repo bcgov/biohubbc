@@ -29,6 +29,8 @@ export class RegionService extends DBService {
       REGION_FEATURE_CODE.NATURAL_RESOURCE_REGION
     );
 
+    console.log({ regions: regions.map((region) => region.region_name) });
+
     // Delete the previous regions and insert new
     await this.refreshSurveyRegions(surveyId, regions);
   }

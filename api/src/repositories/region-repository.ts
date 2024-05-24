@@ -118,42 +118,6 @@ export class RegionRepository extends BaseRepository {
   }
 
   /**
-   * Get region lookup values from feature code
-   * TODO: Can remove?
-   *
-   * @async
-   * @param {REGION_FEATURE_CODE} featureCode - Feature code of region lookup table
-   * @returns {Promise<IRegion[]>} - List of regions
-   */
-  async getRegionsByFeatureCode(featureCode: REGION_FEATURE_CODE): Promise<IRegion[]> {
-    const sql = SQL`
-      SELECT
-        region_id,
-        region_name,
-        org_unit,
-        org_unit_name,
-        feature_code,
-        feature_name,
-        geojson,
-        geometry,
-        geography
-      FROM
-        region_lookup
-      WHERE
-        feature_code = ${featureCode};
-    `;
-    try {
-      const response = await this.connection.sql<IRegion>(sql, IRegion);
-
-      return response.rows;
-    } catch (error) {
-      throw new ApiExecuteSQLError('Failed to execute get regions by feature code SQL', [
-        'RegionRepository->getRegionsByFeatureCode'
-      ]);
-    }
-  }
-
-  /**
    * Get intersecting regions from a list of features
    * Optionally provide feature code to filter available intersections
    *
@@ -186,21 +150,21 @@ export class RegionRepository extends BaseRepository {
     }
 
     // Postgis find intersecting regions
-    for (const feature of features) {
-      queryBuilder.orWhere(
-        knex.raw(`NOT public.ST_IsEmpty(public.ST_AsText(public.ST_Intersection(ST_GeomFromGeoJSON(?), geography)))`, [
-          JSON.stringify(feature.geometry)
-        ])
-      );
-    }
+    queryBuilder.andWhere((query) => {
+      for (const feature of features) {
+        query.orWhereRaw(
+          `NOT public.ST_IsEmpty(public.ST_AsText(public.ST_Intersection(ST_GeomFromGeoJSON(?), geography)))`,
+          [JSON.stringify(feature.geometry)]
+        );
+      }
+    });
 
     try {
       const response = await this.connection.knex<IRegion>(queryBuilder, IRegion);
+      console.log(queryBuilder.toSQL().toNative().sql);
 
       return response.rows;
     } catch (error) {
-      console.log(queryBuilder.toSQL().toNative().sql);
-      console.log(queryBuilder.toSQL().toNative().bindings);
       throw new ApiExecuteSQLError('Failed to execute get intersecting regions SQL', [
         'RegionRepository->getIntersectingRegionsFromFeatures'
       ]);
