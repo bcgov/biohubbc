@@ -11,6 +11,8 @@ export interface IItisSearchResponse {
 
 export interface ITaxonomy {
   tsn: number;
-  commonName: string | null;
+  commonNames: string[];
   scientificName: string;
+  rank: string;
+  kingdom: string;
 }

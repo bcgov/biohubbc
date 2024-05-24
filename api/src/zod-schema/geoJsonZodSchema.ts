@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const GeoJSONPointZodSchema = z.object({
   type: z.enum(['Point']),
-  coordinates: z.array(z.number()).min(2),
+  coordinates: z.array(z.number()).min(2).max(2),
   bbox: z.array(z.number()).min(4).optional()
 });
 

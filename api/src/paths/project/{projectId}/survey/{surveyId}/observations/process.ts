@@ -59,6 +59,17 @@ POST.apiDoc = {
             observation_submission_id: {
               description: 'The ID of the submission to validate',
               type: 'integer'
+            },
+            options: {
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                surveySamplePeriodId: {
+                  type: 'integer',
+                  description:
+                    'The optional ID of a survey sample period to associate the parsed observation records with.'
+                }
+              }
             }
           }
         }
@@ -96,9 +107,11 @@ export function processFile(): RequestHandler {
     try {
       await connection.open();
 
+      const options = req.body.options || undefined;
+
       const observationService = new ObservationService(connection);
 
-      await observationService.processObservationCsvSubmission(surveyId, submissionId);
+      await observationService.processObservationCsvSubmission(surveyId, submissionId, options);
 
       await connection.commit();
 

@@ -1,25 +1,33 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
+
 import {
+  IGetSurveyObservationsGeometryResponse,
+  IGetSurveyObservationsResponse,
   ObservationRecord,
   StandardObservationColumns,
   SupplementaryObservationCountData
-} from 'contexts/observationsTableContext';
-import {
-  IGetSurveyObservationsGeometryResponse,
-  IGetSurveyObservationsResponse
 } from 'interfaces/useObservationApi.interface';
+import { EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
 export interface SubcountToSave {
   observation_subcount_id: number | null;
   subcount: number | null;
-  qualitative: {
+  qualitative_measurements: {
     measurement_id: string;
     measurement_option_id: string;
   }[];
-  quantitative: {
+  quantitative_measurements: {
     measurement_id: string;
     measurement_value: number;
+  }[];
+  qualitative_environments: {
+    environment_qualitative_id: string;
+    environment_qualitative_option_id: string;
+  }[];
+  quantitative_environments: {
+    environment_quantitative_id: string;
+    value: number;
   }[];
 }
 
@@ -59,7 +67,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {ApiPaginationRequestOptions} [pagination]
-   * @return {*}  {Promise<IObservationTableRow[]>}
+   * @return {*}  {Promise<IGetSurveyObservationsResponse>}
    */
   const getObservationRecords = async (
     projectId: number,
@@ -94,7 +102,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {ApiPaginationRequestOptions} [pagination]
-   * @return {*}  {Promise<IObservationTableRow[]>}
+   * @return {*}  {Promise<ObservationRecord>}
    */
   const getObservationRecord = async (
     projectId: number,
@@ -133,6 +141,9 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {File} file
+   * @param {{
+   *       samplingPeriodId: number;
+   *     }} [options]
    * @param {CancelTokenSource} [cancelTokenSource]
    * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<{ submissionId: number }>}
@@ -153,7 +164,6 @@ const useObservationApi = (axios: AxiosInstance) => {
       formData,
       {
         cancelToken: cancelTokenSource?.token,
-
         onUploadProgress: onProgress
       }
     );
@@ -167,11 +177,22 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} submissionId
-   * @return {*}
+   * @param {{
+   *       surveySamplePeriodId?: number;
+   *     }} [options]
+   * @return {*}  {Promise<void>}
    */
-  const processCsvSubmission = async (projectId: number, surveyId: number, submissionId: number) => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/process`, {
-      observation_submission_id: submissionId
+  const processCsvSubmission = async (
+    projectId: number,
+    surveyId: number,
+    submissionId: number,
+    options?: {
+      surveySamplePeriodId?: number;
+    }
+  ): Promise<void> => {
+    const { data } = await axios.post<void>(`/api/project/${projectId}/survey/${surveyId}/observations/process`, {
+      observation_submission_id: submissionId,
+      options
     });
 
     return data;
@@ -221,6 +242,30 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Deletes all of the observation environments, from all observation records, having the given environment_id.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {string[]} environmentIds The environment ids to delete.
+   * @return {*}  {Promise<void>}
+   */
+  const deleteObservationEnvironments = async (
+    projectId: number,
+    surveyId: number,
+    environmentIds: EnvironmentTypeIds
+  ): Promise<void> => {
+    const { data } = await axios.post<void>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/environments/delete`,
+      {
+        environment_qualitative_id: environmentIds.qualitative_environments,
+        environment_quantitative_id: environmentIds.quantitative_environments
+      }
+    );
+
+    return data;
+  };
+
   return {
     insertUpdateObservationRecords,
     getObservationRecords,
@@ -228,6 +273,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     getObservationsGeometry,
     deleteObservationRecords,
     deleteObservationMeasurements,
+    deleteObservationEnvironments,
     uploadCsvForImport,
     processCsvSubmission
   };

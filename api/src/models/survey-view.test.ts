@@ -84,8 +84,8 @@ describe('GetFocalSpeciesData', () => {
     let data: GetFocalSpeciesData;
 
     const obj = [
-      { tsn: 1, commonName: 'species1' },
-      { tsn: 2, commonName: 'species2' }
+      { tsn: 1, commonNames: ['species1'] },
+      { tsn: 2, commonNames: ['species2'] }
     ];
 
     before(() => {
@@ -94,8 +94,8 @@ describe('GetFocalSpeciesData', () => {
 
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([
-        { tsn: 1, commonName: 'species1' },
-        { tsn: 2, commonName: 'species2' }
+        { tsn: 1, commonNames: ['species1'] },
+        { tsn: 2, commonNames: ['species2'] }
       ]);
     });
   });
@@ -118,8 +118,8 @@ describe('GetAncillarySpeciesData', () => {
     let data: GetAncillarySpeciesData;
 
     const obj = [
-      { tsn: 1, commonName: 'species1' },
-      { tsn: 2, commonName: 'species2' }
+      { tsn: 1, commonNames: ['species1'] },
+      { tsn: 2, commonNames: ['species2'] }
     ];
 
     before(() => {
@@ -128,8 +128,8 @@ describe('GetAncillarySpeciesData', () => {
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql([
-        { tsn: 1, commonName: 'species1' },
-        { tsn: 2, commonName: 'species2' }
+        { tsn: 1, commonNames: ['species1'] },
+        { tsn: 2, commonNames: ['species2'] }
       ]);
     });
   });
@@ -368,7 +368,7 @@ describe('GetAttachmentsData', () => {
     let data: GetAttachmentsData;
 
     before(() => {
-      data = new GetAttachmentsData((null as unknown) as any[]);
+      data = new GetAttachmentsData(null as unknown as any[]);
     });
 
     it('sets attachmentDetails', function () {
@@ -471,7 +471,7 @@ describe('GetAttachmentsData', () => {
 describe('GetReportAttachmentsData', () => {
   describe('No values provided', () => {
     it('sets attachmentDetails', function () {
-      const data: GetReportAttachmentsData = new GetReportAttachmentsData((null as unknown) as any[]);
+      const data: GetReportAttachmentsData = new GetReportAttachmentsData(null as unknown as any[]);
 
       expect(data.attachmentDetails).to.eql([]);
     });

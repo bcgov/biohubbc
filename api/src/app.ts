@@ -4,7 +4,7 @@ import multer from 'multer';
 import { OpenAPIV3 } from 'openapi-types';
 import swaggerUIExperss from 'swagger-ui-express';
 import { defaultPoolConfig, initDBPool } from './database/db';
-import { ensureHTTPError, HTTPErrorType } from './errors/http-error';
+import { ensureHTTPError, HTTP500 } from './errors/http-error';
 import {
   authorizeAndAuthenticateMiddleware,
   getCritterbaseProxyMiddleware,
@@ -104,14 +104,22 @@ const openAPIFramework = initialize({
       return authenticateRequestOptional(req);
     }
   },
-  errorTransformer: function (openapiError: object, ajvError: object): object {
-    // Transform openapi-request-validator and openapi-response-validator errors
-    defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
+  errorTransformer: function (_, ajvError: object): object {
+    // Transform openapi-request-validator or openapi-response-validator errors
     return ajvError;
   },
   // If `next` is not included express will silently skip calling the `errorMiddleware` entirely.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   errorMiddleware: function (error, req, res, next) {
+    defaultLog.error({
+      label: 'errorMiddleware',
+      message: 'error',
+      error,
+      req_url: `${req.method} ${req.url}`,
+      req_params: req.params,
+      req_body: req.body
+    });
+
     // Ensure all errors (intentionally thrown or not) are in the same format as specified by the schema
     const httpError = ensureHTTPError(error);
 
@@ -175,15 +183,16 @@ function validateAllResponses(req: Request, res: Response, next: NextFunction) {
 
     res.json = (...args) => {
       if (res.get('x-express-openapi-validation-error-for')) {
-        // Already validated, return
+        // Already validated this response once, skip validation and return
         return json.apply(res, args);
       }
 
-      const body = args[0];
+      const reqBody = args[0];
 
+      // Run openapi response validation function
       const validationResult: { message: any; errors: any[] } | undefined = res['validateResponse'](
         res.statusCode,
-        body
+        reqBody
       );
 
       let validationMessage = '';
@@ -204,16 +213,14 @@ function validateAllResponses(req: Request, res: Response, next: NextFunction) {
         defaultLog.debug({
           label: 'validateAllResponses',
           message: validationMessage,
-          responseBody: body,
-          errors: errorList
+          error: errorList,
+          req_url: `${req.method} ${req.url}`,
+          req_params: req.params,
+          req_body: req.body,
+          res_body: reqBody
         });
 
-        return res.status(500).json({
-          name: HTTPErrorType.INTERNAL_SERVER_ERROR,
-          status: 500,
-          message: validationMessage,
-          errors: errorList
-        });
+        throw new HTTP500(validationMessage, errorList);
       }
     };
   }

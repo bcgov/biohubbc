@@ -10,7 +10,7 @@ chai.use(sinonChai);
 describe('ProjectParticipationRepository', () => {
   describe('deleteProjectParticipationRecord', () => {
     it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new ProjectParticipationRepository(dbConnection);
@@ -21,7 +21,7 @@ describe('ProjectParticipationRepository', () => {
     });
 
     it('should throw an error', async () => {
-      const mockResponse = (undefined as any) as Promise<QueryResult<any>>;
+      const mockResponse = undefined as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new ProjectParticipationRepository(dbConnection);
@@ -37,14 +37,14 @@ describe('ProjectParticipationRepository', () => {
 
   describe('getProjectParticipant', () => {
     it('should return result', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rows: [
           {
             system_user_id: 1
           }
         ],
         rowCount: 1
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new ProjectParticipationRepository(dbConnection);
@@ -55,7 +55,7 @@ describe('ProjectParticipationRepository', () => {
     });
 
     it('should return null', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new ProjectParticipationRepository(dbConnection);
@@ -68,14 +68,14 @@ describe('ProjectParticipationRepository', () => {
 
   describe('getProjectParticipantByProjectIdAndUserGuid', () => {
     it('should return result', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rows: [
           {
             user_guid: '123-456-789'
           }
         ],
         rowCount: 1
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new ProjectParticipationRepository(dbConnection);
@@ -89,7 +89,7 @@ describe('ProjectParticipationRepository', () => {
     });
 
     it('should return null', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new ProjectParticipationRepository(dbConnection);
@@ -105,14 +105,14 @@ describe('ProjectParticipationRepository', () => {
 
   describe('getProjectParticipantBySurveyIdAndUserGuid', () => {
     it('should return result', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rows: [
           {
             user_guid: '123-456-789'
           }
         ],
         rowCount: 1
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new ProjectParticipationRepository(dbConnection);
@@ -126,7 +126,7 @@ describe('ProjectParticipationRepository', () => {
     });
 
     it('should return null', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new ProjectParticipationRepository(dbConnection);
@@ -142,7 +142,7 @@ describe('ProjectParticipationRepository', () => {
 
   describe('getProjectParticipants', () => {
     it('should return result', async () => {
-      const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new ProjectParticipationRepository(dbConnection);
@@ -153,7 +153,7 @@ describe('ProjectParticipationRepository', () => {
     });
 
     it('should throw an error when no rows returned', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
       const repository = new ProjectParticipationRepository(dbConnection);
@@ -170,7 +170,7 @@ describe('ProjectParticipationRepository', () => {
   describe('postProjectParticipant', () => {
     describe('with role id', () => {
       it('should return result', async () => {
-        const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+        const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
         const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
         const repository = new ProjectParticipationRepository(dbConnection);
@@ -181,7 +181,7 @@ describe('ProjectParticipationRepository', () => {
       });
 
       it('should throw an error when no rows returned', async () => {
-        const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+        const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
         const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
         const repository = new ProjectParticipationRepository(dbConnection);
@@ -197,7 +197,7 @@ describe('ProjectParticipationRepository', () => {
 
     describe('with role name', () => {
       it('should throw an error when no user found', async () => {
-        const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+        const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
         const dbConnection = getMockDBConnection({ sql: () => mockResponse });
 
         const repository = new ProjectParticipationRepository(dbConnection);
@@ -211,7 +211,7 @@ describe('ProjectParticipationRepository', () => {
       });
 
       it('should return result', async () => {
-        const mockResponse = ({ rows: [{ id: 1 }], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+        const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
         const dbConnection = getMockDBConnection({ sql: () => mockResponse, systemUserId: () => 1 });
 
         const repository = new ProjectParticipationRepository(dbConnection);
@@ -222,7 +222,7 @@ describe('ProjectParticipationRepository', () => {
       });
 
       it('should throw an error', async () => {
-        const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+        const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
         const dbConnection = getMockDBConnection({ sql: () => mockResponse, systemUserId: () => 1 });
 
         const repository = new ProjectParticipationRepository(dbConnection);

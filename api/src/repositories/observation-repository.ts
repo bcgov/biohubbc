@@ -3,8 +3,13 @@ import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getLogger } from '../utils/logger';
+import { GeoJSONPointZodSchema } from '../zod-schema/geoJsonZodSchema';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
+import {
+  ObservationSubCountQualitativeEnvironmentRecord,
+  ObservationSubCountQuantitativeEnvironmentRecord
+} from './observation-subcount-environment-repository';
 import {
   ObservationSubCountQualitativeMeasurementRecord,
   ObservationSubCountQuantitativeMeasurementRecord
@@ -19,6 +24,7 @@ const defaultLog = getLogger('repositories/observation-repository');
 export const ObservationRecord = z.object({
   survey_observation_id: z.number(),
   survey_id: z.number(),
+  wldtaxonomic_units_id: z.number().nullable(),
   itis_tsn: z.number(),
   itis_scientific_name: z.string().nullable(),
   survey_sample_site_id: z.number().nullable(),
@@ -54,11 +60,25 @@ const ObservationSubcountQuantitativeMeasurementObject = ObservationSubCountQuan
   value: true
 });
 
+const ObservationSubcountQualitativeEnvironmentObject = ObservationSubCountQualitativeEnvironmentRecord.pick({
+  observation_subcount_qualitative_environment_id: true,
+  environment_qualitative_id: true,
+  environment_qualitative_option_id: true
+});
+
+const ObservationSubcountQuantitativeEnvironmentObject = ObservationSubCountQuantitativeEnvironmentRecord.pick({
+  observation_subcount_quantitative_environment_id: true,
+  environment_quantitative_id: true,
+  value: true
+});
+
 const ObservationSubcountObject = z.object({
   observation_subcount_id: ObservationSubCountRecord.shape.observation_subcount_id,
   subcount: ObservationSubCountRecord.shape.subcount,
   qualitative_measurements: z.array(ObservationSubcountQualitativeMeasurementObject),
-  quantitative_measurements: z.array(ObservationSubcountQuantitativeMeasurementObject)
+  quantitative_measurements: z.array(ObservationSubcountQuantitativeMeasurementObject),
+  qualitative_environments: z.array(ObservationSubcountQualitativeEnvironmentObject),
+  quantitative_environments: z.array(ObservationSubcountQuantitativeEnvironmentObject)
 });
 
 const ObservationSubcountsObject = z.object({
@@ -68,29 +88,32 @@ const ObservationSubcountsObject = z.object({
 /**
  * An extended observation record.
  * Includes:
- * - all fields from the observation record
+ * - fields from the observation record
  * - additional fields about the survey_sample_* data for the observation record
  * - additional fields about the subcount records for the observation record
  */
-export const ObservationRecordWithSamplingAndSubcountData = ObservationRecord.extend(
-  ObservationSamplingData.shape
-).extend(ObservationSubcountsObject.shape);
-
+export const ObservationRecordWithSamplingAndSubcountData = ObservationRecord.pick({
+  survey_observation_id: true,
+  survey_id: true,
+  itis_tsn: true,
+  itis_scientific_name: true,
+  survey_sample_site_id: true,
+  survey_sample_method_id: true,
+  survey_sample_period_id: true,
+  latitude: true,
+  longitude: true,
+  count: true,
+  observation_time: true,
+  observation_date: true
+})
+  .extend(ObservationSamplingData.shape)
+  .extend(ObservationSubcountsObject.shape);
 export type ObservationRecordWithSamplingAndSubcountData = z.infer<typeof ObservationRecordWithSamplingAndSubcountData>;
-
-const GeoJSONPointSchema = z.object({
-  type: z
-    .string()
-    .optional()
-    .refine((val) => val === 'Point', { message: 'Type must be "Point"' }),
-  coordinates: z.array(z.number()).min(2).max(2) // Assuming GeoJSON Point has 2 coordinates (longitude and latitude)
-});
 
 export const ObservationGeometryRecord = z.object({
   survey_observation_id: z.number(),
-  geometry: GeoJSONPointSchema
+  geometry: GeoJSONPointZodSchema
 });
-
 export type ObservationGeometryRecord = z.infer<typeof ObservationGeometryRecord>;
 
 /**
@@ -370,6 +393,56 @@ export class ObservationRepository extends BaseRepository {
           })
           .groupBy('observation_subcount_id')
       )
+      // Get all qualitative environments for all subcounts associated to all observations for the survey
+      .with(
+        'w_qualitative_environments',
+        knex
+          .select(
+            'observation_subcount_id',
+            knex.raw(`
+              json_agg(json_build_object(
+                'observation_subcount_qualitative_environment_id', observation_subcount_qualitative_environment_id,
+                'environment_qualitative_id', environment_qualitative_id,
+                'environment_qualitative_option_id', environment_qualitative_option_id
+              )) as qualitative_environments
+            `)
+          )
+          .from('observation_subcount_qualitative_environment')
+          .whereIn('observation_subcount_id', (qb1) => {
+            qb1
+              .select('observation_subcount_id')
+              .from('observation_subcount')
+              .whereIn('survey_observation_id', (qb2) => {
+                qb2.select('survey_observation_id').from('survey_observation').where('survey_id', surveyId);
+              });
+          })
+          .groupBy('observation_subcount_id')
+      )
+      // Get all quantitative environments for all subcounts associated to all observations for the survey
+      .with(
+        'w_quantitative_environments',
+        knex
+          .select(
+            'observation_subcount_id',
+            knex.raw(`
+              json_agg(json_build_object(
+                'observation_subcount_quantitative_environment_id', observation_subcount_quantitative_environment_id,
+                'environment_quantitative_id', environment_quantitative_id,
+                'value', value
+              )) as quantitative_environments
+            `)
+          )
+          .from('observation_subcount_quantitative_environment')
+          .whereIn('observation_subcount_id', (qb1) => {
+            qb1
+              .select('observation_subcount_id')
+              .from('observation_subcount')
+              .whereIn('survey_observation_id', (qb2) => {
+                qb2.select('survey_observation_id').from('survey_observation').where('survey_id', surveyId);
+              });
+          })
+          .groupBy('observation_subcount_id')
+      )
       // Rollup the subcount records into an array of objects for each observation
       .with(
         'w_subcounts',
@@ -381,7 +454,9 @@ export class ObservationRepository extends BaseRepository {
                 'observation_subcount_id', observation_subcount.observation_subcount_id,
                 'subcount', subcount,
                 'qualitative_measurements', COALESCE(w_qualitative_measurements.qualitative_measurements, '[]'::json),
-                'quantitative_measurements', COALESCE(w_quantitative_measurements.quantitative_measurements, '[]'::json)
+                'quantitative_measurements', COALESCE(w_quantitative_measurements.quantitative_measurements, '[]'::json),
+                'qualitative_environments', COALESCE(w_qualitative_environments.qualitative_environments, '[]'::json),
+                'quantitative_environments', COALESCE(w_quantitative_environments.quantitative_environments, '[]'::json)
               )) as subcounts
             `)
           )
@@ -396,6 +471,16 @@ export class ObservationRepository extends BaseRepository {
             'observation_subcount.observation_subcount_id',
             'w_quantitative_measurements.observation_subcount_id'
           )
+          .leftJoin(
+            'w_qualitative_environments',
+            'observation_subcount.observation_subcount_id',
+            'w_qualitative_environments.observation_subcount_id'
+          )
+          .leftJoin(
+            'w_quantitative_environments',
+            'observation_subcount.observation_subcount_id',
+            'w_quantitative_environments.observation_subcount_id'
+          )
           .whereIn(
             'survey_observation_id',
             knex('survey_observation').select('survey_observation_id').where('survey_id', surveyId)
@@ -404,7 +489,18 @@ export class ObservationRepository extends BaseRepository {
       )
       // Return all observations for the surveys, including the additional sampling data, and rolled up subcount data
       .select(
-        'survey_observation.*',
+        'survey_observation.survey_observation_id',
+        'survey_observation.survey_id',
+        'survey_observation.itis_tsn',
+        'survey_observation.itis_scientific_name',
+        'survey_observation.survey_sample_site_id',
+        'survey_observation.survey_sample_method_id',
+        'survey_observation.survey_sample_period_id',
+        'survey_observation.latitude',
+        'survey_observation.longitude',
+        'survey_observation.count',
+        'survey_observation.observation_date',
+        'survey_observation.observation_time',
         'w_survey_sample_site.survey_sample_site_name',
         'w_survey_sample_method.survey_sample_method_name',
         'w_survey_sample_period.survey_sample_period_start_datetime',
@@ -522,13 +618,13 @@ export class ObservationRepository extends BaseRepository {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
-      .count('survey_observation_id as rowCount')
+      .select(knex.raw('COUNT(survey_observation_id)::integer as count'))
       .from('survey_observation')
       .where('survey_id', surveyId);
 
-    const response = await this.connection.knex(sqlStatement);
+    const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
 
-    return Number(response.rows[0].rowCount);
+    return response.rows[0].count;
   }
 
   /**
@@ -644,12 +740,12 @@ export class ObservationRepository extends BaseRepository {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
-      .count('survey_observation_id as observation_count')
+      .select(knex.raw('COUNT(survey_observation_id)::integer as count'))
       .from('survey_observation')
       .where('survey_id', surveyId)
       .whereIn('survey_sample_site_id', sampleSiteIds);
 
-    const response = await this.connection.knex(sqlStatement);
+    const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
 
     if (response?.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get observations count', [
@@ -658,8 +754,7 @@ export class ObservationRepository extends BaseRepository {
       ]);
     }
 
-    const observation_count = Number(response.rows[0].observation_count);
-    return observation_count;
+    return Number(response.rows[0].count);
   }
 
   /**
@@ -673,11 +768,11 @@ export class ObservationRepository extends BaseRepository {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
-      .count('survey_observation_id as observation_count')
+      .select(knex.raw('COUNT(survey_observation_id)::integer as count'))
       .from('survey_observation')
       .whereIn('survey_sample_method_id', sampleMethodIds);
 
-    const response = await this.connection.knex(sqlStatement);
+    const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
 
     if (response?.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get observations count', [
@@ -686,8 +781,7 @@ export class ObservationRepository extends BaseRepository {
       ]);
     }
 
-    const observation_count = Number(response.rows[0].observation_count);
-    return observation_count;
+    return response.rows[0].count;
   }
 
   /**
@@ -701,11 +795,11 @@ export class ObservationRepository extends BaseRepository {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
-      .count('survey_observation_id as rowCount')
+      .select(knex.raw('COUNT(survey_observation_id)::integer as count'))
       .from('survey_observation')
       .whereIn('survey_sample_period_id', samplePeriodIds);
 
-    const response = await this.connection.knex(sqlStatement);
+    const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
 
     if (response?.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get observations count', [
@@ -714,7 +808,6 @@ export class ObservationRepository extends BaseRepository {
       ]);
     }
 
-    const observation_count = Number(response.rows[0].observation_count);
-    return observation_count;
+    return response.rows[0].count;
   }
 }

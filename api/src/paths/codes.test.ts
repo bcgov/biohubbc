@@ -43,7 +43,7 @@ describe('codes', () => {
       try {
         const result = codes.getAllCodes();
 
-        await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+        await result(sampleReq, null as unknown as any, null as unknown as any);
         expect.fail();
       } catch (actualError) {
         expect((actualError as HTTPError).status).to.equal(500);
@@ -59,7 +59,7 @@ describe('codes', () => {
 
       const result = codes.getAllCodes();
 
-      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+      await result(sampleReq, sampleRes as any, null as unknown as any);
 
       expect(actualResult.management_action_type).to.eql({ id: 1, name: 'management action type' });
     });
@@ -73,7 +73,7 @@ describe('codes', () => {
       try {
         const result = codes.getAllCodes();
 
-        await result(sampleReq, sampleRes as any, (null as unknown) as any);
+        await result(sampleReq, sampleRes as any, null as unknown as any);
         expect.fail();
       } catch (actualError) {
         expect((actualError as HTTPError).message).to.equal(expectedError.message);

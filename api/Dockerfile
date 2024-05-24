@@ -1,4 +1,6 @@
-# This DockerFile is used for Openshift deployments.
+# ########################################################################################################
+# This DockerFile is used for Openshift deployments only.
+# ########################################################################################################
 
 FROM node:18
 
@@ -27,10 +29,10 @@ ENV PATH ${HOME}/node_modules/.bin/:${HOME}/.npm-global/bin/:${HOME}/bin:/usr/lo
 COPY . ./
 
 # Cleaning any existing generated file
-RUN rm -rf ./dist
+# RUN rm -rf ./dist
 
 # Build api
-RUN npm run build
+# RUN npm run build
 
 # Application VOLUME
 VOLUME ${HOME}

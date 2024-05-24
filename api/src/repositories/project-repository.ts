@@ -48,7 +48,6 @@ export class ProjectRepository extends BaseRepository {
       .select([
         'p.project_id',
         'p.name',
-        'p.objectives',
         'p.start_date',
         'p.end_date',
         knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
@@ -60,8 +59,8 @@ export class ProjectRepository extends BaseRepository {
       .leftJoin('survey as s', 's.project_id', 'p.project_id')
       .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
       .leftJoin('program as prog', 'prog.program_id', 'pp.program_id')
-      .leftJoin('project_region as pr', 'p.project_id', 'pr.project_id')
-      .leftJoin('region_lookup as rl', 'pr.region_id', 'rl.region_id')
+      .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
+      .leftJoin('region_lookup as rl', 'sr.region_id', 'rl.region_id')
 
       .groupBy(['p.project_id', 'p.name', 'p.objectives', 'p.start_date', 'p.end_date']);
 
@@ -164,9 +163,12 @@ export class ProjectRepository extends BaseRepository {
   ): Promise<number> {
     const projectsListQuery = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields);
 
-    const query = getKnex().from(projectsListQuery.as('temp')).count('* as project_count');
+    const knex = getKnex();
 
-    const response = await this.connection.knex(query, z.object({ project_count: z.string().transform(Number) }));
+    // See https://knexjs.org/guide/query-builder.html#usage-with-typescript-3 for details on count() usage
+    const query = knex.from(projectsListQuery.as('plq')).select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(query, z.object({ count: z.number() }));
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get project count', [
@@ -175,7 +177,7 @@ export class ProjectRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].project_count;
+    return response.rows[0].count;
   }
 
   async getProjectData(projectId: number): Promise<ProjectData> {
@@ -184,15 +186,9 @@ export class ProjectRepository extends BaseRepository {
         p.project_id,
         p.uuid,
         p.name as project_name,
-        p.objectives,
         p.start_date,
         p.end_date,
         p.comments,
-        p.geojson as geometry,
-        p.create_date,
-        p.create_user,
-        p.update_date,
-        p.update_user,
         p.revision_count,
         pp.project_programs
       FROM

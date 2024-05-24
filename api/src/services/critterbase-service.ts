@@ -182,7 +182,6 @@ export type CBQuantitativeMeasurementTypeDefinition = z.infer<typeof CBQuantitat
  * A Critterbase qualitative measurement option definition (ie. drop-down option).
  */
 const CBQualitativeOption = z.object({
-  taxon_measurement_id: z.string(),
   qualitative_option_id: z.string(),
   option_label: z.string(),
   option_value: z.number(),
@@ -333,9 +332,7 @@ export class CritterbaseService {
     return this._makeGetRequest(CbRoutes[route], params);
   }
 
-  async getTaxonMeasurements(
-    tsn: string
-  ): Promise<{
+  async getTaxonMeasurements(tsn: string): Promise<{
     qualitative: CBQualitativeMeasurementTypeDefinition[];
     quantitative: CBQuantitativeMeasurementTypeDefinition[];
   }> {
@@ -343,9 +340,9 @@ export class CritterbaseService {
     return response;
   }
 
-  async getTaxonBodyLocations(taxon_id: string) {
+  async getTaxonBodyLocations(tsn: string) {
     return this._makeGetRequest(CbRoutes['taxon-marking-body-locations'], [
-      { key: 'taxon_id', value: taxon_id },
+      { key: 'tsn', value: tsn },
       { key: 'format', value: 'asSelect' }
     ]);
   }

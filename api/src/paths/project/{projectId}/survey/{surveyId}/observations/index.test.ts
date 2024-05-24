@@ -5,15 +5,14 @@ import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import { ObservationRecordWithSamplingAndSubcountData } from '../../../../../../repositories/observation-repository';
-import { CBMeasurementUnit, CritterbaseService } from '../../../../../../services/critterbase-service';
+import { CritterbaseService } from '../../../../../../services/critterbase-service';
 import { ObservationService } from '../../../../../../services/observation-service';
-import { PlatformService } from '../../../../../../services/platform-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as observationRecords from './index';
 
 chai.use(sinonChai);
 
-describe('insertUpdateSurveyObservationsWithMeasurements', () => {
+describe('insertUpdateManualSurveyObservations', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -23,32 +22,14 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
+    const validateSurveyObservationsStub = sinon
+      .stub(ObservationService.prototype, 'validateSurveyObservations')
+      .resolves(true);
+
     const insertUpdateSurveyObservationsStub = sinon
-      .stub(ObservationService.prototype, 'insertUpdateSurveyObservationsWithMeasurements')
+      .stub(ObservationService.prototype, 'insertUpdateManualSurveyObservations')
       .resolves();
 
-    sinon.stub(CritterbaseService.prototype, 'getTaxonMeasurements').resolves({
-      qualitative: [
-        {
-          itis_tsn: 1,
-          taxon_measurement_id: '',
-          measurement_name: '',
-          measurement_desc: '',
-          options: []
-        }
-      ],
-      quantitative: [
-        {
-          itis_tsn: 1,
-          taxon_measurement_id: '',
-          measurement_name: '',
-          measurement_desc: '',
-          min_value: 0,
-          max_value: 100,
-          unit: CBMeasurementUnit.Values.centimeter
-        }
-      ]
-    });
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
@@ -94,9 +75,14 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
       surveyObservations
     };
 
-    const requestHandler = observationRecords.insertUpdateSurveyObservationsWithMeasurements();
+    const requestHandler = observationRecords.insertUpdateManualSurveyObservations();
+
     await requestHandler(mockReq, mockRes, mockNext);
 
+    expect(validateSurveyObservationsStub).to.have.been.calledOnceWith(
+      surveyObservations,
+      sinon.match.instanceOf(CritterbaseService)
+    );
     expect(insertUpdateSurveyObservationsStub).to.have.been.calledOnceWith(2, surveyObservations);
     expect(mockRes.statusValue).to.equal(204);
     expect(mockRes.jsonValue).to.eql(undefined);
@@ -107,13 +93,9 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon
-      .stub(ObservationService.prototype, 'insertUpdateSurveyObservationsWithMeasurements')
-      .rejects(new Error('a test error'));
-    sinon.stub(PlatformService.prototype, 'getTaxonomyByTsns').resolves([
-      { tsn: '1234', scientificName: 'scientific name' },
-      { tsn: '1234', scientificName: 'scientific name' }
-    ]);
+    sinon.stub(ObservationService.prototype, 'validateSurveyObservations').resolves(true);
+
+    sinon.stub(ObservationService.prototype, 'insertUpdateManualSurveyObservations').rejects(new Error('a test error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -144,16 +126,14 @@ describe('insertUpdateSurveyObservationsWithMeasurements', () => {
     };
 
     try {
-      const requestHandler = observationRecords.insertUpdateSurveyObservationsWithMeasurements();
+      const requestHandler = observationRecords.insertUpdateManualSurveyObservations();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect(dbConnectionObj.release).to.have.been.called;
 
-      expect((actualError as HTTPError).message).to.equal(
-        'Error connecting to the Critterbase API: Error: API request failed with status code undefined'
-      );
+      expect((actualError as HTTPError).message).to.equal('a test error');
     }
   });
 });
@@ -171,14 +151,16 @@ describe('getSurveyObservations', () => {
     const getSurveyObservationsStub = sinon
       .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData')
       .resolves({
-        surveyObservations: ([
+        surveyObservations: [
           { survey_observation_id: 11 },
           { survey_observation_id: 12 }
-        ] as unknown) as ObservationRecordWithSamplingAndSubcountData[],
+        ] as unknown as ObservationRecordWithSamplingAndSubcountData[],
         supplementaryObservationData: {
           observationCount: 59,
           qualitative_measurements: [],
-          quantitative_measurements: []
+          quantitative_measurements: [],
+          qualitative_environments: [],
+          quantitative_environments: []
         }
       });
 
@@ -206,7 +188,9 @@ describe('getSurveyObservations', () => {
       supplementaryObservationData: {
         observationCount: 59,
         qualitative_measurements: [],
-        quantitative_measurements: []
+        quantitative_measurements: [],
+        qualitative_environments: [],
+        quantitative_environments: []
       },
       pagination: {
         total: 59,
@@ -227,14 +211,16 @@ describe('getSurveyObservations', () => {
     const getSurveyObservationsStub = sinon
       .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData')
       .resolves({
-        surveyObservations: ([
+        surveyObservations: [
           { survey_observation_id: 16 },
           { survey_observation_id: 17 }
-        ] as unknown) as ObservationRecordWithSamplingAndSubcountData[],
+        ] as unknown as ObservationRecordWithSamplingAndSubcountData[],
         supplementaryObservationData: {
           observationCount: 50,
           qualitative_measurements: [],
-          quantitative_measurements: []
+          quantitative_measurements: [],
+          qualitative_environments: [],
+          quantitative_environments: []
         }
       });
 
@@ -260,7 +246,9 @@ describe('getSurveyObservations', () => {
       supplementaryObservationData: {
         observationCount: 50,
         qualitative_measurements: [],
-        quantitative_measurements: []
+        quantitative_measurements: [],
+        qualitative_environments: [],
+        quantitative_environments: []
       },
       pagination: {
         total: 50,
@@ -281,14 +269,16 @@ describe('getSurveyObservations', () => {
     const getSurveyObservationsStub = sinon
       .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData')
       .resolves({
-        surveyObservations: ([
+        surveyObservations: [
           { survey_observation_id: 16 },
           { survey_observation_id: 17 }
-        ] as unknown) as ObservationRecordWithSamplingAndSubcountData[],
+        ] as unknown as ObservationRecordWithSamplingAndSubcountData[],
         supplementaryObservationData: {
           observationCount: 2,
           qualitative_measurements: [],
-          quantitative_measurements: []
+          quantitative_measurements: [],
+          qualitative_environments: [],
+          quantitative_environments: []
         }
       });
 
@@ -309,7 +299,9 @@ describe('getSurveyObservations', () => {
       supplementaryObservationData: {
         observationCount: 2,
         qualitative_measurements: [],
-        quantitative_measurements: []
+        quantitative_measurements: [],
+        qualitative_environments: [],
+        quantitative_environments: []
       },
       pagination: {
         total: 2,

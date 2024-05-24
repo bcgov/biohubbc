@@ -1,4 +1,5 @@
 import axios from 'axios';
+import useReferenceApi from 'hooks/api/useReferenceApi';
 import { useConfigContext } from 'hooks/useContext';
 import { useMemo } from 'react';
 import useAdminApi from './api/useAdminApi';
@@ -13,6 +14,7 @@ import usePublishApi from './api/usePublishApi';
 import useResourcesApi from './api/useResourcesApi';
 import useSamplingSiteApi from './api/useSamplingSiteApi';
 import useSpatialApi from './api/useSpatialApi';
+import useStandardsApi from './api/useStandardsApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useUserApi from './api/useUserApi';
@@ -54,6 +56,10 @@ export const useBiohubApi = () => {
 
   const samplingSite = useSamplingSiteApi(apiAxios);
 
+  const standards = useStandardsApi(apiAxios);
+
+  const reference = useReferenceApi(apiAxios);
+
   return useMemo(
     () => ({
       project,
@@ -69,7 +75,9 @@ export const useBiohubApi = () => {
       publish,
       spatial,
       funding,
-      samplingSite
+      samplingSite,
+      standards,
+      reference
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

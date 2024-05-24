@@ -59,9 +59,7 @@ export class FundingSourceService extends DBService {
    *   }>)}
    * @memberof FundingSourceService
    */
-  async getFundingSource(
-    fundingSourceId: number
-  ): Promise<{
+  async getFundingSource(fundingSourceId: number): Promise<{
     funding_source: FundingSource & FundingSourceSupplementaryData;
     funding_source_survey_references: (SurveyFundingSource | SurveyFundingSourceSupplementaryData)[];
   }> {

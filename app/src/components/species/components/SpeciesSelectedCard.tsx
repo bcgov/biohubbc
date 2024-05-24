@@ -20,7 +20,13 @@ const SpeciesSelectedCard = (props: ISpeciesSelectedCardProps) => {
     <Paper variant="outlined" sx={{ mt: 1, background: grey[100] }}>
       <Box display="flex" alignItems="center" px={2} py={1.5}>
         <Box flex="1 1 auto">
-          <SpeciesCard commonName={species.commonName} scientificName={species.scientificName} tsn={species.tsn} />
+          <SpeciesCard
+            commonNames={species.commonNames}
+            scientificName={species.scientificName}
+            tsn={species.tsn}
+            rank={species.rank}
+            kingdom={species.kingdom}
+          />
         </Box>
         <Box flex="0 0 auto">
           <IconButton

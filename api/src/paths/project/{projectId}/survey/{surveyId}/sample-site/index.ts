@@ -39,7 +39,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveySampleLocationRecords()
+  getSurveySampleLocationRecord()
 ];
 
 GET.apiDoc = {
@@ -131,6 +131,10 @@ GET.apiDoc = {
                             type: 'integer',
                             minimum: 1
                           },
+                          method_response_metric_id: {
+                            type: 'integer',
+                            minimum: 1
+                          },
                           description: {
                             type: 'string',
                             maxLength: 250
@@ -173,12 +177,11 @@ GET.apiDoc = {
                                 }
                               }
                             }
-                          },
-                          method_response_metric_id: { type: 'integer', minimum: 1 }
+                          }
                         }
                       }
                     },
-                    sample_blocks: {
+                    blocks: {
                       type: 'array',
                       items: {
                         type: 'object',
@@ -203,7 +206,7 @@ GET.apiDoc = {
                         }
                       }
                     },
-                    sample_stratums: {
+                    stratums: {
                       type: 'array',
                       items: {
                         type: 'object',
@@ -260,7 +263,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getSurveySampleLocationRecords(): RequestHandler {
+export function getSurveySampleLocationRecord(): RequestHandler {
   return async (req, res) => {
     if (!req.params.surveyId) {
       throw new HTTP400('Missing required param `surveyId`');
@@ -289,7 +292,7 @@ export function getSurveySampleLocationRecords(): RequestHandler {
         pagination: makePaginationResponse(sampleSitesTotalCount, paginationOptions)
       });
     } catch (error) {
-      defaultLog.error({ label: 'getSurveySampleLocationRecords', message: 'error', error });
+      defaultLog.error({ label: 'getSurveySampleLocationRecord', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -351,7 +354,7 @@ POST.apiDoc = {
         schema: {
           type: 'object',
           additionalProperties: false,
-          required: ['methods', 'survey_sample_sites'],
+          required: ['sample_methods', 'survey_sample_sites'],
           properties: {
             survey_id: {
               type: 'integer'
@@ -362,13 +365,13 @@ POST.apiDoc = {
             description: {
               type: 'string'
             },
-            methods: {
+            sample_methods: {
               type: 'array',
               minItems: 1,
               items: {
                 type: 'object',
                 additionalProperties: false,
-                required: ['method_lookup_id', 'description', 'periods', 'method_response_metric_id'],
+                required: ['method_lookup_id', 'description', 'sample_periods', 'method_response_metric_id'],
                 properties: {
                   survey_sample_site_id: {
                     type: 'integer',
@@ -385,7 +388,7 @@ POST.apiDoc = {
                   description: {
                     type: 'string'
                   },
-                  periods: {
+                  sample_periods: {
                     type: 'array',
                     minItems: 1,
                     items: {
@@ -456,7 +459,7 @@ POST.apiDoc = {
                     nullable: true
                   },
                   create_user: {
-                    type: 'number',
+                    type: 'integer',
                     nullable: true
                   },
                   update_date: {
@@ -464,7 +467,7 @@ POST.apiDoc = {
                     nullable: true
                   },
                   update_user: {
-                    type: 'string',
+                    type: 'integer',
                     nullable: true
                   },
                   revision_count: {
@@ -500,7 +503,7 @@ POST.apiDoc = {
                     nullable: true
                   },
                   create_user: {
-                    type: 'string',
+                    type: 'integer',
                     nullable: true
                   },
                   update_date: {
@@ -508,7 +511,7 @@ POST.apiDoc = {
                     nullable: true
                   },
                   update_user: {
-                    type: 'string',
+                    type: 'integer',
                     nullable: true
                   },
                   revision_count: {

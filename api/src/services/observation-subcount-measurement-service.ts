@@ -16,16 +16,41 @@ export class ObservationSubCountMeasurementService extends DBService {
     this.observationSubCountMeasurementRepository = new ObservationSubCountMeasurementRepository(connection);
   }
 
+  /**
+   * Insert qualitative measurement records.
+   *
+   * @param {InsertObservationSubCountQualitativeMeasurementRecord[]} data
+   * @return {*}  {Promise<ObservationSubCountQualitativeMeasurementRecord[]>}
+   * @memberof ObservationSubCountMeasurementService
+   */
   async insertObservationSubCountQualitativeMeasurement(
     data: InsertObservationSubCountQualitativeMeasurementRecord[]
   ): Promise<ObservationSubCountQualitativeMeasurementRecord[]> {
     return this.observationSubCountMeasurementRepository.insertObservationQualitativeMeasurementRecords(data);
   }
 
+  /**
+   * Insert quantitative measurement records.
+   *
+   * @param {InsertObservationSubCountQuantitativeMeasurementRecord[]} data
+   * @return {*}  {Promise<ObservationSubCountQuantitativeMeasurementRecord[]>}
+   * @memberof ObservationSubCountMeasurementService
+   */
   async insertObservationSubCountQuantitativeMeasurement(
     data: InsertObservationSubCountQuantitativeMeasurementRecord[]
   ): Promise<ObservationSubCountQuantitativeMeasurementRecord[]> {
     return this.observationSubCountMeasurementRepository.insertObservationQuantitativeMeasurementRecords(data);
+  }
+
+  /**
+   * Deletes all observation measurements for a given survey and set of survey observation ids.
+   *
+   * @param {number} surveyId
+   * @param {number[]} surveyObservationId
+   * @memberof ObservationSubCountMeasurementService
+   */
+  async deleteObservationMeasurements(surveyId: number, surveyObservationId: number[]) {
+    await this.observationSubCountMeasurementRepository.deleteObservationMeasurements(surveyId, surveyObservationId);
   }
 
   /**
@@ -35,7 +60,7 @@ export class ObservationSubCountMeasurementService extends DBService {
    * @return {*}  {Promise<string[]>}
    * @memberof ObservationSubCountMeasurementService
    */
-  async getObservationSubCountQualitativeTaxonMeasurements(surveyId: number): Promise<string[]> {
+  async getObservationSubCountQualitativeTaxonMeasurementIds(surveyId: number): Promise<string[]> {
     return this.observationSubCountMeasurementRepository.getObservationSubCountQualitativeTaxonMeasurementIds(surveyId);
   }
 
@@ -46,7 +71,7 @@ export class ObservationSubCountMeasurementService extends DBService {
    * @return {*}  {Promise<string[]>}
    * @memberof ObservationSubCountMeasurementService
    */
-  async getObservationSubCountQuantitativeTaxonMeasurements(surveyId: number): Promise<string[]> {
+  async getObservationSubCountQuantitativeTaxonMeasurementIds(surveyId: number): Promise<string[]> {
     return this.observationSubCountMeasurementRepository.getObservationSubCountQuantitativeTaxonMeasurementIds(
       surveyId
     );

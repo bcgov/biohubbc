@@ -69,6 +69,10 @@ export class SurveyBlockService extends DBService {
       promises.push(this.deleteSurveyBlock(block.survey_block_id));
     });
 
+    // Delete blocks before upserting in case blocks to upsert have the same name as a block to delete
+    // ie. if you delete block 'abc' and add a new block 'abc' in the same request, there will be a duplicate name conflict
+    await Promise.all(promises);
+
     // update or insert block data
     blocks.forEach((item: PostSurveyBlock) => {
       item.survey_id = surveyId;
