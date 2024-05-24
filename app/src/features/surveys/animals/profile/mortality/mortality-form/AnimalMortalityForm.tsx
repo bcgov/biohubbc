@@ -2,14 +2,14 @@ import { Divider } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
+import { CaptureMarkingsForm } from 'features/surveys/animals/profile/captures/capture-form/components/markings/CaptureMarkingsForm';
+import { MeasurementsForm } from 'features/surveys/animals/profile/measurements/MeasurementsForm';
 import { Formik, FormikProps } from 'formik';
 import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import yup from 'utils/YupSchema';
-import CaptureMarkingsForm from '../../../captures/create/form/markings/CaptureMarkingsForm';
-import AnimalMeasurementsForm from '../../../captures/create/form/measurements/CaptureMeasurementsForm';
-import CauseOfDeathForm from './cause-of-death/CauseOfDeathForm';
-import MortalityGeneralInformationForm from './general-information/MortalityGeneralInformationForm';
-import MortalityLocationForm from './location/MortalityLocationForm';
+import { CauseOfDeathForm } from './components/cause-of-death/CauseOfDeathForm';
+import { MortalityGeneralInformationForm } from './components/general-information/MortalityGeneralInformationForm';
+import { MortalityLocationForm } from './components/location/MortalityLocationForm';
 
 export interface IAnimalMortalityFormProps {
   initialMortalityData: ICreateEditMortalityRequest;
@@ -17,7 +17,7 @@ export interface IAnimalMortalityFormProps {
   formikRef: React.RefObject<FormikProps<ICreateEditMortalityRequest>>;
 }
 
-const AnimalMortalityForm = (props: IAnimalMortalityFormProps) => {
+export const AnimalMortalityForm = (props: IAnimalMortalityFormProps) => {
   const animalEditYupSchemas = yup.object({ nickname: yup.string() });
 
   return (
@@ -51,7 +51,7 @@ const AnimalMortalityForm = (props: IAnimalMortalityFormProps) => {
         <HorizontalSplitFormComponent
           title="Measurements"
           summary="Enter measurements recorded during the mortality"
-          component={<AnimalMeasurementsForm formikName="measurements" />}
+          component={<MeasurementsForm formikName="measurements" />}
         />
         <Divider />
         <HorizontalSplitFormComponent
@@ -64,5 +64,3 @@ const AnimalMortalityForm = (props: IAnimalMortalityFormProps) => {
     </Formik>
   );
 };
-
-export default AnimalMortalityForm;

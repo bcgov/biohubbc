@@ -10,6 +10,7 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { CreateMortalityI18N } from 'constants/i18n';
+import { AnimalMortalityForm } from 'features/surveys/animals/profile/mortality/mortality-form/AnimalMortalityForm';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
@@ -19,7 +20,6 @@ import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface'
 import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import AnimalMortalityForm from './form/AnimalMortalityForm';
 
 export const defaultAnimalMortalityFormValues: ICreateEditMortalityRequest = {
   mortality: {

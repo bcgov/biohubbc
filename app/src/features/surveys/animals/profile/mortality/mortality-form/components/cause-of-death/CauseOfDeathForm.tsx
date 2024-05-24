@@ -6,7 +6,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 
-const CauseOfDeathForm = () => {
+export const CauseOfDeathForm = () => {
   const { setFieldValue } = useFormikContext<ICreateEditMortalityRequest>();
   const critterbaseApi = useCritterbaseApi();
 
@@ -53,5 +53,3 @@ const CauseOfDeathForm = () => {
     </Box>
   );
 };
-
-export default CauseOfDeathForm;

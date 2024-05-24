@@ -2,9 +2,9 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/system/Box';
 import { useFormikContext } from 'formik';
 import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
-import MortalityLocationMapControl from './MortalityLocationMapControl';
+import { MortalityLocationMapControl } from './MortalityLocationMapControl';
 
-const MortalityLocationForm = () => {
+export const MortalityLocationForm = () => {
   const formikProps = useFormikContext<ICreateEditMortalityRequest>();
 
   return (
@@ -22,5 +22,3 @@ const MortalityLocationForm = () => {
     </Box>
   );
 };
-
-export default MortalityLocationForm;

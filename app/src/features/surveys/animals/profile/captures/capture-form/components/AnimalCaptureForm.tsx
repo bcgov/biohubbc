@@ -5,12 +5,11 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { Formik, FormikProps } from 'formik';
 import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import yup from 'utils/YupSchema';
+import { MeasurementsForm } from '../../../measurements/MeasurementsForm';
 import { CaptureGeneralInformationForm } from './general-information/CaptureGeneralInformationForm';
 import { CaptureLocationForm } from './location/CaptureLocationForm';
 import { ReleaseLocationForm } from './location/ReleaseLocationForm';
 import { CaptureMarkingsForm } from './markings/CaptureMarkingsForm';
-import { AnimalMeasurementsForm}  from './measurements/CaptureMeasurementsForm';
-import { CaptureMeasurementsForm } from './measurements/CaptureMeasurementsForm';
 
 export interface IAnimalCaptureFormProps {
   initialCaptureData: ICreateEditCaptureRequest;
@@ -99,7 +98,7 @@ export const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
         <HorizontalSplitFormComponent
           title="Measurements"
           summary="Enter measurements recorded during the capture"
-          component={<AnimalMeasurementsForm formikName="measurements" />}
+          component={<MeasurementsForm formikName="measurements" />}
         />
         <Divider />
         <HorizontalSplitFormComponent

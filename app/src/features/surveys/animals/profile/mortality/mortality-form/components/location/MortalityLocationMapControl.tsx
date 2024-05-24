@@ -39,7 +39,7 @@ export interface IMortalityLocationMapControlProps {
  * @param {IMortalityLocationMapControlProps} props
  * @return {*}
  */
-const MortalityLocationMapControl = (props: IMortalityLocationMapControlProps) => {
+export const MortalityLocationMapControl = (props: IMortalityLocationMapControlProps) => {
   const { name, title } = props;
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [lastDrawn, setLastDrawn] = useState<null | number>(null);
@@ -52,7 +52,7 @@ const MortalityLocationMapControl = (props: IMortalityLocationMapControlProps) =
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 
- //   Array of mortality location features. Should only be one.
+  //   Array of mortality location features. Should only be one.
   const mortalityLocationGeoJson: Feature | undefined = useMemo(() => {
     const location: { latitude: number; longitude: number } | Feature = get(values, name);
 
@@ -219,5 +219,3 @@ const MortalityLocationMapControl = (props: IMortalityLocationMapControlProps) =
     </>
   );
 };
-
-export default MortalityLocationMapControl;

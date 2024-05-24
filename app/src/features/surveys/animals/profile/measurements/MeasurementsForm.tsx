@@ -3,7 +3,7 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
-import { CaptureMeasurementSelect } from 'features/surveys/animals/profile/captures/capture-form/components/measurements/CaptureMeasurementSelect';
+import { MeasurementSelect } from 'features/surveys/animals/profile/measurements/components/MeasurementSelect';
 import { ICreateCritterMeasurement } from 'features/surveys/view/survey-animals/animal';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useAnimalPageContext } from 'hooks/useContext';
@@ -22,8 +22,11 @@ interface IAnimalMeasurementsFormProps {
  *
  * @return {*}
  */
-export const AnimalMeasurementsForm = (props: IAnimalMeasurementsFormProps) => {
+export const MeasurementsForm = (props: IAnimalMeasurementsFormProps) => {
   const { formikName } = props;
+
+  const { values } = useFormikContext<ICreateEditCaptureRequest>();
+
   const critterbaseApi = useCritterbaseApi();
   const animalPageContext = useAnimalPageContext();
 
@@ -68,7 +71,7 @@ export const AnimalMeasurementsForm = (props: IAnimalMeasurementsFormProps) => {
                     index
                   }>
                   <Box mb={2}>
-                    <CaptureMeasurementSelect
+                    <MeasurementSelect
                       formikName={formikName}
                       measurements={[
                         ...(measurementsDataLoader.data?.quantitative ?? []),

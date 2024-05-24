@@ -15,7 +15,7 @@ import {
   ICreateEditCaptureRequest
 } from 'interfaces/useCritterApi.interface';
 import { useMemo } from 'react';
-import { CaptureQualitativeMeasurementOptionSelect } from './CaptureQualitativeMeasurementsOptionSelect';
+import { CaptureQualitativeMeasurementOptionSelect } from './QualitativeMeasurementsOptionSelect';
 
 interface ICaptureMeasurementSelectProps {
   // The collection units (categories) available to select from
@@ -34,7 +34,7 @@ interface ICaptureMeasurementSelectProps {
  * @param {ICaptureMeasurementSelectProps} props
  * @return {*}
  */
-export const CaptureMeasurementSelect = (props: ICaptureMeasurementSelectProps) => {
+export const MeasurementSelect = (props: ICaptureMeasurementSelectProps) => {
   const { index, measurements, formikName, arrayHelpers } = props;
 
   const { values, setFieldValue } = useFormikContext<ICreateEditCaptureRequest>();

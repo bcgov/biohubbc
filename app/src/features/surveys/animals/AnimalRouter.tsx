@@ -104,4 +104,4 @@ export const AnimalRouter: React.FC = () => {
   </Switch>
 );
 
-export default AnimalRouter;
+
