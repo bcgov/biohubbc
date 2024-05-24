@@ -7,7 +7,7 @@ import { MemoryRouter, Router } from 'react-router-dom';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
-import ProjectsListPage from './ProjectsListPage';
+import ProjectsListContainer from './ProjectsListContainer';
 
 const history = createMemoryHistory();
 
@@ -23,7 +23,7 @@ const mockUseApi = {
   }
 };
 
-describe('ProjectsListPage', () => {
+describe('ProjectsListContainer', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
     mockUseApi.project.getProjectsList.mockClear();
@@ -59,7 +59,7 @@ describe('ProjectsListPage', () => {
       <AuthStateContext.Provider value={authState}>
         <CodesContext.Provider value={mockCodesContext}>
           <MemoryRouter>
-            <ProjectsListPage />
+            <ProjectsListContainer />
           </MemoryRouter>
         </CodesContext.Provider>
       </AuthStateContext.Provider>
@@ -96,7 +96,7 @@ describe('ProjectsListPage', () => {
       <AuthStateContext.Provider value={authState}>
         <CodesContext.Provider value={mockCodesContext}>
           <MemoryRouter>
-            <ProjectsListPage />
+            <ProjectsListContainer />
           </MemoryRouter>
         </CodesContext.Provider>
       </AuthStateContext.Provider>
@@ -143,7 +143,7 @@ describe('ProjectsListPage', () => {
       <AuthStateContext.Provider value={authState}>
         <CodesContext.Provider value={mockCodesContext}>
           <Router history={history}>
-            <ProjectsListPage />
+            <ProjectsListContainer />
           </Router>
         </CodesContext.Provider>
       </AuthStateContext.Provider>

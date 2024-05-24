@@ -15,8 +15,8 @@ import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 import CreateProjectPage from './create/CreateProjectPage';
 import EditProjectPage from './edit/EditProjectPage';
-import ProjectsListPage from './list/ProjectsListPage';
 import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
+import ProjectsPage from './ProjectPage';
 
 /**
  * Router for all `/admin/projects/*` pages.
@@ -29,7 +29,7 @@ const ProjectsRouter: React.FC = () => {
       {/* Project List Routes */}
       <RouteWithTitle exact path="/admin/projects" title={getTitle('Projects')}>
         <DialogContextProvider>
-          <ProjectsListPage />
+          <ProjectsPage />
         </DialogContextProvider>
       </RouteWithTitle>
 

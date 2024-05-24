@@ -90,9 +90,6 @@ const ProjectAdvancedFilters = () => {
   return (
     <form onSubmit={handleSubmit}>
       <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <CustomTextField name="keyword" label="Keyword (or any portion of any word)" />
-        </Grid>
         <Grid item xs={12} md={4}>
           <CustomTextField name="project_name" label="Project Name" />
         </Grid>

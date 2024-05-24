@@ -12,7 +12,7 @@ export interface ICustomTextField {
   other?: any;
   //Additionally add a handlBlur if touced properties not updating correclty.
   handleBlur?: FormikContextType<any>['handleBlur'];
-
+  startIcon?: JSX.Element
   maxLength?: number;
 }
 
