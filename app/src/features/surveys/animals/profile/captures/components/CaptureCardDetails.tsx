@@ -89,11 +89,10 @@ export const CaptureCardDetails = (props: ICaptureCardDetails) => {
             Markings
           </Typography>
           <Box maxHeight="600px" sx={{ overflowY: 'auto', pr: 1, pb: 1 }}>
-            {capture.markings.map((marking) => (
-              <Box mt={1}>
+            {capture.markings.map((marking, index) => (
+              <Box mt={1} key={`${marking.marking_id}-${index}`}>
                 <MarkingCard
                   editable={false}
-                  key={marking.marking_id}
                   identifier={marking.identifier}
                   marking_type_label={marking.marking_type}
                   primary_colour_label={marking.primary_colour ?? ''}
@@ -113,8 +112,10 @@ export const CaptureCardDetails = (props: ICaptureCardDetails) => {
             Measurements
           </Typography>
           <Box maxHeight="300px" sx={{ overflow: 'auto', pr: 1, pb: 1 }}>
-            {measurements.map((measurement) => (
-              <Paper sx={{ px: 3, py: 2, bgcolor: grey[100], mt: 1 }}>
+            {measurements.map((measurement, index) => (
+              <Paper
+                sx={{ px: 3, py: 2, bgcolor: grey[100], mt: 1 }}
+                key={`${measurement.taxon_measurement_id}-${index}`}>
                 <Typography fontWeight={700}>
                   {measurement.measurement_name}: <Typography component="span">{measurement.value}</Typography>
                 </Typography>

@@ -23,7 +23,7 @@ import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { formatCritterDetailsForBulkUpdate, formatLocation } from 'utils/Utils';
+import { formatCritterDetailsForBulkUpdate, formatLocation } from 'utils/animal-utils';
 
 /**
  * Returns the page for editing an animal capture
@@ -48,6 +48,8 @@ export const EditCapturePage = () => {
   const dialogContext = useDialogContext();
   const animalPageContext = useAnimalPageContext();
 
+  const { projectId, surveyId } = surveyContext;
+
   const critter = animalPageContext.critterDataLoader.data;
 
   const captureDataLoader = useDataLoader(() => critterbaseApi.capture.getCapture(captureId));
@@ -56,53 +58,49 @@ export const EditCapturePage = () => {
     captureDataLoader.load();
   }, [captureDataLoader]);
 
+  const capture = captureDataLoader.data;
+
   // If the user has refreshed the page and cleared the context, or come to this page externally from a link,
   // use the url params to set the select animal in the context. The context then requests critter data from critterbase.
   if (!animalPageContext.selectedAnimal) {
     animalPageContext.setSelectedAnimalFromSurveyCritterId(surveyCritterId);
   }
 
-  const capture = captureDataLoader.data;
-
   if (!capture || !critter) {
     return <CircularProgress size={40} className="pageProgress" />;
   }
 
-  const { projectId, surveyId } = surveyContext;
-
   const handleCancel = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
+    dialogContext.setYesNoDialog({
+      dialogTitle: EditCaptureI18N.cancelTitle,
+      dialogText: EditCaptureI18N.cancelText,
+      open: false,
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onYes: () => {
+        dialogContext.setYesNoDialog({ open: false });
+        history.push(`/admin/projects/${projectId}`);
+      }
+    });
     history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
-  };
-
-  const defaultCancelDialogProps = {
-    dialogTitle: EditCaptureI18N.cancelTitle,
-    dialogText: EditCaptureI18N.cancelText,
-    open: false,
-    onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onYes: () => {
-      dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectId}`);
-    }
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
       dialogTitle: EditCaptureI18N.createErrorTitle,
       dialogText: EditCaptureI18N.createErrorText,
+      open: true,
       onClose: () => {
         dialogContext.setErrorDialog({ open: false });
       },
       onOk: () => {
         dialogContext.setErrorDialog({ open: false });
       },
-      ...textDialogProps,
-      open: true
+      ...textDialogProps
     });
   };
 
@@ -118,12 +116,19 @@ export const EditCapturePage = () => {
     if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
       dialogContext.setYesNoDialog({
-        ...defaultCancelDialogProps,
+        dialogTitle: EditCaptureI18N.cancelTitle,
+        dialogText: EditCaptureI18N.cancelText,
+        open: true,
+        onClose: () => {
+          dialogContext.setYesNoDialog({ open: false });
+        },
+        onNo: () => {
+          dialogContext.setYesNoDialog({ open: false });
+        },
         onYes: () => {
           dialogContext.setYesNoDialog({ open: false });
           history.push(location.pathname);
-        },
-        open: true
+        }
       });
       return false;
     }
@@ -171,6 +176,13 @@ export const EditCapturePage = () => {
           : captureTimestamp
       ).toDate();
 
+      const x = formatCritterDetailsForBulkUpdate(
+        critter,
+        values.markings,
+        values.measurements,
+        values.capture.capture_id
+      );
+
       const {
         qualitativeMeasurementsForDelete,
         quantitativeMeasurementsForDelete,
@@ -181,7 +193,7 @@ export const EditCapturePage = () => {
         quantitativeMeasurementsForCreate,
         qualitativeMeasurementsForUpdate,
         quantitativeMeasurementsForUpdate
-      } = formatCritterDetailsForBulkUpdate(critter, values.markings, values.measurements, values.capture.capture_id);
+      } = x;
 
       // Create new measurements added while editing the capture
       if (
@@ -240,8 +252,6 @@ export const EditCapturePage = () => {
     }
   };
 
-  const animalId = animalPageContext.critterDataLoader.data?.animal_id;
-
   const [captureDate, captureTime] = dayjs(capture.capture_timestamp).format('YYYY-MM-DD HH:mm:ss').split(' ');
   const [releaseDate, releaseTime] = dayjs(capture.release_timestamp).format('YYYY-MM-DD HH:mm:ss').split(' ');
 
@@ -275,7 +285,7 @@ export const EditCapturePage = () => {
       release_comment: capture.release_comment ?? ''
     },
     markings:
-      animalPageContext.critterDataLoader.data?.markings
+      critter.markings
         .filter((marking) => marking.capture_id === capture.capture_id)
         .map((marking) => ({
           marking_id: marking.marking_id,
@@ -288,7 +298,7 @@ export const EditCapturePage = () => {
           secondary_colour_id: marking.secondary_colour_id
         })) ?? [],
     measurements: [
-      ...(animalPageContext.critterDataLoader.data?.measurements.qualitative
+      ...(critter.measurements.qualitative
         .filter((measurement) => measurement.capture_id === capture.capture_id)
         .map((measurement) => ({
           measurement_qualitative_id: measurement.measurement_qualitative_id,
@@ -299,7 +309,7 @@ export const EditCapturePage = () => {
           measurement_comment: measurement.measurement_comment,
           measured_timestamp: measurement.measured_timestamp
         })) ?? []),
-      ...(animalPageContext.critterDataLoader.data?.measurements.quantitative
+      ...(critter.measurements.quantitative
         .filter((measurement) => measurement.capture_id === capture.capture_id)
         .map((measurement) => ({
           measurement_quantitative_id: measurement.measurement_quantitative_id,
@@ -319,7 +329,7 @@ export const EditCapturePage = () => {
       <PageHeader
         title="Edit Capture"
         breadCrumbJSX={
-          animalId ? (
+          critter?.animal_id ? (
             <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
               <Link component={RouterLink} underline="hover" to={`/admin/projects/${projectId}/`}>
                 {projectContext.projectDataLoader.data?.projectData.project.project_name}
@@ -337,7 +347,7 @@ export const EditCapturePage = () => {
                 component={RouterLink}
                 underline="hover"
                 to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`}>
-                {animalId}
+                {critter.animal_id}
               </Link>
               <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
                 Edit Capture
@@ -367,7 +377,7 @@ export const EditCapturePage = () => {
         <Paper sx={{ p: 5 }}>
           <AnimalCaptureForm
             initialCaptureData={initialFormikValues}
-            handleSubmit={(formikData) => handleSubmit(formikData as ICreateEditCaptureRequest)}
+            handleSubmit={(formikData) => handleSubmit(formikData)}
             formikRef={formikRef}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>

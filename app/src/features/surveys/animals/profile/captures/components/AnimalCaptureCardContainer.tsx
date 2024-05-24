@@ -102,8 +102,9 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
       {captureForDelete && selectedCapture && (
         <YesNoDialog
           dialogTitle={'Delete capture event?'}
-          dialogText={`Are you sure you want to permanently delete this capture? All information associated with
-          the capture will be deleted.`}
+          dialogText={
+            'Are you sure you want to permanently delete this capture? All information associated with the capture will be deleted.'
+          }
           yesButtonProps={{ color: 'error' }}
           yesButtonLabel={'Delete'}
           noButtonProps={{ color: 'primary', variant: 'outlined' }}
@@ -125,8 +126,7 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
               component={Paper}
               variant="outlined"
               disableGutters
-              elevation={1}
-              key={`${capture.capture_id}`}
+              key={capture.capture_id}
               sx={{
                 margin: '15px',
                 boxShadow: 'none',

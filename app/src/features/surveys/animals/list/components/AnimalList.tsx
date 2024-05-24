@@ -353,9 +353,9 @@ export const AnimalList = () => {
                       <Typography variant="body2">No Animals</Typography>
                     </Stack>
                   )}
-                  {critters.map((critter, index) => (
+                  {critters.map((critter) => (
                     <Stack
-                      key={`${critter.critter_id}-${index}`}
+                      key={critter.critter_id}
                       direction="row"
                       display="flex"
                       alignItems="center"
@@ -366,7 +366,6 @@ export const AnimalList = () => {
                         borderRadius: '5px'
                       }}>
                       <CritterListItem
-                        key={`${critter.survey_critter_id}-${critter.critter_id}`}
                         critter={critter}
                         isChecked={checkboxSelectedIds.includes(critter.survey_critter_id)}
                         handleCheckboxChange={handleCheckboxChange}
