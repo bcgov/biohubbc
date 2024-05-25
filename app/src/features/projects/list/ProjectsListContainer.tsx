@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
@@ -21,6 +22,10 @@ interface IProjectsListTableRow extends Omit<IProjectsListItemData, 'project_pro
   project_programs: string;
 }
 
+interface IProjectsListContainerProps {
+  showSearch: boolean;
+}
+
 const pageSizeOptions = [10, 25, 50];
 
 /**
@@ -28,7 +33,9 @@ const pageSizeOptions = [10, 25, 50];
  *
  * @return {*}
  */
-const ProjectsListContainer = () => {
+const ProjectsListContainer = (props: IProjectsListContainerProps) => {
+  const { showSearch } = props;
+
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: pageSizeOptions[0]
@@ -130,11 +137,13 @@ const ProjectsListContainer = () => {
    */
   return (
     <>
-      <ProjectsListFilterForm
-        handleSubmit={setAdvancedFiltersModel}
-        handleReset={() => setAdvancedFiltersModel(undefined)}
-      />
-      <Divider />
+      <Collapse in={showSearch}>
+        <ProjectsListFilterForm
+          handleSubmit={setAdvancedFiltersModel}
+          handleReset={() => setAdvancedFiltersModel(undefined)}
+        />
+        <Divider />
+      </Collapse>
       <Box p={2}>
         <StyledDataGrid
           noRowsMessage="No projects found"

@@ -59,7 +59,7 @@ describe('ProjectsListContainer', () => {
       <AuthStateContext.Provider value={authState}>
         <CodesContext.Provider value={mockCodesContext}>
           <MemoryRouter>
-            <ProjectsListContainer />
+            <ProjectsListContainer showSearch={true} />
           </MemoryRouter>
         </CodesContext.Provider>
       </AuthStateContext.Provider>
@@ -96,7 +96,7 @@ describe('ProjectsListContainer', () => {
       <AuthStateContext.Provider value={authState}>
         <CodesContext.Provider value={mockCodesContext}>
           <MemoryRouter>
-            <ProjectsListContainer />
+            <ProjectsListContainer showSearch={true} />
           </MemoryRouter>
         </CodesContext.Provider>
       </AuthStateContext.Provider>
@@ -143,7 +143,7 @@ describe('ProjectsListContainer', () => {
       <AuthStateContext.Provider value={authState}>
         <CodesContext.Provider value={mockCodesContext}>
           <Router history={history}>
-            <ProjectsListContainer />
+            <ProjectsListContainer showSearch={true} />
           </Router>
         </CodesContext.Provider>
       </AuthStateContext.Provider>

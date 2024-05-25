@@ -1,4 +1,4 @@
-import { mdiFolder, mdiListBoxOutline, mdiPlus } from '@mdi/js';
+import { mdiFolder, mdiListBoxOutline, mdiMagnify, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -12,12 +12,22 @@ import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import ProjectsListPage from './list/ProjectsListContainer';
+import ProjectsListContainer from './list/ProjectsListContainer';
 
 export enum ProjectsPageViewEnum {
   PROJECTS = 'PROJECTS',
   SURVEYS = 'SURVEYS'
 }
+
+const buttonSx = {
+  py: 0.5,
+  px: 1.5,
+  border: 'none',
+  fontWeight: 700,
+  borderRadius: '4px !important',
+  fontSize: '0.875rem',
+  letterSpacing: '0.02rem'
+};
 
 /**
  * Page to display a list of projects.
@@ -25,7 +35,8 @@ export enum ProjectsPageViewEnum {
  * @return {*}
  */
 const ProjectsPage = () => {
-  const [activeView, setActiveView] = useState<ProjectsPageViewEnum>();
+  const [activeView, setActiveView] = useState<ProjectsPageViewEnum>(ProjectsPageViewEnum.PROJECTS);
+  const [showSearch, setShowSearch] = useState(true);
 
   const views = [
     { value: ProjectsPageViewEnum.PROJECTS, label: 'PROJECTS', icon: mdiFolder },
@@ -64,15 +75,7 @@ const ProjectsPage = () => {
               sx={{
                 display: 'flex',
                 gap: 1,
-                '& Button': {
-                  py: 0.25,
-                  px: 1.5,
-                  border: 'none',
-                  borderRadius: '4px !important',
-                  fontSize: '0.875rem',
-                  fontWeight: 700,
-                  letterSpacing: '0.02rem'
-                }
+                '& Button': buttonSx
               }}>
               {views.map((view) => (
                 <ToggleButton
@@ -85,9 +88,18 @@ const ProjectsPage = () => {
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
+
+            <Button
+              color="primary"
+              sx={buttonSx}
+              onClick={() => setShowSearch(!showSearch)}
+              component={Button}
+              startIcon={<Icon path={mdiMagnify} size={1} />}>
+              SEARCH
+            </Button>
           </Toolbar>
           <Divider />
-          {activeView === 'PROJECTS' && <ProjectsListPage />}
+          {activeView === 'PROJECTS' && <ProjectsListContainer showSearch={showSearch} />}
         </Paper>
       </Container>
     </>
