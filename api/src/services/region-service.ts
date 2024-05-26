@@ -6,26 +6,35 @@ import { DBService } from './db-service';
 
 export class RegionService extends DBService {
   regionRepository: RegionRepository;
+  bcgwLayerService: BcgwLayerService;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
     this.regionRepository = new RegionRepository(connection);
+    this.bcgwLayerService = new BcgwLayerService();
   }
 
   /**
-   * Adds regions to a given survey based on a list of features.
-   * This function will fist find a unique list of region details and use that list of details
-   * to search the region lookup table for corresponding regions, then links regions to the survey
+   * Adds NRM regions to a given survey based on a list of features,
+   * business requires all features to be mapped to intersecting NRM regions.
+   * Note: This method will delete all regions in the survey before adding the new regions.
    *
    * @param {number} surveyId
    * @param {Feature[]} features
    */
-  async addRegionsToSurveyFromFeatures(surveyId: number, features: Feature[]): Promise<void> {
-    const regionDetails = await this.getUniqueRegionsForFeatures(features);
-    const regions: IRegion[] = await this.searchRegionWithDetails(regionDetails);
+  async insertRegionsIntoSurveyFromFeatures(surveyId: number, features: Feature[]): Promise<void> {
+    // Get intersecting region names of the `Natural Resource Region` BCGW layer
+    const nrmRegionNames = await this.bcgwLayerService.getIntersectingNrmRegionNamesFromFeatures(
+      features,
+      this.connection
+    );
 
-    await this.addRegionsToSurvey(surveyId, regions);
+    // Search for matching regions in the regions_lookup table
+    const regions = await this.getRegionsByNames(nrmRegionNames);
+
+    // Delete the previous regions and insert new
+    await this.refreshSurveyRegions(surveyId, regions);
   }
 
   /**
@@ -35,8 +44,7 @@ export class RegionService extends DBService {
    * @returns {*} {Promise<RegionDetails[]>}
    */
   async getUniqueRegionsForFeatures(features: Feature[]): Promise<RegionDetails[]> {
-    const bcgwService = new BcgwLayerService();
-    return bcgwService.getUniqueRegionsForFeatures(features, this.connection);
+    return this.bcgwLayerService.getUniqueRegionsForFeatures(features, this.connection);
   }
 
   /**
@@ -45,8 +53,9 @@ export class RegionService extends DBService {
    *
    * @param {number} surveyId
    * @param {IRegion[]} regions
+   * @returns {Promise<void>}
    */
-  async addRegionsToSurvey(surveyId: number, regions: IRegion[]): Promise<void> {
+  async refreshSurveyRegions(surveyId: number, regions: IRegion[]): Promise<void> {
     // remove existing regions from a survey
     await this.regionRepository.deleteRegionsForSurvey(surveyId);
 
@@ -62,5 +71,15 @@ export class RegionService extends DBService {
    */
   async searchRegionWithDetails(details: RegionDetails[]): Promise<IRegion[]> {
     return this.regionRepository.searchRegionsWithDetails(details);
+  }
+
+  /**
+   * Searches for regions based on a given list of region names
+   *
+   * @param {string[]} regionNames - Names of regions
+   * @returns {IRegion[]}
+   */
+  async getRegionsByNames(regionNames: string[]): Promise<IRegion[]> {
+    return this.regionRepository.getRegionsByNames(regionNames);
   }
 }

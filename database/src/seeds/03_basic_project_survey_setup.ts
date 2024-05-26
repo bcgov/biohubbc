@@ -57,7 +57,7 @@ export async function seed(knex: Knex): Promise<void> {
   if (!checkProjectsResponse.rows.length) {
     for (let i = 0; i < NUM_SEED_PROJECTS; i++) {
       // Insert project data
-      const createProjectResponse = await knex.raw(insertProjectData(`Seed Project ${i + 1}`));
+      const createProjectResponse = await knex.raw(insertProjectData(faker.lorem.words(8)));
       const projectId = createProjectResponse.rows[0].project_id;
 
       // Insert project IUCN, participant and program data
@@ -69,7 +69,7 @@ export async function seed(knex: Knex): Promise<void> {
 
       // Insert survey data
       for (let j = 0; j < NUM_SEED_SURVEYS_PER_PROJECT; j++) {
-        const createSurveyResponse = await knex.raw(insertSurveyData(projectId, `Seed Survey ${j + 1}`));
+        const createSurveyResponse = await knex.raw(insertSurveyData(projectId, faker.lorem.words(8)));
         const surveyId = createSurveyResponse.rows[0].survey_id;
 
         await knex.raw(`

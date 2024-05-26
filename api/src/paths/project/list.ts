@@ -102,6 +102,7 @@ GET.apiDoc = {
                     'completion_status',
                     'start_date',
                     'end_date',
+                    'focal_species',
                     'regions'
                   ],
                   properties: {
@@ -130,6 +131,18 @@ GET.apiDoc = {
                       type: 'array',
                       items: {
                         type: 'string'
+                      }
+                    },
+                    focal_species: {
+                      type: 'array',
+                      items: {
+                        type: 'integer'
+                      }
+                    },
+                    types: {
+                      type: 'array',
+                      items: {
+                        type: 'integer'
                       }
                     },
                     completion_status: {

@@ -1,25 +1,37 @@
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
+import blueGrey from '@mui/material/colors/blueGrey';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
+import { SystemRoleGuard } from 'components/security/Guards';
 import { ListProjectsI18N } from 'constants/i18n';
+import { REGION_COLOURS } from 'constants/regions';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext } from 'hooks/useContext';
+import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
-import { firstOrNull } from 'utils/Utils';
+import { firstOrNull, getCodesName } from 'utils/Utils';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
+
+/**
+ * `Natural Resource Regions` appended text
+ * ie: `Cariboo Natural Resource Region`
+ *
+ */
+export const NRM_REGION_APPENDED_TEXT = ' Natural Resource Region';
 
 interface IProjectsListTableRow extends Omit<IProjectsListItemData, 'project_programs'> {
   project_programs: string;
@@ -50,6 +62,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
   const biohubApi = useBiohubApi();
 
   const codesContext = useCodesContext();
+  const taxonomyContext = useTaxonomyContext();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -79,6 +92,23 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     );
   };
 
+  // Fetch/cache all taxonomic data for the projects on the current page
+  useEffect(() => {
+    const cacheTaxonomicData = async () => {
+      if (projectsDataLoader.data) {
+        // fetch all unique itis_tsn's from project focal species
+        const taxonomicIds = [
+          ...new Set(projectsDataLoader.data.projects.flatMap((item) => item.focal_species))
+        ].filter((tsns: number) => tsns !== null);
+        await taxonomyContext.cacheSpeciesTaxonomyByIds(taxonomicIds);
+      }
+    };
+
+    cacheTaxonomicData();
+    // Should not re-run this effect on `taxonomyContext` changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectsDataLoader.data]);
+
   const projectRows =
     projectsDataLoader.data?.projects.map((project) => {
       return {
@@ -94,7 +124,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
       sortable: false,
       flex: 0.1,
       renderHeader: () => (
-        <Typography color={grey[500]} variant="body2">
+        <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
         </Typography>
       ),
@@ -109,32 +139,61 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
       headerName: 'Name',
       flex: 1,
       disableColumnMenu: true,
-      renderCell: (params) => (
-        <Stack gap={1}>
-          <Link
-            style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
-            data-testid={params.row.name}
-            underline="always"
-            title={params.row.name}
-            component={RouterLink}
-            to={`/admin/projects/${params.row.project_id}`}
-            children={params.row.name}
-          />
-          <Typography variant="body2" color="textSecondary">
-            {params.row.name}
-          </Typography>
-        </Stack>
-      )
+      renderCell: (params) => {
+        const startDateYear = params.row.start_date.split('-')[0];
+        const endDateYear = params.row.end_date ? params.row.end_date.split('-')[0] : null;
+        const focalSpecies = params.row.focal_species
+          .map((species) => taxonomyContext.getCachedSpeciesTaxonomyById(species)?.commonNames)
+          .join(`\u00A0\u2013\u00A0`);
+        const types = params.row.types
+          .map((type) => getCodesName(codesContext.codesDataLoader.data, 'type', type || 0))
+          .join(`\u00A0\u2013\u00A0`);
+
+        return (
+          <Stack mb={0.25}>
+            <Link
+              style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
+              data-testid={params.row.name}
+              underline="always"
+              title={params.row.name}
+              component={RouterLink}
+              to={`/admin/projects/${params.row.project_id}`}
+              children={params.row.name}
+            />
+            {/* Only administrators see the second title to help them find Projects with a standard naming convention */}
+            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              <Typography variant="body2" color="textSecondary">
+                {startDateYear}&nbsp;&ndash;&nbsp;{endDateYear}&nbsp;&ndash;&nbsp;{focalSpecies}&nbsp;&ndash;&nbsp;
+                {types}
+              </Typography>
+            </SystemRoleGuard>
+          </Stack>
+        );
+      }
     },
     {
       field: 'regions',
       headerName: 'Regions',
-      flex: 1
+      type: 'string',
+      flex: 0.5,
+      renderCell: (params) => (
+        <Stack direction="row" gap={1} flexWrap="wrap">
+          {params.row.regions.map((region) => {
+            const label = region.replace(NRM_REGION_APPENDED_TEXT, '');
+            return (
+              <ColouredRectangleChip
+                colour={REGION_COLOURS.find((colour) => colour.region === label)?.color ?? blueGrey}
+                label={label}
+              />
+            );
+          })}{' '}
+        </Stack>
+      )
     },
     {
       field: 'project_programs',
       headerName: 'Programs',
-      flex: 0.5
+      flex: 0.3
     }
   ];
 
@@ -171,7 +230,9 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
       <Box p={2}>
         <StyledDataGrid
           noRowsMessage="No projects found"
-          autoHeight
+          rowHeight={70}
+          getRowHeight={() => 'auto'}
+          getEstimatedRowHeight={() => 500}
           rows={projectRows}
           rowCount={projectsDataLoader.data?.pagination.total ?? 0}
           getRowId={(row) => row.project_id}

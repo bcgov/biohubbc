@@ -122,4 +122,29 @@ describe('RegionRepository', () => {
       }
     });
   });
+
+  describe('getRegionsByNames', () => {
+    it('should run without issue', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const repo = new RegionRepository(mockDBConnection);
+      const knexStub = sinon.stub(mockDBConnection, 'knex').returns({ rows: [true] } as any);
+
+      const response = await repo.getRegionsByNames(['REGION']);
+      expect(knexStub).to.be.called;
+      expect(response).to.eql([true]);
+    });
+
+    it('should throw an error when SQL fails', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const repo = new RegionRepository(mockDBConnection);
+      sinon.stub(mockDBConnection, 'knex').throws();
+
+      try {
+        await repo.getRegionsByNames(['REGION']);
+        expect.fail();
+      } catch (error) {
+        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to execute get regions by names SQL');
+      }
+    });
+  });
 });

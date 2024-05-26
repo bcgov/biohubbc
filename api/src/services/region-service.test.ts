@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { RegionRepository } from '../repositories/region-repository';
+import { IRegion, RegionRepository } from '../repositories/region-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { BcgwLayerService } from './bcgw-layer-service';
 import { RegionService } from './region-service';
@@ -12,6 +12,17 @@ chai.use(sinonChai);
 describe('RegionRepository', () => {
   afterEach(() => {
     sinon.restore();
+  });
+
+  describe('constructor', () => {
+    it('should initialize all dependencies', () => {
+      const mockDBConnection = getMockDBConnection();
+      const service = new RegionService(mockDBConnection);
+
+      expect(service.connection).to.eql(mockDBConnection);
+      expect(service.regionRepository).to.be.instanceof(RegionRepository);
+      expect(service.bcgwLayerService).to.be.instanceof(BcgwLayerService);
+    });
   });
 
   describe('searchRegionWithDetails', () => {
@@ -56,7 +67,7 @@ describe('RegionRepository', () => {
       const service = new RegionService(mockDBConnection);
       const addStub = sinon.stub(RegionRepository.prototype, 'addRegionsToSurvey').resolves();
 
-      await service.addRegionsToSurvey(1, []);
+      await service.refreshSurveyRegions(1, []);
       expect(addStub).to.be.called;
     });
   });
@@ -74,6 +85,7 @@ describe('RegionRepository', () => {
 
       const response = await service.getUniqueRegionsForFeatures([]);
       expect(search).to.be.called;
+      expect(search).to.be.calledWith([], mockDBConnection);
       expect(response[0]).to.be.eql({
         regionName: 'cool name',
         sourceLayer: 'BCGW:Layer'
@@ -81,19 +93,40 @@ describe('RegionRepository', () => {
     });
   });
 
-  describe('addRegionsToSurveyFromFeatures', () => {
+  describe('insertRegionsIntoSurveyFromFeatures', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const service = new RegionService(mockDBConnection);
-      const getUniqueStub = sinon.stub(RegionService.prototype, 'getUniqueRegionsForFeatures').resolves();
-      const searchStub = sinon.stub(RegionService.prototype, 'searchRegionWithDetails').resolves();
-      const addRegionStub = sinon.stub(RegionService.prototype, 'addRegionsToSurvey').resolves();
 
-      await service.addRegionsToSurveyFromFeatures(1, []);
+      const intersectingRegionsStub = sinon
+        .stub(BcgwLayerService.prototype, 'getIntersectingNrmRegionNamesFromFeatures')
+        .resolves(['REGION']);
 
-      expect(getUniqueStub).to.be.called;
-      expect(searchStub).to.be.called;
-      expect(addRegionStub).to.be.called;
+      const getRegionsByNamesStub = sinon
+        .stub(RegionService.prototype, 'getRegionsByNames')
+        .resolves([{ region_id: 1 }] as unknown as IRegion[]);
+
+      const refreshSurveyRegionsStub = sinon.stub(RegionService.prototype, 'refreshSurveyRegions').resolves();
+
+      await service.insertRegionsIntoSurveyFromFeatures(1, []);
+
+      expect(intersectingRegionsStub).to.be.calledWith([], mockDBConnection);
+      expect(getRegionsByNamesStub).to.be.calledWith(['REGION']);
+      expect(refreshSurveyRegionsStub).to.be.calledWith(1, [{ region_id: 1 }]);
+    });
+  });
+
+  describe('getRegionsByNames', () => {
+    it('should run without issue', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const service = new RegionService(mockDBConnection);
+
+      const namesStub = sinon.stub(RegionRepository.prototype, 'getRegionsByNames').resolves([true] as any);
+
+      const response = await service.getRegionsByNames(['REGION']);
+
+      expect(namesStub).to.have.been.calledWith(['REGION']);
+      expect(response).to.eql([true]);
     });
   });
 });

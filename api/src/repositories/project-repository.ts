@@ -44,8 +44,6 @@ export class ProjectRepository extends BaseRepository {
   ): Knex.QueryBuilder {
     const knex = getKnex();
 
-    console.log(filterFields.system_user_id);
-
     const query = knex
       .select([
         'p.project_id',
@@ -53,13 +51,16 @@ export class ProjectRepository extends BaseRepository {
         'p.start_date',
         'p.end_date',
         knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
-        knex.raw('array_agg(distinct prog.program_id) as project_programs')
+        knex.raw('array_agg(distinct prog.program_id) as project_programs'),
+        knex.raw('array_agg(distinct sp.itis_tsn) as focal_species'),
+        knex.raw('array_agg(distinct st.type_id) as types')
       ])
       .from('project as p')
 
       .leftJoin('project_program as pp', 'p.project_id', 'pp.project_id')
       .leftJoin('survey as s', 's.project_id', 'p.project_id')
       .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
+      .leftJoin('survey_type as st', 'sp.survey_id', 'st.survey_id')
       .leftJoin('program as prog', 'prog.program_id', 'pp.program_id')
       .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
       .leftJoin('region_lookup as rl', 'sr.region_id', 'rl.region_id')

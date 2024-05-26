@@ -67,8 +67,6 @@ const SystemUserAutocomplete = (props: ISystemUserAutocompleteProps) => {
     });
   };
 
-  console.log(handleClear);
-
   return (
     <Autocomplete
       id={formikFieldName}
@@ -81,9 +79,7 @@ const SystemUserAutocomplete = (props: ISystemUserAutocompleteProps) => {
       onInputChange={(_, value, reason) => {
         if (reason === 'reset' || reason === 'clear') {
           setSearchText('');
-
           handleClear();
-          console.log('here');
         } else {
           setSearchText(value);
         }

@@ -38,8 +38,6 @@ const ProjectsSearchFilters = (props: IProjectsSearchFiltersProps) => {
     return <></>;
   }
 
-  console.log(values);
-
   return (
     <Stack spacing={1}>
       <Box display="flex" alignItems="center">

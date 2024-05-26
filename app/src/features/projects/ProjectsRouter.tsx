@@ -5,6 +5,7 @@ import { ObservationsContextProvider } from 'contexts/observationsContext';
 import { ProjectAuthStateContextProvider } from 'contexts/projectAuthStateContext';
 import { ProjectContextProvider } from 'contexts/projectContext';
 import { SurveyContextProvider } from 'contexts/surveyContext';
+import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import ProjectPage from 'features/projects/view/ProjectPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
@@ -29,7 +30,9 @@ const ProjectsRouter: React.FC = () => {
       {/* Project List Routes */}
       <RouteWithTitle exact path="/admin/projects" title={getTitle('Projects')}>
         <DialogContextProvider>
-          <ProjectsPage />
+          <TaxonomyContextProvider>
+            <ProjectsPage />
+          </TaxonomyContextProvider>
         </DialogContextProvider>
       </RouteWithTitle>
 
