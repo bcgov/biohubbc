@@ -36,7 +36,7 @@ const buttonSx = {
  */
 const ProjectsPage = () => {
   const [activeView, setActiveView] = useState<ProjectsPageViewEnum>(ProjectsPageViewEnum.PROJECTS);
-  const [showSearch, setShowSearch] = useState(true);
+  const [showSearch, setShowSearch] = useState(false);
 
   const views = [
     { value: ProjectsPageViewEnum.PROJECTS, label: 'PROJECTS', icon: mdiFolder },
@@ -70,7 +70,12 @@ const ProjectsPage = () => {
           <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
             <ToggleButtonGroup
               value={activeView}
-              onChange={(_, value) => setActiveView(value)}
+              onChange={(_, value) => {
+                if (!value) {
+                  return;
+                }
+                return setActiveView(value);
+              }}
               exclusive
               sx={{
                 display: 'flex',

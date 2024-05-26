@@ -14,17 +14,19 @@ export interface ICustomTextField {
   handleBlur?: FormikContextType<any>['handleBlur'];
   startIcon?: JSX.Element
   maxLength?: number;
+  placeholder?: string
 }
 
 const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (props) => {
   const { touched, errors, values, handleChange, handleBlur } = useFormikContext<any>();
 
-  const { name, label, other } = props;
+  const { name, label, placeholder, other } = props;
 
   return (
     <TextField
       name={name}
       label={label}
+      placeholder={placeholder ?? undefined}
       id={name}
       inputProps={{ 'data-testid': name, maxLength: props.maxLength || undefined }} // targets the internal input rather than the react component
       onChange={handleChange}

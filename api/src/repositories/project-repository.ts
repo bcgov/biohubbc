@@ -44,6 +44,8 @@ export class ProjectRepository extends BaseRepository {
   ): Knex.QueryBuilder {
     const knex = getKnex();
 
+    console.log(filterFields.system_user_id);
+
     const query = knex
       .select([
         'p.project_id',
@@ -61,6 +63,7 @@ export class ProjectRepository extends BaseRepository {
       .leftJoin('program as prog', 'prog.program_id', 'pp.program_id')
       .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
       .leftJoin('region_lookup as rl', 'sr.region_id', 'rl.region_id')
+      .leftJoin('project_participation as ppa', 'p.project_id', 'ppa.project_id')
 
       .groupBy(['p.project_id', 'p.name', 'p.objectives', 'p.start_date', 'p.end_date']);
 
@@ -84,9 +87,14 @@ export class ProjectRepository extends BaseRepository {
       query.andWhere('p.end_date', '<=', filterFields.end_date);
     }
 
-    // Project Name filter (exact match)
+    // Project Member filter (exact match)
+    if (filterFields.system_user_id) {
+      query.andWhere('system_user_id', filterFields.system_user_id);
+    }
+
+    // Project Name filter (like match)
     if (filterFields.project_name) {
-      query.andWhere('p.name', filterFields.project_name);
+      query.andWhere('p.name', 'ilike', `%${filterFields.project_name}%`);
     }
 
     // Focal Species filter
@@ -102,6 +110,11 @@ export class ProjectRepository extends BaseRepository {
           .where('p.name', 'ilike', keywordMatch)
           .orWhere('p.objectives', 'ilike', keywordMatch)
           .orWhere('s.name', 'ilike', keywordMatch);
+
+        // If the keyword is a number, also match on project Id
+        if (!isNaN(Number(filterFields.keyword))) {
+          subQueryBuilder.orWhere('p.project_id', Number(filterFields.keyword));
+        }
       });
     }
 

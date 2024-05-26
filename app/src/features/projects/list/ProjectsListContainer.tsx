@@ -1,7 +1,10 @@
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
+import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
@@ -86,20 +89,41 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
 
   const columns: GridColDef<IProjectsListTableRow>[] = [
     {
+      field: 'project_id',
+      headerName: 'ID',
+      sortable: false,
+      flex: 0.1,
+      renderHeader: () => (
+        <Typography color={grey[500]} variant="body2">
+          ID
+        </Typography>
+      ),
+      renderCell: (params) => (
+        <Typography color={grey[500]} variant="body2">
+          {params.row.project_id}
+        </Typography>
+      )
+    },
+    {
       field: 'name',
       headerName: 'Name',
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params) => (
-        <Link
-          style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
-          data-testid={params.row.name}
-          underline="always"
-          title={params.row.name}
-          component={RouterLink}
-          to={`/admin/projects/${params.row.project_id}`}
-          children={params.row.name}
-        />
+        <Stack gap={1}>
+          <Link
+            style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
+            data-testid={params.row.name}
+            underline="always"
+            title={params.row.name}
+            component={RouterLink}
+            to={`/admin/projects/${params.row.project_id}`}
+            children={params.row.name}
+          />
+          <Typography variant="body2" color="textSecondary">
+            {params.row.name}
+          </Typography>
+        </Stack>
       )
     },
     {

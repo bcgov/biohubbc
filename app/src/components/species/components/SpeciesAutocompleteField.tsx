@@ -9,7 +9,7 @@ import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import { debounce, startCase } from 'lodash-es';
+import { debounce } from 'lodash-es';
 import { ChangeEvent, useMemo, useState } from 'react';
 
 export interface ISpeciesAutocompleteFieldProps {
@@ -34,6 +34,12 @@ export interface ISpeciesAutocompleteFieldProps {
    * @memberof ISpeciesAutocompleteFieldProps
    */
   handleSpecies: (species?: ITaxonomy) => void;
+  /**
+   * Optional callback to fire on species option being cleared
+   *
+   * @memberof ISpeciesAutocompleteFieldProps
+   */
+  handleClear?: () => void;
   /**
    * Default species to render for input and options.
    *
@@ -72,10 +78,38 @@ export interface ISpeciesAutocompleteFieldProps {
    * @memberof ISpeciesAutocompleteFieldProps
    */
   clearOnSelect?: boolean;
+  /**
+   * Whether to show start adnornment magnifying glass or not
+   * Defaults to false
+   *
+   * @type {boolean}
+   * @memberof ISpeciesAutocompleteFieldProps
+   */
+  showStartAdornment?: boolean;
+  /**
+   * Whether to show selected values in the textfield or not
+   * Defaults to false
+   *
+   * @type {boolean}
+   * @memberof ISpeciesAutocompleteFieldProps
+   */
+  showSelectedValue?: boolean;
 }
 
 const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
-  const { formikFieldName, label, required, error, handleSpecies, defaultSpecies } = props;
+  const {
+    formikFieldName,
+    clearOnSelect,
+    required,
+    label,
+    error,
+    disabled,
+    handleSpecies,
+    handleClear,
+    defaultSpecies,
+    showStartAdornment,
+    showSelectedValue
+  } = props;
 
   const biohubApi = useBiohubApi();
   const isMounted = useIsMounted();
@@ -121,9 +155,9 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
 
   return (
     <Autocomplete
-      id={props.formikFieldName}
-      disabled={props.disabled}
-      data-testid={props.formikFieldName}
+      id={formikFieldName}
+      disabled={disabled}
+      data-testid={formikFieldName}
       filterSelectedOptions
       noOptionsText="No matching options"
       options={options}
@@ -134,14 +168,17 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       filterOptions={(item) => item}
       inputValue={inputValue}
       onInputChange={(_, _value, reason) => {
-        if (props.clearOnSelect && reason === 'reset') {
+        if (clearOnSelect && reason === 'reset') {
           setInputValue('');
+          if (handleClear) {
+            handleClear();
+          }
         }
       }}
       onChange={(_, option) => {
         if (option) {
           handleSpecies(option);
-          setInputValue(startCase(option.commonNames[0] ?? option.scientificName));
+          setInputValue(showSelectedValue ? option.scientificName : '');
         }
       }}
       renderOption={(renderProps, renderOption) => {
@@ -155,7 +192,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
             }}
             key={`${renderOption.tsn}-${renderOption.scientificName}`}
             {...renderProps}>
-            <Box py={1} width="100%">
+            <Box py={1} width={'100%'}>
               <SpeciesCard
                 commonNames={renderOption.commonNames}
                 scientificName={renderOption.scientificName}
@@ -174,19 +211,24 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
           onChange={handleOnChange}
           required={required}
           label={label}
+          sx={{
+            '& .MuiAutocomplete-input': {
+              fontStyle: inputValue.split(' ').length > 1 ? 'italic' : 'normal'
+            }
+          }}
           variant="outlined"
           fullWidth
-          placeholder="Type to start searching"
+          placeholder="Enter a species or taxon"
           InputProps={{
             ...params.InputProps,
-            startAdornment: (
+            startAdornment: showStartAdornment && (
               <Box mx={1} mt="6px">
                 <Icon path={mdiMagnify} size={1}></Icon>
               </Box>
             ),
             endAdornment: (
               <>
-                {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {inputValue && isLoading ? <CircularProgress color="inherit" size={20} /> : null}
                 {params.InputProps.endAdornment}
               </>
             )

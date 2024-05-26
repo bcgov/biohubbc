@@ -1,11 +1,9 @@
-import { mdiCircle } from '@mdi/js';
-import Icon from '@mdi/react';
-import Chip from '@mui/material/Chip';
-import { grey } from '@mui/material/colors';
+import Box from '@mui/material/Box';
+import { blueGrey } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { taxonRankColours } from 'constants/taxon';
-import React from 'react';
 
 interface ISpeciesCard {
   commonNames: string[];
@@ -16,70 +14,45 @@ interface ISpeciesCard {
 }
 
 const SpeciesCard = (props: ISpeciesCard) => {
+  // combine all common names and join them with a middot
+  const commonNames = props.commonNames.filter((item) => item !== null).join(`\u00A0\u00B7\u00A0`);
+
   return (
-    <Stack flexDirection="row" justifyContent="space-between" width="100%">
-      <Typography component="span" variant="body1">
-        <Typography
-          component="strong"
-          sx={{
-            display: 'inline-block',
-            fontWeight: 700,
-            whiteSpace: 'nowrap',
-            '&::first-letter': {
-              textTransform: 'capitalize'
-            }
-          }}>
-          {props.scientificName.split(' ').length > 1 ? <em>{props.scientificName}</em> : <>{props.scientificName}</>}
+    <Stack flexDirection="row" justifyContent="space-between" flex="1 1 auto">
+      <Box>
+        <Stack direction="row" gap={1} mb={0.25}>
+          <Typography
+            variant="body2"
+            component="span"
+            className="speciesCommonName"
+            fontWeight={700}
+            sx={{
+              display: 'inline-block',
+              '&::first-letter': {
+                textTransform: 'capitalize'
+              }
+            }}>
+            {props.scientificName.split(' ')?.length > 1 ? (
+              <em>{props.scientificName}</em>
+            ) : (
+              <>{props.scientificName}</>
+            )}
+          </Typography>
           {props.rank && (
-            <Chip
-              title="Taxonomic rank"
+            <ColouredRectangleChip
+              sx={{ mx: 1 }}
               label={props.rank}
-              size="small"
-              sx={{
-                minWidth: '0.4rem',
-                padding: '0.8px 0.8px',
-                margin: '0 10px 3px 10px',
-                opacity: 0.6,
-                backgroundColor: taxonRankColours.find((color) => color.ranks.includes(props.rank))?.color || grey[800],
-                '& .MuiChip-label': {
-                  letterSpacing: '0.03rem',
-                  color: '#fff',
-                  fontWeight: 100,
-                  fontSize: '0.6rem'
-                }
-              }}
+              colour={taxonRankColours.find((color) => color.ranks.includes(props.rank))?.color ?? blueGrey}
             />
           )}
-        </Typography>
-        <Stack direction="row" alignItems="center">
-          {props.commonNames?.length > 0 &&
-            props.commonNames.map((name, index) => (
-              <React.Fragment key={`${name}-${index}`}>
-                {index > 0 && <Icon path={mdiCircle} size={0.15} color={grey[500]} style={{ margin: '0 5px' }} />}
-                <Typography
-                  variant="body2"
-                  color="textSecondary"
-                  sx={{
-                    textTransform: 'capitalize'
-                  }}>
-                  {name}
-                </Typography>
-              </React.Fragment>
-            ))}
         </Stack>
+        <Typography variant="subtitle2" color="textSecondary">
+          {commonNames}
+        </Typography>
+      </Box>
+      <Typography color="textSecondary" variant="body2" title="Taxonomic Serial Number">
+        {props.tsn}
       </Typography>
-      <Stack spacing={1} direction="row">
-        <Chip
-          title="Taxonomic serial number (ID)"
-          label={'ID: ' + props.tsn}
-          size="small"
-          sx={{
-            '& .MuiChip-label': {
-              letterSpacing: '0.03rem'
-            }
-          }}
-        />
-      </Stack>
     </Stack>
   );
 };

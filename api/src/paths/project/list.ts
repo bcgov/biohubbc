@@ -71,6 +71,9 @@ GET.apiDoc = {
               items: {
                 type: 'integer'
               }
+            },
+            system_user_id: {
+              type: 'integer'
             }
           }
         }
@@ -187,7 +190,8 @@ export function getProjectList(): RequestHandler {
           : undefined,
         itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined,
         start_date: req.query.start_date && String(req.query.start_date),
-        end_date: req.query.end_date && String(req.query.end_date)
+        end_date: req.query.end_date && String(req.query.end_date),
+        system_user_id: req.query.system_user_id && String(req.query.system_user_id)
       };
 
       const paginationOptions = makePaginationOptionsFromRequest(req);
