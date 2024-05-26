@@ -140,14 +140,21 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params) => {
-        const startDateYear = params.row.start_date.split('-')[0];
-        const endDateYear = params.row.end_date ? params.row.end_date.split('-')[0] : null;
+        const dates = [params.row.start_date?.split('-')[0], params.row.end_date?.split('-')[0]]
+          .filter(Boolean)
+          .join(' \u2013 '); // n-dash with spaces
+
         const focalSpecies = params.row.focal_species
           .map((species) => taxonomyContext.getCachedSpeciesTaxonomyById(species)?.commonNames)
-          .join(`\u00A0\u2013\u00A0`);
+          .filter(Boolean)
+          .join(' \u2013 '); // n-dash with spaces
+
         const types = params.row.types
           .map((type) => getCodesName(codesContext.codesDataLoader.data, 'type', type || 0))
-          .join(`\u00A0\u2013\u00A0`);
+          .filter(Boolean)
+          .join(' \u2013 '); // n-dash with spaces
+
+        const detailsArray = [dates, focalSpecies, types].filter(Boolean).join(' \u2013 ');
 
         return (
           <Stack mb={0.25}>
@@ -163,8 +170,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
             {/* Only administrators see the second title to help them find Projects with a standard naming convention */}
             <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <Typography variant="body2" color="textSecondary">
-                {startDateYear}&nbsp;&ndash;&nbsp;{endDateYear}&nbsp;&ndash;&nbsp;{focalSpecies}&nbsp;&ndash;&nbsp;
-                {types}
+                {detailsArray.length > 0 ? detailsArray : 'No Surveys'}
               </Typography>
             </SystemRoleGuard>
           </Stack>

@@ -120,6 +120,7 @@ GET.apiDoc = {
                     },
                     start_date: {
                       oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                      nullable: true,
                       description: 'ISO 8601 date string for the funding end_date'
                     },
                     end_date: {
@@ -130,19 +131,22 @@ GET.apiDoc = {
                     regions: {
                       type: 'array',
                       items: {
-                        type: 'string'
+                        type: 'string',
+                        nullable: true
                       }
                     },
                     focal_species: {
                       type: 'array',
                       items: {
-                        type: 'integer'
+                        type: 'integer',
+                        nullable: true
                       }
                     },
                     types: {
                       type: 'array',
                       items: {
-                        type: 'integer'
+                        type: 'integer',
+                        nullable: true
                       }
                     },
                     completion_status: {

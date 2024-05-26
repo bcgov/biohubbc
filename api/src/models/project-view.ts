@@ -37,10 +37,10 @@ export const ProjectListData = z.object({
   name: z.string(),
   project_programs: z.array(z.number()),
   regions: z.array(z.string()),
-  start_date: z.string(),
-  end_date: z.string().nullable().optional(),
-  focal_species: z.array(z.number()),
-  types: z.array(z.number())
+  start_date: z.string().nullable(),
+  end_date: z.string().nullable().optional().nullable(),
+  focal_species: z.array(z.number().nullable()),
+  types: z.array(z.number().nullable())
 });
 
 export type ProjectListData = z.infer<typeof ProjectListData>;

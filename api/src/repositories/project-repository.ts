@@ -48,8 +48,8 @@ export class ProjectRepository extends BaseRepository {
       .select([
         'p.project_id',
         'p.name',
-        'p.start_date',
-        'p.end_date',
+        knex.raw(`MIN(s.start_date) as start_date`),
+        knex.raw('MAX(s.end_date) as end_date'),
         knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
         knex.raw('array_agg(distinct prog.program_id) as project_programs'),
         knex.raw('array_agg(distinct sp.itis_tsn) as focal_species'),
