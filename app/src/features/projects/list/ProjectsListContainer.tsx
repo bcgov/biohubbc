@@ -66,7 +66,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
+  }, []);
 
   const projectsDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) => {
@@ -169,9 +169,15 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
             />
             {/* Only administrators see the second title to help them find Projects with a standard naming convention */}
             <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <Typography variant="body2" color="textSecondary">
-                {detailsArray.length > 0 ? detailsArray : 'No Surveys'}
-              </Typography>
+              {detailsArray.length > 0 ? (
+                <Typography variant="body2" color="textSecondary">
+                  {detailsArray}
+                </Typography>
+              ) : (
+                <Typography variant="body2" color={grey[400]}>
+                  There are no Surveys in this Project
+                </Typography>
+              )}
             </SystemRoleGuard>
           </Stack>
         );
@@ -179,7 +185,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     },
     {
       field: 'regions',
-      headerName: 'Regions',
+      headerName: 'Region',
       type: 'string',
       flex: 0.5,
       renderCell: (params) => (
@@ -188,6 +194,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
             const label = region.replace(NRM_REGION_APPENDED_TEXT, '');
             return (
               <ColouredRectangleChip
+                key={region}
                 colour={REGION_COLOURS.find((colour) => colour.region === label)?.color ?? blueGrey}
                 label={label}
               />

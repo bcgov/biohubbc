@@ -1,3 +1,4 @@
+import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
@@ -8,7 +9,9 @@ import {
   GetAttachmentsData,
   GetReportAttachmentsData,
   GetSurveyProprietorData,
-  GetSurveyPurposeAndMethodologyData
+  GetSurveyPurposeAndMethodologyData,
+  ISurveyAdvancedFilters,
+  SurveyListData
 } from '../models/survey-view';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
@@ -130,6 +133,134 @@ export class SurveyRepository extends BaseRepository {
     const sqlStatement = SQL`call api_delete_survey(${surveyId})`;
 
     await this.connection.sql(sqlStatement);
+  }
+
+  /**
+   * Constructs a non-paginated query used to get a survey list for users.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @return {*}  Promise<Knex.QueryBuilder>
+   * @memberof SurveyRepository
+   */
+  _makeSurveyListQuery(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    const query = knex
+      .select([
+        's.survey_id',
+        's.project_id',
+        's.name',
+        's.progress_id',
+        knex.raw(`MIN(s.start_date) as start_date`),
+        knex.raw('MAX(s.end_date) as end_date'),
+        knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
+        knex.raw('array_agg(distinct sp.itis_tsn) as focal_species'),
+        knex.raw('array_agg(distinct st.type_id) as types')
+      ])
+      .from('survey as s')
+      .leftJoin('project as p', 'p.project_id', 's.project_id')
+      .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
+      .leftJoin('survey_type as st', 'st.survey_id', 's.survey_id')
+      .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
+      .leftJoin('region_lookup as rl', 'rl.region_id', 'sr.region_id')
+      .leftJoin('project_participation as ppa', 'ppa.project_id', 's.project_id')
+      .groupBy('s.survey_id', 's.project_id', 's.name', 's.progress_id'); 
+
+    /*
+     * Ensure that users can only see project that they are participating in, unless
+     * they are an administrator.
+     */
+    if (!isUserAdmin) {
+      query.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder.select('project_id').from('project_participation').where('system_user_id', systemUserId);
+      });
+    }
+
+    // Start Date filter
+    if (filterFields.start_date) {
+      query.andWhere('s.start_date', '>=', filterFields.start_date);
+    }
+
+    // End Date filter
+    if (filterFields.end_date) {
+      query.andWhere('s.end_date', '<=', filterFields.end_date);
+    }
+
+    // Project Member filter (exact match)
+    if (filterFields.system_user_id) {
+      query.andWhere('system_user_id', filterFields.system_user_id);
+    }
+
+    // Project Name filter (like match)
+    if (filterFields.project_name) {
+      query.andWhere('s.name', 'ilike', `%${filterFields.project_name}%`);
+    }
+
+    // Focal Species filter
+    if (filterFields.itis_tsns?.length) {
+      query.whereIn('sp.itis_tsn', filterFields.itis_tsns);
+    }
+
+    // Keyword Search filter
+    if (filterFields.keyword) {
+      const keywordMatch = `%${filterFields.keyword}%`;
+      query.where((subQueryBuilder) => {
+        subQueryBuilder
+          .where('p.name', 'ilike', keywordMatch)
+          .orWhere('p.objectives', 'ilike', keywordMatch)
+          .orWhere('s.name', 'ilike', keywordMatch);
+
+        // If the keyword is a number, also match on project Id
+        if (!isNaN(Number(filterFields.keyword))) {
+          subQueryBuilder.orWhere('p.project_id', Number(filterFields.keyword));
+        }
+      });
+    }
+
+    // Programs filter
+    if (filterFields.project_programs?.length) {
+      query.where('prog.program_id', 'IN', filterFields.project_programs);
+    }
+
+    return query;
+  }
+
+  /**
+   * Get survey(s) that a user has access to
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof SurveyRepository
+   */
+  async getSurveyList(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<SurveyListData[]> {
+    const query = this._makeSurveyListQuery(isUserAdmin, systemUserId, filterFields);
+
+    // Pagination
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(query, SurveyListData);
+
+    return response.rows;
   }
 
   /**
@@ -473,6 +604,38 @@ export class SurveyRepository extends BaseRepository {
     const response = await this.connection.knex(queryBuilder, SurveyBasicFields.omit({ focal_species_names: true }));
 
     return response.rows;
+  }
+
+  /**
+   * Returns the total number of surveys that the user has access to
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyService
+   */
+  async getSurveyCountByUserId(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters
+  ): Promise<number> {
+    const surveyListQuery = this._makeSurveyListQuery(isUserAdmin, systemUserId, filterFields);
+
+    const knex = getKnex();
+
+    const queryBuilder = knex.from(surveyListQuery.as('plq')).select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get survey count', [
+        'SurveyRepository->getSurveyCountByUserId',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].count;
   }
 
   /**

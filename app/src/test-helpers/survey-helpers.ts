@@ -132,7 +132,9 @@ export const getSurveyForListResponse: IGetSurveyListResponse = {
       end_date: '2021-05-09 11:53:53',
       progress_id: 1,
       focal_species: [1],
-      focal_species_names: ['species 1']
+      focal_species_names: ['species 1'],
+      project_id: 1,
+      regions: ['Skeena']
     },
     {
       survey_id: 2,
@@ -141,7 +143,9 @@ export const getSurveyForListResponse: IGetSurveyListResponse = {
       end_date: '2021-06-10 11:53:53',
       progress_id: 1,
       focal_species: [3],
-      focal_species_names: ['species 3']
+      focal_species_names: ['species 3'],
+      project_id: 1,
+      regions: ['Skeena']
     }
   ],
   pagination: {

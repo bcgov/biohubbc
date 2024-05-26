@@ -15,6 +15,28 @@ import { ApiPaginationResponseParams, StringBoolean } from 'types/misc';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from './useCritterApi.interface';
 
 /**
+ * Get surveys list response object.
+ *
+ * @export
+ * @interface IGetProjectsListResponse
+ */
+export interface IGetSurveysListResponse {
+  surveys: ISurveysListItemData[];
+  pagination: ApiPaginationResponseParams;
+}
+
+export interface ISurveysListItemData {
+  survey_id: number;
+  name: string;
+  start_date: string;
+  end_date?: string;
+  regions: string[];
+  focal_species: number[],
+  types: number[]
+}
+
+
+/**
  * Create survey post object.
  *
  * @export
@@ -166,12 +188,14 @@ export interface SurveyViewObject {
 
 export interface SurveyBasicFieldsObject {
   survey_id: number;
+  project_id: number;
   name: string;
   start_date: string;
   end_date: string | null;
   progress_id: number;
   focal_species: number[];
   focal_species_names: string[];
+  regions: string[]
 }
 
 export type SurveyUpdateObject = ISurveyUpdateObject & ISurveySiteSelectionUpdateObject;

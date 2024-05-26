@@ -12,7 +12,9 @@ import {
   GetSurveyFundingSourceData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
+  ISurveyAdvancedFilters,
   ISurveyPartnerships,
+  SurveyListData,
   SurveyObject,
   SurveySupplementaryData
 } from '../models/survey-view';
@@ -53,6 +55,24 @@ export class SurveyService extends DBService {
     this.siteSelectionStrategyService = new SiteSelectionStrategyService(connection);
     this.surveyParticipationService = new SurveyParticipationService(connection);
     this.regionService = new RegionService(connection);
+  }
+
+  /**
+   * Gets paginated list of Surveys that the user has access to
+   *
+   * @param {(number | null)} systemUserId
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof SurveyService
+   */
+  async getSurveyList(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<SurveyListData[]> {
+    return this.surveyRepository.getSurveyList(isUserAdmin, systemUserId, filterFields, pagination);
   }
 
   /**
@@ -326,6 +346,23 @@ export class SurveyService extends DBService {
    */
   async getSurveyCountByProjectId(projectId: number): Promise<number> {
     return this.surveyRepository.getSurveyCountByProjectId(projectId);
+  }
+
+  /**
+   * Returns the total number of surveys that the user has access to
+   *
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyService
+   */
+  async getSurveyCountByUserId(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters
+  ): Promise<number> {
+    return this.surveyRepository.getSurveyCountByUserId(isUserAdmin, systemUserId, filterFields);
   }
 
   /**

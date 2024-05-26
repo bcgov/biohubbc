@@ -1,5 +1,5 @@
 import { ChipProps } from '@mui/material';
-import blueGrey from '@mui/material/colors/blueGrey';
+import grey from '@mui/material/colors/grey';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { SurveyProgressChipColours } from 'constants/misc';
 import { useCodesContext } from 'hooks/useContext';
@@ -18,9 +18,8 @@ interface ISurveyProgressChipProps extends ChipProps {
 const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
   const codesContext = useCodesContext();
 
-  const codeName =
-    getCodesName(codesContext.codesDataLoader.data, 'survey_progress', props.progress_id)?.toUpperCase() ?? '';
-  const codeColour = SurveyProgressChipColours[codeName] ?? blueGrey;
+  const codeName = getCodesName(codesContext.codesDataLoader.data, 'survey_progress', props.progress_id) ?? '';
+  const codeColour = SurveyProgressChipColours.find((option) => option.label === codeName)?.colour ?? grey;
 
   return <ColouredRectangleChip colour={codeColour} label={codeName} title="Survey progress" />;
 };

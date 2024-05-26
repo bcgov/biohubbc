@@ -10,6 +10,7 @@ import Toolbar from '@mui/material/Toolbar';
 import PageHeader from 'components/layout/PageHeader';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
+import SurveysListContainer from 'features/surveys/list/SurveysListContainer';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import ProjectsListContainer from './list/ProjectsListContainer';
@@ -40,7 +41,7 @@ const ProjectsPage = () => {
 
   const views = [
     { value: ProjectsPageViewEnum.PROJECTS, label: 'PROJECTS', icon: mdiFolder },
-    { value: ProjectsPageViewEnum, label: 'SURVEYS', icon: mdiListBoxOutline }
+    { value: ProjectsPageViewEnum.SURVEYS, label: 'SURVEYS', icon: mdiListBoxOutline }
   ];
 
   /**
@@ -105,6 +106,7 @@ const ProjectsPage = () => {
           </Toolbar>
           <Divider />
           {activeView === 'PROJECTS' && <ProjectsListContainer showSearch={showSearch} />}
+          {activeView === 'SURVEYS' && <SurveysListContainer showSearch={showSearch} />}
         </Paper>
       </Container>
     </>
