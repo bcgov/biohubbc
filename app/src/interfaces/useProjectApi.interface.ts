@@ -69,6 +69,22 @@ export interface IGetUserProjectsListResponse {
 }
 
 /**
+ * Get surveys list response object.
+ *
+ * @export
+ * @interface IGetUserSurveysListResponse
+ */
+export interface IGetUserSurveysListResponse {
+  project_participation_id: number;
+  project_id: number;
+  project_name: string;
+  system_user_id: number;
+  project_role_ids: number[];
+  project_role_names: string[];
+  project_role_permissions: string[];
+}
+
+/**
  * An interface that describes project supplementary data
  * @export
  * @interface IProjectSupplementaryData

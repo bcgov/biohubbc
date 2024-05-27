@@ -121,8 +121,8 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     {
       field: 'project_id',
       headerName: 'ID',
-      sortable: false,
-      flex: 0.1,
+      width: 50,
+      minWidth: 50,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
@@ -174,8 +174,8 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
                   {detailsArray}
                 </Typography>
               ) : (
-                <Typography variant="body2" color={grey[400]}>
-                  There are no Surveys in this Project
+                <Typography variant="body2" color={grey[500]} fontStyle="italic">
+                  No Surveys
                 </Typography>
               )}
             </SystemRoleGuard>
@@ -187,7 +187,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
       field: 'regions',
       headerName: 'Region',
       type: 'string',
-      flex: 0.5,
+      flex: 0.4,
       renderCell: (params) => (
         <Stack direction="row" gap={1} flexWrap="wrap">
           {params.row.regions.map((region) => {
@@ -202,11 +202,6 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
           })}{' '}
         </Stack>
       )
-    },
-    {
-      field: 'project_programs',
-      headerName: 'Programs',
-      flex: 0.3
     }
   ];
 
@@ -264,6 +259,23 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
           disableColumnFilter
           disableColumnMenu
           sortingOrder={['asc', 'desc']}
+          sx={{
+            '& .MuiDataGrid-virtualScroller': {
+              height: '600px',
+              overflowY: 'auto !important',
+              background: grey[50]
+            },
+            '& .MuiDataGrid-overlay': {
+              background: grey[50]
+            },
+            '& .MuiDataGrid-cell': {
+              py: 0.75,
+              background: '#fff',
+              '&.MuiDataGrid-cell--editing:focus-within': {
+                outline: 'none'
+              }
+            }
+          }}
         />
       </Box>
     </>

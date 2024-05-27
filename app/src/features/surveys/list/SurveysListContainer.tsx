@@ -9,16 +9,19 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { REGION_COLOURS } from 'constants/regions';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { NRM_REGION_APPENDED_TEXT } from 'features/projects/list/ProjectsListContainer';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
-import { firstOrNull, getFormattedDate } from 'utils/Utils';
+import { firstOrNull, getCodesName, getFormattedDate } from 'utils/Utils';
 import SurveyProgressChip from '../components/SurveyProgressChip';
 import SurveysListFilterForm from './SurveysListFilterForm';
 
@@ -46,6 +49,8 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
+  const taxonomyContext = useTaxonomyContext();
+  const codesContext = useCodesContext();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -82,8 +87,8 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
     {
       field: 'survey_id',
       headerName: 'ID',
-      sortable: false,
-      flex: 0.1,
+      width: 50,
+      minWidth: 50,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
@@ -98,60 +103,63 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
     {
       field: 'name',
       headerName: 'Name',
-      minWidth: 200,
       flex: 1,
       disableColumnMenu: true,
-      renderCell: (params) => (
-        <Link
-          style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
-          data-testid={params.row.name}
-          underline="always"
-          title={params.row.name}
-          component={RouterLink}
-          to={`/admin/projects/${params.row.project_id}/surveys/${params.row.survey_id}`}
-          children={params.row.name}
-        />
-      )
-    },
-    {
-      field: 'project_id',
-      headerName: 'Project',
-      minWidth: 70,
-      flex: 0.15,
-      renderHeader: () => (
-        <Typography
-          color={grey[500]}
-          variant="body2"
-          fontWeight={700}
-          sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
-          PROJECT ID
-        </Typography>
-      ),
-      renderCell: (params) => (
-        <Link
-          style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
-          data-testid={params.row.name}
-          underline="always"
-          title={params.row.name}
-          component={RouterLink}
-          to={`/admin/projects/${params.row.project_id}`}
-          children={params.row.project_id}
-        />
-      )
-    },
+      renderCell: (params) => {
+        const dates = [params.row.start_date?.split('-')[0], params.row.end_date?.split('-')[0]]
+          .filter(Boolean)
+          .join(' \u2013 '); // n-dash with spaces
 
+        const focalSpecies = params.row.focal_species
+          .map((species) => taxonomyContext.getCachedSpeciesTaxonomyById(species)?.commonNames)
+          .filter(Boolean)
+          .join(' \u2013 '); // n-dash with spaces
+
+        const types = params.row.types
+          .map((type) => getCodesName(codesContext.codesDataLoader.data, 'type', type || 0))
+          .filter(Boolean)
+          .join(' \u2013 '); // n-dash with spaces
+
+        const detailsArray = [dates, focalSpecies, types].filter(Boolean).join(' \u2013 ');
+
+        return (
+          <Stack mb={0.25}>
+            <Link
+              style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
+              data-testid={params.row.name}
+              underline="always"
+              title={params.row.name}
+              component={RouterLink}
+              to={`/admin/projects/${params.row.project_id}/surveys/${params.row.survey_id}`}
+              children={params.row.name}
+            />
+            {/* Only administrators see the second title to help them find Projects with a standard naming convention */}
+            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+              {detailsArray.length > 0 ? (
+                <Typography variant="body2" color="textSecondary">
+                  {detailsArray}
+                </Typography>
+              ) : (
+                <Typography variant="body2" color={grey[500]} fontStyle="italic">
+                  No Surveys
+                </Typography>
+              )}
+            </SystemRoleGuard>
+          </Stack>
+        );
+      }
+    },
     {
       field: 'progress_id',
       headerName: 'Progress',
-      minWidth: 40,
-      flex: 0.25,
+      flex: 0.2,
       disableColumnMenu: true,
       renderCell: (params) => <SurveyProgressChip progress_id={params.row.progress_id} />
     },
     {
       field: 'start_date',
       headerName: 'Start Date',
-      flex: 0.3,
+      flex: 0.2,
       disableColumnMenu: true,
       renderCell: (params) => (
         <Typography variant="body2">{getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.start_date)}</Typography>
@@ -160,8 +168,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
     {
       field: 'end_date',
       headerName: 'End Date',
-      minWidth: 50,
-      flex: 0.3,
+      flex: 0.2,
       disableColumnMenu: true,
       renderCell: (params) =>
         params.row.end_date ? (
@@ -204,7 +211,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
         />
         <Divider />
       </Collapse>
-      <Box p={2} sx={{ overflowY: 'auto' }}>
+      <Box p={2}>
         <StyledDataGrid
           noRowsMessage="No surveys found"
           columns={columns}
@@ -223,15 +230,29 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
           onSortModelChange={setSortModel}
           rowSelection={false}
           checkboxSelection={false}
-          sx={{
-            overflow: 'auto',
-            minWidth: '1000px'
-          }}
           disableRowSelectionOnClick
           disableColumnSelector
           disableColumnFilter
           disableColumnMenu
           sortingOrder={['asc', 'desc']}
+          sx={{
+            '& .MuiDataGrid-virtualScroller': {
+              // Height is an odd number to help the list obviously scrollable by likely cutting off the last visible row
+              height: '589px',
+              overflowY: 'auto !important',
+              background: grey[50]
+            },
+            '& .MuiDataGrid-overlay': {
+              background: grey[50]
+            },
+            '& .MuiDataGrid-cell': {
+              py: 0.75,
+              background: '#fff',
+              '&.MuiDataGrid-cell--editing:focus-within': {
+                outline: 'none'
+              }
+            }
+          }}
         />
       </Box>
     </>

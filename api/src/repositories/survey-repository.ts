@@ -157,8 +157,8 @@ export class SurveyRepository extends BaseRepository {
         's.project_id',
         's.name',
         's.progress_id',
-        knex.raw(`MIN(s.start_date) as start_date`),
-        knex.raw('MAX(s.end_date) as end_date'),
+        's.start_date',
+        's.end_date',
         knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
         knex.raw('array_agg(distinct sp.itis_tsn) as focal_species'),
         knex.raw('array_agg(distinct st.type_id) as types')
@@ -170,7 +170,7 @@ export class SurveyRepository extends BaseRepository {
       .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
       .leftJoin('region_lookup as rl', 'rl.region_id', 'sr.region_id')
       .leftJoin('project_participation as ppa', 'ppa.project_id', 's.project_id')
-      .groupBy('s.survey_id', 's.project_id', 's.name', 's.progress_id'); 
+      .groupBy('s.survey_id', 's.project_id', 's.name', 's.progress_id', 's.start_date', 's.end_date'); 
 
     /*
      * Ensure that users can only see project that they are participating in, unless
@@ -212,13 +212,13 @@ export class SurveyRepository extends BaseRepository {
       const keywordMatch = `%${filterFields.keyword}%`;
       query.where((subQueryBuilder) => {
         subQueryBuilder
-          .where('p.name', 'ilike', keywordMatch)
-          .orWhere('p.objectives', 'ilike', keywordMatch)
-          .orWhere('s.name', 'ilike', keywordMatch);
+          .where('s.name', 'ilike', keywordMatch)
+          .orWhere('s.additional_details', 'ilike', keywordMatch)
+          .orWhere('s.comments', 'ilike', keywordMatch);
 
-        // If the keyword is a number, also match on project Id
+        // If the keyword is a number, also match on survey Id
         if (!isNaN(Number(filterFields.keyword))) {
-          subQueryBuilder.orWhere('p.project_id', Number(filterFields.keyword));
+          subQueryBuilder.orWhere('s.survey_id', Number(filterFields.keyword));
         }
       });
     }
@@ -624,7 +624,7 @@ export class SurveyRepository extends BaseRepository {
 
     const knex = getKnex();
 
-    const queryBuilder = knex.from(surveyListQuery.as('plq')).select(knex.raw('count(*)::integer as count'));
+    const queryBuilder = knex.from(surveyListQuery.as('slq')).select(knex.raw('count(*)::integer as count'));
 
     const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
 

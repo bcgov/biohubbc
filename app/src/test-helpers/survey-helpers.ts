@@ -134,7 +134,8 @@ export const getSurveyForListResponse: IGetSurveyListResponse = {
       focal_species: [1],
       focal_species_names: ['species 1'],
       project_id: 1,
-      regions: ['Skeena']
+      regions: ['Skeena'],
+      types: [1]
     },
     {
       survey_id: 2,
@@ -145,7 +146,8 @@ export const getSurveyForListResponse: IGetSurveyListResponse = {
       focal_species: [3],
       focal_species_names: ['species 3'],
       project_id: 1,
-      regions: ['Skeena']
+      regions: ['Skeena'],
+      types: [1]
     }
   ],
   pagination: {

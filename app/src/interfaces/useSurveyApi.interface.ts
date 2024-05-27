@@ -195,7 +195,8 @@ export interface SurveyBasicFieldsObject {
   progress_id: number;
   focal_species: number[];
   focal_species_names: string[];
-  regions: string[]
+  regions: string[],
+  types: number[]
 }
 
 export type SurveyUpdateObject = ISurveyUpdateObject & ISurveySiteSelectionUpdateObject;

@@ -1,7 +1,9 @@
+import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { IObservationAdvancedFilters } from '../models/observation-view';
 import { getLogger } from '../utils/logger';
 import { GeoJSONPointZodSchema } from '../zod-schema/geoJsonZodSchema';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
@@ -169,6 +171,314 @@ export const ObservationSubmissionRecord = z.object({
 export type ObservationSubmissionRecord = z.infer<typeof ObservationSubmissionRecord>;
 
 export class ObservationRepository extends BaseRepository {
+  /**
+   * Constructs a non-paginated query used to get a list of observations for a user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IObservationAdvancedFilters} filterFields
+   * @return {*}  Promise<Knex.QueryBuilder>
+   * @memberof SurveyRepository
+   */
+  _makeObservationListQuery(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IObservationAdvancedFilters
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    const userProjectIds = knex
+      .select('p.project_id')
+      .from('project')
+      .leftJoin('project_participation as ppa', 'ppa.project_id', 'p.project_id')
+      .where('p.system_user_id', systemUserId);
+
+    const userSurveyIds = knex.select('survey_id').from('survey');
+
+    /*
+     * Ensure that users can only see project that they are participating in, unless
+     * they are an administrator.
+     */
+    if (!isUserAdmin) {
+      userSurveyIds.whereIn('p.project_id', userProjectIds);
+    }
+
+    const userObservationSubcountIds = knex
+      .select('observation_subcount_id')
+      .from('observation_subcount')
+      .whereIn('survey_observation_id', (subQueryBuilder) =>
+        subQueryBuilder.select('survey_observation_id').from('survey_observation').whereIn('survey_id', userSurveyIds)
+      );
+
+    const query = knex
+      .with(
+        'w_survey_sample_site',
+        knex
+          .select('survey_sample_site_id', 'name as survey_sample_site_name')
+          .from('survey_sample_site')
+          .whereIn('survey_id', userSurveyIds)
+      )
+      .with(
+        'w_survey_sample_method',
+        knex
+          .select(
+            'survey_sample_method.survey_sample_site_id',
+            'survey_sample_method.survey_sample_method_id',
+            'method_lookup.name as survey_sample_method_name'
+          )
+          .from('survey_sample_method')
+          .innerJoin('method_lookup', 'survey_sample_method.method_lookup_id', 'method_lookup.method_lookup_id')
+          .innerJoin(
+            'w_survey_sample_site',
+            'survey_sample_method.survey_sample_site_id',
+            'w_survey_sample_site.survey_sample_site_id'
+          )
+      )
+      .with(
+        'w_survey_sample_period',
+        knex
+          .select(
+            'w_survey_sample_method.survey_sample_site_id',
+            'survey_sample_period.survey_sample_method_id',
+            'survey_sample_period.survey_sample_period_id',
+            knex.raw(
+              `(survey_sample_period.start_date::date + COALESCE(survey_sample_period.start_time, '00:00:00')::time)::timestamp as survey_sample_period_start_datetime`
+            )
+          )
+          .from('survey_sample_period')
+          .innerJoin(
+            'w_survey_sample_method',
+            'survey_sample_period.survey_sample_method_id',
+            'w_survey_sample_method.survey_sample_method_id'
+          )
+      )
+      .with(
+        'w_qualitative_measurements',
+        knex
+          .select(
+            'observation_subcount_id',
+            knex.raw(`
+          json_agg(json_build_object(
+            'critterbase_taxon_measurement_id', critterbase_taxon_measurement_id,
+            'critterbase_measurement_qualitative_option_id', critterbase_measurement_qualitative_option_id
+          )) as qualitative_measurements
+        `)
+          )
+          .from('observation_subcount_qualitative_measurement')
+          .whereIn('observation_subcount_id', userObservationSubcountIds)
+          .groupBy('observation_subcount_id')
+      )
+      .with(
+        'w_quantitative_measurements',
+        knex
+          .select(
+            'observation_subcount_id',
+            knex.raw(`
+          json_agg(json_build_object(
+            'critterbase_taxon_measurement_id', critterbase_taxon_measurement_id,
+            'value', value
+          )) as quantitative_measurements
+        `)
+          )
+          .from('observation_subcount_quantitative_measurement')
+          .whereIn('observation_subcount_id', userObservationSubcountIds)
+          .groupBy('observation_subcount_id')
+      )
+      .with(
+        'w_qualitative_environments',
+        knex
+          .select(
+            'observation_subcount_id',
+            knex.raw(`
+          json_agg(json_build_object(
+            'observation_subcount_qualitative_environment_id', observation_subcount_qualitative_environment_id,
+            'environment_qualitative_id', environment_qualitative_id,
+            'environment_qualitative_option_id', environment_qualitative_option_id
+          )) as qualitative_environments
+        `)
+          )
+          .from('observation_subcount_qualitative_environment')
+          .whereIn('observation_subcount_id', userObservationSubcountIds)
+          .groupBy('observation_subcount_id')
+      )
+      .with(
+        'w_quantitative_environments',
+        knex
+          .select(
+            'observation_subcount_id',
+            knex.raw(`
+          json_agg(json_build_object(
+            'observation_subcount_quantitative_environment_id', observation_subcount_quantitative_environment_id,
+            'environment_quantitative_id', environment_quantitative_id,
+            'value', value
+          )) as quantitative_environments
+        `)
+          )
+          .from('observation_subcount_quantitative_environment')
+          .whereIn('observation_subcount_id', userObservationSubcountIds)
+          .groupBy('observation_subcount_id')
+      )
+      .with(
+        'w_subcounts',
+        knex
+          .select(
+            'survey_observation_id',
+            knex.raw(`
+          json_agg(json_build_object(
+            'observation_subcount_id', observation_subcount.observation_subcount_id,
+            'subcount', subcount,
+            'qualitative_measurements', COALESCE(w_qualitative_measurements.qualitative_measurements, '[]'::json),
+            'quantitative_measurements', COALESCE(w_quantitative_measurements.quantitative_measurements, '[]'::json),
+            'qualitative_environments', COALESCE(w_qualitative_environments.qualitative_environments, '[]'::json),
+            'quantitative_environments', COALESCE(w_quantitative_environments.quantitative_environments, '[]'::json)
+          )) as subcounts
+        `)
+          )
+          .from('observation_subcount')
+          .leftJoin(
+            'w_qualitative_measurements',
+            'observation_subcount.observation_subcount_id',
+            'w_qualitative_measurements.observation_subcount_id'
+          )
+          .leftJoin(
+            'w_quantitative_measurements',
+            'observation_subcount.observation_subcount_id',
+            'w_quantitative_measurements.observation_subcount_id'
+          )
+          .leftJoin(
+            'w_qualitative_environments',
+            'observation_subcount.observation_subcount_id',
+            'w_qualitative_environments.observation_subcount_id'
+          )
+          .leftJoin(
+            'w_quantitative_environments',
+            'observation_subcount.observation_subcount_id',
+            'w_quantitative_environments.observation_subcount_id'
+          )
+          .whereIn(
+            'survey_observation_id',
+            knex('survey_observation').select('survey_observation_id').whereIn('survey_id', userSurveyIds)
+          )
+          .groupBy('survey_observation_id')
+      )
+      .select(
+        'survey_observation.survey_observation_id',
+        'survey_observation.survey_id',
+        'survey_observation.itis_tsn',
+        'survey_observation.itis_scientific_name',
+        'survey_observation.survey_sample_site_id',
+        'survey_observation.survey_sample_method_id',
+        'survey_observation.survey_sample_period_id',
+        'survey_observation.latitude',
+        'survey_observation.longitude',
+        'survey_observation.count',
+        'survey_observation.observation_date',
+        'survey_observation.observation_time',
+        'w_survey_sample_site.survey_sample_site_name',
+        'w_survey_sample_method.survey_sample_method_name',
+        'w_survey_sample_period.survey_sample_period_start_datetime',
+        knex.raw(`COALESCE(w_subcounts.subcounts, '[]'::json) as subcounts`)
+      )
+      .from('survey_observation')
+      .leftJoin(
+        'w_survey_sample_site',
+        'survey_observation.survey_sample_site_id',
+        'w_survey_sample_site.survey_sample_site_id'
+      )
+      .leftJoin(
+        'w_survey_sample_method',
+        'survey_observation.survey_sample_method_id',
+        'w_survey_sample_method.survey_sample_method_id'
+      )
+      .leftJoin(
+        'w_survey_sample_period',
+        'survey_observation.survey_sample_period_id',
+        'w_survey_sample_period.survey_sample_period_id'
+      )
+      .innerJoin('w_subcounts', 'w_subcounts.survey_observation_id', 'survey_observation.survey_observation_id')
+      .whereIn('survey_observation.survey_id', userSurveyIds);
+
+    // // Start Date filter
+    // if (filterFields.start_date) {
+    //   query.andWhere('s.start_date', '>=', filterFields.start_date);
+    // }
+
+    // // End Date filter
+    // if (filterFields.end_date) {
+    //   query.andWhere('s.end_date', '<=', filterFields.end_date);
+    // }
+
+    // // Project Member filter (exact match)
+    // if (filterFields.system_user_id) {
+    //   query.andWhere('system_user_id', filterFields.system_user_id);
+    // }
+
+    // // Project Name filter (like match)
+    // if (filterFields.project_name) {
+    //   query.andWhere('s.name', 'ilike', `%${filterFields.project_name}%`);
+    // }
+
+    // // Focal Species filter
+    // if (filterFields.itis_tsns?.length) {
+    //   query.whereIn('sp.itis_tsn', filterFields.itis_tsns);
+    // }
+
+    // // Keyword Search filter
+    // if (filterFields.keyword) {
+    //   const keywordMatch = `%${filterFields.keyword}%`;
+    //   query.where((subQueryBuilder) => {
+    //     subQueryBuilder
+    //       .where('s.name', 'ilike', keywordMatch)
+    //       .orWhere('s.additional_details', 'ilike', keywordMatch)
+    //       .orWhere('s.comments', 'ilike', keywordMatch);
+
+    //     // If the keyword is a number, also match on survey Id
+    //     if (!isNaN(Number(filterFields.keyword))) {
+    //       subQueryBuilder.orWhere('s.survey_id', Number(filterFields.keyword));
+    //     }
+    //   });
+    // }
+
+    // // Programs filter
+    // if (filterFields.project_programs?.length) {
+    //   query.where('prog.program_id', 'IN', filterFields.project_programs);
+    // }
+
+    return query;
+  }
+
+  /**
+   * Get survey(s) that a user has access to
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IObservationAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof SurveyRepository
+   */
+  async getObservationList(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IObservationAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<ObservationRecordWithSamplingAndSubcountData[]> {
+    const query = this._makeObservationListQuery(isUserAdmin, systemUserId, filterFields);
+
+    // Pagination
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(query, ObservationRecordWithSamplingAndSubcountData);
+
+    return response.rows;
+  }
+
   /**
    * Deletes all survey observation records associated with the given survey, except
    * for records whose ID belongs to the given array, then returns the count of
@@ -623,6 +933,38 @@ export class ObservationRepository extends BaseRepository {
       .where('survey_id', surveyId);
 
     const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
+
+    return response.rows[0].count;
+  }
+
+  /**
+   * Retrieves the count of survey observations for the given survey
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IObservationAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
+   */
+  async getSurveyObservationCountByUserId(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IObservationAdvancedFilters
+  ): Promise<number> {
+    const observationListQuery = this._makeObservationListQuery(isUserAdmin, systemUserId, filterFields);
+
+    const knex = getKnex();
+
+    const queryBuilder = knex.from(observationListQuery.as('olq')).select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get survey count', [
+        'SurveyRepository->getSurveyCountByUserId',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
 
     return response.rows[0].count;
   }

@@ -1,0 +1,225 @@
+import Box from '@mui/material/Box';
+import Collapse from '@mui/material/Collapse';
+import grey from '@mui/material/colors/grey';
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
+import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { IObservationTableRow } from 'contexts/observationsTableContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
+import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
+import { useCallback, useEffect, useState } from 'react';
+import { ApiPaginationRequestOptions } from 'types/misc';
+import { firstOrNull } from 'utils/Utils';
+import ObservationsListFilterForm from './ObservationsListFilterForm';
+
+export interface IObservationsAdvancedFilters {
+  start_date: string;
+  end_date: string;
+  keyword: string;
+  project_name: string;
+  system_user_id: string;
+  itis_tsns: number[];
+}
+
+const pageSizeOptions = [10, 25, 50];
+
+interface IObservationsListContainerProps {
+  showSearch: boolean;
+}
+
+/**
+ * List of Surveys belonging to a Project.
+ *
+ * @return {*}
+ */
+const ObservationsListContainer = (props: IObservationsListContainerProps) => {
+  const { showSearch } = props;
+
+  const biohubApi = useBiohubApi();
+  // const taxonomyContext = useTaxonomyContext();
+  // const codesContext = useCodesContext();
+
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: pageSizeOptions[0]
+  });
+  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IObservationsAdvancedFilters | undefined>(undefined);
+
+  const observationsDataLoader = useDataLoader(
+    (pagination?: ApiPaginationRequestOptions, filter?: IObservationsAdvancedFilters) =>
+      biohubApi.observation.getObservationList(pagination, filter)
+  );
+
+  // Refresh survey list when pagination or sort changes
+  useEffect(() => {
+    const sort = firstOrNull(sortModel);
+    const pagination: ApiPaginationRequestOptions = {
+      limit: paginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
+    };
+
+    observationsDataLoader.refresh(pagination, advancedFiltersModel);
+
+    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sortModel, paginationModel, advancedFiltersModel]);
+
+  const getRowsFromObservations = useCallback(
+    (observationsData: IGetSurveyObservationsResponse): IObservationTableRow[] =>
+      observationsData.surveyObservations?.flatMap((observationRow) => {
+        return observationRow.subcounts.map((subcountRow) => {
+          return {
+            // Spread the standard observation row data into the row
+            id: String(observationRow.survey_observation_id),
+            ...observationRow,
+
+            // Spread the subcount row data into the row
+            observation_subcount_id: subcountRow.observation_subcount_id,
+            // Reduce the array of qualitative measurements into an object and spread into the row
+            ...subcountRow.qualitative_measurements.reduce((acc, cur) => {
+              return {
+                ...acc,
+                [cur.critterbase_taxon_measurement_id]: cur.critterbase_measurement_qualitative_option_id
+              };
+            }, {}),
+            // Reduce the array of quantitative measurements into an object and spread into the row
+            ...subcountRow.quantitative_measurements.reduce((acc, cur) => {
+              return {
+                ...acc,
+                [cur.critterbase_taxon_measurement_id]: cur.value
+              };
+            }, {}),
+            // Reduce the array of qualitative environments into an object and spread into the row
+            ...subcountRow.qualitative_environments.reduce((acc, cur) => {
+              return {
+                ...acc,
+                [cur.environment_qualitative_id]: cur.environment_qualitative_option_id
+              };
+            }, {}),
+            // Reduce the array of quantitative environments into an object and spread into the row
+            ...subcountRow.quantitative_environments.reduce((acc, cur) => {
+              return {
+                ...acc,
+                [cur.environment_quantitative_id]: cur.value
+              };
+            }, {})
+          };
+        });
+      }),
+    []
+  );
+
+  const rows = observationsDataLoader.data ? getRowsFromObservations(observationsDataLoader.data) : [];
+
+  console.log(rows)
+
+  const columns: GridColDef<IObservationTableRow>[] = [
+    {
+      field: 'survey_observation_id',
+      headerName: 'ID',
+      width: 50,
+      minWidth: 50,
+      renderHeader: () => (
+        <Typography color={grey[500]} variant="body2" fontWeight={700}>
+          ID
+        </Typography>
+      ),
+      renderCell: (params) => (
+        <Typography color={grey[500]} variant="body2">
+          {params.row.survey_observation_id}
+        </Typography>
+      )
+    },
+    {
+      field: 'itis_scientific_name',
+      headerName: 'Species',
+      renderCell: (params) => (
+        <Typography
+          key={params.row.observation_subcount_id}
+          fontStyle={
+            params.row.itis_scientific_name && params.row.itis_scientific_name.split(' ').length > 1
+              ? 'italic'
+              : 'normal'
+          }>
+          {params.row.itis_scientific_name}
+        </Typography>
+      )
+    },
+    {
+      field: 'count',
+      headerName: 'Count'
+    },
+    {
+      field: 'observation_date',
+      headerName: 'Date'
+    },
+    { field: 'observation_time', headerName: 'Time' },
+    { field: 'latitude', headerName: 'Latitude' },
+    { field: 'longitude', headerName: 'Longitude' }
+  ];
+
+  return (
+    <>
+      <Collapse in={showSearch}>
+        <ObservationsListFilterForm
+          handleSubmit={setAdvancedFiltersModel}
+          handleReset={() => setAdvancedFiltersModel(undefined)}
+        />
+        <Divider />
+      </Collapse>
+      <Box p={2}>
+        <StyledDataGrid
+          noRowsMessage="No observations found"
+          columns={columns}
+          rowHeight={70}
+          getRowHeight={() => 'auto'}
+          getEstimatedRowHeight={() => 500}
+          rows={rows ?? []}
+          rowCount={observationsDataLoader.data?.pagination.total ?? 0}
+          getRowId={(row) => row.observation_subcount_id}
+          pageSizeOptions={[...pageSizeOptions]}
+          paginationMode="server"
+          sortingMode="server"
+          sortModel={sortModel}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+          onSortModelChange={setSortModel}
+          rowSelection={false}
+          checkboxSelection={false}
+          disableRowSelectionOnClick
+          disableColumnSelector
+          disableColumnFilter
+          disableColumnMenu
+          sortingOrder={['asc', 'desc']}
+          sx={{
+            '& .MuiDataGrid-virtualScroller': {
+              // Height is an odd number to help the list obviously scrollable by likely cutting off the last visible row
+              height: '589px',
+              overflowY: 'auto !important',
+              background: grey[50]
+            },
+            '& .MuiDataGrid-overlay': {
+              background: grey[50]
+            },
+            '& .MuiDataGrid-cell': {
+              py: 0.75,
+              background: '#fff',
+              '&.MuiDataGrid-cell--editing:focus-within': {
+                outline: 'none'
+              }
+            }
+          }}
+        />
+      </Box>
+    </>
+  );
+};
+
+export default ObservationsListContainer;

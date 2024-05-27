@@ -1,34 +1,14 @@
-import { mdiFolder, mdiListBoxOutline, mdiMagnify, mdiPlus } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Toolbar from '@mui/material/Toolbar';
 import PageHeader from 'components/layout/PageHeader';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
-import SurveysListContainer from 'features/surveys/list/SurveysListContainer';
-import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import ProjectsListContainer from './list/ProjectsListContainer';
-
-export enum ProjectsPageViewEnum {
-  PROJECTS = 'PROJECTS',
-  SURVEYS = 'SURVEYS'
-}
-
-const buttonSx = {
-  py: 0.5,
-  px: 1.5,
-  border: 'none',
-  fontWeight: 700,
-  borderRadius: '4px !important',
-  fontSize: '0.875rem',
-  letterSpacing: '0.02rem'
-};
+import ObservationTelemetryAnimalContainer from './ObservationTelemetryAnimalContainer';
+import ProjectSurveyContainer from './ProjectSurveyContainer';
 
 /**
  * Page to display a list of projects.
@@ -36,16 +16,8 @@ const buttonSx = {
  * @return {*}
  */
 const ProjectsPage = () => {
-  const [activeView, setActiveView] = useState<ProjectsPageViewEnum>(ProjectsPageViewEnum.PROJECTS);
-  const [showSearch, setShowSearch] = useState(false);
-
-  const views = [
-    { value: ProjectsPageViewEnum.PROJECTS, label: 'PROJECTS', icon: mdiFolder },
-    { value: ProjectsPageViewEnum.SURVEYS, label: 'SURVEYS', icon: mdiListBoxOutline }
-  ];
-
   /**
-   * Displays project list.
+   * Display projects, surveys and survey data
    */
   return (
     <>
@@ -68,45 +40,10 @@ const ProjectsPage = () => {
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper>
-          <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <ToggleButtonGroup
-              value={activeView}
-              onChange={(_, value) => {
-                if (!value) {
-                  return;
-                }
-                return setActiveView(value);
-              }}
-              exclusive
-              sx={{
-                display: 'flex',
-                gap: 1,
-                '& Button': buttonSx
-              }}>
-              {views.map((view) => (
-                <ToggleButton
-                  key={view.label}
-                  component={Button}
-                  color="primary"
-                  startIcon={<Icon path={view.icon} size={0.75} />}
-                  value={view.value}>
-                  {view.label}
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-
-            <Button
-              color="primary"
-              sx={buttonSx}
-              onClick={() => setShowSearch(!showSearch)}
-              component={Button}
-              startIcon={<Icon path={mdiMagnify} size={1} />}>
-              SEARCH
-            </Button>
-          </Toolbar>
-          <Divider />
-          {activeView === 'PROJECTS' && <ProjectsListContainer showSearch={showSearch} />}
-          {activeView === 'SURVEYS' && <SurveysListContainer showSearch={showSearch} />}
+          <ProjectSurveyContainer />
+        </Paper>
+        <Paper sx={{ mt: 3 }}>
+          <ObservationTelemetryAnimalContainer />
         </Paper>
       </Container>
     </>
