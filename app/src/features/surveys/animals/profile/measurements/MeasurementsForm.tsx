@@ -20,6 +20,7 @@ interface IAnimalMeasurementsFormProps {
 /**
  * Returns the control for applying measurements to an animal on the animal capture form
  *
+ * @param {IAnimalMeasurementsFormProps} props
  * @return {*}
  */
 export const MeasurementsForm = (props: IAnimalMeasurementsFormProps) => {

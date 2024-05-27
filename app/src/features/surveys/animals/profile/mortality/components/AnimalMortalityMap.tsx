@@ -12,7 +12,8 @@ interface IAnimalMortalityMapProps {
 /**
  * Wrapper around the Survey Map component for displaying the selected animal's mortality on the map
  *
- * @returns
+ * @param {IAnimalMortalityMapProps} props
+ * @return {*}
  */
 const AnimalMortalityMap = (props: IAnimalMortalityMapProps) => {
   const { mortality, isLoading } = props;

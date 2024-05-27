@@ -3,6 +3,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { CreateCapturePage } from 'features/surveys/animals/profile/captures/capture-form/create/CreateCapturePage';
 import { EditCapturePage } from 'features/surveys/animals/profile/captures/capture-form/edit/EditCapturePage';
+import CreateMortalityPage from 'features/surveys/animals/profile/mortality/mortality-form/create/CreateMortalityPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
@@ -10,7 +11,6 @@ import { getTitle } from 'utils/Utils';
 import { CreateAnimalPage } from './animal-form/create/CreateAnimalPage';
 import { EditAnimalPage } from './animal-form/edit/EditAnimalPage';
 import { SurveyAnimalPage } from './AnimalPage';
-import CreateMortalityPage from './profile/mortality/create/CreateMortalityPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/animals/*` pages.
@@ -89,19 +89,18 @@ export const AnimalRouter: React.FC = () => {
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
-    <RouteWithTitle
-      exact
-      path={'/admin/projects/:id/surveys/:survey_id/animals/:survey_critter_id/mortality/create'}
-      title={getTitle('Report Mortality')}>
-      <ProjectRoleRouteGuard
-        validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-        validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-        <DialogContextProvider>
-          <CreateMortalityPage />
-        </DialogContextProvider>
-      </ProjectRoleRouteGuard>
-    </RouteWithTitle>
-  </Switch>
-);
-
-
+      <RouteWithTitle
+        exact
+        path={'/admin/projects/:id/surveys/:survey_id/animals/:survey_critter_id/mortality/create'}
+        title={getTitle('Report Mortality')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <CreateMortalityPage />
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+    </Switch>
+  );
+};

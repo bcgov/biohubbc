@@ -31,7 +31,8 @@ interface IAnimalCaptureCardContainer {
 /**
  * Returns accordian cards for displaying animal capture details on the animal profile page
  *
- * @returns
+ * @param {IAnimalCaptureCardContainer} props
+ * @return {*}
  */
 export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) => {
   const { captures, selectedAnimal, handleDelete } = props;

@@ -12,7 +12,8 @@ interface IAnimalCapturesMapProps {
 /**
  * Wrapper around the Survey Map component for displaying the selected animal's captures on the map
  *
- * @returns
+ * @param {IAnimalCapturesMapProps} props
+ * @return {*}
  */
 export const AnimalCapturesMap = (props: IAnimalCapturesMapProps) => {
   const { captures, isLoading } = props;

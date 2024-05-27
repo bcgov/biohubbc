@@ -13,6 +13,7 @@ interface IAnimalCapturesToolbarProps {
 /**
  * Toolbar for actions affecting an animal's captures, ie. add a new capture
  *
+ * @param {IAnimalCapturesToolbarProps} props
  * @returns {*}
  */
 export const AnimalCapturesToolbar = (props: IAnimalCapturesToolbarProps) => {

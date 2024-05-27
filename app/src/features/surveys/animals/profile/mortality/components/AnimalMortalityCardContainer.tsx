@@ -29,7 +29,8 @@ interface IAnimalMortalityCardContainer {
 /**
  * Returns accordian cards for displaying animal mortality details on the animal profile page
  *
- * @returns
+ * @param {IAnimalMortalityCardContainer} props
+ * @return {*}
  */
 const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContainer) => {
   const { mortality, selectedAnimal } = props;

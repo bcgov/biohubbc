@@ -184,7 +184,6 @@ const SamplingSiteList = () => {
       }
     });
   };
-  
 
   const samplingSiteCount = sampleSites.length ?? 0;
 

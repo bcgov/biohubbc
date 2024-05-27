@@ -8,13 +8,14 @@ import Typography from '@mui/material/Typography';
 
 interface IAnimalMortalityToolbarProps {
   onAddAnimalMortality: () => void;
-  isDeceased: boolean
+  isDeceased: boolean;
 }
 
 /**
  * Toolbar for actions affecting an animal's Mortality, ie. add a new Mortality
  *
- * @returns
+ * @param {IAnimalMortalityToolbarProps} props
+ * @return {*}
  */
 const AnimalMortalityToolbar = (props: IAnimalMortalityToolbarProps) => {
   const { onAddAnimalMortality, isDeceased } = props;
@@ -34,17 +35,21 @@ const AnimalMortalityToolbar = (props: IAnimalMortalityToolbarProps) => {
         }}>
         Mortality
       </Typography>
-      {isDeceased ? <IconButton onClick={onAddAnimalMortality}>
+      {isDeceased ? (
+        <IconButton onClick={onAddAnimalMortality}>
           <Icon path={mdiDotsVertical} size={1} />
-        </IconButton> : <Box display="flex">
-        <Button
-          variant="outlined"
-          color="error"
-          onClick={onAddAnimalMortality}
-          startIcon={<Icon path={mdiPlus} size={1} />}>
-          Report Mortality
-        </Button></Box>
-}
+        </IconButton>
+      ) : (
+        <Box display="flex">
+          <Button
+            variant="outlined"
+            color="error"
+            onClick={onAddAnimalMortality}
+            startIcon={<Icon path={mdiPlus} size={1} />}>
+            Report Mortality
+          </Button>
+        </Box>
+      )}
     </Toolbar>
   );
 };

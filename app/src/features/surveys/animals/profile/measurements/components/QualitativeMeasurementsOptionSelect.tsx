@@ -25,9 +25,9 @@ interface ICaptureQualitativeMeasurementOptionSelectProps {
    */
   index: number;
   /**
-   * 
+   * TODO
    */
-  formikName: string
+  formikName: string;
 }
 
 /**
