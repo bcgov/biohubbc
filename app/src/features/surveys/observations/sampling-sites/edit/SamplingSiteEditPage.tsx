@@ -3,16 +3,15 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
-import { SurveyContext } from 'contexts/surveyContext';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
 import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IEditSamplingSiteRequest, IGetSampleLocationDetailsForUpdate } from 'interfaces/useSamplingSiteApi.interface';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import SamplingSiteHeader from '../components/SamplingSiteHeader';
 import SampleSiteEditForm, { samplingSiteYupSchema } from './form/SampleSiteEditForm';
@@ -30,8 +29,9 @@ const SamplingSiteEditPage = () => {
 
   const [initialFormValues, setInitialFormValues] = useState<IGetSampleLocationDetailsForUpdate>();
 
-  const surveyContext = useContext(SurveyContext);
-  const dialogContext = useContext(DialogContext);
+  const surveyContext = useSurveyContext();
+  const projectContext = useProjectContext();
+  const dialogContext = useDialogContext();
 
   const formikRef = useRef<FormikProps<IGetSampleLocationDetailsForUpdate>>(null);
 
@@ -166,7 +166,7 @@ const SamplingSiteEditPage = () => {
     return true;
   };
 
-  if (!surveyContext.surveyDataLoader.data || !initialFormValues) {
+  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data || !initialFormValues) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -186,6 +186,7 @@ const SamplingSiteEditPage = () => {
             project_id={surveyContext.projectId}
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+            project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
             is_submitting={isSubmitting}
             title="Edit Sampling Site"
             breadcrumb="Edit Sampling Site"

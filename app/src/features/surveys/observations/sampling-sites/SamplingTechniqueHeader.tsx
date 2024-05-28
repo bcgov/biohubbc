@@ -12,7 +12,7 @@ import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interf
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
-export interface ISamplingSiteHeaderProps {
+export interface ISamplingTechniqueHeaderProps {
   project_id: number;
   survey_id: number;
   survey_name: string;
@@ -28,7 +28,7 @@ export interface ISamplingSiteHeaderProps {
  * @param {*} props
  * @return {*}
  */
-export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) => {
+export const SamplingTechniqueHeader: React.FC<ISamplingTechniqueHeaderProps> = (props) => {
   const history = useHistory();
   const formikProps = useFormikContext<ICreateSamplingSiteRequest>();
 
@@ -52,9 +52,9 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
             sx={{
               typography: 'body2'
             }}>
-              <Link
+                <Link
               component={RouterLink}
-              to={`/admin/projects/${project_id}/details`}
+              to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}
               underline="none">
               {project_name}
             </Link>
@@ -68,7 +68,13 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
               component={RouterLink}
               to={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}
               underline="none">
-              Manage Survey Observations
+              Observations
+            </Link>
+            <Link
+              component={RouterLink}
+              to={`/admin/projects/${project_id}/surveys/${survey_id}/manage-sampling`}
+              underline="none">
+              Manage Sampling Sites
             </Link>
             <Typography component="span" variant="body2" color="textSecondary">
               {breadcrumb}
@@ -109,4 +115,4 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
   );
 };
 
-export default SamplingSiteHeader;
+export default SamplingTechniqueHeader;

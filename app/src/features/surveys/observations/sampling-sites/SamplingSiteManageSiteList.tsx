@@ -1,4 +1,4 @@
-import { mdiCog, mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -17,9 +17,8 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
-import { SamplingSiteListSite } from 'features/surveys/observations/sampling-sites/list/SamplingSiteListSite';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext, useDialogContext, useObservationsPageContext, useSurveyContext } from 'hooks/useContext';
+import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -28,11 +27,10 @@ import { Link as RouterLink } from 'react-router-dom';
  *
  * @return {*}
  */
-const SamplingSiteList = () => {
+const SamplingSiteManageSiteList = () => {
   const surveyContext = useSurveyContext();
   const codesContext = useCodesContext();
   const dialogContext = useDialogContext();
-  const observationsPageContext = useObservationsPageContext();
   const biohubApi = useBiohubApi();
 
   useEffect(() => {
@@ -58,6 +56,8 @@ const SamplingSiteList = () => {
     setSampleSiteAnchorEl(event.currentTarget);
     setSelectedSampleSiteId(sample_site_id);
   };
+
+  console.log(handleSampleSiteMenuClick);
 
   const handleHeaderMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setHeaderAnchorEl(event.currentTarget);
@@ -131,6 +131,8 @@ const SamplingSiteList = () => {
       }
     });
   };
+
+  console.log(handleCheckboxChange);
 
   const handleBulkDeleteSampleSites = async () => {
     await biohubApi.samplingSite
@@ -243,7 +245,7 @@ const SamplingSiteList = () => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem onClick={handlePromptConfirmBulkDelete} disabled={observationsPageContext.isDisabled}>
+        <MenuItem onClick={handlePromptConfirmBulkDelete}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
@@ -275,10 +277,9 @@ const SamplingSiteList = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to={'manage-sampling'}
-            startIcon={<Icon path={mdiCog} size={0.8} />}
-            disabled={observationsPageContext.isDisabled}>
-            Manage
+            to={'sampling'}
+            startIcon={<Icon path={mdiPlus} size={0.8} />}>
+            Add
           </Button>
           <IconButton
             edge="end"
@@ -364,13 +365,14 @@ const SamplingSiteList = () => {
 
                   {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
                     return (
-                      <SamplingSiteListSite
-                        sampleSite={sampleSite}
-                        isChecked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
-                        handleSampleSiteMenuClick={handleSampleSiteMenuClick}
-                        handleCheckboxChange={handleCheckboxChange}
-                        key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
-                      />
+                      <>{sampleSite.name}</>
+                      //   <
+                      //     sampleSite={sampleSite}
+                      //     isChecked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
+                      //     handleSampleSiteMenuClick={handleSampleSiteMenuClick}
+                      //     handleCheckboxChange={handleCheckboxChange}
+                      //     key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
+                      //   />
                     );
                   })}
                 </Box>
@@ -394,4 +396,4 @@ const SamplingSiteList = () => {
   );
 };
 
-export default SamplingSiteList;
+export default SamplingSiteManageSiteList;

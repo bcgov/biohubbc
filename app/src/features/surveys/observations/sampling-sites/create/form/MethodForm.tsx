@@ -1,4 +1,11 @@
-import { mdiArrowRightThin, mdiCalendarMonthOutline, mdiClockOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import {
+  mdiArrowRightThin,
+  mdiCalendarMonthOutline,
+  mdiClockOutline,
+  mdiCog,
+  mdiPlus,
+  mdiTrashCanOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
@@ -131,19 +138,31 @@ const MethodForm = () => {
   if (!codesContext.codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
+  console.log(methodOptions);
+  const techniques = [];
 
   return (
     <form>
       <Stack gap={3} width={900}>
         <Stack component="fieldset" gap={3}>
+          <Box display="flex">
+            {/* <SelectWithSubtextField
+              id="method_lookup_id"
+              label="Sampling Technique"
+              name="method_lookup_id"
+              options={methodOptions}
+              required
+            /> */}
+            <Button
+              sx={{ ml: 2, px: 10, textTransform: 'uppercase' }}
+              color="primary"
+              variant="outlined"
+              startIcon={<Icon path={techniques.length ? mdiCog : mdiPlus} size={1} />}
+              aria-label="add author">
+              <strong>{techniques.length ? 'Manage techniques' : 'Create sampling technique'}</strong>
+            </Button>
+          </Box>
           <Typography component="legend">Details</Typography>
-          <SelectWithSubtextField
-            id="method_lookup_id"
-            label="Sampling Method"
-            name="method_lookup_id"
-            options={methodOptions}
-            required
-          />
           <SelectWithSubtextField
             id="method_response_metric_id"
             label="Response Metric"
@@ -153,7 +172,7 @@ const MethodForm = () => {
           />
           <CustomTextField
             name="description"
-            label="Description of method"
+            label="Description (optional)"
             maxLength={250}
             other={{ multiline: true, placeholder: 'Maximum 250 characters', rows: 3 }}
           />

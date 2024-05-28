@@ -13,8 +13,8 @@ import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interf
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
-import SamplingSiteHeader from '../components/SamplingSiteHeader';
-import SampleSiteCreateForm from './form/SampleSiteCreateForm';
+import SamplingTechniqueHeader from './SamplingTechniqueHeader';
+import TechniqueCreateForm from './technique/form/TechniqueCreateForm';
 
 export interface ISurveySampleSite {
   name: string;
@@ -23,16 +23,16 @@ export interface ISurveySampleSite {
 }
 
 /**
- * Renders the body content of the Sampling Site page.
+ * Renders the body content of the Technique page.
  *
  * @return {*}
  */
-const SamplingSitePage = () => {
+const SamplingSiteTechniquePage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext()
+  const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
 
   const formikRef = useRef<FormikProps<ICreateSamplingSiteRequest>>(null);
@@ -53,7 +53,7 @@ const SamplingSitePage = () => {
           geojson: yup.object({})
         })
       )
-      .min(1, 'At least one sampling site location is required'),
+      .min(1, 'At least one technique location is required'),
     sample_methods: yup
       .array(yup.object().concat(SamplingSiteMethodYupSchema))
       .min(1, 'At least one sampling method is required')
@@ -151,17 +151,17 @@ const SamplingSitePage = () => {
         validateOnChange={false}
         onSubmit={handleSubmit}>
         <Box display="flex" flexDirection="column" height="100%">
-          <SamplingSiteHeader
+          <SamplingTechniqueHeader
             project_id={surveyContext.projectId}
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
             project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
             is_submitting={isSubmitting}
-            title="Add Sampling Site"
-            breadcrumb="Add Sampling Sites"
+            title="Add Technique"
+            breadcrumb="Add Technique"
           />
           <Box display="flex" flex="1 1 auto">
-            <SampleSiteCreateForm isSubmitting={isSubmitting} />
+            <TechniqueCreateForm isSubmitting={isSubmitting} />
           </Box>
         </Box>
       </Formik>
@@ -169,4 +169,4 @@ const SamplingSitePage = () => {
   );
 };
 
-export default SamplingSitePage;
+export default SamplingSiteTechniquePage;

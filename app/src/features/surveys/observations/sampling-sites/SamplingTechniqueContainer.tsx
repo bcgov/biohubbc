@@ -1,4 +1,4 @@
-import { mdiCog, mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -17,22 +17,20 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
-import { SamplingSiteListSite } from 'features/surveys/observations/sampling-sites/list/SamplingSiteListSite';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext, useDialogContext, useObservationsPageContext, useSurveyContext } from 'hooks/useContext';
+import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 /**
- * Renders a list of sampling sites.
+ * Renders a list of techniques.
  *
  * @return {*}
  */
-const SamplingSiteList = () => {
+const SamplingSiteTechniqueContainer = () => {
   const surveyContext = useSurveyContext();
   const codesContext = useCodesContext();
   const dialogContext = useDialogContext();
-  const observationsPageContext = useObservationsPageContext();
   const biohubApi = useBiohubApi();
 
   useEffect(() => {
@@ -59,12 +57,14 @@ const SamplingSiteList = () => {
     setSelectedSampleSiteId(sample_site_id);
   };
 
+  console.log(handleSampleSiteMenuClick);
+
   const handleHeaderMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setHeaderAnchorEl(event.currentTarget);
   };
 
   /**
-   * Handle the delete sampling site API call.
+   * Handle the delete technique API call.
    *
    */
   const handleDeleteSampleSite = async () => {
@@ -82,7 +82,7 @@ const SamplingSiteList = () => {
           snackbarMessage: (
             <>
               <Typography variant="body2" component="div">
-                <strong>Error Deleting Sampling Site</strong>
+                <strong>Error Deleting Technique</strong>
               </Typography>
               <Typography variant="body2" component="div">
                 {String(error)}
@@ -95,18 +95,18 @@ const SamplingSiteList = () => {
   };
 
   /**
-   * Display the delete sampling site dialog.
+   * Display the delete technique dialog.
    *
    */
   const deleteSampleSiteDialog = () => {
     dialogContext.setYesNoDialog({
-      dialogTitle: 'Delete Sampling Site?',
+      dialogTitle: 'Delete Technique?',
       dialogContent: (
         <Typography variant="body1" component="div" color="textSecondary">
-          Are you sure you want to delete this sampling site?
+          Are you sure you want to delete this technique?
         </Typography>
       ),
-      yesButtonLabel: 'Delete Sampling Site',
+      yesButtonLabel: 'Delete Technique',
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'error' },
       onClose: () => {
@@ -132,6 +132,8 @@ const SamplingSiteList = () => {
     });
   };
 
+  console.log(handleCheckboxChange);
+
   const handleBulkDeleteSampleSites = async () => {
     await biohubApi.samplingSite
       .deleteSampleSites(surveyContext.projectId, surveyContext.surveyId, checkboxSelectedIds)
@@ -149,7 +151,7 @@ const SamplingSiteList = () => {
           snackbarMessage: (
             <>
               <Typography variant="body2" component="div">
-                <strong>Error Deleting Sampling Sites</strong>
+                <strong>Error Deleting Techniques</strong>
               </Typography>
               <Typography variant="body2" component="div">
                 {String(error)}
@@ -163,13 +165,13 @@ const SamplingSiteList = () => {
 
   const handlePromptConfirmBulkDelete = () => {
     dialogContext.setYesNoDialog({
-      dialogTitle: 'Delete Sampling Sites?',
+      dialogTitle: 'Delete Techniques?',
       dialogContent: (
         <Typography variant="body1" component="div" color="textSecondary">
-          Are you sure you want to delete the selected sampling sites?
+          Are you sure you want to delete the selected techniques?
         </Typography>
       ),
-      yesButtonLabel: 'Delete Sampling Sites',
+      yesButtonLabel: 'Delete Techniques',
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'error' },
       onClose: () => {
@@ -243,7 +245,7 @@ const SamplingSiteList = () => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem onClick={handlePromptConfirmBulkDelete} disabled={observationsPageContext.isDisabled}>
+        <MenuItem onClick={handlePromptConfirmBulkDelete}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
@@ -266,7 +268,7 @@ const SamplingSiteList = () => {
             pl: 2
           }}>
           <Typography variant="h3" component="h2" flexGrow={1}>
-            Sampling Sites &zwnj;
+            Sampling Techniques &zwnj;
             <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
               ({samplingSiteCount})
             </Typography>
@@ -275,10 +277,9 @@ const SamplingSiteList = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to={'manage-sampling'}
-            startIcon={<Icon path={mdiCog} size={0.8} />}
-            disabled={observationsPageContext.isDisabled}>
-            Manage
+            to={'manage-sampling/technique'}
+            startIcon={<Icon path={mdiPlus} size={0.8} />}>
+            Add
           </Button>
           <IconButton
             edge="end"
@@ -358,19 +359,20 @@ const SamplingSiteList = () => {
                       left={0}
                       bottom={0}
                       height="100%">
-                      <Typography variant="body2">No Sampling Sites</Typography>
+                      <Typography variant="body2">No Techniques</Typography>
                     </Stack>
                   )}
 
                   {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
                     return (
-                      <SamplingSiteListSite
-                        sampleSite={sampleSite}
-                        isChecked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
-                        handleSampleSiteMenuClick={handleSampleSiteMenuClick}
-                        handleCheckboxChange={handleCheckboxChange}
-                        key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
-                      />
+                      <>{sampleSite.name}</>
+                      //   <
+                      //     sampleSite={sampleSite}
+                      //     isChecked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
+                      //     handleSampleSiteMenuClick={handleSampleSiteMenuClick}
+                      //     handleCheckboxChange={handleCheckboxChange}
+                      //     key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
+                      //   />
                     );
                   })}
                 </Box>
@@ -394,4 +396,4 @@ const SamplingSiteList = () => {
   );
 };
 
-export default SamplingSiteList;
+export default SamplingSiteTechniqueContainer;

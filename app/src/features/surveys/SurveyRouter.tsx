@@ -9,6 +9,8 @@ import { getTitle } from 'utils/Utils';
 import EditSurveyPage from './edit/EditSurveyPage';
 import SamplingSitePage from './observations/sampling-sites/create/SamplingSitePage';
 import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
+import SamplingSiteManagePage from './observations/sampling-sites/SamplingSiteManagePage';
+import SamplingSiteTechniquePage from './observations/sampling-sites/SamplingTechniquePage';
 import { SurveyObservationPage } from './observations/SurveyObservationPage';
 import ManualTelemetryPage from './telemetry/ManualTelemetryPage';
 import { SurveyAnimalsPage } from './view/survey-animals/SurveyAnimalsPage';
@@ -77,6 +79,24 @@ const SurveyRouter: React.FC = () => {
       </RouteWithTitle>
 
       {/* Sample Site Routes  TODO: Remove unused path and page */}
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/manage-sampling"
+        title={getTitle('Manage Sampling Sites')}>
+        <DialogContextProvider>
+          <SamplingSiteManagePage />
+        </DialogContextProvider>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/manage-sampling/technique"
+        title={getTitle('Techniques')}>
+        <DialogContextProvider>
+          <SamplingSiteTechniquePage />
+        </DialogContextProvider>
+      </RouteWithTitle>
+
       <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/sampling" title={getTitle('Sampling Sites')}>
         <DialogContextProvider>
           <SamplingSitePage />
