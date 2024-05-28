@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
 
 /**
- * Create 7 new tables:
+ * Create 8 new tables:
  *
  * ATTRIBUTE LOOKUPS
  * - technique_attribute_quantitative
@@ -15,8 +15,8 @@ import { Knex } from 'knex';
  * - method_lookup_attribute_qualitative_option
  *
  * JOINS BETWEEN TECHNIQUE AND METHOD_LOOKUP_ATTRIBUTE_*
- * - method_technique_quantitative_attribute
- * - method_technique_qualitative_attribute
+ * - method_technique_attribute_quantitative
+ * - method_technique_attribute_qualitative
  *
  * @export
  * @param {Knex} knex
@@ -101,7 +101,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE method_lookup_attribute_qualitative (
       method_lookup_attribute_qualitative_id    uuid               DEFAULT public.gen_random_uuid(),
       technique_attribute_qualitative_id   uuid               NOT NULL,
-      method_lookup_id                     uuid               NOT NULL,
+      method_lookup_id                     integer               NOT NULL,
       description                          varchar(400),
       record_end_date                      date,
       create_date                          timestamptz(6)     DEFAULT now() NOT NULL,
@@ -136,7 +136,7 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE method_lookup_attribute_qualitative
       ADD CONSTRAINT method_lookup_attribute_qualitative_fk1
       FOREIGN KEY (technique_attribute_qualitative_id)
-      REFERENCES survey(technique_attribute_qualitative_id);
+      REFERENCES technique_attribute_qualitative(technique_attribute_qualitative_id);
 
     ALTER TABLE method_lookup_attribute_qualitative
       ADD CONSTRAINT method_lookup_attribute_qualitative_fk2
@@ -153,7 +153,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE method_lookup_attribute_quantitative (
       method_lookup_attribute_quantitative_id    uuid               DEFAULT public.gen_random_uuid(),
       technique_attribute_quantitative_id  uuid               NOT NULL,
-      method_lookup_id                     uuid               NOT NULL,
+      method_lookup_id                     integer               NOT NULL,
       description                          varchar(400),
       record_end_date                      date,
       create_date                          timestamptz(6)     DEFAULT now() NOT NULL,
@@ -188,7 +188,8 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE method_lookup_attribute_quantitative
       ADD CONSTRAINT method_lookup_attribute_quantitative_fk1
       FOREIGN KEY (technique_attribute_quantitative_id)
-      REFERENCES survey(technique_attribute_quantitative_id);
+      REFERENCES technique_attribute_quantitative(technique_attribute_quantitative_id);
+      
 
     ALTER TABLE method_lookup_attribute_quantitative
       ADD CONSTRAINT method_lookup_attribute_quantitative_fk2
@@ -220,7 +221,7 @@ export async function up(knex: Knex): Promise<void> {
 
     COMMENT ON TABLE  method_lookup_attribute_qualitative_option                                      IS 'qualitative technique attribute options.';
     COMMENT ON COLUMN method_lookup_attribute_qualitative_option.method_lookup_attribute_qualitative_option_id    IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN method_lookup_attribute_qualitative_option.method_lookup_technique_attribute_qualitative_id           IS 'Foreign key to the method_lookup_technique_attribute_qualitative table.';
+    COMMENT ON COLUMN method_lookup_attribute_qualitative_option.method_lookup_attribute_qualitative_id           IS 'Foreign key to the method_lookup_attribute_qualitative table.';
     COMMENT ON COLUMN method_lookup_attribute_qualitative_option.name                                 IS 'The name of the option.';
     COMMENT ON COLUMN method_lookup_attribute_qualitative_option.description                          IS 'The description of the option.';
     COMMENT ON COLUMN method_lookup_attribute_qualitative_option.record_end_date                      IS 'Record level end date.';
@@ -230,8 +231,8 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN method_lookup_attribute_qualitative_option.update_user                          IS 'The id of the user who updated the record as identified in the system user table.';
     COMMENT ON COLUMN method_lookup_attribute_qualitative_option.revision_count                       IS 'Revision count used for concurrency control.';
 
-    -- Add unique end-date key constraint (don't allow 2 records with the same method_lookup_technique_attribute_qualitative_id and name and a NULL record_end_date)
-    CREATE UNIQUE INDEX method_lookup_attribute_qualitative_option_nuk1 ON method_lookup_attribute_qualitative_option(method_lookup_technique_attribute_qualitative_id, name, (record_end_date IS NULL)) WHERE record_end_date IS NULL;
+    -- Add unique end-date key constraint (don't allow 2 records with the same method_lookup_attribute_qualitative_id and name and a NULL record_end_date)
+    CREATE UNIQUE INDEX method_lookup_attribute_qualitative_option_nuk1 ON method_lookup_attribute_qualitative_option(method_lookup_attribute_qualitative_id, name, (record_end_date IS NULL)) WHERE record_end_date IS NULL;
     
     -- Add unique composite key constraint
     ALTER TABLE method_lookup_attribute_qualitative_option
@@ -239,10 +240,10 @@ export async function up(knex: Knex): Promise<void> {
       UNIQUE (method_lookup_attribute_qualitative_option_id, method_lookup_attribute_qualitative_id);
 
     -- Add foreign key constraint
-    ALTER TABLE method_lookup_attribute_qualitative
-      ADD CONSTRAINT method_lookup_attribute_qualitative_fk1
+    ALTER TABLE method_lookup_attribute_qualitative_option
+      ADD CONSTRAINT method_lookup_attribute_qualitative_option_fk1
       FOREIGN KEY (method_lookup_attribute_qualitative_id)
-      REFERENCES survey(method_lookup_attribute_qualitative_id);
+      REFERENCES method_lookup_attribute_qualitative(method_lookup_attribute_qualitative_id);
 
     -- Add indexes for foreign keys
     CREATE INDEX method_lookup_attribute_qualitative_option_idx1 ON method_lookup_attribute_qualitative_option(method_lookup_attribute_qualitative_id);
@@ -256,6 +257,7 @@ export async function up(knex: Knex): Promise<void> {
       survey_id                                           integer            NOT NULL,
       name                                                varchar(64)        NOT NULL,
       description                                         varchar(1048),
+      distance_threshold                                  decimal,
       method_lookup_id                                    integer            NOT NULL,
       create_date                                         timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                                         integer            NOT NULL,
@@ -270,6 +272,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN method_technique.survey_id                                           IS 'Foreign key to the survey table.';
     COMMENT ON COLUMN method_technique.name                                                IS 'Name of the method technique.';
     COMMENT ON COLUMN method_technique.description                                         IS 'Description of the method technique.';
+    COMMENT ON COLUMN method_technique.distance_threshold                                  IS 'Maximum distance under which data were collected. Data beyond the distance threshold are not included.';
     COMMENT ON COLUMN method_technique.method_lookup_id                                    IS 'Foreign key to the method_lookup table.';
     COMMENT ON COLUMN method_technique.create_date                                         IS 'The datetime the record was created.';
     COMMENT ON COLUMN method_technique.create_user                                         IS 'The id of the user who created the record as identified in the system user table.';
@@ -298,8 +301,8 @@ export async function up(knex: Knex): Promise<void> {
 
     ----------------------------------------------------------------------------------------
 
-    CREATE TABLE method_technique_quantitative_attribute (
-      method_technique_quantitative_attribute_id          integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    CREATE TABLE method_technique_attribute_quantitative (
+      method_technique_attribute_quantitative_id          integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       method_technique_id                                 integer            NOT NULL,
       method_lookup_attribute_quantitative_id             uuid               NOT NULL,
       value                                               numeric            NOT NULL,
@@ -308,97 +311,97 @@ export async function up(knex: Knex): Promise<void> {
       update_date                                         timestamptz(6),
       update_user                                         integer,
       revision_count                                      integer            DEFAULT 0 NOT NULL,
-      CONSTRAINT method_technique_quantitative_attribute_pk PRIMARY KEY (method_technique_quantitative_attribute_id)
+      CONSTRAINT method_technique_attribute_quantitative_pk PRIMARY KEY (method_technique_attribute_quantitative_id)
     );
 
-    COMMENT ON TABLE  method_technique_quantitative_attribute                                                     IS 'This table is intended to track quantitative technique attributess applied to a particular technique.';
-    COMMENT ON COLUMN method_technique_quantitative_attribute.method_technique_quantitative_attribute_id    IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN method_technique_quantitative_attribute.method_technique_id                             IS 'Foreign key to the method_technique table.';
-    COMMENT ON COLUMN method_technique_quantitative_attribute.method_lookup_attribute_quantitative_id                         IS 'Foreign key to the technique_attribute_quantitative table.';
-    COMMENT ON COLUMN method_technique_quantitative_attribute.value                                               IS 'Quantitative data value.';
-    COMMENT ON COLUMN method_technique_quantitative_attribute.create_date                                         IS 'The datetime the record was created.';
-    COMMENT ON COLUMN method_technique_quantitative_attribute.create_user                                         IS 'The id of the user who created the record as identified in the system user table.';
-    COMMENT ON COLUMN method_technique_quantitative_attribute.update_date                                         IS 'The datetime the record was updated.';
-    COMMENT ON COLUMN method_technique_quantitative_attribute.update_user                                         IS 'The id of the user who updated the record as identified in the system user table.';
-    COMMENT ON COLUMN method_technique_quantitative_attribute.revision_count                                      IS 'Revision count used for concurrency control.';
+    COMMENT ON TABLE  method_technique_attribute_quantitative                                                     IS 'This table is intended to track quantitative technique attributess applied to a particular technique.';
+    COMMENT ON COLUMN method_technique_attribute_quantitative.method_technique_attribute_quantitative_id    IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN method_technique_attribute_quantitative.method_technique_id                             IS 'Foreign key to the method_technique table.';
+    COMMENT ON COLUMN method_technique_attribute_quantitative.method_lookup_attribute_quantitative_id                         IS 'Foreign key to the technique_attribute_quantitative table.';
+    COMMENT ON COLUMN method_technique_attribute_quantitative.value                                               IS 'Quantitative data value.';
+    COMMENT ON COLUMN method_technique_attribute_quantitative.create_date                                         IS 'The datetime the record was created.';
+    COMMENT ON COLUMN method_technique_attribute_quantitative.create_user                                         IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN method_technique_attribute_quantitative.update_date                                         IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN method_technique_attribute_quantitative.update_user                                         IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN method_technique_attribute_quantitative.revision_count                                      IS 'Revision count used for concurrency control.';
 
     -- Add unique constraint
-    CREATE UNIQUE INDEX method_technique_quantitative_attribute_uk1 ON method_technique_quantitative_attribute(method_technique_id, method_lookup_attribute_quantitative_id);
+    CREATE UNIQUE INDEX method_technique_attribute_quantitative_uk1 ON method_technique_attribute_quantitative(method_technique_id, method_lookup_attribute_quantitative_id);
 
     -- Add foreign key constraint
-    ALTER TABLE method_technique_quantitative_attribute
-      ADD CONSTRAINT method_technique_quantitative_attribute_fk1
+    ALTER TABLE method_technique_attribute_quantitative
+      ADD CONSTRAINT method_technique_attribute_quantitative_fk1
       FOREIGN KEY (method_technique_id)
       REFERENCES method_technique(method_technique_id);
 
-    ALTER TABLE method_technique_quantitative_attribute
-      ADD CONSTRAINT method_technique_quantitative_attribute_fk2
+    ALTER TABLE method_technique_attribute_quantitative
+      ADD CONSTRAINT method_technique_attribute_quantitative_fk2
       FOREIGN KEY (method_lookup_attribute_quantitative_id)
-      REFERENCES technique_attribute_quantitative(method_lookup_attribute_quantitative_id);
+      REFERENCES technique_attribute_quantitative(technique_attribute_quantitative_id);
 
     -- Add indexes for foreign keys
-    CREATE INDEX method_technique_quantitative_attribute_idx1 ON method_technique_quantitative_attribute(method_technique_id);
+    CREATE INDEX method_technique_attribute_quantitative_idx1 ON method_technique_attribute_quantitative(method_technique_id);
 
-    CREATE INDEX method_technique_quantitative_attribute_idx2 ON method_technique_quantitative_attribute(method_lookup_attribute_quantitative_id);
+    CREATE INDEX method_technique_attribute_quantitative_idx2 ON method_technique_attribute_quantitative(method_lookup_attribute_quantitative_id);
 
     ----------------------------------------------------------------------------------------
 
-    CREATE TABLE method_technique_qualitative_attribute (
-      method_technique_qualitative_attribute_id          integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    CREATE TABLE method_technique_attribute_qualitative (
+      method_technique_attribute_qualitative_id          integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       method_technique_id                                integer            NOT NULL,
-      method_lookup_attribute_qualitative_id                         uuid               NOT NULL,
-      method_lookup_attribute_qualitative_option_id                  uuid               NOT NULL,
+      method_lookup_attribute_qualitative_id             uuid               NOT NULL,
+      method_lookup_attribute_qualitative_option_id      uuid               NOT NULL,
       create_date                                        timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                                        integer            NOT NULL,
       update_date                                        timestamptz(6),
       update_user                                        integer,
       revision_count                                     integer            DEFAULT 0 NOT NULL,
-      CONSTRAINT method_technique_qualitative_attribute_pk PRIMARY KEY (method_technique_qualitative_attribute_id)
+      CONSTRAINT method_technique_attribute_qualitative_pk PRIMARY KEY (method_technique_attribute_qualitative_id)
     );
 
-    COMMENT ON TABLE  method_technique_qualitative_attribute                                                    IS 'This table is intended to track qualitative technique attributess applied to a particular method_technique.';
-    COMMENT ON COLUMN method_technique_qualitative_attribute.method_technique_qualitative_attribute_id    IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN method_technique_qualitative_attribute.method_technique_id                            IS 'Foreign key to the method_technique table.';
-    COMMENT ON COLUMN method_technique_qualitative_attribute.method_lookup_attribute_qualitative_id                         IS 'Foreign key to the method_lookup_attribute_qualitative table.';
-    COMMENT ON COLUMN method_technique_qualitative_attribute.method_lookup_attribute_qualitative_option_id                  IS 'Foreign key to the method_lookup_attribute_qualitative_option table.';
-    COMMENT ON COLUMN method_technique_qualitative_attribute.create_date                                        IS 'The datetime the record was created.';
-    COMMENT ON COLUMN method_technique_qualitative_attribute.create_user                                        IS 'The id of the user who created the record as identified in the system user table.';
-    COMMENT ON COLUMN method_technique_qualitative_attribute.update_date                                        IS 'The datetime the record was updated.';
-    COMMENT ON COLUMN method_technique_qualitative_attribute.update_user                                        IS 'The id of the user who updated the record as identified in the system user table.';
-    COMMENT ON COLUMN method_technique_qualitative_attribute.revision_count                                     IS 'Revision count used for concurrency control.';
+    COMMENT ON TABLE  method_technique_attribute_qualitative                                                    IS 'This table is intended to track qualitative technique attributess applied to a particular method_technique.';
+    COMMENT ON COLUMN method_technique_attribute_qualitative.method_technique_attribute_qualitative_id    IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN method_technique_attribute_qualitative.method_technique_id                            IS 'Foreign key to the method_technique table.';
+    COMMENT ON COLUMN method_technique_attribute_qualitative.method_lookup_attribute_qualitative_id                         IS 'Foreign key to the method_lookup_attribute_qualitative table.';
+    COMMENT ON COLUMN method_technique_attribute_qualitative.method_lookup_attribute_qualitative_option_id                  IS 'Foreign key to the method_lookup_attribute_qualitative_option table.';
+    COMMENT ON COLUMN method_technique_attribute_qualitative.create_date                                        IS 'The datetime the record was created.';
+    COMMENT ON COLUMN method_technique_attribute_qualitative.create_user                                        IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN method_technique_attribute_qualitative.update_date                                        IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN method_technique_attribute_qualitative.update_user                                        IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN method_technique_attribute_qualitative.revision_count                                     IS 'Revision count used for concurrency control.';
 
     -- Add unique constraint
-    CREATE UNIQUE INDEX method_technique_qualitative_attribute_uk1 ON method_technique_qualitative_attribute(method_technique_id, method_lookup_attribute_qualitative_id, method_lookup_attribute_qualitative_option_id);
+    CREATE UNIQUE INDEX method_technique_attribute_qualitative_uk1 ON method_technique_attribute_qualitative(method_technique_id, method_lookup_attribute_qualitative_id, method_lookup_attribute_qualitative_option_id);
 
     -- Add foreign key constraint
-    ALTER TABLE method_technique_qualitative_attribute
-      ADD CONSTRAINT method_technique_qualitative_attribute_fk1
+    ALTER TABLE method_technique_attribute_qualitative
+      ADD CONSTRAINT method_technique_attribute_qualitative_fk1
       FOREIGN KEY (method_technique_id)
       REFERENCES method_technique(method_technique_id);
 
-    ALTER TABLE method_technique_qualitative_attribute
-      ADD CONSTRAINT method_technique_qualitative_attribute_fk2
+    ALTER TABLE method_technique_attribute_qualitative
+      ADD CONSTRAINT method_technique_attribute_qualitative_fk2
       FOREIGN KEY (method_lookup_attribute_qualitative_id)
       REFERENCES method_lookup_attribute_qualitative(method_lookup_attribute_qualitative_id);
 
-    ALTER TABLE method_technique_qualitative_attribute
-      ADD CONSTRAINT method_technique_qualitative_attribute_fk3
+    ALTER TABLE method_technique_attribute_qualitative
+      ADD CONSTRAINT method_technique_attribute_qualitative_fk3
       FOREIGN KEY (method_lookup_attribute_qualitative_option_id)
       REFERENCES method_lookup_attribute_qualitative_option(method_lookup_attribute_qualitative_option_id);
 
     -- Foreign key on both method_lookup_attribute_qualitative_id and method_lookup_attribute_qualitative_option_id of 
     -- method_lookup_attribute_qualitative_option to ensure that the combination of those ids in this table has a valid match.
-    ALTER TABLE method_technique_qualitative_attribute
-      ADD CONSTRAINT method_technique_qualitative_attribute_fk4
+    ALTER TABLE method_technique_attribute_qualitative
+      ADD CONSTRAINT method_technique_attribute_qualitative_fk4
       FOREIGN KEY (method_lookup_attribute_qualitative_id, method_lookup_attribute_qualitative_option_id)
       REFERENCES method_lookup_attribute_qualitative_option(method_lookup_attribute_qualitative_id, method_lookup_attribute_qualitative_option_id);
 
     -- Add indexes for foreign keys
-    CREATE INDEX method_technique_qualitative_attribute_idx1 ON method_technique_qualitative_attribute(method_technique_id);
+    CREATE INDEX method_technique_attribute_qualitative_idx1 ON method_technique_attribute_qualitative(method_technique_id);
 
-    CREATE INDEX method_technique_qualitative_attribute_idx2 ON method_technique_qualitative_attribute(method_lookup_attribute_qualitative_id);
+    CREATE INDEX method_technique_attribute_qualitative_idx2 ON method_technique_attribute_qualitative(method_lookup_attribute_qualitative_id);
 
-    CREATE INDEX method_technique_qualitative_attribute_idx3 ON method_technique_qualitative_attribute(method_lookup_attribute_qualitative_option_id);
+    CREATE INDEX method_technique_attribute_qualitative_idx3 ON method_technique_attribute_qualitative(method_lookup_attribute_qualitative_option_id);
 
     ----------------------------------------------------------------------------------------
     -- Create audit/journal triggers
@@ -416,14 +419,14 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TRIGGER audit_method_lookup_attribute_quantitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_method_lookup_attribute_quantitative AFTER INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
-    CREATE TRIGGER audit_technique_attribute_qualitative_option BEFORE INSERT OR UPDATE OR DELETE ON biohub.technique_attribute_qualitative_option FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_technique_attribute_qualitative_option AFTER INSERT OR UPDATE OR DELETE ON biohub.technique_attribute_qualitative_option FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+    CREATE TRIGGER audit_method_lookup_attribute_qualitative_option BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_qualitative_option FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_method_lookup_attribute_qualitative_option AFTER INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_qualitative_option FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
-    CREATE TRIGGER audit_method_technique_quantitative_attribute BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_technique_quantitative_attribute FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_method_technique_quantitative_attribute AFTER INSERT OR UPDATE OR DELETE ON biohub.method_technique_quantitative_attribute FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+    CREATE TRIGGER audit_method_technique_attribute_quantitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_technique_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_method_technique_attribute_quantitative AFTER INSERT OR UPDATE OR DELETE ON biohub.method_technique_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
-    CREATE TRIGGER audit_method_technique_qualitative_attribute BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_technique_qualitative_attribute FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_method_technique_qualitative_attribute AFTER INSERT OR UPDATE OR DELETE ON biohub.method_technique_qualitative_attribute FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+    CREATE TRIGGER audit_method_technique_attribute_qualitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_technique_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_method_technique_attribute_qualitative AFTER INSERT OR UPDATE OR DELETE ON biohub.method_technique_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
     CREATE TRIGGER audit_method_technique BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_technique FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_method_technique AFTER INSERT OR UPDATE OR DELETE ON biohub.method_technique FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
@@ -438,9 +441,9 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE OR REPLACE VIEW technique_attribute_qualitative AS SELECT * FROM biohub.technique_attribute_qualitative;
 
-    CREATE OR REPLACE VIEW method_lookup_quantitative_attribute AS SELECT * FROM biohub.method_lookup_quantitative_attribute;
+    CREATE OR REPLACE VIEW method_lookup_attribute_quantitative AS SELECT * FROM biohub.method_lookup_attribute_quantitative;
 
-    CREATE OR REPLACE VIEW method_lookup_qualitative_attribute AS SELECT * FROM biohub.method_lookup_qualitative_attribute;
+    CREATE OR REPLACE VIEW method_lookup_attribute_qualitative AS SELECT * FROM biohub.method_lookup_attribute_qualitative;
     
     CREATE OR REPLACE VIEW method_lookup_attribute_qualitative_option AS SELECT * FROM biohub.method_lookup_attribute_qualitative_option;
 

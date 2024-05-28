@@ -1,3 +1,4 @@
+import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { useProjectContext, useSurveyContext } from 'hooks/useContext';
@@ -11,7 +12,6 @@ const SamplingSiteManagePage = () => {
   return (
     <Stack
       sx={{
-        // margin: 0,
         '& .MuiContainer-root': {
           maxWidth: 'none'
         }
@@ -23,12 +23,14 @@ const SamplingSiteManagePage = () => {
         survey_name={surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name ?? ''}
       />
 
-      <Paper sx={{ mb: 3 }}>
-        <SamplingSiteTechniqueContainer />
-      </Paper>
-      <Paper>
-        <SamplingSiteManageSiteList />
-      </Paper>
+      <Container maxWidth={'xl'} sx={{ py: { xs: 2, sm: 3 } }}>
+        <Paper sx={{ mb: 3 }}>
+          <SamplingSiteTechniqueContainer />
+        </Paper>
+        <Paper>
+          <SamplingSiteManageSiteList />
+        </Paper>
+      </Container>
     </Stack>
   );
 };
