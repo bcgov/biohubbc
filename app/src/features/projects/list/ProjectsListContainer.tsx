@@ -43,6 +43,8 @@ interface IProjectsListContainerProps {
 
 const pageSizeOptions = [10, 25, 50];
 
+const tableHeight = '589px';
+
 /**
  * Page to display a list of projects.
  *
@@ -261,9 +263,13 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
           sortingOrder={['asc', 'desc']}
           sx={{
             '& .MuiDataGrid-virtualScroller': {
-              height: '600px',
+              // Height is an odd number to help the list obviously scrollable by likely cutting off the last visible row
+              height: tableHeight,
               overflowY: 'auto !important',
               background: grey[50]
+            },
+            '& .MuiDataGrid-overlayWrapperInner': {
+              height: `${tableHeight} !important`
             },
             '& .MuiDataGrid-overlay': {
               background: grey[50]

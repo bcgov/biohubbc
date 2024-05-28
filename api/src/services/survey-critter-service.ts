@@ -20,6 +20,16 @@ export class SurveyCritterService extends DBService {
   }
 
   /**
+   * Get all critters that a user has access to. This only gets you critter ids, which can be used to fetch details from the external system.
+   * @param {boolean} isUserAdmin
+   * @param {number} systemUserId
+   * @returns {*}
+   */
+  async getCrittersByUserId(isUserAdmin: boolean, systemUserId: number): Promise<SurveyCritterRecord[]> {
+    return this.critterRepository.getCrittersByUserId(isUserAdmin, systemUserId);
+  }
+
+  /**
    * Add a critter as part of this survey. Does not create anything in the external system.
    *
    * @param {number} surveyId

@@ -381,6 +381,12 @@ export class CritterbaseService {
     return response.data;
   }
 
+  // TODO: Bug fix - not returning any critters with ?format=detailed
+  async getMultipleCrittersByIdsDetailed(critter_ids: string[]) {
+    const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}`, { critter_ids }); //?format=detailed
+    return response.data;
+  }
+
   async signUp() {
     const response = await this.axiosInstance.post(SIGNUP_ENDPOINT);
     return response.data;

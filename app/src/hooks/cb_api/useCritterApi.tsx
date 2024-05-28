@@ -35,7 +35,7 @@ const useCritterApi = (axios: AxiosInstance) => {
    * @returns {Promise<ICritterDetailedResponse>}
    */
   const getDetailedCritter = async (critter_id: string): Promise<ICritterDetailedResponse> => {
-    const { data } = await axios.get(`/api/critterbase/critters/${critter_id}?format=detailed`);
+    const { data } = await axios.get(`/api/critterbase/critters/${critter_id}?format=detailedd`);
     return data;
   };
 

@@ -1,5 +1,5 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
-import { IObservationsAdvancedFilters } from 'features/surveys/observations/ObservationsListContainer';
+import { IObservationsAdvancedFilters } from 'features/surveys/observations/list/ObservationsListContainer';
 
 import {
   IGetSurveyObservationsGeometryResponse,

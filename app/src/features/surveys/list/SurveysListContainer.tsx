@@ -40,6 +40,8 @@ interface ISurveysListContainerProps {
   showSearch: boolean;
 }
 
+const tableHeight = '589px';
+
 /**
  * List of Surveys belonging to a Project.
  *
@@ -238,9 +240,12 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
           sx={{
             '& .MuiDataGrid-virtualScroller': {
               // Height is an odd number to help the list obviously scrollable by likely cutting off the last visible row
-              height: '589px',
+              height: tableHeight,
               overflowY: 'auto !important',
               background: grey[50]
+            },
+            '& .MuiDataGrid-overlayWrapperInner': {
+              height: `${tableHeight} !important`
             },
             '& .MuiDataGrid-overlay': {
               background: grey[50]

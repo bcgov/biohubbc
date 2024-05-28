@@ -29,6 +29,8 @@ interface IObservationsListContainerProps {
   showSearch: boolean;
 }
 
+const tableHeight = '589px';
+
 /**
  * List of Surveys belonging to a Project.
  *
@@ -118,8 +120,6 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
 
   const rows = observationsDataLoader.data ? getRowsFromObservations(observationsDataLoader.data) : [];
 
-  console.log(rows)
-
   const columns: GridColDef<IObservationTableRow>[] = [
     {
       field: 'survey_observation_id',
@@ -140,6 +140,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
     {
       field: 'itis_scientific_name',
       headerName: 'Species',
+      flex: 1,
       renderCell: (params) => (
         <Typography
           key={params.row.observation_subcount_id}
@@ -154,15 +155,17 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
     },
     {
       field: 'count',
-      headerName: 'Count'
+      headerName: 'Count',
+      flex: 1
     },
     {
       field: 'observation_date',
-      headerName: 'Date'
+      headerName: 'Date',
+      flex: 1
     },
-    { field: 'observation_time', headerName: 'Time' },
-    { field: 'latitude', headerName: 'Latitude' },
-    { field: 'longitude', headerName: 'Longitude' }
+    { field: 'observation_time', headerName: 'Time', flex: 1 },
+    { field: 'latitude', headerName: 'Latitude', flex: 1 },
+    { field: 'longitude', headerName: 'Longitude', flex: 1 }
   ];
 
   return (
@@ -201,9 +204,12 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
           sx={{
             '& .MuiDataGrid-virtualScroller': {
               // Height is an odd number to help the list obviously scrollable by likely cutting off the last visible row
-              height: '589px',
+              height: tableHeight,
               overflowY: 'auto !important',
               background: grey[50]
+            },
+            '& .MuiDataGrid-overlayWrapperInner': {
+              height: `${tableHeight} !important`
             },
             '& .MuiDataGrid-overlay': {
               background: grey[50]

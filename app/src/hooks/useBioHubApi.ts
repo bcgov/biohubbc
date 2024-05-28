@@ -3,6 +3,7 @@ import useReferenceApi from 'hooks/api/useReferenceApi';
 import { useConfigContext } from 'hooks/useContext';
 import { useMemo } from 'react';
 import useAdminApi from './api/useAdminApi';
+import { useAnimalApi } from './api/useAnimalApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import useExternalApi from './api/useExternalApi';
@@ -35,6 +36,8 @@ export const useBiohubApi = () => {
   const taxonomy = useTaxonomyApi();
 
   const survey = useSurveyApi(apiAxios);
+
+  const animal = useAnimalApi(apiAxios);
 
   const codes = useCodesApi(apiAxios);
 
@@ -69,6 +72,7 @@ export const useBiohubApi = () => {
       observation,
       resources,
       codes,
+      animal,
       user,
       admin,
       external,

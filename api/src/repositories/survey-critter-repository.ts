@@ -29,6 +29,36 @@ export class SurveyCritterRepository extends BaseRepository {
   }
 
   /**
+   * Get critter Ids that a user has access to
+   *
+   * @param {number} isUserAdmin
+   * @param {number} systemUserId
+   * @returns {*}
+   * @member SurveyRepository
+   */
+  async getCrittersByUserId(isUserAdmin: boolean, systemUserId: number): Promise<SurveyCritterRecord[]> {
+    defaultLog.debug({ label: 'getCrittersInSurvey', systemUserId });
+
+    const queryBuilder = getKnex().select('*').from('critter as c');
+
+    console.log(isUserAdmin)
+
+    if (!isUserAdmin) {
+      queryBuilder
+        .leftJoin('survey as s', 's.survey_id', 'c.survey_id')
+        .leftJoin('project as p', 'p.project_id', 's.project_id')
+        .leftJoin('project_participation as pp', 'pp.project_id', 'p.project_id')
+        .where('pp.system_user_id', systemUserId);
+    }
+
+    const response = await this.connection.knex(queryBuilder);
+
+    console.log(response.rows)
+
+    return response.rows;
+  }
+
+  /**
    * Add critter to survey
    *
    * @param {number} surveyId
