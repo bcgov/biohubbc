@@ -11,7 +11,6 @@ import ProjectAdvancedFilters from 'components/search-filter/ProjectAdvancedFilt
 import { SystemRoleGuard } from 'components/security/Guards';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import { SYSTEM_ROLE } from 'constants/roles';
-import SystemUserAutocomplete from 'features/projects/components/SystemUserAutocomplete';
 import MultiAutocompleteStack from 'features/projects/list/components/MultiAutocompleteStack';
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
@@ -43,7 +42,7 @@ const AnimalsSearchFilters = (props: IAnimalsSearchFiltersProps) => {
     <Stack spacing={1}>
       <Box display="flex" alignItems="center">
         <MultiAutocompleteStack>
-          <CustomTextField placeholder="Type any keyword" name="keyword" label="Keyword" other={{ sx: { pl: 1 } }} />
+          <CustomTextField name="nickname" label="Nickname or Wildlife Health ID" other={{ sx: { pl: 1 } }} />
           <Box minWidth="33%">
             <SpeciesAutocompleteField
               formikFieldName={'itis_tsns'}
@@ -59,20 +58,7 @@ const AnimalsSearchFilters = (props: IAnimalsSearchFiltersProps) => {
               showSelectedValue={true}
             />
           </Box>
-          <Box minWidth="33%">
-            <SystemUserAutocomplete
-              label="Person"
-              formikFieldName="system_user_id"
-              handleUser={(value) => {
-                setFieldValue('system_user_id', value?.system_user_id);
-              }}
-              handleClear={() => {
-                setFieldValue('system_user_id', '');
-              }}
-              required={false}
-              showSelectedValue={true}
-            />
-          </Box>
+          <CustomTextField placeholder="Enter any keyword" name="keyword" label="Keyword" other={{ sx: { pl: 1 } }} />
         </MultiAutocompleteStack>
         <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <IconButton onClick={() => setShowAdvancedFilters(!showAdvancedFilters)} sx={{ ml: 1 }}>

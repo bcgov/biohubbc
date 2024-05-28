@@ -12,10 +12,12 @@ export interface IObservationsListFilterFormProps {
 }
 
 export const ObservationAdvancedFiltersInitialValues: IObservationsAdvancedFilters = {
-  start_date: '',
-  end_date: '',
+  minimum_date: '',
+  maximum_date: '',
   keyword: '',
-  project_name: '',
+  minimum_count: '',
+  minimum_time: '',
+  maximum_time: '',
   system_user_id: '',
   itis_tsns: []
 };

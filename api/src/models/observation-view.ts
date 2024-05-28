@@ -1,9 +1,10 @@
 export interface IObservationAdvancedFilters {
-  project_programs?: number[];
-  start_date?: string;
-  end_date?: string;
+  minimum_date?: string;
+  maximum_date?: string;
   keyword?: string;
-  project_name?: string;
-  itis_tsns?: number[];
+  minimum_count?: number;
+  minimum_time?: string;
+  maximum_time?: string;
   system_user_id?: string;
+  itis_tsns?: number[];
 }

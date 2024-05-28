@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -10,7 +11,6 @@ import { useEffect, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import AnimalsListFilterForm from './AnimalsListFilterForm';
-import Typography from '@mui/material/Typography';
 
 interface IAnimalTableRow {
   survey_critter_id: number;

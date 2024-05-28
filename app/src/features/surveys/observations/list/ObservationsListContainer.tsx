@@ -15,10 +15,12 @@ import { firstOrNull } from 'utils/Utils';
 import ObservationsListFilterForm from './ObservationsListFilterForm';
 
 export interface IObservationsAdvancedFilters {
-  start_date: string;
-  end_date: string;
+  minimum_date: string;
+  maximum_date: string;
   keyword: string;
-  project_name: string;
+  minimum_count: string;
+  minimum_time: string;
+  maximum_time: string;
   system_user_id: string;
   itis_tsns: number[];
 }

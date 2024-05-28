@@ -520,13 +520,12 @@ export function getObservationList(): RequestHandler {
       const systemUserId = connection.systemUserId();
       const filterFields: IObservationAdvancedFilters = {
         keyword: req.query.keyword && String(req.query.keyword),
-        project_name: req.query.project_name && String(req.query.project_name),
-        project_programs: req.query.project_programs
-          ? String(req.query.project_programs).split(',').map(Number)
-          : undefined,
+        minimum_count: req.query.minimum_count ? Number(req.query.minimum_count) : undefined,
         itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined,
-        start_date: req.query.start_date && String(req.query.start_date),
-        end_date: req.query.end_date && String(req.query.end_date),
+        minimum_date: req.query.minimum_date && String(req.query.minimum_date),
+        maximum_date: req.query.maximum_date && String(req.query.maximum_date),
+        minimum_time: req.query.minimum_time && String(req.query.minimum_time),
+        maximum_time: req.query.maximum_time && String(req.query.maximum_time),
         system_user_id: req.query.system_user_id && String(req.query.system_user_id)
       };
 

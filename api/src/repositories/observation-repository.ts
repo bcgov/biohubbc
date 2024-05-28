@@ -398,51 +398,42 @@ export class ObservationRepository extends BaseRepository {
       .innerJoin('w_subcounts', 'w_subcounts.survey_observation_id', 'survey_observation.survey_observation_id')
       .whereIn('survey_observation.survey_id', userSurveyIds);
 
-    // // Start Date filter
-    // if (filterFields.start_date) {
-    //   query.andWhere('s.start_date', '>=', filterFields.start_date);
-    // }
+    // Minimum count filter
+    if (filterFields.minimum_count) {
+      query.andWhere('subcount', '>=', filterFields.minimum_count);
+    }
 
-    // // End Date filter
-    // if (filterFields.end_date) {
-    //   query.andWhere('s.end_date', '<=', filterFields.end_date);
-    // }
+    // Minimum date filter
+    if (filterFields.minimum_date) {
+      query.andWhere('date', '>=', filterFields.minimum_date);
+    }
 
-    // // Project Member filter (exact match)
-    // if (filterFields.system_user_id) {
-    //   query.andWhere('system_user_id', filterFields.system_user_id);
-    // }
+    // Maximum date filter
+    if (filterFields.maximum_date) {
+      query.andWhere('date', '<=', filterFields.maximum_date);
+    }
 
-    // // Project Name filter (like match)
-    // if (filterFields.project_name) {
-    //   query.andWhere('s.name', 'ilike', `%${filterFields.project_name}%`);
-    // }
+    // Keyword filter
+    if (filterFields.keyword) {
+      query
+        .andWhere('itis_scientific_name', 'ilike', `%${filterFields.keyword}%`)
+        // TODO: must add comment column to subcounts: .orWhere('comment', '>=', filterFields.keyword);
+    }
 
-    // // Focal Species filter
-    // if (filterFields.itis_tsns?.length) {
-    //   query.whereIn('sp.itis_tsn', filterFields.itis_tsns);
-    // }
+    // Minimum time filter
+    if (filterFields.minimum_time) {
+      query.andWhere('time', '>=', filterFields.minimum_time);
+    }
 
-    // // Keyword Search filter
-    // if (filterFields.keyword) {
-    //   const keywordMatch = `%${filterFields.keyword}%`;
-    //   query.where((subQueryBuilder) => {
-    //     subQueryBuilder
-    //       .where('s.name', 'ilike', keywordMatch)
-    //       .orWhere('s.additional_details', 'ilike', keywordMatch)
-    //       .orWhere('s.comments', 'ilike', keywordMatch);
+    // Maximum time filter
+    if (filterFields.maximum_time) {
+      query.andWhere('time', '<=', filterFields.maximum_time);
+    }
 
-    //     // If the keyword is a number, also match on survey Id
-    //     if (!isNaN(Number(filterFields.keyword))) {
-    //       subQueryBuilder.orWhere('s.survey_id', Number(filterFields.keyword));
-    //     }
-    //   });
-    // }
-
-    // // Programs filter
-    // if (filterFields.project_programs?.length) {
-    //   query.where('prog.program_id', 'IN', filterFields.project_programs);
-    // }
+    // Maximum date filter
+    if (filterFields.itis_tsns) {
+      query.whereIn('itis_tsn', filterFields.itis_tsns);
+    }
 
     return query;
   }
