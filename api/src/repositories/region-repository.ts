@@ -24,7 +24,14 @@ export const IRegion = z.object({
   geojson: z.any()
 });
 
+/**
+ * Excluding spatial fields for performance
+ *
+ */
+export const RegionNoSpatial = IRegion.omit({ geometry: true, geography: true, geojson: true });
+
 export type IRegion = z.infer<typeof IRegion>;
+export type IRegionNoSpatial = z.infer<typeof RegionNoSpatial>;
 
 /**
  * A repository class for accessing region data.
@@ -124,24 +131,16 @@ export class RegionRepository extends BaseRepository {
    * @async
    * @param {Feature[]} features - List of geometry features
    * @param {REGION_FEATURE_CODE} [featureCode] - Feature code of region lookup table
-   * @returns {Promise<IRegion[]>} - List of regions
+   * @returns {Promise<IRegionNoSpatial[]>} - List of regions
    */
-  async getIntersectingRegionsFromFeatures(features: Feature[], featureCode?: REGION_FEATURE_CODE): Promise<IRegion[]> {
+  async getIntersectingRegionsFromFeatures(
+    features: Feature[],
+    featureCode?: REGION_FEATURE_CODE
+  ): Promise<IRegionNoSpatial[]> {
     const knex = getKnex();
     const queryBuilder = knex
       .queryBuilder()
-      .select(
-        'region_id',
-        'region_name',
-        'org_unit',
-        'org_unit_name',
-        'feature_code',
-        'feature_name',
-        'object_id',
-        'geojson',
-        'geometry',
-        'geography'
-      )
+      .select('region_id', 'region_name', 'org_unit', 'org_unit_name', 'feature_code', 'feature_name', 'object_id')
       .from('region_lookup');
 
     // Optional filter for region lookup table ie: only NRM regions
@@ -151,10 +150,10 @@ export class RegionRepository extends BaseRepository {
 
     // With list of features return intersecting regions via PostGis
     queryBuilder.andWhere((query) => {
-      console.log('calling');
       for (const feature of features) {
-        // Row geography is actually a 'geometry' object
-        query.orWhereRaw(`public.ST_Intersects(ST_GeomFromGeoJSON(?), geography)`, [JSON.stringify(feature.geometry)]);
+        query.orWhereRaw(`public.ST_Intersects(public.ST_GeomFromGeoJSON(?), geometry)`, [
+          JSON.stringify(feature.geometry)
+        ]);
       }
     });
     console.log(queryBuilder.toSQL().toNative().sql);

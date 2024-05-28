@@ -27,13 +27,15 @@ export class RegionService extends DBService {
     // Find intersecting NRM regions from list of features
     const regions = await this.regionRepository.getIntersectingRegionsFromFeatures(
       features,
-      REGION_FEATURE_CODE.NATURAL_RESOURCE_REGION
+      REGION_FEATURE_CODE.NATURAL_RESOURCE_REGION // Optional filter
     );
 
     console.log({ regions: regions.map((region) => region.region_name) });
 
+    const regionIds = regions.map((region) => region.region_id);
+
     // Delete the previous regions and insert new
-    await this.refreshSurveyRegions(surveyId, regions);
+    await this.refreshSurveyRegions(surveyId, regionIds);
   }
 
   /**
@@ -51,14 +53,13 @@ export class RegionService extends DBService {
    * all currently linked regions are removed before regions are linked
    *
    * @param {number} surveyId
-   * @param {IRegion[]} regions
+   * @param {number[]} regionIds - region lookup ids
    * @returns {Promise<void>}
    */
-  async refreshSurveyRegions(surveyId: number, regions: IRegion[]): Promise<void> {
+  async refreshSurveyRegions(surveyId: number, regionIds: number[]): Promise<void> {
     // remove existing regions from a survey
     await this.regionRepository.deleteRegionsForSurvey(surveyId);
 
-    const regionIds = regions.map((item) => item.region_id);
     await this.regionRepository.addRegionsToSurvey(surveyId, regionIds);
   }
 
