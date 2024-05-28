@@ -1,19 +1,19 @@
 import { Knex } from 'knex';
 
 /**
- * Create new tables:
- * 
+ * Create 7 new tables:
+ *
  * ATTRIBUTE LOOKUPS
  * - technique_attribute_quantitative
  * - technique_attribute_qualitative
- * 
+ *
  * JOINS BETWEEN ATTRIBUTE LOOKUPS AND METHOD_LOOKUP_ID
  * - method_lookup_attribute_quantitative
  * - method_lookup_attribute_qualitative
- * 
+ *
  * QUALITATIVE OPTIONS LOOKUP (depends on method_lookup_attribute_qualitative, not technique_attribute_qualitative)
- * - technique_attribute_qualitative_option
- * 
+ * - method_lookup_attribute_qualitative_option
+ *
  * JOINS BETWEEN TECHNIQUE AND METHOD_LOOKUP_ATTRIBUTE_*
  * - method_technique_quantitative_attribute
  * - method_technique_qualitative_attribute
@@ -116,7 +116,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN method_lookup_attribute_qualitative.method_lookup_attribute_qualitative_id    IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN method_lookup_attribute_qualitative.technique_attribute_qualitative_id           IS 'Foreign key to the technique_attribute_qualitative table.';
     COMMENT ON COLUMN method_lookup_attribute_qualitative.method_lookup_id                     IS 'Foreign key to the method_lookup table.';
-    COMMENT ON COLUMN method_lookup_attribute_qualitative.description                          IS 'The description of the option.';
+    COMMENT ON COLUMN method_lookup_attribute_qualitative.description                          IS 'The description of the attribute.';
     COMMENT ON COLUMN method_lookup_attribute_qualitative.record_end_date                      IS 'Record level end date.';
     COMMENT ON COLUMN method_lookup_attribute_qualitative.create_date                          IS 'The datetime the record was created.';
     COMMENT ON COLUMN method_lookup_attribute_qualitative.create_user                          IS 'The id of the user who created the record as identified in the system user table.';
@@ -168,7 +168,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN method_lookup_attribute_quantitative.method_lookup_attribute_quantitative_id    IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN method_lookup_attribute_quantitative.technique_attribute_quantitative_id           IS 'Foreign key to the technique_attribute_quantitative table.';
     COMMENT ON COLUMN method_lookup_attribute_quantitative.method_lookup_id                     IS 'Foreign key to the method_lookup table.';
-    COMMENT ON COLUMN method_lookup_attribute_quantitative.description                          IS 'The description of the option.';
+    COMMENT ON COLUMN method_lookup_attribute_quantitative.description                          IS 'The description of the attribute.';
     COMMENT ON COLUMN method_lookup_attribute_quantitative.record_end_date                      IS 'Record level end date.';
     COMMENT ON COLUMN method_lookup_attribute_quantitative.create_date                          IS 'The datetime the record was created.';
     COMMENT ON COLUMN method_lookup_attribute_quantitative.create_user                          IS 'The id of the user who created the record as identified in the system user table.';
@@ -407,6 +407,9 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TRIGGER audit_technique_attribute_quantitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.technique_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_technique_attribute_quantitative AFTER INSERT OR UPDATE OR DELETE ON biohub.technique_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
+    CREATE TRIGGER audit_technique_attribute_qualitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.technique_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_technique_attribute_qualitative AFTER INSERT OR UPDATE OR DELETE ON biohub.technique_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
     CREATE TRIGGER audit_method_lookup_attribute_qualitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_method_lookup_attribute_qualitative AFTER INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
@@ -422,6 +425,9 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TRIGGER audit_method_technique_qualitative_attribute BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_technique_qualitative_attribute FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_method_technique_qualitative_attribute AFTER INSERT OR UPDATE OR DELETE ON biohub.method_technique_qualitative_attribute FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
+    CREATE TRIGGER audit_method_technique BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_technique FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_method_technique AFTER INSERT OR UPDATE OR DELETE ON biohub.method_technique FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
     ----------------------------------------------------------------------------------------
     -- Create views
     ----------------------------------------------------------------------------------------
@@ -432,11 +438,18 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE OR REPLACE VIEW technique_attribute_qualitative AS SELECT * FROM biohub.technique_attribute_qualitative;
 
-    CREATE OR REPLACE VIEW technique_attribute_qualitative_option AS SELECT * FROM biohub.technique_attribute_qualitative_option;
+    CREATE OR REPLACE VIEW method_lookup_quantitative_attribute AS SELECT * FROM biohub.method_lookup_quantitative_attribute;
 
-    CREATE OR REPLACE VIEW method_technique_quantitative_attribute AS SELECT * FROM biohub.method_technique_quantitative_attribute;
+    CREATE OR REPLACE VIEW method_lookup_qualitative_attribute AS SELECT * FROM biohub.method_lookup_qualitative_attribute;
+    
+    CREATE OR REPLACE VIEW method_lookup_attribute_qualitative_option AS SELECT * FROM biohub.method_lookup_attribute_qualitative_option;
 
-    CREATE OR REPLACE VIEW method_technique_qualitative_attribute AS SELECT * FROM biohub.method_technique_qualitative_attribute;
+    CREATE OR REPLACE VIEW technique_attribute_quantitative AS SELECT * FROM biohub.technique_attribute_quantitative;
+
+    CREATE OR REPLACE VIEW technique_attribute_qualitative AS SELECT * FROM biohub.technique_attribute_qualitative;
+
+    CREATE OR REPLACE VIEW method_technique AS SELECT * FROM biohub.method_technique;
+
   `);
 }
 

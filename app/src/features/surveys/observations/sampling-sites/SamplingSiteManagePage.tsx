@@ -11,7 +11,7 @@ const SamplingSiteManagePage = () => {
   return (
     <Stack
       sx={{
-        margin: 0,
+        // margin: 0,
         '& .MuiContainer-root': {
           maxWidth: 'none'
         }
