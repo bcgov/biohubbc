@@ -4,7 +4,10 @@ import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { RegionDetails } from '../services/bcgw-layer-service';
+import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
+
+const defaultLog = getLogger('region-repository');
 
 export const enum REGION_FEATURE_CODE {
   NATURAL_RESOURCE_REGION = 'FM90000010', // NRM
@@ -143,24 +146,46 @@ export class RegionRepository extends BaseRepository {
       .select('region_id', 'region_name', 'org_unit', 'org_unit_name', 'feature_code', 'feature_name', 'object_id')
       .from('region_lookup');
 
-    // Optional filter for region lookup table ie: only NRM regions
+    /**
+     * Optional filter for region lookup table
+     * example: only NRM regions
+     */
     if (featureCode) {
       queryBuilder.where({ feature_code: featureCode });
     }
 
-    // With list of features return intersecting regions via PostGis
+    /**
+     * From a list of features return intersecting lookup regions
+     */
     queryBuilder.andWhere((query) => {
       for (const feature of features) {
-        query.orWhereRaw(`public.ST_Intersects(public.ST_GeomFromGeoJSON(?), geometry)`, [
-          JSON.stringify(feature.geometry)
-        ]);
+        /**
+         * note: If a spatial layer is selected, the ST_Intersects will return all surrounding layers.
+         * This will try and query the region_lookup table using the region name instead.
+         */
+        const regionName = feature?.properties?.['REGION_NAME'];
+        if (regionName) {
+          query.orWhereILike({ region_name: regionName });
+        } else {
+          query.orWhereRaw(`public.ST_Intersects(public.ST_GeomFromGeoJSON(?), geometry)`, [
+            JSON.stringify(feature.geometry) // geometry needs to be stringified before PostGis can use
+          ]);
+        }
       }
     });
-    console.log(queryBuilder.toSQL().toNative().sql);
-    console.log(queryBuilder.toSQL().toNative().bindings);
 
     try {
-      const response = await this.connection.knex<IRegion>(queryBuilder);
+      const response = await this.connection.knex<IRegionNoSpatial>(queryBuilder);
+
+      /**
+       * Additional logging incase region mapping not fully successfull
+       */
+      if (features.length !== response.rowCount) {
+        defaultLog.info({
+          label: 'getIntersectingRegionsFromFeatures',
+          message: 'unable to map a feature to NRM region -> less regions than features'
+        });
+      }
 
       return response.rows;
     } catch (error) {

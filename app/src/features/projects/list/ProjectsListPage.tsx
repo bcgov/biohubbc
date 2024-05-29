@@ -3,7 +3,6 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
-import blueGrey from '@mui/material/colors/blueGrey';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
@@ -19,7 +18,7 @@ import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvance
 import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ListProjectsI18N } from 'constants/i18n';
-import { REGION_COLOURS } from 'constants/regions';
+import { getNrmRegionColour, NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -32,12 +31,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
-/**
- * `Natural Resource Regions` appended text
- * ie: `Cariboo Natural Resource Region`
- *
- */
-export const NRM_REGION_APPENDED_TEXT = ' Natural Resource Region';
 
 interface IProjectsListTableRow extends Omit<IProjectsListItemData, 'project_programs'> {
   project_programs: string;
@@ -133,12 +126,9 @@ const ProjectsListPage = () => {
           {params.row.regions.map((region) => {
             const label = region.replace(NRM_REGION_APPENDED_TEXT, '');
             return (
-              <ColouredRectangleChip
-                colour={REGION_COLOURS.find((colour) => colour.region === label)?.color ?? blueGrey}
-                label={label}
-              />
+              <ColouredRectangleChip key={region} colour={getNrmRegionColour(region)} label={label} sx={{ mr: 1 }} />
             );
-          })}{' '}
+          })}
         </Stack>
       )
     },
