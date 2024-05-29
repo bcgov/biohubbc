@@ -1,8 +1,7 @@
 import { Knex } from 'knex';
 
 /**
- * Added unique key constraint to survey funding source table
- *
+ * Adding more values to method lookup table as discussed in meeting about getting existing SPI values into SIMS.
  * @export
  * @param {Knex} knex
  * @return {*}  {Promise<void>}
@@ -18,12 +17,9 @@ export async function up(knex: Knex): Promise<void> {
     DELETE FROM method_lookup
     WHERE name IN ('Aerial transect', 'Ground transect', 'Aquatic transect', 'Underwater transect');  
 
-
-
   ----------------------------------------------------------------------------------------
   --Adding more values to the method lookup table. 
   ----------------------------------------------------------------------------------------
-
     INSERT into method_lookup (name, description)
     VALUES
     (
