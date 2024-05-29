@@ -32,13 +32,13 @@ parameters:
     value: dev
   - name: BASE_IMAGE_URL
     required: true
-    value: image-registry.openshift-image-registry.svc:5000/openshift/nodejs-18:1-98.1711398651
+    value: image-registry.openshift-image-registry.svc:5000/openshift/nodejs:latest
   - name: SOURCE_IMAGE_NAME
     required: true
-    value: nodejs-18
+    value: nodejs
   - name: SOURCE_IMAGE_TAG
     required: true
-    value: 1-98.1711398651
+    value: latest
   - name: CPU_REQUEST
     value: '50m'
   - name: CPU_LIMIT
