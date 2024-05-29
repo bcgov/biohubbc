@@ -11,6 +11,15 @@ import { Knex } from 'knex';
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     ----------------------------------------------------------------------------------------
+    -- Edit enum list
+    ----------------------------------------------------------------------------------------
+    SET SEARCH_PATH=biohub, public;
+    BEGIN;
+    ALTER TYPE environment_unit ADD VALUE 'seconds';
+    COMMIT;
+
+
+    ----------------------------------------------------------------------------------------
     -- Populate lookup tables.
     ----------------------------------------------------------------------------------------
 
@@ -38,6 +47,27 @@ export async function up(knex: Knex): Promise<void> {
         0,
         10000,
         NULL
+      ),
+      (
+        'Trigger speed',
+        'The time it takes for a camera trap to capture an image or start recording after detecting motion.',
+        0,
+        100,
+        'seconds'
+      ),
+      (
+        'Detection Distance',
+        'The maximum range at which a camera trap can detect motion to trigger a photo or video capture.',
+        0,
+        200,
+        'meter'
+      ),
+      (
+        'Field of View',
+        'The extent of the observable area that a camera trap can capture.',
+        0,
+        360,
+        'degrees'
       );
 
     ----------------------------------------------------------------------------------------
@@ -51,6 +81,18 @@ export async function up(knex: Knex): Promise<void> {
       (
         'Model',
         'The model of the device.'
+      ),
+      (
+        'Image resolution',
+        'The level of detail captured in a photo.'
+      ),
+      (
+        'Video Resolution',
+        'The clarity and detail of recorded video footage.'
+      ),
+      (
+        'Infrared type',
+        'The kind of infrared illumination used for night-time images such as low-glow no-glow or white flash which affects visibility to wildlife and image quality in darkness.'
       );
 
     ----------------------------------------------------------------------------------------
