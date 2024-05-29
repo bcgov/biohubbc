@@ -215,7 +215,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
 
     CREATE TABLE attractant_lookup (
-      attractant_lookup_id                 uuid               DEFAULT public.gen_random_uuid(),
+      attractant_lookup_id                 integer            NOT NULL GENERATED ALWAYS AS IDENTITY,
       name                                 varchar(100)       NOT NULL,
       description                          varchar(400),
       record_end_date                      date,
@@ -389,7 +389,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE method_technique_attractant (
       method_technique_attractant_id                      integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       method_technique_id                                 integer            NOT NULL,
-      attractant_lookup_id                                uuid               NOT NULL,
+      attractant_lookup_id                                integer            NOT NULL,
       create_date                                         timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                                         integer            NOT NULL,
       update_date                                         timestamptz(6),

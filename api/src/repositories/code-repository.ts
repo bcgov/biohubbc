@@ -20,6 +20,7 @@ const IntendedOutcomeCode = ICode.extend({ description: z.string() });
 const SampleMethodsCode = ICode.extend({ description: z.string() });
 const SurveyProgressCode = ICode.extend({ description: z.string() });
 const MethodResponseMetricsCode = ICode.extend({ description: z.string() });
+const AttractantCode = ICode.extend({ description: z.string() });
 
 export const IAllCodeSets = z.object({
   management_action_type: CodeSet(),
@@ -41,7 +42,8 @@ export const IAllCodeSets = z.object({
   site_selection_strategies: CodeSet(),
   sample_methods: CodeSet(SampleMethodsCode.shape),
   survey_progress: CodeSet(SurveyProgressCode.shape),
-  method_response_metrics: CodeSet(MethodResponseMetricsCode.shape)
+  method_response_metrics: CodeSet(MethodResponseMetricsCode.shape),
+  attractants: CodeSet(AttractantCode.shape)
 });
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
 
@@ -454,6 +456,27 @@ export class CodeRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement, MethodResponseMetricsCode);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetch attractants for techniques
+   *
+   * @return {*}
+   * @memberof CodeRepository
+   */
+  async getAttractants() {
+    const sqlStatement = SQL`
+      SELECT
+        attractant_lookup_id AS id,
+        name,
+        description
+      FROM attractant_lookup
+      WHERE record_end_date IS null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, AttractantCode);
 
     return response.rows;
   }

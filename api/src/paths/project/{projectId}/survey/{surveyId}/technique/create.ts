@@ -125,11 +125,11 @@ export function createTechniques(): RequestHandler {
       const surveyId = Number(req.params.surveyId);
 
       const techniqueService = new TechniqueService(connection);
-      await techniqueService.insertTechniquesForSurvey(surveyId, req.body.techniques);
+      const techniques = await techniqueService.insertTechniquesForSurvey(surveyId, req.body.techniques);
 
       await connection.commit();
 
-      return res.status(201).send();
+      return res.status(200).send(techniques);
     } catch (error) {
       defaultLog.error({ label: 'insertTechniques', message: 'error', error });
       await connection.rollback();

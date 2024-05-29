@@ -38,7 +38,8 @@ GET.apiDoc = {
               'vantage_codes',
               'site_selection_strategies',
               'survey_progress',
-              'method_response_metrics'
+              'method_response_metrics',
+              'attractants'
             ],
             properties: {
               management_action_type: {
@@ -348,6 +349,25 @@ GET.apiDoc = {
                 }
               },
               method_response_metrics: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
+                  properties: {
+                    id: {
+                      type: 'integer'
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              attractants: {
                 type: 'array',
                 items: {
                   type: 'object',

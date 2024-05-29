@@ -41,4 +41,5 @@ export interface IGetAllCodeSetsResponse {
   survey_progress: CodeSet<{ id: number; name: string; description: string }>;
   sample_methods: CodeSet<{ id: number; name: string; description: string }>;
   method_response_metrics: CodeSet<{ id: number; name: string; description: string }>;
+  attractants: CodeSet<{ id: number; name: string; description: string }>;
 }

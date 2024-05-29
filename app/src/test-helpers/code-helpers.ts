@@ -63,5 +63,9 @@ export const codes: IGetAllCodeSetsResponse = {
   method_response_metrics: [
     { id: 1, name: 'Count', description: 'Description 1' },
     { id: 2, name: 'Presence-absence', description: 'Description 2' }
+  ],
+  attractants: [
+    { id: 1, name: 'Bait', description: 'Consumable bait or food used as a lure.' },
+    { id: 1, name: 'Scent', description: 'A scent used as a lure.' },
   ]
 };

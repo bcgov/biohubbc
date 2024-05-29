@@ -17,10 +17,10 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import SamplingTechniqueCardContainer from './SamplingTechniqueCardContainer';
 
 /**
  * Renders a list of techniques.
@@ -31,33 +31,33 @@ const SamplingSiteTechniqueContainer = () => {
   const surveyContext = useSurveyContext();
   const codesContext = useCodesContext();
   const dialogContext = useDialogContext();
-  const biohubApi = useBiohubApi();
+  // const biohubApi = useBiohubApi();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
   useEffect(() => {
-    surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [sampleSiteAnchorEl, setSampleSiteAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  const [techniqueAnchorEl, setTechniqueAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [headerAnchorEl, setHeaderAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [selectedSampleSiteId, setSelectedSampleSiteId] = useState<number | undefined>();
+  const [selectedTechniqueId, setSelectedTechniqueId] = useState<number | undefined>();
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
 
-  const sampleSites = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
+  const techniqueDataLoaderData = surveyContext.techniqueDataLoader.data;
 
-  const handleSampleSiteMenuClick = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    sample_site_id: number
-  ) => {
-    setSampleSiteAnchorEl(event.currentTarget);
-    setSelectedSampleSiteId(sample_site_id);
+  const techniqueCount = techniqueDataLoaderData?.count ?? 0;
+  const techniques = techniqueDataLoaderData?.techniques ?? [];
+
+  const handleTechniqueMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sample_site_id: number) => {
+    setTechniqueAnchorEl(event.currentTarget);
+    setSelectedTechniqueId(sample_site_id);
   };
 
-  console.log(handleSampleSiteMenuClick);
+  console.log(handleTechniqueMenuClick);
 
   const handleHeaderMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setHeaderAnchorEl(event.currentTarget);
@@ -67,38 +67,38 @@ const SamplingSiteTechniqueContainer = () => {
    * Handle the delete technique API call.
    *
    */
-  const handleDeleteSampleSite = async () => {
-    await biohubApi.samplingSite
-      .deleteSampleSite(surveyContext.projectId, surveyContext.surveyId, Number(selectedSampleSiteId))
-      .then(() => {
-        dialogContext.setYesNoDialog({ open: false });
-        setSampleSiteAnchorEl(null);
-        surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-      })
-      .catch((error: any) => {
-        dialogContext.setYesNoDialog({ open: false });
-        setSampleSiteAnchorEl(null);
-        dialogContext.setSnackbar({
-          snackbarMessage: (
-            <>
-              <Typography variant="body2" component="div">
-                <strong>Error Deleting Technique</strong>
-              </Typography>
-              <Typography variant="body2" component="div">
-                {String(error)}
-              </Typography>
-            </>
-          ),
-          open: true
-        });
-      });
+  const handleDeleteTechnique = async () => {
+    // await biohubApi.samplingSite
+    //   .deleteTechnique(surveyContext.projectId, surveyContext.surveyId, Number(selectedTechniqueId))
+    //   .then(() => {
+    //     dialogContext.setYesNoDialog({ open: false });
+    //     setTechniqueAnchorEl(null);
+    //     surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    //   })
+    //   .catch((error: any) => {
+    //     dialogContext.setYesNoDialog({ open: false });
+    //     setTechniqueAnchorEl(null);
+    //     dialogContext.setSnackbar({
+    //       snackbarMessage: (
+    //         <>
+    //           <Typography variant="body2" component="div">
+    //             <strong>Error Deleting Technique</strong>
+    //           </Typography>
+    //           <Typography variant="body2" component="div">
+    //             {String(error)}
+    //           </Typography>
+    //         </>
+    //       ),
+    //       open: true
+    //     });
+    //   });
   };
 
   /**
    * Display the delete technique dialog.
    *
    */
-  const deleteSampleSiteDialog = () => {
+  const deleteTechniqueDialog = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Delete Technique?',
       dialogContent: (
@@ -117,50 +117,50 @@ const SamplingSiteTechniqueContainer = () => {
       },
       open: true,
       onYes: () => {
-        handleDeleteSampleSite();
+        handleDeleteTechnique();
       }
     });
   };
 
-  const handleCheckboxChange = (sampleSiteId: number) => {
+  const handleCheckboxChange = (techniqueId: number) => {
     setCheckboxSelectedIds((prev) => {
-      if (prev.includes(sampleSiteId)) {
-        return prev.filter((item) => item !== sampleSiteId);
+      if (prev.includes(techniqueId)) {
+        return prev.filter((item) => item !== techniqueId);
       } else {
-        return [...prev, sampleSiteId];
+        return [...prev, techniqueId];
       }
     });
   };
 
   console.log(handleCheckboxChange);
 
-  const handleBulkDeleteSampleSites = async () => {
-    await biohubApi.samplingSite
-      .deleteSampleSites(surveyContext.projectId, surveyContext.surveyId, checkboxSelectedIds)
-      .then(() => {
-        dialogContext.setYesNoDialog({ open: false });
-        setCheckboxSelectedIds([]);
-        setHeaderAnchorEl(null);
-        surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-      })
-      .catch((error: any) => {
-        dialogContext.setYesNoDialog({ open: false });
-        setCheckboxSelectedIds([]);
-        setHeaderAnchorEl(null);
-        dialogContext.setSnackbar({
-          snackbarMessage: (
-            <>
-              <Typography variant="body2" component="div">
-                <strong>Error Deleting Techniques</strong>
-              </Typography>
-              <Typography variant="body2" component="div">
-                {String(error)}
-              </Typography>
-            </>
-          ),
-          open: true
-        });
-      });
+  const handleBulkDeleteTechniques = async () => {
+    // await biohubApi.samplingSite
+    //   .deleteTechniques(surveyContext.projectId, surveyContext.surveyId, checkboxSelectedIds)
+    //   .then(() => {
+    //     dialogContext.setYesNoDialog({ open: false });
+    //     setCheckboxSelectedIds([]);
+    //     setHeaderAnchorEl(null);
+    //     surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    //   })
+    //   .catch((error: any) => {
+    //     dialogContext.setYesNoDialog({ open: false });
+    //     setCheckboxSelectedIds([]);
+    //     setHeaderAnchorEl(null);
+    //     dialogContext.setSnackbar({
+    //       snackbarMessage: (
+    //         <>
+    //           <Typography variant="body2" component="div">
+    //             <strong>Error Deleting Techniques</strong>
+    //           </Typography>
+    //           <Typography variant="body2" component="div">
+    //             {String(error)}
+    //           </Typography>
+    //         </>
+    //       ),
+    //       open: true
+    //     });
+    //   });
   };
 
   const handlePromptConfirmBulkDelete = () => {
@@ -182,19 +182,17 @@ const SamplingSiteTechniqueContainer = () => {
       },
       open: true,
       onYes: () => {
-        handleBulkDeleteSampleSites();
+        handleBulkDeleteTechniques();
       }
     });
   };
 
-  const samplingSiteCount = sampleSites.length ?? 0;
-
   return (
     <>
       <Menu
-        open={Boolean(sampleSiteAnchorEl)}
-        onClose={() => setSampleSiteAnchorEl(null)}
-        anchorEl={sampleSiteAnchorEl}
+        open={Boolean(techniqueAnchorEl)}
+        onClose={() => setTechniqueAnchorEl(null)}
+        anchorEl={techniqueAnchorEl}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'right'
@@ -218,14 +216,14 @@ const SamplingSiteTechniqueContainer = () => {
               }
             }
           }}>
-          <RouterLink to={`sampling/${selectedSampleSiteId}/edit`}>
+          <RouterLink to={`sampling/${selectedTechniqueId}/edit`}>
             <ListItemIcon>
               <Icon path={mdiPencilOutline} size={1} />
             </ListItemIcon>
             <ListItemText>Edit Details</ListItemText>
           </RouterLink>
         </MenuItem>
-        <MenuItem onClick={deleteSampleSiteDialog}>
+        <MenuItem onClick={deleteTechniqueDialog}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
@@ -270,7 +268,7 @@ const SamplingSiteTechniqueContainer = () => {
           <Typography variant="h3" component="h2" flexGrow={1}>
             Sampling Techniques &zwnj;
             <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-              ({samplingSiteCount})
+              ({techniqueCount})
             </Typography>
           </Typography>
           <Button
@@ -294,103 +292,77 @@ const SamplingSiteTechniqueContainer = () => {
           </IconButton>
         </Toolbar>
         <Divider flexItem />
-        <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-          <Box position="absolute" top="0" right="0" bottom="0" left="0">
-            {surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
-              <SkeletonList />
-            ) : (
-              <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
-                <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
-                  <FormGroup>
-                    <FormControlLabel
-                      label={
-                        <Typography
-                          variant="body2"
-                          component="span"
-                          color="textSecondary"
-                          fontWeight={700}
-                          sx={{ textTransform: 'uppercase' }}>
-                          Select All
-                        </Typography>
-                      }
-                      control={
-                        <Checkbox
-                          sx={{
-                            mr: 0.75
-                          }}
-                          checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === samplingSiteCount}
-                          indeterminate={
-                            checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount
-                          }
-                          onClick={() => {
-                            if (checkboxSelectedIds.length === samplingSiteCount) {
-                              setCheckboxSelectedIds([]);
-                              return;
-                            }
-
-                            const sampleSiteIds = sampleSites.map((sampleSite) => sampleSite.survey_sample_site_id);
-                            setCheckboxSelectedIds(sampleSiteIds);
-                          }}
-                          inputProps={{ 'aria-label': 'controlled' }}
-                        />
-                      }
-                    />
-                  </FormGroup>
-                </Box>
-                <Divider flexItem></Divider>
-                <Box
-                  flex="1 1 auto"
-                  sx={{
-                    background: grey[100]
-                  }}>
-                  {/* Display text if the sample site data loader has no items in it */}
-                  {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length && (
-                    <Stack
+        {surveyContext.techniqueDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
+          <SkeletonList />
+        ) : (
+          <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
+            <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
+              <FormGroup>
+                <FormControlLabel
+                  label={
+                    <Typography
+                      variant="body2"
+                      component="span"
+                      color="textSecondary"
+                      fontWeight={700}
+                      sx={{ textTransform: 'uppercase' }}>
+                      Select All
+                    </Typography>
+                  }
+                  control={
+                    <Checkbox
                       sx={{
-                        background: grey[100]
+                        mr: 0.75
                       }}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      flex="1 1 auto"
-                      position="absolute"
-                      top={0}
-                      right={0}
-                      left={0}
-                      bottom={0}
-                      height="100%">
-                      <Typography variant="body2">No Techniques</Typography>
-                    </Stack>
-                  )}
+                      checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === techniqueCount}
+                      indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < techniqueCount}
+                      onClick={() => {
+                        if (checkboxSelectedIds.length === techniqueCount) {
+                          setCheckboxSelectedIds([]);
+                          return;
+                        }
+                      }}
+                      inputProps={{ 'aria-label': 'controlled' }}
+                    />
+                  }
+                />
+              </FormGroup>
+            </Box>
+            <Divider flexItem></Divider>
+            <Box
+              flex="1 1 auto"
+              sx={{
+                background: grey[100]
+              }}>
+              {/* Display text if the sample site data loader has no items in it */}
+              {!techniqueCount && (
+                <Stack
+                  sx={{
+                    background: grey[50]
+                  }}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  flex="1 1 auto"
+                  position="absolute"
+                  top={0}
+                  right={0}
+                  left={0}
+                  bottom={0}
+                  height="100%">
+                  <Typography variant="body2">No Techniques</Typography>
+                </Stack>
+              )}
 
-                  {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
-                    return (
-                      <>{sampleSite.name}</>
-                      //   <
-                      //     sampleSite={sampleSite}
-                      //     isChecked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
-                      //     handleSampleSiteMenuClick={handleSampleSiteMenuClick}
-                      //     handleCheckboxChange={handleCheckboxChange}
-                      //     key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
-                      //   />
-                    );
-                  })}
-                </Box>
-                {/* TODO how should we handle controlling pagination? */}
-                {/* <Paper square sx={{ position: 'sticky', bottom: 0, marginTop: '-1px' }}>
-                <Divider flexItem></Divider>
-                  <TablePagination
-                    rowsPerPage={10}
-                    page={1}
-                    onPageChange={(event) => {}}
-                    rowsPerPageOptions={[10, 50]}
-                    count={69}
-                  />
-                </Paper> */}
-              </Stack>
-            )}
-          </Box>
-        </Box>
+              <SamplingTechniqueCardContainer
+                techniques={techniques}
+                handleDelete={(technique) => {
+                  console.log(technique);
+                }}
+              />
+            </Box>
+          </Stack>
+        )}
       </Paper>
     </>
   );

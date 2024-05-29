@@ -1,7 +1,7 @@
 import { IDBConnection } from '../database/db';
 import {
   ITechniquePostData,
-  ITechniqueResponse,
+  IGetTechnique,
   ITechniqueRowData,
   TechniqueRepository
 } from '../repositories/technique-repository';
@@ -23,7 +23,7 @@ export class TechniqueService extends DBService {
    * @returns {*} {Promise<{id: number}[]>}
    * @memberof TechniqueService
    */
-  async getTechniquesForSurveyId(surveyId: number): Promise<ITechniqueResponse[]> {
+  async getTechniquesForSurveyId(surveyId: number): Promise<IGetTechnique[]> {
     return this.techniqueRepository.getTechniquesForSurveyId(surveyId);
   }
 

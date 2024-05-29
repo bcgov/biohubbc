@@ -68,7 +68,93 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'object'
+            type: 'object',
+            required: ['techniques', 'count'],
+            properties: {
+              techniques: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: [
+                    'name',
+                    'description',
+                    'distance_threshold',
+                    'method_lookup_id',
+                    'attractants',
+                    'quantitative_attributes',
+                    'qualitative_attributes'
+                  ],
+                  properties: {
+                    method_technique_id: {
+                      type: 'integer',
+                      description: 'Identifier of the technique.'
+                    },
+                    name: {
+                      type: 'string',
+                      description: 'Name of the technique.'
+                    },
+                    description: {
+                      type: 'string',
+                      description: 'Description of the technique.',
+                      nullable: true
+                    },
+                    distance_threshold: {
+                      type: 'number',
+                      description: 'Distance over which data were not measured.',
+                      nullable: true
+                    },
+                    method_lookup_id: {
+                      type: 'integer',
+                      description: 'Foreign key reference to a method lookup value.'
+                    },
+                    attractants: {
+                      type: 'array',
+                      description: 'Attractants used to lure species.',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          attractant_lookup_id: {
+                            type: 'string',
+                            description: 'Foreign key reference to a attractant lookup value.'
+                          }
+                        }
+                      }
+                    },
+                    qualitative_attributes: {
+                      type: 'array',
+                      description: 'Qualitative attributes describing the technique.',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          attractant_lookup_id: {
+                            type: 'string',
+                            description: 'Foreign key reference to a qualitative attribute lookup value.'
+                          }
+                        }
+                      }
+                    },
+                    quantitative_attributes: {
+                      type: 'array',
+                      description: 'Quantitative attributes describing the technique.',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          attractant_lookup_id: {
+                            type: 'string',
+                            description: 'Foreign key reference to a quantitative attribute lookup value.'
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              count: {
+                type: 'number',
+                description: 'Count of method techniques in the respective survey.'
+              }
+            }
           }
         }
       }
@@ -117,7 +203,7 @@ export function getSurveyTechniques(): RequestHandler {
       await connection.commit();
 
       return res.status(200).json({
-        ...techniques,
+        techniques,
         count: sampleSitesTotalCount
       });
     } catch (error) {

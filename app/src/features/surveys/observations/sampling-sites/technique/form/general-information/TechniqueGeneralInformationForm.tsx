@@ -1,42 +1,22 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
+import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
-import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
+import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
+import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
-import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import React, { useEffect } from 'react';
-
-export interface ITechniqueGeneralInformationForm {
-  survey_details: {
-    survey_name: string;
-    start_date: string;
-    end_date: string;
-    progress_id: number | null;
-    survey_types: number[];
-    revision_count: number;
-  };
-  species: {
-    focal_species: ITaxonomy[];
-    ancillary_species: ITaxonomy[];
-  };
-  permit: {
-    permits: {
-      permit_id?: number;
-      permit_number: string;
-      permit_type: string;
-    }[];
-  };
-}
-
-export interface ITechniqueGeneralInformationFormProps {}
+import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
+import { useEffect } from 'react';
 
 /**
  * Create survey - general information fields
  *
  * @return {*}
  */
-const TechniqueGeneralInformationForm: React.FC<ITechniqueGeneralInformationFormProps> = () => {
+const TechniqueGeneralInformationForm = () => {
   const codesContext = useCodesContext();
+
+  const { setFieldValue } = useFormikContext<ICreateTechniqueRequest>();
 
   const methodOptions: ISelectWithSubtextFieldOption[] =
     codesContext.codesDataLoader.data?.sample_methods.map((option) => ({
@@ -67,12 +47,23 @@ const TechniqueGeneralInformationForm: React.FC<ITechniqueGeneralInformationForm
           />
         </Grid>
         <Grid item xs={12}>
-          <SelectWithSubtextField
+          <AutocompleteField
             id="method_lookup_id"
-            label="Sampling Technique"
+            label="Sampling method"
             name="method_lookup_id"
-            options={methodOptions}
+            showValue
             required
+            loading={codesContext.codesDataLoader.isLoading}
+            options={methodOptions.map((option) => ({
+              value: option.value,
+              label: option.label,
+              description: option.subText
+            }))}
+            onChange={(_, value) => {
+              if (value?.value) {
+                setFieldValue('method_lookup_id', value.value);
+              }
+            }}
           />
         </Grid>
         <Grid item xs={12}>
@@ -85,9 +76,6 @@ const TechniqueGeneralInformationForm: React.FC<ITechniqueGeneralInformationForm
               rows: 4
             }}
           />
-        </Grid>
-        <Grid item xs={12}>
-          <CustomTextField name="distance_threshold" label="Distance threshold" maxLength={100} />
         </Grid>
       </Grid>
     </>

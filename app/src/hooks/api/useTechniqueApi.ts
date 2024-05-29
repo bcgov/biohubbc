@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { ICreateTechniqueRequest, ITechniqueResponse } from 'interfaces/useTechniqueApi.interface';
+import { ICreateTechniqueRequest, IGetTechnique, ITechniqueResponse } from 'interfaces/useTechniqueApi.interface';
 
 /**
  * Returns a set of supported api methods for working with techniques.
@@ -15,7 +15,7 @@ const useTechniqueApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @return {*}  {Promise<ICreateTechniqueResponse>}
    */
-  const getTechniquesForSurvey = async (projectId: number, surveyId: number): Promise<ITechniqueResponse[]> => {
+  const getTechniquesForSurvey = async (projectId: number, surveyId: number): Promise<ITechniqueResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/technique`);
 
     return data;
@@ -31,7 +31,7 @@ const useTechniqueApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     technique: ICreateTechniqueRequest
-  ): Promise<ITechniqueResponse[]> => {
+  ): Promise<IGetTechnique[]> => {
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/technique/create`, {techniques: [technique]});
 
     return data;

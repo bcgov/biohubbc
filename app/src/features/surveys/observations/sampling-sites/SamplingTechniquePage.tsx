@@ -68,7 +68,7 @@ const TechniqueTechniquePage = () => {
       surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
       // create complete, navigate back to observations page
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
+      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/manage-sampling`);
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: CreateTechniqueI18N.createErrorTitle,
@@ -123,7 +123,8 @@ const TechniqueTechniquePage = () => {
           name: '',
           description: '',
           distance_threshold: null,
-          method_lookup_id: 0,
+          method_lookup_id: null,
+          attractants: [],
           qualitative_attributes: [],
           quantitative_attributes: []
         }}

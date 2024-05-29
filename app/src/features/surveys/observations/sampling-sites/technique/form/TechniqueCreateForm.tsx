@@ -7,10 +7,11 @@ import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
-import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
+import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
 import { useHistory } from 'react-router';
-import TechniqueGeneralInformationForm from './general-information/TechniqueGeneralInformationForm';
 import TechniqueAttractantsForm from './attractants/TechniqueAttractantsForm';
+import TechniqueDetailsForm from './details/TechniqueDetailsForm';
+import TechniqueGeneralInformationForm from './general-information/TechniqueGeneralInformationForm';
 
 interface ITechniqueCreateFormProps {
   isSubmitting: boolean;
@@ -20,7 +21,7 @@ const TechniqueCreateForm = (props: ITechniqueCreateFormProps) => {
   const { isSubmitting } = props;
 
   const history = useHistory();
-  const { submitForm } = useFormikContext<ICreateSamplingSiteRequest>();
+  const { submitForm } = useFormikContext<ICreateTechniqueRequest>();
 
   const surveyContext = useSurveyContext();
 
@@ -36,9 +37,16 @@ const TechniqueCreateForm = (props: ITechniqueCreateFormProps) => {
           <Divider />
 
           <HorizontalSplitFormComponent
-            title="General Information"
-            summary="Enter information about the technique"
+            title="Attractants"
+            summary="Enter information about any attractants used to lure species as part of the technique"
             component={<TechniqueAttractantsForm />}></HorizontalSplitFormComponent>
+
+          <Divider />
+
+          <HorizontalSplitFormComponent
+            title="Methodology"
+            summary="Enter details about the technique"
+            component={<TechniqueDetailsForm />}></HorizontalSplitFormComponent>
 
           <Divider />
 

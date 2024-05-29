@@ -18,7 +18,7 @@ import { TransitionGroup } from 'react-transition-group';
  *
  * @return {*}
  */
-const TechniqueAttractantsForm = () => {
+const TechniqueAttributesForm = () => {
   const codesContext = useCodesContext();
 
   const { values, setFieldValue } = useFormikContext<ICreateTechniqueRequest>();
@@ -101,4 +101,4 @@ const TechniqueAttractantsForm = () => {
   );
 };
 
-export default TechniqueAttractantsForm;
+export default TechniqueAttributesForm;
