@@ -123,7 +123,7 @@ describe('RegionRepository', () => {
     });
   });
 
-  describe('getRegionsByNames', () => {
+  describe('getIntersectingRegionsFromFeatures', () => {
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const repo = new RegionRepository(mockDBConnection);
