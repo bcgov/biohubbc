@@ -1,8 +1,10 @@
+import CircularProgress from '@mui/material/CircularProgress';
 import Grid from '@mui/material/Grid';
 import CustomTextField from 'components/fields/CustomTextField';
-import { useFormikContext } from 'formik';
+import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
+import { useCodesContext } from 'hooks/useContext';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 export interface ITechniqueGeneralInformationForm {
   survey_details: {
@@ -34,9 +36,22 @@ export interface ITechniqueGeneralInformationFormProps {}
  * @return {*}
  */
 const TechniqueGeneralInformationForm: React.FC<ITechniqueGeneralInformationFormProps> = () => {
-  const formikProps = useFormikContext<ITechniqueGeneralInformationForm>();
+  const codesContext = useCodesContext();
 
-  console.log(formikProps);
+  const methodOptions: ISelectWithSubtextFieldOption[] =
+    codesContext.codesDataLoader.data?.sample_methods.map((option) => ({
+      value: option.id,
+      label: option.name,
+      subText: option.description
+    })) ?? [];
+
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
+
+  if (!codesContext.codesDataLoader.data) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   return (
     <>
@@ -52,13 +67,12 @@ const TechniqueGeneralInformationForm: React.FC<ITechniqueGeneralInformationForm
           />
         </Grid>
         <Grid item xs={12}>
-          <CustomTextField
+          <SelectWithSubtextField
+            id="method_lookup_id"
+            label="Sampling Technique"
             name="method_lookup_id"
-            label="Type"
-            maxLength={1000}
-            other={{
-              required: true
-            }}
+            options={methodOptions}
+            required
           />
         </Grid>
         <Grid item xs={12}>
@@ -71,6 +85,9 @@ const TechniqueGeneralInformationForm: React.FC<ITechniqueGeneralInformationForm
               rows: 4
             }}
           />
+        </Grid>
+        <Grid item xs={12}>
+          <CustomTextField name="distance_threshold" label="Distance threshold" maxLength={100} />
         </Grid>
       </Grid>
     </>

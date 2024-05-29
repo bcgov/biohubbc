@@ -1,33 +1,25 @@
-import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+import { Box } from '@mui/system';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { CreateSamplingSiteI18N } from 'constants/i18n';
-import { SamplingSiteMethodYupSchema } from 'features/surveys/observations/sampling-sites/create/form/MethodForm';
+import { CreateTechniqueI18N } from 'constants/i18n';
 import { Formik, FormikProps } from 'formik';
-import { Feature } from 'geojson';
 import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
-import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
+import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingTechniqueHeader from './SamplingTechniqueHeader';
 import TechniqueCreateForm from './technique/form/TechniqueCreateForm';
 
-export interface ISurveySampleSite {
-  name: string;
-  description: string;
-  geojson: Feature;
-}
-
 /**
  * Renders the body content of the Technique page.
  *
  * @return {*}
  */
-const SamplingSiteTechniquePage = () => {
+const TechniqueTechniquePage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
@@ -35,34 +27,26 @@ const SamplingSiteTechniquePage = () => {
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
 
-  const formikRef = useRef<FormikProps<ICreateSamplingSiteRequest>>(null);
+  const formikRef = useRef<FormikProps<ICreateTechniqueRequest>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  const samplingSiteYupSchema = yup.object({
-    survey_sample_sites: yup
-      .array(
-        yup.object({
-          name: yup.string().default(''),
-          description: yup.string().default(''),
-          geojson: yup.object({})
-        })
-      )
-      .min(1, 'At least one technique location is required'),
-    sample_methods: yup
-      .array(yup.object().concat(SamplingSiteMethodYupSchema))
-      .min(1, 'At least one sampling method is required')
+  const techniqueYupSchema = yup.object({
+    name: yup.string().required('Name is required.'),
+    description: yup.string().nullable(),
+    distance_threshold: yup.number().nullable(),
+    method_lookup_id: yup.number().required('A method type is required.'),
+    quantitative_attributes: yup.array(yup.object({ method_technique_attribute_quantitative_id: yup.string().uuid() })),
+    qualitative_attributes: yup.array(yup.object({ method_technique_attribute_qualitative_id: yup.string().uuid() }))
   });
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
-      dialogTitle: CreateSamplingSiteI18N.createErrorTitle,
-      dialogText: CreateSamplingSiteI18N.createErrorText,
+      dialogTitle: CreateTechniqueI18N.createErrorTitle,
+      dialogText: CreateTechniqueI18N.createErrorText,
       onClose: () => {
         dialogContext.setErrorDialog({ open: false });
       },
@@ -74,14 +58,11 @@ const SamplingSiteTechniquePage = () => {
     });
   };
 
-  const handleSubmit = async (values: ICreateSamplingSiteRequest) => {
+  const handleSubmit = async (values: ICreateTechniqueRequest) => {
     try {
       setIsSubmitting(true);
 
-      await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, values);
-
-      // Disable cancel prompt so we can navigate away from the page after saving
-      setEnableCancelCheck(false);
+      await biohubApi.technique.createTechnique(surveyContext.projectId, surveyContext.surveyId, values);
 
       // Refresh the context, so the next page loads with the latest data
       surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
@@ -90,8 +71,8 @@ const SamplingSiteTechniquePage = () => {
       history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
     } catch (error) {
       showCreateErrorDialog({
-        dialogTitle: CreateSamplingSiteI18N.createErrorTitle,
-        dialogText: CreateSamplingSiteI18N.createErrorText,
+        dialogTitle: CreateTechniqueI18N.createErrorTitle,
+        dialogText: CreateTechniqueI18N.createErrorText,
         dialogError: (error as APIError).message,
         dialogErrorDetails: (error as APIError)?.errors
       });
@@ -108,12 +89,12 @@ const SamplingSiteTechniquePage = () => {
    * @return {*}
    */
   const handleLocationChange = (location: History.Location) => {
-    if (!dialogContext.yesNoDialogProps.open) {
+    if (!dialogContext.yesNoDialogProps.open && !isSubmitting) {
       // If the cancel dialog is not open: open it
       dialogContext.setYesNoDialog({
         open: true,
-        dialogTitle: CreateSamplingSiteI18N.cancelTitle,
-        dialogText: CreateSamplingSiteI18N.cancelText,
+        dialogTitle: CreateTechniqueI18N.cancelTitle,
+        dialogText: CreateTechniqueI18N.cancelText,
         onClose: () => {
           dialogContext.setYesNoDialog({ open: false });
         },
@@ -134,19 +115,19 @@ const SamplingSiteTechniquePage = () => {
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={!isSubmitting} message={handleLocationChange} />
       <Formik
         innerRef={formikRef}
         initialValues={{
           survey_id: surveyContext.surveyId,
           name: '',
           description: '',
-          survey_sample_sites: [],
-          sample_methods: [],
-          blocks: [],
-          stratums: []
+          distance_threshold: null,
+          method_lookup_id: 0,
+          qualitative_attributes: [],
+          quantitative_attributes: []
         }}
-        validationSchema={samplingSiteYupSchema}
+        validationSchema={techniqueYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={handleSubmit}>
@@ -169,4 +150,4 @@ const SamplingSiteTechniquePage = () => {
   );
 };
 
-export default SamplingSiteTechniquePage;
+export default TechniqueTechniquePage;

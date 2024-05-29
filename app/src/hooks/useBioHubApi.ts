@@ -18,6 +18,7 @@ import useStandardsApi from './api/useStandardsApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useUserApi from './api/useUserApi';
+import { useTechniqueApi } from './api/useTechniqueApi';
 
 /**
  * Returns a set of supported api methods.
@@ -56,6 +57,8 @@ export const useBiohubApi = () => {
 
   const samplingSite = useSamplingSiteApi(apiAxios);
 
+  const technique = useTechniqueApi(apiAxios)
+
   const standards = useStandardsApi(apiAxios);
 
   const reference = useReferenceApi(apiAxios);
@@ -74,6 +77,7 @@ export const useBiohubApi = () => {
       external,
       publish,
       spatial,
+      technique,
       funding,
       samplingSite,
       standards,

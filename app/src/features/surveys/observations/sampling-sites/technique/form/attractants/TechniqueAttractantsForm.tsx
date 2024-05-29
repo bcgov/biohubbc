@@ -43,8 +43,8 @@ const TechniqueAttractantsForm: React.FC<ITechniqueAttractantsFormProps> = () =>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <CustomTextField
-            name="name"
-            label="Technique Name"
+            name="attractants"
+            label="Attractants"
             maxLength={64}
             other={{
               required: true

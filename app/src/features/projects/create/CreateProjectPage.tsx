@@ -137,6 +137,7 @@ const CreateProjectPage = () => {
       }
 
       setEnableCancelCheck(false);
+      
       history.push(`/admin/projects/${response.id}`);
     } finally {
       setIsSaving(false);
