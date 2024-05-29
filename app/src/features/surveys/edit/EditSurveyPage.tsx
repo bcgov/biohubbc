@@ -68,25 +68,26 @@ const EditSurveyPage = () => {
 
   const surveyData = editSurveyDataLoader.data?.surveyData;
 
-  const defaultCancelDialogProps = {
-    dialogTitle: EditSurveyI18N.cancelTitle,
-    dialogText: EditSurveyI18N.cancelText,
-    open: false,
-    onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onYes: () => {
-      dialogContext.setYesNoDialog({ open: false });
-      history.push('details');
-    }
+  const getCancelDialogProps = (pathname: string) => {
+    return {
+      dialogTitle: EditSurveyI18N.cancelTitle,
+      dialogText: EditSurveyI18N.cancelText,
+      open: true,
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onYes: () => {
+        dialogContext.setYesNoDialog({ open: false });
+        history.push(pathname);
+      }
+    };
   };
 
   const handleCancel = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push('details');
+    dialogContext.setYesNoDialog(getCancelDialogProps('details'));
   };
 
   const showEditErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -173,20 +174,17 @@ const EditSurveyPage = () => {
    * @return {*}
    */
   const handleLocationChange = (location: History.Location) => {
+    // If the form is currently saving: allow it
+    if (isSaving) {
+      return true;
+    }
+
+    // If the dialog is not currently open and location is trying to change: open dialog
     if (!dialogContext.yesNoDialogProps.open) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        ...defaultCancelDialogProps,
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        },
-        open: true
-      });
+      dialogContext.setYesNoDialog(getCancelDialogProps(location.pathname));
       return false;
     }
 
-    // If the cancel dialog is already open and another location change action is triggered: allow it
     return true;
   };
 
