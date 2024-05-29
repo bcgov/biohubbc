@@ -160,7 +160,7 @@ export class RegionRepository extends BaseRepository {
     queryBuilder.andWhere((query) => {
       for (const feature of features) {
         /**
-         * note: If a spatial layer is selected, the ST_Intersects will return all surrounding layers.
+         * note: If a spatial (bcgw) layer is selected, the ST_Intersects will return all surrounding layers.
          * This will try and query the region_lookup table using the region name instead.
          */
         const regionName = feature?.properties?.['REGION_NAME'];
