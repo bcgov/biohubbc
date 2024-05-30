@@ -5,14 +5,18 @@ import { useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
+import { useEffect } from 'react';
 
 export const CauseOfDeathForm = () => {
   const { setFieldValue } = useFormikContext<ICreateEditMortalityRequest>();
+
   const critterbaseApi = useCritterbaseApi();
 
   const causeOfDeathDataLoader = useDataLoader(() => critterbaseApi.mortality.getCauseOfDeathOptions());
 
-  causeOfDeathDataLoader.load();
+  useEffect(() => {
+    causeOfDeathDataLoader.load();
+  }, [causeOfDeathDataLoader]);
 
   return (
     <Box component="fieldset">
@@ -33,21 +37,6 @@ export const CauseOfDeathForm = () => {
               flex: '0.5'
             }}
           />
-          {/* <AutocompleteField
-            id={`mortality.proximate_cause_of_death_confidence`}
-            name={`mortality.proximate_cause_of_death_confidence`}
-            label="Proximate cause of death"
-            options={CritterbaseCauseOfDeathConfidence.map((cause) => ({ value: cause.id, label: cause.value })) ?? []}
-            onChange={(_, option) => {
-              if (option?.value) {
-                setFieldValue(`mortality.proximate_cause_of_death_confidence`, option.value);
-              }
-            }}
-            required
-            sx={{
-              flex: '0.5'
-            }}
-          /> */}
         </Grid>
       </Grid>
     </Box>

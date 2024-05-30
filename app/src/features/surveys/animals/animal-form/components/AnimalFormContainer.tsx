@@ -97,7 +97,6 @@ export const AnimalFormContainer = (props: IAnimalFormProps) => {
 
   return (
     <Formik
-      enableReinitialize
       innerRef={formikRef}
       initialValues={initialAnimalData}
       validationSchema={AnimalFormYupSchema}

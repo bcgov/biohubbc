@@ -18,9 +18,11 @@ export const AnimalDetailsContainer = () => {
     !animalPageContext.critterDataLoader.data
   ) {
     return (
-      <Stack spacing={1.5} flexDirection="column" height="100%" maxWidth="100%" flex="1 1 auto">
+      <Stack flex="1 1 auto" flexDirection="column" spacing={1.5} height="100%" maxWidth="100%" maxHeight="136px">
+        {/* Title */}
         <Skeleton variant="rectangular" width={'25%'} height={25} sx={{ p: 2 }} />
-        <Box display="flex" flexDirection={'row'} justifyContent={'space-between'} pb={1}>
+        {/* Species/Status/ID */}
+        <Box display="flex" flexDirection={'row'} justifyContent={'space-between'} pb={'7px'}>
           <Box display="flex" flexDirection={'row'} width="50%">
             <Skeleton variant="circular" height={15} sx={{ p: 1, mr: 1 }} />
             <Skeleton variant="rectangular" width={'15%'} height={15} sx={{ p: 1, mr: 2 }} />
@@ -30,8 +32,13 @@ export const AnimalDetailsContainer = () => {
             <Skeleton variant="rectangular" width={'75%'} height={15} sx={{ p: 1, mr: 2 }} />
           </Box>
         </Box>
-        <Skeleton variant="rectangular" width={'100%'} height={'2px'} />
-        <Skeleton variant="rectangular" width={'50%'} height={42} sx={{ p: 2 }} />
+        {/* Divider */}
+        <Skeleton variant="rectangular" width={'100%'} sx={{ pb: '1px' }} />
+        {/* Attributes */}
+        <Box display="flex" flexDirection={'row'} pb={1}>
+          <Skeleton variant="rectangular" width={'75px'} height={42} sx={{ p: 1, mr: 3 }} />
+          <Skeleton variant="rectangular" width={'75px'} height={42} sx={{ p: 1 }} />
+        </Box>
       </Stack>
     );
   }

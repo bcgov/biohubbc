@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
-interface IAnimalCapturesToolbarProps {
+interface ICapturesToolbarProps {
   capturesCount: number;
   onAddAnimalCapture: () => void;
 }
@@ -13,10 +13,10 @@ interface IAnimalCapturesToolbarProps {
 /**
  * Toolbar for actions affecting an animal's captures, ie. add a new capture
  *
- * @param {IAnimalCapturesToolbarProps} props
+ * @param {ICapturesToolbarProps} props
  * @returns {*}
  */
-export const AnimalCapturesToolbar = (props: IAnimalCapturesToolbarProps) => {
+export const AnimalCapturesToolbar = (props: ICapturesToolbarProps) => {
   const { capturesCount, onAddAnimalCapture } = props;
 
   return (
@@ -43,7 +43,7 @@ export const AnimalCapturesToolbar = (props: IAnimalCapturesToolbarProps) => {
           color="primary"
           onClick={onAddAnimalCapture}
           startIcon={<Icon path={mdiPlus} size={1} />}>
-          Add
+          Add Capture
         </Button>
       </Box>
     </Toolbar>

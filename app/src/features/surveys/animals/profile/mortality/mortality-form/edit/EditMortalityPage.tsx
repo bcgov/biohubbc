@@ -10,27 +10,27 @@ import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
-import { EditCaptureI18N } from 'constants/i18n';
+import { EditMortalityI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
-import { AnimalCaptureForm } from 'features/surveys/animals/profile/captures/capture-form/components/AnimalCaptureForm';
+import { AnimalMortalityForm } from 'features/surveys/animals/profile/mortality/mortality-form/AnimalMortalityForm';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { formatCritterDetailsForBulkUpdate, formatLocation } from './utils';
 
 /**
- * Returns the page for editing an animal capture
+ * Returns the page for editing an animal mortality
  *
  * @return {*}
  */
-export const EditCapturePage = () => {
+export const EditMortalityPage = () => {
   const history = useHistory();
 
   const critterbaseApi = useCritterbaseApi();
@@ -43,24 +43,28 @@ export const EditCapturePage = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
 
   const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
-  const captureId: string | undefined = String(urlParams['capture_id']);
+  const mortalityId: string | undefined = String(urlParams['mortality_id']);
 
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  const formikRef = useRef<FormikProps<ICreateEditCaptureRequest>>(null);
+  const formikRef = useRef<FormikProps<ICreateEditMortalityRequest>>(null);
 
   const { projectId, surveyId } = surveyContext;
 
   const critter = animalPageContext.critterDataLoader.data;
 
-  const captureDataLoader = useDataLoader(() => critterbaseApi.capture.getCapture(captureId));
+  const mortalityDataLoader = useDataLoader(() => critterbaseApi.mortality.getMortality(mortalityId));
+
+  console.log('mortality critter', critter);
 
   useEffect(() => {
-    captureDataLoader.load();
-  }, [captureDataLoader]);
+    mortalityDataLoader.load();
+  }, [mortalityDataLoader]);
 
-  const capture = captureDataLoader.data;
+  const mortality = mortalityDataLoader.data;
+
+  console.log('mortality', mortality);
 
   // If the user has refreshed the page and cleared the context, or come to this page externally from a link, use the
   // url params to set the selected animal in the context. The context then requests critter data from Critterbase.
@@ -72,14 +76,14 @@ export const EditCapturePage = () => {
     animalPageContext.setSelectedAnimalFromSurveyCritterId(surveyCritterId);
   }, [animalPageContext, surveyCritterId]);
 
-  if (!capture || !critter) {
+  if (!mortality || !critter) {
     return <CircularProgress size={40} className="pageProgress" />;
   }
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog({
-      dialogTitle: EditCaptureI18N.cancelTitle,
-      dialogText: EditCaptureI18N.cancelText,
+      dialogTitle: EditMortalityI18N.cancelTitle,
+      dialogText: EditMortalityI18N.cancelText,
       open: false,
       onClose: () => {
         dialogContext.setYesNoDialog({ open: false });
@@ -97,8 +101,8 @@ export const EditCapturePage = () => {
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
-      dialogTitle: EditCaptureI18N.createErrorTitle,
-      dialogText: EditCaptureI18N.createErrorText,
+      dialogTitle: EditMortalityI18N.createErrorTitle,
+      dialogText: EditMortalityI18N.createErrorText,
       open: true,
       onClose: () => {
         dialogContext.setErrorDialog({ open: false });
@@ -122,8 +126,8 @@ export const EditCapturePage = () => {
     if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
       dialogContext.setYesNoDialog({
-        dialogTitle: EditCaptureI18N.cancelTitle,
-        dialogText: EditCaptureI18N.cancelText,
+        dialogTitle: EditMortalityI18N.cancelTitle,
+        dialogText: EditMortalityI18N.cancelText,
         open: true,
         onClose: () => {
           dialogContext.setYesNoDialog({ open: false });
@@ -144,42 +148,28 @@ export const EditCapturePage = () => {
   };
 
   /**
-   * Creates an Capture
+   * Creates an Mortality
    *
    * @return {*}
    */
-  const handleSubmit = async (values: ICreateEditCaptureRequest) => {
+  const handleSubmit = async (values: ICreateEditMortalityRequest) => {
     setIsSaving(true);
     setEnableCancelCheck(false);
 
     try {
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
-      if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
+      if (!values || !critterbaseCritterId || values.mortality.location?.geometry.type !== 'Point') {
         return;
       }
 
-      // Format capture location
-      const captureLocation = formatLocation(values.capture.capture_location);
+      // Format mortality location
+      const mortalityLocation = formatLocation(values.mortality.location);
 
-      // If release location is null, use the capture location, otherwise format release location
-      const releaseLocation = values.capture.release_location
-        ? formatLocation(values.capture.release_location)
-        : values.capture.capture_location;
-
-      // Format capture timestamp
-      const captureTimestamp = dayjs(
-        `${values.capture.capture_date}${
-          values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00'
+      // Format mortality timestamp
+      const mortalityTimestamp = dayjs(
+        `${values.mortality.mortality_date}${
+          values.mortality.mortality_time ? ` ${values.mortality.mortality_time}-07:00` : 'T00:00:00-07:00'
         }`
-      ).toDate();
-
-      // If release timestamp is null, use the capture timestamp, otherwise format release location
-      const releaseTimestamp = dayjs(
-        values.capture.release_date
-          ? `${values.capture.release_date}${
-              values.capture.release_time ? ` ${values.capture.release_time}-07:00` : 'T00:00:00-07:00'
-            }`
-          : captureTimestamp
       ).toDate();
 
       const {
@@ -192,9 +182,14 @@ export const EditCapturePage = () => {
         quantitativeMeasurementsForCreate,
         qualitativeMeasurementsForUpdate,
         quantitativeMeasurementsForUpdate
-      } = formatCritterDetailsForBulkUpdate(critter, values.markings, values.measurements, values.capture.capture_id);
+      } = formatCritterDetailsForBulkUpdate(
+        critter,
+        values.markings,
+        values.measurements,
+        values.mortality.mortality_id
+      );
 
-      // Create new measurements added while editing the capture
+      // Create new measurements added while editing the mortality
       if (
         qualitativeMeasurementsForCreate.length ||
         quantitativeMeasurementsForCreate.length ||
@@ -209,18 +204,19 @@ export const EditCapturePage = () => {
 
       // Update existing critter information
       const response = await critterbaseApi.critters.bulkUpdate({
-        captures: [
-          {
-            capture_id: values.capture.capture_id,
-            capture_timestamp: captureTimestamp,
-            release_timestamp: releaseTimestamp,
-            capture_comment: values.capture.capture_comment ?? '',
-            release_comment: values.capture.release_comment ?? '',
-            capture_location: captureLocation,
-            release_location: releaseLocation ?? captureLocation,
-            critter_id: critterbaseCritterId
-          }
-        ],
+        mortality: {
+          critter_id: critterbaseCritterId,
+          mortality_id: values.mortality.mortality_id,
+          location: mortalityLocation,
+          mortality_timestamp: mortalityTimestamp,
+          mortality_comment: values.mortality.mortality_comment,
+          proximate_cause_of_death_id: values.mortality.proximate_cause_of_death_id,
+          proximate_cause_of_death_confidence: values.mortality.proximate_cause_of_death_confidence,
+          proximate_predated_by_itis_tsn: values.mortality.proximate_predated_by_itis_tsn,
+          ultimate_cause_of_death_id: values.mortality.ultimate_cause_of_death_id,
+          ultimate_cause_of_death_confidence: values.mortality.ultimate_cause_of_death_confidence,
+          ultimate_predated_by_itis_tsn: values.mortality.ultimate_predated_by_itis_tsn
+        },
         markings: [...markingsForUpdate, ...markingsForDelete],
         qualitative_measurements: [...qualitativeMeasurementsForUpdate, ...qualitativeMeasurementsForDelete],
         quantitative_measurements: [...quantitativeMeasurementsForUpdate, ...quantitativeMeasurementsForDelete]
@@ -251,41 +247,34 @@ export const EditCapturePage = () => {
     }
   };
 
-  const [captureDate, captureTime] = dayjs(capture.capture_timestamp).format('YYYY-MM-DD HH:mm:ss').split(' ');
-  const [releaseDate, releaseTime] = dayjs(capture.release_timestamp).format('YYYY-MM-DD HH:mm:ss').split(' ');
+  const [mortalityDate, mortalityTime] = dayjs(mortality.mortality_timestamp).format('YYYY-MM-DD HH:mm:ss').split(' ');
 
   // Initial formik values
-  const initialFormikValues: ICreateEditCaptureRequest = {
-    capture: {
-      capture_id: capture.capture_id,
-      capture_comment: capture.capture_comment ?? '',
-      capture_timestamp: capture.capture_timestamp,
-      capture_date: captureDate,
-      capture_time: captureTime,
-      capture_location: {
+  const initialFormikValues: ICreateEditMortalityRequest = {
+    mortality: {
+      mortality_id: mortality.mortality_id,
+      mortality_comment: mortality.mortality_comment ?? '',
+      mortality_timestamp: mortality.mortality_timestamp,
+      mortality_date: mortalityDate,
+      mortality_time: mortalityTime,
+      proximate_cause_of_death_id: mortality.proximate_cause_of_death_id,
+      proximate_cause_of_death_confidence: mortality.proximate_cause_of_death_confidence,
+      proximate_predated_by_itis_tsn: mortality.proximate_predated_by_itis_tsn,
+      ultimate_cause_of_death_id: mortality.ultimate_cause_of_death_id,
+      ultimate_cause_of_death_confidence: mortality.ultimate_cause_of_death_confidence,
+      ultimate_predated_by_itis_tsn: mortality.ultimate_predated_by_itis_tsn,
+      location: {
         type: 'Feature',
         geometry: {
           type: 'Point',
-          coordinates: [capture.capture_location.longitude ?? 0, capture.capture_location.latitude ?? 0]
+          coordinates: [mortality.location.longitude ?? 0, mortality.location.latitude ?? 0]
         },
         properties: {}
-      },
-      release_location: {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [capture.release_location?.longitude ?? 0, capture.release_location?.latitude ?? 0]
-        },
-        properties: {}
-      },
-      release_timestamp: capture.release_timestamp ?? '',
-      release_date: releaseDate,
-      release_time: releaseTime,
-      release_comment: capture.release_comment ?? ''
+      }
     },
     markings:
       critter.markings
-        .filter((marking) => marking.capture_id === capture.capture_id)
+        .filter((marking) => marking.mortality_id === mortality.mortality_id)
         .map((marking) => ({
           marking_id: marking.marking_id,
           identifier: marking.identifier,
@@ -299,7 +288,7 @@ export const EditCapturePage = () => {
         })) ?? [],
     measurements: [
       ...(critter.measurements.qualitative
-        .filter((measurement) => measurement.capture_id === capture.capture_id)
+        .filter((measurement) => measurement.mortality_id === mortality.mortality_id)
         .map((measurement) => ({
           measurement_qualitative_id: measurement.measurement_qualitative_id,
           taxon_measurement_id: measurement.taxon_measurement_id,
@@ -310,7 +299,7 @@ export const EditCapturePage = () => {
           measured_timestamp: measurement.measured_timestamp
         })) ?? []),
       ...(critter.measurements.quantitative
-        .filter((measurement) => measurement.capture_id === capture.capture_id)
+        .filter((measurement) => measurement.mortality_id === mortality.mortality_id)
         .map((measurement) => ({
           measurement_quantitative_id: measurement.measurement_quantitative_id,
           taxon_measurement_id: measurement.taxon_measurement_id,
@@ -323,11 +312,13 @@ export const EditCapturePage = () => {
     ]
   };
 
+  console.log('initialFormikValues', initialFormikValues);
+
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
       <PageHeader
-        title="Edit Capture"
+        title="Edit Mortality"
         breadCrumbJSX={
           critter?.animal_id ? (
             <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
@@ -350,7 +341,7 @@ export const EditCapturePage = () => {
                 {critter.animal_id}
               </Link>
               <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
-                Edit Capture
+                Edit Mortality
               </Typography>
             </Breadcrumbs>
           ) : (
@@ -375,9 +366,9 @@ export const EditCapturePage = () => {
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
-          <AnimalCaptureForm
-            initialCaptureData={initialFormikValues}
-            onSubmit={(formikData) => handleSubmit(formikData)}
+          <AnimalMortalityForm
+            initialMortalityData={initialFormikValues}
+            handleSubmit={(formikData) => handleSubmit(formikData)}
             formikRef={formikRef}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>

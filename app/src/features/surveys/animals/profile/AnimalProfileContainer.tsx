@@ -5,7 +5,7 @@ import { AnimalCaptureContainer } from './captures/AnimalCaptureContainer';
 import AnimalMortalityContainer from './mortality/AnimalMortalityContainer';
 
 /**
- * Component for displaying an animal's details within the Manage Animals page
+ * Component for displaying an animal's details (profile) within the Manage Animals page
  *
  * @return {*}
  */

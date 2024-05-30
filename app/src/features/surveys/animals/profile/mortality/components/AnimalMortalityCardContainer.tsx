@@ -16,24 +16,26 @@ import Typography from '@mui/material/Typography';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ISurveyCritter } from 'contexts/animalPageContext';
+import { IMortalityWithSupplementaryData } from 'features/surveys/animals/profile/mortality/AnimalMortalityContainer';
+import { AnimalMortalityCardDetailsContainer } from 'features/surveys/animals/profile/mortality/components/mortality-card-details/AnimalMortalityCardDetailsContainer';
 import { useSurveyContext } from 'hooks/useContext';
-import { IMortalityResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
 
 interface IAnimalMortalityCardContainer {
-  mortality: IMortalityResponse[];
+  mortality: IMortalityWithSupplementaryData[];
   selectedAnimal: ISurveyCritter;
+  handleDelete: (selectedMortality: string, critterbase_critter_id: string) => Promise<void>;
 }
 /**
- * Returns accordian cards for displaying animal mortality details on the animal profile page
+ * Returns accordion cards for displaying animal mortality details on the animal profile page
  *
  * @param {IAnimalMortalityCardContainer} props
  * @return {*}
  */
-const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContainer) => {
-  const { mortality, selectedAnimal } = props;
+export const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContainer) => {
+  const { mortality, selectedAnimal, handleDelete } = props;
 
   const [selectedMortality, setSelectedMortality] = useState<string | null>(null);
   const [mortalityAnchorEl, setMortalityAnchorEl] = useState<MenuProps['anchorEl']>(null);
@@ -41,13 +43,9 @@ const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContainer) => {
 
   const { projectId, surveyId } = useSurveyContext();
 
-  const handleMortalityMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, mortalityId: string) => {
-    setMortalityAnchorEl(event.currentTarget);
-    setSelectedMortality(mortalityId);
-  };
-
   return (
     <>
+      {/* 3 DOT ACTION MENU */}
       {selectedMortality && (
         <Menu
           sx={{ pb: 2 }}
@@ -97,7 +95,6 @@ const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContainer) => {
           </MenuItem>
         </Menu>
       )}
-
       {/* DELETE CONFIRMATION DIALOG */}
       {mortalityForDelete && selectedMortality && (
         <YesNoDialog
@@ -111,7 +108,7 @@ const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContainer) => {
           open={Boolean(mortalityForDelete)}
           onYes={() => {
             setMortalityForDelete(false);
-            // handleDelete(selectedMortality, selectedAnimal.critterbase_critter_id);
+            handleDelete(selectedMortality, selectedAnimal.critterbase_critter_id);
           }}
           onClose={() => setMortalityForDelete(false)}
           onNo={() => setMortalityForDelete(false)}
@@ -120,13 +117,13 @@ const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContainer) => {
 
       {mortality.length ? (
         mortality.map((mortality) => {
+          /* MORTALITY DETAILS */
           return (
             <Accordion
               component={Paper}
               variant="outlined"
               disableGutters
-              elevation={1}
-              key={`${mortality.mortality_id}`}
+              key={mortality.mortality_id}
               sx={{
                 margin: '15px',
                 boxShadow: 'none',
@@ -162,29 +159,35 @@ const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContainer) => {
                     <Typography fontWeight={700}>
                       {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, mortality.mortality_timestamp)}&nbsp;
                     </Typography>
-                    <Box>
-                      <Typography color="textSecondary" variant="body2">
-                        {mortality.location.longitude},&nbsp;
-                        {mortality.location.latitude}
-                      </Typography>
-                    </Box>
+                    {mortality.location.latitude && mortality.location.longitude && (
+                      <Box>
+                        <Typography color="textSecondary" variant="body2">
+                          {mortality.location.longitude},&nbsp;
+                          {mortality.location.latitude}
+                        </Typography>
+                      </Box>
+                    )}
                   </Stack>
                 </AccordionSummary>
                 <IconButton
                   sx={{ position: 'absolute', right: '24px' }}
                   edge="end"
-                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                    handleMortalityMenuClick(event, mortality.mortality_id)
-                  }
+                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                    setMortalityAnchorEl(event.currentTarget);
+                    setSelectedMortality(mortality.mortality_id);
+                  }}
                   aria-label="sample-site-settings">
                   <Icon path={mdiDotsVertical} size={1}></Icon>
                 </IconButton>
               </Box>
-              <AccordionDetails>{/* <MortalityCardDetails mortality={mortality} /> */}</AccordionDetails>
+              <AccordionDetails>
+                <AnimalMortalityCardDetailsContainer mortality={mortality} />
+              </AccordionDetails>
             </Accordion>
           );
         })
       ) : (
+        /* NO MORTALITY RECORDS */
         <Box
           flex="1 1 auto"
           borderRadius="5px"
@@ -201,5 +204,3 @@ const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContainer) => {
     </>
   );
 };
-
-export default AnimalMortalityCardContainer;

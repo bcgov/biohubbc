@@ -11,7 +11,7 @@ import {
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
 
-interface ICaptureMarkingsDialogProps {
+interface IMarkingsDialogProps {
   initialValues?: IMarkingPostData;
   markingColours: IMarkingColourOption[];
   markingBodyLocations: IMarkingBodyLocationResponse[];
@@ -22,14 +22,23 @@ interface ICaptureMarkingsDialogProps {
 }
 
 /**
- * Capture markings dialog.
+ * Animal markings dialog.
  *
- * @param {ICaptureMarkingsDialogProps} props
+ * @param {IMarkingsDialogProps} props
  * @return {*}
  */
-export const CaptureMarkingsDialog = (props: ICaptureMarkingsDialogProps) => {
+export const MarkingsDialog = (props: IMarkingsDialogProps) => {
   const { initialValues, isDialogOpen, handleSave, handleClose, markingBodyLocations, markingColours, markingTypes } =
     props;
+
+  const animalMarkingYupSchema = yup.object({
+    marking_type_id: yup.string().required('Marking type is required.'),
+    taxon_marking_body_location_id: yup.string().required('Marking body location is required.'),
+    identifier: yup.string().nullable(),
+    primary_colour_id: yup.string().nullable(),
+    secondary_colour_id: yup.string().nullable(),
+    comment: yup.string().nullable()
+  });
 
   return (
     <EditDialog
@@ -48,14 +57,7 @@ export const CaptureMarkingsDialog = (props: ICaptureMarkingsDialogProps) => {
           secondary_colour_id: null,
           comment: null
         },
-        validationSchema: yup.object({
-          marking_type_id: yup.string().required('Marking type is required.'),
-          taxon_marking_body_location_id: yup.string().required('Marking body location is required.'),
-          identifier: yup.string().nullable(),
-          primary_colour_id: yup.string().nullable(),
-          secondary_colour_id: yup.string().nullable(),
-          comment: yup.string().nullable()
-        }),
+        validationSchema: animalMarkingYupSchema,
         element: (
           <Stack gap={2}>
             <Stack gap={1} direction="row">

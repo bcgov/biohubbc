@@ -45,8 +45,9 @@ export interface ICapturePostData {
 
 export type IMortalityPostData = {
   mortality_id: string;
-  location: Feature | null;
   mortality_timestamp: string;
+  mortality_date?: string;
+  mortality_time?: string;
   proximate_cause_of_death_id?: string | null;
   proximate_cause_of_death_confidence?: string | null;
   proximate_predated_by_itis_tsn?: number | null;
@@ -54,6 +55,7 @@ export type IMortalityPostData = {
   ultimate_cause_of_death_confidence?: string | null;
   ultimate_predated_by_itis_tsn?: number | null;
   mortality_comment: string | null;
+  location: Feature | null;
 };
 
 export interface ILocationPostData {
@@ -108,8 +110,8 @@ export interface ICritterCollectionUnitResponse {
 
 type ILocationResponse = {
   location_id: string;
-  latitude: number;
-  longitude: number;
+  latitude: number | null;
+  longitude: number | null;
   coordinate_uncertainty: number | null;
   coordinate_uncertainty_unit: string | null;
   temperature: number | null;

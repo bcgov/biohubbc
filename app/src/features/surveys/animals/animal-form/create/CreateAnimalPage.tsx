@@ -36,19 +36,20 @@ export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
  * @return {*}
  */
 export const CreateAnimalPage = () => {
-  const biohubApi = useBiohubApi();
-  const critterbaseApi = useCritterbaseApi();
-
-  const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
-  const [isSaving, setIsSaving] = useState(false);
   const history = useHistory();
 
-  const formikRef = useRef<FormikProps<ICreateEditAnimalRequest>>(null);
+  const biohubApi = useBiohubApi();
+  const critterbaseApi = useCritterbaseApi();
 
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
   const animalPageContext = useAnimalPageContext();
+
+  const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const formikRef = useRef<FormikProps<ICreateEditAnimalRequest>>(null);
 
   const { projectId, surveyId } = surveyContext;
 

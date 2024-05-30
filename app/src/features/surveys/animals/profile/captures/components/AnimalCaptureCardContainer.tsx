@@ -20,16 +20,16 @@ import { useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
-import { ICapturesWithSupplementaryData } from '../AnimalCaptureContainer';
-import { CaptureCardDetails } from './CaptureCardDetails';
+import { ICaptureWithSupplementaryData } from '../AnimalCaptureContainer';
+import { AnimalCaptureCardDetailsContainer } from './capture-card-details/AnimalCaptureCardDetailsContainer';
 
 interface IAnimalCaptureCardContainer {
-  captures: ICapturesWithSupplementaryData[];
+  captures: ICaptureWithSupplementaryData[];
   selectedAnimal: ISurveyCritter;
   handleDelete: (selectedCapture: string, critterbase_critter_id: string) => Promise<void>;
 }
 /**
- * Returns accordian cards for displaying animal capture details on the animal profile page
+ * Returns accordion cards for displaying animal capture details on the animal profile page
  *
  * @param {IAnimalCaptureCardContainer} props
  * @return {*}
@@ -43,13 +43,9 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
 
   const { projectId, surveyId } = useSurveyContext();
 
-  const handleCaptureMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, captureId: string) => {
-    setCaptureAnchorEl(event.currentTarget);
-    setSelectedCapture(captureId);
-  };
-
   return (
     <>
+      {/* 3 DOT ACTION MENU */}
       {selectedCapture && (
         <Menu
           sx={{ pb: 2 }}
@@ -123,6 +119,7 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
 
       {captures.length ? (
         captures.map((capture) => {
+          /* CAPTURE DETAILS */
           return (
             <Accordion
               component={Paper}
@@ -164,31 +161,35 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
                     <Typography fontWeight={700}>
                       {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, capture.capture_timestamp)}&nbsp;
                     </Typography>
-                    <Box>
-                      <Typography color="textSecondary" variant="body2">
-                        {capture.capture_location.longitude},&nbsp;
-                        {capture.capture_location.latitude}
-                      </Typography>
-                    </Box>
+                    {capture.capture_location.latitude && capture.capture_location.longitude && (
+                      <Box>
+                        <Typography color="textSecondary" variant="body2">
+                          {capture.capture_location.longitude},&nbsp;
+                          {capture.capture_location.latitude}
+                        </Typography>
+                      </Box>
+                    )}
                   </Stack>
                 </AccordionSummary>
                 <IconButton
                   sx={{ position: 'absolute', right: '24px' }}
                   edge="end"
-                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                    handleCaptureMenuClick(event, capture.capture_id)
-                  }
+                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                    setCaptureAnchorEl(event.currentTarget);
+                    setSelectedCapture(capture.capture_id);
+                  }}
                   aria-label="sample-site-settings">
                   <Icon path={mdiDotsVertical} size={1}></Icon>
                 </IconButton>
               </Box>
               <AccordionDetails>
-                <CaptureCardDetails capture={capture} />
+                <AnimalCaptureCardDetailsContainer capture={capture} />
               </AccordionDetails>
             </Accordion>
           );
         })
       ) : (
+        /* NO CAPTURE RECORDS */
         <Box
           flex="1 1 auto"
           borderRadius="5px"

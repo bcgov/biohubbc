@@ -62,16 +62,18 @@ export const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps
       return;
     }
 
-    if ('latitude' in location && location.latitude !== 0) {
+    if ('latitude' in location && location.latitude !== 0 && location.longitude !== 0) {
       return {
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [location.longitude, location.latitude] },
         properties: {}
       };
     }
+
     if ('type' in location) {
       return location;
     }
+
     return;
   }, [name, values]);
 
@@ -92,7 +94,7 @@ export const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps
     <Grid item xs={12}>
       {get(errors, name) && !Array.isArray(get(errors, name)) && (
         <Alert severity="error" variant="outlined" sx={{ mb: 2 }}>
-          <AlertTitle>Capture location missing</AlertTitle>
+          <AlertTitle>Missing capture location</AlertTitle>
           {get(errors, name) as string}
         </Alert>
       )}

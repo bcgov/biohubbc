@@ -7,6 +7,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Stack } from '@mui/system';
+import { MarkingsDialog } from 'features/surveys/animals/profile/markings/MarkingsDialog';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useAnimalPageContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
@@ -14,15 +15,14 @@ import useDataLoader from 'hooks/useDataLoader';
 import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
-import { CaptureMarkingsDialog } from './CaptureMarkingsDialog';
 import { MarkingCard } from './MarkingCard';
 
 /**
- * Returns the control for applying markings to an animal on the animal capture form
+ * Returns the control for applying markings to an animal on the animal form
  *
  * @returns
  */
-export const CaptureMarkingsForm = () => {
+export const MarkingsForm = () => {
   const { values } = useFormikContext<ICreateEditCaptureRequest>();
 
   const animalPageContext = useAnimalPageContext();
@@ -108,7 +108,7 @@ export const CaptureMarkingsForm = () => {
           )}
 
           {/* ADD/EDIT MARKING DIALOG */}
-          <CaptureMarkingsDialog
+          <MarkingsDialog
             initialValues={selectedMarking !== null ? values.markings[selectedMarking] : undefined}
             markingBodyLocations={markingBodyLocationDataLoader.data ?? []}
             markingColours={markingColoursDataLoader.data ?? []}

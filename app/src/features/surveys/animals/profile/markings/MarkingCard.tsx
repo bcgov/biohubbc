@@ -19,7 +19,7 @@ interface IMarkingCardProps {
 }
 
 /**
- * Card for displaying information about markings on the animal capture form
+ * Card for displaying information about markings on the animal form
  *
  * @param {IMarkingCardProps} props
  * @return {*}

@@ -10,6 +10,9 @@ import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface'
 export const MortalityGeneralInformationForm = () => {
   const formikProps = useFormikContext<ICreateEditMortalityRequest>();
 
+  console.log('A', formikProps.values);
+  console.log('B', formikProps.errors);
+
   return (
     <Box component="fieldset">
       <Grid container spacing={3}>
@@ -20,21 +23,18 @@ export const MortalityGeneralInformationForm = () => {
           <Box mt={3}>
             <DateTimeFields
               formikProps={formikProps}
-              parentName="mortality"
               date={{
                 dateLabel: 'Mortality date',
-                dateName: 'mortality.mortality_timestamp',
-                dateId: 'mortality.mortality_timestamp',
+                dateName: 'mortality.mortality_date',
+                dateId: 'mortality.mortality_date',
                 dateRequired: true,
-                dateHelperText: '',
                 dateIcon: mdiCalendar
               }}
               time={{
                 timeLabel: 'Mortality time',
                 timeName: 'mortality.mortality_time',
                 timeId: 'mortality.mortality_time',
-                timeRequired: true,
-                timeHelperText: '',
+                timeRequired: false,
                 timeIcon: mdiCalendar
               }}
             />

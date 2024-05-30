@@ -28,21 +28,22 @@ import { Link as RouterLink } from 'react-router-dom';
  * @return {*}
  */
 export const EditAnimalPage = () => {
+  const history = useHistory();
+
   const critterbaseApi = useCritterbaseApi();
+
+  const surveyContext = useSurveyContext();
+  const projectContext = useProjectContext();
+  const dialogContext = useDialogContext();
+  const animalPageContext = useAnimalPageContext();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
   const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
 
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
-  const history = useHistory();
 
   const formikRef = useRef<FormikProps<ICreateEditAnimalRequest>>(null);
-
-  const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext();
-  const dialogContext = useDialogContext();
-  const animalPageContext = useAnimalPageContext();
 
   const { projectId, surveyId } = surveyContext;
 

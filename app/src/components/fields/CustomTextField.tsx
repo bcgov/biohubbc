@@ -33,7 +33,7 @@ const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (pr
       value={get(values, name) ?? ''}
       fullWidth={true}
       error={get(touched, name) && Boolean(get(errors, name))}
-      helperText={get(touched, name) && (get(errors, name) as string)}
+      helperText={get(touched, name) && get(errors, name)}
       {...other}
     />
   );

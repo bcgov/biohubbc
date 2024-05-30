@@ -221,7 +221,6 @@ const MethodForm = () => {
                                     timeRequired: false,
                                     timeIcon: mdiClockOutline
                                   }}
-                                  parentName={`sample_periods[${index}]`}
                                   formikProps={formikProps}
                                 />
                                 {errors.sample_periods &&
@@ -260,7 +259,6 @@ const MethodForm = () => {
                                     timeRequired: false,
                                     timeIcon: mdiClockOutline
                                   }}
-                                  parentName={`sample_periods[${index}]`}
                                   formikProps={formikProps}
                                 />
                                 {errors.sample_periods &&

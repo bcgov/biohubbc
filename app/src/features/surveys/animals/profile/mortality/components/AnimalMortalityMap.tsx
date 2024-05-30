@@ -3,6 +3,7 @@ import { IStaticLayer } from 'components/map/components/StaticLayers';
 import SurveyMap from 'features/surveys/view/SurveyMap';
 import { Feature } from 'geojson';
 import { IMortalityResponse } from 'interfaces/useCritterApi.interface';
+import { isDefined } from 'utils/Utils';
 
 interface IAnimalMortalityMapProps {
   mortality: IMortalityResponse[];
@@ -15,17 +16,19 @@ interface IAnimalMortalityMapProps {
  * @param {IAnimalMortalityMapProps} props
  * @return {*}
  */
-const AnimalMortalityMap = (props: IAnimalMortalityMapProps) => {
+export const AnimalMortalityMap = (props: IAnimalMortalityMapProps) => {
   const { mortality, isLoading } = props;
 
-  const mortalityMapFeatures = mortality.map((mortality) => ({
-    type: 'Feature',
-    geometry: {
-      type: 'Point',
-      coordinates: [mortality.location.longitude, mortality.location.latitude]
-    },
-    properties: { mortalityId: mortality.mortality_id, date: mortality.mortality_timestamp }
-  })) as Feature[];
+  const mortalityMapFeatures = mortality
+    .filter((mortality) => isDefined(mortality.location?.latitude) && isDefined(mortality.location.longitude))
+    .map((mortality) => ({
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [mortality.location.longitude, mortality.location.latitude]
+      },
+      properties: { mortalityId: mortality.mortality_id, date: mortality.mortality_timestamp }
+    })) as Feature[];
 
   const staticLayers: IStaticLayer[] = mortalityMapFeatures.map((feature, index) => ({
     layerName: 'Mortality',
@@ -44,5 +47,3 @@ const AnimalMortalityMap = (props: IAnimalMortalityMapProps) => {
     </Box>
   );
 };
-
-export default AnimalMortalityMap;

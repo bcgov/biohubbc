@@ -26,13 +26,11 @@ export const CaptureGeneralInformationForm = () => {
             <Box mt={3}>
               <DateTimeFields
                 formikProps={formikProps}
-                parentName="capture"
                 date={{
                   dateLabel: 'Capture date',
                   dateName: 'capture.capture_date',
                   dateId: 'capture.capture_date',
                   dateRequired: true,
-                  dateHelperText: '',
                   dateIcon: mdiCalendar
                 }}
                 time={{
@@ -40,7 +38,6 @@ export const CaptureGeneralInformationForm = () => {
                   timeName: 'capture.capture_time',
                   timeId: 'capture.capture_time',
                   timeRequired: false,
-                  timeHelperText: '',
                   timeIcon: mdiCalendar
                 }}
               />
@@ -61,13 +58,11 @@ export const CaptureGeneralInformationForm = () => {
             <Box mt={3}>
               <DateTimeFields
                 formikProps={formikProps}
-                parentName="capture"
                 date={{
                   dateLabel: 'Release date',
                   dateName: 'capture.release_date',
                   dateId: 'capture.release_date',
                   dateRequired: false,
-                  dateHelperText: '',
                   dateIcon: mdiCalendar
                 }}
                 time={{
@@ -75,7 +70,6 @@ export const CaptureGeneralInformationForm = () => {
                   timeName: 'capture.release_time',
                   timeId: 'capture.release_time',
                   timeRequired: false,
-                  timeHelperText: '',
                   timeIcon: mdiCalendar
                 }}
               />

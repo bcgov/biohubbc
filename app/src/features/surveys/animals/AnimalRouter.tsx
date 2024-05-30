@@ -4,6 +4,7 @@ import { DialogContextProvider } from 'contexts/dialogContext';
 import { CreateCapturePage } from 'features/surveys/animals/profile/captures/capture-form/create/CreateCapturePage';
 import { EditCapturePage } from 'features/surveys/animals/profile/captures/capture-form/edit/EditCapturePage';
 import CreateMortalityPage from 'features/surveys/animals/profile/mortality/mortality-form/create/CreateMortalityPage';
+import { EditMortalityPage } from 'features/surveys/animals/profile/mortality/mortality-form/edit/EditMortalityPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
@@ -98,6 +99,19 @@ export const AnimalRouter: React.FC = () => {
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <CreateMortalityPage />
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path={'/admin/projects/:id/surveys/:survey_id/animals/:survey_critter_id/mortality/:mortality_id/edit'}
+        title={getTitle('Edit Mortality')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <EditMortalityPage />
           </DialogContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>

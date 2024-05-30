@@ -18,7 +18,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -46,29 +46,34 @@ export const defaultAnimalCaptureFormValues: ICreateEditCaptureRequest = {
  * @returns
  */
 export const CreateCapturePage = () => {
+  const history = useHistory();
+
   const critterbaseApi = useCritterbaseApi();
+
+  const surveyContext = useSurveyContext();
+  const projectContext = useProjectContext();
+  const dialogContext = useDialogContext();
+  const animalPageContext = useAnimalPageContext();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
   const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
 
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
-  const history = useHistory();
 
   const formikRef = useRef<FormikProps<ICreateEditCaptureRequest>>(null);
-
-  const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext();
-  const dialogContext = useDialogContext();
-  const { selectedAnimal, setSelectedAnimalFromSurveyCritterId, critterDataLoader } = useAnimalPageContext();
 
   const { projectId, surveyId } = surveyContext;
 
   // If the user has refreshed the page and cleared the context, or come to this page externally from a link,
   // use the url params to set the select animal in the context. The context then requests critter data from critterbase.
-  if (!selectedAnimal) {
-    setSelectedAnimalFromSurveyCritterId(surveyCritterId);
-  }
+  useEffect(() => {
+    if (animalPageContext.selectedAnimal || !surveyCritterId) {
+      return;
+    }
+
+    animalPageContext.setSelectedAnimalFromSurveyCritterId(surveyCritterId);
+  }, [animalPageContext, surveyCritterId]);
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
@@ -142,7 +147,7 @@ export const CreateCapturePage = () => {
     setEnableCancelCheck(false);
 
     try {
-      const critterbaseCritterId = selectedAnimal?.critterbase_critter_id;
+      const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
 
       if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
         return;
@@ -186,15 +191,23 @@ export const CreateCapturePage = () => {
       // Must create capture first to avoid foreign key constraints. Can't guarantee that the capture is
       // inserted before the measurements/markings.
       const captureResponse = await critterbaseApi.capture.createCapture({
+        critter_id: critterbaseCritterId,
         capture_id: undefined,
         capture_timestamp: captureTimestamp,
         release_timestamp: releaseTimestamp,
         capture_comment: values.capture.capture_comment ?? '',
         release_comment: values.capture.release_comment ?? '',
         capture_location: captureLocation,
-        release_location: releaseLocation ?? captureLocation,
-        critter_id: critterbaseCritterId
+        release_location: releaseLocation ?? captureLocation
       });
+
+      if (!captureResponse) {
+        showCreateErrorDialog({
+          dialogError: 'An error occurred while attempting to create the capture record.',
+          dialogErrorDetails: ['Capture create failed']
+        });
+        return;
+      }
 
       // Create new measurements added while editing the capture
       const bulkResponse = await critterbaseApi.critters.bulkCreate({
@@ -226,15 +239,16 @@ export const CreateCapturePage = () => {
           }))
       });
 
-      if (!captureResponse || !bulkResponse) {
+      if (!bulkResponse) {
         showCreateErrorDialog({
-          dialogError: 'The response from the server was null, or did not contain a survey ID.'
+          dialogError: 'An error occurred while attempting to create the capture record.',
+          dialogErrorDetails: ['Bulk create failed when creating measurements and markings']
         });
         return;
       }
 
       // Refresh page
-      critterDataLoader.refresh(critterbaseCritterId);
+      animalPageContext.critterDataLoader.refresh(critterbaseCritterId);
 
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
     } catch (error) {
@@ -249,7 +263,7 @@ export const CreateCapturePage = () => {
     }
   };
 
-  const animalId = critterDataLoader.data?.animal_id;
+  const animalId = animalPageContext.critterDataLoader.data?.animal_id;
 
   return (
     <>
@@ -305,7 +319,7 @@ export const CreateCapturePage = () => {
         <Paper sx={{ p: 5 }}>
           <AnimalCaptureForm
             initialCaptureData={defaultAnimalCaptureFormValues}
-            handleSubmit={(formikData) => handleSubmit(formikData as ICreateEditCaptureRequest)}
+            onSubmit={(formikData) => handleSubmit(formikData)}
             formikRef={formikRef}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>

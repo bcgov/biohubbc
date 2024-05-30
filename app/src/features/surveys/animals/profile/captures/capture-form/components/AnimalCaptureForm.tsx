@@ -5,15 +5,15 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { Formik, FormikProps } from 'formik';
 import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import yup from 'utils/YupSchema';
+import { MarkingsForm } from '../../../markings/MarkingsForm';
 import { MeasurementsForm } from '../../../measurements/MeasurementsForm';
 import { CaptureGeneralInformationForm } from './general-information/CaptureGeneralInformationForm';
 import { CaptureLocationForm } from './location/CaptureLocationForm';
 import { ReleaseLocationForm } from './location/ReleaseLocationForm';
-import { CaptureMarkingsForm } from './markings/CaptureMarkingsForm';
 
 export interface IAnimalCaptureFormProps {
   initialCaptureData: ICreateEditCaptureRequest;
-  handleSubmit: (formikData: ICreateEditCaptureRequest) => void;
+  onSubmit: (formikData: ICreateEditCaptureRequest) => void;
   formikRef: React.RefObject<FormikProps<ICreateEditCaptureRequest>>;
 }
 
@@ -28,7 +28,9 @@ export const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
     capture: yup.object({
       capture_id: yup.string().nullable(),
       capture_date: yup.string().required('Capture date is required'),
+      capture_time: yup.string().nullable(),
       capture_comment: yup.string().required('Capture comment is required'),
+      release_date: yup.string().nullable(),
       release_time: yup.string().nullable(),
       release_comment: yup.string().nullable(),
       capture_location: yup
@@ -54,7 +56,11 @@ export const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
         .min(1, 'Release location is required if it is different from the capture location')
         .nullable()
     }),
-    measurements: yup.array(yup.object()),
+    measurements: yup.array(
+      yup.object({
+        // TODO
+      })
+    ),
     markings: yup.array(
       yup.object({
         marking_type_id: yup.string().required('Marking type is required.'),
@@ -74,7 +80,7 @@ export const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
       validationSchema={animalCaptureYupSchema}
       validateOnBlur={false}
       validateOnChange={false}
-      onSubmit={props.handleSubmit}>
+      onSubmit={props.onSubmit}>
       <Stack gap={5}>
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
@@ -92,7 +98,7 @@ export const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
         <HorizontalSplitFormComponent
           title="Markings"
           summary="Enter markings applied to the animal during the capture"
-          component={<CaptureMarkingsForm />}
+          component={<MarkingsForm />}
         />
         <Divider />
         <HorizontalSplitFormComponent

@@ -14,7 +14,6 @@ interface IDateTimeFieldsProps<FormikPropsType> {
     dateName: string;
     dateId: string;
     dateRequired: boolean;
-    dateHelperText?: string;
     dateIcon: string;
   };
   time: {
@@ -22,20 +21,16 @@ interface IDateTimeFieldsProps<FormikPropsType> {
     timeName: string;
     timeId: string;
     timeRequired: boolean;
-    timeErrorHelper?: string;
-    timeHelperText?: string;
     timeIcon: string;
   };
-  parentName: string;
   formikProps: FormikContextType<FormikPropsType>;
 }
 
 export const DateTimeFields = <FormikPropsType,>(props: IDateTimeFieldsProps<FormikPropsType>) => {
   const {
     formikProps: { values, errors, touched, setFieldValue },
-    date: { dateLabel, dateName, dateId, dateRequired, dateHelperText, dateIcon },
-    time: { timeLabel, timeName, timeId, timeRequired, timeHelperText, timeIcon },
-    parentName
+    date: { dateLabel, dateName, dateId, dateRequired, dateIcon },
+    time: { timeLabel, timeName, timeId, timeRequired, timeIcon }
   } = props;
 
   const DateIcon = () => {
@@ -60,6 +55,11 @@ export const DateTimeFields = <FormikPropsType,>(props: IDateTimeFieldsProps<For
       dayjs(rawTimeValue, TIME_FORMAT.LongTimeFormat24Hour)) ||
     null;
 
+  console.log('11---------------------');
+  console.log('error', get(touched, dateName) && Boolean(get(errors, dateName)));
+  console.log('text', get(touched, dateName) && get(errors, dateName));
+  console.log('33---------------------');
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Grid container>
@@ -80,10 +80,8 @@ export const DateTimeFields = <FormikPropsType,>(props: IDateTimeFieldsProps<For
                 name: dateName,
                 required: dateRequired,
                 variant: 'outlined',
-                error:
-                  (get(touched, dateName) && Boolean(get(errors, dateName))) ||
-                  typeof get(errors, parentName) === 'string',
-                helperText: (get(touched, dateName) && get(errors, dateName)) || dateHelperText,
+                error: get(touched, dateName) && Boolean(get(errors, dateName)),
+                helperText: get(touched, dateName) && get(errors, dateName),
                 inputProps: {
                   'data-testid': dateName
                 },
@@ -127,10 +125,8 @@ export const DateTimeFields = <FormikPropsType,>(props: IDateTimeFieldsProps<For
                 name: timeName,
                 required: timeRequired,
                 variant: 'outlined',
-                error:
-                  (get(touched, timeName) && Boolean(get(errors, timeName))) ||
-                  typeof get(errors, parentName) === 'string',
-                helperText: (get(touched, timeName) && get(errors, timeName)) || timeHelperText,
+                error: get(touched, timeName) && Boolean(get(errors, timeName)),
+                helperText: get(touched, timeName) && get(errors, timeName),
                 inputProps: {
                   'data-testid': timeId,
                   'aria-label': 'Time (optional)'

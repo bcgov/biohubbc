@@ -1,14 +1,13 @@
-import { mdiDotsVertical, mdiPlus } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 
 interface IAnimalMortalityToolbarProps {
+  mortalityCount: number;
   onAddAnimalMortality: () => void;
-  isDeceased: boolean;
 }
 
 /**
@@ -17,8 +16,8 @@ interface IAnimalMortalityToolbarProps {
  * @param {IAnimalMortalityToolbarProps} props
  * @return {*}
  */
-const AnimalMortalityToolbar = (props: IAnimalMortalityToolbarProps) => {
-  const { onAddAnimalMortality, isDeceased } = props;
+export const AnimalMortalityToolbar = (props: IAnimalMortalityToolbarProps) => {
+  const { mortalityCount, onAddAnimalMortality } = props;
 
   return (
     <Toolbar
@@ -34,16 +33,15 @@ const AnimalMortalityToolbar = (props: IAnimalMortalityToolbarProps) => {
           flex: '1 1 auto'
         }}>
         Mortality
+        <Typography component="span" color="textSecondary" sx={{ ml: 0.5, flex: '1 1 auto' }}>
+          ({mortalityCount})
+        </Typography>
       </Typography>
-      {isDeceased ? (
-        <IconButton onClick={onAddAnimalMortality}>
-          <Icon path={mdiDotsVertical} size={1} />
-        </IconButton>
-      ) : (
+      {mortalityCount === 0 && (
         <Box display="flex">
           <Button
-            variant="outlined"
-            color="error"
+            variant="contained"
+            color="primary"
             onClick={onAddAnimalMortality}
             startIcon={<Icon path={mdiPlus} size={1} />}>
             Report Mortality
@@ -53,5 +51,3 @@ const AnimalMortalityToolbar = (props: IAnimalMortalityToolbarProps) => {
     </Toolbar>
   );
 };
-
-export default AnimalMortalityToolbar;
