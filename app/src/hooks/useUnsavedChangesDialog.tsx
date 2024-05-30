@@ -51,7 +51,7 @@ export const useUnsavedChangesDialog = (skipConfirmationDialog?: boolean) => {
 
   /**
    * Renders unsaved changes confirmation dialog - which redirects to a specific location on confirmation
-   * Useful for when you need to render the confirmation dialog when not attempting to change location.
+   * Useful for when you need to render the confirmation dialog explicitly.
    * ie: Cancel callback or some action button
    *
    * @param {string} pathname - A history location pathname ie: 'projects'
