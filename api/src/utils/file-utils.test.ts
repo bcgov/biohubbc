@@ -1,4 +1,4 @@
-import AWS from 'aws-sdk';
+import { S3Client } from '@aws-sdk/client-s3';
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
@@ -131,7 +131,7 @@ describe('_getS3Client', () => {
     process.env.OBJECT_STORE_SECRET_KEY_ID = 'bbbb';
 
     const result = _getS3Client();
-    expect(result).to.be.instanceOf(AWS.S3);
+    expect(result).to.be.instanceOf(S3Client);
   });
 });
 

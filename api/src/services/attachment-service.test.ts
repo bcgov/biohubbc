@@ -1,4 +1,4 @@
-import AWS from 'aws-sdk';
+import { DeleteObjectCommandOutput, S3Client } from '@aws-sdk/client-s3';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import { QueryResult } from 'pg';
@@ -306,14 +306,10 @@ describe('AttachmentService', () => {
               .stub(AttachmentService.prototype, '_deleteProjectAttachmentRecord')
               .resolves();
 
-            const mockS3Client = new AWS.S3();
-            sinon.stub(AWS, 'S3').returns(mockS3Client);
-            const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
-              promise: () =>
-                Promise.resolve({
-                  DeleteMarker: true
-                })
-            } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
+            const mockS3Client = new S3Client();
+            const deleteS3 = sinon
+              .stub(mockS3Client, 'send')
+              .resolves({ DeleteMarker: true } as DeleteObjectCommandOutput);
 
             await service.deleteProjectAttachment(1, 1, ATTACHMENT_TYPE.REPORT);
 
@@ -356,14 +352,10 @@ describe('AttachmentService', () => {
               .stub(AttachmentService.prototype, '_deleteProjectAttachmentRecord')
               .resolves();
 
-            const mockS3Client = new AWS.S3();
-            sinon.stub(AWS, 'S3').returns(mockS3Client);
-            const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
-              promise: () =>
-                Promise.resolve({
-                  DeleteMarker: true
-                })
-            } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
+            const mockS3Client = new S3Client();
+            const deleteS3 = sinon
+              .stub(mockS3Client, 'send')
+              .resolves({ DeleteMarker: true } as DeleteObjectCommandOutput);
 
             await service.deleteProjectAttachment(1, 1, ATTACHMENT_TYPE.OTHER);
 
@@ -767,14 +759,10 @@ describe('AttachmentService', () => {
                 key: 's3/key'
               } as unknown as ISurveyReportAttachment);
 
-            const mockS3Client = new AWS.S3();
-            sinon.stub(AWS, 'S3').returns(mockS3Client);
-            const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
-              promise: () =>
-                Promise.resolve({
-                  DeleteMarker: true
-                })
-            } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
+            const mockS3Client = new S3Client();
+            const deleteS3 = sinon
+              .stub(mockS3Client, 'send')
+              .resolves({ DeleteMarker: true } as DeleteObjectCommandOutput);
 
             await service.deleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.OTHER);
 
@@ -830,14 +818,10 @@ describe('AttachmentService', () => {
                 key: 's3/key'
               } as unknown as ISurveyReportAttachment);
 
-            const mockS3Client = new AWS.S3();
-            sinon.stub(AWS, 'S3').returns(mockS3Client);
-            const deleteS3 = sinon.stub(mockS3Client, 'deleteObject').returns({
-              promise: () =>
-                Promise.resolve({
-                  DeleteMarker: true
-                })
-            } as AWS.Request<AWS.S3.DeleteObjectOutput, AWS.AWSError>);
+            const mockS3Client = new S3Client();
+            const deleteS3 = sinon
+              .stub(mockS3Client, 'send')
+              .resolves({ DeleteMarker: true } as DeleteObjectCommandOutput);
 
             await service.deleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.REPORT);
 

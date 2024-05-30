@@ -1,4 +1,3 @@
-import { Object as S3Object } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getObjectMeta, getS3HostUrl, listFilesFromS3 } from '../../utils/file-utils';
@@ -93,8 +92,8 @@ export function listResources(): RequestHandler {
        * which fetch the metadata for each object in the list.
        */
       const filePromises = (response?.Contents || [])
-        .filter((file: S3Object) => !file.Key?.endsWith('/'))
-        .map(async (file: S3Object) => {
+        .filter((file) => !file.Key?.endsWith('/'))
+        .map(async (file) => {
           let metadata = {};
           let fileName = '';
 
