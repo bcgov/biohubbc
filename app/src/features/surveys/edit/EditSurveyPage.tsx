@@ -42,7 +42,7 @@ const EditSurveyPage = () => {
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const { changeLocation, renderUnsavedChangesDialog } = useUnsavedChangesDialog(isSaving);
+  const { changeLocationInterceptor, renderUnsavedChangesDialog } = useUnsavedChangesDialog(isSaving);
 
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
@@ -154,7 +154,7 @@ const EditSurveyPage = () => {
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={changeLocation} />
+      <Prompt when={enableCancelCheck} message={changeLocationInterceptor} />
       <PageHeader
         title="Edit Survey Details"
         breadCrumbJSX={

@@ -37,7 +37,7 @@ const EditProjectPage = () => {
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  const { changeLocation, renderUnsavedChangesDialog } = useUnsavedChangesDialog(isSaving);
+  const { changeLocationInterceptor, renderUnsavedChangesDialog } = useUnsavedChangesDialog(isSaving);
 
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
@@ -113,7 +113,7 @@ const EditProjectPage = () => {
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={changeLocation} />
+      <Prompt when={enableCancelCheck} message={changeLocationInterceptor} />
       <PageHeader
         title="Edit Project Details"
         buttonJSX={

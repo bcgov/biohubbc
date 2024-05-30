@@ -39,7 +39,7 @@ const SamplingSitePage = () => {
 
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
-  const { changeLocation } = useUnsavedChangesDialog(isSubmitting);
+  const { changeLocationInterceptor } = useUnsavedChangesDialog(isSubmitting);
 
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -102,7 +102,7 @@ const SamplingSitePage = () => {
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={changeLocation} />
+      <Prompt when={enableCancelCheck} message={changeLocationInterceptor} />
       <Formik
         innerRef={formikRef}
         initialValues={{

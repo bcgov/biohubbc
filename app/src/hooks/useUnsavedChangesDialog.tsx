@@ -10,13 +10,13 @@ import { useHistory } from 'react-router';
  * Will render a confirmation dialog when attempting to navigate to a different page.
  * In most cases this hook will be used in conjunction with the Prompt (react-router-dom) component.
  *
- * @param {boolean} [skipConfirmation] - Boolean indicator to skip the dialog confirmation ie: isSaving / isSubmitting
+ * @param {boolean} [skipConfirmationDialog] - Boolean indicator to skip the dialog confirmation ie: isSaving / isSubmitting
  * @returns {*} {
  *  renderUnsavedChangesDialog: (pathname: string) => void - manually trigger the confirmation dialog - usually used with `cancel` callbacks
- *  changeLocation: (location: History.Location) => boolean - location change interceptor - passed to prompt `message` prop
+ *  changeLocationInterceptor: (location: History.Location) => boolean - location change interceptor - passed to prompt `message` prop
  * }
  */
-export const useUnsavedChangesDialog = (skipConfirmation?: boolean) => {
+export const useUnsavedChangesDialog = (skipConfirmationDialog?: boolean) => {
   const history = useHistory();
   const dialogContext = useContext(DialogContext);
 
@@ -39,7 +39,12 @@ export const useUnsavedChangesDialog = (skipConfirmation?: boolean) => {
       },
       onYes: () => {
         dialogContext.setYesNoDialog({ open: false });
-        history.push(pathname);
+        /**
+         * History.push allows an additional unknown param to be passed
+         * Allowing explicit control over when the changeLocationInterceptor
+         * skips rendering the confirmation dialog.
+         */
+        history.push(pathname, { skipConfirmationDialog: true });
       }
     };
   };
@@ -61,23 +66,23 @@ export const useUnsavedChangesDialog = (skipConfirmation?: boolean) => {
    * @param {History.Location} location
    * @return {*}
    */
-  const changeLocation = (location: History.Location) => {
-    // Skip the confirmation dialog, usually when form is saving: allow location change
-    if (skipConfirmation) {
+  const changeLocationInterceptor = (location: History.Location) => {
+    const onYesSkipConfirmationDialog = (location.state as { skipConfirmationDialog?: boolean })
+      ?.skipConfirmationDialog;
+    /**
+     * skipConfirmationDialog: when a piece of state allows ie: isSaving or isSubmitting
+     * onYesSkipConfirmationDialog: when onYes is selected from confirmation dialog
+     */
+    if (skipConfirmationDialog || onYesSkipConfirmationDialog) {
       return true;
     }
 
-    // If dialog not open: open confirmation dialog
-    if (!dialogContext.yesNoDialogProps.open) {
-      // Dialog will trigger a another location change if yes selected
-      dialogContext.setYesNoDialog(getCancelDialogProps(location.pathname));
-      // Do not allow location change
-      return false;
-    }
+    // Dialog will trigger a another location change if yes selected
+    dialogContext.setYesNoDialog(getCancelDialogProps(location.pathname));
 
-    // All other location changes: allow it
-    return true;
+    // Dialog opened waiting for onYes to be selected
+    return false;
   };
 
-  return { changeLocation, renderUnsavedChangesDialog };
+  return { changeLocationInterceptor, renderUnsavedChangesDialog };
 };

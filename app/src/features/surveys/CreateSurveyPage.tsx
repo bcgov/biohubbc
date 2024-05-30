@@ -73,7 +73,7 @@ const CreateSurveyPage = () => {
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  const { changeLocation, renderUnsavedChangesDialog } = useUnsavedChangesDialog(isSaving);
+  const { changeLocationInterceptor, renderUnsavedChangesDialog } = useUnsavedChangesDialog(isSaving);
 
   const dialogContext = useContext(DialogContext);
 
@@ -134,7 +134,7 @@ const CreateSurveyPage = () => {
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={changeLocation} />
+      <Prompt when={enableCancelCheck} message={changeLocationInterceptor} />
       <PageHeader
         title="Create New Survey"
         breadCrumbJSX={
