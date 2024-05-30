@@ -2,36 +2,29 @@ import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import CustomTextField from 'components/fields/CustomTextField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
-import SearchFilters from 'features/projects/components/SearchFilters';
 import { Formik, FormikProps } from 'formik';
 import { debounce } from 'lodash-es';
 import React, { useMemo, useRef } from 'react';
-import { IObservationsAdvancedFilters } from './ObservationsListContainer';
+import { ITelemetryAdvancedFilters } from './TelemetryListContainer';
+import SearchFilters from 'features/projects/components/SearchFilters';
 
-export interface IObservationsListFilterFormProps {
-  handleSubmit: (filterValues: IObservationsAdvancedFilters) => void;
+export interface ITelemetryListFilterFormProps {
+  handleSubmit: (filterValues: ITelemetryAdvancedFilters) => void;
   handleReset: () => void;
 }
 
-export const ObservationAdvancedFiltersInitialValues: IObservationsAdvancedFilters = {
-  minimum_date: '',
-  maximum_date: '',
-  keyword: '',
-  minimum_count: '',
-  minimum_time: '',
-  maximum_time: '',
-  system_user_id: '' as unknown as number,
+export const ObservationAdvancedFiltersInitialValues: ITelemetryAdvancedFilters = {
   itis_tsns: []
 };
 
-const ObservationsListFilterForm: React.FC<IObservationsListFilterFormProps> = (props) => {
-  const formikRef = useRef<FormikProps<IObservationsAdvancedFilters>>(null);
+const TelemetryListFilterForm: React.FC<ITelemetryListFilterFormProps> = (props) => {
+  const formikRef = useRef<FormikProps<ITelemetryAdvancedFilters>>(null);
 
   const searchBackgroundColor = grey[50];
 
   const debounced = useMemo(
     () =>
-      debounce((values: IObservationsAdvancedFilters) => {
+      debounce((values: ITelemetryAdvancedFilters) => {
         props.handleSubmit(values);
       }, 300),
     []
@@ -66,9 +59,7 @@ const ObservationsListFilterForm: React.FC<IObservationsListFilterFormProps> = (
                   formikFieldName={'itis_tsns'}
                   label={'Species'}
                   handleSpecies={(value) => {
-                    if (value?.tsn) {
-                      formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
-                    }
+                    formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
                   }}
                   handleClear={() => {
                     formikRef.current?.setFieldValue('itis_tsns', '');
@@ -85,4 +76,4 @@ const ObservationsListFilterForm: React.FC<IObservationsListFilterFormProps> = (
   );
 };
 
-export default ObservationsListFilterForm;
+export default TelemetryListFilterForm;

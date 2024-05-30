@@ -11,6 +11,7 @@ const MultiAutocompleteStack = (props: PropsWithChildren) => {
       direction="row"
       gap={0}
       sx={{
+        flexGrow: 1,
         border: `1px solid ${grey[300]}`,
         borderRadius: '5px',
         '& .MuiInputBase-root': {

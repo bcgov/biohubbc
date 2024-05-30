@@ -1,10 +1,12 @@
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
+import CustomTextField from 'components/fields/CustomTextField';
+import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import { Formik, FormikProps } from 'formik';
 import { debounce } from 'lodash-es';
 import React, { useMemo, useRef } from 'react';
 import { IAnimalsAdvancedFilters } from './AnimalsListContainer';
-import AnimalsSearchFilters from './AnimalsSearchFilters';
+import SearchFilters from 'features/projects/components/SearchFilters';
 
 export interface IAnimalsListFilterFormProps {
   handleSubmit: (filterValues: IAnimalsAdvancedFilters) => void;
@@ -34,7 +36,41 @@ const AnimalsListFilterForm: React.FC<IAnimalsListFilterFormProps> = (props) => 
         innerRef={formikRef}
         initialValues={ObservationAdvancedFiltersInitialValues}
         onSubmit={props.handleSubmit}>
-        <AnimalsSearchFilters onChange={debounced} />
+        <SearchFilters
+          onChange={debounced}
+          fields={[
+            {
+              id: 1,
+              name: '',
+              component: (
+                <CustomTextField
+                  placeholder="Type any keyword"
+                  name="keyword"
+                  label="Keyword"
+                  other={{ sx: { pl: 1 } }}
+                />
+              )
+            },
+            {
+              id: 2,
+              name: 'species',
+              component: (
+                <SpeciesAutocompleteField
+                  formikFieldName={'itis_tsns'}
+                  label={'Species'}
+                  handleSpecies={(value) => {
+                    formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
+                  }}
+                  handleClear={() => {
+                    formikRef.current?.setFieldValue('itis_tsns', '');
+                  }}
+                  clearOnSelect={true}
+                  showSelectedValue={true}
+                />
+              )
+            }
+          ]}
+        />
       </Formik>
     </Box>
   );

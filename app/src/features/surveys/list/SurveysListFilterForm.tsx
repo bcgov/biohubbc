@@ -1,10 +1,13 @@
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
+import CustomTextField from 'components/fields/CustomTextField';
+import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
+import SearchFilters from 'features/projects/components/SearchFilters';
+import SystemUserAutocomplete from 'features/projects/components/SystemUserAutocomplete';
 import { Formik, FormikProps } from 'formik';
 import { debounce } from 'lodash-es';
 import React, { useMemo, useRef } from 'react';
 import { ISurveyAdvancedFilters } from './SurveysListContainer';
-import SurveysSearchFilters from './SurveysSearchFilters';
 
 export interface ISurveysListFilterFormProps {
   handleSubmit: (filterValues: ISurveyAdvancedFilters) => void;
@@ -16,7 +19,7 @@ export const SurveyAdvancedFiltersInitialValues: ISurveyAdvancedFilters = {
   end_date: '',
   keyword: '',
   project_name: '',
-  system_user_id: '',
+  system_user_id: '' as unknown as number,
   itis_tsns: []
 };
 
@@ -36,7 +39,52 @@ const SurveysListFilterForm: React.FC<ISurveysListFilterFormProps> = (props) => 
   return (
     <Box p={2} bgcolor={searchBackgroundColor}>
       <Formik innerRef={formikRef} initialValues={SurveyAdvancedFiltersInitialValues} onSubmit={props.handleSubmit}>
-        <SurveysSearchFilters onChange={debounced} />
+        <SearchFilters
+          onChange={debounced}
+          fields={[
+            {
+              id: 1,
+              name: '',
+              component: (
+                <CustomTextField
+                  placeholder="Type any keyword"
+                  name="keyword"
+                  label="Keyword"
+                  other={{ sx: { pl: 1 } }}
+                />
+              )
+            },
+            {
+              id: 2,
+              name: 'species',
+              component: (
+                <SpeciesAutocompleteField
+                  formikFieldName={'itis_tsns'}
+                  label={'Species'}
+                  handleSpecies={(value) => {
+                    formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
+                  }}
+                  handleClear={() => {
+                    formikRef.current?.setFieldValue('itis_tsns', '');
+                  }}
+                  clearOnSelect={true}
+                  showSelectedValue={true}
+                />
+              )
+            },
+            {
+              id: 3,
+              name: 'system_user_id',
+              component: (
+                <SystemUserAutocomplete
+                  label="Person"
+                  formikFieldName="system_user_id"
+                  showSelectedValue={true}
+                />
+              )
+            }
+          ]}
+        />
       </Formik>
     </Box>
   );

@@ -21,7 +21,7 @@ export interface IObservationsAdvancedFilters {
   minimum_count: string;
   minimum_time: string;
   maximum_time: string;
-  system_user_id: string;
+  system_user_id: number;
   itis_tsns: number[];
 }
 

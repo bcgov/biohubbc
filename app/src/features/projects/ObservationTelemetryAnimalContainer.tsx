@@ -7,6 +7,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import Toolbar from '@mui/material/Toolbar';
 import AnimalsListContainer from 'features/surveys/animals/list/AnimalsListContainer';
 import ObservationsListContainer from 'features/surveys/observations/list/ObservationsListContainer';
+import TelemetryListContainer from 'features/surveys/telemetry/list/TelemetryListContainer';
 import { useState } from 'react';
 
 export enum ObservationTelemetryAnimalViewEnum {
@@ -85,7 +86,8 @@ const ObservationTelemetryAnimalContainer = () => {
       </Toolbar>
       <Divider />
       {activeView === 'OBSERVATIONS' && <ObservationsListContainer showSearch={showSearch} />}
-          {activeView === 'ANIMALS' && <AnimalsListContainer showSearch={showSearch} />}
+      {activeView === 'ANIMALS' && <AnimalsListContainer showSearch={showSearch} />}
+      {activeView === 'TELEMETRY' && <TelemetryListContainer showSearch={showSearch} />}
     </>
   );
 };

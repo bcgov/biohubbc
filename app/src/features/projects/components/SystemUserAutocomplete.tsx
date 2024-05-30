@@ -6,6 +6,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
 import UserCard from 'components/user/UserCard';
+import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
@@ -14,15 +15,15 @@ import { ChangeEvent, useMemo, useState } from 'react';
 
 interface ISystemUserAutocompleteProps {
   formikFieldName: string;
-  required: boolean;
+  required?: boolean;
   label: string;
-  handleUser: (user?: ISystemUser) => void;
-  handleClear: () => void;
+  handleUser?: (user?: ISystemUser) => void;
+  handleClear?: () => void;
   showStartAdornment?: boolean;
   showSelectedValue?: boolean;
 }
 
-const SystemUserAutocomplete = (props: ISystemUserAutocompleteProps) => {
+const SystemUserAutocomplete = <T extends object>(props: ISystemUserAutocompleteProps) => {
   const { formikFieldName, label, showStartAdornment, showSelectedValue, handleUser, handleClear } = props;
 
   const biohubApi = useBiohubApi();
@@ -31,6 +32,8 @@ const SystemUserAutocomplete = (props: ISystemUserAutocompleteProps) => {
   const [searchText, setSearchText] = useState('');
   const [sortedUsers, setSortedUsers] = useState<ISystemUser[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const { setFieldValue } = useFormikContext<T>();
 
   const search = useMemo(
     () =>
@@ -54,9 +57,10 @@ const SystemUserAutocomplete = (props: ISystemUserAutocompleteProps) => {
     if (!input) {
       setSortedUsers([]);
       search.cancel();
-      handleUser();
+      // handleUser();
       return;
     }
+
     setIsLoading(true);
     search(input, (userOptions) => {
       if (!isMounted()) {
@@ -79,6 +83,11 @@ const SystemUserAutocomplete = (props: ISystemUserAutocompleteProps) => {
       onInputChange={(_, value, reason) => {
         if (reason === 'reset' || reason === 'clear') {
           setSearchText('');
+
+          if (!handleClear) {
+            setFieldValue(formikFieldName, '');
+            return;
+          }
           handleClear();
         } else {
           setSearchText(value);
@@ -86,8 +95,15 @@ const SystemUserAutocomplete = (props: ISystemUserAutocompleteProps) => {
       }}
       onChange={(_, option) => {
         if (option) {
-          handleUser(option);
+
           setSearchText(showSelectedValue ? option.display_name : '');
+          
+          if (!handleUser) {
+            setFieldValue(formikFieldName, option.system_user_id);
+            return;
+          }
+
+          handleUser(option);
         }
       }}
       renderInput={(params) => (

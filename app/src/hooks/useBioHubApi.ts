@@ -18,6 +18,7 @@ import useSpatialApi from './api/useSpatialApi';
 import useStandardsApi from './api/useStandardsApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
+import useTelemetryApi from './api/useTelemetryApi';
 import useUserApi from './api/useUserApi';
 
 /**
@@ -63,6 +64,8 @@ export const useBiohubApi = () => {
 
   const reference = useReferenceApi(apiAxios);
 
+  const telemetry = useTelemetryApi(apiAxios);
+
   return useMemo(
     () => ({
       project,
@@ -81,7 +84,8 @@ export const useBiohubApi = () => {
       funding,
       samplingSite,
       standards,
-      reference
+      reference,
+      telemetry
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

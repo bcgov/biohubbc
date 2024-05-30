@@ -102,7 +102,9 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
         const taxonomicIds = [
           ...new Set(projectsDataLoader.data.projects.flatMap((item) => item.focal_species))
         ].filter((tsns: number) => tsns !== null);
-        await taxonomyContext.cacheSpeciesTaxonomyByIds(taxonomicIds);
+        if (taxonomicIds.length > 0) {
+          await taxonomyContext.cacheSpeciesTaxonomyByIds(taxonomicIds);
+        }
       }
     };
 

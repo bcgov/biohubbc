@@ -14,7 +14,7 @@ export interface IProjectAdvancedFilters {
   project_name: string;
   agency_id: number;
   agency_project_id: string;
-  system_user_id: string;
+  system_user_id: number;
   itis_tsns: number[];
 }
 
@@ -25,7 +25,7 @@ export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {
   keyword: '',
   project_name: '',
   agency_id: '' as unknown as number,
-  system_user_id: '',
+  system_user_id: '' as unknown as number,
   agency_project_id: '',
   itis_tsns: []
 };

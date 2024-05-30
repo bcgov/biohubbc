@@ -30,7 +30,7 @@ export interface ISurveyAdvancedFilters {
   end_date: string;
   keyword: string;
   project_name: string;
-  system_user_id: string;
+  system_user_id: number;
   itis_tsns: number[];
 }
 
