@@ -6,6 +6,7 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
@@ -42,8 +43,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
-  // const taxonomyContext = useTaxonomyContext();
-  // const codesContext = useCodesContext();
+  const authStateContext = useAuthStateContext();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -54,7 +54,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
 
   const observationsDataLoader = useDataLoader(
     (pagination?: ApiPaginationRequestOptions, filter?: IObservationsAdvancedFilters) =>
-      biohubApi.observation.getObservationList(pagination, filter)
+      biohubApi.user.getObservationsForUserId(authStateContext.simsUserWrapper.systemUserId ?? 0, pagination, filter)
   );
 
   // Refresh survey list when pagination or sort changes

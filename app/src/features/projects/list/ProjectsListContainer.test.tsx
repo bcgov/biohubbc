@@ -15,8 +15,8 @@ jest.mock('../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
-  project: {
-    getProjectsList: jest.fn()
+  user: {
+    getProjectsForUserId: jest.fn()
   },
   codes: {
     getAllCodeSets: jest.fn()
@@ -26,7 +26,7 @@ const mockUseApi = {
 describe('ProjectsListContainer', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
-    mockUseApi.project.getProjectsList.mockClear();
+    mockUseApi.user.getProjectsForUserId.mockClear();
   });
 
   afterEach(() => {
@@ -34,7 +34,7 @@ describe('ProjectsListContainer', () => {
   });
 
   it('renders with the create project button', async () => {
-    mockUseApi.project.getProjectsList.mockResolvedValue({
+    mockUseApi.user.getProjectsForUserId.mockResolvedValue({
       projects: [],
       pagination: {
         current_page: 1,
@@ -71,7 +71,7 @@ describe('ProjectsListContainer', () => {
   });
 
   it('renders with the open advanced filters button', async () => {
-    mockUseApi.project.getProjectsList.mockResolvedValue({
+    mockUseApi.user.getProjectsForUserId.mockResolvedValue({
       projects: [],
       pagination: {
         current_page: 1,
@@ -108,7 +108,7 @@ describe('ProjectsListContainer', () => {
   });
 
   it('navigating to the project works', async () => {
-    mockUseApi.project.getProjectsList.mockResolvedValue({
+    mockUseApi.user.getProjectsForUserId.mockResolvedValue({
       projects: [
         {
           project_id: 1,

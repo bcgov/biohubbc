@@ -1,5 +1,4 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
-import { IObservationsAdvancedFilters } from 'features/surveys/observations/list/ObservationsListContainer';
 
 import {
   IGetSurveyObservationsGeometryResponse,
@@ -113,43 +112,6 @@ const useObservationApi = (axios: AxiosInstance) => {
     const { data } = await axios.get<ObservationRecord>(
       `/api/project/${projectId}/survey/${surveyId}/observations/${surveyObservationId}`
     );
-
-    return data;
-  };
-
-  /**
-   * Get observations for a system user id.
-   *
-   * @param {ApiPaginationRequestOptions} [pagination]
-   * @param {ISurveyAdvancedFilters} filterFieldData
-   * @return {*} {Promise<IGetProjectsListResponse[]>}
-   */
-  const getObservationList = async (
-    pagination?: ApiPaginationRequestOptions,
-    filterFieldData?: IObservationsAdvancedFilters
-  ): Promise<IGetSurveyObservationsResponse> => {
-    const params = new URLSearchParams();
-
-    if (pagination) {
-      params.append('page', pagination.page.toString());
-      params.append('limit', pagination.limit.toString());
-      if (pagination.sort) {
-        params.append('sort', pagination.sort);
-      }
-      if (pagination.order) {
-        params.append('order', pagination.order);
-      }
-    }
-
-    if (filterFieldData) {
-      Object.entries(filterFieldData).forEach(([key, value]) => {
-        params.append(key, value);
-      });
-    }
-
-    const urlParamsString = `?${params.toString()}`;
-
-    const { data } = await axios.get(`/api/observation/list${urlParamsString}`);
 
     return data;
   };
@@ -307,7 +269,6 @@ const useObservationApi = (axios: AxiosInstance) => {
   return {
     insertUpdateObservationRecords,
     getObservationRecords,
-    getObservationList,
     getObservationRecord,
     getObservationsGeometry,
     deleteObservationRecords,

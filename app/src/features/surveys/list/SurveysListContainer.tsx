@@ -14,6 +14,7 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { REGION_COLOURS } from 'constants/regions';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { NRM_REGION_APPENDED_TEXT } from 'features/projects/list/ProjectsListContainer';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
@@ -53,6 +54,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   const biohubApi = useBiohubApi();
   const taxonomyContext = useTaxonomyContext();
   const codesContext = useCodesContext();
+  const auth = useAuthStateContext();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
@@ -62,7 +64,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ISurveyAdvancedFilters | undefined>(undefined);
 
   const surveysDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions, filter?: ISurveyAdvancedFilters) =>
-    biohubApi.survey.getSurveysList(pagination, filter)
+    biohubApi.user.getSurveysForUserId(auth.simsUserWrapper.systemUserId ?? 0, pagination, filter)
   );
 
   // Refresh survey list when pagination or sort changes

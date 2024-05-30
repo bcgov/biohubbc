@@ -241,7 +241,7 @@ export class SurveyRepository extends BaseRepository {
    * @returns {*} {Promise<{id: number}[]>}
    * @memberof SurveyRepository
    */
-  async getSurveyList(
+  async getSurveysForUserId(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: ISurveyAdvancedFilters,

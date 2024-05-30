@@ -106,7 +106,6 @@ export function getAnimalList(): RequestHandler {
         surveyCritters.map((critter) => critter.critterbase_critter_id)
       );
 
-      console.log(critters)
       await connection.commit();
 
       return res.status(200).json(critters);

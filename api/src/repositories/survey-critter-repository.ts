@@ -41,8 +41,6 @@ export class SurveyCritterRepository extends BaseRepository {
 
     const queryBuilder = getKnex().select('*').from('critter as c');
 
-    console.log(isUserAdmin)
-
     if (!isUserAdmin) {
       queryBuilder
         .leftJoin('survey as s', 's.survey_id', 'c.survey_id')
@@ -52,8 +50,6 @@ export class SurveyCritterRepository extends BaseRepository {
     }
 
     const response = await this.connection.knex(queryBuilder);
-
-    console.log(response.rows)
 
     return response.rows;
   }

@@ -1,7 +1,6 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import { ISurveyAdvancedFilters } from 'features/surveys/list/SurveysListContainer';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import {
   IAnimalDeployment,
@@ -17,7 +16,7 @@ import {
   IGetSurveyAttachmentsResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
-  IGetSurveyListResponse,
+  IgetSurveysForUserIdResponse,
   ISimpleCritterWithInternalId,
   SurveyUpdateObject
 } from 'interfaces/useSurveyApi.interface';
@@ -31,43 +30,6 @@ import { ApiPaginationRequestOptions } from 'types/misc';
  * @return {*} object whose properties are supported api methods.
  */
 const useSurveyApi = (axios: AxiosInstance) => {
-  /**
-   * Get surveys for a system user id.
-   *
-   * @param {ApiPaginationRequestOptions} [pagination]
-   * @param {ISurveyAdvancedFilters} filterFieldData
-   * @return {*} {Promise<IGetProjectsListResponse[]>}
-   */
-  const getSurveysList = async (
-    pagination?: ApiPaginationRequestOptions,
-    filterFieldData?: ISurveyAdvancedFilters
-  ): Promise<IGetSurveyListResponse> => {
-    const params = new URLSearchParams();
-
-    if (pagination) {
-      params.append('page', pagination.page.toString());
-      params.append('limit', pagination.limit.toString());
-      if (pagination.sort) {
-        params.append('sort', pagination.sort);
-      }
-      if (pagination.order) {
-        params.append('order', pagination.order);
-      }
-    }
-
-    if (filterFieldData) {
-      Object.entries(filterFieldData).forEach(([key, value]) => {
-        params.append(key, value);
-      });
-    }
-
-    const urlParamsString = `?${params.toString()}`;
-
-    const { data } = await axios.get(`/api/survey/list${urlParamsString}`);
-
-    return data;
-  };
-
   /**
    * Create a new project survey
    *
@@ -116,7 +78,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
   const getSurveysBasicFieldsByProjectId = async (
     projectId: number,
     pagination?: ApiPaginationRequestOptions
-  ): Promise<IGetSurveyListResponse> => {
+  ): Promise<IgetSurveysForUserIdResponse> => {
     let urlParamsString = '';
 
     if (pagination) {
@@ -547,7 +509,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
   return {
     createSurvey,
     getSurveyForView,
-    getSurveysList,
     getSurveysBasicFieldsByProjectId,
     getSurveyForUpdate,
     updateSurvey,

@@ -21,7 +21,7 @@ const mockUseApi = {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
   },
   project: {
-    getAllUserProjectsForView: jest.fn<Promise<IGetUserProjectsListResponse>, []>()
+    getProjectList: jest.fn<Promise<IGetUserProjectsListResponse>, []>()
   }
 };
 
@@ -63,7 +63,7 @@ describe('UsersDetailPage', () => {
       agency: ''
     });
 
-    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue({
+    mockUseApi.project.getProjectList.mockResolvedValue({
       project_participation_id: 3,
       project_id: 321,
       project_name: 'test',
