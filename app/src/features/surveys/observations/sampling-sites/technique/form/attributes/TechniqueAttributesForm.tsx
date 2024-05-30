@@ -1,17 +1,22 @@
-import { mdiClose } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
-import grey from '@mui/material/colors/grey';
-import Grid from '@mui/material/Grid';
-import IconButton from '@mui/material/IconButton';
-import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
-import AutocompleteField from 'components/fields/AutocompleteField';
-import { useFormikContext } from 'formik';
-import { useCodesContext } from 'hooks/useContext';
+import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
+import { useEffect } from 'react';
 import { TransitionGroup } from 'react-transition-group';
+import TechniqueAttributeSelect from './components/TechniqueAttributeSelect';
+
+const initialAttributeValues = {
+  method_lookup_attribute_quantitative_id: undefined,
+  value: undefined,
+  method_lookup_attribute_qualitative_id: undefined,
+  method_lookup_attribute_qualitative_option_id: undefined
+};
 
 /**
  * Create survey - general information fields
@@ -19,85 +24,54 @@ import { TransitionGroup } from 'react-transition-group';
  * @return {*}
  */
 const TechniqueAttributesForm = () => {
-  const codesContext = useCodesContext();
+  const biohubApi = useBiohubApi();
 
-  const { values, setFieldValue } = useFormikContext<ICreateTechniqueRequest>();
+  const { values } = useFormikContext<ICreateTechniqueRequest>();
 
-  if (!codesContext.codesDataLoader.data) {
-    return <></>;
-  }
+  const attributesDataLoader = useDataLoader((method_lookup_id: number) =>
+    biohubApi.reference.getTechniqueAttributes([method_lookup_id])
+  );
 
-  const attractants = codesContext.codesDataLoader.data.attractants;
+  useEffect(() => {
+    if (values.method_lookup_id) {
+      attributesDataLoader.refresh(values.method_lookup_id);
+    }
+  }, [values.method_lookup_id]);
+
+  const attributes =
+    attributesDataLoader.data?.flatMap((attribute) => [
+      ...attribute.qualitative_attributes,
+      ...attribute.quantitative_attributes
+    ]) ?? [];
 
   return (
-    <>
-      <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <AutocompleteField
-            id="technique_attractant_id"
-            label="Attractants (optional)"
-            name="attractants"
-            loading={codesContext.codesDataLoader.isLoading}
-            options={
-              attractants
-                .map((option) => ({
-                  value: option.id,
-                  label: option.name,
-                  description: option.description
-                }))
-                .filter((option) => !values.attractants.includes(option.value)) ?? []
-            }
-            onChange={(_, value) => {
-              if (value?.value) {
-                setFieldValue('attractants', [...values.attractants, value.value]);
-              }
-            }}
-          />
-        </Grid>
-        <Grid item xs={12}>
+    <FieldArray
+      name="attributes"
+      render={(arrayHelpers: FieldArrayRenderProps) => (
+        <>
           <TransitionGroup>
-            {values.attractants.map((attractant, index) => {
-              const lookup = attractants.find((option) => option.id === attractant);
-              return (
-                <Collapse key={attractant}>
-                  <Paper
-                    sx={{
-                      py: 2,
-                      px: 3,
-                      mb: 1.5,
-                      bgcolor: grey[100],
-                      flex: '1 1 auto',
-                      display: 'flex',
-                      justifyContent: 'space-between'
-                    }}>
-                    <Box>
-                      <Typography fontWeight={700}>{lookup?.name}</Typography>
-                      <Typography color="textSecondary">{lookup?.description}</Typography>
-                    </Box>
-                    <Box>
-                      <IconButton
-                        data-testid={`remove-species-button-${index}`}
-                        sx={{
-                          ml: 2
-                        }}
-                        aria-label="remove species"
-                        onClick={() => {
-                          setFieldValue(
-                            'attractants',
-                            values.attractants.length > 1 ? values.attractants.filter((id) => id !== attractant) : []
-                          );
-                        }}>
-                        <Icon path={mdiClose} size={1} />
-                      </IconButton>
-                    </Box>
-                  </Paper>
-                </Collapse>
-              );
-            })}
+            {values.attributes.map((attribute, index) => (
+              <Collapse in={true} key={attribute.attribute_id || index}>
+                <Box mb={2}>
+                  <TechniqueAttributeSelect attributes={attributes} arrayHelpers={arrayHelpers} index={index} />
+                </Box>
+              </Collapse>
+            ))}
           </TransitionGroup>
-        </Grid>
-      </Grid>
-    </>
+
+          <Button
+            color="primary"
+            variant="outlined"
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            aria-label="add attribute"
+            onClick={() => {
+              arrayHelpers.push(initialAttributeValues);
+            }}>
+            Add Attribute
+          </Button>
+        </>
+      )}
+    />
   );
 };
 

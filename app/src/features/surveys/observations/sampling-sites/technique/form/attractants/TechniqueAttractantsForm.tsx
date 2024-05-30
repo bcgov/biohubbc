@@ -33,9 +33,10 @@ const TechniqueAttractantsForm = () => {
     <>
       <Grid container spacing={2}>
         <Grid item xs={12}>
+          <Typography component="legend">Attractants (optional)</Typography>
           <AutocompleteField
             id="technique_attractant_id"
-            label="Attractants (optional)"
+            label="Enter an attractant"
             name="attractants"
             loading={codesContext.codesDataLoader.isLoading}
             options={
@@ -61,26 +62,29 @@ const TechniqueAttractantsForm = () => {
               return (
                 <Collapse key={attractant}>
                   <Paper
+                    variant="outlined"
                     sx={{
-                      py: 2,
-                      px: 3,
-                      mb: 1.5,
-                      bgcolor: grey[100],
+                      py: 1.5,
+                      px: 2.5,
+                      mb: 1,
+                      background: grey[100],
                       flex: '1 1 auto',
                       display: 'flex',
                       justifyContent: 'space-between'
                     }}>
                     <Box>
                       <Typography fontWeight={700}>{lookup?.name}</Typography>
-                      <Typography color="textSecondary">{lookup?.description}</Typography>
+                      <Typography color="textSecondary" variant="body2">
+                        {lookup?.description}
+                      </Typography>
                     </Box>
                     <Box>
                       <IconButton
-                        data-testid={`remove-species-button-${index}`}
+                        data-testid={`remove-attractant-button-${index}`}
                         sx={{
                           ml: 2
                         }}
-                        aria-label="remove species"
+                        aria-label="remove attractant"
                         onClick={() => {
                           setFieldValue(
                             'attractants',

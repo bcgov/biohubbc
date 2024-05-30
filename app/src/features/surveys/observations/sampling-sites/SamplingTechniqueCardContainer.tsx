@@ -13,7 +13,9 @@ import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import YesNoDialog from 'components/dialog/YesNoDialog';
+import { TechniqueChipColours } from 'constants/misc';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import { IGetTechnique } from 'interfaces/useTechniqueApi.interface';
 import { useState } from 'react';
@@ -36,6 +38,7 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
   const [selectedTechnique, setSelectedTechnique] = useState<number | null>(null);
   const [techniqueAnchorEl, setTechniqueAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [techniqueForDelete, setTechniqueForDelete] = useState<boolean>();
+  const [expanded, setExpanded] = useState<number[]>([]);
 
   const { projectId, surveyId } = useSurveyContext();
   const codesContext = useCodesContext();
@@ -99,7 +102,7 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
       {/* DELETE CONFIRMATION DIALOG */}
       {techniqueForDelete && selectedTechnique && (
         <YesNoDialog
-          dialogTitle={'Delete technique event?'}
+          dialogTitle={'Delete technique?'}
           dialogText={
             'Are you sure you want to permanently delete this technique? All information associated with the technique will be deleted.'
           }
@@ -118,12 +121,19 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
       )}
 
       {techniques.length ? (
-        techniques.map((technique) => {
+        techniques.map((technique, index) => {
           return (
             <Accordion
               component={Paper}
-              variant='outlined'
+              variant="outlined"
               disableGutters
+              onChange={() =>
+                setExpanded((expanded) => {
+                  if (expanded.includes(technique.method_technique_id)) {
+                    return expanded.filter((exp) => exp !== technique.method_technique_id);
+                  } else return [...expanded, technique.method_technique_id];
+                })
+              }
               key={technique.method_technique_id}
               sx={{
                 margin: '15px',
@@ -151,15 +161,33 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
                     '& .MuiAccordionSummary-content': {
                       flex: '1 1 auto',
                       py: 0,
-                      pl: 0,
-                      overflow: 'hidden',
-                      whiteSpace: 'nowrap'
+                      pl: 0
                     }
                   }}>
-                  <Stack gap={0.5} display="flex">
-                    <Typography variant="h5">{technique.name}</Typography>
-                    <Typography color="textSecondary">
-                      {getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id)}
+                  <Stack gap={1} display="flex" flex="1 1 auto">
+                    <Stack direction="row" gap={1.5} flex="1 1 auto">
+                      <Typography variant="h5">{technique.name}</Typography>
+                      <ColouredRectangleChip
+                        label={
+                          getCodesName(
+                            codesContext.codesDataLoader.data,
+                            'sample_methods',
+                            technique.method_lookup_id
+                          ) ?? ''
+                        }
+                        colour={TechniqueChipColours[index]}
+                      />
+                    </Stack>
+                    <Typography
+                      color="textSecondary"
+                      variant="body2"
+                      sx={{
+                        display: '-webkit-box',
+                        overflow: 'hidden',
+                        WebkitBoxOrient: 'vertical',
+                        WebkitLineClamp: expanded.includes(technique.method_technique_id) ? 'unset' : 2
+                      }}>
+                      {technique.description}
                     </Typography>
                   </Stack>
                 </AccordionSummary>
@@ -183,13 +211,13 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
         <Box
           flex="1 1 auto"
           borderRadius="5px"
-          minHeight="70px"
+          minHeight="140px"
           display="flex"
           alignItems="center"
           justifyContent="center"
-          bgcolor={grey[50]}>
+          bgcolor={grey[200]}>
           <Typography variant="body2" color="textSecondary">
-            This technique has no techniques
+            No techniques
           </Typography>
         </Box>
       )}

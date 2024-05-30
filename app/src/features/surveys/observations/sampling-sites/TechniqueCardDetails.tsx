@@ -27,19 +27,19 @@ export const TechniqueCardDetails = (props: ITechniqueCardDetails) => {
             fontWeight={700}
             fontSize="0.75rem"
             sx={{ textTransform: 'uppercase', mb: 0.5 }}>
-            Release time
+            Attractants
           </Typography>
         </Box>
       </Stack>
 
-      {technique.description && (
+      {(technique.quantitative_attributes.length > 0 || technique.qualitative_attributes.length > 0) && (
         <Box maxWidth="50%">
           <Typography
             color="textSecondary"
             fontWeight={700}
             fontSize="0.75rem"
             sx={{ textTransform: 'uppercase', mb: 0.5 }}>
-            Technique comment
+            Attributes
           </Typography>
           <Typography color="textSecondary" variant="body2">
             {technique.description}
@@ -47,7 +47,9 @@ export const TechniqueCardDetails = (props: ITechniqueCardDetails) => {
         </Box>
       )}
 
-      {attributes.map((attribute) => <Typography>{attribute.method_technique_attribute_qualitative_id}</Typography>)}
+      {attributes.map((attribute) => (
+        <Typography>{attribute.method_technique_attribute_qualitative_id}</Typography>
+      ))}
     </Stack>
   );
 };

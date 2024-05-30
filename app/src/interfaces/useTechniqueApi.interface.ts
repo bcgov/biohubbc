@@ -4,8 +4,7 @@ export interface ICreateTechniqueRequest {
   distance_threshold: number | null;
   method_lookup_id: number | null;
   attractants: number[];
-  quantitative_attributes: { method_technique_attribute_quantitative_id: number }[];
-  qualitative_attributes: { method_technique_attribute_qualitative_id: number }[];
+  attributes: { attribute_id: string, type: string }[];
 }
 
 export interface IAttractant {
@@ -20,8 +19,11 @@ export interface IGetTechnique {
   description: string | null;
   distance_threshold: number | null;
   method_lookup_id: number;
-  quantitative_attributes: { method_technique_attribute_quantitative_id: number }[];
-  qualitative_attributes: { method_technique_attribute_qualitative_id: number }[];
+  quantitative_attributes: { method_technique_attribute_quantitative_id: string; value: number }[];
+  qualitative_attributes: {
+    method_technique_attribute_qualitative_id: string;
+    method_technique_attribute_qualitative_option_id: string;
+  }[];
   attractants: { attractant_lookup_id: number }[];
 }
 

@@ -10,6 +10,7 @@ import { useSurveyContext } from 'hooks/useContext';
 import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
 import { useHistory } from 'react-router';
 import TechniqueAttractantsForm from './attractants/TechniqueAttractantsForm';
+import TechniqueAttributesForm from './attributes/TechniqueAttributesForm';
 import TechniqueDetailsForm from './details/TechniqueDetailsForm';
 import TechniqueGeneralInformationForm from './general-information/TechniqueGeneralInformationForm';
 
@@ -37,8 +38,15 @@ const TechniqueCreateForm = (props: ITechniqueCreateFormProps) => {
           <Divider />
 
           <HorizontalSplitFormComponent
+            title="Details"
+            summary="Enter additional information about the technique"
+            component={<TechniqueAttributesForm />}></HorizontalSplitFormComponent>
+
+          <Divider />
+
+          <HorizontalSplitFormComponent
             title="Attractants"
-            summary="Enter information about any attractants used to lure species as part of the technique"
+            summary="Enter any attractants used to lure species during the technique"
             component={<TechniqueAttractantsForm />}></HorizontalSplitFormComponent>
 
           <Divider />

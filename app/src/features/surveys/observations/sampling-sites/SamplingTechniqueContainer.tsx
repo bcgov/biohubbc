@@ -2,11 +2,7 @@ import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -275,7 +271,7 @@ const SamplingSiteTechniqueContainer = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to={'manage-sampling/technique'}
+            to={'manage-sampling/technique/create'}
             startIcon={<Icon path={mdiPlus} size={0.8} />}>
             Add
           </Button>
@@ -296,64 +292,7 @@ const SamplingSiteTechniqueContainer = () => {
           <SkeletonList />
         ) : (
           <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
-            <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
-              <FormGroup>
-                <FormControlLabel
-                  label={
-                    <Typography
-                      variant="body2"
-                      component="span"
-                      color="textSecondary"
-                      fontWeight={700}
-                      sx={{ textTransform: 'uppercase' }}>
-                      Select All
-                    </Typography>
-                  }
-                  control={
-                    <Checkbox
-                      sx={{
-                        mr: 0.75
-                      }}
-                      checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === techniqueCount}
-                      indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < techniqueCount}
-                      onClick={() => {
-                        if (checkboxSelectedIds.length === techniqueCount) {
-                          setCheckboxSelectedIds([]);
-                          return;
-                        }
-                      }}
-                      inputProps={{ 'aria-label': 'controlled' }}
-                    />
-                  }
-                />
-              </FormGroup>
-            </Box>
-            <Divider flexItem></Divider>
-            <Box
-              flex="1 1 auto"
-              sx={{
-                background: grey[100]
-              }}>
-              {/* Display text if the sample site data loader has no items in it */}
-              {!techniqueCount && (
-                <Stack
-                  sx={{
-                    background: grey[50]
-                  }}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  flex="1 1 auto"
-                  position="absolute"
-                  top={0}
-                  right={0}
-                  left={0}
-                  bottom={0}
-                  height="100%">
-                  <Typography variant="body2">No Techniques</Typography>
-                </Stack>
-              )}
-
+            <Box flex="1 1 auto">
               <SamplingTechniqueCardContainer
                 techniques={techniques}
                 handleDelete={(technique) => {

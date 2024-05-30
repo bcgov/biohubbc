@@ -125,6 +125,7 @@ const TechniqueTechniquePage = () => {
           distance_threshold: null,
           method_lookup_id: null,
           attractants: [],
+          attributes: [],
           qualitative_attributes: [],
           quantitative_attributes: []
         }}

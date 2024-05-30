@@ -78,6 +78,25 @@ const SurveyRouter: React.FC = () => {
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
+      {/* Technique routes */}
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/manage-sampling/technique/create"
+        title={getTitle('Create Technique')}>
+        <DialogContextProvider>
+          <SamplingSiteTechniquePage />
+        </DialogContextProvider>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/manage-sampling/technique/:method_technique_id/edit"
+        title={getTitle('Edit Technique')}>
+        <DialogContextProvider>
+          <SamplingSiteTechniquePage />
+        </DialogContextProvider>
+      </RouteWithTitle>
+
       {/* Sample Site Routes  TODO: Remove unused path and page */}
       <RouteWithTitle
         exact
@@ -85,15 +104,6 @@ const SurveyRouter: React.FC = () => {
         title={getTitle('Manage Sampling Sites')}>
         <DialogContextProvider>
           <SamplingSiteManagePage />
-        </DialogContextProvider>
-      </RouteWithTitle>
-
-      <RouteWithTitle
-        exact
-        path="/admin/projects/:id/surveys/:survey_id/manage-sampling/technique"
-        title={getTitle('Techniques')}>
-        <DialogContextProvider>
-          <SamplingSiteTechniquePage />
         </DialogContextProvider>
       </RouteWithTitle>
 
