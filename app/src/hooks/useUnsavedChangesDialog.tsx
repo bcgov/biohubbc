@@ -41,7 +41,7 @@ export const useUnsavedChangesDialog = (skipConfirmationDialog?: boolean) => {
         dialogContext.setYesNoDialog({ open: false });
         /**
          * History.push allows an additional unknown param to be passed
-         * Allowing explicit control over when the changeLocationInterceptor
+         * Allowing explicit control over when the `changeLocationInterceptor`
          * skips rendering the confirmation dialog.
          */
         history.push(pathname, { skipConfirmationDialog: true });
@@ -74,13 +74,14 @@ export const useUnsavedChangesDialog = (skipConfirmationDialog?: boolean) => {
      * onYesSkipConfirmationDialog: when onYes is selected from confirmation dialog
      */
     if (skipConfirmationDialog || onYesSkipConfirmationDialog) {
+      // Allow the location change
       return true;
     }
 
     // Dialog will trigger a another location change if yes selected
     dialogContext.setYesNoDialog(getCancelDialogProps(location.pathname));
 
-    // Dialog opened waiting for onYes to be selected
+    // Don't allow the location change
     return false;
   };
 
