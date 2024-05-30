@@ -18,7 +18,7 @@ import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useUnsavedChangesDialog } from 'hooks/useUnsavedChanges';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';

@@ -13,7 +13,7 @@ import { ProjectContext } from 'contexts/projectContext';
 import { FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useUnsavedChangesDialog } from 'hooks/useUnsavedChanges';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { IUpdateProjectRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';

@@ -8,7 +8,7 @@ import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { useUnsavedChangesDialog } from 'hooks/useUnsavedChanges';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
