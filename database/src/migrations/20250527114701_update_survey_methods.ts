@@ -73,7 +73,7 @@ export async function up(knex: Knex): Promise<void> {
     ),
     (
         'Visual encounter',
-        'an observer systematically watches and records species seen within a defined area or along a specific transect, often used to estimate population size and distribution.'
+        'An observer systematically watches and records species seen within a defined area or along a specific transect, often used to estimate population size and distribution.'
     );
     
   ----------------------------------------------------------------------------------------
