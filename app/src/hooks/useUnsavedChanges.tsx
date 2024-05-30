@@ -1,5 +1,5 @@
 import { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
-import { EditSurveyI18N } from 'constants/i18n';
+import { CancelDialogI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import * as History from 'history';
 import { useContext } from 'react';
@@ -28,8 +28,8 @@ export const useUnsavedChangesDialog = (skipConfirmation?: boolean) => {
    */
   const getCancelDialogProps = (pathname: string): IYesNoDialogProps => {
     return {
-      dialogTitle: EditSurveyI18N.cancelTitle,
-      dialogText: EditSurveyI18N.cancelText,
+      dialogTitle: CancelDialogI18N.cancelTitle,
+      dialogText: CancelDialogI18N.cancelText,
       open: true,
       onClose: () => {
         dialogContext.setYesNoDialog({ open: false });
