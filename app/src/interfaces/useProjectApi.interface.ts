@@ -97,9 +97,9 @@ export interface IProjectSupplementaryData {
  * Get projects list response object.
  *
  * @export
- * @interface IGetProjectsListResponse
+ * @interface IgetProjectsForUserIdResponse
  */
-export interface IGetProjectsListResponse {
+export interface IgetProjectsForUserIdResponse {
   projects: IProjectsListItemData[];
   pagination: ApiPaginationResponseParams;
 }

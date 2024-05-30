@@ -99,17 +99,13 @@ export function getAnimalList(): RequestHandler {
 
       const surveyCritters = await surveyService.getCrittersByUserId(isUserAdmin, systemUserId);
 
-      console.log(surveyCritters)
-
       // Request all critters from critterbase
       const cb = new CritterbaseService(user);
 
       const critters = await cb.getMultipleCrittersByIdsDetailed(
         surveyCritters.map((critter) => critter.critterbase_critter_id)
-        
       );
 
-      console.log(critters)
       await connection.commit();
 
       return res.status(200).json(critters);

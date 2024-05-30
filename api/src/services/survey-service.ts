@@ -66,13 +66,13 @@ export class SurveyService extends DBService {
    * @returns {*} {Promise<{id: number}[]>}
    * @memberof SurveyService
    */
-  async getSurveyList(
+  async getSurveysForUserId(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: ISurveyAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<SurveyListData[]> {
-    return this.surveyRepository.getSurveyList(isUserAdmin, systemUserId, filterFields, pagination);
+    return this.surveyRepository.getSurveysForUserId(isUserAdmin, systemUserId, filterFields, pagination);
   }
 
   /**

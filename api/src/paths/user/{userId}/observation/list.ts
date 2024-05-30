@@ -1,19 +1,19 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
-import { getDBConnection } from '../../database/db';
-import { IObservationAdvancedFilters } from '../../models/observation-view';
-import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
-import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
-import { ObservationService } from '../../services/observation-service';
-import { getLogger } from '../../utils/logger';
+import { SYSTEM_ROLE } from '../../../../constants/roles';
+import { getDBConnection } from '../../../../database/db';
+import { IObservationAdvancedFilters } from '../../../../models/observation-view';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
+import { authorizeRequestHandler, userHasValidRole } from '../../../../request-handlers/security/authorization';
+import { ObservationService } from '../../../../services/observation-service';
+import { getLogger } from '../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
   makePaginationOptionsFromRequest,
   makePaginationResponse
-} from '../../utils/pagination';
+} from '../../../../utils/pagination';
 
-const defaultLog = getLogger('paths/observation');
+const defaultLog = getLogger('paths/user');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
@@ -25,7 +25,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getObservationList()
+  getObservationsForUserId()
 ];
 
 GET.apiDoc = {
@@ -504,9 +504,9 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getObservationList(): RequestHandler {
+export function getObservationsForUserId(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getObservationList' });
+    defaultLog.debug({ label: 'getObservationsForUserId' });
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -532,7 +532,7 @@ export function getObservationList(): RequestHandler {
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const observationService = new ObservationService(connection);
-      const observations = await observationService.getObservationList(
+      const observations = await observationService.getObservationsForUserId(
         isUserAdmin,
         systemUserId,
         filterFields,
@@ -554,7 +554,7 @@ export function getObservationList(): RequestHandler {
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getObservationList', message: 'error', error });
+      defaultLog.error({ label: 'getObservationsForUserId', message: 'error', error });
       throw error;
     } finally {
       connection.release();

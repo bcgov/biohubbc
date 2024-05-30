@@ -1,7 +1,6 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import {
   ICreateProjectRequest,
   ICreateProjectResponse,
@@ -9,15 +8,12 @@ import {
   IGetProjectAttachmentsResponse,
   IGetProjectForUpdateResponse,
   IGetProjectForViewResponse,
-  IGetProjectsListResponse,
   IGetReportDetails,
-  IGetUserProjectsListResponse,
   IUpdateProjectRequest,
   IUploadAttachmentResponse,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
 import qs from 'qs';
-import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with projects.
@@ -26,17 +22,6 @@ import { ApiPaginationRequestOptions } from 'types/misc';
  * @return {*} object whose properties are supported api methods.
  */
 const useProjectApi = (axios: AxiosInstance) => {
-  /**
-   * Get projects for a system user id.
-   *
-   * @param {number} systemUserId
-   * @return {*} {Promise<IGetProjectsListResponse[]>}
-   */
-  const getAllUserProjectsForView = async (systemUserId: number): Promise<IGetUserProjectsListResponse[]> => {
-    const { data } = await axios.get(`/api/user/${systemUserId}/projects/get`);
-    return data;
-  };
-
   /**
    * Get project attachments based on project ID
    *
@@ -100,43 +85,6 @@ const useProjectApi = (axios: AxiosInstance) => {
         return qs.stringify(params);
       }
     });
-
-    return data;
-  };
-
-  /**
-   * Get projects list (potentially based on filter criteria).
-   *
-   * @param {ApiPaginationRequestOptions} [pagination]
-   * @param {IProjectAdvancedFilters} filterFieldData
-   * @return {*}  {Promise<IGetProjectsListResponse[]>}
-   */
-  const getProjectsList = async (
-    pagination?: ApiPaginationRequestOptions,
-    filterFieldData?: IProjectAdvancedFilters
-  ): Promise<IGetProjectsListResponse> => {
-    const params = new URLSearchParams();
-
-    if (pagination) {
-      params.append('page', pagination.page.toString());
-      params.append('limit', pagination.limit.toString());
-      if (pagination.sort) {
-        params.append('sort', pagination.sort);
-      }
-      if (pagination.order) {
-        params.append('order', pagination.order);
-      }
-    }
-
-    if (filterFieldData) {
-      Object.entries(filterFieldData).forEach(([key, value]) => {
-        params.append(key, value);
-      });
-    }
-
-    const urlParamsString = `?${params.toString()}`;
-
-    const { data } = await axios.get(`/api/project/list${urlParamsString}`);
 
     return data;
   };
@@ -337,8 +285,6 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   return {
-    getAllUserProjectsForView,
-    getProjectsList,
     createProject,
     getProjectForView,
     uploadProjectAttachments,

@@ -448,7 +448,7 @@ export class ObservationRepository extends BaseRepository {
    * @returns {*} {Promise<{id: number}[]>}
    * @memberof SurveyRepository
    */
-  async getObservationList(
+  async getObservationsForUserId(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IObservationAdvancedFilters,

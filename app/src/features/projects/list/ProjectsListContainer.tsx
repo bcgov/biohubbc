@@ -15,6 +15,7 @@ import { ListProjectsI18N } from 'constants/i18n';
 import { REGION_COLOURS } from 'constants/regions';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { APIError } from 'hooks/api/useAxios';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
@@ -65,6 +66,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
 
   const codesContext = useCodesContext();
   const taxonomyContext = useTaxonomyContext();
+  const authStateContext = useAuthStateContext();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -72,7 +74,11 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
 
   const projectsDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) => {
-      return biohubApi.project.getProjectsList(pagination, filter);
+      return biohubApi.user.getProjectsForUserId(
+        authStateContext.simsUserWrapper.systemUserId ?? 0,
+        pagination,
+        filter
+      );
     }
   );
 

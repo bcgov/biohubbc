@@ -1,19 +1,19 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
-import { getDBConnection } from '../../database/db';
-import { IProjectAdvancedFilters } from '../../models/project-view';
-import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
-import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
-import { ProjectService } from '../../services/project-service';
-import { getLogger } from '../../utils/logger';
+import { SYSTEM_ROLE } from '../../../../constants/roles';
+import { getDBConnection } from '../../../../database/db';
+import { ISurveyAdvancedFilters } from '../../../../models/survey-view';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
+import { authorizeRequestHandler, userHasValidRole } from '../../../../request-handlers/security/authorization';
+import { SurveyService } from '../../../../services/survey-service';
+import { getLogger } from '../../../../utils/logger';
 import {
   ensureCompletePaginationOptions,
   makePaginationOptionsFromRequest,
   makePaginationResponse
-} from '../../utils/pagination';
+} from '../../../../utils/pagination';
 
-const defaultLog = getLogger('paths/projects');
+const defaultLog = getLogger('paths/user');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
@@ -25,12 +25,12 @@ export const GET: Operation = [
       ]
     };
   }),
-  getProjectList()
+  getSurveysForUserId()
 ];
 
 GET.apiDoc = {
-  description: 'Gets a list of projects based on search parameters if passed in.',
-  tags: ['projects'],
+  description: 'Gets a list of surveys based on search parameters if passed in.',
+  tags: ['surveys'],
   security: [
     {
       Bearer: []
@@ -88,18 +88,17 @@ GET.apiDoc = {
           schema: {
             type: 'object',
             additionalProperties: false,
-            required: ['projects', 'pagination'],
+            required: ['surveys', 'pagination'],
             properties: {
-              projects: {
+              surveys: {
                 type: 'array',
                 items: {
                   type: 'object',
                   additionalProperties: false,
                   required: [
                     'project_id',
+                    'survey_id',
                     'name',
-                    'project_programs',
-                    'completion_status',
                     'start_date',
                     'end_date',
                     'focal_species',
@@ -109,24 +108,24 @@ GET.apiDoc = {
                     project_id: {
                       type: 'integer'
                     },
+                    survey_id: {
+                      type: 'integer'
+                    },
                     name: {
                       type: 'string'
                     },
-                    project_programs: {
-                      type: 'array',
-                      items: {
-                        type: 'integer'
-                      }
+                    progress_id: {
+                      type: 'integer'
                     },
                     start_date: {
                       oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
                       nullable: true,
-                      description: 'ISO 8601 date string for the funding end_date'
+                      description: 'ISO 8601 date string for the survey end_date'
                     },
                     end_date: {
                       oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
                       nullable: true,
-                      description: 'ISO 8601 date string for the funding end_date'
+                      description: 'ISO 8601 date string for the survey end_date'
                     },
                     regions: {
                       type: 'array',
@@ -149,10 +148,6 @@ GET.apiDoc = {
                         nullable: true
                       }
                     },
-                    completion_status: {
-                      type: 'string',
-                      enum: ['Completed', 'Active']
-                    }
                   }
                 }
               },
@@ -181,13 +176,13 @@ GET.apiDoc = {
 };
 
 /**
- * Get all projects (potentially based on filter criteria).
+ * Get all surveys (potentially based on filter criteria) from any project.
  *
  * @returns {RequestHandler}
  */
-export function getProjectList(): RequestHandler {
+export function getSurveysForUserId(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getProjectList' });
+    defaultLog.debug({ label: 'getSurveysForUserId' });
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -199,7 +194,7 @@ export function getProjectList(): RequestHandler {
         req['system_user']['role_names']
       );
       const systemUserId = connection.systemUserId();
-      const filterFields: IProjectAdvancedFilters = {
+      const filterFields: ISurveyAdvancedFilters = {
         keyword: req.query.keyword && String(req.query.keyword),
         project_name: req.query.project_name && String(req.query.project_name),
         project_programs: req.query.project_programs
@@ -213,26 +208,26 @@ export function getProjectList(): RequestHandler {
 
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
-      const projectService = new ProjectService(connection);
-      const projects = await projectService.getProjectList(
+      const surveyService = new SurveyService(connection);
+      const surveys = await surveyService.getSurveysForUserId(
         isUserAdmin,
         systemUserId,
         filterFields,
         ensureCompletePaginationOptions(paginationOptions)
       );
 
-      const projectsTotalCount = await projectService.getProjectCount(filterFields, isUserAdmin, systemUserId);
+      const surveysTotalCount = await surveyService.getSurveyCountByUserId(isUserAdmin, systemUserId, filterFields);
 
       const response = {
-        projects,
-        pagination: makePaginationResponse(projectsTotalCount, paginationOptions)
+        surveys,
+        pagination: makePaginationResponse(surveysTotalCount, paginationOptions)
       };
 
       await connection.commit();
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getProjectList', message: 'error', error });
+      defaultLog.error({ label: 'getSurveysForUserId', message: 'error', error });
       throw error;
     } finally {
       connection.release();

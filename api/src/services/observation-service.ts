@@ -129,7 +129,7 @@ export class ObservationService extends DBService {
    * @returns {*} {Promise<{id: number}[]>}
    * @memberof ObservationService
    */
-  async getObservationList(
+  async getObservationsForUserId(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IObservationAdvancedFilters,
@@ -138,7 +138,7 @@ export class ObservationService extends DBService {
     surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
     supplementaryObservationData: AllObservationSupplementaryData;
   }> {
-    const surveyObservations = await this.observationRepository.getObservationList(
+    const surveyObservations = await this.observationRepository.getObservationsForUserId(
       isUserAdmin,
       systemUserId,
       filterFields,

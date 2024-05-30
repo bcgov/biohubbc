@@ -3,12 +3,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { SYSTEM_ROLE } from '../../constants/roles';
-import * as db from '../../database/db';
-import { HTTPError } from '../../errors/http-error';
-import * as authorization from '../../request-handlers/security/authorization';
-import { COMPLETION_STATUS, ProjectService } from '../../services/project-service';
-import { getMockDBConnection } from '../../__mocks__/db';
+import { SYSTEM_ROLE } from '../../../../constants/roles';
+import * as db from '../../../../database/db';
+import { HTTPError } from '../../../../errors/http-error';
+import * as authorization from '../../../../request-handlers/security/authorization';
+import { COMPLETION_STATUS, ProjectService } from '../../../../services/project-service';
+import { getMockDBConnection } from '../../../../__mocks__/db';
 import * as list from './list';
 
 chai.use(sinonChai);
@@ -96,6 +96,8 @@ describe('list', () => {
           name: 'myproject',
           project_programs: [1],
           start_date: '2022-02-02',
+          focal_species: [1],
+          types: [1],
           end_date: null,
           regions: [],
           completion_status: COMPLETION_STATUS.COMPLETED
