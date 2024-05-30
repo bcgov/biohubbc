@@ -13,16 +13,18 @@ const TextFieldDataGrid = <DataGridType extends GridValidRowModel>({
   dataGridProps
 }: ITextFieldCustomValidation<DataGridType>) => {
   const ref = useRef<HTMLInputElement>();
+
   useEnhancedEffect(() => {
     if (dataGridProps.hasFocus) {
       ref.current?.focus();
     }
   }, [dataGridProps.hasFocus]);
+
   return (
     <TextField
       fullWidth
       inputRef={ref}
-      value={dataGridProps.value ?? dataGridProps[dataGridProps.field].value ?? ''}
+      value={dataGridProps.value ?? ''}
       variant="outlined"
       type="text"
       {...textFieldProps}

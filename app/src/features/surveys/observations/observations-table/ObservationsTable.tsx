@@ -1,12 +1,9 @@
 import { cyan, grey } from '@mui/material/colors';
-import { DataGrid, GridColDef, GridColumnVisibilityModel, GridRowModesModel } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
-import { getSurveySessionStorageKey, SIMS_OBSERVATIONS_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
-import { SurveyContext } from 'contexts/surveyContext';
 import { useObservationsTableContext } from 'hooks/useContext';
 import { has } from 'lodash-es';
-import { useCallback, useContext } from 'react';
 
 export interface ISpeciesObservationTableProps {
   /**
@@ -26,68 +23,7 @@ export interface ISpeciesObservationTableProps {
 }
 
 const ObservationsTable = (props: ISpeciesObservationTableProps) => {
-  const { surveyId } = useContext(SurveyContext);
-
   const observationsTableContext = useObservationsTableContext();
-
-  /**
-   * Callback fired when the column visibility model changes.
-   *
-   * @param {GridColumnVisibilityModel} model
-   */
-  const onColumnVisibilityModelChange = useCallback(
-    (model: GridColumnVisibilityModel) => {
-      // Store current visibility model in session storage
-      sessionStorage.setItem(
-        getSurveySessionStorageKey(surveyId, SIMS_OBSERVATIONS_HIDDEN_COLUMNS),
-        JSON.stringify(model)
-      );
-
-      // Update the column visibility model in the context
-      observationsTableContext.setColumnVisibilityModel(model);
-    },
-    [observationsTableContext, surveyId]
-  );
-
-  /**
-   * Callback fired when a row transitions from `view` mode to `edit` mode.
-   *
-   * @param {IObservationTableRow} newRow
-   * @return {*}
-   */
-  const processRowUpdate = useCallback(
-    (newRow: IObservationTableRow) => {
-      if (observationsTableContext.savedRows.find((row) => row.id === newRow.id)) {
-        // Update savedRows
-        observationsTableContext.setSavedRows((currentSavedRows) =>
-          currentSavedRows.map((row) => (row.id === newRow.id ? newRow : row))
-        );
-      } else {
-        // Update stagedRows
-        observationsTableContext.setStagedRows((currentStagedRows) =>
-          currentStagedRows.map((row) => (row.id === newRow.id ? newRow : row))
-        );
-      }
-
-      return newRow;
-    },
-    [observationsTableContext]
-  );
-
-  /**
-   * Callback fired when the row modes model changes.
-   * The row modes model stores the `view` vs `edit` state of the rows.
-   *
-   * Note: Any row not included in the model will default to `view` mode.
-   *
-   * @param {GridRowModesModel} model
-   */
-  const onRowModesModelChange = useCallback(
-    (model: GridRowModesModel) => {
-      observationsTableContext.setRowModesModel(() => model);
-    },
-    [observationsTableContext]
-  );
 
   return (
     <>
@@ -100,13 +36,13 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         columns={props.columns}
         // Column visibility
         columnVisibilityModel={observationsTableContext.columnVisibilityModel}
-        onColumnVisibilityModelChange={onColumnVisibilityModelChange}
+        onColumnVisibilityModelChange={observationsTableContext.onColumnVisibilityModelChange}
         // Rows
-        rows={[...observationsTableContext.savedRows, ...observationsTableContext.stagedRows]}
-        processRowUpdate={processRowUpdate}
+        rows={[...observationsTableContext.stagedRows, ...observationsTableContext.savedRows]}
+        processRowUpdate={observationsTableContext.processRowUpdate}
         // Row modes
         rowModesModel={observationsTableContext.rowModesModel}
-        onRowModesModelChange={onRowModesModelChange}
+        onRowModesModelChange={observationsTableContext.onRowModesModelChange}
         // Pagination
         paginationMode="server"
         rowCount={observationsTableContext.observationCount}
@@ -143,8 +79,7 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
             top: 0,
             right: 0,
             width: 100,
-            height: 55,
-            background: 'linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 50%)'
+            height: 55
           },
           '& .pinnedColumn': {
             position: 'sticky',
