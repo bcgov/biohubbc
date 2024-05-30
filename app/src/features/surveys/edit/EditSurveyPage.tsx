@@ -15,10 +15,10 @@ import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { FormikProps } from 'formik';
-import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChanges';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -28,7 +28,7 @@ import EditSurveyForm from './EditSurveyForm';
 /**
  * Page to create a survey.
  *
- * @return {*}
+ * @returns {*}
  */
 const EditSurveyPage = () => {
   const biohubApi = useBiohubApi();
@@ -42,6 +42,7 @@ const EditSurveyPage = () => {
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const { changeLocation, renderUnsavedChangesDialog } = useUnsavedChangesDialog(isSaving);
 
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
@@ -68,26 +69,8 @@ const EditSurveyPage = () => {
 
   const surveyData = editSurveyDataLoader.data?.surveyData;
 
-  const getCancelDialogProps = (pathname: string) => {
-    return {
-      dialogTitle: EditSurveyI18N.cancelTitle,
-      dialogText: EditSurveyI18N.cancelText,
-      open: true,
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onYes: () => {
-        dialogContext.setYesNoDialog({ open: false });
-        history.push(pathname);
-      }
-    };
-  };
-
   const handleCancel = () => {
-    dialogContext.setYesNoDialog(getCancelDialogProps('details'));
+    renderUnsavedChangesDialog('details');
   };
 
   const showEditErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -165,36 +148,13 @@ const EditSurveyPage = () => {
     }
   };
 
-  /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location) => {
-    // If the form is currently saving: allow it
-    if (isSaving) {
-      return true;
-    }
-
-    // If the dialog is not currently open and location is trying to change: open dialog
-    if (!dialogContext.yesNoDialogProps.open) {
-      dialogContext.setYesNoDialog(getCancelDialogProps(location.pathname));
-      return false;
-    }
-
-    return true;
-  };
-
   if (!codesContext.codesDataLoader.data || !projectContext.projectDataLoader.data || !surveyData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={enableCancelCheck} message={changeLocation} />
       <PageHeader
         title="Edit Survey Details"
         breadCrumbJSX={

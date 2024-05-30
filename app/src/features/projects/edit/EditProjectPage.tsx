@@ -11,9 +11,9 @@ import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { FormikProps } from 'formik';
-import * as History from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChanges';
 import { IUpdateProjectRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
@@ -37,6 +37,8 @@ const EditProjectPage = () => {
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
+  const { changeLocation, renderUnsavedChangesDialog } = useUnsavedChangesDialog(isSaving);
+
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
 
@@ -56,22 +58,6 @@ const EditProjectPage = () => {
   if (projectId) {
     editProjectDataLoader.load(projectId);
   }
-
-  const defaultCancelDialogProps = {
-    dialogTitle: EditProjectI18N.cancelTitle,
-    dialogText: EditProjectI18N.cancelText,
-    open: false,
-    onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onYes: () => {
-      dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectId}`);
-    }
-  };
 
   const defaultErrorDialogProps = {
     onClose: () => {
@@ -93,8 +79,7 @@ const EditProjectPage = () => {
   };
 
   const handleCancel = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectId}`);
+    renderUnsavedChangesDialog(`/admin/projects/${projectId}`);
   };
 
   /**
@@ -122,39 +107,13 @@ const EditProjectPage = () => {
     }
   };
 
-  /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location) => {
-    if (!dialogContext.yesNoDialogProps.open) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        ...defaultCancelDialogProps,
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        },
-        open: true
-      });
-      return false;
-    }
-
-    // If the cancel dialog is already open and another location change action is triggered: allow it
-    return true;
-  };
-
   if (!codesContext.codesDataLoader.data || !editProjectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={enableCancelCheck} message={changeLocation} />
       <PageHeader
         title="Edit Project Details"
         buttonJSX={

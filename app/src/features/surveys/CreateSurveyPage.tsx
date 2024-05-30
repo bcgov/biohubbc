@@ -15,9 +15,9 @@ import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyPartnershipsFormInitialValues } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { FormikProps } from 'formik';
-import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChanges';
 import { ICreateSurveyRequest, IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -73,27 +73,12 @@ const CreateSurveyPage = () => {
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
 
+  const { changeLocation, renderUnsavedChangesDialog } = useUnsavedChangesDialog(isSaving);
+
   const dialogContext = useContext(DialogContext);
 
-  const defaultCancelDialogProps = {
-    dialogTitle: CreateSurveyI18N.cancelTitle,
-    dialogText: CreateSurveyI18N.cancelText,
-    open: false,
-    onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onYes: () => {
-      dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectData?.project.project_id}`);
-    }
-  };
-
   const handleCancel = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectData?.project.project_id}`);
+    renderUnsavedChangesDialog(`/admin/projects/${projectData?.project.project_id}`);
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -143,39 +128,13 @@ const CreateSurveyPage = () => {
     }
   };
 
-  /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location) => {
-    if (!dialogContext.yesNoDialogProps.open) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        ...defaultCancelDialogProps,
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        },
-        open: true
-      });
-      return false;
-    }
-
-    // If the cancel dialog is already open and another location change action is triggered: allow it
-    return true;
-  };
-
   if (!codes || !projectData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={enableCancelCheck} message={changeLocation} />
       <PageHeader
         title="Create New Survey"
         breadCrumbJSX={

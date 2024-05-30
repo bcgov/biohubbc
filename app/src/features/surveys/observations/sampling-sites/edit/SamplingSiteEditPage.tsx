@@ -142,6 +142,11 @@ const SamplingSiteEditPage = () => {
    * @return {*}
    */
   const handleLocationChange = (location: History.Location) => {
+    // If the form is currently submitting: allow it
+    if (isSubmitting) {
+      return true;
+    }
+
     if (!dialogContext.yesNoDialogProps.open) {
       // If the cancel dialog is not open: open it
       dialogContext.setYesNoDialog({

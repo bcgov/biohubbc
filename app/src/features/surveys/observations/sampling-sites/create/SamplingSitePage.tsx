@@ -5,10 +5,10 @@ import { CreateSamplingSiteI18N } from 'constants/i18n';
 import { SamplingSiteMethodYupSchema } from 'features/surveys/observations/sampling-sites/create/form/MethodForm';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
-import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChanges';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -38,6 +38,8 @@ const SamplingSitePage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+
+  const { changeLocation } = useUnsavedChangesDialog(isSubmitting);
 
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -98,42 +100,9 @@ const SamplingSitePage = () => {
     }
   };
 
-  /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location) => {
-    if (!dialogContext.yesNoDialogProps.open) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        open: true,
-        dialogTitle: CreateSamplingSiteI18N.cancelTitle,
-        dialogText: CreateSamplingSiteI18N.cancelText,
-        onClose: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onNo: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        }
-      });
-      return false;
-    }
-
-    // If the cancel dialog is already open and another location change action is triggered: allow it
-    return true;
-  };
-
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={enableCancelCheck} message={changeLocation} />
       <Formik
         innerRef={formikRef}
         initialValues={{
