@@ -13,7 +13,7 @@ import { useHistory } from 'react-router';
  * @param {boolean} [skipConfirmationDialog] - Boolean indicator to skip the dialog confirmation ie: isSaving / isSubmitting
  * @returns {*} {
  *  renderUnsavedChangesDialog: (pathname: string) => void - manually trigger the confirmation dialog - usually used with `cancel` callbacks
- *  changeLocationInterceptor: (location: History.Location) => boolean - location change interceptor - passed to prompt `message` prop
+ *  locationChangeInterceptor: (location: History.Location) => boolean - location change interceptor - passed to prompt `message` prop
  * }
  */
 export const useUnsavedChangesDialog = (skipConfirmationDialog?: boolean) => {
@@ -41,7 +41,7 @@ export const useUnsavedChangesDialog = (skipConfirmationDialog?: boolean) => {
         dialogContext.setYesNoDialog({ open: false });
         /**
          * History.push allows an additional unknown param to be passed
-         * Allowing explicit control over when the `changeLocationInterceptor`
+         * Allowing explicit control over when the `locationChangeInterceptor`
          * skips rendering the confirmation dialog.
          */
         history.push(pathname, { skipConfirmationDialog: true });
@@ -66,7 +66,7 @@ export const useUnsavedChangesDialog = (skipConfirmationDialog?: boolean) => {
    * @param {History.Location} location
    * @return {*}
    */
-  const changeLocationInterceptor = (location: History.Location) => {
+  const locationChangeInterceptor = (location: History.Location) => {
     const onYesSkipConfirmationDialog = (location.state as { skipConfirmationDialog?: boolean })
       ?.skipConfirmationDialog;
     /**
@@ -85,5 +85,5 @@ export const useUnsavedChangesDialog = (skipConfirmationDialog?: boolean) => {
     return false;
   };
 
-  return { changeLocationInterceptor, renderUnsavedChangesDialog };
+  return { locationChangeInterceptor, renderUnsavedChangesDialog };
 };
