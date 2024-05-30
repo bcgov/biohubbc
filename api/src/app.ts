@@ -117,8 +117,7 @@ const openAPIFramework = initialize({
       error,
       req_url: `${req.method} ${req.url}`,
       req_params: req.params,
-      req_body: req.body,
-      tmp: JSON.stringify(req.body)
+      req_body: req.body
     });
 
     // Ensure all errors (intentionally thrown or not) are in the same format as specified by the schema
