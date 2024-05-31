@@ -6,7 +6,7 @@ import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
   IDetailedCritterWithInternalId,
-  IgetSurveysForUserIdResponse,
+  IGetSurveysForUserIdResponse,
   SurveyBasicFieldsObject
 } from 'interfaces/useSurveyApi.interface';
 import { ApiPaginationResponseParams } from 'types/misc';
@@ -49,7 +49,7 @@ describe('useSurveyApi', () => {
     it('fetches an array of surveys', async () => {
       const projectId = 1;
 
-      const res: IgetSurveysForUserIdResponse = {
+      const res: IGetSurveysForUserIdResponse = {
         surveys: [{ survey_id: 1 }, { survey_id: 2 }] as SurveyBasicFieldsObject[],
         pagination: null as unknown as ApiPaginationResponseParams
       };

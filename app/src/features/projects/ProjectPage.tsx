@@ -28,10 +28,10 @@ const ProjectsPage = () => {
   const observationAnimalsTelemetryViewParam = 'observationView';
 
   if (!params.get(projectSurveyViewParam)) {
-    params.set(projectSurveyViewParam, ProjectSurveyViewEnum.PROJECTS);
+    params.set(projectSurveyViewParam, ProjectSurveyViewEnum.projects);
   }
   if (!params.get(observationAnimalsTelemetryViewParam)) {
-    params.set(observationAnimalsTelemetryViewParam, ObservationTelemetryAnimalViewEnum.OBSERVATIONS);
+    params.set(observationAnimalsTelemetryViewParam, ObservationTelemetryAnimalViewEnum.observations);
   }
 
   useEffect(() => {
@@ -39,7 +39,7 @@ const ProjectsPage = () => {
       pathname: location.pathname,
       search: params.toString()
     });
-  }, [location.search]);
+  }, []);
 
   /**
    * Display projects, surveys and survey data

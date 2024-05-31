@@ -11,8 +11,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 import ProjectsListContainer from './list/ProjectsListContainer';
 
 export enum ProjectSurveyViewEnum {
-  PROJECTS = 'PROJECTS',
-  SURVEYS = 'SURVEYS'
+  projects = 'projects',
+  surveys = 'surveys'
 }
 
 const buttonSx = {
@@ -36,35 +36,30 @@ const ProjectSurveyContainer = (props: IProjectSurveyContainerProps) => {
   const location = useLocation();
 
   const [showSearch, setShowSearch] = useState(false);
+  const [activeView, setActiveView] = useState<string>(params.get(viewParam) ?? ProjectSurveyViewEnum.projects);
 
+  // Lowercase enums for the URL string to be lowercase
   const views = [
-    { value: ProjectSurveyViewEnum.PROJECTS, label: 'PROJECTS', icon: mdiFolder },
-    { value: ProjectSurveyViewEnum.SURVEYS, label: 'SURVEYS', icon: mdiListBoxOutline }
+    { value: ProjectSurveyViewEnum.projects, label: 'projects', icon: mdiFolder },
+    { value: ProjectSurveyViewEnum.surveys, label: 'surveys', icon: mdiListBoxOutline }
   ];
-
-  // useEffect(() => {
-  //   const viewParamValue = params.get(viewParam) as ProjectSurveyViewEnum;
-  //   if (viewParamValue) {
-  //     setActiveView(viewParamValue);
-  //   }
-  // }, [location.search, params, viewParam]);
 
   const handleToggleChange = (_: React.MouseEvent<HTMLElement, MouseEvent>, value: ProjectSurveyViewEnum) => {
     if (!value) {
       return;
     }
+
+    // Update the value of the viewParam in the cloned params
     params.set(viewParam, value);
 
-    console.log(location.pathname);
-    console.log(params.get(viewParam));
+    setActiveView(value);
 
+    // Push the new URL with updated params to the browser history
     history.push({
       pathname: location.pathname,
       search: params.toString()
     });
   };
-
-  const activeView = params.get('projectView');
 
   return (
     <>
@@ -79,7 +74,7 @@ const ProjectSurveyContainer = (props: IProjectSurveyContainerProps) => {
             '& Button': buttonSx
           }}>
           {views
-            .filter((view) => [ProjectSurveyViewEnum.PROJECTS, ProjectSurveyViewEnum.SURVEYS].includes(view.value))
+            .filter((view) => [ProjectSurveyViewEnum.projects, ProjectSurveyViewEnum.surveys].includes(view.value))
             .map((view) => (
               <ToggleButton
                 key={view.label}
@@ -102,10 +97,10 @@ const ProjectSurveyContainer = (props: IProjectSurveyContainerProps) => {
         </Button>
       </Toolbar>
       <Divider />
-      {activeView === ProjectSurveyViewEnum.PROJECTS && (
-        <ProjectsListContainer showSearch={showSearch} params={params} />
+      {activeView === ProjectSurveyViewEnum.projects && (
+        <ProjectsListContainer showSearch={showSearch} />
       )}
-      {activeView === ProjectSurveyViewEnum.SURVEYS && <SurveysListContainer showSearch={showSearch} />}
+      {activeView === ProjectSurveyViewEnum.surveys && <SurveysListContainer showSearch={showSearch}/>}
     </>
   );
 };

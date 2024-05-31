@@ -17,7 +17,7 @@ import {
   IGetSurveyAttachmentsResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
-  IgetSurveysForUserIdResponse,
+  IGetSurveysForUserIdResponse,
   ISimpleCritterWithInternalId,
   SurveyUpdateObject
 } from 'interfaces/useSurveyApi.interface';
@@ -74,12 +74,12 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {ApiPaginationRequestOptions} [pagination]
    * @param {ISurveyAdvancedFilters} filterFieldData
-   * @return {*} {Promise<IgetProjectsForUserIdResponse[]>}
+   * @return {*} {Promise<IGetProjectsForUserIdResponse[]>}
    */
   const getSurveysForUserId = async (
     pagination?: ApiPaginationRequestOptions,
     filterFieldData?: ISurveyAdvancedFilters
-  ): Promise<IgetSurveysForUserIdResponse> => {
+  ): Promise<IGetSurveysForUserIdResponse> => {
     const params = new URLSearchParams();
 
     if (pagination) {
@@ -116,7 +116,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
   const getSurveysBasicFieldsByProjectId = async (
     projectId: number,
     pagination?: ApiPaginationRequestOptions
-  ): Promise<IgetSurveysForUserIdResponse> => {
+  ): Promise<IGetSurveysForUserIdResponse> => {
     let urlParamsString = '';
 
     if (pagination) {

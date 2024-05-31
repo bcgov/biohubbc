@@ -11,12 +11,12 @@ import TelemetryListContainer from 'features/surveys/telemetry/list/TelemetryLis
 import { useState } from 'react';
 
 export enum ObservationTelemetryAnimalViewEnum {
-  OBSERVATIONS = 'OBSERVATIONS',
-  TELEMETRY = 'TELEMETRY',
-  ANIMALS = 'ANIMALS'
+  observations = 'observations',
+  telemetry = 'telemetry',
+  animals = 'animals'
 }
 
-const buttonSx = {
+const buttonsx = {
   py: 0.5,
   px: 1.5,
   border: 'none',
@@ -39,9 +39,9 @@ const ObservationTelemetryAnimalContainer = (props: IObservationTelemetryAnimalC
   const [showSearch, setShowSearch] = useState(false);
 
   const views = [
-    { value: ObservationTelemetryAnimalViewEnum.OBSERVATIONS, label: 'OBSERVATIONS', icon: mdiEye },
-    { value: ObservationTelemetryAnimalViewEnum.ANIMALS, label: 'ANIMALS', icon: mdiPaw },
-    { value: ObservationTelemetryAnimalViewEnum.TELEMETRY, label: 'TELEMETRY', icon: mdiWifiMarker }
+    { value: ObservationTelemetryAnimalViewEnum.observations, label: 'observations', icon: mdiEye },
+    { value: ObservationTelemetryAnimalViewEnum.animals, label: 'animals', icon: mdiPaw },
+    { value: ObservationTelemetryAnimalViewEnum.telemetry, label: 'telemetry', icon: mdiWifiMarker }
   ];
 
   return (
@@ -59,14 +59,14 @@ const ObservationTelemetryAnimalContainer = (props: IObservationTelemetryAnimalC
           sx={{
             display: 'flex',
             gap: 1,
-            '& Button': buttonSx
+            '& Button': buttonsx
           }}>
           {views
             .filter((view) =>
               [
-                ObservationTelemetryAnimalViewEnum.OBSERVATIONS,
-                ObservationTelemetryAnimalViewEnum.TELEMETRY,
-                ObservationTelemetryAnimalViewEnum.ANIMALS
+                ObservationTelemetryAnimalViewEnum.observations,
+                ObservationTelemetryAnimalViewEnum.telemetry,
+                ObservationTelemetryAnimalViewEnum.animals
               ].includes(view.value)
             )
             .map((view) => (
@@ -83,7 +83,7 @@ const ObservationTelemetryAnimalContainer = (props: IObservationTelemetryAnimalC
 
         <Button
           color="primary"
-          sx={buttonSx}
+          sx={buttonsx}
           onClick={() => setShowSearch(!showSearch)}
           component={Button}
           startIcon={<Icon path={mdiMagnify} size={1} />}>
@@ -91,9 +91,9 @@ const ObservationTelemetryAnimalContainer = (props: IObservationTelemetryAnimalC
         </Button>
       </Toolbar>
       <Divider />
-      {activeView === 'OBSERVATIONS' && <ObservationsListContainer showSearch={showSearch} />}
-      {activeView === 'ANIMALS' && <AnimalsListContainer showSearch={showSearch} />}
-      {activeView === 'TELEMETRY' && <TelemetryListContainer showSearch={showSearch} />}
+      {activeView === 'observations' && <ObservationsListContainer showSearch={showSearch} />}
+      {activeView === 'animals' && <AnimalsListContainer showSearch={showSearch} />}
+      {activeView === 'telemetry' && <TelemetryListContainer showSearch={showSearch} />}
     </>
   );
 };

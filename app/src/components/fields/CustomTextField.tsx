@@ -12,9 +12,9 @@ export interface ICustomTextField {
   other?: any;
   //Additionally add a handlBlur if touced properties not updating correclty.
   handleBlur?: FormikContextType<any>['handleBlur'];
-  startIcon?: JSX.Element
+  startIcon?: JSX.Element;
   maxLength?: number;
-  placeholder?: string
+  placeholder?: string;
 }
 
 const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (props) => {

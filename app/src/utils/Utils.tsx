@@ -6,6 +6,7 @@ import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import _ from 'lodash';
 import { IDialogContext } from '../contexts/dialogContext';
+import { History } from 'history';
 
 /**
  * Checks if a url string starts with an `http[s]://` protocol, and adds `https://` if it does not. If the url
@@ -469,4 +470,16 @@ export const getRandomHexColor = (seed: number, min = 100, max = 170): string =>
   };
 
   return `#${randomChannel()}${randomChannel()}${randomChannel()}`;
+};
+
+export const updateUrl = (history: History, field: string, value: string) => {
+  const searchParams = new URLSearchParams(location.search);
+
+  // Update query params based on form values
+  searchParams.set(field, value);
+
+  // Replace the current search params in the URL
+  history.replace({
+    search: searchParams.toString()
+  });
 };

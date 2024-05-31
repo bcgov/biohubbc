@@ -1,6 +1,6 @@
 import {
   IGetSurveyForViewResponse,
-  IgetSurveysForUserIdResponse,
+  IGetSurveysForUserIdResponse,
   SurveySupplementaryData,
   SurveyViewObject
 } from 'interfaces/useSurveyApi.interface';
@@ -123,7 +123,7 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
   surveySupplementaryData: surveySupplementaryData
 };
 
-export const getSurveyForListResponse: IgetSurveysForUserIdResponse = {
+export const getSurveyForListResponse: IGetSurveysForUserIdResponse = {
   surveys: [
     {
       survey_id: 1,

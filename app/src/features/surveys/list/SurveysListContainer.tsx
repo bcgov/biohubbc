@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
-import blueGrey from '@mui/material/colors/blueGrey';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
@@ -11,7 +10,7 @@ import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { REGION_COLOURS } from 'constants/regions';
+import { getNrmRegionColour } from 'constants/regions';
 import { SYSTEM_ROLE } from 'constants/roles';
 import dayjs from 'dayjs';
 import { NRM_REGION_APPENDED_TEXT } from 'features/projects/list/ProjectsListContainer';
@@ -55,11 +54,20 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   const taxonomyContext = useTaxonomyContext();
   const codesContext = useCodesContext();
 
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: pageSizeOptions[0]
-  });
-  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'survey_id', sort: 'desc' }]);
+  const searchParams = new URLSearchParams(location.search);
+
+  console.log(searchParams)
+
+  const initialPaginationModel = {
+    page: parseInt(searchParams.get('page') || '0', 10),
+    pageSize: parseInt(searchParams.get('pageSize')?.toString() || pageSizeOptions[0].toString(), 10)
+  };
+
+  const initialSortModel = JSON.parse(searchParams.get('sortModel') || '[{"field":"project_id","sort":"desc"}]');
+
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>(initialPaginationModel);
+
+  const [sortModel, setSortModel] = useState<GridSortModel>(initialSortModel);
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ISurveyAdvancedFilters>(
     SurveyAdvancedFiltersInitialValues
   );
@@ -188,13 +196,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
         <Stack direction="row" gap={1} flexWrap="wrap">
           {params.row.regions.map((region) => {
             const label = region.replace(NRM_REGION_APPENDED_TEXT, '');
-            return (
-              <ColouredRectangleChip
-                key={region}
-                colour={REGION_COLOURS.find((colour) => colour.region === label)?.color ?? blueGrey}
-                label={label}
-              />
-            );
+            return <ColouredRectangleChip key={region} colour={getNrmRegionColour(region)} label={label} />;
           })}{' '}
         </Stack>
       )

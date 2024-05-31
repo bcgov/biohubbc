@@ -1,32 +1,29 @@
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
-import blueGrey from '@mui/material/colors/blueGrey';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import {
-  IProjectAdvancedFilters,
-  ProjectAdvancedFiltersInitialValues
-} from 'components/search-filter/ProjectAdvancedFilters';
+import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { ListProjectsI18N } from 'constants/i18n';
-import { REGION_COLOURS } from 'constants/regions';
+import { getNrmRegionColour } from 'constants/regions';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
+import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
-import { useEffect, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link as RouterLink, useHistory, useLocation } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
-import { getCodesName } from 'utils/Utils';
+import { firstOrNull, getCodesName } from 'utils/Utils';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
 
 /**
@@ -42,12 +39,18 @@ interface IProjectsListTableRow extends Omit<IProjectsListItemData, 'project_pro
 
 interface IProjectsListContainerProps {
   showSearch: boolean;
-  params: URLSearchParams;
 }
 
-// const pageSizeOptions = [10, 25, 50];
+// const limitOptions = [10, 25, 50];
 
 const tableHeight = '589px';
+
+const initialParams = {
+  page: 1,
+  limit: 10,
+  field: 'project_id',
+  sort: 'desc' as GridSortDirection
+};
 
 /**
  * Page to display a list of projects.
@@ -55,25 +58,74 @@ const tableHeight = '589px';
  * @return {*}
  */
 const ProjectsListContainer = (props: IProjectsListContainerProps) => {
-  const { showSearch, params } = props;
+  const { showSearch } = props;
 
-  // const searchParams = new URLSearchParams(location.search);
+  const history = useHistory();
+  const location = useLocation();
+  const ref = useRef(true);
 
-  // const initialPaginationModel = {
-  //   page: parseInt(searchParams.get('page') || '0', 10),
-  //   pageSize: parseInt(searchParams.get('pageSize')?.toString() || pageSizeOptions[0].toString(), 10)
-  // };
+  // const query = useQuery();
+  // console.log(query);
+  // const paramss = useParams();
+  // console.log(paramss);
 
-  // const initialSortModel = JSON.parse(searchParams.get('sortModel') || '[{"field":"project_id","sort":"desc"}]');
+  // Object of existing params
+  // const paramsObject = useParams();
 
-  // const [paginationModel, setPaginationModel] = useState<GridPaginationModel>(initialPaginationModel);
+  // Get the current URL params
+  const params = new URLSearchParams(location.search);
 
-  // const [sortModel, setSortModel] = useState<GridSortModel>(initialSortModel);
-  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IProjectAdvancedFilters>(
-    ProjectAdvancedFiltersInitialValues
-  );
+  // Pagination and sort state
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    pageSize: Number(params.get('limit') ?? initialParams.limit),
+    page: Number(params.get('page') ?? initialParams.page)
+  });
+  const [sortModel, setSortModel] = useState<GridSortModel>([
+    {
+      field: params.get('field') ?? initialParams.field,
+      sort: (params.get('sort') as GridSortDirection) ?? (initialParams.sort as GridSortDirection)
+    }
+  ]);
 
-  console.log(advancedFiltersModel);
+  // Advanced filters state
+  // Initial value depends on URL params
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IProjectAdvancedFilters>();
+
+  const sort = firstOrNull(sortModel);
+  const paginationSort: ApiPaginationRequestOptions = {
+    limit: paginationModel.pageSize,
+    sort: sort?.field || undefined,
+    order: sort?.sort || undefined,
+
+    // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+    page: paginationModel.page + 1
+  };
+
+  useDeepCompareEffect(() => {
+    console.log(advancedFiltersModel);
+    // When pagination, sort, or advanced filters change, refresh the data
+    // if (!ref.current) {
+    //   // projectsDataLoader.re(paginationSort, advancedFiltersModel);
+    //   return;
+    // }
+
+    projectsDataLoader.refresh(paginationSort, advancedFiltersModel);
+
+    // When the pagination or sort change, update the URL
+    params.set('field', sortModel[0]?.field);
+    params.set('sort', sortModel[0]?.sort ?? 'asc');
+    params.set('page', String(paginationModel.page));
+    params.set('limit', String(paginationModel.pageSize));
+
+    // Update URL
+    history.push({ pathname: location.pathname, search: params.toString() });
+  }, [advancedFiltersModel, sortModel, paginationModel]);
+
+  // // // Set the formik state based on the URL
+  useDeepCompareEffect(() => {
+    ref.current = false;
+    // projectsDataLoader.refresh(paginationSort, advancedFiltersModel);
+  }, [params]);
 
   const biohubApi = useBiohubApi();
 
@@ -210,13 +262,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
         <Stack direction="row" gap={1} flexWrap="wrap">
           {params.row.regions.map((region) => {
             const label = region.replace(NRM_REGION_APPENDED_TEXT, '');
-            return (
-              <ColouredRectangleChip
-                key={region}
-                colour={REGION_COLOURS.find((colour) => colour.region === label)?.color ?? blueGrey}
-                label={label}
-              />
-            );
+            return <ColouredRectangleChip key={region} colour={getNrmRegionColour(region)} label={label} />;
           })}{' '}
         </Stack>
       )
@@ -227,7 +273,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
   // useEffect(() => {
   //   const sort = firstOrNull(sortModel);
   //   const pagination = {
-  //     limit: paginationModel.pageSize,
+  //     limit: paginationModel.limit,
   //     sort: sort?.field || undefined,
   //     order: sort?.sort || undefined,
 
@@ -236,6 +282,8 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
   //   };
 
   //   projectsDataLoader.refresh(pagination, advancedFiltersModel);
+
+  //   // Update URL
 
   //   // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -248,8 +296,9 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     <>
       <Collapse in={showSearch}>
         <ProjectsListFilterForm
+          paginationSort={paginationSort}
           handleSubmit={setAdvancedFiltersModel}
-          handleReset={() => setAdvancedFiltersModel(ProjectAdvancedFiltersInitialValues)}
+          handleReset={() => setAdvancedFiltersModel({})}
           params={params}
         />
         <Divider />
@@ -265,13 +314,13 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
           getRowId={(row) => row.project_id}
           loading={!projectsDataLoader.data}
           columns={columns}
-          // pageSizeOptions={[...pageSizeOptions]}
-          // paginationMode="server"
-          // sortingMode="server"
-          // sortModel={sortModel}
-          // paginationModel={paginationModel}
-          // onPaginationModelChange={setPaginationModel}
-          // onSortModelChange={setSortModel}
+          // limitOptions={[6]}
+          paginationMode="server"
+          sortingMode="server"
+          sortModel={sortModel}
+          paginationModel={paginationModel}
+          onPaginationModelChange={setPaginationModel}
+          onSortModelChange={setSortModel}
           rowSelection={false}
           checkboxSelection={false}
           disableRowSelectionOnClick

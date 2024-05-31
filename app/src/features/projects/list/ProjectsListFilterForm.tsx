@@ -1,21 +1,24 @@
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import CustomTextField from 'components/fields/CustomTextField';
-import {
-  IProjectAdvancedFilters,
-  ProjectAdvancedFiltersInitialValues
-} from 'components/search-filter/ProjectAdvancedFilters';
+import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import { Formik, FormikProps } from 'formik';
 import { debounce } from 'lodash-es';
 import React, { useMemo, useRef } from 'react';
-import SystemUserAutocomplete from '../components/SystemUserAutocomplete';
 import SearchFilters from '../components/SearchFilters';
+import SystemUserAutocomplete from '../components/SystemUserAutocomplete';
 
 export interface IProjectsListFilterFormProps {
   handleSubmit: (filterValues: IProjectAdvancedFilters) => void;
   handleReset: () => void;
-  params: URLSearchParams
+  params: URLSearchParams;
+  paginationSort: {
+    limit?: number;
+    page?: number;
+    sort?: string;
+    order?: 'desc' | 'asc';
+  };
 }
 
 const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) => {
@@ -26,14 +29,16 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
   const debounced = useMemo(
     () =>
       debounce((values: IProjectAdvancedFilters) => {
-        props.handleSubmit(values);
+        // props.handleSubmit(values);
+        console.log(values)
+        // updateUrl(values);
       }, 300),
     []
   );
 
   return (
     <Box p={2} bgcolor={searchBackgroundColor}>
-      <Formik innerRef={formikRef} initialValues={ProjectAdvancedFiltersInitialValues} onSubmit={props.handleSubmit}>
+      <Formik innerRef={formikRef} initialValues={props.paginationSort} onSubmit={props.handleSubmit}>
         <SearchFilters
           onChange={debounced}
           fields={[
@@ -41,12 +46,7 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
               id: 1,
               name: '',
               component: (
-                <CustomTextField
-                  placeholder="Enter any keyword or a Project ID"
-                  name="keyword"
-                  label="Keyword"
-                  
-                />
+                <CustomTextField placeholder="Enter any keyword or a Project ID" name="keyword" label="Keyword" />
               )
             },
             {
@@ -56,13 +56,14 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
                 <SpeciesAutocompleteField
                   formikFieldName={'itis_tsns'}
                   label={'Species'}
-                  placeholder='Find Projects relating to a specific taxon'
+                  placeholder="Find Projects relating to a specific taxon"
                   handleSpecies={(value) => {
-                    
                     formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
+                    formikRef.current?.submitForm();
                   }}
                   handleClear={() => {
                     formikRef.current?.setFieldValue('itis_tsns', '');
+                    formikRef.current?.submitForm();
                   }}
                   clearOnSelect={true}
                   showSelectedValue={true}

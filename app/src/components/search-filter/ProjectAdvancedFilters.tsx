@@ -7,15 +7,15 @@ import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
 
 export interface IProjectAdvancedFilters {
-  project_programs: number[];
-  start_date: string;
-  end_date: string;
-  keyword: string;
-  project_name: string;
-  agency_id: number;
-  agency_project_id: string;
-  system_user_id: number;
-  itis_tsns: number[];
+  project_programs?: number[];
+  start_date?: string;
+  end_date?: string;
+  keyword?: string;
+  project_name?: string;
+  agency_id?: number;
+  agency_project_id?: string;
+  system_user_id?: number;
+  itis_tsns?: number[];
 }
 
 export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {

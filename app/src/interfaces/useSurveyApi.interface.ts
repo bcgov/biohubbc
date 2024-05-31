@@ -274,7 +274,7 @@ export interface ISurveySupplementaryData {
  * @export
  * @interface IgetSurveysForUserIdResponse
  */
-export interface IgetSurveysForUserIdResponse {
+export interface IGetSurveysForUserIdResponse {
   surveys: SurveyBasicFieldsObject[];
   pagination: ApiPaginationResponseParams;
 }
