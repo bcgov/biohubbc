@@ -5,7 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getMockDBConnection } from '../__mocks__/db';
-import { RegionRepository } from './region-repository';
+import { RegionRepository, REGION_FEATURE_CODE } from './region-repository';
 
 chai.use(sinonChai);
 
@@ -119,6 +119,31 @@ describe('RegionRepository', () => {
         expect.fail();
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to execute search region SQL');
+      }
+    });
+  });
+
+  describe('getIntersectingRegionsFromFeatures', () => {
+    it('should run without issue', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const repo = new RegionRepository(mockDBConnection);
+      const knexStub = sinon.stub(mockDBConnection, 'knex').returns({ rows: [true] } as any);
+
+      const response = await repo.getIntersectingRegionsFromFeatures([], REGION_FEATURE_CODE.WHSE_ADMIN_BOUNDARY);
+      expect(knexStub).to.be.called;
+      expect(response).to.eql([true]);
+    });
+
+    it('should throw an error when SQL fails', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const repo = new RegionRepository(mockDBConnection);
+      sinon.stub(mockDBConnection, 'knex').throws();
+
+      try {
+        await repo.getIntersectingRegionsFromFeatures([], REGION_FEATURE_CODE.WHSE_ADMIN_BOUNDARY);
+        expect.fail();
+      } catch (error) {
+        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to execute get intersecting regions SQL');
       }
     });
   });
