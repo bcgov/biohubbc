@@ -7,15 +7,18 @@ import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import PageHeader from 'components/layout/PageHeader';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ListProjectsI18N } from 'constants/i18n';
+import { getNrmRegionColour, NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -116,7 +119,18 @@ const ProjectsListPage = () => {
     {
       field: 'regions',
       headerName: 'Regions',
-      flex: 1
+      type: 'string',
+      flex: 1,
+      renderCell: (params) => (
+        <Stack direction="row" gap={1} flexWrap="wrap">
+          {params.row.regions.map((region) => {
+            const label = region.replace(NRM_REGION_APPENDED_TEXT, '');
+            return (
+              <ColouredRectangleChip key={region} colour={getNrmRegionColour(region)} label={label} sx={{ mr: 1 }} />
+            );
+          })}
+        </Stack>
+      )
     },
     {
       field: 'start_date',
@@ -207,6 +221,9 @@ const ProjectsListPage = () => {
             <StyledDataGrid
               noRowsMessage="No projects found"
               autoHeight
+              rowHeight={70}
+              getRowHeight={() => 'auto'}
+              getEstimatedRowHeight={() => 500}
               rows={projectRows}
               rowCount={projectsDataLoader.data?.pagination.total ?? 0}
               getRowId={(row) => row.project_id}
