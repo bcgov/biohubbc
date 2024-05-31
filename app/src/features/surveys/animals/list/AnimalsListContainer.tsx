@@ -10,7 +10,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import AnimalsListFilterForm from './AnimalsListFilterForm';
+import AnimalsListFilterForm, { AnimalsAdvancedFiltersInitialValues } from './AnimalsListFilterForm';
 
 interface IAnimalTableRow {
   survey_critter_id: number;
@@ -49,7 +49,9 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
     pageSize: pageSizeOptions[0]
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'survey_critter_id', sort: 'desc' }]);
-  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IAnimalsAdvancedFilters | undefined>(undefined);
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IAnimalsAdvancedFilters>(
+    AnimalsAdvancedFiltersInitialValues
+  );
 
   const animalsDataLoader = useDataLoader(
     (pagination?: ApiPaginationRequestOptions, filter?: IAnimalsAdvancedFilters) =>
@@ -126,7 +128,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
       <Collapse in={showSearch}>
         <AnimalsListFilterForm
           handleSubmit={setAdvancedFiltersModel}
-          handleReset={() => setAdvancedFiltersModel(undefined)}
+          handleReset={() => setAdvancedFiltersModel(AnimalsAdvancedFiltersInitialValues)}
         />
         <Divider />
       </Collapse>
@@ -138,7 +140,8 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
           getRowHeight={() => 'auto'}
           getEstimatedRowHeight={() => 500}
           rows={rows ?? []}
-          //   rowCount={animalsDataLoader.data?.pagination.total ?? 0}
+          loading={!animalsDataLoader.data}
+          rowCount={animalsDataLoader.data?.length ?? 0}
           getRowId={(row) => row.critter_id}
           pageSizeOptions={[...pageSizeOptions]}
           paginationMode="server"

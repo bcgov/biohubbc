@@ -13,7 +13,7 @@ import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { useEffect, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import TelemetryListFilterForm from './TelemetryListFilterForm';
+import TelemetryListFilterForm, { TelemetryAdvancedFiltersInitialValues } from './TelemetryListFilterForm';
 
 interface ITelemetryTableRow {
   id: number;
@@ -53,8 +53,10 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
     page: 0,
     pageSize: pageSizeOptions[0]
   });
-  const [sortModel, setSortModel] = useState<GridSortModel>([]);
-  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ITelemetryAdvancedFilters | undefined>(undefined);
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'acquisition_date', sort: 'desc' }]);
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ITelemetryAdvancedFilters>(
+    TelemetryAdvancedFiltersInitialValues
+  );
 
   const telemetryDataLoader = useDataLoader(
     (pagination?: ApiPaginationRequestOptions, filter?: ITelemetryAdvancedFilters) =>
@@ -79,7 +81,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortModel, paginationModel, advancedFiltersModel]);
 
-  const rows = telemetryDataLoader.data?.telemetry.map((telemetry, index) => ({ ...telemetry, id: index })) ?? [];
+  const rows = telemetryDataLoader.data?.telemetry.map((telemetry, index) => ({ ...telemetry, id: index + 1 })) ?? [];
 
   console.log(rows);
 
@@ -141,7 +143,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
       <Collapse in={showSearch}>
         <TelemetryListFilterForm
           handleSubmit={setAdvancedFiltersModel}
-          handleReset={() => setAdvancedFiltersModel(undefined)}
+          handleReset={() => setAdvancedFiltersModel(TelemetryAdvancedFiltersInitialValues)}
         />
         <Divider />
       </Collapse>
@@ -153,7 +155,8 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
           getRowHeight={() => 'auto'}
           getEstimatedRowHeight={() => 500}
           rows={rows ?? []}
-          //   rowCount={telemetryDataLoader.data?.pagination.total ?? 0}
+          loading={!telemetryDataLoader.data}
+          rowCount={telemetryDataLoader.data?.telemetry.length ?? 0}
           getRowId={(row) => row.id}
           pageSizeOptions={[...pageSizeOptions]}
           paginationMode="server"

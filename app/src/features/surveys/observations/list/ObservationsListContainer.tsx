@@ -14,7 +14,7 @@ import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.int
 import { useCallback, useEffect, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import ObservationsListFilterForm from './ObservationsListFilterForm';
+import ObservationsListFilterForm, { ObservationAdvancedFiltersInitialValues } from './ObservationsListFilterForm';
 
 export interface IObservationsAdvancedFilters {
   minimum_date: string;
@@ -50,7 +50,9 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
     pageSize: pageSizeOptions[0]
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'survey_observation_id', sort: 'desc' }]);
-  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IObservationsAdvancedFilters | undefined>(undefined);
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IObservationsAdvancedFilters>(
+    ObservationAdvancedFiltersInitialValues
+  );
 
   const observationsDataLoader = useDataLoader(
     (pagination?: ApiPaginationRequestOptions, filter?: IObservationsAdvancedFilters) =>
@@ -122,8 +124,6 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
 
   const rows = observationsDataLoader.data ? getRowsFromObservations(observationsDataLoader.data) : [];
 
-  console.log(rows);
-
   const columns: GridColDef<IObservationTableRow>[] = [
     {
       field: 'survey_observation_id',
@@ -187,7 +187,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
       <Collapse in={showSearch}>
         <ObservationsListFilterForm
           handleSubmit={setAdvancedFiltersModel}
-          handleReset={() => setAdvancedFiltersModel(undefined)}
+          handleReset={() => setAdvancedFiltersModel(ObservationAdvancedFiltersInitialValues)}
         />
         <Divider />
       </Collapse>
@@ -199,6 +199,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
           getRowHeight={() => 'auto'}
           getEstimatedRowHeight={() => 500}
           rows={rows ?? []}
+          loading={!observationsDataLoader.data}
           rowCount={observationsDataLoader.data?.pagination.total ?? 0}
           getRowId={(row) => row.observation_subcount_id}
           pageSizeOptions={[...pageSizeOptions]}

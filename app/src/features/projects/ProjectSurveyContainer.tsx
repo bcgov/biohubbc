@@ -1,12 +1,13 @@
 import { mdiFolder, mdiListBoxOutline, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
-import ToggleButtonGroup from '@mui/lab/ToggleButtonGroup';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Toolbar from '@mui/material/Toolbar';
 import SurveysListContainer from 'features/surveys/list/SurveysListContainer';
 import { useState } from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import ProjectsListContainer from './list/ProjectsListContainer';
 
 export enum ProjectSurveyViewEnum {
@@ -24,8 +25,16 @@ const buttonSx = {
   letterSpacing: '0.02rem'
 };
 
-const ProjectSurveyContainer = () => {
-  const [activeView, setActiveView] = useState<ProjectSurveyViewEnum>(ProjectSurveyViewEnum.PROJECTS);
+interface IProjectSurveyContainerProps {
+  params: URLSearchParams;
+  viewParam: string;
+}
+
+const ProjectSurveyContainer = (props: IProjectSurveyContainerProps) => {
+  const { params, viewParam } = props;
+  const history = useHistory();
+  const location = useLocation();
+
   const [showSearch, setShowSearch] = useState(false);
 
   const views = [
@@ -33,17 +42,36 @@ const ProjectSurveyContainer = () => {
     { value: ProjectSurveyViewEnum.SURVEYS, label: 'SURVEYS', icon: mdiListBoxOutline }
   ];
 
+  // useEffect(() => {
+  //   const viewParamValue = params.get(viewParam) as ProjectSurveyViewEnum;
+  //   if (viewParamValue) {
+  //     setActiveView(viewParamValue);
+  //   }
+  // }, [location.search, params, viewParam]);
+
+  const handleToggleChange = (_: React.MouseEvent<HTMLElement, MouseEvent>, value: ProjectSurveyViewEnum) => {
+    if (!value) {
+      return;
+    }
+    params.set(viewParam, value);
+
+    console.log(location.pathname);
+    console.log(params.get(viewParam));
+
+    history.push({
+      pathname: location.pathname,
+      search: params.toString()
+    });
+  };
+
+  const activeView = params.get('projectView');
+
   return (
     <>
       <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
         <ToggleButtonGroup
           value={activeView}
-          onChange={(_, value) => {
-            if (!value) {
-              return;
-            }
-            return setActiveView(value);
-          }}
+          onChange={handleToggleChange}
           exclusive
           sx={{
             display: 'flex',
@@ -74,8 +102,10 @@ const ProjectSurveyContainer = () => {
         </Button>
       </Toolbar>
       <Divider />
-      {activeView === 'PROJECTS' && <ProjectsListContainer showSearch={showSearch} />}
-      {activeView === 'SURVEYS' && <SurveysListContainer showSearch={showSearch} />}
+      {activeView === ProjectSurveyViewEnum.PROJECTS && (
+        <ProjectsListContainer showSearch={showSearch} params={params} />
+      )}
+      {activeView === ProjectSurveyViewEnum.SURVEYS && <SurveysListContainer showSearch={showSearch} />}
     </>
   );
 };

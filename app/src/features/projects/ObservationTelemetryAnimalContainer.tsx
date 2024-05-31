@@ -1,9 +1,9 @@
 import { mdiEye, mdiMagnify, mdiPaw, mdiWifiMarker } from '@mdi/js';
 import Icon from '@mdi/react';
-import ToggleButtonGroup from '@mui/lab/ToggleButtonGroup';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Toolbar from '@mui/material/Toolbar';
 import AnimalsListContainer from 'features/surveys/animals/list/AnimalsListContainer';
 import ObservationsListContainer from 'features/surveys/observations/list/ObservationsListContainer';
@@ -26,10 +26,16 @@ const buttonSx = {
   letterSpacing: '0.02rem'
 };
 
-const ObservationTelemetryAnimalContainer = () => {
-  const [activeView, setActiveView] = useState<ObservationTelemetryAnimalViewEnum>(
-    ObservationTelemetryAnimalViewEnum.OBSERVATIONS
-  );
+interface IObservationTelemetryAnimalContainerProps {
+  params: URLSearchParams;
+  viewParam: string;
+}
+
+const ObservationTelemetryAnimalContainer = (props: IObservationTelemetryAnimalContainerProps) => {
+  const { params, viewParam } = props;
+
+  const activeView = params.get(viewParam);
+
   const [showSearch, setShowSearch] = useState(false);
 
   const views = [
@@ -47,7 +53,7 @@ const ObservationTelemetryAnimalContainer = () => {
             if (!value) {
               return;
             }
-            return setActiveView(value);
+            return params.set(viewParam, value);
           }}
           exclusive
           sx={{

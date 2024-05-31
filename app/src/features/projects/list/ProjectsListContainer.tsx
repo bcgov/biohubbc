@@ -6,10 +6,13 @@ import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
+import {
+  IProjectAdvancedFilters,
+  ProjectAdvancedFiltersInitialValues
+} from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { ListProjectsI18N } from 'constants/i18n';
 import { REGION_COLOURS } from 'constants/regions';
@@ -23,7 +26,7 @@ import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
-import { firstOrNull, getCodesName } from 'utils/Utils';
+import { getCodesName } from 'utils/Utils';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
 
 /**
@@ -39,9 +42,10 @@ interface IProjectsListTableRow extends Omit<IProjectsListItemData, 'project_pro
 
 interface IProjectsListContainerProps {
   showSearch: boolean;
+  params: URLSearchParams;
 }
 
-const pageSizeOptions = [10, 25, 50];
+// const pageSizeOptions = [10, 25, 50];
 
 const tableHeight = '589px';
 
@@ -51,15 +55,25 @@ const tableHeight = '589px';
  * @return {*}
  */
 const ProjectsListContainer = (props: IProjectsListContainerProps) => {
-  const { showSearch } = props;
+  const { showSearch, params } = props;
 
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: pageSizeOptions[0]
-  });
+  // const searchParams = new URLSearchParams(location.search);
 
-  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'project_id', sort: 'desc' }]);
-  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IProjectAdvancedFilters | undefined>(undefined);
+  // const initialPaginationModel = {
+  //   page: parseInt(searchParams.get('page') || '0', 10),
+  //   pageSize: parseInt(searchParams.get('pageSize')?.toString() || pageSizeOptions[0].toString(), 10)
+  // };
+
+  // const initialSortModel = JSON.parse(searchParams.get('sortModel') || '[{"field":"project_id","sort":"desc"}]');
+
+  // const [paginationModel, setPaginationModel] = useState<GridPaginationModel>(initialPaginationModel);
+
+  // const [sortModel, setSortModel] = useState<GridSortModel>(initialSortModel);
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IProjectAdvancedFilters>(
+    ProjectAdvancedFiltersInitialValues
+  );
+
+  console.log(advancedFiltersModel);
 
   const biohubApi = useBiohubApi();
 
@@ -209,23 +223,23 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     }
   ];
 
-  // Refresh projects when pagination or sort changes
-  useEffect(() => {
-    const sort = firstOrNull(sortModel);
-    const pagination = {
-      limit: paginationModel.pageSize,
-      sort: sort?.field || undefined,
-      order: sort?.sort || undefined,
+  // // Refresh projects when pagination or sort changes
+  // useEffect(() => {
+  //   const sort = firstOrNull(sortModel);
+  //   const pagination = {
+  //     limit: paginationModel.pageSize,
+  //     sort: sort?.field || undefined,
+  //     order: sort?.sort || undefined,
 
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    };
+  //     // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+  //     page: paginationModel.page + 1
+  //   };
 
-    projectsDataLoader.refresh(pagination, advancedFiltersModel);
+  //   projectsDataLoader.refresh(pagination, advancedFiltersModel);
 
-    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortModel, paginationModel, advancedFiltersModel]);
+  //   // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [sortModel, paginationModel, advancedFiltersModel]);
 
   /**
    * Displays project list.
@@ -235,7 +249,8 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
       <Collapse in={showSearch}>
         <ProjectsListFilterForm
           handleSubmit={setAdvancedFiltersModel}
-          handleReset={() => setAdvancedFiltersModel(undefined)}
+          handleReset={() => setAdvancedFiltersModel(ProjectAdvancedFiltersInitialValues)}
+          params={params}
         />
         <Divider />
       </Collapse>
@@ -248,14 +263,15 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
           rows={projectRows}
           rowCount={projectsDataLoader.data?.pagination.total ?? 0}
           getRowId={(row) => row.project_id}
+          loading={!projectsDataLoader.data}
           columns={columns}
-          pageSizeOptions={[...pageSizeOptions]}
-          paginationMode="server"
-          sortingMode="server"
-          sortModel={sortModel}
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
-          onSortModelChange={setSortModel}
+          // pageSizeOptions={[...pageSizeOptions]}
+          // paginationMode="server"
+          // sortingMode="server"
+          // sortModel={sortModel}
+          // paginationModel={paginationModel}
+          // onPaginationModelChange={setPaginationModel}
+          // onSortModelChange={setSortModel}
           rowSelection={false}
           checkboxSelection={false}
           disableRowSelectionOnClick

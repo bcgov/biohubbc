@@ -15,6 +15,7 @@ import SearchFilters from '../components/SearchFilters';
 export interface IProjectsListFilterFormProps {
   handleSubmit: (filterValues: IProjectAdvancedFilters) => void;
   handleReset: () => void;
+  params: URLSearchParams
 }
 
 const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) => {
@@ -43,8 +44,8 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
                 <CustomTextField
                   placeholder="Enter any keyword or a Project ID"
                   name="keyword"
-                  label="Keyword or ID"
-                  other={{ sx: { pl: 1 } }}
+                  label="Keyword"
+                  
                 />
               )
             },

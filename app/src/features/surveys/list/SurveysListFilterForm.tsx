@@ -49,8 +49,8 @@ const SurveysListFilterForm: React.FC<ISurveysListFilterFormProps> = (props) => 
                 <CustomTextField
                   placeholder="Enter any keyword or a Survey ID"
                   name="keyword"
-                  label="Keyword or ID"
-                  other={{ sx: { pl: 1 } }}
+                  label="Keyword"
+                  
                 />
               )
             },

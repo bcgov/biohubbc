@@ -52,12 +52,7 @@ const ObservationsListFilterForm: React.FC<IObservationsListFilterFormProps> = (
               name: '',
               component: (
                 <Box>
-                  <CustomTextField
-                    placeholder="Enter any keyword or Observation ID"
-                    name="keyword"
-                    label="Keyword or Observation ID"
-                    other={{ sx: { pl: 1, flex: '1 1 auto' } }}
-                  />
+                  <CustomTextField placeholder="Enter any keyword or Observation ID" name="keyword" label="Keyword" />
                 </Box>
               )
             },
@@ -85,22 +80,12 @@ const ObservationsListFilterForm: React.FC<IObservationsListFilterFormProps> = (
             {
               id: 3,
               name: 'minimum_date',
-              component: (
-                <SingleDateField
-                  name={'minimum_date'}
-                  label={'Observed after'}
-                />
-              )
+              component: <SingleDateField name={'minimum_date'} label={'Observed after'} />
             },
             {
               id: 4,
               name: 'maximum_date',
-              component: (
-                <SingleDateField
-                  name={'maximum_date'}
-                  label={'Observed before'}
-                />
-              )
+              component: <SingleDateField name={'maximum_date'} label={'Observed before'} />
             }
           ]}
         />

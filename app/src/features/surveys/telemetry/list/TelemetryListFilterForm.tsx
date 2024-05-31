@@ -13,7 +13,7 @@ export interface ITelemetryListFilterFormProps {
   handleReset: () => void;
 }
 
-export const ObservationAdvancedFiltersInitialValues: ITelemetryAdvancedFilters = {
+export const TelemetryAdvancedFiltersInitialValues: ITelemetryAdvancedFilters = {
   itis_tsns: []
 };
 
@@ -34,7 +34,7 @@ const TelemetryListFilterForm: React.FC<ITelemetryListFilterFormProps> = (props)
     <Box p={2} bgcolor={searchBackgroundColor}>
       <Formik
         innerRef={formikRef}
-        initialValues={ObservationAdvancedFiltersInitialValues}
+        initialValues={TelemetryAdvancedFiltersInitialValues}
         onSubmit={props.handleSubmit}>
         <SearchFilters
           onChange={debounced}
@@ -47,7 +47,7 @@ const TelemetryListFilterForm: React.FC<ITelemetryListFilterFormProps> = (props)
                   placeholder="Type any keyword"
                   name="keyword"
                   label="Keyword"
-                  other={{ sx: { pl: 1 } }}
+                  
                 />
               )
             },

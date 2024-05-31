@@ -24,7 +24,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getCodesName } from 'utils/Utils';
 import SurveyProgressChip from '../components/SurveyProgressChip';
-import SurveysListFilterForm from './SurveysListFilterForm';
+import SurveysListFilterForm, { SurveyAdvancedFiltersInitialValues } from './SurveysListFilterForm';
 
 export interface ISurveyAdvancedFilters {
   start_date: string;
@@ -60,7 +60,9 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
     pageSize: pageSizeOptions[0]
   });
   const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'survey_id', sort: 'desc' }]);
-  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ISurveyAdvancedFilters | undefined>(undefined);
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ISurveyAdvancedFilters>(
+    SurveyAdvancedFiltersInitialValues
+  );
 
   const surveysDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions, filter?: ISurveyAdvancedFilters) =>
     biohubApi.survey.getSurveysForUserId(pagination, filter)
@@ -204,7 +206,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
       <Collapse in={showSearch}>
         <SurveysListFilterForm
           handleSubmit={setAdvancedFiltersModel}
-          handleReset={() => setAdvancedFiltersModel(undefined)}
+          handleReset={() => setAdvancedFiltersModel(SurveyAdvancedFiltersInitialValues)}
         />
         <Divider />
       </Collapse>
@@ -217,6 +219,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
           getEstimatedRowHeight={() => 500}
           rows={surveyRows ?? []}
           rowCount={surveysDataLoader.data?.surveys.length ?? 0}
+          loading={!surveysDataLoader.data}
           getRowId={(row) => row.survey_id}
           pageSizeOptions={[...pageSizeOptions]}
           paginationMode="server"

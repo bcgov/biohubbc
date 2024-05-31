@@ -19,7 +19,7 @@ const MultiAutocompleteStack = (props: PropsWithChildren) => {
         },
         '& fieldset': { border: 'none' },
         '& .Mui-focused': { outline: 'none', border: 'red', boxShadow: '0 !important' },
-        '& .MuiInputLabel-root': { px: 1.5, background: searchBgColor }
+        '& .MuiInputLabel-root': { mx: 0, background: searchBgColor }
       }}
       flex="1 1 auto">
       {React.Children.map(props.children, (child, index) => (

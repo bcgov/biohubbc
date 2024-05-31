@@ -13,7 +13,7 @@ export interface IAnimalsListFilterFormProps {
   handleReset: () => void;
 }
 
-export const ObservationAdvancedFiltersInitialValues: IAnimalsAdvancedFilters = {
+export const AnimalsAdvancedFiltersInitialValues: IAnimalsAdvancedFilters = {
   itis_tsns: []
 };
 
@@ -34,7 +34,7 @@ const AnimalsListFilterForm: React.FC<IAnimalsListFilterFormProps> = (props) => 
     <Box p={2} bgcolor={searchBackgroundColor}>
       <Formik
         innerRef={formikRef}
-        initialValues={ObservationAdvancedFiltersInitialValues}
+        initialValues={AnimalsAdvancedFiltersInitialValues}
         onSubmit={props.handleSubmit}>
         <SearchFilters
           onChange={debounced}
@@ -47,7 +47,7 @@ const AnimalsListFilterForm: React.FC<IAnimalsListFilterFormProps> = (props) => 
                   placeholder="Type any keyword"
                   name="keyword"
                   label="Keyword"
-                  other={{ sx: { pl: 1 } }}
+                  
                 />
               )
             },

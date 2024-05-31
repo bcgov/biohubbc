@@ -6,9 +6,12 @@ import Paper from '@mui/material/Paper';
 import PageHeader from 'components/layout/PageHeader';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { Link as RouterLink } from 'react-router-dom';
-import ObservationTelemetryAnimalContainer from './ObservationTelemetryAnimalContainer';
-import ProjectSurveyContainer from './ProjectSurveyContainer';
+import { useEffect } from 'react';
+import { Link as RouterLink, useHistory, useLocation } from 'react-router-dom';
+import ObservationTelemetryAnimalContainer, {
+  ObservationTelemetryAnimalViewEnum
+} from './ObservationTelemetryAnimalContainer';
+import ProjectSurveyContainer, { ProjectSurveyViewEnum } from './ProjectSurveyContainer';
 
 /**
  * Page to display a list of projects.
@@ -16,6 +19,28 @@ import ProjectSurveyContainer from './ProjectSurveyContainer';
  * @return {*}
  */
 const ProjectsPage = () => {
+  const params = new URLSearchParams();
+
+  const location = useLocation();
+  const history = useHistory();
+
+  const projectSurveyViewParam = 'projectView';
+  const observationAnimalsTelemetryViewParam = 'observationView';
+
+  if (!params.get(projectSurveyViewParam)) {
+    params.set(projectSurveyViewParam, ProjectSurveyViewEnum.PROJECTS);
+  }
+  if (!params.get(observationAnimalsTelemetryViewParam)) {
+    params.set(observationAnimalsTelemetryViewParam, ObservationTelemetryAnimalViewEnum.OBSERVATIONS);
+  }
+
+  useEffect(() => {
+    history.push({
+      pathname: location.pathname,
+      search: params.toString()
+    });
+  }, [location.search]);
+
   /**
    * Display projects, surveys and survey data
    */
@@ -40,10 +65,10 @@ const ProjectsPage = () => {
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper>
-          <ProjectSurveyContainer />
+          <ProjectSurveyContainer params={params} viewParam={projectSurveyViewParam} />
         </Paper>
         <Paper sx={{ mt: 3 }}>
-          <ObservationTelemetryAnimalContainer />
+          <ObservationTelemetryAnimalContainer params={params} viewParam={observationAnimalsTelemetryViewParam} />
         </Paper>
       </Container>
     </>

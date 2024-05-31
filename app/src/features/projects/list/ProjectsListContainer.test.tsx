@@ -34,6 +34,7 @@ describe('ProjectsListContainer', () => {
   });
 
   it('renders with the create project button', async () => {
+    const mockParams = new URLSearchParams();
     mockUseApi.user.getProjectsForUserId.mockResolvedValue({
       projects: [],
       pagination: {
@@ -59,7 +60,7 @@ describe('ProjectsListContainer', () => {
       <AuthStateContext.Provider value={authState}>
         <CodesContext.Provider value={mockCodesContext}>
           <MemoryRouter>
-            <ProjectsListContainer showSearch={true} />
+            <ProjectsListContainer showSearch={true} params={mockParams} />
           </MemoryRouter>
         </CodesContext.Provider>
       </AuthStateContext.Provider>
@@ -71,6 +72,7 @@ describe('ProjectsListContainer', () => {
   });
 
   it('renders with the open advanced filters button', async () => {
+    const mockParams = new URLSearchParams();
     mockUseApi.user.getProjectsForUserId.mockResolvedValue({
       projects: [],
       pagination: {
@@ -96,7 +98,7 @@ describe('ProjectsListContainer', () => {
       <AuthStateContext.Provider value={authState}>
         <CodesContext.Provider value={mockCodesContext}>
           <MemoryRouter>
-            <ProjectsListContainer showSearch={true} />
+            <ProjectsListContainer showSearch={true} params={mockParams} />
           </MemoryRouter>
         </CodesContext.Provider>
       </AuthStateContext.Provider>
@@ -108,6 +110,7 @@ describe('ProjectsListContainer', () => {
   });
 
   it('navigating to the project works', async () => {
+    const mockParams = new URLSearchParams();
     mockUseApi.user.getProjectsForUserId.mockResolvedValue({
       projects: [
         {
@@ -143,7 +146,7 @@ describe('ProjectsListContainer', () => {
       <AuthStateContext.Provider value={authState}>
         <CodesContext.Provider value={mockCodesContext}>
           <Router history={history}>
-            <ProjectsListContainer showSearch={true} />
+            <ProjectsListContainer showSearch={true} params={mockParams} />
           </Router>
         </CodesContext.Provider>
       </AuthStateContext.Provider>
