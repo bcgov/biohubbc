@@ -58,24 +58,6 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Gets paginated list of Surveys that the user has access to
-   *
-   * @param {(number | null)} systemUserId
-   * @param {ISurveyAdvancedFilters} filterFields
-   * @param {ApiPaginationOptions} [pagination]
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof SurveyService
-   */
-  async getSurveysForUserId(
-    isUserAdmin: boolean,
-    systemUserId: number | null,
-    filterFields: ISurveyAdvancedFilters,
-    pagination?: ApiPaginationOptions
-  ): Promise<SurveyListData[]> {
-    return this.surveyRepository.getSurveysForUserId(isUserAdmin, systemUserId, filterFields, pagination);
-  }
-
-  /**
    * Get Survey IDs for a project ID
    *
    * @param {number} projectId

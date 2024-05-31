@@ -123,13 +123,21 @@ describe('RegionRepository', () => {
     });
   });
 
+<<<<<<< HEAD
+  describe('getRegionsByNames', () => {
+=======
   describe('getIntersectingRegionsFromFeatures', () => {
+>>>>>>> 566cc77c628369eaf2eba4325691d15967f6e449
     it('should run without issue', async () => {
       const mockDBConnection = getMockDBConnection();
       const repo = new RegionRepository(mockDBConnection);
       const knexStub = sinon.stub(mockDBConnection, 'knex').returns({ rows: [true] } as any);
 
+<<<<<<< HEAD
+      const response = await repo.getRegionsByNames(['REGION']);
+=======
       const response = await repo.getIntersectingRegionsFromFeatures([], REGION_FEATURE_CODE.WHSE_ADMIN_BOUNDARY);
+>>>>>>> 566cc77c628369eaf2eba4325691d15967f6e449
       expect(knexStub).to.be.called;
       expect(response).to.eql([true]);
     });
@@ -140,10 +148,17 @@ describe('RegionRepository', () => {
       sinon.stub(mockDBConnection, 'knex').throws();
 
       try {
+<<<<<<< HEAD
+        await repo.getRegionsByNames(['REGION']);
+        expect.fail();
+      } catch (error) {
+        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to execute get regions by names SQL');
+=======
         await repo.getIntersectingRegionsFromFeatures([], REGION_FEATURE_CODE.WHSE_ADMIN_BOUNDARY);
         expect.fail();
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to execute get intersecting regions SQL');
+>>>>>>> 566cc77c628369eaf2eba4325691d15967f6e449
       }
     });
   });
