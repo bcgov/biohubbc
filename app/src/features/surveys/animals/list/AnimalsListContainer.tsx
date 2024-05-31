@@ -17,6 +17,7 @@ interface IAnimalTableRow {
   critter_id: string;
   animal_id: string | null;
   itis_scientific_name: string;
+  wlh_id: string;
 }
 
 export interface IAnimalsAdvancedFilters {
@@ -47,7 +48,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
     page: 0,
     pageSize: pageSizeOptions[0]
   });
-  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'survey_critter_id', sort: 'desc' }]);
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IAnimalsAdvancedFilters | undefined>(undefined);
 
   const animalsDataLoader = useDataLoader(
@@ -73,14 +74,17 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortModel, paginationModel, advancedFiltersModel]);
 
-  const rows = animalsDataLoader.data?.map((animal, index) => ({ ...animal, id: index + 1 })) ?? [];
+  // TODO: CHANGE SIMPLE RESPONSE TO DETAILED TO INCLUDE ECOLOGICAL UNITS
+  const rows = animalsDataLoader.data ?? [];
+
+  console.log(rows);
 
   const columns: GridColDef<IAnimalTableRow>[] = [
     {
-      field: 'id',
+      field: 'survey_critter_id',
       headerName: 'ID',
-      width: 50,
-      minWidth: 50,
+      width: 70,
+      minWidth: 70,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
@@ -93,6 +97,27 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
       )
     },
     { field: 'animal_id', headerName: 'Nickname', flex: 1 },
+    {
+      field: 'itis_scientific_name',
+      headerName: 'Species',
+      flex: 1,
+      renderCell: (params) => (
+        <Typography fontStyle={params.row.itis_scientific_name.split(' ').length > 1 ? 'italic' : 'normal'}>
+          {params.row.itis_scientific_name}
+        </Typography>
+      )
+    },
+    {
+      field: 'wlh_id',
+      headerName: 'Wildlife Health ID',
+      flex: 1,
+      renderCell: (params) =>
+        params.row.wlh_id ? (
+          <Typography>{params.row.wlh_id}</Typography>
+        ) : (
+          <Typography color={grey[400]}>None</Typography>
+        )
+    },
     { field: 'critter_id', headerName: 'Unique ID', flex: 1 }
   ];
 

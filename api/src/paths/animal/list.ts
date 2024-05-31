@@ -4,7 +4,7 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { paginationRequestQueryParamSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
-import { CritterbaseService, ICritterbaseUser } from '../../services/critterbase-service';
+import { CritterbaseService, ICritter, ICritterbaseUser } from '../../services/critterbase-service';
 import { SurveyCritterService } from '../../services/survey-critter-service';
 import { getLogger } from '../../utils/logger';
 
@@ -100,15 +100,23 @@ export function getAnimalList(): RequestHandler {
       const surveyCritters = await surveyService.getCrittersByUserId(isUserAdmin, systemUserId);
 
       // Request all critters from critterbase
-      const cb = new CritterbaseService(user);
+      const critterbaseService = new CritterbaseService(user);
 
-      const critters = await cb.getMultipleCrittersByIdsDetailed(
+      // TODO: SHOULD BE DETAILED CRITTER, NOT CRITTER
+      const critters: ICritter[] = await critterbaseService.getMultipleCrittersByIdsDetailed(
         surveyCritters.map((critter) => critter.critterbase_critter_id)
       );
 
+      const crittersWithCritterSurveyId = critters.map((critter) => ({
+        ...critter,
+        survey_critter_id: surveyCritters.find(
+          (surveyCritter) => surveyCritter.critterbase_critter_id === critter.critter_id
+        )?.critter_id
+      }));
+
       await connection.commit();
 
-      return res.status(200).json(critters);
+      return res.status(200).json(crittersWithCritterSurveyId);
     } catch (error) {
       defaultLog.error({ label: 'getAnimalList', message: 'error', error });
       throw error;

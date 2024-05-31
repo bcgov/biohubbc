@@ -1,6 +1,7 @@
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import CustomTextField from 'components/fields/CustomTextField';
+import SingleDateField from 'components/fields/SingleDateField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import SearchFilters from 'features/projects/components/SearchFilters';
 import { Formik, FormikProps } from 'formik';
@@ -50,12 +51,14 @@ const ObservationsListFilterForm: React.FC<IObservationsListFilterFormProps> = (
               id: 1,
               name: '',
               component: (
-                <CustomTextField
-                  placeholder="Type any keyword"
-                  name="keyword"
-                  label="Keyword"
-                  other={{ sx: { pl: 1 } }}
-                />
+                <Box>
+                  <CustomTextField
+                    placeholder="Enter any keyword or Observation ID"
+                    name="keyword"
+                    label="Keyword or Observation ID"
+                    other={{ sx: { pl: 1, flex: '1 1 auto' } }}
+                  />
+                </Box>
               )
             },
             {
@@ -65,6 +68,7 @@ const ObservationsListFilterForm: React.FC<IObservationsListFilterFormProps> = (
                 <SpeciesAutocompleteField
                   formikFieldName={'itis_tsns'}
                   label={'Species'}
+                  placeholder="Find observations of a specific taxon"
                   handleSpecies={(value) => {
                     if (value?.tsn) {
                       formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
@@ -75,6 +79,26 @@ const ObservationsListFilterForm: React.FC<IObservationsListFilterFormProps> = (
                   }}
                   clearOnSelect={true}
                   showSelectedValue={true}
+                />
+              )
+            },
+            {
+              id: 3,
+              name: 'minimum_date',
+              component: (
+                <SingleDateField
+                  name={'minimum_date'}
+                  label={'Observed after'}
+                />
+              )
+            },
+            {
+              id: 4,
+              name: 'maximum_date',
+              component: (
+                <SingleDateField
+                  name={'maximum_date'}
+                  label={'Observed before'}
                 />
               )
             }

@@ -6,12 +6,13 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
+import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { useEffect, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
-import { firstOrNull, getFormattedDateRangeString, getFormattedTime } from 'utils/Utils';
+import { firstOrNull } from 'utils/Utils';
 import TelemetryListFilterForm from './TelemetryListFilterForm';
 
 interface ITelemetryTableRow {
@@ -117,7 +118,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
       flex: 1,
       renderCell: (params) => (
         <Typography variant="body2">
-          {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, params.row.acquisition_date || '')}
+          {dayjs(params.row.acquisition_date).format(DATE_FORMAT.MediumDateFormat)}
         </Typography>
       )
     },
@@ -127,7 +128,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
       flex: 1,
       renderCell: (params) => (
         <Typography variant="body2">
-          {getFormattedTime(TIME_FORMAT.LongTimeFormat24Hour, params.row.acquisition_date || '')}
+          {dayjs(params.row.acquisition_date).format(TIME_FORMAT.LongTimeFormat24Hour)}
         </Typography>
       )
     },

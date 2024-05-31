@@ -5,8 +5,9 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
-import { useAuthStateContext } from 'hooks/useAuthStateContext';
+import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
@@ -43,18 +44,17 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
-  const authStateContext = useAuthStateContext();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: pageSizeOptions[0]
   });
-  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'survey_observation_id', sort: 'desc' }]);
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IObservationsAdvancedFilters | undefined>(undefined);
 
   const observationsDataLoader = useDataLoader(
     (pagination?: ApiPaginationRequestOptions, filter?: IObservationsAdvancedFilters) =>
-      biohubApi.user.getObservationsForUserId(authStateContext.simsUserWrapper.systemUserId ?? 0, pagination, filter)
+      biohubApi.observation.getObservationsForUserId(pagination, filter)
   );
 
   // Refresh survey list when pagination or sort changes
@@ -122,12 +122,14 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
 
   const rows = observationsDataLoader.data ? getRowsFromObservations(observationsDataLoader.data) : [];
 
+  console.log(rows);
+
   const columns: GridColDef<IObservationTableRow>[] = [
     {
       field: 'survey_observation_id',
       headerName: 'ID',
-      width: 50,
-      minWidth: 50,
+      width: 70,
+      minWidth: 70,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
@@ -163,9 +165,19 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
     {
       field: 'observation_date',
       headerName: 'Date',
-      flex: 1
+      flex: 1,
+      renderCell: (params) => (
+        <Typography variant="body2">
+          {dayjs(params.row.observation_date).format(DATE_FORMAT.MediumDateFormat)}
+        </Typography>
+      )
     },
-    { field: 'observation_time', headerName: 'Time', flex: 1 },
+    {
+      field: 'observation_time',
+      headerName: 'Time',
+      flex: 1,
+      renderCell: (params) => <Typography variant="body2">{params.row.observation_time}</Typography>
+    },
     { field: 'latitude', headerName: 'Latitude', flex: 1 },
     { field: 'longitude', headerName: 'Longitude', flex: 1 }
   ];

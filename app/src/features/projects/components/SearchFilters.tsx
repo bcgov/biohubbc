@@ -41,7 +41,7 @@ const SearchFilters = <T extends object>(props: ISearchFiltersProps<T>) => {
       <Box display="flex" alignItems="center">
         <MultiAutocompleteStack>
           {fields.map((field) => (
-            <Box key={field.id} minWidth="33%">
+            <Box key={field.id} width={`${100 / fields.length}%`}>
               {field.component}
             </Box>
           ))}

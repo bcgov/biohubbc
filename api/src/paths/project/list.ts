@@ -1,19 +1,19 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../constants/roles';
-import { getDBConnection } from '../../../../database/db';
-import { IProjectAdvancedFilters } from '../../../../models/project-view';
-import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
-import { authorizeRequestHandler, userHasValidRole } from '../../../../request-handlers/security/authorization';
-import { ProjectService } from '../../../../services/project-service';
-import { getLogger } from '../../../../utils/logger';
+import { SYSTEM_ROLE } from '../../constants/roles';
+import { getDBConnection } from '../../database/db';
+import { IProjectAdvancedFilters } from '../../models/project-view';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
+import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
+import { ProjectService } from '../../services/project-service';
+import { getLogger } from '../../utils/logger';
 import {
   ensureCompletePaginationOptions,
   makePaginationOptionsFromRequest,
   makePaginationResponse
-} from '../../../../utils/pagination';
+} from '../../utils/pagination';
 
-const defaultLog = getLogger('paths/user');
+const defaultLog = getLogger('paths/project');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {

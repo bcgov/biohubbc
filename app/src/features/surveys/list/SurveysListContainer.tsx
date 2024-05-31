@@ -13,8 +13,8 @@ import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { REGION_COLOURS } from 'constants/regions';
 import { SYSTEM_ROLE } from 'constants/roles';
+import dayjs from 'dayjs';
 import { NRM_REGION_APPENDED_TEXT } from 'features/projects/list/ProjectsListContainer';
-import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
@@ -22,7 +22,7 @@ import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
-import { firstOrNull, getCodesName, getFormattedDate } from 'utils/Utils';
+import { firstOrNull, getCodesName } from 'utils/Utils';
 import SurveyProgressChip from '../components/SurveyProgressChip';
 import SurveysListFilterForm from './SurveysListFilterForm';
 
@@ -54,17 +54,16 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   const biohubApi = useBiohubApi();
   const taxonomyContext = useTaxonomyContext();
   const codesContext = useCodesContext();
-  const auth = useAuthStateContext();
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: pageSizeOptions[0]
   });
-  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'survey_id', sort: 'desc' }]);
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ISurveyAdvancedFilters | undefined>(undefined);
 
   const surveysDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions, filter?: ISurveyAdvancedFilters) =>
-    biohubApi.user.getSurveysForUserId(auth.simsUserWrapper.systemUserId ?? 0, pagination, filter)
+    biohubApi.survey.getSurveysForUserId(pagination, filter)
   );
 
   // Refresh survey list when pagination or sort changes
@@ -91,8 +90,8 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
     {
       field: 'survey_id',
       headerName: 'ID',
-      width: 50,
-      minWidth: 50,
+      width: 70,
+      minWidth: 70,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
@@ -139,15 +138,9 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
             />
             {/* Only administrators see the second title to help them find Projects with a standard naming convention */}
             <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              {detailsArray.length > 0 ? (
-                <Typography variant="body2" color="textSecondary">
-                  {detailsArray}
-                </Typography>
-              ) : (
-                <Typography variant="body2" color={grey[500]} fontStyle="italic">
-                  No Surveys
-                </Typography>
-              )}
+              <Typography variant="body2" color="textSecondary">
+                {detailsArray}
+              </Typography>
             </SystemRoleGuard>
           </Stack>
         );
@@ -166,7 +159,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
       flex: 0.2,
       disableColumnMenu: true,
       renderCell: (params) => (
-        <Typography variant="body2">{getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.start_date)}</Typography>
+        <Typography variant="body2">{dayjs(params.row.start_date).format(DATE_FORMAT.MediumDateFormat)}</Typography>
       )
     },
     {
@@ -176,7 +169,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
       disableColumnMenu: true,
       renderCell: (params) =>
         params.row.end_date ? (
-          <Typography variant="body2">{getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.end_date)}</Typography>
+          <Typography variant="body2">{dayjs(params.row.end_date).format(DATE_FORMAT.MediumDateFormat)}</Typography>
         ) : (
           <Typography variant="body2" color="textSecondary">
             None
@@ -243,6 +236,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
             '& .MuiDataGrid-virtualScroller': {
               // Height is an odd number to help the list obviously scrollable by likely cutting off the last visible row
               height: tableHeight,
+              overflowX: 'hidden',
               overflowY: 'auto !important',
               background: grey[50]
             },

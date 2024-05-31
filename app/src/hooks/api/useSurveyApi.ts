@@ -1,6 +1,7 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import { ISurveyAdvancedFilters } from 'features/surveys/list/SurveysListContainer';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import {
   IAnimalDeployment,
@@ -64,6 +65,43 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const getSurveyForUpdate = async (projectId: number, surveyId: number): Promise<IGetSurveyForUpdateResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/update/get`);
+
+    return data;
+  };
+
+  /**
+   * Get surveys for a system user id.
+   *
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @param {ISurveyAdvancedFilters} filterFieldData
+   * @return {*} {Promise<IgetProjectsForUserIdResponse[]>}
+   */
+  const getSurveysForUserId = async (
+    pagination?: ApiPaginationRequestOptions,
+    filterFieldData?: ISurveyAdvancedFilters
+  ): Promise<IgetSurveysForUserIdResponse> => {
+    const params = new URLSearchParams();
+
+    if (pagination) {
+      params.append('page', pagination.page.toString());
+      params.append('limit', pagination.limit.toString());
+      if (pagination.sort) {
+        params.append('sort', pagination.sort);
+      }
+      if (pagination.order) {
+        params.append('order', pagination.order);
+      }
+    }
+
+    if (filterFieldData) {
+      Object.entries(filterFieldData).forEach(([key, value]) => {
+        params.append(key, value);
+      });
+    }
+
+    const urlParamsString = `?${params.toString()}`;
+
+    const { data } = await axios.get(`/api/survey/list${urlParamsString}`);
 
     return data;
   };
@@ -511,6 +549,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForView,
     getSurveysBasicFieldsByProjectId,
     getSurveyForUpdate,
+    getSurveysForUserId,
     updateSurvey,
     uploadSurveyAttachments,
     uploadSurveyKeyx,

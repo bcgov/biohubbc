@@ -41,9 +41,9 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
               name: '',
               component: (
                 <CustomTextField
-                  placeholder="Type any keyword"
+                  placeholder="Enter any keyword or a Project ID"
                   name="keyword"
-                  label="Keyword"
+                  label="Keyword or ID"
                   other={{ sx: { pl: 1 } }}
                 />
               )
@@ -55,6 +55,7 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
                 <SpeciesAutocompleteField
                   formikFieldName={'itis_tsns'}
                   label={'Species'}
+                  placeholder='Find Projects relating to a specific taxon'
                   handleSpecies={(value) => {
                     
                     formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
@@ -73,6 +74,7 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
               component: (
                 <SystemUserAutocomplete
                   label="Person"
+                  placeholder="Find Projects that a person has access to"
                   formikFieldName="system_user_id"
                   required={false}
                   showSelectedValue={true}

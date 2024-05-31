@@ -47,9 +47,9 @@ const SurveysListFilterForm: React.FC<ISurveysListFilterFormProps> = (props) => 
               name: '',
               component: (
                 <CustomTextField
-                  placeholder="Type any keyword"
+                  placeholder="Enter any keyword or a Survey ID"
                   name="keyword"
-                  label="Keyword"
+                  label="Keyword or ID"
                   other={{ sx: { pl: 1 } }}
                 />
               )
@@ -61,6 +61,7 @@ const SurveysListFilterForm: React.FC<ISurveysListFilterFormProps> = (props) => 
                 <SpeciesAutocompleteField
                   formikFieldName={'itis_tsns'}
                   label={'Species'}
+                  placeholder="Find Surveys relating to a specific taxon"
                   handleSpecies={(value) => {
                     formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
                   }}
@@ -78,6 +79,7 @@ const SurveysListFilterForm: React.FC<ISurveysListFilterFormProps> = (props) => 
               component: (
                 <SystemUserAutocomplete
                   label="Person"
+                  placeholder="Find Projects that a person has access to"
                   formikFieldName="system_user_id"
                   showSelectedValue={true}
                 />

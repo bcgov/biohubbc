@@ -405,19 +405,26 @@ export class ObservationRepository extends BaseRepository {
 
     // Minimum date filter
     if (filterFields.minimum_date) {
-      query.andWhere('date', '>=', filterFields.minimum_date);
+      query.andWhere('observation_date', '>=', filterFields.minimum_date);
     }
 
     // Maximum date filter
     if (filterFields.maximum_date) {
-      query.andWhere('date', '<=', filterFields.maximum_date);
+      query.andWhere('observation_date', '<=', filterFields.maximum_date);
     }
+
+    console.log(filterFields.keyword)
 
     // Keyword filter
     if (filterFields.keyword) {
-      query
-        .andWhere('itis_scientific_name', 'ilike', `%${filterFields.keyword}%`)
+      query.where((subqueryBuilder) => {
+        subqueryBuilder.where('itis_scientific_name', 'ilike', `%${filterFields.keyword}%`);
+        // If the keyword is a number, also match on observation Id
+        if (!isNaN(Number(filterFields.keyword))) {
+          subqueryBuilder.orWhere('survey_observation.survey_observation_id', Number(filterFields.keyword));
+        }
         // TODO: must add comment column to subcounts: .orWhere('comment', '>=', filterFields.keyword);
+      });
     }
 
     // Minimum time filter

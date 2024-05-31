@@ -15,7 +15,6 @@ import { ListProjectsI18N } from 'constants/i18n';
 import { REGION_COLOURS } from 'constants/regions';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { APIError } from 'hooks/api/useAxios';
-import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
@@ -59,14 +58,13 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     pageSize: pageSizeOptions[0]
   });
 
-  const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'project_id', sort: 'desc' }]);
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IProjectAdvancedFilters | undefined>(undefined);
 
   const biohubApi = useBiohubApi();
 
   const codesContext = useCodesContext();
   const taxonomyContext = useTaxonomyContext();
-  const authStateContext = useAuthStateContext();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -74,11 +72,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
 
   const projectsDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) => {
-      return biohubApi.user.getProjectsForUserId(
-        authStateContext.simsUserWrapper.systemUserId ?? 0,
-        pagination,
-        filter
-      );
+      return biohubApi.project.getProjectsForUserId(pagination, filter);
     }
   );
 
@@ -131,8 +125,8 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     {
       field: 'project_id',
       headerName: 'ID',
-      width: 50,
-      minWidth: 50,
+      width: 70,
+      minWidth: 70,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
@@ -184,8 +178,8 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
                   {detailsArray}
                 </Typography>
               ) : (
-                <Typography variant="body2" color={grey[500]} fontStyle="italic">
-                  No Surveys
+                <Typography variant="body2" color="textSecondary">
+                  There are no Surveys in this Project
                 </Typography>
               )}
             </SystemRoleGuard>
@@ -274,6 +268,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
               // Height is an odd number to help the list obviously scrollable by likely cutting off the last visible row
               height: tableHeight,
               overflowY: 'auto !important',
+              overflowX: 'hidden',
               background: grey[50]
             },
             '& .MuiDataGrid-overlayWrapperInner': {

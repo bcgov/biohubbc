@@ -1,19 +1,19 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../constants/roles';
-import { getDBConnection } from '../../../../database/db';
-import { IObservationAdvancedFilters } from '../../../../models/observation-view';
-import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../../openapi/schemas/pagination';
-import { authorizeRequestHandler, userHasValidRole } from '../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../services/observation-service';
-import { getLogger } from '../../../../utils/logger';
+import { SYSTEM_ROLE } from '../../constants/roles';
+import { getDBConnection } from '../../database/db';
+import { IObservationAdvancedFilters } from '../../models/observation-view';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
+import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
+import { ObservationService } from '../../services/observation-service';
+import { getLogger } from '../../utils/logger';
 import {
   ensureCompletePaginationOptions,
   makePaginationOptionsFromRequest,
   makePaginationResponse
-} from '../../../../utils/pagination';
+} from '../../utils/pagination';
 
-const defaultLog = getLogger('paths/user');
+const defaultLog = getLogger('paths/observation');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {

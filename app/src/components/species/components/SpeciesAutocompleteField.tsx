@@ -87,6 +87,13 @@ export interface ISpeciesAutocompleteFieldProps {
    */
   showStartAdornment?: boolean;
   /**
+   * Placeholder text for the TextField
+   *
+   * @type {string}
+   * @memberof ISpeciesAutocompleteFieldProps
+   */
+  placeholder?: string;
+  /**
    * Whether to show selected values in the textfield or not
    * Defaults to false
    *
@@ -103,6 +110,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
     required,
     label,
     error,
+    placeholder,
     disabled,
     handleSpecies,
     handleClear,
@@ -218,7 +226,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
           }}
           variant="outlined"
           fullWidth
-          placeholder="Enter a species or taxon"
+          placeholder={placeholder ? placeholder : "Enter a species or taxon"}
           InputProps={{
             ...params.InputProps,
             startAdornment: showStartAdornment && (
