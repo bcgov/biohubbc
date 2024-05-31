@@ -34,7 +34,7 @@ import CreateSamplingMethod from './CreateSamplingMethod';
  * @returns
  */
 const SamplingMethodForm = () => {
-  const { values, errors, setFieldValue, validateField } = useFormikContext<ICreateSamplingSiteRequest>();
+  const { values, errors, setFieldValue, setFieldTouched } = useFormikContext<ICreateSamplingSiteRequest>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
@@ -59,6 +59,9 @@ const SamplingMethodForm = () => {
     setAnchorEl(null);
   };
 
+  console.log(values);
+  console.log(errors);
+
   return (
     <>
       {/* CREATE SAMPLE METHOD DIALOG */}
@@ -66,7 +69,7 @@ const SamplingMethodForm = () => {
         open={isCreateModalOpen}
         onSubmit={(data) => {
           setFieldValue(`sample_methods[${values.sample_methods.length}]`, data);
-          validateField('sample_methods');
+          setFieldTouched('sample_methods', true, false);
           setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
@@ -83,7 +86,7 @@ const SamplingMethodForm = () => {
           open={isEditModalOpen}
           onSubmit={(data) => {
             setFieldValue(`sample_methods[${editData?.index}]`, data);
-            validateField('sample_methods');
+            setFieldTouched('sample_methods', true, false);
             setAnchorEl(null);
             setIsEditModalOpen(false);
           }}
