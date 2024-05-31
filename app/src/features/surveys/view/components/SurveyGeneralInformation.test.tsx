@@ -36,7 +36,8 @@ describe('SurveyGeneralInformation', () => {
             artifactDataLoader: mockArtifactDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
             critterDataLoader: mockCritterDataLoader,
-            deploymentDataLoader: mockDeploymentDataLoader
+            deploymentDataLoader: mockDeploymentDataLoader,
+            critterDeployments: []
           }}>
           <SurveyGeneralInformation />
         </SurveyContext.Provider>
@@ -74,7 +75,8 @@ describe('SurveyGeneralInformation', () => {
             artifactDataLoader: mockArtifactDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
             critterDataLoader: mockCritterDataLoader,
-            deploymentDataLoader: mockDeploymentDataLoader
+            deploymentDataLoader: mockDeploymentDataLoader,
+            critterDeployments: []
           }}>
           <SurveyGeneralInformation />
         </SurveyContext.Provider>
@@ -102,7 +104,8 @@ describe('SurveyGeneralInformation', () => {
             artifactDataLoader: mockArtifactDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
             critterDataLoader: mockCritterDataLoader,
-            deploymentDataLoader: mockDeploymentDataLoader
+            deploymentDataLoader: mockDeploymentDataLoader,
+            critterDeployments: []
           }}>
           <SurveyGeneralInformation />
         </SurveyContext.Provider>

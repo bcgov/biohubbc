@@ -52,6 +52,8 @@ export interface ITaxonomy {
   tsn: number;
   commonNames?: string[];
   scientificName: string;
+  rank: string;
+  kingdom: string;
 }
 
 const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;

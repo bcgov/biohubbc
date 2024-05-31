@@ -2,7 +2,7 @@
 # This DockerFile is used for local development (via docker-compose) only.
 # ########################################################################################################
 
-FROM node:18
+FROM node:20
 
 ENV HOME=/opt/app-root/src
 
@@ -14,9 +14,7 @@ WORKDIR $HOME
 # A wildcard is used to ensure both package.json AND package-lock.json are copied where available (npm@5+)
 COPY package*.json ./
 
-# If you are building your code for production
-# RUN npm install --only=production
-RUN npm install
+RUN npm ci --include=dev
 
 ENV PATH ${HOME}/node_modules/.bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH
 

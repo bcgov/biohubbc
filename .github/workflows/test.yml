@@ -25,7 +25,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Checkout Target Branch
         uses: actions/checkout@v4
@@ -53,7 +53,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       # Load repo from cache
       - name: Cache repo
@@ -84,7 +84,7 @@ jobs:
 
       - name: Install api dependencies
         working-directory: api
-        run: npm install
+        run: npm ci --include=dev
 
       - name: Run api tests with coverage
         working-directory: api
@@ -110,7 +110,7 @@ jobs:
 
       - name: Install app dependencies
         working-directory: app
-        run: npm install
+        run: npm ci --include=dev
 
       - name: Run app tests with coverage
         working-directory: app

@@ -7,6 +7,10 @@ import { GeoJSONPointZodSchema } from '../zod-schema/geoJsonZodSchema';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 import {
+  ObservationSubCountQualitativeEnvironmentRecord,
+  ObservationSubCountQuantitativeEnvironmentRecord
+} from './observation-subcount-environment-repository';
+import {
   ObservationSubCountQualitativeMeasurementRecord,
   ObservationSubCountQuantitativeMeasurementRecord
 } from './observation-subcount-measurement-repository';
@@ -56,11 +60,25 @@ const ObservationSubcountQuantitativeMeasurementObject = ObservationSubCountQuan
   value: true
 });
 
+const ObservationSubcountQualitativeEnvironmentObject = ObservationSubCountQualitativeEnvironmentRecord.pick({
+  observation_subcount_qualitative_environment_id: true,
+  environment_qualitative_id: true,
+  environment_qualitative_option_id: true
+});
+
+const ObservationSubcountQuantitativeEnvironmentObject = ObservationSubCountQuantitativeEnvironmentRecord.pick({
+  observation_subcount_quantitative_environment_id: true,
+  environment_quantitative_id: true,
+  value: true
+});
+
 const ObservationSubcountObject = z.object({
   observation_subcount_id: ObservationSubCountRecord.shape.observation_subcount_id,
   subcount: ObservationSubCountRecord.shape.subcount,
   qualitative_measurements: z.array(ObservationSubcountQualitativeMeasurementObject),
-  quantitative_measurements: z.array(ObservationSubcountQuantitativeMeasurementObject)
+  quantitative_measurements: z.array(ObservationSubcountQuantitativeMeasurementObject),
+  qualitative_environments: z.array(ObservationSubcountQualitativeEnvironmentObject),
+  quantitative_environments: z.array(ObservationSubcountQuantitativeEnvironmentObject)
 });
 
 const ObservationSubcountsObject = z.object({
@@ -375,6 +393,56 @@ export class ObservationRepository extends BaseRepository {
           })
           .groupBy('observation_subcount_id')
       )
+      // Get all qualitative environments for all subcounts associated to all observations for the survey
+      .with(
+        'w_qualitative_environments',
+        knex
+          .select(
+            'observation_subcount_id',
+            knex.raw(`
+              json_agg(json_build_object(
+                'observation_subcount_qualitative_environment_id', observation_subcount_qualitative_environment_id,
+                'environment_qualitative_id', environment_qualitative_id,
+                'environment_qualitative_option_id', environment_qualitative_option_id
+              )) as qualitative_environments
+            `)
+          )
+          .from('observation_subcount_qualitative_environment')
+          .whereIn('observation_subcount_id', (qb1) => {
+            qb1
+              .select('observation_subcount_id')
+              .from('observation_subcount')
+              .whereIn('survey_observation_id', (qb2) => {
+                qb2.select('survey_observation_id').from('survey_observation').where('survey_id', surveyId);
+              });
+          })
+          .groupBy('observation_subcount_id')
+      )
+      // Get all quantitative environments for all subcounts associated to all observations for the survey
+      .with(
+        'w_quantitative_environments',
+        knex
+          .select(
+            'observation_subcount_id',
+            knex.raw(`
+              json_agg(json_build_object(
+                'observation_subcount_quantitative_environment_id', observation_subcount_quantitative_environment_id,
+                'environment_quantitative_id', environment_quantitative_id,
+                'value', value
+              )) as quantitative_environments
+            `)
+          )
+          .from('observation_subcount_quantitative_environment')
+          .whereIn('observation_subcount_id', (qb1) => {
+            qb1
+              .select('observation_subcount_id')
+              .from('observation_subcount')
+              .whereIn('survey_observation_id', (qb2) => {
+                qb2.select('survey_observation_id').from('survey_observation').where('survey_id', surveyId);
+              });
+          })
+          .groupBy('observation_subcount_id')
+      )
       // Rollup the subcount records into an array of objects for each observation
       .with(
         'w_subcounts',
@@ -386,7 +454,9 @@ export class ObservationRepository extends BaseRepository {
                 'observation_subcount_id', observation_subcount.observation_subcount_id,
                 'subcount', subcount,
                 'qualitative_measurements', COALESCE(w_qualitative_measurements.qualitative_measurements, '[]'::json),
-                'quantitative_measurements', COALESCE(w_quantitative_measurements.quantitative_measurements, '[]'::json)
+                'quantitative_measurements', COALESCE(w_quantitative_measurements.quantitative_measurements, '[]'::json),
+                'qualitative_environments', COALESCE(w_qualitative_environments.qualitative_environments, '[]'::json),
+                'quantitative_environments', COALESCE(w_quantitative_environments.quantitative_environments, '[]'::json)
               )) as subcounts
             `)
           )
@@ -400,6 +470,16 @@ export class ObservationRepository extends BaseRepository {
             'w_quantitative_measurements',
             'observation_subcount.observation_subcount_id',
             'w_quantitative_measurements.observation_subcount_id'
+          )
+          .leftJoin(
+            'w_qualitative_environments',
+            'observation_subcount.observation_subcount_id',
+            'w_qualitative_environments.observation_subcount_id'
+          )
+          .leftJoin(
+            'w_quantitative_environments',
+            'observation_subcount.observation_subcount_id',
+            'w_quantitative_environments.observation_subcount_id'
           )
           .whereIn(
             'survey_observation_id',
