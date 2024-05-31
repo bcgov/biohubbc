@@ -73,12 +73,12 @@ const CreateSurveyPage = () => {
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  const { locationChangeInterceptor, renderUnsavedChangesDialog } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
   const dialogContext = useContext(DialogContext);
 
   const handleCancel = () => {
-    renderUnsavedChangesDialog(`/admin/projects/${projectData?.project.project_id}`);
+    history.push(`/admin/projects/${projectData?.project.project_id}`);
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {

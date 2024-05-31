@@ -48,7 +48,7 @@ const CreateProjectPage = () => {
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  const { locationChangeInterceptor, renderUnsavedChangesDialog } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
@@ -99,7 +99,7 @@ const CreateProjectPage = () => {
   };
 
   const handleCancel = () => {
-    renderUnsavedChangesDialog('/admin/projects');
+    history.push('/admin/projects');
   };
 
   /**

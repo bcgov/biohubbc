@@ -1,4 +1,3 @@
-import { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
 import { CancelDialogI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import * as History from 'history';
@@ -19,51 +18,12 @@ type SkipDialog = { skipConfirmationDialog?: boolean };
  * In most cases this hook will be used in conjunction with the Prompt (react-router-dom) component.
  *
  * @returns {*} {
- *  renderUnsavedChangesDialog: (pathname: string) => void - manually trigger the confirmation dialog - usually used with `cancel` callbacks
  *  locationChangeInterceptor: (location: History.Location) => boolean - location change interceptor - passed to prompt `message` prop
  * }
  */
 export const useUnsavedChangesDialog = () => {
   const history = useHistory();
   const dialogContext = useContext(DialogContext);
-
-  /**
-   * Generates the cancel dialog props
-   *
-   * @param {string} pathname - Path to redirect to on confirmation
-   * @returns {IYesNoDialogProps} Cancel dialog props
-   */
-  const getCancelDialogProps = (pathname: string): IYesNoDialogProps => {
-    return {
-      dialogTitle: CancelDialogI18N.cancelTitle,
-      dialogText: CancelDialogI18N.cancelText,
-      open: true,
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onYes: () => {
-        dialogContext.setYesNoDialog({ open: false });
-        /**
-         * History.push allows an additional unknown param to be passed
-         * Allowing explicit control over when the `locationChangeInterceptor`
-         * skips rendering the confirmation dialog.
-         */
-        history.push(pathname, SKIP_CONFIRMATION_DIALOG);
-      }
-    };
-  };
-
-  /**
-   * Renders unsaved changes confirmation dialog - which redirects to a specific location on confirmation
-   * Useful for when you need to render the confirmation dialog explicitly.
-   * ie: Cancel callback or some action button
-   *
-   * @param {string} pathname - A history location pathname ie: 'projects'
-   */
-  const renderUnsavedChangesDialog = (pathname: string) => dialogContext.setYesNoDialog(getCancelDialogProps(pathname));
 
   /**
    * Intercepts all history navigation attempts usually used with '<Prompt>'
@@ -86,11 +46,30 @@ export const useUnsavedChangesDialog = () => {
     }
 
     // Dialog will trigger a another location change if yes selected
-    dialogContext.setYesNoDialog(getCancelDialogProps(location.pathname));
+    dialogContext.setYesNoDialog({
+      dialogTitle: CancelDialogI18N.cancelTitle,
+      dialogText: CancelDialogI18N.cancelText,
+      open: true,
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onYes: () => {
+        dialogContext.setYesNoDialog({ open: false });
+        /**
+         * History.push allows an additional unknown param to be passed
+         * Allowing explicit control over when the `locationChangeInterceptor`
+         * skips rendering the confirmation dialog.
+         */
+        history.push(location.pathname, SKIP_CONFIRMATION_DIALOG);
+      }
+    });
 
     // Don't allow the location change
     return false;
   };
 
-  return { locationChangeInterceptor, renderUnsavedChangesDialog };
+  return { locationChangeInterceptor };
 };

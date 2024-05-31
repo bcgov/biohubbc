@@ -42,7 +42,7 @@ const EditSurveyPage = () => {
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const { locationChangeInterceptor, renderUnsavedChangesDialog } = useUnsavedChangesDialog();
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
@@ -70,7 +70,7 @@ const EditSurveyPage = () => {
   const surveyData = editSurveyDataLoader.data?.surveyData;
 
   const handleCancel = () => {
-    renderUnsavedChangesDialog('details');
+    history.push('details');
   };
 
   const showEditErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
