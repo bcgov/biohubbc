@@ -1,12 +1,10 @@
 {
   "compilerOptions": {
-    "module": "esnext",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "baseUrl": "src",
+    "module": "commonjs",
+    "lib": ["es2020"],
     "outDir": "dist",
-    "jsx": "react-jsx",
     "target": "es2018",
-    "sourceMap": true,
+    "sourceMap": false,
     "allowJs": false,
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
@@ -22,12 +20,12 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noFallthroughCasesInSwitch": true,
-    "noEmit": true,
     "strict": true,
     "typeRoots": ["node_modules/@types", "src/types"]
   },
   "include": ["src"],
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts"],
   "ts-node": {
-    "swc": true
+    "files": true
   }
 }
