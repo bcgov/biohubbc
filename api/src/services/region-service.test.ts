@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { IRegion, RegionRepository } from '../repositories/region-repository';
+import { IRegion, RegionRepository, REGION_FEATURE_CODE } from '../repositories/region-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { BcgwLayerService } from './bcgw-layer-service';
 import { RegionService } from './region-service';
@@ -98,35 +98,16 @@ describe('RegionRepository', () => {
       const mockDBConnection = getMockDBConnection();
       const service = new RegionService(mockDBConnection);
 
-      const intersectingRegionsStub = sinon
-        .stub(BcgwLayerService.prototype, 'getIntersectingNrmRegionNamesFromFeatures')
-        .resolves(['REGION']);
-
-      const getRegionsByNamesStub = sinon
-        .stub(RegionService.prototype, 'getRegionsByNames')
+      const getIntersectingRegions = sinon
+        .stub(RegionRepository.prototype, 'getIntersectingRegionsFromFeatures')
         .resolves([{ region_id: 1 }] as unknown as IRegion[]);
 
       const refreshSurveyRegionsStub = sinon.stub(RegionService.prototype, 'refreshSurveyRegions').resolves();
 
       await service.insertRegionsIntoSurveyFromFeatures(1, []);
 
-      expect(intersectingRegionsStub).to.be.calledWith([], mockDBConnection);
-      expect(getRegionsByNamesStub).to.be.calledWith(['REGION']);
-      expect(refreshSurveyRegionsStub).to.be.calledWith(1, [{ region_id: 1 }]);
-    });
-  });
-
-  describe('getRegionsByNames', () => {
-    it('should run without issue', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const service = new RegionService(mockDBConnection);
-
-      const namesStub = sinon.stub(RegionRepository.prototype, 'getRegionsByNames').resolves([true] as any);
-
-      const response = await service.getRegionsByNames(['REGION']);
-
-      expect(namesStub).to.have.been.calledWith(['REGION']);
-      expect(response).to.eql([true]);
+      expect(getIntersectingRegions).to.be.calledWith([], REGION_FEATURE_CODE.NATURAL_RESOURCE_REGION);
+      expect(refreshSurveyRegionsStub).to.be.calledWith(1, [1]);
     });
   });
 });
