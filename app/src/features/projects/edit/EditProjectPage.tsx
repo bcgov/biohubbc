@@ -13,11 +13,10 @@ import { ProjectContext } from 'contexts/projectContext';
 import { FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { IUpdateProjectRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router';
-import { Prompt } from 'react-router-dom';
+import { Prompt, useHistory } from 'react-router';
 import { defaultProjectDataFormValues } from '../create/CreateProjectPage';
 import EditProjectForm from './EditProjectForm';
 
@@ -37,7 +36,7 @@ const EditProjectPage = () => {
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  const { locationChangeInterceptor, renderUnsavedChangesDialog } = useUnsavedChangesDialog(isSaving);
+  const { locationChangeInterceptor, renderUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
@@ -101,7 +100,7 @@ const EditProjectPage = () => {
       }
 
       setEnableCancelCheck(false);
-      history.push(`/admin/projects/${response.id}`);
+      history.push(`/admin/projects/${response.id}`, SKIP_CONFIRMATION_DIALOG);
     } finally {
       setIsSaving(false);
     }

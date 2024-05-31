@@ -17,7 +17,7 @@ import { SurveyPartnershipsFormInitialValues } from 'features/surveys/view/compo
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateSurveyRequest, IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -73,7 +73,7 @@ const CreateSurveyPage = () => {
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  const { locationChangeInterceptor, renderUnsavedChangesDialog } = useUnsavedChangesDialog(isSaving);
+  const { locationChangeInterceptor, renderUnsavedChangesDialog } = useUnsavedChangesDialog();
 
   const dialogContext = useContext(DialogContext);
 
@@ -115,7 +115,10 @@ const CreateSurveyPage = () => {
 
       setEnableCancelCheck(false);
 
-      history.push(`/admin/projects/${projectData?.project.project_id}/surveys/${response.id}/details`);
+      history.push(
+        `/admin/projects/${projectData?.project.project_id}/surveys/${response.id}/details`,
+        SKIP_CONFIRMATION_DIALOG
+      );
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({

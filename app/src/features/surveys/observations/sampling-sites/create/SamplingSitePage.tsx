@@ -8,7 +8,7 @@ import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -39,7 +39,7 @@ const SamplingSitePage = () => {
 
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog(isSubmitting);
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
   if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -88,7 +88,10 @@ const SamplingSitePage = () => {
       surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
       // create complete, navigate back to observations page
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
+      history.push(
+        `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`,
+        SKIP_CONFIRMATION_DIALOG
+      );
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: CreateSamplingSiteI18N.createErrorTitle,
