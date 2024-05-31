@@ -142,7 +142,7 @@ export async function up(knex: Knex): Promise<void> {
       'meter'
     ),
     (
-      'Number of entrances'
+      'Number of entrances',
       'The count of entry points into the capture mechanism.',
       0,
       100,
