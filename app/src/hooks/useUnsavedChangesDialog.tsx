@@ -68,16 +68,18 @@ export const useUnsavedChangesDialog = () => {
   /**
    * Intercepts all history navigation attempts usually used with '<Prompt>'
    *
+   * Note: history.push('location', SKIP_CONFIRMATION_DIALOG) will bypass confirmation dialog.
+   *
    * Returning true allows the navigation, returning false prevents it.
    *
    * @param {History.Location} location
    * @return {*}
    */
   const locationChangeInterceptor = (location: History.Location) => {
-    const onYesSkipConfirmationDialog = (location.state as SkipDialog)?.skipConfirmationDialog;
     /**
-     * onYesSkipConfirmationDialog: when onYes is selected from confirmation dialog
+     * onYesSkipConfirmationDialog: when onYes is selected from confirmation dialog or history.push that includes skipConfirmationDialog
      */
+    const onYesSkipConfirmationDialog = (location.state as SkipDialog)?.skipConfirmationDialog;
     if (onYesSkipConfirmationDialog) {
       // Allow the location change
       return true;
