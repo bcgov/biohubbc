@@ -34,7 +34,7 @@ import CreateSamplingMethod from './CreateSamplingMethod';
  * @returns
  */
 const SamplingMethodForm = () => {
-  const { values, errors, setFieldValue, validateField } = useFormikContext<ICreateSamplingSiteRequest>();
+  const { values, errors, setFieldValue, setFieldTouched } = useFormikContext<ICreateSamplingSiteRequest>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
@@ -59,6 +59,9 @@ const SamplingMethodForm = () => {
     setAnchorEl(null);
   };
 
+  console.log(values);
+  console.log(errors);
+
   return (
     <>
       {/* CREATE SAMPLE METHOD DIALOG */}
@@ -66,7 +69,7 @@ const SamplingMethodForm = () => {
         open={isCreateModalOpen}
         onSubmit={(data) => {
           setFieldValue(`sample_methods[${values.sample_methods.length}]`, data);
-          validateField('sample_methods');
+          setFieldTouched('sample_methods', true, false);
           setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
@@ -83,7 +86,7 @@ const SamplingMethodForm = () => {
           open={isEditModalOpen}
           onSubmit={(data) => {
             setFieldValue(`sample_methods[${editData?.index}]`, data);
-            validateField('sample_methods');
+            setFieldTouched('sample_methods', true, false);
             setAnchorEl(null);
             setIsEditModalOpen(false);
           }}
@@ -142,75 +145,81 @@ const SamplingMethodForm = () => {
               {errors.sample_methods}
             </Alert>
           )}
-          <Stack component={TransitionGroup} gap={1.5}>
-            {values.sample_methods.map((item, index) => (
-              <Collapse key={`sample_method_${item.method_lookup_id || 0}`}>
-                <Card
-                  variant="outlined"
-                  sx={{
-                    background: grey[100],
-                    '& .MuiCardHeader-root': {
-                      pb: 1
-                    }
-                  }}>
-                  <CardHeader
-                    title={
-                      <>
-                        {getCodesName(codesContext.codesDataLoader.data, 'sample_methods', item.method_lookup_id || 0)}
-                        <Typography component="span" variant="body2" color="textSecondary" ml={1}>
+          <Stack gap={1.5}>
+            <Stack component={TransitionGroup} gap={1.5}>
+              {values.sample_methods.map((item, index) => (
+                <Collapse key={`sample_method_${item.method_lookup_id || 0}`}>
+                  <Card
+                    variant="outlined"
+                    sx={{
+                      background: grey[100],
+                      '& .MuiCardHeader-root': {
+                        pb: 1
+                      }
+                    }}>
+                    <CardHeader
+                      title={
+                        <>
                           {getCodesName(
                             codesContext.codesDataLoader.data,
-                            'method_response_metrics',
-                            item.method_response_metric_id || 0
+                            'sample_methods',
+                            item.method_lookup_id || 0
                           )}
-                        </Typography>
-                      </>
-                    }
-                    action={
-                      <IconButton
-                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                          handleMenuClick(event, index)
-                        }
-                        aria-label="settings">
-                        <MoreVertIcon />
-                      </IconButton>
-                    }
-                  />
-                  <CardContent
-                    sx={{
-                      pt: 0,
-                      pb: '6px !important'
-                    }}>
-                    <Stack gap={2}>
-                      {item.description && (
-                        <Typography
-                          variant="body2"
-                          color="textSecondary"
-                          sx={{
-                            display: '-webkit-box',
-                            WebkitLineClamp: '2',
-                            WebkitBoxOrient: 'vertical',
-                            maxWidth: '92ch',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis'
-                          }}>
-                          {item.description}
-                        </Typography>
-                      )}
-                      <Box>
-                        <Typography variant="body2" fontWeight={700}>
-                          Periods
-                        </Typography>
-                        <Divider component="div" sx={{ mt: 1 }}></Divider>
-                        <Box sx={{ maxWidth: { xs: '100%', sm: '400px', xl: '300px' }, m: 1 }}>
-                          <SamplingSiteListPeriod samplePeriods={item.sample_periods} />
+                          <Typography component="span" variant="body2" color="textSecondary" ml={1}>
+                            {getCodesName(
+                              codesContext.codesDataLoader.data,
+                              'method_response_metrics',
+                              item.method_response_metric_id || 0
+                            )}
+                          </Typography>
+                        </>
+                      }
+                      action={
+                        <IconButton
+                          onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                            handleMenuClick(event, index)
+                          }
+                          aria-label="settings">
+                          <MoreVertIcon />
+                        </IconButton>
+                      }
+                    />
+                    <CardContent
+                      sx={{
+                        pt: 0,
+                        pb: '6px !important'
+                      }}>
+                      <Stack gap={2}>
+                        {item.description && (
+                          <Typography
+                            variant="body2"
+                            color="textSecondary"
+                            sx={{
+                              display: '-webkit-box',
+                              WebkitLineClamp: '2',
+                              WebkitBoxOrient: 'vertical',
+                              maxWidth: '92ch',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
+                            }}>
+                            {item.description}
+                          </Typography>
+                        )}
+                        <Box>
+                          <Typography variant="body2" fontWeight={700}>
+                            Periods
+                          </Typography>
+                          <Divider component="div" sx={{ mt: 1 }}></Divider>
+                          <Box sx={{ maxWidth: { xs: '100%', sm: '400px', xl: '300px' }, m: 1 }}>
+                            <SamplingSiteListPeriod samplePeriods={item.sample_periods} />
+                          </Box>
                         </Box>
-                      </Box>
-                    </Stack>
-                  </CardContent>
-                </Card>
-              </Collapse>
-            ))}
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Collapse>
+              ))}
+            </Stack>
             <Button
               sx={{
                 alignSelf: 'flex-start'
