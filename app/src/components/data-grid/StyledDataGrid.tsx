@@ -49,7 +49,10 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
         },
         '& .MuiDataGrid-columnHeader:last-of-type, .MuiDataGrid-cell:last-of-type': {
           pr: 2
-        }
+        },
+        '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },
+        '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': { py: '15px' },
+        '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': { py: '22px' }
       }}
     />
   );

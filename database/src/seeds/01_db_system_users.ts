@@ -138,6 +138,16 @@ const systemUsers: SystemUserSeed[] = [
     given_name: 'Macgregor',
     family_name: 'Aubertin-Young',
     email: 'macgregor.aubertin-young@gov.bc.ca'
+  },
+  {
+    identifier: 'anthomps',
+    type: SYSTEM_IDENTITY_SOURCE.IDIR,
+    role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
+    user_guid: '543C3CE2F4DE472DB3A569FD0024B244',
+    display_name: 'Thompson, Andrew WLRS:EX',
+    given_name: 'Andrew',
+    family_name: 'Thompson',
+    email: 'andrew.thompson@gov.bc.ca'
   }
 ];
 

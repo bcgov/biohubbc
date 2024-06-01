@@ -1,5 +1,6 @@
 import chai, { expect } from 'chai';
 import { Feature } from 'geojson';
+import { flatten } from 'lodash';
 import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
@@ -31,6 +32,7 @@ import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
+import { RegionService } from './region-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyBlockService } from './survey-block-service';
 import { SurveyLocationService } from './survey-location-service';
@@ -152,7 +154,6 @@ describe('SurveyService', () => {
       const updateSurveyProprietorDataStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyProprietorData')
         .resolves();
-      const insertRegionStub = sinon.stub(SurveyService.prototype, 'insertRegion').resolves();
       const upsertSurveyParticipantDataStub = sinon
         .stub(SurveyService.prototype, 'upsertSurveyParticipantData')
         .resolves();
@@ -177,7 +178,6 @@ describe('SurveyService', () => {
       expect(updateSurveyPermitDataStub).not.to.have.been.called;
       expect(upsertSurveyFundingSourceDataStub).to.have.been.calledOnce;
       expect(updateSurveyProprietorDataStub).not.to.have.been.called;
-      expect(insertRegionStub).not.to.have.been.called;
       expect(upsertSurveyParticipantDataStub).not.to.have.been.called;
       expect(updateSurveyStratumsStub).not.to.have.been.called;
       expect(insertUpdateDeleteSurveyLocationStub).not.to.have.been.called;
@@ -1047,7 +1047,7 @@ describe('SurveyService', () => {
       const insertSurveyLocationsStub = sinon.stub(service, 'insertSurveyLocations').resolves();
       const updateSurveyLocationStub = sinon.stub(service, 'updateSurveyLocation').resolves();
       const deleteSurveyLocationStub = sinon.stub(service, 'deleteSurveyLocation').resolves(existingLocationsMock[1]);
-      const insertRegionStub = sinon.stub(service, 'insertRegion').resolves();
+      const insertRegionsStub = sinon.stub(RegionService.prototype, 'insertRegionsIntoSurveyFromFeatures').resolves();
 
       const surveyId = 20;
       const data: PostSurveyLocationData[] = [
@@ -1085,8 +1085,7 @@ describe('SurveyService', () => {
         revision_count: 0
       });
       expect(deleteSurveyLocationStub).to.be.calledOnceWith(40);
-      expect(insertRegionStub).to.be.calledWith(surveyId, geoJson2); // from inserts
-      expect(insertRegionStub).to.be.calledWith(surveyId, geoJson1); // from updates
+      expect(insertRegionsStub).to.be.calledWith(surveyId, flatten([geoJson1, geoJson2]));
     });
   });
 

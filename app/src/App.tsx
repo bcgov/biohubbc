@@ -4,14 +4,13 @@ import AppRouter from 'AppRouter';
 import { AuthStateContext, AuthStateContextProvider } from 'contexts/authStateContext';
 import { ConfigContext, ConfigContextProvider } from 'contexts/configContext';
 import { WebStorageStateStore } from 'oidc-client-ts';
-import React from 'react';
 import { AuthProvider, AuthProviderProps } from 'react-oidc-context';
 import { BrowserRouter } from 'react-router-dom';
 import appTheme from 'themes/appTheme';
 import ScrollToTop from 'utils/ScrollToTop';
 import { buildUrl } from 'utils/Utils';
 
-const App: React.FC = () => {
+const App = () => {
   return (
     <ThemeProvider theme={appTheme}>
       <ConfigContextProvider>

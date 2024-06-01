@@ -28,6 +28,7 @@ export interface ISurveyMapSupplementaryLayer {
   layerColors?: {
     color: string;
     fillColor: string;
+    opacity?: number;
   };
   /**
    * The array of map points

@@ -25,6 +25,9 @@ const ancillaryTaxonIdOptions = [
   { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
 ];
 
+const surveyRegionsA = ['Kootenay-Boundary Natural Resource Region', 'West Coast Natural Resource Region'];
+const surveyRegionsB = ['Cariboo Natural Resource Region', 'South Coast Natural Resource Region'];
+
 /**
  * Add spatial transform
  *
@@ -87,6 +90,19 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveySamplingMethodData(surveyId)}
           ${insertSurveySamplePeriodData(surveyId)}
         `);
+
+        // Insert regions into surveys
+        if (projectId % 2 === 0) {
+          // Insert survey regions A
+          for (const region of surveyRegionsA) {
+            await knex.raw(`${insertSurveyRegionData(surveyId, region)}`);
+          }
+        } else {
+          // Insert survey regions B
+          for (const region of surveyRegionsB) {
+            await knex.raw(`${insertSurveyRegionData(surveyId, region)}`);
+          }
+        }
 
         const response1 = await knex.raw(insertSurveyObservationData(surveyId, 20));
         await knex.raw(insertObservationSubCount(response1.rows[0].survey_observation_id));
@@ -742,4 +758,23 @@ const insertProjectData = (projectName?: string) => `
     ]'
   )
   RETURNING project_id;
+`;
+
+/**
+ * SQL to insert survey regions
+ *
+ */
+const insertSurveyRegionData = (surveyId: string, region: string) => `
+  INSERT INTO survey_region
+  (
+    survey_id,
+    region_id
+  )
+  SELECT
+    $$${surveyId}$$,
+    region_id
+  FROM
+    region_lookup
+  WHERE
+    region_name = $$${region}$$;
 `;

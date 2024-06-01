@@ -114,7 +114,7 @@ const SurveyGeneralInformation = () => {
             );
           })}
           {species.ancillary_species?.length <= 0 && (
-            <Typography component="dd">No secondary species of interest</Typography>
+            <Typography component="span">No secondary species of interest</Typography>
           )}
         </Typography>
       </Box>
