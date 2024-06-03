@@ -84,8 +84,8 @@ describe('GetFocalSpeciesData', () => {
     let data: GetFocalSpeciesData;
 
     const obj = [
-      { tsn: 1, commonName: 'species1' },
-      { tsn: 2, commonName: 'species2' }
+      { tsn: 1, commonNames: ['species1'] },
+      { tsn: 2, commonNames: ['species2'] }
     ];
 
     before(() => {
@@ -94,8 +94,8 @@ describe('GetFocalSpeciesData', () => {
 
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([
-        { tsn: 1, commonName: 'species1' },
-        { tsn: 2, commonName: 'species2' }
+        { tsn: 1, commonNames: ['species1'] },
+        { tsn: 2, commonNames: ['species2'] }
       ]);
     });
   });
@@ -118,8 +118,8 @@ describe('GetAncillarySpeciesData', () => {
     let data: GetAncillarySpeciesData;
 
     const obj = [
-      { tsn: 1, commonName: 'species1' },
-      { tsn: 2, commonName: 'species2' }
+      { tsn: 1, commonNames: ['species1'] },
+      { tsn: 2, commonNames: ['species2'] }
     ];
 
     before(() => {
@@ -128,8 +128,8 @@ describe('GetAncillarySpeciesData', () => {
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql([
-        { tsn: 1, commonName: 'species1' },
-        { tsn: 2, commonName: 'species2' }
+        { tsn: 1, commonNames: ['species1'] },
+        { tsn: 2, commonNames: ['species2'] }
       ]);
     });
   });

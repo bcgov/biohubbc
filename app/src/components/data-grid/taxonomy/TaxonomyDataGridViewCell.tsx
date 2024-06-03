@@ -59,7 +59,7 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
           }
         }
       }}>
-      {taxon.commonName ? (
+      {taxon.commonNames.length ? (
         <>
           <Typography
             component="span"
@@ -71,9 +71,9 @@ const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
                 textTransform: 'capitalize'
               }
             }}>
-            {taxon.commonName}
+            {taxon.scientificName.split(' ').length > 1 ? <em>{taxon.scientificName}</em> : <>{taxon.scientificName}</>}
           </Typography>
-          &nbsp;(<em>{taxon.scientificName}</em>)
+          &nbsp;({taxon.commonNames.join(', ')})
         </>
       ) : (
         <em>{taxon.scientificName}</em>

@@ -51,6 +51,7 @@ describe.skip('SurveyStudyArea', () => {
         value={{
           projectId: 1,
           surveyId: 1,
+          critterDeployments: [],
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
           sampleSiteDataLoader: mockSampleSiteDataLoader,
@@ -87,6 +88,7 @@ describe.skip('SurveyStudyArea', () => {
           value={{
             projectId: 1,
             surveyId: 1,
+            critterDeployments: [],
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
@@ -115,6 +117,7 @@ describe.skip('SurveyStudyArea', () => {
           value={{
             projectId: 1,
             surveyId: 1,
+            critterDeployments: [],
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
@@ -157,6 +160,7 @@ describe.skip('SurveyStudyArea', () => {
           value={{
             projectId: 1,
             surveyId: 1,
+            critterDeployments: [],
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
@@ -267,6 +271,7 @@ describe.skip('SurveyStudyArea', () => {
           value={{
             projectId: 1,
             surveyId: 1,
+            critterDeployments: [],
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,

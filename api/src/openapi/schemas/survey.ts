@@ -115,18 +115,30 @@ export const focalSpeciesSchema: OpenAPIV3.SchemaObject = {
   title: 'focal species response object',
   type: 'object',
   additionalProperties: false,
+  required: ['tsn', 'commonNames', 'scientificName'],
   properties: {
     tsn: {
       description: 'Taxonomy tsn',
       type: 'number'
     },
-    commonName: {
-      description: 'Taxonomy common name',
-      type: 'string',
+    commonNames: {
+      description: 'Taxonomy common names',
+      type: 'array',
+      items: {
+        type: 'string'
+      },
       nullable: true
     },
     scientificName: {
       description: 'Taxonomy scientific name',
+      type: 'string'
+    },
+    rank: {
+      description: 'Taxonomy rank name',
+      type: 'string'
+    },
+    kingdom: {
+      description: 'Taxonomy kingdom name',
       type: 'string'
     }
   }
@@ -136,18 +148,30 @@ export const ancillarySpeciesSchema: OpenAPIV3.SchemaObject = {
   title: 'ancillary species response object',
   type: 'object',
   additionalProperties: false,
+  required: ['tsn', 'commonNames', 'scientificName'],
   properties: {
     tsn: {
       description: 'Taxonomy tsn',
       type: 'number'
     },
-    commonName: {
-      description: 'Taxonomy common name',
-      type: 'string',
+    commonNames: {
+      description: 'Taxonomy common names',
+      type: 'array',
+      items: {
+        type: 'string'
+      },
       nullable: true
     },
     scientificName: {
       description: 'Taxonomy scientific name',
+      type: 'string'
+    },
+    rank: {
+      description: 'Taxonomy rank name',
+      type: 'string'
+    },
+    kingdom: {
+      description: 'Taxonomy kingdom name',
       type: 'string'
     }
   }
@@ -180,6 +204,7 @@ export const surveyPermitSchema: OpenAPIV3.SchemaObject = {
     permits: {
       description: 'Permits',
       type: 'array',
+      required: ['permit_id', 'permit_number', 'permit_type'],
       items: {
         type: 'object',
         properties: {

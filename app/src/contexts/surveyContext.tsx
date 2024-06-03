@@ -1,3 +1,4 @@
+import { ICritterDeployment } from 'features/surveys/telemetry/ManualTelemetryList';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
@@ -52,6 +53,14 @@ export interface ISurveyContext {
   critterDataLoader: DataLoader<[project_id: number, survey_id: number], ISimpleCritterWithInternalId[], unknown>;
 
   /**
+   * Critters and deployments combined
+   *
+   * @type {ICritterDeployment[]}
+   * @memberof ISurveyContext
+   */
+  critterDeployments: ICritterDeployment[];
+
+  /**
    * The project ID belonging to the current project
    *
    * @type {number}
@@ -74,6 +83,7 @@ export const SurveyContext = createContext<ISurveyContext>({
   sampleSiteDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSampleSiteResponse, unknown>,
   deploymentDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IAnimalDeployment[], unknown>,
   critterDataLoader: {} as DataLoader<[project_id: number, survey_id: number], ISimpleCritterWithInternalId[], unknown>,
+  critterDeployments: [],
   projectId: -1,
   surveyId: -1
 });
@@ -110,6 +120,32 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   critterDataLoader.load(projectId, surveyId);
 
   /**
+   * Merges critters with associated deployments
+   *
+   * @returns {ICritterDeployment[]} Critter deployments
+   */
+  const critterDeployments = useMemo(() => {
+    const critterDeployments: ICritterDeployment[] = [];
+    const critters = critterDataLoader.data ?? [];
+    const deployments = deploymentDataLoader.data ?? [];
+
+    if (!critters.length || !deployments.length) {
+      return [];
+    }
+
+    const critterMap = new Map(critters.map((critter) => [critter.critter_id, critter]));
+
+    deployments.forEach((deployment) => {
+      const critter = critterMap.get(deployment.critter_id);
+      if (critter) {
+        critterDeployments.push({ critter, deployment });
+      }
+    });
+
+    return critterDeployments;
+  }, [critterDataLoader.data, deploymentDataLoader.data]);
+
+  /**
    * Refreshes the current survey object whenever the current survey ID changes from the currently loaded survey.
    */
   useEffect(() => {
@@ -122,6 +158,8 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
       surveyDataLoader.refresh(projectId, surveyId);
       artifactDataLoader.refresh(projectId, surveyId);
       sampleSiteDataLoader.refresh(projectId, surveyId);
+      deploymentDataLoader.refresh(projectId, surveyId);
+      critterDataLoader.refresh(projectId, surveyId);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -134,6 +172,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
       sampleSiteDataLoader,
       critterDataLoader,
       deploymentDataLoader,
+      critterDeployments,
       projectId,
       surveyId
     };
@@ -143,6 +182,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     sampleSiteDataLoader,
     critterDataLoader,
     deploymentDataLoader,
+    critterDeployments,
     projectId,
     surveyId
   ]);
