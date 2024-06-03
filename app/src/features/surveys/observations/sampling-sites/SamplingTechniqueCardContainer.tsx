@@ -159,7 +159,7 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
                   <Stack gap={0.5} display="flex">
                     <Typography variant="h5">{technique.name}</Typography>
                     <Typography color="textSecondary">
-                      {getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id)}
+                      {getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_technique_id)}
                     </Typography>
                   </Stack>
                 </AccordionSummary>
@@ -183,7 +183,7 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
         <Box
           flex="1 1 auto"
           borderRadius="5px"
-          minHeight="70px"
+          minHeight="150px"
           display="flex"
           alignItems="center"
           justifyContent="center"

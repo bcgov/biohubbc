@@ -25,7 +25,7 @@ export const SampleLocationRecord = z.object({
     SampleMethodRecord.pick({
       survey_sample_method_id: true,
       survey_sample_site_id: true,
-      method_lookup_id: true,
+      method_technique_id: true,
       description: true,
       method_response_metric_id: true
     }).extend(
@@ -160,7 +160,7 @@ export class SampleLocationRepository extends BaseRepository {
           json_agg(json_build_object(
             'survey_sample_method_id', ssm.survey_sample_method_id,
             'survey_sample_site_id', ssm.survey_sample_site_id,
-            'method_lookup_id', ssm.method_lookup_id,
+            'method_technique_id', ssm.method_technique_id,
             'description', ssm.description,
             'sample_periods', COALESCE(wssp.sample_periods, '[]'::json),
             'method_response_metric_id', ssm.method_response_metric_id
@@ -333,7 +333,7 @@ export class SampleLocationRepository extends BaseRepository {
           json_agg(json_build_object(
             'survey_sample_method_id', ssm.survey_sample_method_id,
             'survey_sample_site_id', ssm.survey_sample_site_id,
-            'method_lookup_id', ssm.method_lookup_id,
+            'method_technique_id', ssm.method_technique_id,
             'description', ssm.description,
             'sample_periods', COALESCE(wssp.sample_periods, '[]'::json),
             'method_response_metric_id', ssm.method_response_metric_id

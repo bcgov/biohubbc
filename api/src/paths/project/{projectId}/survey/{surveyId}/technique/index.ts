@@ -80,7 +80,7 @@ GET.apiDoc = {
                     'name',
                     'description',
                     'distance_threshold',
-                    'method_lookup_id',
+                    'method_technique_id',
                     'attractants',
                     'quantitative_attributes',
                     'qualitative_attributes'

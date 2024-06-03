@@ -101,7 +101,7 @@ export interface IGetSampleStratumDetails {
 export interface IGetSampleMethodRecord {
   survey_sample_method_id: number;
   survey_sample_site_id: number;
-  method_lookup_id: number;
+  method_technique_id: number;
   method_response_metric_id: number;
   description: string;
   create_date: string;

@@ -73,7 +73,7 @@ const ObservationComponent = () => {
     survey_sample_method_id: method.survey_sample_method_id,
     survey_sample_site_id: method.survey_sample_site_id,
     sample_method_name:
-      getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? '',
+      getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_technique_id) ?? '',
     response_metric:
       getCodesName(codesContext.codesDataLoader.data, 'method_response_metrics', method.method_response_metric_id) ?? ''
   }));

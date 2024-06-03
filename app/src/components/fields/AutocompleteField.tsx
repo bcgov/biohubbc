@@ -35,6 +35,8 @@ export interface IAutocompleteField<T extends string | number> {
 const AutocompleteField = <T extends string | number>(props: IAutocompleteField<T>) => {
   const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOption<T>>();
 
+  console.log(values)
+
   const getExistingValue = (existingValue: T): IAutocompleteFieldOption<T> => {
     const result = props.options.find((option) => existingValue === option[props.optionFilter ?? 'value']);
     if (!result) {
@@ -63,7 +65,7 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
       handleHomeEndKeys
       id={props.id}
       data-testid={props.id}
-      value={props.showValue ? getExistingValue(get(values, props.name)) : null}
+      value={getExistingValue(get(values, props.name))}
       options={props.options}
       getOptionLabel={(option) => option.label}
       isOptionEqualToValue={handleGetOptionSelected}
@@ -71,6 +73,11 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
       sx={props.sx}
       loading={props.loading}
+      onInputChange={(_, _value, reason) => {
+        if (reason === 'reset') {
+          setFieldValue(props.name, null);
+        }
+      }}
       onChange={(event, option) => {
         if (props.onChange) {
           props.onChange(event, option);
@@ -111,6 +118,7 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
             {...params}
             required={props.required}
             label={props.label}
+            value={props.showValue ? getExistingValue(get(values, props.name)) : null}
             variant="outlined"
             fullWidth
             error={get(touched, props.name) && Boolean(get(errors, props.name))}

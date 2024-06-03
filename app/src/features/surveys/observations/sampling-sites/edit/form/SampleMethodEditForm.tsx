@@ -21,6 +21,7 @@ import { CodesContext } from 'contexts/codesContext';
 import CreateSamplingMethod from 'features/surveys/observations/sampling-sites/create/form/CreateSamplingMethod';
 import EditSamplingMethod from 'features/surveys/observations/sampling-sites/edit/form/EditSamplingMethod';
 import { useFormikContext } from 'formik';
+import { useSurveyContext } from 'hooks/useContext';
 import { IGetSampleLocationDetailsForUpdate } from 'interfaces/useSamplingSiteApi.interface';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
@@ -48,6 +49,8 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
   const [editData, setEditData] = useState<{ data: ISurveySampleMethodData; index: number } | undefined>(undefined);
 
   const codesContext = useContext(CodesContext);
+  const surveyContext = useSurveyContext();
+
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
@@ -170,11 +173,11 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                     <CardHeader
                       title={
                         <>
-                          {getCodesName(
-                            codesContext.codesDataLoader.data,
-                            'sample_methods',
-                            item.method_lookup_id || 0
-                          )}
+                          {
+                            surveyContext.techniqueDataLoader.data?.techniques.find(
+                              (technique) => technique.method_technique_id === item.method_technique_id
+                            )?.name
+                          }
                           <Typography component="span" variant="body2" color="textSecondary" ml={1}>
                             {getCodesName(
                               codesContext.codesDataLoader.data,

@@ -94,7 +94,7 @@ GET.apiDoc = {
                     survey_sample_site_id: {
                       type: 'integer'
                     },
-                    method_lookup_id: {
+                    method_technique_id: {
                       type: 'integer'
                     },
                     description: {

@@ -18,6 +18,8 @@ interface IEditSamplingMethodProps {
 const EditSamplingMethod = (props: IEditSamplingMethodProps) => {
   const { open, initialData, onSubmit, onClose } = props;
 
+  console.log(initialData)
+
   return (
     <EditDialog
       dialogTitle={'Edit Sampling Method'}
