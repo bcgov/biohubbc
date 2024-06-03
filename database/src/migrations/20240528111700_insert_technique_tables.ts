@@ -19,6 +19,12 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TYPE environment_unit ADD VALUE 'seconds';
     ALTER TYPE environment_unit ADD VALUE 'meters squared';
     ALTER TYPE environment_unit ADD VALUE 'count';
+    ALTER TYPE environment_unit ADD VALUE 'MHz';
+    ALTER TYPE environment_unit ADD VALUE 'Hz';
+    ALTER TYPE environment_unit ADD VALUE 'amps';
+    ALTER TYPE environment_unit ADD VALUE 'volts';
+
+
     COMMIT;
 
 
@@ -154,11 +160,72 @@ export async function up(knex: Knex): Promise<void> {
     0,
     100,
     'meter'
+    ),
+    (
+      'Hook size',
+      'Numerical scale where smaller numbers indicate larger hooks based on the gap and shank length.',
+      1,
+      32,
+      'count'
+    ),
+    (
+      'Radio Frequency',
+      'Frequency refers to the specific radio wave band at which the transmitter on the animal and the receiver on the tower communicate to ensure accurate tracking and data transmission.',
+      100,
+      450,
+      'MHz'
+    ),
+    (
+      'Pulse repetition frequency',
+      'The number of radar pulses transmitted per second, measured in hertz (Hz), and is a key parameter that affects the radar''s range resolution and target detection capabilities.',
+      0,
+      100000,
+      'Hz'
+    ),
+    (
+      'Range Resolution',
+      'Measured in meters and indicates the minimum distance between two distinct targets that the radar can differentiate. It is determined by the radar''s pulse width, with shorter pulses providing better (smaller) range resolution.',
+      0,
+      1000,
+      'meter'
+    ),
+    (
+      'Current',
+      'Current is the flow of electric charge through a conductor, typically measured in amperes.',
+      0,
+      10,
+      'amps'
+    ),
+    (
+      'Voltage',
+      'Voltage is the electric potential difference between two points in a circuit which drives the flow of electric current.',
+      0,
+      1000,
+      'volts'
+    ),
+    (
+      'Electrical frequency', 
+      'The frequency of the electrical pulses, measured in Hz.',
+      0,
+      1000,
+      'Hz'
+    ),
+    (
+      'Duty cycle',
+      'The duty cycle is measured as a percentage (%), representing the proportion of time the electrical current is active (on) versus the total time of the cycle.',
+      0,
+      100,
+      'percent'
+    ),
+    (
+      'Number of hooks',
+      'The number of hooks included in the device',
+      0,
+      10000,
+      'count'
     );
-  
-  ----------------------------------------------------------------------------------------
-  
-  INSERT INTO technique_attribute_qualitative
+
+INSERT INTO technique_attribute_qualitative
     (
       name,
       description
@@ -205,10 +272,37 @@ export async function up(knex: Knex): Promise<void> {
       'The direction in which a mist net is positioned relative to cardinal points (e.g., north-south, east-west), influencing capture success based on factors like prevailing winds and animal movement patterns.'
     ),
     (
-      'Type of cover',
+      'Type of trap cover',
       'The design and material of any cover used to protect the trap (e.g., to prevent rainwater entry or minimize disturbance), impacting the trap functionality and animal welfare.'
+    ),
+    (
+      'Angling tool',
+      'Device or implement used in the sport of fishing, such as a rod, pole, or lure, designed to assist in the capture of fish.'
+    ),
+    (
+      'Bait',
+      'Substance used to attract and catch fish, typically consisting of natural or artificial materials such as worms, insects, small fish, or specially designed synthetic lures.'
+    ),
+    (
+      'Transmitter make and model',
+      'The specific manufacturer and the particular design or version of the device, which determine its features, capabilities, and compatibility with other equipment in wildlife tracking systems.'
+    ),
+    (
+      'Radar make and model',
+      'The specific brand and version of the radar equipment used, which determine its technical specifications, capabilities, and suitability for tracking and monitoring wildlife.'
+    ),
+    (
+      'Fishing technique',
+      'The specific method or approach used in fishing, such as float fishing, lure fishing, or bottom fishing, each involving distinct equipment and strategies to catch fish.'
+    ),
+    (
+      'Anchored or floating',
+      'Whether or not the device is anchored or floating.'
+    ),
+    (
+      'Substrate type',
+      'Substrate type refers to the material on which the egg mats are placed, affecting the adherence and development of fish or amphibian eggs.'
     );
-  
 
     ----------------------------------------------------------------------------------------
 
@@ -234,7 +328,20 @@ export async function up(knex: Knex): Promise<void> {
       (
         (SELECT technique_attribute_qualitative_id FROM technique_attribute_qualitative WHERE name = 'Model'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap')
+      ),
+      (
+          (SELECT technique_attribute_qualitative_id FROM technique_attribute_qualitative WHERE name = 'Image Resolution'),
+          (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera Trap')
+      ),
+      (
+          (SELECT technique_attribute_qualitative_id FROM technique_attribute_qualitative WHERE name = 'Video Resolution'),
+          (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera Trap')
+      ),
+      (
+          (SELECT technique_attribute_qualitative_id FROM technique_attribute_qualitative WHERE name = 'Infrared type'),
+          (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera Trap')
       );
+      
 
     ----------------------------------------------------------------------------------------
 
