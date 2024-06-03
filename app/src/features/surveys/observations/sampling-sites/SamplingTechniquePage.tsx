@@ -38,7 +38,7 @@ const TechniqueTechniquePage = () => {
     name: yup.string().required('Name is required.'),
     description: yup.string().nullable(),
     distance_threshold: yup.number().nullable(),
-    method_lookup_id: yup.number().required('A method type is required.'),
+    method_technique_id: yup.number().required('A method type is required.'),
     quantitative_attributes: yup.array(yup.object({ method_technique_attribute_quantitative_id: yup.string().uuid() })),
     qualitative_attributes: yup.array(yup.object({ method_technique_attribute_qualitative_id: yup.string().uuid() }))
   });
@@ -123,7 +123,7 @@ const TechniqueTechniquePage = () => {
           name: '',
           description: '',
           distance_threshold: null,
-          method_lookup_id: null,
+          method_technique_id: null,
           attractants: [],
           qualitative_attributes: [],
           quantitative_attributes: []

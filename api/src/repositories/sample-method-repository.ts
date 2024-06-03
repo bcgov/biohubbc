@@ -9,7 +9,7 @@ import { InsertSamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-per
  */
 export type InsertSampleMethodRecord = Pick<
   SampleMethodRecord,
-  'survey_sample_site_id' | 'method_lookup_id' | 'description' | 'method_response_metric_id'
+  'survey_sample_site_id' | 'method_technique_id' | 'description' | 'method_response_metric_id'
 > & { sample_periods: InsertSamplePeriodRecord[] };
 
 /**
@@ -17,7 +17,7 @@ export type InsertSampleMethodRecord = Pick<
  */
 export type UpdateSampleMethodRecord = Pick<
   SampleMethodRecord,
-  'survey_sample_method_id' | 'survey_sample_site_id' | 'method_lookup_id' | 'description' | 'method_response_metric_id'
+  'survey_sample_method_id' | 'survey_sample_site_id' | 'method_technique_id' | 'description' | 'method_response_metric_id'
 > & { sample_periods: UpdateSamplePeriodRecord[] };
 
 /**
@@ -26,7 +26,7 @@ export type UpdateSampleMethodRecord = Pick<
 export const SampleMethodRecord = z.object({
   survey_sample_method_id: z.number(),
   survey_sample_site_id: z.number(),
-  method_lookup_id: z.number(),
+  method_technique_id: z.number(),
   method_response_metric_id: z.number(),
   description: z.string(),
   create_date: z.string(),
@@ -93,7 +93,7 @@ export class SampleMethodRepository extends BaseRepository {
       UPDATE survey_sample_method ssm
       SET
           survey_sample_site_id = ${sampleMethod.survey_sample_site_id},
-          method_lookup_id = ${sampleMethod.method_lookup_id},
+          method_technique_id = ${sampleMethod.method_technique_id},
           description = ${sampleMethod.description},
           method_response_metric_id = ${sampleMethod.method_response_metric_id}
       FROM 
@@ -128,12 +128,12 @@ export class SampleMethodRepository extends BaseRepository {
     const sqlStatement = SQL`
       INSERT INTO survey_sample_method (
         survey_sample_site_id,
-        method_lookup_id,
+        method_technique_id,
         description,
         method_response_metric_id
       ) VALUES (
         ${sampleMethod.survey_sample_site_id},
-        ${sampleMethod.method_lookup_id},
+        ${sampleMethod.method_technique_id},
         ${sampleMethod.description},
         ${sampleMethod.method_response_metric_id}
         )

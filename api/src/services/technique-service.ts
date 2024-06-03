@@ -57,7 +57,7 @@ export class TechniqueService extends DBService {
       const rowForInsert: ITechniqueRowData = {
         name: technique.name,
         description: technique.description,
-        method_lookup_id: technique.method_lookup_id,
+        method_lookup_id: technique.method_technique_id,
         distance_threshold: technique.distance_threshold,
         survey_id: technique.survey_id
       };

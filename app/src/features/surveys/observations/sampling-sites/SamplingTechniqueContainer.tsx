@@ -2,11 +2,8 @@ import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -296,38 +293,6 @@ const SamplingSiteTechniqueContainer = () => {
           <SkeletonList />
         ) : (
           <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
-            <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
-              <FormGroup>
-                <FormControlLabel
-                  label={
-                    <Typography
-                      variant="body2"
-                      component="span"
-                      color="textSecondary"
-                      fontWeight={700}
-                      sx={{ textTransform: 'uppercase' }}>
-                      Select All
-                    </Typography>
-                  }
-                  control={
-                    <Checkbox
-                      sx={{
-                        mr: 0.75
-                      }}
-                      checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === techniqueCount}
-                      indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < techniqueCount}
-                      onClick={() => {
-                        if (checkboxSelectedIds.length === techniqueCount) {
-                          setCheckboxSelectedIds([]);
-                          return;
-                        }
-                      }}
-                      inputProps={{ 'aria-label': 'controlled' }}
-                    />
-                  }
-                />
-              </FormGroup>
-            </Box>
             <Divider flexItem></Divider>
             <Box
               flex="1 1 auto"

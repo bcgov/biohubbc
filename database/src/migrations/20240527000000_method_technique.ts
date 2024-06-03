@@ -499,8 +499,44 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE INDEX survey_sample_method_idx2 ON survey_sample_method(method_technique_id);
 
-    -- add missing index
-    CREATE INDEX survey_sample_method_idx3 ON survey_sample_method(method_lookup_id);
+    ----------------------------------------------------------------------------------------
+    -- Alter method table to drop method lookup ID
+    ----------------------------------------------------------------------------------------
+
+    -- Insert method techniques based on survey_sample_method
+    INSERT INTO method_technique (survey_id, name, description, method_lookup_id)
+    SELECT 
+        sss.survey_id,
+        ml.name,
+        NULL,
+        ssm.method_lookup_id
+    FROM 
+        survey_sample_method ssm
+    JOIN 
+        method_lookup ml ON ssm.method_lookup_id = ml.method_lookup_id
+    JOIN 
+        survey_sample_site sss ON ssm.survey_sample_site_id = sss.survey_sample_site_id;
+
+    -- Update survey_sample_method with the generated method_technique_ids
+    UPDATE survey_sample_method
+    SET 
+        method_technique_id = mt.method_technique_id
+    FROM 
+        survey_sample_method ssm
+      JOIN 
+        method_technique mt ON ssm.method_lookup_id = mt.method_lookup_id
+      JOIN 
+        survey_sample_site sss ON sss.survey_sample_site_id = ssm.survey_sample_site_id
+    WHERE 
+        sss.survey_id = mt.survey_id
+      AND
+        mt.method_lookup_id = ssm.method_lookup_id;
+
+    -- Drop method_lookup_id from survey_sample_method
+    -- ALTER TABLE survey_sample_method DROP COLUMN method_lookup_id;
+
+    -- Add NOT NULL constraint to method_technique_id column
+    ALTER TABLE survey_sample_method ALTER COLUMN method_technique_id SET NOT NULL;
 
     ----------------------------------------------------------------------------------------
     -- Create audit/journal triggers
