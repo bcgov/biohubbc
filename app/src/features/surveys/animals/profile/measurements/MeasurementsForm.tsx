@@ -13,19 +13,12 @@ import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
-interface IAnimalMeasurementsFormProps {
-  formikName: string;
-}
-
 /**
  * Returns the control for applying measurements to an animal on the animal capture form
  *
- * @param {IAnimalMeasurementsFormProps} props
  * @return {*}
  */
-export const MeasurementsForm = (props: IAnimalMeasurementsFormProps) => {
-  const { formikName } = props;
-
+export const MeasurementsForm = () => {
   const { values } = useFormikContext<ICreateEditCaptureRequest>();
 
   const critterbaseApi = useCritterbaseApi();
@@ -59,7 +52,7 @@ export const MeasurementsForm = (props: IAnimalMeasurementsFormProps) => {
   return (
     <>
       <FieldArray
-        name={formikName}
+        name="measurements"
         render={(arrayHelpers: FieldArrayRenderProps) => (
           <>
             <TransitionGroup>
@@ -73,7 +66,6 @@ export const MeasurementsForm = (props: IAnimalMeasurementsFormProps) => {
                   }>
                   <Box mb={2}>
                     <MeasurementSelect
-                      formikName={formikName}
                       measurements={[
                         ...(measurementsDataLoader.data?.quantitative ?? []),
                         ...(measurementsDataLoader.data?.qualitative ?? [])

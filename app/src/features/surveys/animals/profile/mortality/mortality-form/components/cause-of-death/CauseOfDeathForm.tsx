@@ -23,13 +23,13 @@ export const CauseOfDeathForm = () => {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <AutocompleteField
-            id={`mortality.proximate_cause_of_death_id`}
-            name={`mortality.proximate_cause_of_death_id`}
+            id="mortality.proximate_cause_of_death_id"
+            name="mortality.proximate_cause_of_death_id"
             label="Cause of death"
             options={causeOfDeathDataLoader.data?.map((cause) => ({ value: cause.id, label: cause.value })) ?? []}
             onChange={(_, option) => {
               if (option?.value) {
-                setFieldValue(`mortality.proximate_cause_of_death_id`, option.value);
+                setFieldValue('mortality.proximate_cause_of_death_id', option.value);
               }
             }}
             required

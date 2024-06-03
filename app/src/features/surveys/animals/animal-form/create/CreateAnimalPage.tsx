@@ -12,11 +12,11 @@ import { CreateAnimalI18N } from 'constants/i18n';
 import { AnimalFormContainer } from 'features/surveys/animals/animal-form/components/AnimalFormContainer';
 import { AnimalSex } from 'features/surveys/view/survey-animals/animal';
 import { FormikProps } from 'formik';
-import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -46,7 +46,8 @@ export const CreateAnimalPage = () => {
   const dialogContext = useDialogContext();
   const animalPageContext = useAnimalPageContext();
 
-  const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+
   const [isSaving, setIsSaving] = useState(false);
 
   const formikRef = useRef<FormikProps<ICreateEditAnimalRequest>>(null);
@@ -54,24 +55,7 @@ export const CreateAnimalPage = () => {
   const { projectId, surveyId } = surveyContext;
 
   const handleCancel = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
     history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
-  };
-
-  const defaultCancelDialogProps = {
-    dialogTitle: CreateAnimalI18N.cancelTitle,
-    dialogText: CreateAnimalI18N.cancelText,
-    open: false,
-    onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onYes: () => {
-      dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectId}`);
-    }
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -90,39 +74,12 @@ export const CreateAnimalPage = () => {
   };
 
   /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location) => {
-    if (!dialogContext.yesNoDialogProps.open) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        ...defaultCancelDialogProps,
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        },
-        open: true
-      });
-      return false;
-    }
-
-    // If the cancel dialog is already open and another location change action is triggered: allow it
-    return true;
-  };
-
-  /**
    * Creates an animal
    *
    * @return {*}
    */
   const handleSubmit = async (values: ICreateEditAnimalRequest) => {
     setIsSaving(true);
-    setEnableCancelCheck(false);
 
     try {
       if (!values.species) {
@@ -166,7 +123,7 @@ export const CreateAnimalPage = () => {
       // Refresh the context, so the next page loads with the latest data
       surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
+      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`, SKIP_CONFIRMATION_DIALOG);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
@@ -181,7 +138,7 @@ export const CreateAnimalPage = () => {
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={true} message={locationChangeInterceptor} />
       <PageHeader
         title="Create New Animal"
         breadCrumbJSX={

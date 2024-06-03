@@ -13,13 +13,8 @@ import { DialogContext } from 'contexts/dialogContext';
 import { FormikProps } from 'formik';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import {
-  ICreateProjectRequest,
-  IGetProjectParticipant,
-  IUpdateProjectRequest
-} from 'interfaces/useProjectApi.interface';
+import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { ProjectDetailsFormInitialValues } from '../components/ProjectDetailsForm';

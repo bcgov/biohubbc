@@ -48,7 +48,6 @@ yup.addMethod(
   'isValidDateString',
   function (dateFormat: DATE_FORMAT = DATE_FORMAT.ShortDateFormat, message = 'Invalid date') {
     return this.test('is-valid-date', message, (value) => {
-      console.log(message, value);
       if (!value) {
         // don't validate date string if it is null
         return true;

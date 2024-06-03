@@ -7,18 +7,17 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { EditMortalityI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
 import { AnimalMortalityForm } from 'features/surveys/animals/profile/mortality/mortality-form/AnimalMortalityForm';
 import { FormikProps } from 'formik';
-import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -45,7 +44,8 @@ export const EditMortalityPage = () => {
   const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
   const mortalityId: string | undefined = String(urlParams['mortality_id']);
 
-  const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+
   const [isSaving, setIsSaving] = useState(false);
 
   const formikRef = useRef<FormikProps<ICreateEditMortalityRequest>>(null);
@@ -56,15 +56,11 @@ export const EditMortalityPage = () => {
 
   const mortalityDataLoader = useDataLoader(() => critterbaseApi.mortality.getMortality(mortalityId));
 
-  console.log('mortality critter', critter);
-
   useEffect(() => {
     mortalityDataLoader.load();
   }, [mortalityDataLoader]);
 
   const mortality = mortalityDataLoader.data;
-
-  console.log('mortality', mortality);
 
   // If the user has refreshed the page and cleared the context, or come to this page externally from a link, use the
   // url params to set the selected animal in the context. The context then requests critter data from Critterbase.
@@ -81,70 +77,7 @@ export const EditMortalityPage = () => {
   }
 
   const handleCancel = () => {
-    dialogContext.setYesNoDialog({
-      dialogTitle: EditMortalityI18N.cancelTitle,
-      dialogText: EditMortalityI18N.cancelText,
-      open: false,
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onYes: () => {
-        dialogContext.setYesNoDialog({ open: false });
-        history.push(`/admin/projects/${projectId}`);
-      }
-    });
     history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
-  };
-
-  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
-      dialogTitle: EditMortalityI18N.createErrorTitle,
-      dialogText: EditMortalityI18N.createErrorText,
-      open: true,
-      onClose: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      onOk: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      ...textDialogProps
-    });
-  };
-
-  /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location) => {
-    if (!dialogContext.yesNoDialogProps.open) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        dialogTitle: EditMortalityI18N.cancelTitle,
-        dialogText: EditMortalityI18N.cancelText,
-        open: true,
-        onClose: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onNo: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        }
-      });
-      return false;
-    }
-
-    // If the cancel dialog is already open and another location change action is triggered: allow it
-    return true;
   };
 
   /**
@@ -154,7 +87,6 @@ export const EditMortalityPage = () => {
    */
   const handleSubmit = async (values: ICreateEditMortalityRequest) => {
     setIsSaving(true);
-    setEnableCancelCheck(false);
 
     try {
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
@@ -223,24 +155,38 @@ export const EditMortalityPage = () => {
       });
 
       if (!response) {
-        showCreateErrorDialog({
-          dialogError: 'The response from the server was null, or did not contain a survey ID.'
+        dialogContext.setErrorDialog({
+          dialogTitle: EditMortalityI18N.editErrorTitle,
+          dialogText: EditMortalityI18N.editErrorText,
+          open: true,
+          onClose: () => {
+            dialogContext.setErrorDialog({ open: false });
+          },
+          onOk: () => {
+            dialogContext.setErrorDialog({ open: false });
+          }
         });
         return;
       }
 
-      setEnableCancelCheck(false);
-
       // Refresh page
       animalPageContext.critterDataLoader.refresh(critterbaseCritterId);
 
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
+      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`, SKIP_CONFIRMATION_DIALOG);
     } catch (error) {
       const apiError = error as APIError;
-      showCreateErrorDialog({
-        dialogTitle: 'Error Creating Survey',
-        dialogError: apiError?.message,
-        dialogErrorDetails: apiError?.errors
+
+      dialogContext.setErrorDialog({
+        dialogTitle: EditMortalityI18N.editErrorTitle,
+        dialogText: EditMortalityI18N.editErrorText,
+        dialogErrorDetails: apiError?.errors,
+        open: true,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        }
       });
     } finally {
       setIsSaving(false);
@@ -312,11 +258,9 @@ export const EditMortalityPage = () => {
     ]
   };
 
-  console.log('initialFormikValues', initialFormikValues);
-
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={true} message={locationChangeInterceptor} />
       <PageHeader
         title="Edit Mortality"
         breadCrumbJSX={
@@ -368,7 +312,7 @@ export const EditMortalityPage = () => {
         <Paper sx={{ p: 5 }}>
           <AnimalMortalityForm
             initialMortalityData={initialFormikValues}
-            handleSubmit={(formikData) => handleSubmit(formikData)}
+            handleSubmit={(values) => handleSubmit(values)}
             formikRef={formikRef}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>

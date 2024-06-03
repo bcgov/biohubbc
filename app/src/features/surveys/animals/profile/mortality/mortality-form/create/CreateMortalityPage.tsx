@@ -13,10 +13,10 @@ import { CreateMortalityI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
 import { AnimalMortalityForm } from 'features/surveys/animals/profile/mortality/mortality-form/AnimalMortalityForm';
 import { FormikProps } from 'formik';
-import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -54,7 +54,8 @@ const CreateMortalityPage = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
   const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
 
-  const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+
   const [isSaving, setIsSaving] = useState(false);
 
   const formikRef = useRef<FormikProps<ICreateEditMortalityRequest>>(null);
@@ -72,24 +73,7 @@ const CreateMortalityPage = () => {
   }, [animalPageContext, surveyCritterId]);
 
   const handleCancel = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
     history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
-  };
-
-  const defaultCancelDialogProps = {
-    dialogTitle: CreateMortalityI18N.cancelTitle,
-    dialogText: CreateMortalityI18N.cancelText,
-    open: false,
-    onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onYes: () => {
-      dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectId}`);
-    }
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -108,39 +92,12 @@ const CreateMortalityPage = () => {
   };
 
   /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location) => {
-    if (!dialogContext.yesNoDialogProps.open) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        ...defaultCancelDialogProps,
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        },
-        open: true
-      });
-      return false;
-    }
-
-    // If the cancel dialog is already open and another location change action is triggered: allow it
-    return true;
-  };
-
-  /**
    * Creates an Mortality
    *
    * @return {*}
    */
   const handleSubmit = async (values: ICreateEditMortalityRequest) => {
     setIsSaving(true);
-    setEnableCancelCheck(false);
 
     try {
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
@@ -225,7 +182,7 @@ const CreateMortalityPage = () => {
       // Refresh page
       animalPageContext.critterDataLoader.refresh(critterbaseCritterId);
 
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
+      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`, SKIP_CONFIRMATION_DIALOG);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
@@ -242,7 +199,7 @@ const CreateMortalityPage = () => {
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={true} message={locationChangeInterceptor} />
       <PageHeader
         title="Report Mortality"
         breadCrumbJSX={
@@ -294,7 +251,7 @@ const CreateMortalityPage = () => {
         <Paper sx={{ p: 5 }}>
           <AnimalMortalityForm
             initialMortalityData={initialAnimalMortalityFormValues}
-            handleSubmit={(formikData) => handleSubmit(formikData as ICreateEditMortalityRequest)}
+            handleSubmit={(values) => handleSubmit(values)}
             formikRef={formikRef}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>

@@ -219,8 +219,8 @@ export const CreateMortalityI18N = {
 export const EditMortalityI18N = {
   cancelTitle: 'Discard changes and exit?',
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
-  createErrorTitle: 'Error Editing Mortality',
-  createErrorText:
+  editErrorTitle: 'Error Editing Mortality',
+  editErrorText:
     'An error has occurred while attempting to edit your mortality, please try again. If the error persists, please contact your system administrator.'
 };
 

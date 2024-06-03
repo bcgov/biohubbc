@@ -59,9 +59,6 @@ const SamplingMethodForm = () => {
     setAnchorEl(null);
   };
 
-  console.log(values);
-  console.log(errors);
-
   return (
     <>
       {/* CREATE SAMPLE METHOD DIALOG */}

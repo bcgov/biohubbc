@@ -55,11 +55,6 @@ export const DateTimeFields = <FormikPropsType,>(props: IDateTimeFieldsProps<For
       dayjs(rawTimeValue, TIME_FORMAT.LongTimeFormat24Hour)) ||
     null;
 
-  console.log('11---------------------');
-  console.log('error', get(touched, dateName) && Boolean(get(errors, dateName)));
-  console.log('text', get(touched, dateName) && get(errors, dateName));
-  console.log('33---------------------');
-
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <Grid container>

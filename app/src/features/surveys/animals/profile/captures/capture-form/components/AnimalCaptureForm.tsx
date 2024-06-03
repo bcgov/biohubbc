@@ -104,7 +104,7 @@ export const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
         <HorizontalSplitFormComponent
           title="Measurements"
           summary="Enter measurements recorded during the capture"
-          component={<MeasurementsForm formikName="measurements" />}
+          component={<MeasurementsForm />}
         />
         <Divider />
         <HorizontalSplitFormComponent

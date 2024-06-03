@@ -13,10 +13,10 @@ import { EditAnimalI18N } from 'constants/i18n';
 import { AnimalFormContainer } from 'features/surveys/animals/animal-form/components/AnimalFormContainer';
 import { AnimalSex } from 'features/surveys/view/survey-animals/animal';
 import { FormikProps } from 'formik';
-import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -40,7 +40,8 @@ export const EditAnimalPage = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
   const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
 
-  const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+
   const [isSaving, setIsSaving] = useState(false);
 
   const formikRef = useRef<FormikProps<ICreateEditAnimalRequest>>(null);
@@ -60,21 +61,6 @@ export const EditAnimalPage = () => {
   }
 
   const handleCancel = () => {
-    dialogContext.setYesNoDialog({
-      dialogTitle: EditAnimalI18N.cancelTitle,
-      dialogText: EditAnimalI18N.cancelText,
-      open: false,
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onYes: () => {
-        dialogContext.setYesNoDialog({ open: false });
-        history.push(`/admin/projects/${projectId}`);
-      }
-    });
     history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
   };
 
@@ -94,46 +80,12 @@ export const EditAnimalPage = () => {
   };
 
   /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location) => {
-    if (!dialogContext.yesNoDialogProps.open) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        dialogTitle: EditAnimalI18N.cancelTitle,
-        dialogText: EditAnimalI18N.cancelText,
-        onClose: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onNo: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        },
-        open: true
-      });
-      return false;
-    }
-
-    // If the cancel dialog is already open and another location change action is triggered: allow it
-    return true;
-  };
-
-  /**
    * Creates an animal
    *
    * @return {*}
    */
   const handleSubmit = async (values: ICreateEditAnimalRequest) => {
     setIsSaving(true);
-    setEnableCancelCheck(false);
 
     try {
       if (!values.species) {
@@ -186,7 +138,7 @@ export const EditAnimalPage = () => {
       surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       animalPageContext.critterDataLoader.refresh(critter.critter_id);
 
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
+      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`, SKIP_CONFIRMATION_DIALOG);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
@@ -201,7 +153,7 @@ export const EditAnimalPage = () => {
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={true} message={locationChangeInterceptor} />
       <PageHeader
         title="Edit Animal"
         breadCrumbJSX={

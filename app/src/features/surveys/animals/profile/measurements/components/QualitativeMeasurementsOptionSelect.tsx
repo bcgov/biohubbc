@@ -24,10 +24,6 @@ interface ICaptureQualitativeMeasurementOptionSelectProps {
    * @memberof ICaptureQualitativeMeasurementOptionSelectProps
    */
   index: number;
-  /**
-   * TODO
-   */
-  formikName: string;
 }
 
 /**
@@ -37,19 +33,19 @@ interface ICaptureQualitativeMeasurementOptionSelectProps {
  * @return {*}
  */
 export const CaptureQualitativeMeasurementOptionSelect = (props: ICaptureQualitativeMeasurementOptionSelectProps) => {
-  const { label, options, index, formikName } = props;
+  const { label, options, index } = props;
 
   const { values, setFieldValue } = useFormikContext<ICreateEditCaptureRequest>();
 
   return (
     <AutocompleteField
-      id={`${formikName}.[${index}].qualitative_option_id`}
-      name={`${formikName}.${index}].qualitative_option_id`}
+      id={`measurements.[${index}].qualitative_option_id`}
+      name={`measurements.${index}].qualitative_option_id`}
       label={label}
       options={options}
       onChange={(_, option) => {
         if (option?.value) {
-          setFieldValue(`${formikName}.[${index}].qualitative_option_id`, option.value);
+          setFieldValue(`measurements.[${index}].qualitative_option_id`, option.value);
         }
       }}
       disabled={Boolean(!values.measurements[index].taxon_measurement_id)}

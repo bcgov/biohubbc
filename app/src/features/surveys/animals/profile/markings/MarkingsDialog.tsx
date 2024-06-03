@@ -65,7 +65,7 @@ export const MarkingsDialog = (props: IMarkingsDialogProps) => {
                 sx={{ flex: '0.5' }}
                 id="marking-type-autocomplete-field"
                 label="Marking type"
-                name={`marking_type_id`}
+                name="marking_type_id"
                 required
                 options={
                   markingTypes.map((item) => ({
@@ -79,7 +79,7 @@ export const MarkingsDialog = (props: IMarkingsDialogProps) => {
                 sx={{ flex: '0.5' }}
                 id="marking-location-autocomplete-field"
                 label="Marking placement"
-                name={`taxon_marking_body_location_id`}
+                name="taxon_marking_body_location_id"
                 required
                 options={
                   markingBodyLocations?.map((item) => ({
@@ -90,7 +90,7 @@ export const MarkingsDialog = (props: IMarkingsDialogProps) => {
               />
             </Stack>
             <CustomTextField
-              name={`identifier`}
+              name="identifier"
               aria-label="Unique marking ID"
               label="Identifier"
               other={{ rows: 1, autoComplete: 'off' }}
@@ -100,14 +100,14 @@ export const MarkingsDialog = (props: IMarkingsDialogProps) => {
                 sx={{ flex: '0.5' }}
                 id="marking-primary-colour-autocomplete-field"
                 label="Primary colour"
-                name={`primary_colour_id`}
+                name="primary_colour_id"
                 options={markingColours?.map((item) => ({ value: item.colour_id, label: item.colour })) ?? []}
               />
               <AutocompleteField
                 sx={{ flex: '0.5' }}
                 id="marking-secondary-colour-autocomplete-field"
                 label="Secondary colour"
-                name={`secondary_colour_id`}
+                name="secondary_colour_id"
                 options={markingColours.map((item) => ({ value: item.colour_id, label: item.colour })) ?? []}
               />
             </Stack>

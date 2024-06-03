@@ -7,18 +7,17 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { EditCaptureI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
 import { AnimalCaptureForm } from 'features/surveys/animals/profile/captures/capture-form/components/AnimalCaptureForm';
 import { FormikProps } from 'formik';
-import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -45,7 +44,8 @@ export const EditCapturePage = () => {
   const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
   const captureId: string | undefined = String(urlParams['capture_id']);
 
-  const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+
   const [isSaving, setIsSaving] = useState(false);
 
   const formikRef = useRef<FormikProps<ICreateEditCaptureRequest>>(null);
@@ -77,70 +77,7 @@ export const EditCapturePage = () => {
   }
 
   const handleCancel = () => {
-    dialogContext.setYesNoDialog({
-      dialogTitle: EditCaptureI18N.cancelTitle,
-      dialogText: EditCaptureI18N.cancelText,
-      open: false,
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onYes: () => {
-        dialogContext.setYesNoDialog({ open: false });
-        history.push(`/admin/projects/${projectId}`);
-      }
-    });
     history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
-  };
-
-  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
-      dialogTitle: EditCaptureI18N.createErrorTitle,
-      dialogText: EditCaptureI18N.createErrorText,
-      open: true,
-      onClose: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      onOk: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      ...textDialogProps
-    });
-  };
-
-  /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location) => {
-    if (!dialogContext.yesNoDialogProps.open) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        dialogTitle: EditCaptureI18N.cancelTitle,
-        dialogText: EditCaptureI18N.cancelText,
-        open: true,
-        onClose: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onNo: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        }
-      });
-      return false;
-    }
-
-    // If the cancel dialog is already open and another location change action is triggered: allow it
-    return true;
   };
 
   /**
@@ -150,7 +87,6 @@ export const EditCapturePage = () => {
    */
   const handleSubmit = async (values: ICreateEditCaptureRequest) => {
     setIsSaving(true);
-    setEnableCancelCheck(false);
 
     try {
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
@@ -227,24 +163,38 @@ export const EditCapturePage = () => {
       });
 
       if (!response) {
-        showCreateErrorDialog({
-          dialogError: 'The response from the server was null, or did not contain a survey ID.'
+        dialogContext.setErrorDialog({
+          dialogTitle: EditCaptureI18N.createErrorTitle,
+          dialogText: EditCaptureI18N.createErrorText,
+          open: true,
+          onClose: () => {
+            dialogContext.setErrorDialog({ open: false });
+          },
+          onOk: () => {
+            dialogContext.setErrorDialog({ open: false });
+          }
         });
         return;
       }
 
-      setEnableCancelCheck(false);
-
       // Refresh page
       animalPageContext.critterDataLoader.refresh(critterbaseCritterId);
 
-      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
+      history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`, SKIP_CONFIRMATION_DIALOG);
     } catch (error) {
       const apiError = error as APIError;
-      showCreateErrorDialog({
-        dialogTitle: 'Error Creating Survey',
-        dialogError: apiError?.message,
-        dialogErrorDetails: apiError?.errors
+
+      dialogContext.setErrorDialog({
+        dialogTitle: EditCaptureI18N.createErrorTitle,
+        dialogText: EditCaptureI18N.createErrorText,
+        dialogErrorDetails: apiError?.errors,
+        open: true,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        }
       });
     } finally {
       setIsSaving(false);
@@ -325,7 +275,7 @@ export const EditCapturePage = () => {
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={true} message={locationChangeInterceptor} />
       <PageHeader
         title="Edit Capture"
         breadCrumbJSX={

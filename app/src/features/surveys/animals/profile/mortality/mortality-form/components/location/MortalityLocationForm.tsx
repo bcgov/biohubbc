@@ -14,7 +14,7 @@ export const MortalityLocationForm = () => {
           <MortalityLocationMapControl
             mapId="location_map"
             title="Mortality Location"
-            name="location"
+            name="mortality.location"
             formikProps={formikProps}
           />
         </Grid>

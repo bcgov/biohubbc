@@ -6,7 +6,6 @@ import { MarkingsForm } from 'features/surveys/animals/profile/markings/Markings
 import { MeasurementsForm } from 'features/surveys/animals/profile/measurements/MeasurementsForm';
 import { Formik, FormikProps } from 'formik';
 import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
-import { logCallbackIfDevelopment } from 'utils/developer-utils';
 import yup from 'utils/YupSchema';
 import { CauseOfDeathForm } from './components/cause-of-death/CauseOfDeathForm';
 import { MortalityGeneralInformationForm } from './components/general-information/MortalityGeneralInformationForm';
@@ -70,7 +69,7 @@ export const AnimalMortalityForm = (props: IAnimalMortalityFormProps) => {
       validationSchema={animalMortalityYupSchema}
       validateOnBlur={false}
       validateOnChange={false}
-      onSubmit={logCallbackIfDevelopment(props.handleSubmit, 'AnimalMortalityForm - onSubmit')}>
+      onSubmit={props.handleSubmit}>
       <Stack gap={5}>
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
@@ -100,7 +99,7 @@ export const AnimalMortalityForm = (props: IAnimalMortalityFormProps) => {
         <HorizontalSplitFormComponent
           title="Measurements"
           summary="Enter measurements recorded during the mortality"
-          component={<MeasurementsForm formikName="measurements" />}
+          component={<MeasurementsForm />}
         />
       </Stack>
     </Formik>

@@ -197,12 +197,6 @@ export const MortalityLocationMapControl = (props: IMortalityLocationMapControlP
                       layerName: 'Sampling Sites',
                       features: get(values, name) ? [{ geoJSON: get(values, name), key: Math.random() }] : []
                     }
-
-                    //   mortalityLocationGeoJson
-                    //         .filter((item) => item?.id) // Filter for only drawn features
-                    //         .map((feature, index) => ({ geoJSON: feature, key: index }))
-                    //     }
-                    // }
                   ]}
                 />
                 <BaseLayerControls />

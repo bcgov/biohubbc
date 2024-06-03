@@ -10,9 +10,6 @@ import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface'
 export const MortalityGeneralInformationForm = () => {
   const formikProps = useFormikContext<ICreateEditMortalityRequest>();
 
-  console.log('A', formikProps.values);
-  console.log('B', formikProps.errors);
-
   return (
     <Box component="fieldset">
       <Grid container spacing={3}>

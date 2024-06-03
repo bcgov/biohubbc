@@ -26,8 +26,8 @@ export const AnimalGeneralInformationForm = (props: IAnimalGeneralInformationFor
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <SpeciesAutocompleteField
-            formikFieldName={'species'}
-            label={'Species'}
+            formikFieldName="species"
+            label="Species"
             required={false}
             disabled={isEdit}
             handleSpecies={(species) => {

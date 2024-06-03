@@ -24,8 +24,6 @@ interface ICaptureMeasurementSelectProps {
   arrayHelpers: FieldArrayRenderProps;
   // The index of the field array for these controls
   index: number;
-  // Formik property name
-  formikName: string;
 }
 
 /**
@@ -35,7 +33,7 @@ interface ICaptureMeasurementSelectProps {
  * @return {*}
  */
 export const MeasurementSelect = (props: ICaptureMeasurementSelectProps) => {
-  const { index, measurements, formikName, arrayHelpers } = props;
+  const { index, measurements, arrayHelpers } = props;
 
   const { values, setFieldValue } = useFormikContext<ICreateEditCaptureRequest>();
 
@@ -82,13 +80,13 @@ export const MeasurementSelect = (props: ICaptureMeasurementSelectProps) => {
           backgroundColor: grey[100]
         }}>
         <AutocompleteField
-          id={`${formikName}.[${index}].taxon_measurement_id`}
-          name={`${formikName}.[${index}].taxon_measurement_id`}
+          id={`measurements.[${index}].taxon_measurement_id`}
+          name={`measurements.[${index}].taxon_measurement_id`}
           label="Measurement"
           options={filteredCategories}
           onChange={(_, option) => {
             if (option?.value) {
-              setFieldValue(`${formikName}.[${index}].taxon_measurement_id`, option.value);
+              setFieldValue(`measurements.[${index}].taxon_measurement_id`, option.value);
             }
           }}
           required
@@ -101,7 +99,6 @@ export const MeasurementSelect = (props: ICaptureMeasurementSelectProps) => {
           {/* Qualitative measurement option select */}
           {selectedTaxonMeasurement && 'options' in selectedTaxonMeasurement ? (
             <CaptureQualitativeMeasurementOptionSelect
-              formikName={formikName}
               index={index}
               options={selectedTaxonMeasurement.options.map((option) => ({
                 label: option.option_label,
@@ -111,7 +108,7 @@ export const MeasurementSelect = (props: ICaptureMeasurementSelectProps) => {
             />
           ) : (
             <CustomTextField
-              name={`${formikName}.[${index}].value`}
+              name={`measurements.[${index}].value`}
               label={`Value ${selectedTaxonMeasurement?.unit ? `(${selectedTaxonMeasurement.unit})` : ''}`}
               other={{
                 required: true,

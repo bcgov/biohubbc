@@ -41,6 +41,9 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
             borderBottom: 'none'
           }
         },
+        '& .MuiDataGrid-row.Mui-hovered': {
+          backgroundColor: 'transparent'
+        },
         '& .MuiDataGrid-row:hover': {
           backgroundColor: 'transparent'
         },

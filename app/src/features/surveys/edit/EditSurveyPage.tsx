@@ -40,7 +40,7 @@ const EditSurveyPage = () => {
   const formikRef = useRef<FormikProps<IEditSurveyRequest>>(null);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
-  const enableCancelCheck = useRef(true);
+  const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
   const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
@@ -131,7 +131,7 @@ const EditSurveyPage = () => {
         return;
       }
 
-      enableCancelCheck.current = false;
+      setEnableCancelCheck(false);
 
       surveyContext.surveyDataLoader.refresh(projectContext.projectId, surveyContext.surveyId);
 

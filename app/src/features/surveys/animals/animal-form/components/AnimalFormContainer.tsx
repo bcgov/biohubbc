@@ -77,8 +77,8 @@ const AnimalFormYupSchema = yup.object({
           .nullable(),
         collection_unit_id: yup.string().when('collection_category_id', {
           is: (collection_category_id: string | null) => collection_category_id !== null,
-          then: yup.string().required('Ecological unit is required').min(1, 'Ecological unit is required'),
-          otherwise: yup.string().nullable() // Allows null when collection_category_id is null
+          then: yup.string().nullable().required('Ecological unit is required'),
+          otherwise: yup.string().nullable()
         })
       })
       .nullable()
