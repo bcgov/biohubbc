@@ -169,7 +169,7 @@ export async function up(knex: Knex): Promise<void> {
       'count'
     ),
     (
-      'Radio Frequency',
+      'Radio frequency',
       'Frequency refers to the specific radio wave band at which the transmitter on the animal and the receiver on the tower communicate to ensure accurate tracking and data transmission.',
       100,
       450,
@@ -183,7 +183,7 @@ export async function up(knex: Knex): Promise<void> {
       'Hz'
     ),
     (
-      'Range Resolution',
+      'Range resolution',
       'Measured in meters and indicates the minimum distance between two distinct targets that the radar can differentiate. It is determined by the radar''s pulse width, with shorter pulses providing better (smaller) range resolution.',
       0,
       1000,
@@ -240,7 +240,7 @@ INSERT INTO technique_attribute_qualitative
       'The level of detail captured in a photo.'
     ),
     (
-      'Video Resolution',
+      'Video resolution',
       'The clarity and detail of recorded video footage.'
     ),
     (
@@ -252,19 +252,19 @@ INSERT INTO technique_attribute_qualitative
       'The type of material (e.g., metal, plastic, wood) used to construct the item, affecting its durability and suitability for different environments.'
     ),
     (
-      'Trap Entrance Mechanism',
+      'Trap entrance mechanism',
       'The design and type of door or opening (e.g., gravity-operated, spring-loaded) that allows animals to enter the trap but prevents them from escaping.'
     ),
     (
-      'Trigger Mechanism',
+      'Trigger mechanism',
       'The mechanism (e.g., pressure plate, trip wire) that activates the closing of the entrance, ensuring the animal is securely captured once inside.'
     ),
     (
-      'Trawl Net type',
+      'Trawl net type',
       'The specific design or style of the trawl net (e.g., bottom trawl, midwater trawl) tailored to target particular species and habitats.'
     ),
     (
-      'Otter Board type',
+      'Otter board type',
       'The type of otter boards (e.g., rectangular, oval) used to keep the trawl net open horizontally while it is being towed, affecting the efficiency and spread of the net.'
     ),
     (
@@ -318,7 +318,6 @@ INSERT INTO technique_attribute_qualitative
       );
 
     ----------------------------------------------------------------------------------------
-
     INSERT INTO method_lookup_attribute_qualitative
       (
         technique_attribute_qualitative_id,
@@ -330,19 +329,18 @@ INSERT INTO technique_attribute_qualitative
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap')
       ),
       (
-          (SELECT technique_attribute_qualitative_id FROM technique_attribute_qualitative WHERE name = 'Image Resolution'),
-          (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera Trap')
+        (SELECT technique_attribute_qualitative_id FROM technique_attribute_qualitative WHERE name = 'Image resolution'),
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap')
       ),
       (
-          (SELECT technique_attribute_qualitative_id FROM technique_attribute_qualitative WHERE name = 'Video Resolution'),
-          (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera Trap')
+        (SELECT technique_attribute_qualitative_id FROM technique_attribute_qualitative WHERE name = 'Video resolution'),
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap')
       ),
       (
-          (SELECT technique_attribute_qualitative_id FROM technique_attribute_qualitative WHERE name = 'Infrared type'),
-          (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera Trap')
+        (SELECT technique_attribute_qualitative_id FROM technique_attribute_qualitative WHERE name = 'Infrared type'),
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap')
       );
       
-
     ----------------------------------------------------------------------------------------
 
     INSERT INTO method_lookup_attribute_qualitative_option
