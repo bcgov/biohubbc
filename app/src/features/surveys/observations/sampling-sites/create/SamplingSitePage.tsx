@@ -14,6 +14,7 @@ import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from '../components/SamplingSiteHeader';
+import { SamplingSiteMethodPeriodYupSchema } from '../periods/create/form/SamplingPeriodForm';
 import SampleSiteCreateForm from './form/SampleSiteCreateForm';
 
 export interface ISurveySampleSite {
@@ -32,7 +33,7 @@ const SamplingSitePage = () => {
   const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext()
+  const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
 
   const formikRef = useRef<FormikProps<ICreateSamplingSiteRequest>>(null);
@@ -55,8 +56,19 @@ const SamplingSitePage = () => {
       )
       .min(1, 'At least one sampling site location is required'),
     sample_methods: yup
-      .array(yup.object().concat(SamplingSiteMethodYupSchema))
-      .min(1, 'At least one sampling method is required')
+      .array()
+      .of(
+        SamplingSiteMethodYupSchema.shape({
+          sample_periods: yup
+            .array()
+            .of(SamplingSiteMethodPeriodYupSchema)
+            .min(
+              1,
+              'At least one sampling period is required for each method, describing when exactly you conducted this method at this site.'
+            )
+        })
+      ) // Ensure each item in the array conforms to SamplingSiteMethodYupSchema
+      .min(1, 'At least one sampling method is required') // Add check for at least one item in the array
   });
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {

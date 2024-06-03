@@ -37,6 +37,10 @@ export async function up(knex: Knex): Promise<void> {
     -- Create technique lookup tables
     ----------------------------------------------------------------------------------------
 
+    SET SEARCH_PATH=biohub_dapi_v1;
+    
+    DROP VIEW IF EXISTS survey_sample_method;
+
     SET SEARCH_PATH=biohub, public;
 
     ----------------------------------------------------------------------------------------
@@ -533,7 +537,7 @@ export async function up(knex: Knex): Promise<void> {
         mt.method_lookup_id = ssm.method_lookup_id;
 
     -- Drop method_lookup_id from survey_sample_method
-    -- ALTER TABLE survey_sample_method DROP COLUMN method_lookup_id;
+    ALTER TABLE survey_sample_method DROP COLUMN method_lookup_id;
 
     -- Add NOT NULL constraint to method_technique_id column
     ALTER TABLE survey_sample_method ALTER COLUMN method_technique_id SET NOT NULL;

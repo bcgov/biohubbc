@@ -1,5 +1,7 @@
 import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -14,7 +16,7 @@ import Stack from '@mui/material/Stack';
 import { GridMoreVertIcon } from '@mui/x-data-grid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
-import { useFormikContext } from 'formik';
+import { getIn, useFormikContext } from 'formik';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
@@ -57,49 +59,32 @@ export const SurveySampleMethodDataInitialValues = {
   method_response_metric_id: '' as unknown as null
 };
 
-export const SamplingSiteMethodPeriodYupSchema = yup.object({
-  //   method_technique_id: yup.number().typeError('Method is required').required('Method is required'),
-  //   method_response_metric_id: yup
-  //     .number()
-  //     .typeError('Response Metric is required')
-  //     .required('Response Metric is required'),
-  description: yup.string().max(250, 'Maximum 250 characters'),
-  sample_periods: yup
-    .array(
-      yup
-        .object({
-          start_date: yup
-            .string()
-            .typeError('Start Date is required')
-            .isValidDateString()
-            .required('Start Date is required'),
-          end_date: yup
-            .string()
-            .typeError('End Date is required')
-            .isValidDateString()
-            .required('End Date is required')
-            .isEndDateSameOrAfterStartDate('start_date'),
-          start_time: yup.string().when('end_time', {
-            is: (val: string | null) => val && val !== null,
-            then: yup.string().typeError('Start Time is required').required('Start Time is required'),
-            otherwise: yup.string().nullable()
-          }),
-          end_time: yup.string().nullable()
-        })
-        .test('checkDatesAreSameAndEndTimeIsAfterStart', 'End date must be after start date', function (value) {
-          const { start_date, end_date, start_time, end_time } = value;
+export const SamplingSiteMethodPeriodYupSchema = yup
+  .object({
+    start_date: yup.string().typeError('Start Date is required').isValidDateString().required('Start Date is required'),
+    end_date: yup
+      .string()
+      .typeError('End Date is required')
+      .isValidDateString()
+      .required('End Date is required')
+      .isEndDateSameOrAfterStartDate('start_date'),
+    start_time: yup.string().when('end_time', {
+      is: (val: string | null) => val && val !== null,
+      then: yup.string().typeError('Start Time is required').required('Start Time is required'),
+      otherwise: yup.string().nullable()
+    }),
+    end_time: yup.string().nullable()
+  })
+  .test('checkDatesAreSameAndEndTimeIsAfterStart', 'End date must be after start date', function (value) {
+    const { start_date, end_date, start_time, end_time } = value;
 
-          if (start_date === end_date && start_time && end_time) {
-            return dayjs(`${start_date} ${start_time}`, 'YYYY-MM-DD HH:mm:ss').isBefore(
-              dayjs(`${end_date} ${end_time}`, 'YYYY-MM-DD HH:mm:ss')
-            );
-          }
-          return true;
-        })
-    )
-    .hasUniqueDateRanges('Periods cannot overlap', 'start_date', 'end_date')
-    .min(1, 'At least one time period is required')
-});
+    if (start_date === end_date && start_time && end_time) {
+      return dayjs(`${start_date} ${start_time}`, 'YYYY-MM-DD HH:mm:ss').isBefore(
+        dayjs(`${end_date} ${end_time}`, 'YYYY-MM-DD HH:mm:ss')
+      );
+    }
+    return true;
+  });
 
 interface IMethodPeriodFormProps {
   method_technique_id: number;
@@ -113,7 +98,7 @@ interface IMethodPeriodFormProps {
  */
 const MethodPeriodForm = (props: IMethodPeriodFormProps) => {
   const formikProps = useFormikContext<ICreateSamplingSiteRequest>();
-  const { values, setFieldValue } = formikProps;
+  const { values, errors, setFieldValue, setErrors } = formikProps;
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -136,10 +121,24 @@ const MethodPeriodForm = (props: IMethodPeriodFormProps) => {
     if (editData) {
       const data = sample_periods;
       data.splice(editData.index, 1);
-      setFieldValue('sample_periods', data);
+      setFieldValue(`sample_methods[${props.index}].sample_periods`, data);
     }
     setAnchorEl(null);
   };
+
+  const clearErrors = (index: number) => {
+    const updatedErrors = { ...errors };
+
+    if (updatedErrors.sample_methods && Array.isArray(updatedErrors.sample_methods)) {
+      updatedErrors.sample_methods[index] = {};
+    }
+
+    console.log(updatedErrors);
+
+    setErrors(updatedErrors);
+  };
+
+  console.log(getIn(errors, `sample_methods[${props.index}].sample_periods`));
 
   return (
     <>
@@ -147,10 +146,10 @@ const MethodPeriodForm = (props: IMethodPeriodFormProps) => {
       <CreateSamplingPeriod
         open={isCreateModalOpen}
         onSubmit={(data) => {
-          setFieldValue(`sample_methods[${props.index}].sample_periods.[${sample_periods.length}]`, data);
-          // validateField(`sample_methods[${props.index}].sample_periods`);
+          setFieldValue(`sample_methods[${props.index}].sample_periods[${sample_periods.length}]`, data);
           setAnchorEl(null);
           setIsCreateModalOpen(false);
+          clearErrors(props.index);
         }}
         onClose={() => {
           setAnchorEl(null);
@@ -165,7 +164,6 @@ const MethodPeriodForm = (props: IMethodPeriodFormProps) => {
           open={isEditModalOpen}
           onSubmit={(data) => {
             setFieldValue(`sample_methods[${props.index}].sample_periods[${editData?.index}]`, data);
-            // validateField('sample_methods');
             setAnchorEl(null);
             setIsEditModalOpen(false);
           }}
@@ -201,6 +199,17 @@ const MethodPeriodForm = (props: IMethodPeriodFormProps) => {
           Remove
         </MenuItem>
       </Menu>
+
+      {getIn(errors, `sample_methods[${props.index}].sample_periods`) !== undefined && (
+        <Alert
+          sx={{
+            my: 1
+          }}
+          severity="error">
+          <AlertTitle>Missing sampling period</AlertTitle>
+          {getIn(errors, `sample_methods[${props.index}].sample_periods`)}
+        </Alert>
+      )}
 
       <Stack component={TransitionGroup} gap={1.5}>
         {sample_periods?.map((item, index) => (

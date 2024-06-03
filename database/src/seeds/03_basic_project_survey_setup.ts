@@ -615,7 +615,6 @@ const insertSurveySamplingMethodData = (surveyId: number) =>
  INSERT INTO survey_sample_method
  (
   survey_sample_site_id,
-  method_lookup_id,
   description,
   method_response_metric_id,
   method_technique_id
@@ -623,7 +622,6 @@ const insertSurveySamplingMethodData = (surveyId: number) =>
  VALUES
  (
     (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
-    (SELECT method_lookup_id FROM method_lookup ORDER BY random() LIMIT 1),
     $$${faker.lorem.sentences(2)}$$,
     $$${faker.number.int({ min: 1, max: 4 })}$$,
     (SELECT method_technique_id FROM method_technique WHERE survey_id = ${surveyId} LIMIT 1)

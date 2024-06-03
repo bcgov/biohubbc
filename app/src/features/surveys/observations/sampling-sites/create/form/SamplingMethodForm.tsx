@@ -51,7 +51,6 @@ const SamplingMethodForm = () => {
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
-    console.log(values.sample_methods[index]);
     setEditData({ data: values.sample_methods[index], index });
   };
 
@@ -71,7 +70,6 @@ const SamplingMethodForm = () => {
         open={isCreateModalOpen}
         onSubmit={(data) => {
           setFieldValue(`sample_methods[${values.sample_methods.length}]`, data);
-          // validateField('sample_methods');
           setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
@@ -88,7 +86,6 @@ const SamplingMethodForm = () => {
           open={isEditModalOpen}
           onSubmit={(data) => {
             setFieldValue(`sample_methods[${editData?.index}]`, data);
-            // validateField('sample_methods');
             setAnchorEl(null);
             setIsEditModalOpen(false);
           }}
@@ -163,7 +160,7 @@ const SamplingMethodForm = () => {
                   <CardHeader
                     title={
                       <Box display="flex">
-                        <Typography component="span">
+                        <Typography component="span" variant="h5">
                           {
                             surveyContext.techniqueDataLoader.data?.techniques.find(
                               (technique) => technique.method_technique_id === item.method_technique_id
@@ -202,7 +199,6 @@ const SamplingMethodForm = () => {
                     <Stack gap={2}>
                       {item.description && (
                         <Typography
-                          variant="body2"
                           color="textSecondary"
                           sx={{
                             display: '-webkit-box',
@@ -216,6 +212,9 @@ const SamplingMethodForm = () => {
                         </Typography>
                       )}
                       <Box py={1}>
+                        <Typography component="legend" variant="body2">
+                          Add Time Periods
+                        </Typography>
                         {item.method_technique_id && (
                           <MethodPeriodForm index={index} method_technique_id={item.method_technique_id} />
                         )}

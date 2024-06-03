@@ -7,7 +7,6 @@ import SelectWithSubtextField from 'components/fields/SelectWithSubtext';
 import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
-import { get } from 'lodash-es';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 import { ISurveySampleMethodPeriodData } from '../../periods/create/form/SamplingPeriodForm';
@@ -48,7 +47,7 @@ const MethodForm = () => {
   const codesContext = useContext(CodesContext);
   const surveyContext = useSurveyContext();
 
-  const { values, setFieldValue } = useFormikContext<ISurveySampleMethodData>();
+  const { setFieldValue } = useFormikContext<ISurveySampleMethodData>();
 
   const methodResponseMetricOptions: IAutocompleteFieldOption<number>[] =
     codesContext.codesDataLoader.data?.method_response_metrics.map((option) => ({
@@ -66,8 +65,6 @@ const MethodForm = () => {
   if (!codesContext.codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-
-  console.log(get(values, 'method_technique_id'));
 
   return (
     <form>
