@@ -220,7 +220,7 @@ const SamplingMethodForm = () => {
                       <Divider sx={{ mt: 0.5 }} />
                       <Box py={1}>
                         {item.method_technique_id && (
-                          <MethodPeriodForm index={index} method_technique_id={item.method_technique_id} survey_sample_method={item}/>
+                          <MethodPeriodForm index={index} survey_sample_method={item} />
                         )}
                       </Box>
                     </Stack>

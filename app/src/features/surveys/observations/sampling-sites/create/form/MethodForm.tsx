@@ -27,13 +27,16 @@ export const SurveySampleMethodDataInitialValues = {
   survey_sample_method_id: null,
   survey_sample_site_id: null,
   method_technique_id: null,
+  // technique: { method_technique_id: null },
   description: '',
   sample_periods: [],
   method_response_metric_id: null
 };
 
 export const SamplingSiteMethodYupSchema = yup.object({
-  method_technique_id: yup.number().required('Technique is required.').typeError('Technique is required'),
+  technique: yup.object({
+    method_technique_id: yup.number().required('Technique is required.').typeError('Technique is required')
+  }),
   method_response_metric_id: yup
     .number()
     .typeError('Response Metric is required')

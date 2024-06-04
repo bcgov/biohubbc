@@ -67,7 +67,7 @@ export interface IGetSampleLocationDetailsForUpdate {
   geojson: Feature;
   geography: string;
   revision_count: number;
-  sample_methods: IGetSampleMethodRecord[] | ISurveySampleMethodData[];
+  sample_methods: IGetSampleMethodDetails[] | ISurveySampleMethodData[];
   blocks: IGetSampleBlockDetails[];
   stratums: IGetSampleStratumDetails[];
 }
@@ -113,7 +113,7 @@ export interface IGetSampleMethodRecord {
 }
 
 export interface IGetSampleMethodDetails extends IGetSampleMethodRecord {
-  technique: { method_technique_id: number; name: string; description: string, attractants: number[]};
+  technique: { method_technique_id: number; name: string; description: string; attractants: number[] };
 }
 
 export interface IGetSamplePeriodRecord {

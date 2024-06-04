@@ -177,11 +177,11 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                     title={
                       <Box display="flex">
                         <Typography component="span" variant="h5">
-                          {
-                            surveyContext.techniqueDataLoader.data?.techniques.find(
-                              (technique) => technique.method_technique_id === item.method_technique_id
-                            )?.name
-                          }
+                          {'technique' in item
+                            ? item.technique.name
+                            : surveyContext.techniqueDataLoader.data?.techniques.find(
+                                (technique) => technique.method_technique_id === item.method_technique_id
+                              )?.name}
                         </Typography>
                         <Box sx={{ ml: 1 }}>
                           <ColouredRectangleChip
@@ -229,13 +229,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
                       )}
                       <Divider sx={{ mt: 0.5 }} />
                       <Box py={1}>
-                        {item.method_technique_id && (
-                          <MethodPeriodForm
-                            index={index}
-                            method_technique_id={item.method_technique_id}
-                            survey_sample_method={item}
-                          />
-                        )}
+                        <MethodPeriodForm index={index} survey_sample_method={item} />
                       </Box>
                     </Stack>
                   </CardContent>

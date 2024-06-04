@@ -1,3 +1,4 @@
+import grey from '@mui/material/colors/grey';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
@@ -38,10 +39,11 @@ export const SamplingSiteListMethod = (props: ISamplingSiteListMethodProps) => {
       }}>
       <ListItemText
         sx={{
-          p: 0,
-          mt: 0,
+          p: 1,
+          bgcolor: grey[100],
           '& .MuiTypography-root': {
-            fontWeight: 700
+            fontWeight: 700,
+            pt: 0
           }
         }}
         title="Sampling Method"

@@ -101,6 +101,7 @@ const SamplingSitePage = () => {
           survey_sample_method_id: method.survey_sample_method_id,
           survey_sample_site_id: method.survey_sample_site_id,
           method_technique_id: method.method_technique_id,
+          // technique: { method_technique_id: method.technique.method_technique_id },
           description: method.description,
           sample_periods: method.sample_periods,
           method_response_metric_id: method.method_response_metric_id

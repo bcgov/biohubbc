@@ -73,7 +73,7 @@ export class SampleMethodRepository extends BaseRepository {
   async getSampleMethodsForSurveySampleSiteId(
     surveyId: number,
     surveySampleSiteId: number
-  ): Promise<SampleMethodDetails[]> {
+  ): Promise<SampleMethodRecord[]> {
     const sql = SQL`
       SELECT
         *
@@ -94,7 +94,7 @@ export class SampleMethodRepository extends BaseRepository {
       ;
     `;
 
-    const response = await this.connection.sql(sql, SampleMethodDetails);
+    const response = await this.connection.sql(sql, SampleMethodRecord);
     return response.rows;
   }
 

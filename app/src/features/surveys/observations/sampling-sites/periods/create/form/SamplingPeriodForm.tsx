@@ -80,7 +80,6 @@ export const SamplingSiteMethodPeriodYupSchema = yup
 
 interface IMethodPeriodFormProps {
   survey_sample_method: ISurveySampleMethodData;
-  method_technique_id: number;
   index: number;
 }
 
