@@ -45,8 +45,12 @@ export type SampleMethodRecord = z.infer<typeof SampleMethodRecord>;
  * A survey_sample_method detail object.
  */
 export const SampleMethodDetails = SampleMethodRecord.extend({
-  method_technique_name: z.string(),
-  method_technique_description: z.string()
+  technique: z.object({
+    method_technique_id: z.number(),
+    name: z.string(),
+    description: z.string().nullable(),
+    attractants: z.array(z.number())
+  })
 });
 export type SampleMethodDetails = z.infer<typeof SampleMethodDetails>;
 
@@ -72,13 +76,9 @@ export class SampleMethodRepository extends BaseRepository {
   ): Promise<SampleMethodDetails[]> {
     const sql = SQL`
       SELECT
-        ssm.*,
-        mt.name as method_technique_name,
-        mt.description as method_technique_description
+        *
       FROM
-        survey_sample_method ssm
-      INNER JOIN 
-        method_technique mt ON mt.method_technique_id = ssm.method_technique_id
+        survey_sample_method
       WHERE
         survey_sample_site_id = (
           SELECT
