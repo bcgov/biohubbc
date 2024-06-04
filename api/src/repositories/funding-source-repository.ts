@@ -145,7 +145,12 @@ export class FundingSourceRepository extends BaseRepository {
             survey_funding_source.funding_source_id = ${fundingSourceId}
         )
       SELECT
-        funding_source.*,
+        funding_source.funding_source_id,
+        funding_source.name,
+        funding_source.description,
+        funding_source.start_date,
+        funding_source.end_date,
+        funding_source.revision_count,
         w_references.survey_reference_count,
         w_references.survey_reference_amount_total
       FROM
@@ -171,7 +176,7 @@ export class FundingSourceRepository extends BaseRepository {
   }
 
   /**
-   * Fetch all survey references to a single funding source.
+   * For a single funding source, fetch basic information about all surveys that reference it.
    *
    * @param {number} fundingSourceId
    * @return {*}  {(Promise<(SurveyFundingSource | SurveyFundingSourceSupplementaryData)[]>)}
@@ -182,8 +187,11 @@ export class FundingSourceRepository extends BaseRepository {
   ): Promise<(SurveyFundingSource | SurveyFundingSourceSupplementaryData)[]> {
     const sqlStatement = SQL`
       SELECT
-        survey_funding_source.*,
+        survey_funding_source.survey_funding_source_id,
+        survey_funding_source.survey_id,
+        survey_funding_source.funding_source_id,
         survey_funding_source.amount::numeric::int,
+        survey_funding_source.revision_count,
         survey.project_id,
         survey.name as survey_name
       FROM
@@ -198,7 +206,15 @@ export class FundingSourceRepository extends BaseRepository {
 
     const response = await this.connection.sql(
       sqlStatement,
-      SurveyFundingSource.extend(SurveyFundingSourceSupplementaryData.shape)
+      z.object({
+        survey_funding_source_id: z.number(),
+        survey_id: z.number(),
+        funding_source_id: z.number(),
+        amount: z.number(),
+        revision_count: z.number(),
+        project_id: z.number(),
+        survey_name: z.string()
+      })
     );
 
     return response.rows;
@@ -315,40 +331,7 @@ export class FundingSourceRepository extends BaseRepository {
    */
 
   /**
-   * Fetch a single survey funding source by survey id and funding source id.
-   *
-   * @param {number} surveyId
-   * @param {number} fundingSourceId
-   * @return {*}  {Promise<SurveyFundingSource>}
-   * @memberof FundingSourceRepository
-   */
-  async getSurveyFundingSourceByFundingSourceId(
-    surveyId: number,
-    fundingSourceId: number
-  ): Promise<SurveyFundingSource> {
-    const sqlStatement = SQL`
-      SELECT
-        *,
-        amount::numeric::int
-      FROM
-        survey_funding_source
-      WHERE
-        survey_id = ${surveyId}
-      AND
-        funding_source_id = ${fundingSourceId};
-    `;
-    const response = await this.connection.sql(sqlStatement, SurveyFundingSource);
-    if (response.rowCount !== 1) {
-      throw new ApiExecuteSQLError('Failed to get survey funding source', [
-        'FundingSourceRepository->getSurveyFundingSourceByFundingSourceId',
-        'rowCount was != 1, expected rowCount = 1'
-      ]);
-    }
-    return response.rows[0];
-  }
-
-  /**
-   * Fetch all survey funding sources by survey id.
+   * For a single survey, fetch all of its funding sources.
    *
    * @param {number} surveyId
    * @return {*}  {Promise<SurveyFundingSource[]>}

@@ -165,7 +165,7 @@ export class RegionRepository extends BaseRepository {
          * This will try and query the region_lookup table using the region name instead.
          */
         if (regionName) {
-          query.orWhereILike({ region_name: regionName });
+          query.orWhereILike('region_name', `%${regionName}%`);
         } else {
           query.orWhereRaw(`public.ST_Intersects(public.ST_GeomFromGeoJSON(?), geometry)`, [
             JSON.stringify(feature.geometry) // geometry needs to be stringified before PostGis can use
