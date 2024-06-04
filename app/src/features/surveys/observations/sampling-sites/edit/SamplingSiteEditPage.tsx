@@ -5,11 +5,11 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
-import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { IEditSamplingSiteRequest, IGetSampleLocationDetailsForUpdate } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -32,6 +32,8 @@ const SamplingSiteEditPage = () => {
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
+
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
   const formikRef = useRef<FormikProps<IGetSampleLocationDetailsForUpdate>>(null);
 
@@ -101,7 +103,10 @@ const SamplingSiteEditPage = () => {
           surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
           // create complete, navigate back to observations page
-          history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
+          history.push(
+            `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`,
+            SKIP_CONFIRMATION_DIALOG
+          );
           surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
         })
         .catch((error: any) => {
@@ -133,46 +138,13 @@ const SamplingSiteEditPage = () => {
     }
   };
 
-  /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location) => {
-    if (!dialogContext.yesNoDialogProps.open) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        open: true,
-        dialogTitle: CreateSamplingSiteI18N.cancelTitle,
-        dialogText: CreateSamplingSiteI18N.cancelText,
-        onClose: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onNo: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        }
-      });
-      return false;
-    }
-
-    // If the cancel dialog is already open and another location change action is triggered: allow it
-    return true;
-  };
-
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data || !initialFormValues) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
       <Formik
         innerRef={formikRef}
         initialValues={initialFormValues}
