@@ -27,7 +27,7 @@ export const CaptureDetails = (props: ICaptureDetailsProps) => {
   }
 
   return (
-    <>
+    <Stack gap={2}>
       <Stack direction="row" spacing={3}>
         {captureTimestamp && (
           <Box>
@@ -74,6 +74,6 @@ export const CaptureDetails = (props: ICaptureDetailsProps) => {
           </Typography>
         </Box>
       )}
-    </>
+    </Stack>
   );
 };

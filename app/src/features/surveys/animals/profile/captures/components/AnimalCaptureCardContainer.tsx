@@ -197,7 +197,7 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
           display="flex"
           alignItems="center"
           justifyContent="center"
-          bgcolor={grey[50]}>
+          bgcolor={grey[100]}>
           <Typography variant="body2" color="textSecondary">
             This animal has no captures
           </Typography>

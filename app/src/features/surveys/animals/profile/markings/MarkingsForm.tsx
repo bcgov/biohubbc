@@ -162,6 +162,7 @@ export const MarkingsForm = () => {
             </TransitionGroup>
           </Stack>
           <Button
+            sx={{ mt: 2 }}
             color="primary"
             variant="outlined"
             startIcon={<Icon path={mdiPlus} size={1} />}

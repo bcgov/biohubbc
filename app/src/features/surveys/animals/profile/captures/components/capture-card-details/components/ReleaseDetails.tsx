@@ -27,7 +27,7 @@ export const ReleaseDetails = (props: IReleaseDetailsProps) => {
   }
 
   return (
-    <>
+    <Stack gap={2}>
       <Stack direction="row" spacing={3}>
         {releaseTimestamp && (
           <Box>
@@ -44,36 +44,34 @@ export const ReleaseDetails = (props: IReleaseDetailsProps) => {
           </Box>
         )}
 
-        {releaseLocation && (
-          <Box>
-            <Typography
-              color="textSecondary"
-              fontWeight={700}
-              fontSize="0.75rem"
-              sx={{ textTransform: 'uppercase', mb: 0.5 }}>
-              Release location
-            </Typography>
-            <Typography color="textSecondary" variant="body2">
-              {releaseLocation.longitude},&nbsp;{releaseLocation.latitude}
-            </Typography>
-          </Box>
-        )}
-      </Stack>
-
-      {releaseComment && (
         <Box>
           <Typography
             color="textSecondary"
             fontWeight={700}
             fontSize="0.75rem"
             sx={{ textTransform: 'uppercase', mb: 0.5 }}>
-            Release comment
+            Release location
           </Typography>
-          <Typography color="textSecondary" variant="body2">
-            {releaseComment}
-          </Typography>
+          {releaseLocation && (
+            <Typography color="textSecondary" variant="body2">
+              {releaseLocation.longitude},&nbsp;{releaseLocation.latitude}
+            </Typography>
+          )}
         </Box>
-      )}
-    </>
+      </Stack>
+
+      <Box>
+        <Typography
+          color="textSecondary"
+          fontWeight={700}
+          fontSize="0.75rem"
+          sx={{ textTransform: 'uppercase', mb: 0.5 }}>
+          Release comment
+        </Typography>
+        <Typography color="textSecondary" variant="body2">
+          {releaseComment ? releaseComment : 'None'}
+        </Typography>
+      </Box>
+    </Stack>
   );
 };

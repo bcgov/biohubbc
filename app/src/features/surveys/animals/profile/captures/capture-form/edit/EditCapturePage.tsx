@@ -110,13 +110,13 @@ export const EditCapturePage = () => {
       ).toDate();
 
       // If release timestamp is null, use the capture timestamp, otherwise format release location
-      const releaseTimestamp = dayjs(
-        values.capture.release_date
-          ? `${values.capture.release_date}${
+      const releaseTimestamp = values.capture.release_date
+        ? dayjs(
+            `${values.capture.release_date}${
               values.capture.release_time ? ` ${values.capture.release_time}-07:00` : 'T00:00:00-07:00'
             }`
-          : captureTimestamp
-      ).toDate();
+          ).toDate()
+        : captureTimestamp;
 
       const {
         qualitativeMeasurementsForDelete,

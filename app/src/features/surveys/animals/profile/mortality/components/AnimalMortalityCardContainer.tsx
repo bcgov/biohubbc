@@ -195,7 +195,7 @@ export const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContaine
           display="flex"
           alignItems="center"
           justifyContent="center"
-          bgcolor={grey[50]}>
+          bgcolor={grey[100]}>
           <Typography variant="body2" color="textSecondary">
             This animal has not been reported as deceased
           </Typography>

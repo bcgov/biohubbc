@@ -28,9 +28,12 @@ export const MeasurementDetails = (props: IMeasurementDetailsProps) => {
       <Typography color="textSecondary" fontWeight={700} fontSize="0.75rem" sx={{ textTransform: 'uppercase' }}>
         Measurements
       </Typography>
-      <Box maxHeight="300px" sx={{ overflow: 'auto', pr: 1, pb: 1 }}>
+      <Box maxHeight="300px" sx={{ overflow: 'auto', pr: 1 }}>
         {allMeasurements.map((measurement, index) => (
-          <Paper sx={{ px: 3, py: 2, bgcolor: grey[100], mt: 1 }} key={`${measurement.taxon_measurement_id}-${index}`}>
+          <Paper
+            variant="outlined"
+            sx={{ px: 3, py: 2, bgcolor: grey[100], mt: 1 }}
+            key={`${measurement.taxon_measurement_id}-${index}`}>
             <Typography fontWeight={700}>
               {measurement.measurement_name}: <Typography component="span">{measurement.value}</Typography>
             </Typography>

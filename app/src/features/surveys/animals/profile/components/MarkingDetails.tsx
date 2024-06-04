@@ -25,7 +25,7 @@ export const MarkingDetails = (props: IMarkingDetailsProps) => {
       <Typography color="textSecondary" fontWeight={700} fontSize="0.75rem" sx={{ textTransform: 'uppercase' }}>
         Markings
       </Typography>
-      <Box maxHeight="600px" sx={{ overflowY: 'auto', pr: 1, pb: 1 }}>
+      <Box maxHeight="600px" sx={{ overflowY: 'auto', pr: 1 }}>
         {markings.map((marking, index) => (
           <Box mt={1} key={`${marking.marking_id}-${index}`}>
             <MarkingCard

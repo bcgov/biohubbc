@@ -1,3 +1,4 @@
+import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import { CaptureDetails } from 'features/surveys/animals/profile/captures/components/capture-card-details/components/CaptureDetails';
 import { ReleaseDetails } from 'features/surveys/animals/profile/captures/components/capture-card-details/components/ReleaseDetails';
@@ -20,8 +21,14 @@ export const AnimalCaptureCardDetailsContainer = (props: IAnimalCaptureCardDetai
 
   return (
     <Stack gap={3} sx={{ '& .MuiTypography-body2': { fontSize: '0.9rem' } }}>
-      <CaptureDetails capture={capture} />
-      <ReleaseDetails capture={capture} />
+      <Grid container spacing={2}>
+        <Grid item xs={12} lg={6}>
+          <CaptureDetails capture={capture} />
+        </Grid>
+        <Grid item xs={12} lg={6}>
+          <ReleaseDetails capture={capture} />
+        </Grid>
+      </Grid>
       <MarkingDetails markings={capture.markings} />
       <MeasurementDetails
         measurements={{

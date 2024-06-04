@@ -128,7 +128,7 @@ export const CreateCapturePage = () => {
               coordinate_uncertainty: 0,
               coordinate_uncertainty_units: 'm'
             }
-          : values.capture.capture_location;
+          : captureLocation;
 
       const captureTimestamp = dayjs(
         `${values.capture.capture_date}${
@@ -137,13 +137,13 @@ export const CreateCapturePage = () => {
       ).toDate();
 
       // if release timestamp is null, use the capture timestamp, otherwise format it for critterbase
-      const releaseTimestamp = dayjs(
-        values.capture.release_date
-          ? captureTimestamp
-          : `${values.capture.release_date}${
+      const releaseTimestamp = values.capture.release_date
+        ? dayjs(
+            `${values.capture.release_date}${
               values.capture.release_time ? ` ${values.capture.release_time}-07:00` : 'T00:00:00-07:00'
             }`
-      ).toDate();
+          ).toDate()
+        : captureTimestamp;
 
       // Must create capture first to avoid foreign key constraints. Can't guarantee that the capture is
       // inserted before the measurements/markings.

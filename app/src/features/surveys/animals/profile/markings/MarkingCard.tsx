@@ -1,9 +1,9 @@
 import { mdiDotsVertical } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
+import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
@@ -37,7 +37,7 @@ export const MarkingCard = (props: IMarkingCardProps) => {
   } = props;
 
   return (
-    <Card sx={{ px: 3, py: 2, mb: 2, bgcolor: grey[100] }}>
+    <Paper variant="outlined" sx={{ px: 3, py: 2, bgcolor: grey[100] }}>
       <Box position="relative" display="flex">
         <Typography component="dd" fontWeight={700}>
           {marking_type_label}
@@ -95,6 +95,6 @@ export const MarkingCard = (props: IMarkingCardProps) => {
           </Box>
         )}
       </Stack>
-    </Card>
+    </Paper>
   );
 };
