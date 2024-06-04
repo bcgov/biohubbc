@@ -21,6 +21,7 @@ describe('listResources', () => {
 
   it('returns an empty array if no resources are found', async () => {
     const listFilesStub = sinon.stub(fileUtils, 'listFilesFromS3').resolves({
+      $metadata: {},
       Contents: []
     });
 
@@ -35,7 +36,7 @@ describe('listResources', () => {
   });
 
   it('returns an array of resources', async () => {
-    const mockMetadata = {
+    const mockMetadata: Record<string, Record<string, string>> = {
       ['key1']: {
         'template-name': 'name1',
         'template-type': 'type1',
@@ -55,11 +56,14 @@ describe('listResources', () => {
 
     sinon.stub(fileUtils, 'getObjectMeta').callsFake((key: string) => {
       return Promise.resolve({
+        $metadata: {},
+        Conents: [],
         Metadata: mockMetadata[key]
       });
     });
 
     const listFilesStub = sinon.stub(fileUtils, 'listFilesFromS3').resolves({
+      $metadata: {},
       Contents: [
         {
           Key: 'key1',
@@ -126,14 +130,13 @@ describe('listResources', () => {
   });
 
   it('should filter out directories from the s3 list respones', async () => {
-    sinon.stub(fileUtils, 'getObjectMeta').resolves({});
+    sinon.stub(fileUtils, 'getObjectMeta').resolves({
+      $metadata: {}
+    });
 
     const listFilesStub = sinon.stub(fileUtils, 'listFilesFromS3').resolves({
-      Contents: [
-        {
-          Key: 'templates/Current/'
-        }
-      ]
+      $metadata: {},
+      Contents: [{ Key: 'templates/Current/' }]
     });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
