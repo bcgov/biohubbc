@@ -2,7 +2,7 @@ export interface ICreateTechniqueRequest {
   name: string;
   description: string | null;
   distance_threshold: number | null;
-  method_technique_id: number | null;
+  method_lookup_id: number | null;
   attractants: number[];
   attributes: { attribute_id: string, type: string }[];
 }

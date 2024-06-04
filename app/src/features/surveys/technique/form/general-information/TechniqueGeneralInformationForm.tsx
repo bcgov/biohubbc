@@ -6,14 +6,18 @@ import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubte
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
 import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
-import { useEffect } from 'react';
+import React, { SetStateAction, useEffect } from 'react';
+
+interface ITechniqueGeneralInformationForm {
+  setSelectedMethodLookupId: React.Dispatch<SetStateAction<number | null>>;
+}
 
 /**
  * Create survey - general information fields
  *
  * @return {*}
  */
-const TechniqueGeneralInformationForm = () => {
+const TechniqueGeneralInformationForm = (props: ITechniqueGeneralInformationForm) => {
   const codesContext = useCodesContext();
 
   const { setFieldValue } = useFormikContext<ICreateTechniqueRequest>();
@@ -62,6 +66,7 @@ const TechniqueGeneralInformationForm = () => {
             onChange={(_, value) => {
               if (value?.value) {
                 setFieldValue('method_lookup_id', value.value);
+                props.setSelectedMethodLookupId(Number(value.value));
               }
             }}
           />

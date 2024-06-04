@@ -18,13 +18,18 @@ const initialAttributeValues = {
   method_lookup_attribute_qualitative_option_id: undefined
 };
 
+interface ITechniqueAttributesFormProps {
+  selectedMethodLookupId: number | null;
+}
+
 /**
  * Create survey - general information fields
  *
  * @return {*}
  */
-const TechniqueAttributesForm = () => {
+const TechniqueAttributesForm = (props: ITechniqueAttributesFormProps) => {
   const biohubApi = useBiohubApi();
+  const { selectedMethodLookupId } = props;
 
   const { values } = useFormikContext<ICreateTechniqueRequest>();
 
@@ -33,10 +38,12 @@ const TechniqueAttributesForm = () => {
   );
 
   useEffect(() => {
-    if (values.method_lookup_id) {
-      attributesDataLoader.refresh(values.method_lookup_id);
+    if (!selectedMethodLookupId) {
+      return;
     }
-  }, [values.method_lookup_id]);
+
+    attributesDataLoader.load(selectedMethodLookupId);
+  }, [selectedMethodLookupId, attributesDataLoader]);
 
   const attributes =
     attributesDataLoader.data?.flatMap((attribute) => [

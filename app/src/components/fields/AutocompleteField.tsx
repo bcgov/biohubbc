@@ -28,6 +28,7 @@ export interface IAutocompleteField<T extends string | number> {
   getOptionDisabled?: (option: IAutocompleteFieldOption<T>) => boolean;
   onChange?: (event: SyntheticEvent<Element, Event>, option: IAutocompleteFieldOption<T> | null) => void;
   renderOption?: (params: React.HTMLAttributes<HTMLLIElement>, option: IAutocompleteFieldOption<T>) => React.ReactNode;
+  onInputChange?: (event: React.SyntheticEvent<Element, Event>, value: string, reason: string) => void;
 }
 
 // To be used when you want an autocomplete field with no freesolo allowed but only one option can be selected
@@ -35,7 +36,7 @@ export interface IAutocompleteField<T extends string | number> {
 const AutocompleteField = <T extends string | number>(props: IAutocompleteField<T>) => {
   const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOption<T>>();
 
-  console.log(values)
+  console.log(values);
 
   const getExistingValue = (existingValue: T): IAutocompleteFieldOption<T> => {
     const result = props.options.find((option) => existingValue === option[props.optionFilter ?? 'value']);
@@ -73,7 +74,12 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
       sx={props.sx}
       loading={props.loading}
-      onInputChange={(_, _value, reason) => {
+      onInputChange={(event, value, reason) => {
+        if (props.onInputChange) {
+          props.onInputChange(event, value, reason);
+          return;
+        }
+
         if (reason === 'reset') {
           setFieldValue(props.name, null);
         }
@@ -84,7 +90,9 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
           return;
         }
 
-        setFieldValue(props.name, option?.value);
+        if (option?.value) {
+          setFieldValue(props.name, option?.value);
+        }
       }}
       renderOption={(params, option) => {
         if (props.renderOption) {

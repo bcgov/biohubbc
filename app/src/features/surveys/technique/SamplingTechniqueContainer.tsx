@@ -9,7 +9,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -17,7 +16,7 @@ import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import SamplingTechniqueCardContainer from './SamplingTechniqueCardContainer';
+import SamplingTechniqueCardContainer from './components/SamplingTechniqueCardContainer';
 
 /**
  * Renders a list of techniques.
@@ -248,8 +247,7 @@ const SamplingSiteTechniqueContainer = () => {
         </MenuItem>
       </Menu>
 
-      <Paper
-        component={Stack}
+      <Stack
         flexDirection="column"
         height="100%"
         sx={{
@@ -327,7 +325,7 @@ const SamplingSiteTechniqueContainer = () => {
             </Box>
           </Stack>
         )}
-      </Paper>
+      </Stack>
     </>
   );
 };

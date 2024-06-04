@@ -10,7 +10,7 @@ import EditSurveyPage from './edit/EditSurveyPage';
 import SamplingSitePage from './observations/sampling-sites/create/SamplingSitePage';
 import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
 import SamplingSiteManagePage from './observations/sampling-sites/SamplingSiteManagePage';
-import SamplingSiteTechniquePage from './observations/sampling-sites/SamplingTechniquePage';
+import SamplingSiteTechniquePage from './technique/form/create/CreateTechniquePage';
 import { SurveyObservationPage } from './observations/SurveyObservationPage';
 import ManualTelemetryPage from './telemetry/ManualTelemetryPage';
 import { SurveyAnimalsPage } from './view/survey-animals/SurveyAnimalsPage';

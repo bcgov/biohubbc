@@ -1,7 +1,11 @@
 import Box from '@mui/material/Box';
+import { blue } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
+import { useCodesContext } from 'hooks/useContext';
 import { IGetTechnique } from 'interfaces/useTechniqueApi.interface';
+import { getCodesName } from 'utils/Utils';
 import AccordionCard from './AccordionCard';
 
 interface ISamplingTechniqueCardProps {
@@ -13,13 +17,23 @@ interface ISamplingTechniqueCardProps {
 const SamplingTechniqueCard = (props: ISamplingTechniqueCardProps) => {
   const { technique, method_lookup_name, handleMenuClick } = props;
 
+  const codesContext = useCodesContext();
+
   const attributes = [...technique.qualitative_attributes, ...technique.qualitative_attributes];
 
   return (
     <AccordionCard
       summaryContent={
         <Stack gap={0.5} display="flex">
-          <Typography variant="h5">{technique.name}</Typography>
+          <Stack direction="row" gap={1}>
+            <Typography variant="h5">{technique.name}</Typography>
+            <ColouredRectangleChip
+              colour={blue}
+              label={
+                getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id) ?? ''
+              }
+            />
+          </Stack>
           <Typography color="textSecondary">{method_lookup_name}</Typography>
         </Stack>
       }

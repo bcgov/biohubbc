@@ -30,7 +30,6 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
   const [selectedTechnique, setSelectedTechnique] = useState<number | null>(null);
   const [techniqueAnchorEl, setTechniqueAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [techniqueForDelete, setTechniqueForDelete] = useState<boolean>();
-  const [expanded, setExpanded] = useState<number[]>([]);
 
   const { projectId, surveyId } = useSurveyContext();
   const codesContext = useCodesContext();
@@ -109,16 +108,18 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
 
       {techniques.length ? (
         techniques.map((technique) => (
-          <SamplingTechniqueCard
-            technique={technique}
-            method_lookup_name={
-              getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id) ?? ''
-            }
-            handleMenuClick={(event) => {
-              setTechniqueAnchorEl(event.currentTarget);
-              setSelectedTechnique(technique.method_technique_id);
-            }}
-          />
+          <Box m={2}>
+            <SamplingTechniqueCard
+              technique={technique}
+              method_lookup_name={
+                getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id) ?? ''
+              }
+              handleMenuClick={(event) => {
+                setTechniqueAnchorEl(event.currentTarget);
+                setSelectedTechnique(technique.method_technique_id);
+              }}
+            />
+          </Box>
         ))
       ) : (
         <Box

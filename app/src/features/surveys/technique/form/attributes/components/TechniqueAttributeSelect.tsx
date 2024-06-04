@@ -25,9 +25,7 @@ interface ICaptureTechniqueAttributeSelectProps {
  */
 const TechniqueAttributeSelect = (props: ICaptureTechniqueAttributeSelectProps) => {
   const { arrayHelpers, attributes, index } = props;
-
   const { values, setFieldValue } = useFormikContext<ICreateTechniqueRequest>();
-
   const value = values.attributes[index];
 
   const selectedAttribute =
@@ -35,7 +33,6 @@ const TechniqueAttributeSelect = (props: ICaptureTechniqueAttributeSelectProps) 
       if ('method_lookup_attribute_qualitative_id' in attribute && 'method_lookup_attribute_qualitative_id' in value) {
         return attribute.method_lookup_attribute_qualitative_id === value.method_lookup_attribute_qualitative_id;
       }
-
       if (
         'method_lookup_attribute_quantitative_id' in attribute &&
         'method_lookup_attribute_quantitative_id' in value
@@ -45,32 +42,39 @@ const TechniqueAttributeSelect = (props: ICaptureTechniqueAttributeSelectProps) 
     }) ?? null;
 
   // Filter out the attributes that are already selected so they can't be selected again
-  const filteredAttributes = useMemo(
-    () =>
-      attributes
-        .filter(
-          (attribute) =>
-            !values.attributes.some(
-              (existing) =>
-                ('method_lookup_attribute_quantitative_id' in attribute &&
-                  'method_lookup_attribute_quantitative_id' in existing &&
-                  existing.method_lookup_attribute_quantitative_id ===
-                    attribute.method_lookup_attribute_quantitative_id) ||
-                ('method_lookup_attribute_qualitative_id' in attribute &&
-                  'method_lookup_attribute_qualitative_id' in existing &&
-                  existing.method_lookup_attribute_qualitative_id === attribute.method_lookup_attribute_qualitative_id)
-            )
-        )
-        .map((option) => ({
-          value:
-            ('method_lookup_attribute_qualitative_id' in option && option.method_lookup_attribute_qualitative_id) ||
-            ('method_lookup_attribute_quantitative_id' in option && option.method_lookup_attribute_quantitative_id) ||
-            0,
-          label: option.name,
-          description: option.description
-        })),
-    [attributes, values.attributes, selectedAttribute?.name, index]
-  );
+  const filteredAttributes = useMemo(() => {
+    return attributes
+      .filter((attribute) => {
+        const isQuantitative = 'method_lookup_attribute_quantitative_id' in attribute;
+        const isQualitative = 'method_lookup_attribute_qualitative_id' in attribute;
+        const existingIsQuantitative =
+          selectedAttribute && 'method_lookup_attribute_quantitative_id' in selectedAttribute;
+        const existingIsQualitative =
+          selectedAttribute && 'method_lookup_attribute_qualitative_id' in selectedAttribute;
+
+        if (isQuantitative && existingIsQuantitative) {
+          return (
+            attribute.method_lookup_attribute_quantitative_id !==
+            selectedAttribute.method_lookup_attribute_quantitative_id
+          );
+        }
+        if (isQualitative && existingIsQualitative) {
+          return (
+            attribute.method_lookup_attribute_qualitative_id !==
+            selectedAttribute.method_lookup_attribute_qualitative_id
+          );
+        }
+        return true;
+      })
+      .map((option) => ({
+        value:
+          ('method_lookup_attribute_qualitative_id' in option && option.method_lookup_attribute_qualitative_id) ||
+          ('method_lookup_attribute_quantitative_id' in option && option.method_lookup_attribute_quantitative_id) ||
+          0,
+        label: option.name,
+        description: option.description
+      }));
+  }, [attributes, value]);
 
   return (
     <Collapse in role="listitem">
@@ -88,7 +92,7 @@ const TechniqueAttributeSelect = (props: ICaptureTechniqueAttributeSelectProps) 
         <AutocompleteField
           id={'technique-attribute-autocomplete'}
           name={'technique-attribute-autocomplete'}
-          label="Measurement"
+          label="Attribute"
           options={filteredAttributes}
           onChange={(_, option) => {
             if (option?.value) {

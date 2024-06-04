@@ -29,6 +29,8 @@ const TechniqueAttractantsForm = () => {
 
   const attractants = codesContext.codesDataLoader.data.attractants;
 
+  console.log(values);
+
   return (
     <>
       <Grid container spacing={2}>
@@ -46,13 +48,15 @@ const TechniqueAttractantsForm = () => {
                   label: option.name,
                   description: option.description
                 }))
-                .filter((option) => !values.attractants.includes(option.value)) ?? []
+                .filter((option) => !values.attractants?.includes(option.value)) ?? []
             }
             onChange={(_, value) => {
+              console.log([...values.attractants, value?.value]);
               if (value?.value) {
                 setFieldValue('attractants', [...values.attractants, value.value]);
               }
             }}
+            onInputChange={(_, __, ___) => {}}
           />
         </Grid>
         <Grid item xs={12}>

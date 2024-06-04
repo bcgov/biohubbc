@@ -3,7 +3,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
-import AccordionCard from './AccordionCard';
+import AccordionCard from '../../technique/components/AccordionCard';
 
 interface ISamplingSiteCardProps {
   sampleSite: IGetSampleLocationDetails;

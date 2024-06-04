@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack';
 import { useProjectContext, useSurveyContext } from 'hooks/useContext';
 import SamplingSiteManageHeader from './SamplingSiteManageHeader';
 import SamplingSiteManageSiteList from './SamplingSiteManageSiteList';
-import SamplingSiteTechniqueContainer from './SamplingTechniqueContainer';
+import SamplingSiteTechniqueContainer from '../../technique/SamplingTechniqueContainer';
 
 const SamplingSiteManagePage = () => {
   const projectContext = useProjectContext();
