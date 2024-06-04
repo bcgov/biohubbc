@@ -164,7 +164,8 @@ export const CreateCritterSchema = yup.object({
   itis_tsn: yup.number().required(req),
   animal_id: yup.string().required(req),
   wlh_id: yup.string().optional(),
-  sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex)).required(req)
+  sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex)).required(req),
+  critter_comment: yup.string().optional().nullable()
 });
 
 export const CreateCritterMarkingSchema = yup.object({

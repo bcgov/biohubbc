@@ -11,7 +11,8 @@ import PageHeader from 'components/layout/PageHeader';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { CreateMortalityI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
-import { AnimalMortalityForm } from 'features/surveys/animals/profile/mortality/mortality-form/AnimalMortalityForm';
+import { AnimalMortalityForm } from 'features/surveys/animals/profile/mortality/mortality-form/components/AnimalMortalityForm';
+import { formatLocation } from 'features/surveys/animals/profile/mortality/mortality-form/edit/utils';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
@@ -102,16 +103,11 @@ const CreateMortalityPage = () => {
     try {
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
 
-      if (!values || !critterbaseCritterId || values.mortality.location?.geometry.type !== 'Point') {
+      if (!values || !critterbaseCritterId) {
         return;
       }
 
-      const mortalityLocation = {
-        longitude: values.mortality.location.geometry.coordinates[0],
-        latitude: values.mortality.location.geometry.coordinates[1],
-        coordinate_uncertainty: 0,
-        coordinate_uncertainty_units: 'm'
-      };
+      const mortalityLocation = formatLocation(values.mortality.location);
 
       const mortalityTimestamp = dayjs(
         `${values.mortality.mortality_date}${
@@ -147,7 +143,7 @@ const CreateMortalityPage = () => {
           ...marking,
           marking_id: marking.marking_id,
           critter_id: critterbaseCritterId,
-          capture_id: mortalityResponse.mortality_id
+          mortality_id: mortalityResponse.mortality_id
         })),
         qualitative_measurements: values.measurements
           .filter((measurement) => 'qualitative_option_id' in measurement && measurement.qualitative_option_id)

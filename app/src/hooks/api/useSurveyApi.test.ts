@@ -67,11 +67,12 @@ describe('useSurveyApi', () => {
   describe('createCritterAndAddToSurvey', () => {
     it('creates a critter successfully', async () => {
       const critter: ICreateCritter = {
-        itis_tsn: 1,
         critter_id: 'blah-blah',
+        itis_tsn: 1,
         wlh_id: '123-45',
         animal_id: 'carl',
-        sex: AnimalSex.MALE
+        sex: AnimalSex.MALE,
+        critter_comment: 'comment'
       };
 
       mock.onPost(`/api/project/${projectId}/survey/${surveyId}/critters`).reply(201, { create: { critters: 1 } });

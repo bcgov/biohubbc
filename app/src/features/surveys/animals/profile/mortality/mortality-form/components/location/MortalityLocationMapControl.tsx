@@ -16,7 +16,7 @@ import ImportBoundaryDialog from 'components/map/components/ImportBoundaryDialog
 import StaticLayers from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
-import { FormikContextType, useFormikContext } from 'formik';
+import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
@@ -32,7 +32,6 @@ export interface IMortalityLocationMapControlProps {
   name: string;
   title: string;
   mapId: string;
-  formikProps: FormikContextType<any>;
 }
 
 /**
@@ -54,7 +53,7 @@ export const MortalityLocationMapControl = (props: IMortalityLocationMapControlP
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 
-  //   Array of mortality location features. Should only be one.
+  // Array of mortality location features. Should only be one.
   const mortalityLocationGeoJson: Feature | undefined = useMemo(() => {
     const location: { latitude: number; longitude: number } | Feature = get(values, name);
 
@@ -78,16 +77,17 @@ export const MortalityLocationMapControl = (props: IMortalityLocationMapControlP
   }, [name, values]);
 
   useEffect(() => {
-    setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
-
     if (mortalityLocationGeoJson) {
       if ('type' in mortalityLocationGeoJson) {
         if (mortalityLocationGeoJson.geometry.type === 'Point')
           if (mortalityLocationGeoJson?.geometry.coordinates[0] !== 0) {
             setUpdatedBounds(calculateUpdatedMapBounds([mortalityLocationGeoJson]));
+            return;
           }
       }
     }
+
+    setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
   }, [mortalityLocationGeoJson]);
 
   return (

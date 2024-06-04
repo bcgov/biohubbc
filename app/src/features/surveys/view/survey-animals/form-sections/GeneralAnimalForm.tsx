@@ -85,7 +85,8 @@ const GeneralAnimalForm = (props: GeneralAnimalFormProps<ICreateCritter>) => {
           sex: props.critter?.sex as AnimalSex,
           itis_tsn: (props.critter?.itis_tsn ?? '') as unknown as number,
           animal_id: props.critter?.animal_id ?? '',
-          wlh_id: props.critter?.wlh_id ? props.critter.wlh_id : undefined
+          wlh_id: props.critter?.wlh_id ? props.critter.wlh_id : undefined,
+          critter_comment: props.critter?.critter_comment ?? ''
         },
         validationSchema: CreateCritterSchema,
         element: (

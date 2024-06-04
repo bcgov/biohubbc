@@ -159,7 +159,7 @@ export const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContaine
                     <Typography fontWeight={700}>
                       {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, mortality.mortality_timestamp)}&nbsp;
                     </Typography>
-                    {mortality.location.latitude && mortality.location.longitude && (
+                    {mortality.location?.latitude && mortality.location?.longitude && (
                       <Box>
                         <Typography color="textSecondary" variant="body2">
                           {mortality.location.longitude},&nbsp;

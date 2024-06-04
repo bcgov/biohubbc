@@ -6,7 +6,7 @@ import { logIfDevelopment } from 'utils/developer-utils';
 
 const FormikErrorSnackbar = () => {
   const formikProps = useFormikContext<any>();
-  const { errors, submitCount, isSubmitting } = formikProps;
+  const { values, errors, submitCount, isSubmitting } = formikProps;
   const [openSnackbar, setOpenSnackbar] = useState({ open: false, msg: '' });
 
   useEffect(() => {
@@ -19,7 +19,7 @@ const FormikErrorSnackbar = () => {
     logIfDevelopment({
       label: 'FormikErrorSnackbar',
       message: 'One or more fields are invalid.',
-      args: [errors]
+      args: [values, errors]
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

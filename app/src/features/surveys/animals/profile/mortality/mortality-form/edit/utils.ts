@@ -9,17 +9,20 @@ import {
 /**
  * Formats a location object into the required structure.
  *
- * @param {Feature} location The location object to be formatted.
+ * @param {(Feature | null)} [location] The location object to be formatted.
  * @return {*}  The formatted location object.
  */
-export const formatLocation = (location: Feature) => {
-  if (location && location.geometry && location.geometry.type === 'Point')
+export const formatLocation = (location?: Feature | null) => {
+  if (location && location.geometry && location.geometry.type === 'Point') {
     return {
       longitude: location.geometry.coordinates[0],
       latitude: location.geometry.coordinates[1],
       coordinate_uncertainty: 0,
       coordinate_uncertainty_units: 'm'
     };
+  }
+
+  return undefined;
 };
 
 /**

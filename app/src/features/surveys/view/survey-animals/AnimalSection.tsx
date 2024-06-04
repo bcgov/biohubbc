@@ -322,10 +322,14 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
             <Collapse key={mortality.mortality_id}>
               <EditDeleteStubCard
                 header={formatDate(new Date(mortality.mortality_timestamp))}
-                subHeader={formatSubHeader({
-                  Latitude: mortality.location.latitude,
-                  Longitude: mortality.location.longitude
-                })}
+                subHeader={
+                  (mortality.location &&
+                    formatSubHeader({
+                      Latitude: mortality.location.latitude,
+                      Longitude: mortality.location.longitude
+                    })) ||
+                  ''
+                }
                 onClickEdit={() => handleOpenEditForm(mortality)}
                 onClickDelete={async () => {
                   handleDelete('mortality', critterbaseApi.mortality.deleteMortality, mortality.mortality_id);

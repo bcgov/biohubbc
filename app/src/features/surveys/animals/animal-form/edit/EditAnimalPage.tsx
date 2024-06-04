@@ -94,10 +94,11 @@ export const EditAnimalPage = () => {
 
       const response = await critterbaseApi.critters.updateCritter({
         critter_id: critter.critter_id,
+        itis_tsn: values.species.tsn,
         wlh_id: values.wildlife_health_id,
         animal_id: values.nickname,
         sex: AnimalSex.UNKNOWN,
-        itis_tsn: values.species.tsn
+        critter_comment: values.critter_comment
       });
 
       // Find collection units to delete
@@ -213,7 +214,7 @@ export const EditAnimalPage = () => {
                 },
                 ecological_units: critter.collection_units.map((unit) => ({ ...unit, critter_id: critter.critter_id })),
                 wildlife_health_id: critter.wlh_id,
-                critter_comment: ''
+                critter_comment: critter.critter_comment
               } as ICreateEditAnimalRequest
             }
             handleSubmit={(formikData) => handleSubmit(formikData as ICreateEditAnimalRequest)}

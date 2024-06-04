@@ -27,7 +27,7 @@ export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
   species: null,
   ecological_units: [],
   wildlife_health_id: '',
-  critter_comment: null
+  critter_comment: ''
 };
 
 /**
@@ -88,10 +88,11 @@ export const CreateAnimalPage = () => {
 
       const response = await biohubApi.survey.createCritterAndAddToSurvey(projectId, surveyId, {
         critter_id: undefined,
+        itis_tsn: values.species.tsn,
         wlh_id: undefined,
         animal_id: values.nickname,
         sex: AnimalSex.UNKNOWN,
-        itis_tsn: values.species.tsn
+        critter_comment: values.critter_comment
       });
 
       // Insert collection units through bulk create

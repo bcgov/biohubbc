@@ -110,11 +110,7 @@ const AnimalMortalityContainer = () => {
         }}
       />
       {mortality.length > 0 && <AnimalMortalityMap mortality={mortality} isLoading={false} />}
-      <AnimalMortalityCardContainer
-        mortality={mortality ?? []}
-        selectedAnimal={selectedAnimal}
-        handleDelete={handleDelete}
-      />
+      <AnimalMortalityCardContainer mortality={mortality} selectedAnimal={selectedAnimal} handleDelete={handleDelete} />
     </>
   );
 };

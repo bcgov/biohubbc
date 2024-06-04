@@ -6,10 +6,11 @@ import { MarkingsForm } from 'features/surveys/animals/profile/markings/Markings
 import { MeasurementsForm } from 'features/surveys/animals/profile/measurements/MeasurementsForm';
 import { Formik, FormikProps } from 'formik';
 import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
+import { isDefined } from 'utils/Utils';
 import yup from 'utils/YupSchema';
-import { CauseOfDeathForm } from './components/cause-of-death/CauseOfDeathForm';
-import { MortalityGeneralInformationForm } from './components/general-information/MortalityGeneralInformationForm';
-import { MortalityLocationForm } from './components/location/MortalityLocationForm';
+import { CauseOfDeathForm } from './cause-of-death/CauseOfDeathForm';
+import { MortalityGeneralInformationForm } from './general-information/MortalityGeneralInformationForm';
+import { MortalityLocationForm } from './location/MortalityLocationForm';
 
 export interface IAnimalMortalityFormProps {
   initialMortalityData: ICreateEditMortalityRequest;
@@ -31,7 +32,7 @@ export const AnimalMortalityForm = (props: IAnimalMortalityFormProps) => {
       mortality_time: yup.string().nullable(),
       proximate_cause_of_death_id: yup.string().nullable().required('Cause of death is required'),
       mortality_comment: yup.string().required('Mortality comment is required'),
-      mortality_location: yup
+      location: yup
         .object()
         .shape({
           type: yup.string(),
@@ -46,9 +47,51 @@ export const AnimalMortalityForm = (props: IAnimalMortalityFormProps) => {
         .default(undefined)
     }),
     measurements: yup.array(
-      yup.object({
-        // TODO
-      })
+      yup
+        .object()
+        .shape({
+          taxon_measurement_id: yup.string().required('Measurement type is required.'),
+          value: yup.mixed().test('is-valid-measurement', 'Measurement value is required.', function () {
+            const { value } = this.parent;
+            if (isDefined(value)) {
+              // Field value is defined, check if it is valid
+              return yup.number().isValidSync(value);
+            }
+            // Field value is not defined, return valid for now
+            return true;
+          }),
+          qualitative_option_id: yup
+            .mixed()
+            .test('is-valid-measurement', 'Measurement value is required.', function () {
+              const { qualitative_option_id } = this.parent;
+              if (isDefined(qualitative_option_id)) {
+                // Field value is defined, check if it is valid
+                return yup.string().isValidSync(qualitative_option_id);
+              }
+              // Field value is not defined, return valid for now
+              return true;
+            })
+        })
+        .test('is-valid-measurement', 'Measurement must have a type and a value', function (_value) {
+          const { taxon_measurement_id } = _value;
+          const path = this.path;
+          if (taxon_measurement_id && !isDefined(_value.value) && !isDefined(_value.qualitative_option_id)) {
+            // Measurement type is defined but neither value nor qualitative option is defined, add errors for both
+            const errors = [
+              this.createError({
+                path: `${path}.qualitative_option_id`,
+                message: 'Measurement value is required.'
+              }),
+              this.createError({
+                path: `${path}.value`,
+                message: 'Measurement value is required.'
+              })
+            ];
+            return new yup.ValidationError(errors);
+          }
+          // Field value is not defined, return valid
+          return true;
+        })
     ),
     markings: yup.array(
       yup.object({

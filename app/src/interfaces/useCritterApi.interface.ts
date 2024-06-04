@@ -208,7 +208,7 @@ export type IMortalityResponse = {
   mortality_id: string;
   location_id: string | null;
   mortality_timestamp: string;
-  location: ILocationResponse;
+  location: ILocationResponse | null;
   proximate_cause_of_death_id: string | null;
   proximate_cause_of_death_confidence: string;
   proximate_predated_by_itis_tsn: number | null;
@@ -238,6 +238,7 @@ export type ICritterDetailedResponse = {
   animal_id: string | null;
   sex: string;
   responsible_region_nr_id: string;
+  critter_comment: string | null;
   collection_units: ICritterCollectionUnitResponse[];
   mortality: IMortalityResponse[];
   captures: ICaptureResponse[];
@@ -258,6 +259,7 @@ export interface ICritterSimpleResponse {
   itis_tsn: number;
   itis_scientific_name: string;
   responsible_region_nr_id: string | null;
+  critter_comment: string | null;
 }
 
 /**

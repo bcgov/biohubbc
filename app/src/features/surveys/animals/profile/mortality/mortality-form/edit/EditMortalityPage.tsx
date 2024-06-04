@@ -11,7 +11,7 @@ import PageHeader from 'components/layout/PageHeader';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { EditMortalityI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
-import { AnimalMortalityForm } from 'features/surveys/animals/profile/mortality/mortality-form/AnimalMortalityForm';
+import { AnimalMortalityForm } from 'features/surveys/animals/profile/mortality/mortality-form/components/AnimalMortalityForm';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
@@ -90,11 +90,10 @@ export const EditMortalityPage = () => {
 
     try {
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
-      if (!values || !critterbaseCritterId || values.mortality.location?.geometry.type !== 'Point') {
+      if (!values || !critterbaseCritterId) {
         return;
       }
 
-      // Format mortality location
       const mortalityLocation = formatLocation(values.mortality.location);
 
       // Format mortality timestamp
@@ -213,7 +212,7 @@ export const EditMortalityPage = () => {
         type: 'Feature',
         geometry: {
           type: 'Point',
-          coordinates: [mortality.location.longitude ?? 0, mortality.location.latitude ?? 0]
+          coordinates: [mortality.location?.longitude ?? 0, mortality.location?.latitude ?? 0]
         },
         properties: {}
       }

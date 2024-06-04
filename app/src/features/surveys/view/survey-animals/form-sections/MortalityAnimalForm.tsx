@@ -68,13 +68,15 @@ const MortalityAnimalForm = (props: AnimalFormProps<IMortalityResponse>) => {
         initialValues: {
           critter_id: props.critter.critter_id,
           mortality_id: props.formObject?.mortality_id,
-          location: {
-            location_id: props?.formObject?.location.location_id,
-            latitude: props?.formObject?.location?.latitude ?? ('' as unknown as number),
-            longitude: props?.formObject?.location?.longitude ?? ('' as unknown as number),
-            coordinate_uncertainty: props?.formObject?.location?.coordinate_uncertainty ?? ('' as unknown as number),
-            coordinate_uncertainty_unit: props?.formObject?.location?.coordinate_uncertainty_unit ?? 'm'
-          },
+          location:
+            (props.formObject && {
+              location_id: props.formObject?.location?.location_id,
+              latitude: props.formObject?.location?.latitude ?? ('' as unknown as number),
+              longitude: props.formObject?.location?.longitude ?? ('' as unknown as number),
+              coordinate_uncertainty: props.formObject?.location?.coordinate_uncertainty ?? ('' as unknown as number),
+              coordinate_uncertainty_unit: props.formObject?.location?.coordinate_uncertainty_unit ?? 'm'
+            }) ||
+            null,
           mortality_timestamp: (props.formObject?.mortality_timestamp ?? '') as unknown as Date,
           mortality_comment: props.formObject?.mortality_comment ?? undefined,
           proximate_cause_of_death_id: props.formObject?.proximate_cause_of_death_id ?? '',

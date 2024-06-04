@@ -151,6 +151,9 @@ POST.apiDoc = {
             },
             sex: {
               type: 'string'
+            },
+            critter_comment: {
+              type: 'string'
             }
           },
           additionalProperties: false

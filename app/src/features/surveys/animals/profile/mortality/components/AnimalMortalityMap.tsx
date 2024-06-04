@@ -20,12 +20,12 @@ export const AnimalMortalityMap = (props: IAnimalMortalityMapProps) => {
   const { mortality, isLoading } = props;
 
   const mortalityMapFeatures = mortality
-    .filter((mortality) => isDefined(mortality.location?.latitude) && isDefined(mortality.location.longitude))
+    .filter((mortality) => isDefined(mortality.location?.latitude) && isDefined(mortality.location?.longitude))
     .map((mortality) => ({
       type: 'Feature',
       geometry: {
         type: 'Point',
-        coordinates: [mortality.location.longitude, mortality.location.latitude]
+        coordinates: [mortality.location?.longitude, mortality.location?.latitude]
       },
       properties: { mortalityId: mortality.mortality_id, date: mortality.mortality_timestamp }
     })) as Feature[];
