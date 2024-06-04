@@ -1,27 +1,19 @@
-import { mdiChevronDown, mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import Accordion from '@mui/material/Accordion';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
-import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import YesNoDialog from 'components/dialog/YesNoDialog';
-import { TechniqueChipColours } from 'constants/misc';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import { IGetTechnique } from 'interfaces/useTechniqueApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getCodesName } from 'utils/Utils';
-import { TechniqueCardDetails } from './TechniqueCardDetails';
+import SamplingTechniqueCard from './SamplingTechniqueCard';
 
 interface ISamplingTechniqueCardContainer {
   techniques: IGetTechnique[];
@@ -42,11 +34,6 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
 
   const { projectId, surveyId } = useSurveyContext();
   const codesContext = useCodesContext();
-
-  const handleTechniqueMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, techniqueId: number) => {
-    setTechniqueAnchorEl(event.currentTarget);
-    setSelectedTechnique(techniqueId);
-  };
 
   return (
     <>
@@ -121,103 +108,29 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
       )}
 
       {techniques.length ? (
-        techniques.map((technique, index) => {
-          return (
-            <Accordion
-              component={Paper}
-              variant="outlined"
-              disableGutters
-              onChange={() =>
-                setExpanded((expanded) => {
-                  if (expanded.includes(technique.method_technique_id)) {
-                    return expanded.filter((exp) => exp !== technique.method_technique_id);
-                  } else return [...expanded, technique.method_technique_id];
-                })
-              }
-              key={technique.method_technique_id}
-              sx={{
-                margin: '15px',
-                boxShadow: 'none',
-                px: 1,
-                borderRadius: '5px',
-                '&.Mui-expanded': {
-                  margin: '15px !important'
-                },
-                '&:before': {
-                  display: 'none'
-                }
-              }}>
-              <Box display="flex" alignItems="center">
-                <AccordionSummary
-                  expandIcon={<Icon path={mdiChevronDown} size={1} />}
-                  aria-controls="panel1bh-content"
-                  sx={{
-                    flex: '1 1 auto',
-                    mr: 1,
-                    pr: 8.5,
-                    minHeight: 55,
-                    overflow: 'hidden',
-                    border: 0,
-                    '& .MuiAccordionSummary-content': {
-                      flex: '1 1 auto',
-                      py: 0,
-                      pl: 0
-                    }
-                  }}>
-                  <Stack gap={1} display="flex" flex="1 1 auto">
-                    <Stack direction="row" gap={1.5} flex="1 1 auto">
-                      <Typography variant="h5">{technique.name}</Typography>
-                      <ColouredRectangleChip
-                        label={
-                          getCodesName(
-                            codesContext.codesDataLoader.data,
-                            'sample_methods',
-                            technique.method_lookup_id
-                          ) ?? ''
-                        }
-                        colour={TechniqueChipColours[index]}
-                      />
-                    </Stack>
-                    <Typography
-                      color="textSecondary"
-                      variant="body2"
-                      sx={{
-                        display: '-webkit-box',
-                        overflow: 'hidden',
-                        WebkitBoxOrient: 'vertical',
-                        WebkitLineClamp: expanded.includes(technique.method_technique_id) ? 'unset' : 2
-                      }}>
-                      {technique.description}
-                    </Typography>
-                  </Stack>
-                </AccordionSummary>
-                <IconButton
-                  sx={{ position: 'absolute', right: '24px' }}
-                  edge="end"
-                  onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                    handleTechniqueMenuClick(event, technique.method_technique_id)
-                  }
-                  aria-label="sample-site-settings">
-                  <Icon path={mdiDotsVertical} size={1}></Icon>
-                </IconButton>
-              </Box>
-              <AccordionDetails>
-                <TechniqueCardDetails technique={technique} />
-              </AccordionDetails>
-            </Accordion>
-          );
-        })
+        techniques.map((technique) => (
+          <SamplingTechniqueCard
+            technique={technique}
+            method_lookup_name={
+              getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id) ?? ''
+            }
+            handleMenuClick={(event) => {
+              setTechniqueAnchorEl(event.currentTarget);
+              setSelectedTechnique(technique.method_technique_id);
+            }}
+          />
+        ))
       ) : (
         <Box
           flex="1 1 auto"
           borderRadius="5px"
-          minHeight="140px"
+          minHeight="150px"
           display="flex"
           alignItems="center"
           justifyContent="center"
           bgcolor={grey[200]}>
           <Typography variant="body2" color="textSecondary">
-            No techniques
+            This Survey has no techniques
           </Typography>
         </Box>
       )}

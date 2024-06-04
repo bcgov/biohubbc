@@ -21,9 +21,9 @@ export interface ITechniquePostData {
   name: string;
   description: string | null;
   distance_threshold: number | null;
-  method_lookup_id: number;
-  quantitative_attributes: { method_lookup_attribute_quantitative_id: string }[];
-  qualitative_attributes: { method_lookup_attribute_qualitative_id: string }[];
+  method_technique_id: number;
+  quantitative_attributes: { method_technique_attribute_quantitative_id: string }[];
+  qualitative_attributes: { method_technique_attribute_qualitative_id: string }[];
   attractants: { attractant_lookup_id: number }[];
 }
 

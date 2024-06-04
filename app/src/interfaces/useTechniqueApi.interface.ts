@@ -2,7 +2,7 @@ export interface ICreateTechniqueRequest {
   name: string;
   description: string | null;
   distance_threshold: number | null;
-  method_lookup_id: number | null;
+  method_technique_id: number | null;
   attractants: number[];
   attributes: { attribute_id: string, type: string }[];
 }
@@ -17,13 +17,10 @@ export interface IGetTechnique {
   method_technique_id: number;
   name: string;
   description: string | null;
-  distance_threshold: number | null;
   method_lookup_id: number;
-  quantitative_attributes: { method_technique_attribute_quantitative_id: string; value: number }[];
-  qualitative_attributes: {
-    method_technique_attribute_qualitative_id: string;
-    method_technique_attribute_qualitative_option_id: string;
-  }[];
+  distance_threshold: number | null;
+  quantitative_attributes: { method_technique_attribute_quantitative_id: number }[];
+  qualitative_attributes: { method_technique_attribute_qualitative_id: number }[];
   attractants: { attractant_lookup_id: number }[];
 }
 

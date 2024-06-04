@@ -36,7 +36,7 @@ import ObservationsTable from 'features/surveys/observations/observations-table/
 import { useCodesContext, useObservationsPageContext, useObservationsTableContext } from 'hooks/useContext';
 import {
   IGetSampleLocationDetails,
-  IGetSampleMethodRecord,
+  IGetSampleMethodDetails,
   IGetSamplePeriodRecord
 } from 'interfaces/useSamplingSiteApi.interface';
 import { useContext } from 'react';
@@ -65,15 +65,14 @@ const ObservationComponent = () => {
     })) ?? [];
 
   // Collect sample methods
-  const surveySampleMethods: IGetSampleMethodRecord[] = surveySampleSites
+  const surveySampleMethods: IGetSampleMethodDetails[] = surveySampleSites
     .filter((sampleSite) => Boolean(sampleSite.sample_methods))
-    .map((sampleSite) => sampleSite.sample_methods as IGetSampleMethodRecord[])
+    .map((sampleSite) => sampleSite.sample_methods as IGetSampleMethodDetails[])
     .flat(2);
   const sampleMethodOptions: ISampleMethodOption[] = surveySampleMethods.map((method) => ({
     survey_sample_method_id: method.survey_sample_method_id,
     survey_sample_site_id: method.survey_sample_site_id,
-    sample_method_name:
-      getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? '',
+    sample_method_name: method.technique.name,
     response_metric:
       getCodesName(codesContext.codesDataLoader.data, 'method_response_metrics', method.method_response_metric_id) ?? ''
   }));

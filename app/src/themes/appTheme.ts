@@ -283,6 +283,13 @@ const appTheme = createTheme({
         }
       }
     },
+    MuiListItemText: {
+      styleOverrides: {
+        root: {
+          borderRadius: '3px'
+        }
+      }
+    },
     MuiListItemIcon: {
       styleOverrides: {
         root: {

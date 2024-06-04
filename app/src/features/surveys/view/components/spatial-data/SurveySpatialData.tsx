@@ -282,7 +282,7 @@ const SurveySpatialData = () => {
                   value: (sampleSite.sample_methods ?? [])
                     .map(
                       (method) =>
-                        getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
+                        getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_technique_id) ?? ''
                     )
                     .filter(Boolean)
                     .join(', ')

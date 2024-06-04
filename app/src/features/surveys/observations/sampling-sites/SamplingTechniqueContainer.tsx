@@ -2,6 +2,7 @@ import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -287,12 +288,36 @@ const SamplingSiteTechniqueContainer = () => {
             <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
         </Toolbar>
-        <Divider flexItem />
         {surveyContext.techniqueDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
           <SkeletonList />
         ) : (
           <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
-            <Box flex="1 1 auto">
+            <Divider flexItem></Divider>
+            <Box
+              flex="1 1 auto"
+              sx={{
+                background: grey[100]
+              }}>
+              {/* Display text if the sample site data loader has no items in it */}
+              {!techniqueCount && (
+                <Stack
+                  sx={{
+                    background: grey[50]
+                  }}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  flex="1 1 auto"
+                  position="absolute"
+                  top={0}
+                  right={0}
+                  left={0}
+                  bottom={0}
+                  height="100%">
+                  <Typography variant="body2">No Techniques</Typography>
+                </Stack>
+              )}
+
               <SamplingTechniqueCardContainer
                 techniques={techniques}
                 handleDelete={(technique) => {

@@ -5,15 +5,16 @@ import { CreateSamplingSiteI18N } from 'constants/i18n';
 import { SamplingSiteMethodYupSchema } from 'features/surveys/observations/sampling-sites/create/form/MethodForm';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
-import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
 import SamplingSiteHeader from '../components/SamplingSiteHeader';
+import { SamplingSiteMethodPeriodYupSchema } from '../periods/create/form/SamplingPeriodForm';
 import SampleSiteCreateForm from './form/SampleSiteCreateForm';
 
 export interface ISurveySampleSite {
@@ -32,13 +33,15 @@ const SamplingSitePage = () => {
   const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext()
+  const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
 
   const formikRef = useRef<FormikProps<ICreateSamplingSiteRequest>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -55,8 +58,19 @@ const SamplingSitePage = () => {
       )
       .min(1, 'At least one sampling site location is required'),
     sample_methods: yup
-      .array(yup.object().concat(SamplingSiteMethodYupSchema))
-      .min(1, 'At least one sampling method is required')
+      .array()
+      .of(
+        SamplingSiteMethodYupSchema.shape({
+          sample_periods: yup
+            .array()
+            .of(SamplingSiteMethodPeriodYupSchema)
+            .min(
+              1,
+              'At least one sampling period is required for each method, describing when exactly this method was done'
+            )
+        })
+      ) // Ensure each item in the array conforms to SamplingSiteMethodYupSchema
+      .min(1, 'At least one sampling method is required') // Add check for at least one item in the array
   });
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -78,7 +92,23 @@ const SamplingSitePage = () => {
     try {
       setIsSubmitting(true);
 
-      await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, values);
+      // Remove internal _id property of newly created sample_methods used only as a unique key prop
+      const { sample_methods, ...otherValues } = values;
+
+      const data = {
+        ...otherValues,
+        sample_methods: sample_methods.map((method) => ({
+          survey_sample_method_id: method.survey_sample_method_id,
+          survey_sample_site_id: method.survey_sample_site_id,
+          method_technique_id: method.method_technique_id,
+          // technique: { method_technique_id: method.technique.method_technique_id },
+          description: method.description,
+          sample_periods: method.sample_periods,
+          method_response_metric_id: method.method_response_metric_id
+        }))
+      };
+
+      await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, data);
 
       // Disable cancel prompt so we can navigate away from the page after saving
       setEnableCancelCheck(false);
@@ -87,7 +117,10 @@ const SamplingSitePage = () => {
       surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
       // create complete, navigate back to observations page
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
+      history.push(
+        `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`,
+        SKIP_CONFIRMATION_DIALOG
+      );
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: CreateSamplingSiteI18N.createErrorTitle,
@@ -99,42 +132,9 @@ const SamplingSitePage = () => {
     }
   };
 
-  /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location) => {
-    if (!dialogContext.yesNoDialogProps.open) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        open: true,
-        dialogTitle: CreateSamplingSiteI18N.cancelTitle,
-        dialogText: CreateSamplingSiteI18N.cancelText,
-        onClose: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onNo: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        }
-      });
-      return false;
-    }
-
-    // If the cancel dialog is already open and another location change action is triggered: allow it
-    return true;
-  };
-
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
       <Formik
         innerRef={formikRef}
         initialValues={{

@@ -167,7 +167,7 @@ export class SampleLocationService extends DBService {
       sampleLocations.sample_methods.map((item) => {
         const sampleMethod = {
           survey_sample_site_id: sampleSiteRecord.survey_sample_site_id,
-          method_lookup_id: item.method_lookup_id,
+          method_technique_id: item.method_technique_id,
           description: item.description,
           sample_periods: item.sample_periods,
           method_response_metric_id: item.method_response_metric_id
@@ -220,6 +220,8 @@ export class SampleLocationService extends DBService {
     const methodService = new SampleMethodService(this.connection);
     const blockService = new SampleBlockService(this.connection);
     const stratumService = new SampleStratumService(this.connection);
+
+    console.log(sampleSite.methods)
 
     // Update the main sample location
     await this.sampleLocationRepository.updateSampleSite(sampleSite);
@@ -276,7 +278,7 @@ export class SampleLocationService extends DBService {
         const sampleMethod = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,
           survey_sample_method_id: item.survey_sample_method_id,
-          method_lookup_id: item.method_lookup_id,
+          method_technique_id: item.method_technique_id,
           method_response_metric_id: item.method_response_metric_id,
           description: item.description,
           sample_periods: item.sample_periods
@@ -285,7 +287,7 @@ export class SampleLocationService extends DBService {
       } else {
         const sampleMethod = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,
-          method_lookup_id: item.method_lookup_id,
+          method_technique_id: item.method_technique_id,
           method_response_metric_id: item.method_response_metric_id,
           description: item.description,
           sample_periods: item.sample_periods

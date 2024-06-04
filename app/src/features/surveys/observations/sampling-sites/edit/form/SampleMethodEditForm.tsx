@@ -9,6 +9,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Collapse from '@mui/material/Collapse';
+import blueGrey from '@mui/material/colors/blueGrey';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -17,16 +18,18 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { CodesContext } from 'contexts/codesContext';
 import CreateSamplingMethod from 'features/surveys/observations/sampling-sites/create/form/CreateSamplingMethod';
 import EditSamplingMethod from 'features/surveys/observations/sampling-sites/edit/form/EditSamplingMethod';
 import { useFormikContext } from 'formik';
+import { useSurveyContext } from 'hooks/useContext';
 import { IGetSampleLocationDetailsForUpdate } from 'interfaces/useSamplingSiteApi.interface';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
 import { ISurveySampleMethodData } from '../../create/form/MethodForm';
-import SamplingSiteListPeriod from '../../list/SamplingSiteListPeriod';
+import MethodPeriodForm from '../../periods/create/form/SamplingPeriodForm';
 
 export interface SampleMethodEditFormProps {
   name: string;
@@ -48,6 +51,8 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
   const [editData, setEditData] = useState<{ data: ISurveySampleMethodData; index: number } | undefined>(undefined);
 
   const codesContext = useContext(CodesContext);
+  const surveyContext = useSurveyContext();
+
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
@@ -155,86 +160,89 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
               {errors.sample_methods}
             </Alert>
           )}
-          <Stack gap={1.5}>
-            <Stack component={TransitionGroup} gap={1.5}>
-              {values.sample_methods.map((item, index) => (
-                <Collapse key={`${index}-${item.survey_sample_method_id}`}>
-                  <Card
-                    variant="outlined"
-                    sx={{
-                      background: grey[100],
-                      '& .MuiCardHeader-root': {
-                        pb: 1
-                      }
-                    }}>
-                    <CardHeader
-                      title={
-                        <>
-                          {getCodesName(
-                            codesContext.codesDataLoader.data,
-                            'sample_methods',
-                            item.method_lookup_id || 0
-                          )}
-                          <Typography component="span" variant="body2" color="textSecondary" ml={1}>
-                            {getCodesName(
-                              codesContext.codesDataLoader.data,
-                              'method_response_metrics',
-                              item.method_response_metric_id || 0
-                            )}
-                          </Typography>
-                        </>
-                      }
-                      action={
-                        <IconButton
-                          onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                            handleMenuClick(event, index)
-                          }
-                          aria-label="settings">
-                          <MoreVertIcon />
-                        </IconButton>
-                      }
-                    />
-                    <CardContent
-                      sx={{
-                        pt: 0,
-                        pb: '12px !important'
-                      }}>
-                      <Stack gap={2}>
-                        {item.description && (
-                          <Typography
-                            variant="body2"
-                            color="textSecondary"
-                            sx={{
-                              display: '-webkit-box',
-                              WebkitLineClamp: '2',
-                              WebkitBoxOrient: 'vertical',
-                              maxWidth: '92ch',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis'
-                            }}>
-                            {item.description}
-                          </Typography>
-                        )}
-                        <Box>
-                          <Typography variant="body2" fontWeight={700}>
-                            Periods
-                          </Typography>
-                          <Divider component="div" sx={{ mt: 1 }}></Divider>
-                          <Box sx={{ maxWidth: { xs: '100%', sm: '400px', xl: '300px' }, m: 1 }}>
-                            <SamplingSiteListPeriod samplePeriods={item.sample_periods} />
-                          </Box>
+          <Stack component={TransitionGroup} gap={1.5}>
+            {values.sample_methods.map((item, index) => (
+              <Collapse key={`sample_method_${item.survey_sample_method_id || ('_id' in item && item._id)}`}>
+                <Card
+                  variant="outlined"
+                  sx={{
+                    background: grey[50],
+                    border: `1px solid ${grey[400]}`,
+                    '& .MuiCardHeader-root': {
+                      pb: 1
+                    },
+                    pb: 2
+                  }}>
+                  <CardHeader
+                    title={
+                      <Box display="flex">
+                        <Typography component="span" variant="h5">
+                          {'technique' in item
+                            ? item.technique.name
+                            : surveyContext.techniqueDataLoader.data?.techniques.find(
+                                (technique) => technique.method_technique_id === item.method_technique_id
+                              )?.name}
+                        </Typography>
+                        <Box sx={{ ml: 1 }}>
+                          <ColouredRectangleChip
+                            colour={blueGrey}
+                            label={
+                              getCodesName(
+                                codesContext.codesDataLoader.data,
+                                'method_response_metrics',
+                                item.method_response_metric_id || 0
+                              ) ?? ''
+                            }
+                          />
                         </Box>
-                      </Stack>
-                    </CardContent>
-                  </Card>
-                </Collapse>
-              ))}
-            </Stack>
+                      </Box>
+                    }
+                    action={
+                      <IconButton
+                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                          handleMenuClick(event, index)
+                        }
+                        aria-label="settings">
+                        <MoreVertIcon />
+                      </IconButton>
+                    }
+                  />
+                  <CardContent
+                    sx={{
+                      pt: 0,
+                      pb: '6px !important'
+                    }}>
+                    <Stack gap={2}>
+                      {item.description && (
+                        <Typography
+                          color="textSecondary"
+                          sx={{
+                            display: '-webkit-box',
+                            WebkitLineClamp: '2',
+                            WebkitBoxOrient: 'vertical',
+                            maxWidth: '92ch',
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis'
+                          }}>
+                          {item.description}
+                        </Typography>
+                      )}
+                      <Divider sx={{ mt: 0.5 }} />
+                      <Box py={1}>
+                        <MethodPeriodForm index={index} survey_sample_method={item} />
+                      </Box>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Collapse>
+            ))}
+
             <Button
               sx={{
-                alignSelf: 'flex-start'
+                alignSelf: 'flex-start',
+                mt: 1
               }}
-              data-testid="edit-sample-method-add-button"
+              data-testid="create-sample-method-add-button"
               variant="outlined"
               color="primary"
               title="Add Sample Method"

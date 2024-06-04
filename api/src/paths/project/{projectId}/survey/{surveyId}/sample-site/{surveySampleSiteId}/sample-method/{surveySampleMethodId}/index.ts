@@ -79,7 +79,7 @@ PUT.apiDoc = {
               type: 'object',
               additionalProperties: false,
               properties: {
-                method_lookup_id: {
+                method_technique_id: {
                   type: 'integer'
                 },
                 description: {
