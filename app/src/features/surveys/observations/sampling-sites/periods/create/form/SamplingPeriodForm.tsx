@@ -21,6 +21,7 @@ import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interf
 import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
+import { ISurveySampleMethodData } from '../../../create/form/MethodForm';
 import EditSamplingPeriod from '../../edit/form/EditSamplingPeriod';
 import CreateSamplingPeriod from './CreateSamplingPeriod';
 
@@ -31,15 +32,6 @@ export interface ISurveySampleMethodPeriodData {
   end_date: string;
   start_time: string | null;
   end_time: string | null;
-}
-
-export interface ISurveySampleMethodData {
-  survey_sample_method_id: number | null;
-  survey_sample_site_id: number | null;
-  method_technique_id?: number | null;
-  description: string;
-  sample_periods: ISurveySampleMethodPeriodData[];
-  method_response_metric_id: number | null;
 }
 
 export const SurveySampleMethodPeriodArrayItemInitialValues = {
@@ -87,6 +79,7 @@ export const SamplingSiteMethodPeriodYupSchema = yup
   });
 
 interface IMethodPeriodFormProps {
+  survey_sample_method: ISurveySampleMethodData;
   method_technique_id: number;
   index: number;
 }
@@ -98,7 +91,7 @@ interface IMethodPeriodFormProps {
  */
 const MethodPeriodForm = (props: IMethodPeriodFormProps) => {
   const formikProps = useFormikContext<ICreateSamplingSiteRequest>();
-  const { values, errors, setFieldValue, setErrors } = formikProps;
+  const { errors, setFieldValue, setErrors } = formikProps;
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -106,11 +99,8 @@ const MethodPeriodForm = (props: IMethodPeriodFormProps) => {
   const [editData, setEditData] = useState<{ data: ISurveySampleMethodPeriodData; index: number } | undefined>(
     undefined
   );
-  // const [selectedMethodIndex, setSelectedMethodIndex] = useState<number>()
 
-  const sample_periods =
-    values.sample_methods.find((method) => method.method_technique_id === props.method_technique_id)?.sample_periods ??
-    [];
+  const sample_periods = props.survey_sample_method.sample_periods;
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
@@ -133,12 +123,8 @@ const MethodPeriodForm = (props: IMethodPeriodFormProps) => {
       updatedErrors.sample_methods[index] = {};
     }
 
-    console.log(updatedErrors);
-
     setErrors(updatedErrors);
   };
-
-  console.log(getIn(errors, `sample_methods[${props.index}].sample_periods`));
 
   return (
     <>
@@ -203,7 +189,7 @@ const MethodPeriodForm = (props: IMethodPeriodFormProps) => {
       {getIn(errors, `sample_methods[${props.index}].sample_periods`) !== undefined && (
         <Alert
           sx={{
-            my: 1
+            mb: 1
           }}
           severity="error">
           <AlertTitle>Missing sampling period</AlertTitle>
@@ -251,7 +237,8 @@ const MethodPeriodForm = (props: IMethodPeriodFormProps) => {
 
         <Button
           sx={{
-            alignSelf: 'flex-start'
+            alignSelf: 'flex-start',
+            mt: 1
           }}
           data-testid="sampling-period-add-button"
           variant="outlined"

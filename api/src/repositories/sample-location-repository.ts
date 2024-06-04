@@ -26,6 +26,8 @@ export const SampleLocationRecord = z.object({
       survey_sample_method_id: true,
       survey_sample_site_id: true,
       method_technique_id: true,
+      method_technique_name: true,
+      method_technique_description: true,
       description: true,
       method_response_metric_id: true
     }).extend(
@@ -134,6 +136,30 @@ export class SampleLocationRepository extends BaseRepository {
     const knex = getKnex();
     const queryBuilder = knex
       .queryBuilder()
+      .with('w_method_technique_attractant', (qb) => {
+        // Gather technique attractants
+        qb.select('mta.method_technique_id', knex.raw(`
+        json_agg(json_build_object(mta.method_technique_attractant_id)
+        ) as technique_attractants`))
+          .from({ mta: 'method_technique_attractant' })
+          .groupBy('mta.method_technique_id');
+      })
+      .with('w_method_technique', (qb) => {
+        // Gather method techniques
+        qb.select(
+          'mt.method_technique_id',
+          knex.raw(`
+          json_agg(json_build_object(
+            'method_technique_id', mt.method_technique_id,
+            'name', mt.name,
+            'description', mt.description,
+            'technique_attractants', COALESCE(mta.technique_attractants, '[]'::json)
+          )) as method_technique`)
+        )
+          .from({ mt: 'method_technique' })
+          .leftJoin('w_method_technique_attractant as mta', 'mta.method_technique_id', 'mt.method_technique_id')
+          .groupBy('mt.method_technique_id');
+      })
       .with('w_survey_sample_period', (qb) => {
         // Aggregate sample periods into an array of objects
         qb.select(
@@ -160,14 +186,15 @@ export class SampleLocationRepository extends BaseRepository {
           json_agg(json_build_object(
             'survey_sample_method_id', ssm.survey_sample_method_id,
             'survey_sample_site_id', ssm.survey_sample_site_id,
-            'method_technique_id', ssm.method_technique_id,
             'description', ssm.description,
             'sample_periods', COALESCE(wssp.sample_periods, '[]'::json),
+            'technique', COALESCE(wmt.method_technique, '[]'::json),
             'method_response_metric_id', ssm.method_response_metric_id
           )) as sample_methods`)
         )
           .from({ ssm: 'survey_sample_method' })
           .leftJoin('w_survey_sample_period as wssp', 'wssp.survey_sample_method_id', 'ssm.survey_sample_method_id')
+          .leftJoin('w_method_technique as wmt', 'wmt.method_technique_id', 'ssm.method_technique_id')
           .groupBy('ssm.survey_sample_site_id');
       })
       .with('w_survey_sample_block', (qb) => {

@@ -11,6 +11,7 @@ import CardHeader from '@mui/material/CardHeader';
 import Collapse from '@mui/material/Collapse';
 import blueGrey from '@mui/material/colors/blueGrey';
 import grey from '@mui/material/colors/grey';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu, { MenuProps } from '@mui/material/Menu';
@@ -146,7 +147,7 @@ const SamplingMethodForm = () => {
           )}
           <Stack component={TransitionGroup} gap={1.5}>
             {values.sample_methods.map((item, index) => (
-              <Collapse key={`sample_method_${item.method_technique_id || index}`}>
+              <Collapse key={`sample_method_${item._id}`}>
                 <Card
                   variant="outlined"
                   sx={{
@@ -211,12 +212,10 @@ const SamplingMethodForm = () => {
                           {item.description}
                         </Typography>
                       )}
+                      <Divider sx={{ mt: 0.5 }} />
                       <Box py={1}>
-                        <Typography component="legend" variant="body2">
-                          Add Time Periods
-                        </Typography>
                         {item.method_technique_id && (
-                          <MethodPeriodForm index={index} method_technique_id={item.method_technique_id} />
+                          <MethodPeriodForm index={index} method_technique_id={item.method_technique_id} survey_sample_method={item}/>
                         )}
                       </Box>
                     </Stack>
@@ -227,7 +226,8 @@ const SamplingMethodForm = () => {
 
             <Button
               sx={{
-                alignSelf: 'flex-start'
+                alignSelf: 'flex-start',
+                mt: 1
               }}
               data-testid="create-sample-method-add-button"
               variant="outlined"

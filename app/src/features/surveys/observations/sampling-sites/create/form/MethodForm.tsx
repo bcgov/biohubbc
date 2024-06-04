@@ -9,18 +9,21 @@ import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
+import { v4 } from 'uuid';
 import { ISurveySampleMethodPeriodData } from '../../periods/create/form/SamplingPeriodForm';
 
 export interface ISurveySampleMethodData {
+  _id?: string; // Internal ID used only for a unique key prop. Should not be sent to the API.
   survey_sample_method_id: number | null;
   survey_sample_site_id: number | null;
-  method_technique_id?: number | null;
+  method_technique_id: number | null;
   description: string;
   sample_periods: ISurveySampleMethodPeriodData[];
   method_response_metric_id: number | null;
 }
 
 export const SurveySampleMethodDataInitialValues = {
+  _id: v4(),
   survey_sample_method_id: null,
   survey_sample_site_id: null,
   method_technique_id: null,
@@ -53,7 +56,7 @@ const MethodForm = () => {
     codesContext.codesDataLoader.data?.method_response_metrics.map((option) => ({
       value: option.id,
       label: option.name,
-      subText: option.description
+      description: option.description
     })) ?? [];
 
   useEffect(() => {

@@ -54,7 +54,7 @@ export interface IGetSampleLocationDetails {
   update_date: string | null;
   update_user: number | null;
   revision_count: number;
-  sample_methods: IGetSampleMethodRecord[];
+  sample_methods: IGetSampleMethodDetails[];
   blocks: IGetSampleBlockDetails[];
   stratums: IGetSampleStratumDetails[];
 }
@@ -110,6 +110,11 @@ export interface IGetSampleMethodRecord {
   update_user: number | null;
   revision_count: number;
   sample_periods: IGetSamplePeriodRecord[];
+}
+
+export interface IGetSampleMethodDetails extends IGetSampleMethodRecord {
+  method_technique_name: string;
+  method_technique_description: string;
 }
 
 export interface IGetSamplePeriodRecord {

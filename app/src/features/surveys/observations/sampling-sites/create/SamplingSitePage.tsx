@@ -64,7 +64,7 @@ const SamplingSitePage = () => {
             .of(SamplingSiteMethodPeriodYupSchema)
             .min(
               1,
-              'At least one sampling period is required for each method, describing when exactly you conducted this method at this site.'
+              'At least one sampling period is required for each method, describing when exactly this method was done'
             )
         })
       ) // Ensure each item in the array conforms to SamplingSiteMethodYupSchema
@@ -90,7 +90,22 @@ const SamplingSitePage = () => {
     try {
       setIsSubmitting(true);
 
-      await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, values);
+      // Remove internal _id property of newly created sample_methods used only as a unique key prop
+      const { sample_methods, ...otherValues } = values;
+
+      const data = {
+        ...otherValues,
+        sample_methods: sample_methods.map((method) => ({
+          survey_sample_method_id: method.survey_sample_method_id,
+          survey_sample_site_id: method.survey_sample_site_id,
+          method_technique_id: method.method_technique_id,
+          description: method.description,
+          sample_periods: method.sample_periods,
+          method_response_metric_id: method.method_response_metric_id
+        }))
+      };
+
+      await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, data);
 
       // Disable cancel prompt so we can navigate away from the page after saving
       setEnableCancelCheck(false);
