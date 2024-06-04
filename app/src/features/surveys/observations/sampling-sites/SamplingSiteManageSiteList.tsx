@@ -16,11 +16,13 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { SkeletonList } from 'components/loading/SkeletonLoaders';
+import { SkeletonMap, SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import SamplingSiteCard from './SamplingSiteCard';
+import SamplingSiteMapContainer from './SamplingSiteMapContainer';
 
 /**
  * Renders a list of sampling sites.
@@ -122,18 +124,6 @@ const SamplingSiteManageSiteList = () => {
     });
   };
 
-  const handleCheckboxChange = (sampleSiteId: number) => {
-    setCheckboxSelectedIds((prev) => {
-      if (prev.includes(sampleSiteId)) {
-        return prev.filter((item) => item !== sampleSiteId);
-      } else {
-        return [...prev, sampleSiteId];
-      }
-    });
-  };
-
-  console.log(handleCheckboxChange);
-
   const handleBulkDeleteSampleSites = async () => {
     await biohubApi.samplingSite
       .deleteSampleSites(surveyContext.projectId, surveyContext.surveyId, checkboxSelectedIds)
@@ -183,6 +173,16 @@ const SamplingSiteManageSiteList = () => {
       open: true,
       onYes: () => {
         handleBulkDeleteSampleSites();
+      }
+    });
+  };
+
+  const handleCheckboxChange = (sampleSiteId: number) => {
+    setCheckboxSelectedIds((prev) => {
+      if (prev.includes(sampleSiteId)) {
+        return prev.filter((item) => item !== sampleSiteId);
+      } else {
+        return [...prev, sampleSiteId];
       }
     });
   };
@@ -253,13 +253,7 @@ const SamplingSiteManageSiteList = () => {
         </MenuItem>
       </Menu>
 
-      <Paper
-        component={Stack}
-        flexDirection="column"
-        height="100%"
-        sx={{
-          overflow: 'hidden'
-        }}>
+      <Paper component={Stack} flexDirection="column" height="100%">
         <Toolbar
           disableGutters
           sx={{
@@ -294,17 +288,22 @@ const SamplingSiteManageSiteList = () => {
           </IconButton>
         </Toolbar>
         <Divider flexItem />
-        <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-          <Box position="absolute" top="0" right="0" bottom="0" left="0">
-            {surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
-              <SkeletonList />
-            ) : (
-              <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
-                <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
+        <Box>
+          {surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
+            <>
+              <SkeletonMap />
+              <SkeletonTable numberOfLines={5} />
+            </>
+          ) : (
+            <>
+              <SamplingSiteMapContainer samplingSites={surveyContext.sampleSiteDataLoader.data?.sampleSites ?? []} />
+              <Stack height="100%" sx={{ overflowY: 'auto' }}>
+                <Box flex="0 0 auto" display="flex" alignItems="center" px={2} ml={1} height={55}>
                   <FormGroup>
                     <FormControlLabel
                       label={
                         <Typography
+                          ml={-0.5}
                           variant="body2"
                           component="span"
                           color="textSecondary"
@@ -338,58 +337,27 @@ const SamplingSiteManageSiteList = () => {
                   </FormGroup>
                 </Box>
                 <Divider flexItem></Divider>
-                <Box
+                <Stack
                   flex="1 1 auto"
                   sx={{
                     background: grey[100]
                   }}>
-                  {/* Display text if the sample site data loader has no items in it */}
-                  {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length && (
-                    <Stack
-                      sx={{
-                        background: grey[100]
-                      }}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      flex="1 1 auto"
-                      position="absolute"
-                      top={0}
-                      right={0}
-                      left={0}
-                      bottom={0}
-                      height="100%">
-                      <Typography variant="body2">No Sampling Sites</Typography>
-                    </Stack>
-                  )}
-
                   {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
                     return (
-                      <>{sampleSite.name}</>
-                      //   <
-                      //     sampleSite={sampleSite}
-                      //     isChecked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
-                      //     handleSampleSiteMenuClick={handleSampleSiteMenuClick}
-                      //     handleCheckboxChange={handleCheckboxChange}
-                      //     key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
-                      //   />
+                      <SamplingSiteCard
+                        sampleSite={sampleSite}
+                        handleCheckboxChange={handleCheckboxChange}
+                        handleMenuClick={(event) => {
+                          setSampleSiteAnchorEl(event.currentTarget);
+                          setSelectedSampleSiteId(sampleSite.survey_sample_site_id);
+                        }}
+                      />
                     );
                   })}
-                </Box>
-                {/* TODO how should we handle controlling pagination? */}
-                {/* <Paper square sx={{ position: 'sticky', bottom: 0, marginTop: '-1px' }}>
-                <Divider flexItem></Divider>
-                  <TablePagination
-                    rowsPerPage={10}
-                    page={1}
-                    onPageChange={(event) => {}}
-                    rowsPerPageOptions={[10, 50]}
-                    count={69}
-                  />
-                </Paper> */}
+                </Stack>
               </Stack>
-            )}
-          </Box>
+            </>
+          )}
         </Box>
       </Paper>
     </>

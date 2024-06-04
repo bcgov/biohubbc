@@ -288,7 +288,6 @@ const SamplingSiteTechniqueContainer = () => {
             <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
         </Toolbar>
-        <Divider flexItem />
         {surveyContext.techniqueDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
           <SkeletonList />
         ) : (
