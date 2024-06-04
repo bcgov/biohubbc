@@ -25,6 +25,7 @@ const AccordionCard = (props: IAccordionCardProps) => {
       disableGutters
       expanded={expanded}
       sx={{
+        borderRadius: 0,
         boxShadow: 'none',
         px: 1,
         '&:before': {

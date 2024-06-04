@@ -88,7 +88,7 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
       {/* DELETE CONFIRMATION DIALOG */}
       {techniqueForDelete && selectedTechnique && (
         <YesNoDialog
-          dialogTitle={'Delete technique event?'}
+          dialogTitle={'Delete technique?'}
           dialogText={
             'Are you sure you want to permanently delete this technique? All information associated with the technique will be deleted.'
           }
@@ -108,16 +108,18 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
 
       {techniques.length ? (
         techniques.map((technique) => (
-          <SamplingTechniqueCard
-            technique={technique}
-            method_lookup_name={
-              getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id) ?? ''
-            }
-            handleMenuClick={(event) => {
-              setTechniqueAnchorEl(event.currentTarget);
-              setSelectedTechnique(technique.method_technique_id);
-            }}
-          />
+          <Box m={2}>
+            <SamplingTechniqueCard
+              technique={technique}
+              method_lookup_name={
+                getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id) ?? ''
+              }
+              handleMenuClick={(event) => {
+                setTechniqueAnchorEl(event.currentTarget);
+                setSelectedTechnique(technique.method_technique_id);
+              }}
+            />
+          </Box>
         ))
       ) : (
         <Box
@@ -127,7 +129,7 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
           display="flex"
           alignItems="center"
           justifyContent="center"
-          bgcolor={grey[50]}>
+          bgcolor={grey[200]}>
           <Typography variant="body2" color="textSecondary">
             This Survey has no techniques
           </Typography>

@@ -3,7 +3,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import SamplingSiteManagerHeader from 'features/surveys/observations/sampling-sites/SamplingSiteManageHeader';
 import SamplingSiteManageSiteList from 'features/surveys/observations/sampling-sites/SamplingSiteManageSiteList';
-import SamplingSiteTechniqueContainer from 'features/surveys/observations/sampling-sites/SamplingTechniqueContainer';
+import SamplingSiteTechniqueContainer from 'features/surveys/technique/SamplingTechniqueContainer';
 import { useProjectContext, useSurveyContext } from 'hooks/useContext';
 
 const SamplingSiteManagePage = () => {
