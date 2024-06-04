@@ -27,7 +27,7 @@ export const MortalityDetails = (props: IMortalityDetailsProps) => {
 
   useEffect(() => {
     mortalityCodesDataLoader.load();
-  }, []);
+  }, [mortalityCodesDataLoader]);
 
   const mortalityTimestamp = mortality.mortality_timestamp;
   const mortalityComment = mortality.mortality_comment;
