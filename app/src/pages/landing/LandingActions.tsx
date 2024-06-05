@@ -4,6 +4,7 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
 import useTheme from '@mui/material/styles/useTheme';
 import Typography from '@mui/material/Typography';
 import { AuthGuard, UnAuthGuard } from 'components/security/Guards';
@@ -11,6 +12,7 @@ import { SYSTEM_ROLE } from 'constants/roles';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { Link } from 'react-router-dom';
 import { hasAtLeastOneValidValue } from 'utils/authUtils';
+import LandingActionCard from './components/LandingActionCard';
 
 const useStyles = () => {
   const theme = useTheme();
@@ -118,7 +120,7 @@ const LandingActions = () => {
         </>
       </UnAuthGuard>
       <AuthGuard>
-        <Typography variant="body1" data-testid="landing_page_greeting">
+        <Typography variant="body1" data-testid="landing_page_greeting" color="primary.contrastText">
           <span>Welcome</span>
           {isReturningUser && <span>&nbsp;back</span>}
           {userIdentifier && (
@@ -139,6 +141,17 @@ const LandingActions = () => {
             Your request is currently pending a review by an administrator.
           </Alert>
         )}
+        <Grid container spacing={5}>
+          <Grid item xs={12} md={6} lg={4}>
+            <LandingActionCard title="Projects" subtext="Learn about Projects" />
+          </Grid>
+          <Grid item xs={12} md={6} lg={4}>
+            <LandingActionCard title="Projects" subtext="Learn about Projects" />
+          </Grid>
+          <Grid item flex='1 1 auto'>
+            <LandingActionCard title="Projects" subtext="Learn about Projects" />
+          </Grid>
+        </Grid>
         <Box sx={classes.heroActions}>
           {mayViewProjects && (
             <Button
