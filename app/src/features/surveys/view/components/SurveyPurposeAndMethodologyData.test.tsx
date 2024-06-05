@@ -24,7 +24,7 @@ describe('SurveyPurposeAndMethodologyData', () => {
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
-  const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const { getByTestId, getAllByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -76,7 +76,7 @@ describe('SurveyPurposeAndMethodologyData', () => {
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
-  const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const { getByTestId, getAllByTestId, queryByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>

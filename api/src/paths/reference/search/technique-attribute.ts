@@ -85,14 +85,7 @@ GET.apiDoc = {
                   items: {
                     type: 'object',
                     additionalProperties: false,
-                    required: [
-                      'method_lookup_attribute_quantitative_id',
-                      'name',
-                      'description',
-                      'min',
-                      'max',
-                      'unit'
-                    ],
+                    required: ['method_lookup_attribute_quantitative_id', 'name', 'description', 'min', 'max', 'unit'],
                     properties: {
                       method_lookup_attribute_quantitative_id: {
                         type: 'string',
