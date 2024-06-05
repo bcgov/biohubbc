@@ -16,7 +16,7 @@ import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import SamplingTechniqueCardContainer from './components/SamplingTechniqueCardContainer';
+import { SamplingTechniqueCardContainer } from './components/SamplingTechniqueCardContainer';
 
 /**
  * Renders a list of techniques.
@@ -48,12 +48,11 @@ const SamplingSiteTechniqueContainer = () => {
   const techniqueCount = techniqueDataLoaderData?.count ?? 0;
   const techniques = techniqueDataLoaderData?.techniques ?? [];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleTechniqueMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sample_site_id: number) => {
     setTechniqueAnchorEl(event.currentTarget);
     setSelectedTechniqueId(sample_site_id);
   };
-
-  console.log(handleTechniqueMenuClick);
 
   const handleHeaderMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setHeaderAnchorEl(event.currentTarget);
@@ -118,6 +117,7 @@ const SamplingSiteTechniqueContainer = () => {
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleCheckboxChange = (techniqueId: number) => {
     setCheckboxSelectedIds((prev) => {
       if (prev.includes(techniqueId)) {
@@ -127,8 +127,6 @@ const SamplingSiteTechniqueContainer = () => {
       }
     });
   };
-
-  console.log(handleCheckboxChange);
 
   const handleBulkDeleteTechniques = async () => {
     // await biohubApi.samplingSite
@@ -316,12 +314,7 @@ const SamplingSiteTechniqueContainer = () => {
                 </Stack>
               )}
 
-              <SamplingTechniqueCardContainer
-                techniques={techniques}
-                handleDelete={(technique) => {
-                  console.log(technique);
-                }}
-              />
+              <SamplingTechniqueCardContainer techniques={techniques} handleDelete={() => {}} />
             </Box>
           </Stack>
         )}

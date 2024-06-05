@@ -52,12 +52,12 @@ export type EnvironmentTypeIds = {
  * Technique quantitative attributes
  */
 export interface ITechniqueAttributeQuantitative {
-  method_lookup_attribute_quantitative_id: number;
+  method_lookup_attribute_quantitative_id: string;
   name: string;
-  description: string;
-  unit: string;
-  min: number;
-  max: number
+  description: string | null;
+  unit: string | null;
+  min: number | null;
+  max: number | null;
 }
 
 /**
@@ -66,16 +66,16 @@ export interface ITechniqueAttributeQuantitative {
 export interface ITechniqueAttributeQualitativeOption {
   method_lookup_attribute_qualitative_option_id: string;
   name: string;
-  description: string;
+  description: string | null;
 }
 
 /**
  * Technique qualitative attributes
  */
 export interface ITechniqueAttributeQualitative {
-  method_lookup_attribute_qualitative_id: number;
+  method_lookup_attribute_qualitative_id: string;
   name: string;
-  description: string;
+  description: string | null;
   options: ITechniqueAttributeQualitativeOption[];
 }
 

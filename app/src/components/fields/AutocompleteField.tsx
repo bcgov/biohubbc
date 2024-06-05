@@ -11,7 +11,7 @@ import { SyntheticEvent } from 'react';
 export interface IAutocompleteFieldOption<T extends string | number> {
   value: T;
   label: string;
-  description?: string;
+  description?: string | null;
 }
 
 export interface IAutocompleteField<T extends string | number> {
@@ -36,8 +36,6 @@ export interface IAutocompleteField<T extends string | number> {
 const AutocompleteField = <T extends string | number>(props: IAutocompleteField<T>) => {
   const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOption<T>>();
 
-  console.log(values);
-
   const getExistingValue = (existingValue: T): IAutocompleteFieldOption<T> => {
     const result = props.options.find((option) => existingValue === option[props.optionFilter ?? 'value']);
     if (!result) {
@@ -60,7 +58,6 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
 
   return (
     <Autocomplete
-      autoSelect
       clearOnBlur
       blurOnSelect
       handleHomeEndKeys
@@ -74,14 +71,14 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
       sx={props.sx}
       loading={props.loading}
-      onInputChange={(event, value, reason) => {
-        if (props.onInputChange) {
-          props.onInputChange(event, value, reason);
+      onInputChange={(_event, _value, reason) => {
+        if (reason === 'reset') {
           return;
         }
 
-        if (reason === 'reset') {
+        if (reason === 'clear') {
           setFieldValue(props.name, null);
+          return;
         }
       }}
       onChange={(event, option) => {
@@ -102,14 +99,14 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
         return (
           <Box
             component="li"
-            {...params} // Ensure params are spread correctly
+            {...params}
             sx={{
               '& + li': {
                 borderTop: '1px solid' + grey[300]
               }
             }}
             key={option.value}>
-            <Box py={1} width="100%">
+            <Box py={1}>
               <Typography fontWeight={700}>{option.label}</Typography>
               {option.description && (
                 <Typography color="textSecondary" variant="body2">

@@ -41,9 +41,7 @@ export const samplingSiteYupSchema = yup.object({
  */
 const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
   const surveyContext = useContext(SurveyContext);
-  const { submitForm, errors } = useFormikContext<IGetSampleLocationDetailsForUpdate>();
-
-  console.log(errors)
+  const { submitForm } = useFormikContext<IGetSampleLocationDetailsForUpdate>();
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>

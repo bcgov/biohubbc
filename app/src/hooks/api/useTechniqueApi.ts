@@ -22,7 +22,7 @@ const useTechniqueApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Create a new project technique
+   * Create a new technique.
    *
    * @param {ICreateTechniqueRequest} technique
    * @return {*}  {Promise<ICreateTechniqueResponse>}
@@ -32,7 +32,9 @@ const useTechniqueApi = (axios: AxiosInstance) => {
     surveyId: number,
     technique: ICreateTechniqueRequest
   ): Promise<IGetTechnique[]> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/technique/create`, {techniques: [technique]});
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/technique/create`, {
+      techniques: [technique]
+    });
 
     return data;
   };
@@ -40,4 +42,4 @@ const useTechniqueApi = (axios: AxiosInstance) => {
   return { createTechnique, getTechniquesForSurvey };
 };
 
-export { useTechniqueApi };
+export default useTechniqueApi;

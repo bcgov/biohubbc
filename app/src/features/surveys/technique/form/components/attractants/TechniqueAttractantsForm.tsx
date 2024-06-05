@@ -8,28 +8,27 @@ import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import AutocompleteField from 'components/fields/AutocompleteField';
+import { TechniqueFormValues } from 'features/surveys/technique/form/components/TechniqueForm';
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
-import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
+
 import { TransitionGroup } from 'react-transition-group';
 
 /**
- * Create survey - general information fields
+ * Technique attractants form.
  *
  * @return {*}
  */
-const TechniqueAttractantsForm = () => {
+export const TechniqueAttractantsForm = () => {
   const codesContext = useCodesContext();
 
-  const { values, setFieldValue } = useFormikContext<ICreateTechniqueRequest>();
+  const { values, setFieldValue } = useFormikContext<TechniqueFormValues>();
 
   if (!codesContext.codesDataLoader.data) {
     return <></>;
   }
 
   const attractants = codesContext.codesDataLoader.data.attractants;
-
-  console.log(values);
 
   return (
     <>
@@ -51,7 +50,6 @@ const TechniqueAttractantsForm = () => {
                 .filter((option) => !values.attractants?.includes(option.value)) ?? []
             }
             onChange={(_, value) => {
-              console.log([...values.attractants, value?.value]);
               if (value?.value) {
                 setFieldValue('attractants', [...values.attractants, value.value]);
               }
@@ -108,5 +106,3 @@ const TechniqueAttractantsForm = () => {
     </>
   );
 };
-
-export default TechniqueAttractantsForm;

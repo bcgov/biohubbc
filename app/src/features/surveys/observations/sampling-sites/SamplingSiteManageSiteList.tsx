@@ -51,6 +51,7 @@ const SamplingSiteManageSiteList = () => {
 
   const sampleSites = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleSampleSiteMenuClick = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     sample_site_id: number
@@ -58,8 +59,6 @@ const SamplingSiteManageSiteList = () => {
     setSampleSiteAnchorEl(event.currentTarget);
     setSelectedSampleSiteId(sample_site_id);
   };
-
-  console.log(handleSampleSiteMenuClick);
 
   const handleHeaderMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setHeaderAnchorEl(event.currentTarget);
@@ -351,6 +350,7 @@ const SamplingSiteManageSiteList = () => {
                           setSampleSiteAnchorEl(event.currentTarget);
                           setSelectedSampleSiteId(sampleSite.survey_sample_site_id);
                         }}
+                        key={sampleSite.survey_sample_site_id}
                       />
                     );
                   })}

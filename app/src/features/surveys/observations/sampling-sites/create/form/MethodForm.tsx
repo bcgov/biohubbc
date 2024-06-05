@@ -50,9 +50,7 @@ const MethodForm = () => {
   const codesContext = useContext(CodesContext);
   const surveyContext = useSurveyContext();
 
-  const { setFieldValue, errors } = useFormikContext<ISurveySampleMethodData>();
-
-  console.log(errors);
+  const { setFieldValue } = useFormikContext<ISurveySampleMethodData>();
 
   const methodResponseMetricOptions: IAutocompleteFieldOption<number>[] =
     codesContext.codesDataLoader.data?.method_response_metrics.map((option) => ({
@@ -101,7 +99,7 @@ const MethodForm = () => {
               })) ?? []
             }
             onChange={(_, value) => {
-              console.log(value);
+
               if (value?.value) {
                 setFieldValue('method_technique_id', value.value);
               }
@@ -114,7 +112,6 @@ const MethodForm = () => {
             showValue={true}
             options={methodResponseMetricOptions ?? []}
             onChange={(_, value) => {
-              console.log(value);
               if (value?.value) {
                 setFieldValue('method_response_metric_id', value.value);
               }

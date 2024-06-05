@@ -22,11 +22,11 @@ import { Link as RouterLink } from 'react-router-dom';
 import { default as TechniqueForm, TechniqueFormValues } from '../components/TechniqueForm';
 
 /**
- * Renders the body content of the create technique page.
+ * Renders the body content of the edit technique page.
  *
  * @return {*}
  */
-export const CreateTechniquePage = () => {
+export const EditTechniquePage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 

@@ -1,11 +1,31 @@
+import { ITechniqueAttributeQualitative, ITechniqueAttributeQuantitative } from 'interfaces/useReferenceApi.interface';
+
+export type QualitativeAttribute = {
+  method_technique_attribute_qualitative_id: string;
+  method_lookup_attribute_qualitative_option_id: string;
+};
+
+export type QuantitativeAttribute = {
+  method_technique_attribute_quantitative_id: string;
+  value: number;
+};
+
 export interface ICreateTechniqueRequest {
   name: string;
   description: string | null;
   distance_threshold: number | null;
   method_lookup_id: number | null;
   attractants: number[];
-  attributes: { attribute_id: string, type: string }[];
+  attributes: {
+    qualitative_attributes: QualitativeAttribute[];
+    quantitative_attributes: QuantitativeAttribute[];
+  };
 }
+
+/**
+ * Technique attribute type.
+ */
+export type TechniqueAttributeType = ITechniqueAttributeQuantitative | ITechniqueAttributeQualitative;
 
 export interface IAttractant {
   attractant_lookup_id: number;

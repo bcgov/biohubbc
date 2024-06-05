@@ -1,26 +1,42 @@
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
+import { TechniqueAttributesForm } from 'features/surveys/technique/form/components/attributes/TechniqueAttributesForm';
 import { Formik, FormikProps } from 'formik';
 import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
-import { useState } from 'react';
 import yup from 'utils/YupSchema';
-import TechniqueAttractantsForm from './attractants/TechniqueAttractantsForm';
-import TechniqueAttributesForm from './attributes/TechniqueAttributesForm';
-import TechniqueDetailsForm from './details/TechniqueDetailsForm';
-import TechniqueGeneralInformationForm from './general-information/TechniqueGeneralInformationForm';
+import { TechniqueAttractantsForm } from './attractants/TechniqueAttractantsForm';
+import { TechniqueDetailsForm } from './details/TechniqueDetailsForm';
+import { TechniqueGeneralInformationForm } from './general-information/TechniqueGeneralInformationForm';
+
+export type TechniqueAttributeFormValues =
+  | {
+      attribute_id: string;
+      attribute_value: 'string';
+      attribute_type: 'qualitative'; // discriminator
+    }
+  | {
+      attribute_id: string;
+      attribute_value: number;
+      attribute_type: 'quantitative'; // discriminator
+    };
+
+/**
+ * Interface for the values of the Technique form controls.
+ */
+export type TechniqueFormValues = Omit<ICreateTechniqueRequest, 'attributes'> & {
+  // Extend the attributes field to include additional fields used only by the form controls
+  attributes: TechniqueAttributeFormValues[];
+};
 
 interface ITechniqueFormProps {
-  initialData: ICreateTechniqueRequest;
-  handleSubmit: (formikData: ICreateTechniqueRequest) => void;
-  formikRef: React.RefObject<FormikProps<ICreateTechniqueRequest>>;
+  initialData: TechniqueFormValues;
+  handleSubmit: (formikData: TechniqueFormValues) => void;
+  formikRef: React.RefObject<FormikProps<TechniqueFormValues>>;
 }
 
 const TechniqueForm = (props: ITechniqueFormProps) => {
   const { initialData, handleSubmit, formikRef } = props;
-
-  // Try tracking state independent of formik to prevent re-renders
-  const [selectedMethodLookupId, setSelectedMethodLookupId] = useState<number | null>(null);
 
   const techniqueYupSchema = yup.object({
     name: yup.string().required('Name is required.'),
@@ -43,18 +59,14 @@ const TechniqueForm = (props: ITechniqueFormProps) => {
         <HorizontalSplitFormComponent
           title="General Information"
           summary="Enter information about the technique"
-          component={
-            <TechniqueGeneralInformationForm setSelectedMethodLookupId={setSelectedMethodLookupId} />
-          }></HorizontalSplitFormComponent>
+          component={<TechniqueGeneralInformationForm />}></HorizontalSplitFormComponent>
 
         <Divider />
 
         <HorizontalSplitFormComponent
           title="Details"
           summary="Enter additional information about the technique"
-          component={
-            <TechniqueAttributesForm selectedMethodLookupId={selectedMethodLookupId} />
-          }></HorizontalSplitFormComponent>
+          component={<TechniqueAttributesForm />}></HorizontalSplitFormComponent>
 
         <Divider />
 

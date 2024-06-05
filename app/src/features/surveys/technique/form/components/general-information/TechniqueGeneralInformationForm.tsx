@@ -3,24 +3,21 @@ import Grid from '@mui/material/Grid';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
+import { TechniqueFormValues } from 'features/surveys/technique/form/components/TechniqueForm';
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
-import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
-import React, { SetStateAction, useEffect } from 'react';
 
-interface ITechniqueGeneralInformationForm {
-  setSelectedMethodLookupId: React.Dispatch<SetStateAction<number | null>>;
-}
+import { useEffect } from 'react';
 
 /**
- * Create survey - general information fields
+ * Technique general information form.
  *
  * @return {*}
  */
-const TechniqueGeneralInformationForm = (props: ITechniqueGeneralInformationForm) => {
+export const TechniqueGeneralInformationForm = () => {
   const codesContext = useCodesContext();
 
-  const { setFieldValue } = useFormikContext<ICreateTechniqueRequest>();
+  const { setFieldValue } = useFormikContext<TechniqueFormValues>();
 
   const methodOptions: ISelectWithSubtextFieldOption[] =
     codesContext.codesDataLoader.data?.sample_methods.map((option) => ({
@@ -66,7 +63,6 @@ const TechniqueGeneralInformationForm = (props: ITechniqueGeneralInformationForm
             onChange={(_, value) => {
               if (value?.value) {
                 setFieldValue('method_lookup_id', value.value);
-                props.setSelectedMethodLookupId(Number(value.value));
               }
             }}
           />
@@ -86,5 +82,3 @@ const TechniqueGeneralInformationForm = (props: ITechniqueGeneralInformationForm
     </>
   );
 };
-
-export default TechniqueGeneralInformationForm;

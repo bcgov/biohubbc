@@ -3,53 +3,56 @@ import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
+import {
+  TechniqueAttributeFormValues,
+  TechniqueFormValues
+} from 'features/surveys/technique/form/components/TechniqueForm';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { TransitionGroup } from 'react-transition-group';
-import TechniqueAttributeSelect from './components/TechniqueAttributeSelect';
+import { TechniqueAttributeSelect } from './components/TechniqueAttributeSelect';
 
-const initialAttributeValues = {
-  method_lookup_attribute_quantitative_id: undefined,
-  value: undefined,
-  method_lookup_attribute_qualitative_id: undefined,
-  method_lookup_attribute_qualitative_option_id: undefined
+const initialAttributeFormValues: Partial<TechniqueAttributeFormValues> = {
+  // The attribute id (method_lookup_attribute_quantitative_id or method_lookup_attribute_qualitative_id)
+  attribute_id: undefined,
+  // The attribute value (quantitative value or method_lookup_attribute_qualitative_option_id)
+  attribute_value: undefined,
+  // The attribute type discriminator ('quantitative' or 'qualitative')
+  attribute_type: undefined
 };
-
-interface ITechniqueAttributesFormProps {
-  selectedMethodLookupId: number | null;
-}
 
 /**
  * Create survey - general information fields
  *
  * @return {*}
  */
-const TechniqueAttributesForm = (props: ITechniqueAttributesFormProps) => {
+export const TechniqueAttributesForm = () => {
   const biohubApi = useBiohubApi();
-  const { selectedMethodLookupId } = props;
 
-  const { values } = useFormikContext<ICreateTechniqueRequest>();
+  const { values } = useFormikContext<TechniqueFormValues>();
 
   const attributesDataLoader = useDataLoader((method_lookup_id: number) =>
     biohubApi.reference.getTechniqueAttributes([method_lookup_id])
   );
 
+  const attributes = useMemo(
+    () =>
+      attributesDataLoader.data?.flatMap((attribute) => [
+        ...attribute.qualitative_attributes,
+        ...attribute.quantitative_attributes
+      ]) ?? [],
+    [attributesDataLoader.data]
+  );
+
   useEffect(() => {
-    if (!selectedMethodLookupId) {
+    if (!values.method_lookup_id) {
       return;
     }
 
-    attributesDataLoader.load(selectedMethodLookupId);
-  }, [selectedMethodLookupId, attributesDataLoader]);
-
-  const attributes =
-    attributesDataLoader.data?.flatMap((attribute) => [
-      ...attribute.qualitative_attributes,
-      ...attribute.quantitative_attributes
-    ]) ?? [];
+    attributesDataLoader.load(values.method_lookup_id);
+  }, [values.method_lookup_id, attributesDataLoader]);
 
   return (
     <FieldArray
@@ -58,7 +61,7 @@ const TechniqueAttributesForm = (props: ITechniqueAttributesFormProps) => {
         <>
           <TransitionGroup>
             {values.attributes.map((attribute, index) => (
-              <Collapse in={true} key={attribute.attribute_id || index}>
+              <Collapse in={true} key={attribute.attribute_id ?? index}>
                 <Box mb={2}>
                   <TechniqueAttributeSelect attributes={attributes} arrayHelpers={arrayHelpers} index={index} />
                 </Box>
@@ -71,8 +74,9 @@ const TechniqueAttributesForm = (props: ITechniqueAttributesFormProps) => {
             variant="outlined"
             startIcon={<Icon path={mdiPlus} size={1} />}
             aria-label="add attribute"
+            disabled={!values.method_lookup_id || values.attributes.length >= attributes.length}
             onClick={() => {
-              arrayHelpers.push(initialAttributeValues);
+              arrayHelpers.push(initialAttributeFormValues);
             }}>
             Add Attribute
           </Button>
@@ -81,5 +85,3 @@ const TechniqueAttributesForm = (props: ITechniqueAttributesFormProps) => {
     />
   );
 };
-
-export default TechniqueAttributesForm;
