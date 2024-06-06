@@ -1506,10 +1506,6 @@ INSERT INTO technique_attribute_qualitative
         'Polyethylene',
         'A lightweight, durable material used in setlines for its flexibility and resistance to UV light.'
       );
-
-
-
-
     ----------------------------------------------------------------------------------------
 
     INSERT INTO attractant_lookup
@@ -1519,13 +1515,34 @@ INSERT INTO technique_attribute_qualitative
       )
     VALUES
       (
-        'Light',
-        'A light used to attract species.'
-      ),
-      (
         'Call playback',
         'An audio recording of a species used to attract species.'
+      ),
+      (
+        'Food baiting',
+        'Using specific foods to attract animals. This can include fruits, vegetables, seeds, fish, meat, or other food items depending on the target species.'
+      ),
+      (
+        'Scent baiting',
+        'Using scents or pheromones to attract animals. Scents can be from natural sources like animal urine or commercial scent lures.'
+      ),
+      (
+        'Salt Licks',
+        'Providing mineral licks to attract herbivores and other animals needing minerals.'
+      ),
+      (
+        'Decoys',
+        'Using life-like models of animals to attract specific species.'
+      ),
+      (
+        'Reflective materials',
+        'Using shiny or reflective objects to catch the attention of curious animals.'
+      ),
+      (
+        'Lighting',
+        'Using artificial lights to attract nocturnal insects or other animals.'
       );
+
     `);
 }
 
