@@ -143,13 +143,13 @@ const LandingActions = () => {
         )}
         <Grid container spacing={5}>
           <Grid item xs={12} md={6} lg={4}>
-            <LandingActionCard title="Projects" subtext="Learn about Projects" />
+            <LandingActionCard title="Projects" subtext="Learn about Projects" to="admin/projects" />
           </Grid>
           <Grid item xs={12} md={6} lg={4}>
-            <LandingActionCard title="Projects" subtext="Learn about Projects" />
+            <LandingActionCard title="Data Standards" subtext="Learn about Data Standards" to="standards" />
           </Grid>
-          <Grid item flex='1 1 auto'>
-            <LandingActionCard title="Projects" subtext="Learn about Projects" />
+          <Grid item flex="1 1 auto">
+            <LandingActionCard title="Tutorials" subtext="Learn how to manage data" to="standards" />
           </Grid>
         </Grid>
         <Box sx={classes.heroActions}>

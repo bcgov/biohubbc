@@ -115,7 +115,7 @@ export const LandingPage = () => {
               </Typography>
               <Typography
                 color={theme.palette.primary.contrastText}
-                sx={{ margin: '1em 0 1.5em 0', maxWidth: '50ch', fontSize: '0.9em' }}>
+                sx={{ margin: '1em 0 1.5em 0', maxWidth: '50ch', fontSize: '0.8em' }}>
                 Collaboratively manage fish and wildlife data and information to help protect biodiversity in British
                 Columbia.
               </Typography>

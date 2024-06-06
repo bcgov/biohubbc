@@ -4,7 +4,7 @@ import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
 import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
 import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
-import Header from './Header';
+import Header from './header/Header';
 
 const history = createMemoryHistory();
 

@@ -2,7 +2,7 @@ import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import CssBaseline from '@mui/material/CssBaseline';
 import Footer from 'components/layout/Footer';
-import Header from 'components/layout/Header';
+import Header from 'components/layout/header/Header';
 import { PropsWithChildren } from 'react';
 
 const BaseLayout = (props: PropsWithChildren) => {

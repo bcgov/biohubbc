@@ -2,6 +2,7 @@ import { AuthenticatedRouteGuard, SystemRoleRouteGuard } from 'components/securi
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import AdminDashboardPage from 'features/admin/AdminDashboardPage';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
@@ -56,6 +57,18 @@ const AppRouter: React.FC = () => {
       </RouteWithTitle>
 
       <Redirect exact from="/admin" to="/admin/projects" />
+
+      <RouteWithTitle path="/admin/admin-dashboard" title={getTitle('Access Request')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
+              <DialogContextProvider>
+                <AdminDashboardPage />
+              </DialogContextProvider>
+            </SystemRoleRouteGuard>
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
 
       <RouteWithTitle path="/admin/projects" title={getTitle('Projects')}>
         <BaseLayout>
