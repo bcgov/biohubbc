@@ -10,7 +10,6 @@
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "deploy_start": "node server",
     "test": "react-scripts test --ci --watchAll=false --runInBand",
     "test-watch": "react-scripts test",
     "coverage": "react-scripts test --ci --coverage --testResultsProcessor jest-sonar-reporter --watchAll=false --runInBand",
@@ -72,7 +71,7 @@
     "react-window": "^1.8.6",
     "request": "^2.88.2",
     "shpjs": "^3.6.3",
-    "typescript": "^4.2.4",
+    "typescript": "^4.7.4",
     "uuid": "^8.3.2",
     "yup": "^0.32.9"
   },

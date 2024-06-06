@@ -103,6 +103,15 @@ export const getDBPool = function (): pg.Pool | undefined {
 
 export interface IDBConnection {
   /**
+   * Get a new pg client.
+   *
+   * Note: This is not the same client that is initialized when calling `.open()`, and must be released manually by
+   * calling `client.release()`.
+   *
+   * @memberof IDBConnection
+   */
+  getClient: () => Promise<pg.PoolClient>;
+  /**
    * Opens a new connection, begins a transaction, and sets the user context.
    *
    * Note: Does nothing if the connection is already open.
@@ -224,6 +233,21 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
   let _isReleased = false;
   let _systemUserId: number | null = null;
   const _token = keycloakToken;
+
+  /**
+   * Get a new pg client.
+   *
+   * @return {*}
+   */
+  const _getClient = async () => {
+    const pool = getDBPool();
+
+    if (!pool) {
+      throw Error('DBPool is not initialized');
+    }
+
+    return pool.connect();
+  };
 
   /**
    * Opens a new connection, begins a transaction, and sets the user context.
@@ -542,6 +566,7 @@ export const getDBConnection = function (keycloakToken: KeycloakUserInformation)
   };
 
   return {
+    getClient: asyncErrorWrapper(_getClient),
     open: asyncErrorWrapper(_open),
     sql: asyncErrorWrapper(_sql),
     knex: asyncErrorWrapper(_knex),

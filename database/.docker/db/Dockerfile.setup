@@ -2,7 +2,7 @@
 # This DockerFile is used for both Openshift deployments and local development (via docker-compose).
 # ########################################################################################################
 
-FROM node:18
+FROM node:20
 
 USER 0
 
@@ -17,9 +17,7 @@ WORKDIR $HOME
 
 COPY . ./
 
-# If you are building your code for production
-# RUN npm install --only=production
-RUN npm install
+RUN npm ci --include=dev
 
 USER 1001
 

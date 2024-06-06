@@ -231,6 +231,17 @@ export async function getS3SignedURL(key: string): Promise<string | null> {
   });
 }
 
+/**
+ * Get an array of s3 signed urls.
+ *
+ * @export
+ * @param {string[]} keys
+ * @return {*}  {(Promise<(string | null)[]>)}
+ */
+export async function getS3SignedURLs(keys: string[]): Promise<(string | null)[]> {
+  return Promise.all(keys.map((key) => getS3SignedURL(key)));
+}
+
 export interface IS3FileKey {
   projectId: number;
   surveyId?: number;
