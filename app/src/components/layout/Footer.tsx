@@ -8,6 +8,7 @@ const useStyles = () => {
 
   return {
     appFooter: {
+      mt: 3,
       backgroundColor: theme.palette.primary.main
     },
     appFooterToolbar: {

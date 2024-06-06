@@ -158,7 +158,7 @@ const appTheme = createTheme({
           }
         },
         startIcon: {
-          marginBottom: '1px'
+          margin: '0 6px 1px 0px'
         },
         sizeLarge: {
           fontSize: '1rem'

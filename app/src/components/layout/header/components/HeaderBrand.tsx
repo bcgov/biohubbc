@@ -19,8 +19,7 @@ const HeaderBrand = () => {
           display: 'flex',
           alignItems: 'center',
           overflow: 'hidden',
-          fontSize: { xs: '16px', lg: '18px' },
-          fontWeight: '700',
+          fontSize: { xs: '14px', lg: '16px' },
           textDecoration: 'none',
           color: theme.palette.primary.main
         },
@@ -39,7 +38,6 @@ const HeaderBrand = () => {
               marginLeft: '4px',
               color: '#fcba19',
               fontSize: '0.75rem',
-              fontWeight: 400,
               textTransform: 'uppercase'
             }}>
             {/* BETA label */}

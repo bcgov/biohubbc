@@ -16,6 +16,8 @@ import HeaderPublic from '../components/HeaderPublic';
 interface IHeaderResponsiveProps {
   isSupportDialogOpen: boolean;
   setIsSupportDialogOpen: React.Dispatch<SetStateAction<boolean>>;
+  setIsAdminHeaderOpen: React.Dispatch<SetStateAction<boolean>>;
+  setIsHeaderMenuOpen: React.Dispatch<SetStateAction<boolean>>;
 }
 
 /**
@@ -24,7 +26,8 @@ interface IHeaderResponsiveProps {
  * @returns
  */
 const HeaderResponsive = (props: IHeaderResponsiveProps) => {
-  const { isSupportDialogOpen, setIsSupportDialogOpen } = props;
+  const { isSupportDialogOpen, setIsSupportDialogOpen, setIsAdminHeaderOpen, setIsHeaderMenuOpen } = props;
+
   const theme = useTheme();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -50,18 +53,17 @@ const HeaderResponsive = (props: IHeaderResponsiveProps) => {
           '& a': {
             display: 'flex',
             fontSize: '18px',
-            fontWeight: '400'
+            fontWeight: 400,
           }
         }}>
         <HeaderBrand />
       </Box>
 
-      <Box>
+      <Box display="flex">
         <UnAuthGuard>
           <HeaderPublic />
         </UnAuthGuard>
         <Button
-          color="inherit"
           startIcon={<Icon path={mdiMenu} size={1.25}></Icon>}
           sx={{
             ml: 2,
@@ -78,22 +80,22 @@ const HeaderResponsive = (props: IHeaderResponsiveProps) => {
         <Menu
           id="mobileMenu"
           anchorEl={anchorEl}
-          open={isSupportDialogOpen}
+          open={Boolean(anchorEl)}
           onClose={hideMobileMenu}
           MenuListProps={{
             'aria-labelledby': 'basic-button'
           }}
           sx={{
             '& a': {
-              color: theme.palette.text.primary,
+              color: theme.palette.primary.main,
               borderRadius: 0,
-              fontWeight: 700,
+              fontWeight: 400,
               textDecoration: 'none',
               outline: 'none'
             },
             '& button': {
               color: theme.palette.text.primary,
-              fontWeight: 700
+              fontWeight: 400
             }
           }}>
           <MenuItem tabIndex={1} component={RouterLink} to="/" id="menu_home_sm">
@@ -135,7 +137,10 @@ const HeaderResponsive = (props: IHeaderResponsiveProps) => {
             Support
           </MenuItem>
           <AuthGuard>
-            <HeaderAuthenticated />
+            <HeaderAuthenticated
+              setIsAdminHeaderOpen={setIsAdminHeaderOpen}
+              setIsHeaderMenuOpen={setIsHeaderMenuOpen}
+            />
           </AuthGuard>
         </Menu>
       </Box>
