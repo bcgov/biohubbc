@@ -1,10 +1,10 @@
 import EditDialog from 'components/dialog/EditDialog';
+import PeriodForm from './PeriodForm';
 import {
   ISurveySampleMethodPeriodData,
   SamplingSiteMethodPeriodYupSchema,
   SurveySampleMethodPeriodArrayItemInitialValues
 } from './SamplingPeriodForm';
-import PeriodForm from './PeriodForm';
 
 interface ISamplingPeriodProps {
   open: boolean;

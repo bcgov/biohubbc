@@ -9,7 +9,7 @@ import { ICreateTechniqueRequest, IGetTechnique, ITechniqueResponse } from 'inte
  */
 const useTechniqueApi = (axios: AxiosInstance) => {
   /**
-   * Get techniques for a survey
+   * Get techniques.
    *
    * @param {number} projectId
    * @param {number} surveyId
@@ -36,22 +36,24 @@ const useTechniqueApi = (axios: AxiosInstance) => {
   /**
    * Create a new project technique
    *
-   * @param {ICreateTechniqueRequest} technique
-   * @return {*}  {Promise<ICreateTechniqueResponse>}
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ICreateTechniqueRequest[]} techniques
+   * @return {*}  {Promise<IGetTechnique[]>}
    */
-  const createTechnique = async (
+  const createTechniques = async (
     projectId: number,
     surveyId: number,
-    technique: ICreateTechniqueRequest
+    techniques: ICreateTechniqueRequest[]
   ): Promise<IGetTechnique[]> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/technique/create`, {
-      techniques: [technique]
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/technique`, {
+      techniques
     });
 
     return data;
   };
 
-  return { createTechnique, getTechniqueById, getTechniquesForSurvey };
+  return { createTechniques, getTechniqueById, getTechniquesForSurvey };
 };
 
-export { useTechniqueApi };
+export default useTechniqueApi;

@@ -19,14 +19,14 @@ import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { default as TechniqueForm } from '../TechniqueForm';
+import { default as TechniqueForm, TechniqueFormValues } from '../components/TechniqueForm';
 
 /**
- * Renders the body content of the Technique page.
+ * Renders the body content of the create technique page.
  *
  * @return {*}
  */
-const CreateTechniquePage = () => {
+export const CreateTechniquePage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
@@ -36,14 +36,15 @@ const CreateTechniquePage = () => {
   const dialogContext = useDialogContext();
 
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
-  const formikRef = useRef<FormikProps<ICreateTechniqueRequest>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const formikRef = useRef<FormikProps<TechniqueFormValues>>(null);
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  const initialTechniqueValues: ICreateTechniqueRequest = {
+  const initialTechniqueValues: TechniqueFormValues = {
     name: '',
     description: '',
     distance_threshold: null,
@@ -88,12 +89,33 @@ const CreateTechniquePage = () => {
     });
   };
 
-  const handleSubmit = async (values: ICreateTechniqueRequest) => {
+  const handleSubmit = async (values: TechniqueFormValues) => {
     try {
       setIsSubmitting(true);
       setEnableCancelCheck(false);
 
-      await biohubApi.technique.createTechnique(surveyContext.projectId, surveyContext.surveyId, values);
+      // Parse the form data into the request format
+      const createTechniqueRequestData: ICreateTechniqueRequest = {
+        ...values,
+        attributes: {
+          qualitative_attributes: values.attributes
+            .filter(({ attribute_type }) => attribute_type === 'qualitative')
+            .map((item) => ({
+              method_technique_attribute_qualitative_id: item.attribute_id,
+              method_lookup_attribute_qualitative_option_id: item.attribute_value as string
+            })),
+          quantitative_attributes: values.attributes
+            .filter(({ attribute_type }) => attribute_type === 'quantitative')
+            .map((item) => ({
+              method_technique_attribute_quantitative_id: item.attribute_id,
+              value: item.attribute_value as number
+            }))
+        }
+      };
+
+      await biohubApi.technique.createTechniques(surveyContext.projectId, surveyContext.surveyId, [
+        createTechniqueRequestData
+      ]);
 
       // Refresh the context, so the next page loads with the latest data
       surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
@@ -205,7 +227,7 @@ const CreateTechniquePage = () => {
         <Paper sx={{ p: 5 }}>
           <TechniqueForm
             initialData={initialTechniqueValues}
-            handleSubmit={(formikData) => handleSubmit(formikData as ICreateTechniqueRequest)}
+            handleSubmit={(formikData) => handleSubmit(formikData as TechniqueFormValues)}
             formikRef={formikRef}
           />
           <Stack flexDirection="row" alignItems="center" justifyContent="flex-end" gap={1}>
@@ -235,5 +257,3 @@ const CreateTechniquePage = () => {
     </>
   );
 };
-
-export default CreateTechniquePage;

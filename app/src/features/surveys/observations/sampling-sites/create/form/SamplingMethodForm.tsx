@@ -64,9 +64,6 @@ const SamplingMethodForm = () => {
     setAnchorEl(null);
   };
 
-  console.log(values);
-  console.log(errors);
-
   return (
     <>
       {/* CREATE SAMPLE METHOD DIALOG */}
@@ -219,9 +216,7 @@ const SamplingMethodForm = () => {
                       )}
                       <Divider sx={{ mt: 0.5 }} />
                       <Box py={1}>
-                        {item.method_technique_id && (
-                          <MethodPeriodForm index={index} survey_sample_method={item} />
-                        )}
+                        {item.method_technique_id && <MethodPeriodForm index={index} survey_sample_method={item} />}
                       </Box>
                     </Stack>
                   </CardContent>

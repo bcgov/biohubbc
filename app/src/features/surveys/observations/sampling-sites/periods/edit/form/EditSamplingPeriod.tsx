@@ -32,7 +32,6 @@ const EditSamplingPeriod = (props: IEditSamplingMethodPeriodProps) => {
       dialogSaveButtonLabel="Update"
       onCancel={onClose}
       onSave={(formValues) => {
-        console.log(formValues);
         onSubmit(formValues);
       }}
     />

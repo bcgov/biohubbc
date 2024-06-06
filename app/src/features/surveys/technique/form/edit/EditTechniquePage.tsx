@@ -20,7 +20,7 @@ import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { default as TechniqueForm } from '../TechniqueForm';
+import TechniqueForm from '../components/TechniqueForm';
 
 /**
  * Renders the body content of the Technique page.
@@ -54,7 +54,7 @@ const EditTechniquePage = () => {
     techniqueDataLoader.load();
   }
 
-  const initialTechniqueValues: ICreateTechniqueRequest = techniqueDataLoader.data
+  const initialTechniqueValues: ICreateTechniqueRequest = techniqueDataLoader.data;
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
@@ -97,7 +97,7 @@ const EditTechniquePage = () => {
       setIsSubmitting(true);
       setEnableCancelCheck(false);
 
-      await biohubApi.technique.createTechnique(surveyContext.projectId, surveyContext.surveyId, values);
+      await biohubApi.technique.createTechniques(surveyContext.projectId, surveyContext.surveyId, values);
 
       // Refresh the context, so the next page loads with the latest data
       surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);

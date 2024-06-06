@@ -108,7 +108,7 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
 
       {techniques.length ? (
         techniques.map((technique) => (
-          <Box m={2}>
+          <Box m={2} key={technique.method_technique_id}>
             <SamplingTechniqueCard
               technique={technique}
               method_lookup_name={
@@ -138,5 +138,3 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
     </>
   );
 };
-
-export default SamplingTechniqueCardContainer;

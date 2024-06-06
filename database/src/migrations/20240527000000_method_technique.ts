@@ -2,7 +2,7 @@ import { Knex } from 'knex';
 
 /**
  * Create 10 new tables:
- * 
+ *
  * ATTRACTANT LOOKUP
  * - attractant_lookup
  *
@@ -16,14 +16,14 @@ import { Knex } from 'knex';
  *
  * QUALITATIVE OPTIONS LOOKUP (depends on method_lookup_attribute_qualitative, not technique_attribute_qualitative)
  * - method_lookup_attribute_qualitative_option
- * 
+ *
  * METHOD TECHNIQUE TABLE
  * - method_technique
  *
  * JOINS BETWEEN METHOD TECHNIQUE AND METHOD_LOOKUP_ATTRIBUTE_*
  * - method_technique_attribute_quantitative
  * - method_technique_attribute_qualitative
- * 
+ *
  * JOIN BETWEEN METHOD TECHNIQUE AND ATTRACTANT_LOOKUP
  * - method_technique_attractant
  *

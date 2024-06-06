@@ -11,10 +11,10 @@ import SamplingSitePage from './observations/sampling-sites/create/SamplingSiteP
 import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
 import SamplingSiteManagePage from './observations/sampling-sites/SamplingSiteManagePage';
 import { SurveyObservationPage } from './observations/SurveyObservationPage';
-import CreateTechniquePage from './technique/form/create/CreateTechniquePage';
-import EditTechniquePage from './technique/form/edit/EditTechniquePage';
+import { CreateTechniquePage } from './technique/form/create/CreateTechniquePage';
 import ManualTelemetryPage from './telemetry/ManualTelemetryPage';
 import { SurveyAnimalsPage } from './view/survey-animals/SurveyAnimalsPage';
+import EditTechniquePage from './technique/form/edit/EditTechniquePage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/*` pages.
