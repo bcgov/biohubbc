@@ -15,9 +15,10 @@ import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
 import { useRef, useState } from 'react';
-import { Prompt, useHistory } from 'react-router';
+import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { default as TechniqueForm } from '../TechniqueForm';
 
@@ -26,9 +27,11 @@ import { default as TechniqueForm } from '../TechniqueForm';
  *
  * @return {*}
  */
-const CreateTechniquePage = () => {
+const EditTechniquePage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
+  const urlParams: Record<string, string | number | undefined> = useParams();
+  const techniqueId = Number(urlParams['technique_id']);
 
   const surveyContext = useSurveyContext();
   const { surveyId, projectId } = surveyContext;
@@ -43,14 +46,15 @@ const CreateTechniquePage = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  const initialTechniqueValues: ICreateTechniqueRequest = {
-    name: '',
-    description: '',
-    distance_threshold: null,
-    method_lookup_id: null,
-    attractants: [],
-    attributes: []
-  };
+  const techniqueDataLoader = useDataLoader(() =>
+    biohubApi.technique.getTechniqueById(projectId, surveyId, techniqueId)
+  );
+
+  if (!techniqueDataLoader.data) {
+    techniqueDataLoader.load();
+  }
+
+  const initialTechniqueValues: ICreateTechniqueRequest = techniqueDataLoader.data
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
@@ -236,4 +240,4 @@ const CreateTechniquePage = () => {
   );
 };
 
-export default CreateTechniquePage;
+export default EditTechniquePage;

@@ -22,6 +22,18 @@ const useTechniqueApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get Technique by ID
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} techniqueId
+   * @return {*}  {Promise<void>}
+   */
+  const getTechniqueById = async (projectId: number, surveyId: number, techniqueId: number): Promise<IGetTechnique> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/technique/${techniqueId}}`);
+    return data;
+  };
+
+  /**
    * Create a new project technique
    *
    * @param {ICreateTechniqueRequest} technique
@@ -32,12 +44,14 @@ const useTechniqueApi = (axios: AxiosInstance) => {
     surveyId: number,
     technique: ICreateTechniqueRequest
   ): Promise<IGetTechnique[]> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/technique/create`, {techniques: [technique]});
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/technique/create`, {
+      techniques: [technique]
+    });
 
     return data;
   };
 
-  return { createTechnique, getTechniquesForSurvey };
+  return { createTechnique, getTechniqueById, getTechniquesForSurvey };
 };
 
 export { useTechniqueApi };

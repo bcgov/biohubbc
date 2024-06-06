@@ -124,6 +124,8 @@ export function createTechniques(): RequestHandler {
 
       const surveyId = Number(req.params.surveyId);
 
+      console.log(surveyId)
+
       const techniqueService = new TechniqueService(connection);
       const techniques = await techniqueService.insertTechniquesForSurvey(surveyId, req.body.techniques);
 

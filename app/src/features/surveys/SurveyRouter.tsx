@@ -10,8 +10,9 @@ import EditSurveyPage from './edit/EditSurveyPage';
 import SamplingSitePage from './observations/sampling-sites/create/SamplingSitePage';
 import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
 import SamplingSiteManagePage from './observations/sampling-sites/SamplingSiteManagePage';
-import SamplingSiteTechniquePage from './technique/form/create/CreateTechniquePage';
 import { SurveyObservationPage } from './observations/SurveyObservationPage';
+import CreateTechniquePage from './technique/form/create/CreateTechniquePage';
+import EditTechniquePage from './technique/form/edit/EditTechniquePage';
 import ManualTelemetryPage from './telemetry/ManualTelemetryPage';
 import { SurveyAnimalsPage } from './view/survey-animals/SurveyAnimalsPage';
 
@@ -84,7 +85,7 @@ const SurveyRouter: React.FC = () => {
         path="/admin/projects/:id/surveys/:survey_id/manage-sampling/technique/create"
         title={getTitle('Create Technique')}>
         <DialogContextProvider>
-          <SamplingSiteTechniquePage />
+          <CreateTechniquePage />
         </DialogContextProvider>
       </RouteWithTitle>
 
@@ -93,7 +94,7 @@ const SurveyRouter: React.FC = () => {
         path="/admin/projects/:id/surveys/:survey_id/manage-sampling/technique/:method_technique_id/edit"
         title={getTitle('Edit Technique')}>
         <DialogContextProvider>
-          <SamplingSiteTechniquePage />
+          <EditTechniquePage />
         </DialogContextProvider>
       </RouteWithTitle>
 

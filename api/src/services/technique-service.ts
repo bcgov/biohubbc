@@ -59,7 +59,7 @@ export class TechniqueService extends DBService {
         description: technique.description,
         method_lookup_id: technique.method_lookup_id,
         distance_threshold: technique.distance_threshold,
-        survey_id: technique.survey_id
+        survey_id: surveyId
       };
       return this.techniqueRepository.insertTechnique(rowForInsert, surveyId);
     });
