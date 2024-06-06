@@ -12,6 +12,11 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
   SET SEARCH_PATH=biohub;
   ----------------------------------------------------------------------------------------
+  --This migration file inserts values into method lookup table, technique attribute qual and quant tables, method lookup quant and qual 
+  --and qualitative options and attractants
+  ----------------------------------------------------------------------------------------
+  
+  ----------------------------------------------------------------------------------------
   --Adding more values to the method lookup table. 
   ----------------------------------------------------------------------------------------
     INSERT into method_lookup (name, description)
