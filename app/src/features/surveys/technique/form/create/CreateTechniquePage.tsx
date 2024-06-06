@@ -113,11 +113,9 @@ export const CreateTechniquePage = () => {
         }
       };
 
-      await biohubApi.technique.createTechnique(
-        surveyContext.projectId,
-        surveyContext.surveyId,
+      await biohubApi.technique.createTechniques(surveyContext.projectId, surveyContext.surveyId, [
         createTechniqueRequestData
-      );
+      ]);
 
       // Refresh the context, so the next page loads with the latest data
       surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);

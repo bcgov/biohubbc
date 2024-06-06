@@ -5,7 +5,6 @@ import { FieldArrayRenderProps, useFormikContext } from 'formik';
 import { ITechniqueAttributeQualitative, ITechniqueAttributeQuantitative } from 'interfaces/useReferenceApi.interface';
 
 interface ITechniqueAttributeValueControlProps {
-  attributes: (ITechniqueAttributeQuantitative | ITechniqueAttributeQualitative)[];
   selectedAttributeTypeDefinition?: ITechniqueAttributeQuantitative | ITechniqueAttributeQualitative;
   arrayHelpers: FieldArrayRenderProps;
   index: number;

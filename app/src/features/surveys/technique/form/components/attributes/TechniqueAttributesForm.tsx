@@ -12,7 +12,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo } from 'react';
 import { TransitionGroup } from 'react-transition-group';
-import { TechniqueAttributeSelect } from './components/TechniqueAttributeSelect';
+import { TechniqueAttributeForm } from './components/TechniqueAttributeForm';
 
 const initialAttributeFormValues: Partial<TechniqueAttributeFormValues> = {
   // The attribute id (method_lookup_attribute_quantitative_id or method_lookup_attribute_qualitative_id)
@@ -33,17 +33,17 @@ export const TechniqueAttributesForm = () => {
 
   const { values } = useFormikContext<TechniqueFormValues>();
 
-  const attributesDataLoader = useDataLoader((method_lookup_id: number) =>
+  const attributeTypeDefinitionDataLoader = useDataLoader((method_lookup_id: number) =>
     biohubApi.reference.getTechniqueAttributes([method_lookup_id])
   );
 
-  const attributes = useMemo(
+  const attributeTypeDefinitions = useMemo(
     () =>
-      attributesDataLoader.data?.flatMap((attribute) => [
+      attributeTypeDefinitionDataLoader.data?.flatMap((attribute) => [
         ...attribute.qualitative_attributes,
         ...attribute.quantitative_attributes
       ]) ?? [],
-    [attributesDataLoader.data]
+    [attributeTypeDefinitionDataLoader.data]
   );
 
   useEffect(() => {
@@ -51,8 +51,8 @@ export const TechniqueAttributesForm = () => {
       return;
     }
 
-    attributesDataLoader.load(values.method_lookup_id);
-  }, [values.method_lookup_id, attributesDataLoader]);
+    attributeTypeDefinitionDataLoader.load(values.method_lookup_id);
+  }, [values.method_lookup_id, attributeTypeDefinitionDataLoader]);
 
   return (
     <FieldArray
@@ -63,7 +63,11 @@ export const TechniqueAttributesForm = () => {
             {values.attributes.map((attribute, index) => (
               <Collapse in={true} key={attribute.attribute_id ?? index}>
                 <Box mb={2}>
-                  <TechniqueAttributeSelect attributes={attributes} arrayHelpers={arrayHelpers} index={index} />
+                  <TechniqueAttributeForm
+                    attributeTypeDefinitions={attributeTypeDefinitions}
+                    arrayHelpers={arrayHelpers}
+                    index={index}
+                  />
                 </Box>
               </Collapse>
             ))}
@@ -74,7 +78,7 @@ export const TechniqueAttributesForm = () => {
             variant="outlined"
             startIcon={<Icon path={mdiPlus} size={1} />}
             aria-label="add attribute"
-            disabled={!values.method_lookup_id || values.attributes.length >= attributes.length}
+            disabled={!values.method_lookup_id || values.attributes.length >= attributeTypeDefinitions.length}
             onClick={() => {
               arrayHelpers.push(initialAttributeFormValues);
             }}>

@@ -7,13 +7,19 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import { TechniqueAttributeValueControl } from 'features/surveys/technique/form/components/attributes/components/TechniqueAttributeValueControl';
+import {
+  formatAttributesForAutoComplete,
+  getAttributeId,
+  getAttributeType,
+  getRemainingAttributes
+} from 'features/surveys/technique/form/components/attributes/components/utils';
 import { TechniqueFormValues } from 'features/surveys/technique/form/components/TechniqueForm';
 import { FieldArrayRenderProps, useFormikContext } from 'formik';
 import { ITechniqueAttributeQualitative, ITechniqueAttributeQuantitative } from 'interfaces/useReferenceApi.interface';
 import { useMemo } from 'react';
 
-interface ICaptureTechniqueAttributeSelectProps {
-  attributes: (ITechniqueAttributeQuantitative | ITechniqueAttributeQualitative)[];
+interface ITechniqueAttributeFormProps {
+  attributeTypeDefinitions: (ITechniqueAttributeQuantitative | ITechniqueAttributeQualitative)[];
   arrayHelpers: FieldArrayRenderProps;
   index: number;
 }
@@ -21,11 +27,11 @@ interface ICaptureTechniqueAttributeSelectProps {
 /**
  * Returns a component for selecting ecological (ie. collection) units for a given species.
  *
- * @param {ICaptureTechniqueAttributeSelectProps} props
+ * @param {ITechniqueAttributeFormProps} props
  * @return {*}
  */
-export const TechniqueAttributeSelect = (props: ICaptureTechniqueAttributeSelectProps) => {
-  const { arrayHelpers, attributes, index } = props;
+export const TechniqueAttributeForm = (props: ITechniqueAttributeFormProps) => {
+  const { arrayHelpers, attributeTypeDefinitions, index } = props;
 
   const { values, setFieldValue } = useFormikContext<TechniqueFormValues>();
 
@@ -33,7 +39,7 @@ export const TechniqueAttributeSelect = (props: ICaptureTechniqueAttributeSelect
   const selectedAttributeTypeDefinition = useMemo(
     () =>
       values.attributes[index]
-        ? attributes.find((attribute) => {
+        ? attributeTypeDefinitions.find((attribute) => {
             if ('method_lookup_attribute_qualitative_id' in attribute) {
               return attribute.method_lookup_attribute_qualitative_id === values.attributes[index].attribute_id;
             }
@@ -41,64 +47,24 @@ export const TechniqueAttributeSelect = (props: ICaptureTechniqueAttributeSelect
             return attribute.method_lookup_attribute_quantitative_id === values.attributes[index].attribute_id;
           })
         : undefined,
-    [attributes, index, values.attributes]
+    [attributeTypeDefinitions, index, values.attributes]
   );
 
-  // The attribute type definitions that can be selected (ie. not already selected), which includes the currently
-  // selected attribute type definition, if one has been selected.
-  const filteredAttributes = useMemo(() => {
-    const selectedAttributeIds = values.attributes.map((attribute) => attribute.attribute_id);
+  const unavailableAttributeIds = useMemo(() => {
+    return values.attributes.map((attribute) => attribute.attribute_id);
+  }, [values.attributes]);
 
-    const remainingAttributes = attributes
-      .filter((attribute) => {
-        if ('method_lookup_attribute_qualitative_id' in attribute) {
-          return !selectedAttributeIds.includes(attribute.method_lookup_attribute_qualitative_id);
-        }
+  const selectedAttributeId = selectedAttributeTypeDefinition && getAttributeId(selectedAttributeTypeDefinition);
 
-        return !selectedAttributeIds.includes(attribute.method_lookup_attribute_quantitative_id);
+  // The remaining attributes that have not been selected
+  const remainingAttributeTypeDefinitions = useMemo(() => {
+    return getRemainingAttributes(attributeTypeDefinitions, unavailableAttributeIds, selectedAttributeId);
+  }, [attributeTypeDefinitions, selectedAttributeId, unavailableAttributeIds]);
 
-        // return true;
-      })
-      .map((option) => {
-        if ('method_lookup_attribute_qualitative_id' in option) {
-          return {
-            value: option.method_lookup_attribute_qualitative_id,
-            label: option.name,
-            description: option.description
-          };
-        }
-
-        return {
-          value: option.method_lookup_attribute_quantitative_id,
-          label: option.name,
-          description: option.description
-        };
-      });
-
-    if (selectedAttributeTypeDefinition) {
-      if ('method_lookup_attribute_qualitative_id' in selectedAttributeTypeDefinition) {
-        return [
-          {
-            value: selectedAttributeTypeDefinition.method_lookup_attribute_qualitative_id,
-            label: selectedAttributeTypeDefinition.name,
-            description: selectedAttributeTypeDefinition.description
-          },
-          ...remainingAttributes
-        ];
-      }
-
-      return [
-        {
-          value: selectedAttributeTypeDefinition.method_lookup_attribute_quantitative_id,
-          label: selectedAttributeTypeDefinition.name,
-          description: selectedAttributeTypeDefinition.description
-        },
-        ...remainingAttributes
-      ];
-    }
-
-    return remainingAttributes;
-  }, [attributes, selectedAttributeTypeDefinition, values.attributes]);
+  // The remaining attributes formatted for use by the autocomplete component
+  const attributesOptionsForAutocomplete = useMemo(() => {
+    return formatAttributesForAutoComplete(remainingAttributeTypeDefinitions);
+  }, [remainingAttributeTypeDefinitions]);
 
   return (
     <Card
@@ -116,15 +82,17 @@ export const TechniqueAttributeSelect = (props: ICaptureTechniqueAttributeSelect
         id={`attributes.[${index}].attribute_id`}
         name={`attributes.[${index}].attribute_id`}
         label="Attribute"
-        options={filteredAttributes}
+        options={attributesOptionsForAutocomplete}
         onChange={(_, option) => {
           if (!option?.value) {
             return;
           }
 
+          console.log(option);
+
           setFieldValue(`attributes.[${index}]`, {
             attribute_id: option.value,
-            attribute_type: 'method_lookup_attribute_qualitative_id' in option ? 'qualitative' : 'quantitative'
+            attribute_type: getAttributeType(remainingAttributeTypeDefinitions, option.value)
           });
         }}
         required
@@ -135,7 +103,6 @@ export const TechniqueAttributeSelect = (props: ICaptureTechniqueAttributeSelect
 
       <Box flex="0.5">
         <TechniqueAttributeValueControl
-          attributes={attributes}
           selectedAttributeTypeDefinition={selectedAttributeTypeDefinition}
           arrayHelpers={arrayHelpers}
           index={index}
