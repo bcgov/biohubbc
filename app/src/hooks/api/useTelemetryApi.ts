@@ -42,7 +42,7 @@ const useTelemetryApi = (axios: AxiosInstance) => {
 
     const urlParamsString = `?${params.toString()}`;
 
-    const { data } = await axios.get(`/api/telemetry/list${urlParamsString}`);
+    const { data } = await axios.get(`/api/telemetry${urlParamsString}`);
 
     return data;
   };

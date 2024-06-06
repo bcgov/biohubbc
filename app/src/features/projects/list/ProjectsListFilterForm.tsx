@@ -30,7 +30,7 @@ const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) =
     () =>
       debounce((values: IProjectAdvancedFilters) => {
         // props.handleSubmit(values);
-        console.log(values)
+        console.log(values);
         // updateUrl(values);
       }, 300),
     []

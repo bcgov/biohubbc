@@ -3,10 +3,10 @@ import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
 import { Feature, GeoJsonProperties, Geometry } from 'geojson';
+import { History } from 'history';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import _ from 'lodash';
 import { IDialogContext } from '../contexts/dialogContext';
-import { History } from 'history';
 
 /**
  * Checks if a url string starts with an `http[s]://` protocol, and adds `https://` if it does not. If the url

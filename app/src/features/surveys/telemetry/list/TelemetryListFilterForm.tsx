@@ -2,11 +2,11 @@ import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import CustomTextField from 'components/fields/CustomTextField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
+import SearchFilters from 'features/projects/components/SearchFilters';
 import { Formik, FormikProps } from 'formik';
 import { debounce } from 'lodash-es';
 import React, { useMemo, useRef } from 'react';
 import { ITelemetryAdvancedFilters } from './TelemetryListContainer';
-import SearchFilters from 'features/projects/components/SearchFilters';
 
 export interface ITelemetryListFilterFormProps {
   handleSubmit: (filterValues: ITelemetryAdvancedFilters) => void;
@@ -32,24 +32,14 @@ const TelemetryListFilterForm: React.FC<ITelemetryListFilterFormProps> = (props)
 
   return (
     <Box p={2} bgcolor={searchBackgroundColor}>
-      <Formik
-        innerRef={formikRef}
-        initialValues={TelemetryAdvancedFiltersInitialValues}
-        onSubmit={props.handleSubmit}>
+      <Formik innerRef={formikRef} initialValues={TelemetryAdvancedFiltersInitialValues} onSubmit={props.handleSubmit}>
         <SearchFilters
           onChange={debounced}
           fields={[
             {
               id: 1,
               name: '',
-              component: (
-                <CustomTextField
-                  placeholder="Type any keyword"
-                  name="keyword"
-                  label="Keyword"
-                  
-                />
-              )
+              component: <CustomTextField placeholder="Type any keyword" name="keyword" label="Keyword" />
             },
             {
               id: 2,

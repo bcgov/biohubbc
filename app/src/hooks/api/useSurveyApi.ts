@@ -101,7 +101,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
 
     const urlParamsString = `?${params.toString()}`;
 
-    const { data } = await axios.get(`/api/survey/list${urlParamsString}`);
+    const { data } = await axios.get(`/api/survey${urlParamsString}`);
 
     return data;
   };

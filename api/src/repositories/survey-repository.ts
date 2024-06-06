@@ -170,7 +170,7 @@ export class SurveyRepository extends BaseRepository {
       .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
       .leftJoin('region_lookup as rl', 'rl.region_id', 'sr.region_id')
       .leftJoin('project_participation as ppa', 'ppa.project_id', 's.project_id')
-      .groupBy('s.survey_id', 's.project_id', 's.name', 's.progress_id', 's.start_date', 's.end_date'); 
+      .groupBy('s.survey_id', 's.project_id', 's.name', 's.progress_id', 's.start_date', 's.end_date');
 
     /*
      * Ensure that users can only see project that they are participating in, unless

@@ -31,10 +31,9 @@ export interface ISurveysListItemData {
   start_date: string;
   end_date?: string;
   regions: string[];
-  focal_species: number[],
-  types: number[]
+  focal_species: number[];
+  types: number[];
 }
-
 
 /**
  * Create survey post object.
@@ -195,8 +194,8 @@ export interface SurveyBasicFieldsObject {
   progress_id: number;
   focal_species: number[];
   focal_species_names: string[];
-  regions: string[],
-  types: number[]
+  regions: string[];
+  types: number[];
 }
 
 export type SurveyUpdateObject = ISurveyUpdateObject & ISurveySiteSelectionUpdateObject;

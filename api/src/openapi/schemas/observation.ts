@@ -1,4 +1,3 @@
-
 import { OpenAPIV3 } from 'openapi-types';
 import { paginationResponseSchema } from './pagination';
 

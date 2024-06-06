@@ -46,12 +46,7 @@ const SurveysListFilterForm: React.FC<ISurveysListFilterFormProps> = (props) => 
               id: 1,
               name: '',
               component: (
-                <CustomTextField
-                  placeholder="Enter any keyword or a Survey ID"
-                  name="keyword"
-                  label="Keyword"
-                  
-                />
+                <CustomTextField placeholder="Enter any keyword or a Survey ID" name="keyword" label="Keyword" />
               )
             },
             {

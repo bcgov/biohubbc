@@ -95,15 +95,7 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: [
-                    'project_id',
-                    'survey_id',
-                    'name',
-                    'start_date',
-                    'end_date',
-                    'focal_species',
-                    'regions'
-                  ],
+                  required: ['project_id', 'survey_id', 'name', 'start_date', 'end_date', 'focal_species', 'regions'],
                   properties: {
                     project_id: {
                       type: 'integer'
@@ -147,7 +139,7 @@ GET.apiDoc = {
                         type: 'integer',
                         nullable: true
                       }
-                    },
+                    }
                   }
                 }
               },

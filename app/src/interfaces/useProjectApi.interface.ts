@@ -112,8 +112,8 @@ export interface IProjectsListItemData {
   completion_status: string;
   regions: string[];
   project_programs: number[];
-  focal_species: number[],
-  types: number[]
+  focal_species: number[];
+  types: number[];
 }
 
 export interface IProjectUserRoles {

@@ -56,7 +56,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
 
   const searchParams = new URLSearchParams(location.search);
 
-  console.log(searchParams)
+  console.log(searchParams);
 
   const initialPaginationModel = {
     page: parseInt(searchParams.get('page') || '0', 10),

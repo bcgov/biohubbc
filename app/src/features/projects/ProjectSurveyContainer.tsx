@@ -97,10 +97,8 @@ const ProjectSurveyContainer = (props: IProjectSurveyContainerProps) => {
         </Button>
       </Toolbar>
       <Divider />
-      {activeView === ProjectSurveyViewEnum.projects && (
-        <ProjectsListContainer showSearch={showSearch} />
-      )}
-      {activeView === ProjectSurveyViewEnum.surveys && <SurveysListContainer showSearch={showSearch}/>}
+      {activeView === ProjectSurveyViewEnum.projects && <ProjectsListContainer showSearch={showSearch} />}
+      {activeView === ProjectSurveyViewEnum.surveys && <SurveysListContainer showSearch={showSearch} />}
     </>
   );
 };

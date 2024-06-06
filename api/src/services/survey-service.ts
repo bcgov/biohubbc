@@ -14,7 +14,6 @@ import {
   GetSurveyPurposeAndMethodologyData,
   ISurveyAdvancedFilters,
   ISurveyPartnerships,
-  SurveyListData,
   SurveyObject,
   SurveySupplementaryData
 } from '../models/survey-view';

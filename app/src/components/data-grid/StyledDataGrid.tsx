@@ -4,9 +4,7 @@ import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { useCallback } from 'react';
 import StyledDataGridOverlay from './StyledDataGridOverlay';
 
-const StyledLoadingOverlay = () => (
-  <SkeletonList numberOfLines={8} />
-);
+const StyledLoadingOverlay = () => <SkeletonList numberOfLines={8} />;
 export type StyledDataGridProps = DataGridProps & {
   noRowsMessage?: string;
 };
