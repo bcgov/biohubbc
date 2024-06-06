@@ -132,6 +132,14 @@ export const focalSpeciesSchema: OpenAPIV3.SchemaObject = {
     scientificName: {
       description: 'Taxonomy scientific name',
       type: 'string'
+    },
+    rank: {
+      description: 'Taxonomy rank name',
+      type: 'string'
+    },
+    kingdom: {
+      description: 'Taxonomy kingdom name',
+      type: 'string'
     }
   }
 };
@@ -156,6 +164,14 @@ export const ancillarySpeciesSchema: OpenAPIV3.SchemaObject = {
     },
     scientificName: {
       description: 'Taxonomy scientific name',
+      type: 'string'
+    },
+    rank: {
+      description: 'Taxonomy rank name',
+      type: 'string'
+    },
+    kingdom: {
+      description: 'Taxonomy kingdom name',
       type: 'string'
     }
   }

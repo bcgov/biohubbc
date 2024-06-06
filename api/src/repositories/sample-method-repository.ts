@@ -17,7 +17,11 @@ export type InsertSampleMethodRecord = Pick<
  */
 export type UpdateSampleMethodRecord = Pick<
   SampleMethodRecord,
-  'survey_sample_method_id' | 'survey_sample_site_id' | 'method_technique_id' | 'description' | 'method_response_metric_id'
+  | 'survey_sample_method_id'
+  | 'survey_sample_site_id'
+  | 'method_technique_id'
+  | 'description'
+  | 'method_response_metric_id'
 > & { sample_periods: UpdateSamplePeriodRecord[] };
 
 /**
@@ -38,6 +42,19 @@ export const SampleMethodRecord = z.object({
 export type SampleMethodRecord = z.infer<typeof SampleMethodRecord>;
 
 /**
+ * A survey_sample_method detail object.
+ */
+export const SampleMethodDetails = SampleMethodRecord.extend({
+  technique: z.object({
+    method_technique_id: z.number(),
+    name: z.string(),
+    description: z.string().nullable(),
+    attractants: z.array(z.number())
+  })
+});
+export type SampleMethodDetails = z.infer<typeof SampleMethodDetails>;
+
+/**
  * Sample Method Repository
  *
  * @export
@@ -50,7 +67,7 @@ export class SampleMethodRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveySampleSiteId
-   * @return {*}  {Promise<SampleMethodRecord[]>}
+   * @return {*}  {Promise<SampleMethodDetails[]>}
    * @memberof SampleMethodRepository
    */
   async getSampleMethodsForSurveySampleSiteId(

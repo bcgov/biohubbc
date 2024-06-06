@@ -1,7 +1,8 @@
 import { IDBConnection } from '../database/db';
 import {
-  ITechniquePostData,
   IGetTechnique,
+  IGetTechniqueAttributes,
+  ITechniquePostData,
   ITechniqueRowData,
   TechniqueRepository
 } from '../repositories/technique-repository';
@@ -51,13 +52,12 @@ export class TechniqueService extends DBService {
     surveyId: number,
     techniques: ITechniquePostData[]
   ): Promise<{ method_technique_id: number }[]> {
-    
     // Insert technique rows
     const promises = techniques.map((technique) => {
       const rowForInsert: ITechniqueRowData = {
         name: technique.name,
         description: technique.description,
-        method_lookup_id: technique.method_technique_id,
+        method_lookup_id: technique.method_lookup_id,
         distance_threshold: technique.distance_threshold,
         survey_id: technique.survey_id
       };
@@ -65,5 +65,16 @@ export class TechniqueService extends DBService {
     });
 
     return Promise.all(promises);
+  }
+
+  /**
+   * Get quantitative and qualitative attributes for a method lookup Id
+   *
+   * @param {number[]} method_lookup_ids
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof TechniqueService
+   */
+  async getAttributesForMethodLookupIds(method_lookup_ids: number[]): Promise<IGetTechniqueAttributes[]> {
+    return this.techniqueRepository.getAttributesForMethodLookupIds(method_lookup_ids);
   }
 }

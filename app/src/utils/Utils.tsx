@@ -452,3 +452,12 @@ export const getRandomHexColor = (seed: number, min = 100, max = 170): string =>
 
   return `#${randomChannel()}${randomChannel()}${randomChannel()}`;
 };
+
+/**
+ * Returns true if the value is defined (not null and not undefined).
+ *
+ * @template T
+ * @param {(T | undefined | null)} value
+ * @return {*}  {value is T}
+ */
+export const isDefined = <T,>(value: T | undefined | null): value is T => value !== undefined && value !== null;

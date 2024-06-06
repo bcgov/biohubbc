@@ -52,10 +52,7 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
             sx={{
               typography: 'body2'
             }}>
-              <Link
-              component={RouterLink}
-              to={`/admin/projects/${project_id}/details`}
-              underline="none">
+            <Link component={RouterLink} to={`/admin/projects/${project_id}/details`} underline="none">
               {project_name}
             </Link>
             <Link

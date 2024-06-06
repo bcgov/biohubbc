@@ -2,7 +2,7 @@ import { Knex } from 'knex';
 
 /**
  * Create 10 new tables:
- * 
+ *
  * ATTRACTANT LOOKUP
  * - attractant_lookup
  *
@@ -16,14 +16,14 @@ import { Knex } from 'knex';
  *
  * QUALITATIVE OPTIONS LOOKUP (depends on method_lookup_attribute_qualitative, not technique_attribute_qualitative)
  * - method_lookup_attribute_qualitative_option
- * 
+ *
  * METHOD TECHNIQUE TABLE
  * - method_technique
  *
  * JOINS BETWEEN METHOD TECHNIQUE AND METHOD_LOOKUP_ATTRIBUTE_*
  * - method_technique_attribute_quantitative
  * - method_technique_attribute_qualitative
- * 
+ *
  * JOIN BETWEEN METHOD TECHNIQUE AND ATTRACTANT_LOOKUP
  * - method_technique_attractant
  *
@@ -36,6 +36,10 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     -- Create technique lookup tables
     ----------------------------------------------------------------------------------------
+
+    SET SEARCH_PATH=biohub_dapi_v1;
+    
+    DROP VIEW IF EXISTS survey_sample_method;
 
     SET SEARCH_PATH=biohub, public;
 
@@ -533,7 +537,7 @@ export async function up(knex: Knex): Promise<void> {
         mt.method_lookup_id = ssm.method_lookup_id;
 
     -- Drop method_lookup_id from survey_sample_method
-    -- ALTER TABLE survey_sample_method DROP COLUMN method_lookup_id;
+    ALTER TABLE survey_sample_method DROP COLUMN method_lookup_id;
 
     -- Add NOT NULL constraint to method_technique_id column
     ALTER TABLE survey_sample_method ALTER COLUMN method_technique_id SET NOT NULL;

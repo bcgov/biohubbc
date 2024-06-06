@@ -3,20 +3,21 @@ import Grid from '@mui/material/Grid';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
+import { TechniqueFormValues } from 'features/surveys/technique/form/components/TechniqueForm';
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
-import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
+
 import { useEffect } from 'react';
 
 /**
- * Create survey - general information fields
+ * Technique general information form.
  *
  * @return {*}
  */
-const TechniqueGeneralInformationForm = () => {
+export const TechniqueGeneralInformationForm = () => {
   const codesContext = useCodesContext();
 
-  const { setFieldValue } = useFormikContext<ICreateTechniqueRequest>();
+  const { setFieldValue } = useFormikContext<TechniqueFormValues>();
 
   const methodOptions: ISelectWithSubtextFieldOption[] =
     codesContext.codesDataLoader.data?.sample_methods.map((option) => ({
@@ -81,5 +82,3 @@ const TechniqueGeneralInformationForm = () => {
     </>
   );
 };
-
-export default TechniqueGeneralInformationForm;

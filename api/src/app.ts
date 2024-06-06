@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import { initialize } from 'express-openapi';
 import multer from 'multer';
 import { OpenAPIV3 } from 'openapi-types';
+import path from 'path';
 import swaggerUIExperss from 'swagger-ui-express';
 import { defaultPoolConfig, initDBPool } from './database/db';
 import { ensureHTTPError, HTTP500 } from './errors/http-error';
@@ -64,7 +65,7 @@ const openAPIFramework = initialize({
     'x-express-openapi-validation-strict': true
   },
   app: app, // express app to initialize
-  paths: './src/paths', // base folder for endpoint routes
+  paths: path.resolve(__dirname, 'paths'), // base folder for endpoint routes
   pathsIgnore: new RegExp('.(spec|test)$'), // ignore test files in paths
   routesGlob: '**/*.{ts,js}', // updated default to allow .ts
   routesIndexFileRegExp: /(?:index)?\.[tj]s$/, // updated default to allow .ts

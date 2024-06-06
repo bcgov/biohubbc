@@ -8,20 +8,21 @@ import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import AutocompleteField from 'components/fields/AutocompleteField';
+import { TechniqueFormValues } from 'features/surveys/technique/form/components/TechniqueForm';
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
-import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
+
 import { TransitionGroup } from 'react-transition-group';
 
 /**
- * Create survey - general information fields
+ * Technique attractants form.
  *
  * @return {*}
  */
-const TechniqueAttractantsForm = () => {
+export const TechniqueAttractantsForm = () => {
   const codesContext = useCodesContext();
 
-  const { values, setFieldValue } = useFormikContext<ICreateTechniqueRequest>();
+  const { values, setFieldValue } = useFormikContext<TechniqueFormValues>();
 
   if (!codesContext.codesDataLoader.data) {
     return <></>;
@@ -33,9 +34,10 @@ const TechniqueAttractantsForm = () => {
     <>
       <Grid container spacing={2}>
         <Grid item xs={12}>
+          <Typography component="legend">Attractants (optional)</Typography>
           <AutocompleteField
             id="technique_attractant_id"
-            label="Attractants (optional)"
+            label="Enter an attractant"
             name="attractants"
             loading={codesContext.codesDataLoader.isLoading}
             options={
@@ -45,13 +47,14 @@ const TechniqueAttractantsForm = () => {
                   label: option.name,
                   description: option.description
                 }))
-                .filter((option) => !values.attractants.includes(option.value)) ?? []
+                .filter((option) => !values.attractants?.includes(option.value)) ?? []
             }
             onChange={(_, value) => {
               if (value?.value) {
                 setFieldValue('attractants', [...values.attractants, value.value]);
               }
             }}
+            onInputChange={(_, __, ___) => {}}
           />
         </Grid>
         <Grid item xs={12}>
@@ -61,26 +64,29 @@ const TechniqueAttractantsForm = () => {
               return (
                 <Collapse key={attractant}>
                   <Paper
+                    variant="outlined"
                     sx={{
-                      py: 2,
-                      px: 3,
-                      mb: 1.5,
-                      bgcolor: grey[100],
+                      py: 1.5,
+                      px: 2.5,
+                      mb: 1,
+                      background: grey[100],
                       flex: '1 1 auto',
                       display: 'flex',
                       justifyContent: 'space-between'
                     }}>
                     <Box>
                       <Typography fontWeight={700}>{lookup?.name}</Typography>
-                      <Typography color="textSecondary">{lookup?.description}</Typography>
+                      <Typography color="textSecondary" variant="body2">
+                        {lookup?.description}
+                      </Typography>
                     </Box>
                     <Box>
                       <IconButton
-                        data-testid={`remove-species-button-${index}`}
+                        data-testid={`remove-attractant-button-${index}`}
                         sx={{
                           ml: 2
                         }}
-                        aria-label="remove species"
+                        aria-label="remove attractant"
                         onClick={() => {
                           setFieldValue(
                             'attractants',
@@ -100,5 +106,3 @@ const TechniqueAttractantsForm = () => {
     </>
   );
 };
-
-export default TechniqueAttractantsForm;

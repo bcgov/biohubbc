@@ -375,44 +375,6 @@ describe('FundingSourceRepository', () => {
     });
   });
 
-  describe('getSurveyFundingSourceByFundingSourceId', () => {
-    it('returns a single funding source basic supplementary data', async () => {
-      const expectedResult = {
-        survey_funding_source_id: 1,
-        survey_id: 1,
-        funding_source_id: 1,
-        amount: 1,
-        revision_count: 1
-      };
-
-      const mockResponse = { rowCount: 1, rows: [expectedResult] } as unknown as Promise<QueryResult<any>>;
-
-      const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
-
-      const fundingSourceRepository = new FundingSourceRepository(dbConnection);
-
-      const response = await fundingSourceRepository.getSurveyFundingSourceByFundingSourceId(1, 1);
-
-      expect(response).to.eql(expectedResult);
-    });
-
-    it('throws an error if rowCount is 0', async () => {
-      const mockResponse = { rowCount: 0, rows: [] } as unknown as Promise<QueryResult<any>>;
-
-      const dbConnection = getMockDBConnection({ sql: async () => mockResponse });
-
-      const fundingSourceRepository = new FundingSourceRepository(dbConnection);
-
-      try {
-        await fundingSourceRepository.getSurveyFundingSourceByFundingSourceId(1, 1);
-
-        expect.fail();
-      } catch (error) {
-        expect((error as ApiError).message).to.equal('Failed to get survey funding source');
-      }
-    });
-  });
-
   describe('getSurveyFundingSources', () => {
     it('returns all survey funding sources', async () => {
       const expectedResult = [

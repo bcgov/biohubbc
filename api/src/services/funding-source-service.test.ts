@@ -178,30 +178,6 @@ describe('FundingSourceService', () => {
     });
   });
 
-  describe('getSurveyFundingSourceByFundingSourceId', () => {
-    it('returns a funding source item', async () => {
-      const dbConnection = getMockDBConnection();
-      const fundingSourceService = new FundingSourceService(dbConnection);
-
-      const expectedResult = {
-        funding_source_id: 1,
-        survey_funding_source_id: 1,
-        survey_id: 1,
-        amount: 1,
-        revision_count: 1
-      };
-
-      const getSurveyFundingSourceByFundingSourceIdStub = sinon
-        .stub(FundingSourceRepository.prototype, 'getSurveyFundingSourceByFundingSourceId')
-        .resolves(expectedResult);
-
-      const response = await fundingSourceService.getSurveyFundingSourceByFundingSourceId(1, 1);
-
-      expect(getSurveyFundingSourceByFundingSourceIdStub).to.be.calledOnce;
-      expect(response).to.eql(expectedResult);
-    });
-  });
-
   describe('getSurveyFundingSources', () => {
     it('returns an array of funding source items', async () => {
       const dbConnection = getMockDBConnection();
@@ -217,13 +193,13 @@ describe('FundingSourceService', () => {
         }
       ];
 
-      const getSurveyFundingSourceByFundingSourceIdStub = sinon
+      const getSurveyFundingSourcesStub = sinon
         .stub(FundingSourceRepository.prototype, 'getSurveyFundingSources')
         .resolves(expectedResult);
 
       const response = await fundingSourceService.getSurveyFundingSources(1);
 
-      expect(getSurveyFundingSourceByFundingSourceIdStub).to.be.calledOnce;
+      expect(getSurveyFundingSourcesStub).to.be.calledOnce;
       expect(response).to.eql(expectedResult);
     });
   });

@@ -108,21 +108,6 @@ export class FundingSourceService extends DBService {
    */
 
   /**
-   * Fetch a single survey funding source by survey id and funding source id.
-   *
-   * @param {number} surveyId
-   * @param {number} fundingSourceId
-   * @return {*}  {Promise<SurveyFundingSource>}
-   * @memberof FundingSourceService
-   */
-  async getSurveyFundingSourceByFundingSourceId(
-    surveyId: number,
-    fundingSourceId: number
-  ): Promise<SurveyFundingSource> {
-    return this.fundingSourceRepository.getSurveyFundingSourceByFundingSourceId(surveyId, fundingSourceId);
-  }
-
-  /**
    * Fetch all survey funding sources by survey id.
    *
    * @param {number} surveyId

@@ -11,7 +11,7 @@ import { SyntheticEvent } from 'react';
 export interface IAutocompleteFieldOption<T extends string | number> {
   value: T;
   label: string;
-  description?: string;
+  description?: string | null;
 }
 
 export interface IAutocompleteField<T extends string | number> {
@@ -28,14 +28,13 @@ export interface IAutocompleteField<T extends string | number> {
   getOptionDisabled?: (option: IAutocompleteFieldOption<T>) => boolean;
   onChange?: (event: SyntheticEvent<Element, Event>, option: IAutocompleteFieldOption<T> | null) => void;
   renderOption?: (params: React.HTMLAttributes<HTMLLIElement>, option: IAutocompleteFieldOption<T>) => React.ReactNode;
+  onInputChange?: (event: React.SyntheticEvent<Element, Event>, value: string, reason: string) => void;
 }
 
 // To be used when you want an autocomplete field with no freesolo allowed but only one option can be selected
 
 const AutocompleteField = <T extends string | number>(props: IAutocompleteField<T>) => {
   const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOption<T>>();
-
-  console.log(values)
 
   const getExistingValue = (existingValue: T): IAutocompleteFieldOption<T> => {
     const result = props.options.find((option) => existingValue === option[props.optionFilter ?? 'value']);
@@ -59,7 +58,6 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
 
   return (
     <Autocomplete
-      autoSelect
       clearOnBlur
       blurOnSelect
       handleHomeEndKeys
@@ -73,9 +71,14 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
       sx={props.sx}
       loading={props.loading}
-      onInputChange={(_, _value, reason) => {
+      onInputChange={(_event, _value, reason) => {
         if (reason === 'reset') {
+          return;
+        }
+
+        if (reason === 'clear') {
           setFieldValue(props.name, null);
+          return;
         }
       }}
       onChange={(event, option) => {
@@ -84,7 +87,9 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
           return;
         }
 
-        setFieldValue(props.name, option?.value);
+        if (option?.value) {
+          setFieldValue(props.name, option?.value);
+        }
       }}
       renderOption={(params, option) => {
         if (props.renderOption) {
@@ -94,14 +99,14 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
         return (
           <Box
             component="li"
-            {...params} // Ensure params are spread correctly
+            {...params}
             sx={{
               '& + li': {
                 borderTop: '1px solid' + grey[300]
               }
             }}
             key={option.value}>
-            <Box py={1} width="100%">
+            <Box py={1}>
               <Typography fontWeight={700}>{option.label}</Typography>
               {option.description && (
                 <Typography color="textSecondary" variant="body2">

@@ -1,6 +1,7 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { EditTechniquePage } from 'features/surveys/technique/form/edit/EditTechniquePage';
 import SurveyPage from 'features/surveys/view/SurveyPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
@@ -10,8 +11,8 @@ import EditSurveyPage from './edit/EditSurveyPage';
 import SamplingSitePage from './observations/sampling-sites/create/SamplingSitePage';
 import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
 import SamplingSiteManagePage from './observations/sampling-sites/SamplingSiteManagePage';
-import SamplingSiteTechniquePage from './observations/sampling-sites/SamplingTechniquePage';
 import { SurveyObservationPage } from './observations/SurveyObservationPage';
+import { CreateTechniquePage } from './technique/form/create/CreateTechniquePage';
 import ManualTelemetryPage from './telemetry/ManualTelemetryPage';
 import { SurveyAnimalsPage } from './view/survey-animals/SurveyAnimalsPage';
 
@@ -78,6 +79,25 @@ const SurveyRouter: React.FC = () => {
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
+      {/* Technique routes */}
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/manage-sampling/technique/create"
+        title={getTitle('Create Technique')}>
+        <DialogContextProvider>
+          <CreateTechniquePage />
+        </DialogContextProvider>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/manage-sampling/technique/:method_technique_id/edit"
+        title={getTitle('Edit Technique')}>
+        <DialogContextProvider>
+          <EditTechniquePage />
+        </DialogContextProvider>
+      </RouteWithTitle>
+
       {/* Sample Site Routes  TODO: Remove unused path and page */}
       <RouteWithTitle
         exact
@@ -85,15 +105,6 @@ const SurveyRouter: React.FC = () => {
         title={getTitle('Manage Sampling Sites')}>
         <DialogContextProvider>
           <SamplingSiteManagePage />
-        </DialogContextProvider>
-      </RouteWithTitle>
-
-      <RouteWithTitle
-        exact
-        path="/admin/projects/:id/surveys/:survey_id/manage-sampling/technique"
-        title={getTitle('Techniques')}>
-        <DialogContextProvider>
-          <SamplingSiteTechniquePage />
         </DialogContextProvider>
       </RouteWithTitle>
 

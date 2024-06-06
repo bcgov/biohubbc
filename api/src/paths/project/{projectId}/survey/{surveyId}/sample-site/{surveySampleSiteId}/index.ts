@@ -133,10 +133,6 @@ PUT.apiDoc = {
                               type: 'integer',
                               nullable: true
                             },
-                            method_technique_id: {
-                              type: 'integer',
-                              nullable: true
-                            },
                             start_date: {
                               type: 'string'
                             },
@@ -466,7 +462,7 @@ GET.apiDoc = {
                 required: [
                   'survey_sample_method_id',
                   'survey_sample_site_id',
-                  'method_technique_id',
+                  'technique',
                   'method_response_metric_id',
                   'sample_periods'
                 ],
@@ -482,9 +478,27 @@ GET.apiDoc = {
                       type: 'integer',
                       minimum: 1
                     },
-                    method_technique_id: {
-                      type: 'integer',
-                      minimum: 1
+                    technique: {
+                      type: 'object',
+                      properties: {
+                        method_technique_id: {
+                          type: 'integer'
+                        },
+                        name: {
+                          type: 'string'
+                        },
+                        description: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        attractants: {
+                          type: 'array',
+                          items: {
+                            type: 'integer',
+                            description: 'Attractant lookup IDs'
+                          }
+                        }
+                      }
                     },
                     description: {
                       type: 'string',

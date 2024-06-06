@@ -1,14 +1,14 @@
+import grey from '@mui/material/colors/grey';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { useCodesContext, useObservationsContext, useObservationsPageContext } from 'hooks/useContext';
-import { IGetSampleMethodRecord } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleMethodDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect } from 'react';
-import { getCodesName } from 'utils/Utils';
 import SamplingSiteListPeriod from './SamplingSiteListPeriod';
 
 export interface ISamplingSiteListMethodProps {
-  sampleMethod: IGetSampleMethodRecord;
+  sampleMethod: IGetSampleMethodDetails;
 }
 
 /**
@@ -39,14 +39,15 @@ export const SamplingSiteListMethod = (props: ISamplingSiteListMethodProps) => {
       }}>
       <ListItemText
         sx={{
-          p: 0,
-          mt: 0,
+          p: 1,
+          bgcolor: grey[100],
           '& .MuiTypography-root': {
-            fontWeight: 700
+            fontWeight: 700,
+            pt: 0
           }
         }}
         title="Sampling Method"
-        primary={getCodesName(codesContext.codesDataLoader.data, 'sample_methods', sampleMethod.method_technique_id)}
+        primary={sampleMethod.technique.name}
       />
       {sampleMethod.sample_periods.length > 0 && (
         <List disablePadding sx={{ ml: 0.5 }}>

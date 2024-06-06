@@ -9,7 +9,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -17,7 +16,7 @@ import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import SamplingTechniqueCardContainer from './SamplingTechniqueCardContainer';
+import { SamplingTechniqueCardContainer } from './components/SamplingTechniqueCardContainer';
 
 /**
  * Renders a list of techniques.
@@ -49,12 +48,11 @@ const SamplingSiteTechniqueContainer = () => {
   const techniqueCount = techniqueDataLoaderData?.count ?? 0;
   const techniques = techniqueDataLoaderData?.techniques ?? [];
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleTechniqueMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sample_site_id: number) => {
     setTechniqueAnchorEl(event.currentTarget);
     setSelectedTechniqueId(sample_site_id);
   };
-
-  console.log(handleTechniqueMenuClick);
 
   const handleHeaderMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setHeaderAnchorEl(event.currentTarget);
@@ -119,6 +117,7 @@ const SamplingSiteTechniqueContainer = () => {
     });
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleCheckboxChange = (techniqueId: number) => {
     setCheckboxSelectedIds((prev) => {
       if (prev.includes(techniqueId)) {
@@ -128,8 +127,6 @@ const SamplingSiteTechniqueContainer = () => {
       }
     });
   };
-
-  console.log(handleCheckboxChange);
 
   const handleBulkDeleteTechniques = async () => {
     // await biohubApi.samplingSite
@@ -248,8 +245,7 @@ const SamplingSiteTechniqueContainer = () => {
         </MenuItem>
       </Menu>
 
-      <Paper
-        component={Stack}
+      <Stack
         flexDirection="column"
         height="100%"
         sx={{
@@ -272,7 +268,7 @@ const SamplingSiteTechniqueContainer = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to={'manage-sampling/technique'}
+            to={'manage-sampling/technique/create'}
             startIcon={<Icon path={mdiPlus} size={0.8} />}>
             Add
           </Button>
@@ -288,7 +284,6 @@ const SamplingSiteTechniqueContainer = () => {
             <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
         </Toolbar>
-        <Divider flexItem />
         {surveyContext.techniqueDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
           <SkeletonList />
         ) : (
@@ -319,16 +314,11 @@ const SamplingSiteTechniqueContainer = () => {
                 </Stack>
               )}
 
-              <SamplingTechniqueCardContainer
-                techniques={techniques}
-                handleDelete={(technique) => {
-                  console.log(technique);
-                }}
-              />
+              <SamplingTechniqueCardContainer techniques={techniques} handleDelete={() => {}} />
             </Box>
           </Stack>
         )}
-      </Paper>
+      </Stack>
     </>
   );
 };

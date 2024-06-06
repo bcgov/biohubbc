@@ -7,21 +7,23 @@ import SelectWithSubtextField from 'components/fields/SelectWithSubtext';
 import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
-import { get } from 'lodash-es';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
+import { v4 } from 'uuid';
 import { ISurveySampleMethodPeriodData } from '../../periods/create/form/SamplingPeriodForm';
 
 export interface ISurveySampleMethodData {
+  _id?: string; // Internal ID used only for a unique key prop. Should not be sent to the API.
   survey_sample_method_id: number | null;
   survey_sample_site_id: number | null;
-  method_technique_id?: number | null;
+  method_technique_id: number | null;
   description: string;
   sample_periods: ISurveySampleMethodPeriodData[];
   method_response_metric_id: number | null;
 }
 
 export const SurveySampleMethodDataInitialValues = {
+  _id: v4(),
   survey_sample_method_id: null,
   survey_sample_site_id: null,
   method_technique_id: null,
@@ -48,13 +50,13 @@ const MethodForm = () => {
   const codesContext = useContext(CodesContext);
   const surveyContext = useSurveyContext();
 
-  const { values, setFieldValue } = useFormikContext<ISurveySampleMethodData>();
+  const { setFieldValue } = useFormikContext<ISurveySampleMethodData>();
 
   const methodResponseMetricOptions: IAutocompleteFieldOption<number>[] =
     codesContext.codesDataLoader.data?.method_response_metrics.map((option) => ({
       value: option.id,
       label: option.name,
-      subText: option.description
+      description: option.description
     })) ?? [];
 
   useEffect(() => {
@@ -66,8 +68,6 @@ const MethodForm = () => {
   if (!codesContext.codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-
-  console.log(get(values, 'method_technique_id'));
 
   return (
     <form>
@@ -99,7 +99,7 @@ const MethodForm = () => {
               })) ?? []
             }
             onChange={(_, value) => {
-              console.log(value);
+
               if (value?.value) {
                 setFieldValue('method_technique_id', value.value);
               }
@@ -112,7 +112,6 @@ const MethodForm = () => {
             showValue={true}
             options={methodResponseMetricOptions ?? []}
             onChange={(_, value) => {
-              console.log(value);
               if (value?.value) {
                 setFieldValue('method_response_metric_id', value.value);
               }

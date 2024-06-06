@@ -11,6 +11,7 @@ import CardHeader from '@mui/material/CardHeader';
 import Collapse from '@mui/material/Collapse';
 import blueGrey from '@mui/material/colors/blueGrey';
 import grey from '@mui/material/colors/grey';
+import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu, { MenuProps } from '@mui/material/Menu';
@@ -36,7 +37,7 @@ import CreateSamplingMethod from './CreateSamplingMethod';
  * @returns
  */
 const SamplingMethodForm = () => {
-  const { values, errors, setFieldValue } = useFormikContext<ICreateSamplingSiteRequest>();
+  const { values, errors, setFieldValue, setFieldTouched } = useFormikContext<ICreateSamplingSiteRequest>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
@@ -51,7 +52,6 @@ const SamplingMethodForm = () => {
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
-    console.log(values.sample_methods[index]);
     setEditData({ data: values.sample_methods[index], index });
   };
 
@@ -71,7 +71,7 @@ const SamplingMethodForm = () => {
         open={isCreateModalOpen}
         onSubmit={(data) => {
           setFieldValue(`sample_methods[${values.sample_methods.length}]`, data);
-          // validateField('sample_methods');
+          setFieldTouched('sample_methods', true, false);
           setAnchorEl(null);
           setIsCreateModalOpen(false);
         }}
@@ -88,7 +88,7 @@ const SamplingMethodForm = () => {
           open={isEditModalOpen}
           onSubmit={(data) => {
             setFieldValue(`sample_methods[${editData?.index}]`, data);
-            // validateField('sample_methods');
+            setFieldTouched('sample_methods', true, false);
             setAnchorEl(null);
             setIsEditModalOpen(false);
           }}
@@ -149,7 +149,7 @@ const SamplingMethodForm = () => {
           )}
           <Stack component={TransitionGroup} gap={1.5}>
             {values.sample_methods.map((item, index) => (
-              <Collapse key={`sample_method_${item.method_technique_id || index}`}>
+              <Collapse key={`sample_method_${item._id}`}>
                 <Card
                   variant="outlined"
                   sx={{
@@ -163,7 +163,7 @@ const SamplingMethodForm = () => {
                   <CardHeader
                     title={
                       <Box display="flex">
-                        <Typography component="span">
+                        <Typography component="span" variant="h5">
                           {
                             surveyContext.techniqueDataLoader.data?.techniques.find(
                               (technique) => technique.method_technique_id === item.method_technique_id
@@ -202,7 +202,6 @@ const SamplingMethodForm = () => {
                     <Stack gap={2}>
                       {item.description && (
                         <Typography
-                          variant="body2"
                           color="textSecondary"
                           sx={{
                             display: '-webkit-box',
@@ -215,10 +214,9 @@ const SamplingMethodForm = () => {
                           {item.description}
                         </Typography>
                       )}
+                      <Divider sx={{ mt: 0.5 }} />
                       <Box py={1}>
-                        {item.method_technique_id && (
-                          <MethodPeriodForm index={index} method_technique_id={item.method_technique_id} />
-                        )}
+                        {item.method_technique_id && <MethodPeriodForm index={index} survey_sample_method={item} />}
                       </Box>
                     </Stack>
                   </CardContent>
@@ -228,7 +226,8 @@ const SamplingMethodForm = () => {
 
             <Button
               sx={{
-                alignSelf: 'flex-start'
+                alignSelf: 'flex-start',
+                mt: 1
               }}
               data-testid="create-sample-method-add-button"
               variant="outlined"
