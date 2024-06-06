@@ -280,9 +280,9 @@ export class TechniqueRepository extends BaseRepository {
           'method_lookup_attribute_quantitative_id', mlaq.method_lookup_attribute_quantitative_id,
           'name', taq.name,
           'description', taq.description,
-          'min', taq.min,
-          'max', taq.max,
-          'unit', taq.unit
+          'min', mlaq.min,
+          'max', mlaq.max,
+          'unit', mlaq.unit
         )) as quantitative_attributes
       `)
           )

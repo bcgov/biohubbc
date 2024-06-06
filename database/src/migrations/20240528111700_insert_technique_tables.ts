@@ -3,6 +3,9 @@ import { Knex } from 'knex';
 /**
  * Populate lookup values for the environment_quantitative, environment_qualitative, and
  * environment_qualitative_option tables.
+ * 
+ * This migration file inserts values into method lookup table, technique attribute qual and quant tables, 
+ * method lookup quant and qual and qualitative options and attractants
  *
  * @export
  * @param {Knex} knex
@@ -10,11 +13,7 @@ import { Knex } from 'knex';
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
-  SET SEARCH_PATH=biohub;
-  ----------------------------------------------------------------------------------------
-  --This migration file inserts values into method lookup table, technique attribute qual and quant tables, method lookup quant and qual 
-  --and qualitative options and attractants
-  ----------------------------------------------------------------------------------------
+  SET SEARCH_PATH=biohub, public;
   
   ----------------------------------------------------------------------------------------
   --Adding more values to the method lookup table. 
@@ -79,9 +78,9 @@ export async function up(knex: Knex): Promise<void> {
     );
     
   ----------------------------------------------------------------------------------------
-  --Deleting and editing previous rows that no longer apply to the method_lookup table
+  --Deleting and editing previous rows that no longer apply to the method_technique table
   ----------------------------------------------------------------------------------------
-    UPDATE survey_sample_method
+    UPDATE method_technique
     SET method_lookup_id = (SELECT method_lookup_id FROM method_lookup WHERE name = 'Visual encounter')
     WHERE method_lookup_id IN (SELECT method_lookup_id FROM method_lookup WHERE name IN ('Aerial transect', 'Ground transect', 'Aquatic transect', 'Underwater transect'));
 
@@ -92,9 +91,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     -- Edit enum list
     ----------------------------------------------------------------------------------------
-    SET SEARCH_PATH=biohub, public;
 
-    BEGIN;
     ALTER TYPE environment_unit ADD VALUE 'seconds';
     ALTER TYPE environment_unit ADD VALUE 'meters squared';
     ALTER TYPE environment_unit ADD VALUE 'count';
@@ -104,233 +101,111 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TYPE environment_unit ADD VALUE 'volts';
     ALTER TYPE environment_unit ADD VALUE 'megapixels';
 
-
-    COMMIT;
-
     ----------------------------------------------------------------------------------------
     -- Populate lookup tables.
     ----------------------------------------------------------------------------------------
 
-    SET SEARCH_PATH=biohub, public;
     INSERT INTO technique_attribute_quantitative
     (
       name,
-      description,
-      min,
-      max,
-      unit
+      description
     )
-  VALUES
+    VALUES
     (
       'Height above ground',
-      'The height above ground.',
-      0,
-      10000,
-      'centimeter'
-    ),
+      'The height above ground.'),
     (
       'Images per trigger',
-      'The number of images captured per trigger.',
-      0,
-      10000,
-      NULL
-    ),
+      'The number of images captured per trigger.'),
     (
       'Trigger speed',
-      'The time it takes for a camera trap to capture an image or start recording after detecting motion.',
-      0,
-      100,
-      'seconds'
-    ),
+      'The time it takes for a camera trap to capture an image or start recording after detecting motion.'),
     (
       'Detection distance',
-      'The maximum range at which a camera trap can detect motion to trigger a photo or video capture.',
-      0,
-      200,
-      'meter'
-    ),
+      'The maximum range at which a camera trap can detect motion to trigger a photo or video capture.'),
     (
       'Field of view',
-      'The extent of the observable area that a camera trap can capture.',
-      0,
-      360,
-      'degrees'
-    ),
+      'The extent of the observable area that a camera trap can capture.'),
     (
       'Length',
-      'The measurement from the front to the back fo the device',
-      0,
-      25,
-      'meter'
-    ),
+      'The measurement from the front to the back fo the device'),
     (
       'Width',
-      'The measurement across the trap from one side to the other, determining the horizontal space available for capturing and containing wildlife.',
-      0,
-      25,
-      'meter'
-    ),
+      'The measurement across the trap from one side to the other, determining the horizontal space available for capturing and containing wildlife.'),
     (
       'Height',
-      'The measurement from the bottom to the top of the trap, determining the vertical space available for capturing and containing wildlife.',
-      0,
-      25,
-      'meter'
-    ),
+      'The measurement from the bottom to the top of the trap, determining the vertical space available for capturing and containing wildlife.'),
     (
       'Net size',
-      'The overall dimensions calculated as length times height, determining the total area available for capturing aquatic species.',
-      0,
-      100000,
-      'meters squared'
-    ),
+      'The overall dimensions calculated as length times height, determining the total area available for capturing aquatic species.'),
     (
       'Mesh size',
-      'The measurement of the distance between two opposite knots when the net is pulled taut, determining the maximum opening for capturing species.',
-      0,
-      100,
-      'centimeter'
-    ),
+      'The measurement of the distance between two opposite knots when the net is pulled taut, determining the maximum opening for capturing species.'),
     (
       'Set depth',
-      'The vertical distance from the water surface to the position where the net is deployed, indicating how deep the net is placed in the water column.',
-      0,
-      1500,
-      'meter'
-    ),
+      'The vertical distance from the water surface to the position where the net is deployed, indicating how deep the net is placed in the water column.'),
     (
       'Trawling depth',
-      'The vertical distance from the water surface to the position where the trawl net is towed, indicating the depth at which the net is operating in the water column.',
-      0,
-      1500,
-      'meter'
-    ),
+      'The vertical distance from the water surface to the position where the trawl net is towed, indicating the depth at which the net is operating in the water column.'),
     (
       'Shelves',
-      'The number of horizontal tiers or pockets in the net, which help entangle and hold captured animals.',
-      0,
-      20,
-      'count'
-    ),
+      'The number of horizontal tiers or pockets in the net, which help entangle and hold captured animals.'),
     (
       'Depth',
-      'The vertical measurement from the top to the bottom.',
-      0,
-      100,
-      'meter'
-    ),
+      'The vertical measurement from the top to the bottom.'),
     (
       'Diameter of opening',
-      'The size of the entry point of the capture mechanism.',
-      0,
-      100,
-      'meter'
-    ),
+      'The size of the entry point of the capture mechanism.'),
     (
       'Number of entrances',
-      'The count of entry points into the capture mechanism.',
-      0,
-      100,
-      'count'
-    ),
+      'The count of entry points into the capture mechanism.'),
     (
     'Leader length',
-    'The length of the guiding structure that directs fish into the trap net.',
-    0,
-    100,
-    'meter'
-    ),
+    'The length of the guiding structure that directs fish into the trap net.'),
     (
       'Hook size',
-      'Numerical scale where smaller numbers indicate larger hooks based on the gap and shank length.',
-      1,
-      32,
-      'count'
-    ),
+      'Numerical scale where smaller numbers indicate larger hooks based on the gap and shank length.'),
     (
       'Radio frequency',
-      'Frequency refers to the specific radio wave band at which the transmitter on the animal and the receiver on the tower communicate to ensure accurate tracking and data transmission.',
-      100,
-      450,
-      'MHz'
-    ),
+      'Frequency refers to the specific radio wave band at which the transmitter on the animal and the receiver on the tower communicate to ensure accurate tracking and data transmission.'),
     (
       'Pulse repetition frequency',
-      'The number of radar pulses transmitted per second, measured in hertz (Hz), and is a key parameter that affects the radar''s range resolution and target detection capabilities.',
-      0,
-      100000,
-      'Hz'
-    ),
+      'The number of radar pulses transmitted per second, measured in hertz (Hz), and is a key parameter that affects the range resolution and target detection capabilities.'),
     (
       'Range resolution',
-      'Measured in meters and indicates the minimum distance between two distinct targets that the radar can differentiate. It is determined by the radar''s pulse width, with shorter pulses providing better (smaller) range resolution.',
-      0,
-      1000,
-      'meter'
-    ),
+      'Measured in meters and indicates the minimum distance between two distinct targets that the radar can differentiate. It is determined by the pulse width, with shorter pulses providing better (smaller) range resolution.'),
     (
       'Current',
-      'Current is the flow of electric charge through a conductor, typically measured in amperes.',
-      0,
-      10,
-      'amps'
-    ),
+      'Current is the flow of electric charge through a conductor, typically measured in amperes.'),
     (
       'Voltage',
-      'Voltage is the electric potential difference between two points in a circuit which drives the flow of electric current.',
-      0,
-      1000,
-      'volts'
-    ),
+      'Voltage is the electric potential difference between two points in a circuit which drives the flow of electric current.'),
     (
       'Electrical frequency', 
-      'The frequency of the electrical pulses, measured in Hz.',
-      0,
-      1000,
-      'Hz'
-    ),
+      'The frequency of the electrical pulses, measured in Hz.'),
     (
       'Duty cycle',
-      'The duty cycle is measured as a percentage (%), representing the proportion of time the electrical current is active (on) versus the total time of the cycle.',
-      0,
-      100,
-      'percent'
-    ),
+      'The duty cycle is measured as a percentage (%), representing the proportion of time the electrical current is active (on) versus the total time of the cycle.'),
     (
       'Number of hooks',
-      'The number of hooks included in the device',
-      0,
-      10000,
-      'count'
-    ),
+      'The number of hooks included in the device'),
     (
       'Surface area',
-      'Width x Height of the device',
-      0,
-      1000,
-      'meters squared'
-    ),
+      'Width x Height of the device'),
     (
       'Camera resolution',
-      'The level of detail captured in a photo.',
-      0,
-      64,
-      'megapixels'
+      'The level of detail captured in a photo.'
     );
 
-INSERT INTO technique_attribute_qualitative
+  INSERT INTO technique_attribute_qualitative
     (
       name,
       description
     )
   VALUES
-    (
-      'Model',
-      'The model of the device.'
-    ),
-    (
-      'Video resolution',
-      'The clarity and detail of recorded video footage.'
+  (
+    'Model',
+    'The model of the device.'
     ),
     (
       'Infrared type',
@@ -402,200 +277,319 @@ INSERT INTO technique_attribute_qualitative
     INSERT INTO method_lookup_attribute_quantitative
       (
         technique_attribute_quantitative_id,
-        method_lookup_id
+        method_lookup_id,
+        min,
+        max,
+        unit
       )
     VALUES
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Height above ground'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap'),
+      0,
+      10000,
+      'centimeter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Images per trigger'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap')
-      ),
-      (
-        (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Trigger speed'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap')
-      ),
-      (
-        (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Detection distance'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap'),
+        0,
+        50,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Field of view'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap'),
+        0,
+        360,
+        'degrees'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Length'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Box or live trap')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Box or live trap'),
+        0,
+        10000,
+        'centimeter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Width'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Box or live trap')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Box or live trap'),
+        0,
+        10000,
+        'centimeter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Height'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Box or live trap')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Box or live trap'),
+        0,
+        10000,
+        'centimeter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Net size'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Gill net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Gill net'),
+        0,
+        10000,
+        'centimeter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Mesh size'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Gill net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Gill net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Set depth'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Gill net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Gill net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Net size'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trawling')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trawling'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Mesh size'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trawling')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trawling'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Trawling depth'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trawling')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trawling'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Length'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Mist net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Mist net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Height'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Mist net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Mist net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Mesh size'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Mist net')
-      ),
-      (
-        (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Shelves'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Mist net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Mist net'),
+        0,
+        100,
+        'millimeter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Width'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Pitfall trap')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Pitfall trap'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Depth'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Pitfall trap')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Pitfall trap'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Length'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Height'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Width'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Mesh size'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Diameter of opening'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Number of entrances'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Leader length'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Depth'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Diameter of opening'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Rotary screw trap')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Rotary screw trap'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Depth'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Handheld net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Handheld net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Diameter of opening'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Handheld net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Handheld net'),
+        NULL,
+        NULL,
+        NULL
       ), 
       (
        (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Hook size'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Angling')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Angling'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Radio frequency'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Radio signal tower')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Radio signal tower'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Pulse repetition frequency'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Radar')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Radar'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Range resolution'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Radar')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Radar'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Current'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Electrofishing')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Electrofishing'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Voltage'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Electrofishing')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Electrofishing'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Electrical frequency'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Electrofishing')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Electrofishing'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Duty cycle'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Electrofishing')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Electrofishing'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Length'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Seine net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Seine net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Height'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Seine net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Seine net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Mesh size'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Seine net')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Seine net'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Width'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Fish weir')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Fish weir'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Surface area'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Egg mats')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Egg mats'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Length'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Setline')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Setline'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Hook size'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Setline')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Setline'),
+        NULL,
+        NULL,
+        NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Number of hooks'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Setline')
-      ),
-      (
-        (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Camera resolution'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap')
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Setline'),
+        NULL,
+        NULL,
+        NULL
       );
 
     ----------------------------------------------------------------------------------------
@@ -607,10 +601,6 @@ INSERT INTO technique_attribute_qualitative
     VALUES
      (
         (SELECT technique_attribute_qualitative_id FROM technique_attribute_qualitative WHERE name = 'Model'),
-        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap')
-      ),
-      (
-        (SELECT technique_attribute_qualitative_id FROM technique_attribute_qualitative WHERE name = 'Video resolution'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap')
       ),
       (
@@ -826,7 +816,7 @@ INSERT INTO technique_attribute_qualitative
           WHERE taq.name = 'Infrared type' AND ml.name = 'Camera trap'
         
         ),
-          'low-glow',
+          'Low-glow',
           NULL
         ),
       (
@@ -841,62 +831,6 @@ INSERT INTO technique_attribute_qualitative
           'White flash',
           NULL
         ),
-      (
-        (
-          SELECT method_lookup_attribute_qualitative_id 
-          FROM method_lookup_attribute_qualitative mlaq 
-          INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id 
-          INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
-          WHERE taq.name = 'Video resolution' AND ml.name = 'Camera trap'
-        
-        ),
-          '480p',
-          'SD - Standard Definition (720x480 pixels).'
-        ),
-      (
-        (
-          SELECT method_lookup_attribute_qualitative_id 
-          FROM method_lookup_attribute_qualitative mlaq 
-          INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id 
-          INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
-          WHERE taq.name = 'Video resolution' AND ml.name = 'Camera trap'
-        
-        ),
-          '720p',
-          'HD - High Definition - 1280x720 pixels.'
-        ),
-      (
-        (
-          SELECT method_lookup_attribute_qualitative_id 
-          FROM method_lookup_attribute_qualitative mlaq 
-          INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id 
-          INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
-          WHERE taq.name = 'Video resolution' AND ml.name = 'Camera trap'
-        ),
-          '1080p',
-          'FHD - Full High Definition - 1920x1080 pixels.'),
-      (
-        (
-          SELECT method_lookup_attribute_qualitative_id 
-          FROM method_lookup_attribute_qualitative mlaq 
-          INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id 
-          INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
-          WHERE taq.name = 'Video resolution' AND ml.name = 'Camera trap'
-        ),
-          '1440p',
-          'QHD - Quad HD - 2560x1440 pixels'
-      ),
-      (
-        (
-          SELECT method_lookup_attribute_qualitative_id 
-          FROM method_lookup_attribute_qualitative mlaq 
-          INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id 
-          INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
-          WHERE taq.name = 'Video resolution' AND ml.name = 'Camera trap'
-        ),
-          '4K',
-          'UHD - ultra HD - 3840x2160'
-      ),
       (
         (
           SELECT method_lookup_attribute_qualitative_id 
@@ -973,7 +907,7 @@ INSERT INTO technique_attribute_qualitative
           SELECT method_lookup_attribute_qualitative_id FROM method_lookup_attribute_qualitative mlaq INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
           WHERE taq.name = 'Trigger mechanism' AND ml.name = 'Box or live trap'
         ),
-        'Presure plate',
+        'Pressure plate',
         'A flat surface that activates the trap when enough weight is applied. The plate is connected to a trigger mechanism that releases the trap door or closure system upon activation.'
       ),
       (
@@ -1524,15 +1458,15 @@ INSERT INTO technique_attribute_qualitative
         'An audio recording of a species used to attract species.'
       ),
       (
-        'Food baiting',
+        'Food bait',
         'Using specific foods to attract animals. This can include fruits, vegetables, seeds, fish, meat, or other food items depending on the target species.'
       ),
       (
-        'Scent baiting',
+        'Scent bait',
         'Using scents or pheromones to attract animals. Scents can be from natural sources like animal urine or commercial scent lures.'
       ),
       (
-        'Salt Licks',
+        'Salt or mineral bait',
         'Providing mineral licks to attract herbivores and other animals needing minerals.'
       ),
       (
@@ -1544,7 +1478,7 @@ INSERT INTO technique_attribute_qualitative
         'Using shiny or reflective objects to catch the attention of curious animals.'
       ),
       (
-        'Lighting',
+        'Light',
         'Using artificial lights to attract nocturnal insects or other animals.'
       );
 

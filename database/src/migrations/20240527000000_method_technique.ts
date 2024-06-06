@@ -49,9 +49,6 @@ export async function up(knex: Knex): Promise<void> {
       technique_attribute_quantitative_id    uuid               DEFAULT public.gen_random_uuid(),
       name                           varchar(100)       NOT NULL,
       description                    varchar(250),
-      min                            numeric,
-      max                            numeric,
-      unit                           environment_unit,
       record_end_date                date,
       create_date                    timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                    integer            NOT NULL,
@@ -65,9 +62,6 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN technique_attribute_quantitative.technique_attribute_quantitative_id    IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN technique_attribute_quantitative.name                           IS 'The name of the technique attribute.';
     COMMENT ON COLUMN technique_attribute_quantitative.description                    IS 'The description of the technique attribute.';
-    COMMENT ON COLUMN technique_attribute_quantitative.min                            IS 'The minimum allowed value (inclusive).';
-    COMMENT ON COLUMN technique_attribute_quantitative.max                            IS 'The maximum allowed value (inclusive).';
-    COMMENT ON COLUMN technique_attribute_quantitative.unit                           IS 'The unit of measure for the value.';
     COMMENT ON COLUMN technique_attribute_quantitative.record_end_date                IS 'Record level end date.';
     COMMENT ON COLUMN technique_attribute_quantitative.create_date                    IS 'The datetime the record was created.';
     COMMENT ON COLUMN technique_attribute_quantitative.create_user                    IS 'The id of the user who created the record as identified in the system user table.';
@@ -167,6 +161,9 @@ export async function up(knex: Knex): Promise<void> {
       method_lookup_attribute_quantitative_id    uuid               DEFAULT public.gen_random_uuid(),
       technique_attribute_quantitative_id  uuid               NOT NULL,
       method_lookup_id                     integer               NOT NULL,
+      min                                   numeric,
+      max                                   numeric,
+      unit                                  environment_unit,
       description                          varchar(400),
       record_end_date                      date,
       create_date                          timestamptz(6)     DEFAULT now() NOT NULL,
@@ -181,6 +178,9 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN method_lookup_attribute_quantitative.method_lookup_attribute_quantitative_id    IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN method_lookup_attribute_quantitative.technique_attribute_quantitative_id           IS 'Foreign key to the technique_attribute_quantitative table.';
     COMMENT ON COLUMN method_lookup_attribute_quantitative.method_lookup_id                     IS 'Foreign key to the method_lookup table.';
+    COMMENT ON COLUMN method_lookup_attribute_quantitative.min                            IS 'The minimum allowed value (inclusive).';
+    COMMENT ON COLUMN method_lookup_attribute_quantitative.max                            IS 'The maximum allowed value (inclusive).';
+    COMMENT ON COLUMN method_lookup_attribute_quantitative.unit                           IS 'The unit of measure for the value.';
     COMMENT ON COLUMN method_lookup_attribute_quantitative.description                          IS 'The description of the attribute.';
     COMMENT ON COLUMN method_lookup_attribute_quantitative.record_end_date                      IS 'Record level end date.';
     COMMENT ON COLUMN method_lookup_attribute_quantitative.create_date                          IS 'The datetime the record was created.';
