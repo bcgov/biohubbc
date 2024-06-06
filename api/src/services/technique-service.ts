@@ -45,15 +45,15 @@ export class TechniqueService extends DBService {
    *
    * @param {number} surveyId
    * @param {ITechniquePostData[]} techniques
-   * @returns {*} {Promise<{id: number}[]>}
+   * @returns {Promise<(ITechniquePostData & { method_technique_id: number })[]>}
    * @memberof TechniqueService
    */
   async insertTechniquesForSurvey(
     surveyId: number,
     techniques: ITechniquePostData[]
-  ): Promise<{ method_technique_id: number }[]> {
+  ): Promise<(ITechniquePostData & { method_technique_id: number })[]> {
     // Insert technique rows
-    const promises = techniques.map((technique) => {
+    const promises = techniques.map(async (technique) => {
       const rowForInsert: ITechniqueRowData = {
         name: technique.name,
         description: technique.description,
@@ -61,10 +61,30 @@ export class TechniqueService extends DBService {
         distance_threshold: technique.distance_threshold,
         survey_id: surveyId
       };
-      return this.techniqueRepository.insertTechnique(rowForInsert, surveyId);
+
+      const { method_technique_id } = await this.techniqueRepository.insertTechnique(rowForInsert, surveyId);
+
+      return { ...technique, method_technique_id };
     });
 
     return Promise.all(promises);
+  }
+
+  /**
+   * Insert attractants for a technique
+   *
+   * @param {number} methodTechniqueId
+   * @param {number[]} attractantLookupIds
+   * @param {number} surveyId
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof TechniqueService
+   */
+  async insertTechniqueAttractants(
+    methodTechniqueId: number,
+    attractantLookupIds: number[],
+    surveyId: number
+  ): Promise<void> {
+    return this.techniqueRepository.insertAttractantsForTechnique(methodTechniqueId, attractantLookupIds, surveyId);
   }
 
   /**

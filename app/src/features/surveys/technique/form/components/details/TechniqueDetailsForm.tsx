@@ -12,7 +12,12 @@ export const TechniqueDetailsForm = () => {
     <Grid container spacing={3}>
       <Grid item xs={12}>
         <Typography component="legend">Detection distance (optional)</Typography>
-        <CustomTextField name="distance_threshold" label="Maximum detection distance (metres)" maxLength={1000} />
+        <CustomTextField
+          name="distance_threshold"
+          label="Maximum detection distance (metres)"
+          maxLength={1000}
+          other={{ type: 'number' }}
+        />
       </Grid>
     </Grid>
   );

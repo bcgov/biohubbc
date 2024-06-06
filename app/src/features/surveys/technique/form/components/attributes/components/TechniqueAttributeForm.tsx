@@ -88,9 +88,8 @@ export const TechniqueAttributeForm = (props: ITechniqueAttributeFormProps) => {
             return;
           }
 
-          console.log(option);
-
           setFieldValue(`attributes.[${index}]`, {
+            ...values.attributes[index],
             attribute_id: option.value,
             attribute_type: getAttributeType(remainingAttributeTypeDefinitions, option.value)
           });

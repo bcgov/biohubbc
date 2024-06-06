@@ -47,11 +47,13 @@ export const TechniqueAttractantsForm = () => {
                   label: option.name,
                   description: option.description
                 }))
-                .filter((option) => !values.attractants?.includes(option.value)) ?? []
+                .filter(
+                  (option) => !values.attractants.some((attractant) => attractant.attractant_lookup_id === option.value)
+                ) ?? []
             }
             onChange={(_, value) => {
               if (value?.value) {
-                setFieldValue('attractants', [...values.attractants, value.value]);
+                setFieldValue('attractants', [...values.attractants, { attractant_lookup_id: value.value }]);
               }
             }}
             onInputChange={(_, __, ___) => {}}
@@ -60,9 +62,10 @@ export const TechniqueAttractantsForm = () => {
         <Grid item xs={12}>
           <TransitionGroup>
             {values.attractants.map((attractant, index) => {
-              const lookup = attractants.find((option) => option.id === attractant);
+              const lookup = attractants.find((option) => option.id === attractant.attractant_lookup_id);
+              console.log(attractant);
               return (
-                <Collapse key={attractant}>
+                <Collapse key={attractant.attractant_lookup_id}>
                   <Paper
                     variant="outlined"
                     sx={{

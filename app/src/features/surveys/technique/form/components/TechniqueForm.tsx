@@ -12,11 +12,13 @@ import { TechniqueGeneralInformationForm } from './general-information/Technique
 
 export type TechniqueAttributeFormValues =
   | {
+      _id?: string; // internal ID used for form control. Not to be sent to API.
       attribute_id: string;
-      attribute_value: 'string';
+      attribute_value: string;
       attribute_type: 'qualitative'; // discriminator
     }
   | {
+      _id?: string; // internal ID used for form control. Not to be sent to API.
       attribute_id: string;
       attribute_value: number;
       attribute_type: 'quantitative'; // discriminator
@@ -48,9 +50,6 @@ const TechniqueForm = (props: ITechniqueFormProps) => {
         attribute_id: yup.string().required('Attribute type is required.'),
         attribute_value: yup.mixed().test('is-valid-attribute', 'Attribute value is required.', function (value) {
           const { attribute_type } = this.parent;
-
-          console.log(this.parent);
-          console.log(value);
 
           if (!isDefined(value)) {
             return false;

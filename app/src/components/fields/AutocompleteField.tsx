@@ -123,6 +123,9 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
             {...params}
             required={props.required}
             label={props.label}
+            InputLabelProps={{
+              // shrink: getExistingValue(get(values, props.name)) !== null ? true : false
+            }}
             value={props.showValue ? getExistingValue(get(values, props.name)) : null}
             variant="outlined"
             fullWidth

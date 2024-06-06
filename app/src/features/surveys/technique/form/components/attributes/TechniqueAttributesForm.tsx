@@ -12,6 +12,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo } from 'react';
 import { TransitionGroup } from 'react-transition-group';
+import { v4 } from 'uuid';
 import { TechniqueAttributeForm } from './components/TechniqueAttributeForm';
 
 const initialAttributeFormValues: Partial<TechniqueAttributeFormValues> = {
@@ -60,19 +61,20 @@ export const TechniqueAttributesForm = () => {
       render={(arrayHelpers: FieldArrayRenderProps) => (
         <>
           <TransitionGroup>
-            {values.attributes.map((attribute, index) => (
-              <Collapse in={true} key={attribute.attribute_id ?? index}>
-                <Box mb={2}>
-                  <TechniqueAttributeForm
-                    attributeTypeDefinitions={attributeTypeDefinitions}
-                    arrayHelpers={arrayHelpers}
-                    index={index}
-                  />
-                </Box>
-              </Collapse>
-            ))}
+            {values.attributes.map((attribute, index) => {
+              return (
+                <Collapse key={attribute._id}>
+                  <Box mb={2}>
+                    <TechniqueAttributeForm
+                      attributeTypeDefinitions={attributeTypeDefinitions}
+                      arrayHelpers={arrayHelpers}
+                      index={index}
+                    />
+                  </Box>
+                </Collapse>
+              );
+            })}
           </TransitionGroup>
-
           <Button
             color="primary"
             variant="outlined"
@@ -80,7 +82,7 @@ export const TechniqueAttributesForm = () => {
             aria-label="add attribute"
             disabled={!values.method_lookup_id || values.attributes.length >= attributeTypeDefinitions.length}
             onClick={() => {
-              arrayHelpers.push(initialAttributeFormValues);
+              arrayHelpers.push({ ...initialAttributeFormValues, _id: v4() });
             }}>
             Add Attribute
           </Button>

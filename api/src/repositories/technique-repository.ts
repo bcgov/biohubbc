@@ -35,6 +35,10 @@ export interface ITechniqueRowData {
   survey_id: number;
 }
 
+export interface IAttractantRowData {
+  attractant_lookup_id: number;
+}
+
 export interface ITechniqueAttributeQuantitative {
   method_lookup_attribute_quantitative_id: string;
   name: string;
@@ -177,8 +181,6 @@ export class TechniqueRepository extends BaseRepository {
 
     const response = await this.connection.knex(queryBuilder, TechniqueObject);
 
-    console.log(response);
-
     return response.rows;
   }
 
@@ -222,6 +224,37 @@ export class TechniqueRepository extends BaseRepository {
     const response = await this.connection.knex(queryBuilder, z.object({ method_technique_id: z.number() }));
 
     return response.rows[0];
+  }
+
+  /**
+   * Insert attractants for a technique
+   *
+   * @param {number} surveyId
+   * @param {number} methodTechniqueId
+   * @param {number[]} attractantLookupIds
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof TechniqueRepository
+   */
+  async insertAttractantsForTechnique(
+    methodTechniqueId: number,
+    attractantLookupIds: number[],
+    surveyId: number
+  ): Promise<void> {
+    defaultLog.debug({ label: 'insertTechnique', surveyId });
+
+    if (attractantLookupIds.length > 0) {
+      const queryBuilder = getKnex()
+        .insert(
+          attractantLookupIds.map((attractantLookupId) => ({
+            method_technique_id: methodTechniqueId,
+            attractant_lookup_id: attractantLookupId
+          }))
+        )
+        .into('method_technique_attractant')
+        .returning('method_technique_attractant_id');
+
+      await this.connection.knex(queryBuilder, z.object({ method_technique_attractant_id: z.number() }));
+    }
   }
 
   /**

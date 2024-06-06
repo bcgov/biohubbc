@@ -135,28 +135,27 @@ export class SampleLocationRepository extends BaseRepository {
     const queryBuilder = knex
       .queryBuilder()
       .with('w_method_technique_attractant', (qb) => {
-        // Gather technique attractants
-        qb.select(
-          'mta.method_technique_id',
-          knex.raw(`
-        json_agg(json_build_object(mta.method_technique_attractant_id)
-        ) as attractants`)
-        )
+        qb.select('mta.method_technique_id')
+          .select(
+            knex.raw(
+              `JSON_AGG(JSON_BUILD_OBJECT('method_technique_attractant_id', mta.method_technique_attractant_id)) AS attractants`
+            )
+          )
           .from({ mta: 'method_technique_attractant' })
           .groupBy('mta.method_technique_id');
       })
       .with('w_method_technique', (qb) => {
-        // Gather method techniques
-        qb.select(
-          'mt.method_technique_id',
-          knex.raw(`
-          json_build_object(
-            'method_technique_id', mt.method_technique_id,
-            'name', mt.name,
-            'description', mt.description,
-            'attractants', COALESCE(wmta.attractants, '[]'::json)
-          ) as method_technique`)
-        )
+        qb.select('mt.method_technique_id')
+          .select(
+            knex.raw(`
+      JSON_BUILD_OBJECT(
+        'method_technique_id', mt.method_technique_id,
+        'name', mt.name,
+        'description', mt.description,
+        'attractants', COALESCE(wmta.attractants, '[]'::JSON)
+      ) AS method_technique
+    `)
+          )
           .from({ mt: 'method_technique' })
           .leftJoin('w_method_technique_attractant as wmta', 'wmta.method_technique_id', 'mt.method_technique_id');
       })

@@ -206,7 +206,26 @@ export function createTechniques(): RequestHandler {
       const surveyId = Number(req.params.surveyId);
 
       const techniqueService = new TechniqueService(connection);
+
+      const promises = [];
+
+      console.log(req.body.techniques);
+
+      // Insert techniques
       const techniques = await techniqueService.insertTechniquesForSurvey(surveyId, req.body.techniques);
+
+      // Insert attractants for each technique
+      techniques.map((technique) =>
+        promises.push(
+          techniqueService.insertTechniqueAttractants(
+            technique.method_technique_id,
+            technique.attractants.map((id) => id.attractant_lookup_id),
+            surveyId
+          )
+        )
+      );
+
+      // Insert technique attributes
 
       await connection.commit();
 
@@ -294,7 +313,8 @@ GET.apiDoc = {
                     'distance_threshold',
                     'method_technique_id',
                     'attractants',
-                    'attributes'
+                    'qualitative_attributes',
+                    'quantitative_attributes'
                   ],
                   properties: {
                     method_technique_id: {
@@ -324,49 +344,45 @@ GET.apiDoc = {
                       description: 'Attractants used to lure species.',
                       items: {
                         type: 'object',
-                        additionalProperties: false,
+                        // additionalProperties: false,
                         properties: {
                           attractant_lookup_id: {
-                            type: 'string',
+                            type: 'number',
                             description: 'Foreign key reference to a attractant lookup value.'
                           }
                         }
                       }
                     },
-                    attributes: {
-                      type: 'object',
-                      description: 'Attributes of the technique.',
-                      required: ['qualitative_attributes', 'quantitative_attributes'],
-                      additionalProperties: false,
-                      properties: {
-                        qualitative_attributes: {
-                          type: 'array',
-                          description: 'Qualitative attributes describing the technique.',
-                          items: {
-                            type: 'object',
-                            required: ['attractant_lookup_id'],
-                            additionalProperties: false,
-                            properties: {
-                              attractant_lookup_id: {
-                                type: 'string',
-                                description: 'Foreign key reference to a qualitative attribute lookup value.'
-                              }
-                            }
+                    qualitative_attributes: {
+                      type: 'array',
+                      description: 'Qualitative attributes describing the technique.',
+                      items: {
+                        type: 'object',
+                        required: ['attractant_lookup_id', 'method_lookup_attribute_qualitative_option_id'],
+                        additionalProperties: false,
+                        properties: {
+                          method_technique_attribute_qualitative_id: {
+                            type: 'string',
+                            description: 'Foreign key reference to a qualitative attribute lookup value.'
                           }
-                        },
-                        quantitative_attributes: {
-                          type: 'array',
-                          description: 'Quantitative attributes describing the technique.',
-                          items: {
-                            type: 'object',
-                            required: ['attractant_lookup_id'],
-                            additionalProperties: false,
-                            properties: {
-                              attractant_lookup_id: {
-                                type: 'string',
-                                description: 'Foreign key reference to a quantitative attribute lookup value.'
-                              }
-                            }
+                        }
+                      }
+                    },
+                    quantitative_attributes: {
+                      type: 'array',
+                      description: 'Quantitative attributes describing the technique.',
+                      items: {
+                        type: 'object',
+                        required: ['method_lookup_attribute_quantitative_id', 'value'],
+                        additionalProperties: false,
+                        properties: {
+                          method_technique_attribute_quantitative_id: {
+                            type: 'string',
+                            description: 'Foreign key reference to a quantitative attribute lookup value.'
+                          },
+                          value: {
+                            type: 'number',
+                            description: 'Value of the attribute'
                           }
                         }
                       }
@@ -421,6 +437,8 @@ export function getTechniques(): RequestHandler {
 
       const techniqueService = new TechniqueService(connection);
       const techniques = await techniqueService.getTechniquesForSurveyId(surveyId);
+
+      console.log(techniques);
 
       const sampleSitesTotalCount = await techniqueService.getTechniquesCountForSurveyId(surveyId);
 
