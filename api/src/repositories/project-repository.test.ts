@@ -17,7 +17,7 @@ import { ProjectRepository } from './project-repository';
 chai.use(sinonChai);
 
 describe('ProjectRepository', () => {
-  describe('getProjectList', () => {
+  describe('findProjects', () => {
     it('should return a list of projects', async () => {
       const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
@@ -34,7 +34,7 @@ describe('ProjectRepository', () => {
         keyword: 'string'
       };
 
-      const response = await repository.getProjectList(false, 1, input);
+      const response = await repository.findProjects(false, 1, input);
 
       expect(response).to.eql([{ id: 1 }]);
     });
@@ -56,7 +56,7 @@ describe('ProjectRepository', () => {
         keyword: 'string'
       };
 
-      const response = await repository.getProjectList(true, 1, input);
+      const response = await repository.findProjects(true, 1, input);
 
       expect(response).to.eql([{ id: 1 }]);
     });
@@ -72,20 +72,20 @@ describe('ProjectRepository', () => {
         end_date: 'end'
       };
 
-      const response = await repository.getProjectList(true, 1, input);
+      const response = await repository.findProjects(true, 1, input);
 
       expect(response).to.eql([]);
     });
   });
 
-  describe('getProjectCount', () => {
+  describe('findProjectCount', () => {
     it('should return a project count', async () => {
       const mockResponse = { rows: [{ count: 69 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({ knex: () => mockResponse });
 
       const repository = new ProjectRepository(dbConnection);
 
-      const response = await repository.getProjectCount({}, false, 1001);
+      const response = await repository.findProjectCount({}, false, 1001);
 
       expect(response).to.eql(69);
     });
@@ -97,7 +97,7 @@ describe('ProjectRepository', () => {
       const repository = new ProjectRepository(dbConnection);
 
       try {
-        await repository.getProjectCount({}, true, 1001);
+        await repository.findProjectCount({}, true, 1001);
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to get project count');

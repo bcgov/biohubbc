@@ -7,7 +7,7 @@ import {
   ObservationRecordWithSamplingAndSubcountData,
   ObservationRepository,
   UpdateObservation
-} from '../repositories/observation-repository';
+} from '../repositories/observation-repository/observation-repository';
 import * as file_utils from '../utils/file-utils';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ObservationService } from './observation-service';

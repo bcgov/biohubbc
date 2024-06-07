@@ -1,11 +1,13 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { IAnimalAdvancedFilters } from '../../models/animal-view';
 import { paginationRequestQueryParamSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { CritterbaseService, ICritter, ICritterbaseUser } from '../../services/critterbase-service';
 import { SurveyCritterService } from '../../services/survey-critter-service';
+import { setCacheControl } from '../../utils/api-utils';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/animal');
@@ -20,21 +22,61 @@ export const GET: Operation = [
       ]
     };
   }),
-  getAnimalList()
+  getAnimals()
 ];
 
 GET.apiDoc = {
-  description: 'Gets a list of animals based on search parameters if passed in.',
+  description: "Gets a list of animals based on the user's permissions and search criteria.",
   tags: ['animals'],
   security: [
     {
       Bearer: []
     }
   ],
-  parameters: [...paginationRequestQueryParamSchema],
+  parameters: [
+    {
+      in: 'query',
+      name: 'start_date',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'end_date',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'keyword',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'itis_tsns',
+      required: false,
+      schema: {
+        type: 'array',
+        items: {
+          type: 'integer'
+        }
+      }
+    },
+    ...paginationRequestQueryParamSchema
+  ],
   responses: {
     200: {
-      description: 'Responds with critters under this survey.',
+      description: 'animal response object.',
       content: {
         'application/json': {
           schema: {
@@ -67,37 +109,40 @@ GET.apiDoc = {
 };
 
 /**
- * Get all animals (potentially based on filter criteria).
+ * Get animals for the current user, based on their permissions and search criteria.
  *
  * @returns {RequestHandler}
  */
-export function getAnimalList(): RequestHandler {
+export function getAnimals(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getAnimalList' });
+    defaultLog.debug({ label: 'getAnimals' });
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
-      const user: ICritterbaseUser = {
-        keycloak_guid: req['system_user']?.user_guid,
-        username: req['system_user']?.user_identifier
-      };
+      const systemUserId = connection.systemUserId();
 
       const isUserAdmin = userHasValidRole(
         [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
         req['system_user']['role_names']
       );
-      const systemUserId = connection.systemUserId();
-      //   const filterFields: IAnimalAdvancedFilters = {
-      //     itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined
-      //   };
+
+      const user: ICritterbaseUser = {
+        keycloak_guid: req['system_user']?.user_guid,
+        username: req['system_user']?.user_identifier
+      };
+
+      const filterFields = parseQueryParams(req);
+      console.log(filterFields);
 
       // Find all critters that user has access to
       const surveyService = new SurveyCritterService(connection);
 
       const surveyCritters = await surveyService.getCrittersByUserId(isUserAdmin, systemUserId);
+
+      await connection.commit();
 
       // Request all critters from critterbase
       const critterbaseService = new CritterbaseService(user);
@@ -114,14 +159,20 @@ export function getAnimalList(): RequestHandler {
         )?.critter_id
       }));
 
-      await connection.commit();
+      setCacheControl(res, 30);
 
       return res.status(200).json(crittersWithCritterSurveyId);
     } catch (error) {
-      defaultLog.error({ label: 'getAnimalList', message: 'error', error });
+      defaultLog.error({ label: 'getAnimals', message: 'error', error });
       throw error;
     } finally {
       connection.release();
     }
+  };
+}
+
+function parseQueryParams(req: Request): IAnimalAdvancedFilters {
+  return {
+    itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined
   };
 }

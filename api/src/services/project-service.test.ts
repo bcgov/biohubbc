@@ -14,7 +14,7 @@ describe('ProjectService', () => {
     sinon.restore();
   });
 
-  describe('getProjectList', () => {
+  describe('findProjects', () => {
     it('returns rows on success', async () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectService(dbConnection);
@@ -38,9 +38,9 @@ describe('ProjectService', () => {
         }
       ];
 
-      const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectList').resolves(data);
+      const repoStub = sinon.stub(ProjectRepository.prototype, 'findProjects').resolves(data);
 
-      const response = await service.getProjectList(true, 1, {});
+      const response = await service.findProjects(true, 1, {});
 
       expect(repoStub).to.be.calledOnce;
       expect(response[0].project_id).to.equal(123);
@@ -53,14 +53,14 @@ describe('ProjectService', () => {
     });
   });
 
-  describe('getProjectCount', () => {
+  describe('findProjectCount', () => {
     it('returns the total project count', async () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectService(dbConnection);
 
-      const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectCount').resolves(69);
+      const repoStub = sinon.stub(ProjectRepository.prototype, 'findProjectCount').resolves(69);
 
-      const response = await service.getProjectCount({}, false, 1001);
+      const response = await service.findProjectCount({}, false, 1001);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(69);

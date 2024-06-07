@@ -1,12 +1,14 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { ITelemetryAdvancedFilters } from '../../models/telemetry-view';
 import { paginationRequestQueryParamSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { BctwService } from '../../services/bctw-service';
 import { CritterbaseService, ICritter, ICritterbaseUser } from '../../services/critterbase-service';
 import { SurveyCritterService } from '../../services/survey-critter-service';
+import { setCacheControl } from '../../utils/api-utils';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/telemetry');
@@ -21,61 +23,79 @@ export const GET: Operation = [
       ]
     };
   }),
-  getTelemetryList()
+  getTelemetry()
 ];
 
 GET.apiDoc = {
-  description: 'Gets a list of telemetrys based on search parameters if passed in.',
-  tags: ['telemetrys'],
+  description: "Gets a list of telemetry based on the user's permissions and search criteria.",
+  tags: ['telemetry'],
   security: [
     {
       Bearer: []
     }
   ],
-  parameters: [...paginationRequestQueryParamSchema],
-  requestBody: {
-    description: 'Telemetry list search filter criteria object.',
-    content: {
-      'application/json': {
-        schema: {
-          properties: {
-            start_date: {
-              type: 'string',
-              nullable: true
-            },
-            end_date: {
-              type: 'string',
-              nullable: true
-            },
-            project_programs: {
-              type: 'array',
-              items: {
-                type: 'integer'
-              },
-              nullable: true
-            },
-            keyword: {
-              type: 'string',
-              nullable: true
-            },
-            project_name: {
-              type: 'string',
-              nullable: true
-            },
-            itis_tsns: {
-              type: 'array',
-              items: {
-                type: 'integer'
-              }
-            },
-            system_user_id: {
-              type: 'integer'
-            }
-          }
+  parameters: [
+    {
+      in: 'query',
+      name: 'start_date',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'end_date',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'project_programs',
+      required: false,
+      schema: {
+        type: 'array',
+        items: {
+          type: 'integer'
+        },
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'keyword',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'project_name',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'itis_tsns',
+      required: false,
+      schema: {
+        type: 'array',
+        items: {
+          type: 'integer'
         }
       }
-    }
-  },
+    },
+    ...paginationRequestQueryParamSchema
+  ],
   responses: {
     200: {
       description: 'Telemetry response object.',
@@ -127,32 +147,33 @@ GET.apiDoc = {
 };
 
 /**
- * Get all telemetrys (potentially based on filter criteria).
+ * Get telemetry for the current user, based on their permissions and search criteria.
  *
  * @returns {RequestHandler}
  */
-export function getTelemetryList(): RequestHandler {
+export function getTelemetry(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getTelemetryList' });
+    defaultLog.debug({ label: 'getTelemetry' });
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
+      const systemUserId = connection.systemUserId();
+
       const isUserAdmin = userHasValidRole(
         [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
         req['system_user']['role_names']
       );
-      const systemUserId = connection.systemUserId();
 
       const user: ICritterbaseUser = {
         keycloak_guid: req['system_user']?.user_guid,
         username: req['system_user']?.user_identifier
       };
-      //   const filterFields: ITelemetryAdvancedFilters = {
-      //     itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined
-      //   };
+
+      const filterFields = parseQueryParams(req);
+      console.log(filterFields);
 
       const surveyCritterService = new SurveyCritterService(connection);
       const bctwService = new BctwService(user);
@@ -160,6 +181,8 @@ export function getTelemetryList(): RequestHandler {
 
       // Find all critters that the user has access to
       const surveyCritters = await surveyCritterService.getCrittersByUserId(isUserAdmin, systemUserId);
+
+      await connection.commit();
 
       // Exit early if there are no critters, and therefore no telemetry
       if (!surveyCritters.length) {
@@ -208,14 +231,20 @@ export function getTelemetryList(): RequestHandler {
         })
       ];
 
-      await connection.commit();
+      setCacheControl(res, 30);
 
       return res.status(200).json({ telemetry: telemetry });
     } catch (error) {
-      defaultLog.error({ label: 'getTelemetryList', message: 'error', error });
+      defaultLog.error({ label: 'getTelemetry', message: 'error', error });
       throw error;
     } finally {
       connection.release();
     }
+  };
+}
+
+function parseQueryParams(req: Request): ITelemetryAdvancedFilters {
+  return {
+    itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined
   };
 }

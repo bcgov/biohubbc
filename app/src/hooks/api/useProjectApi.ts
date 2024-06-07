@@ -69,7 +69,7 @@ const useProjectApi = (axios: AxiosInstance) => {
 
     const urlParamsString = `?${params.toString()}`;
 
-    const { data } = await axios.get(`/api/project/list${urlParamsString}`);
+    const { data } = await axios.get(`/api/project${urlParamsString}`);
 
     return data;
   };

@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { ITelemetryAdvancedFilters } from 'features/surveys/telemetry/list/TelemetryListContainer';
+import { ITelemetryAdvancedFilters } from 'features/summary/tabular-data/telemetry/TelemetryListContainer';
 import { IGetTelemetryListResponse } from 'interfaces/useTelemetryApi.interface';
 import { ApiPaginationRequestOptions } from 'types/misc';
 

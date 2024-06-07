@@ -59,8 +59,8 @@ const SamplingMethodForm = () => {
     setAnchorEl(null);
   };
 
-  console.log(values);
-  console.log(errors);
+  //   console.log(values);
+  //   console.log(errors);
 
   return (
     <>

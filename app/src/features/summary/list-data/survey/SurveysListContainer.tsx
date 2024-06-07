@@ -5,7 +5,7 @@ import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SystemRoleGuard } from 'components/security/Guards';
@@ -13,26 +13,34 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { getNrmRegionColour } from 'constants/regions';
 import { SYSTEM_ROLE } from 'constants/roles';
 import dayjs from 'dayjs';
-import { NRM_REGION_APPENDED_TEXT } from 'features/projects/list/ProjectsListContainer';
+import { NRM_REGION_APPENDED_TEXT } from 'features/summary/list-data/project/ProjectsListContainer';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { UseURLParams } from 'hooks/useURLParams';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getCodesName } from 'utils/Utils';
-import SurveyProgressChip from '../components/SurveyProgressChip';
-import SurveysListFilterForm, { SurveyAdvancedFiltersInitialValues } from './SurveysListFilterForm';
+import SurveyProgressChip from '../../../surveys/components/SurveyProgressChip';
+import SurveysListFilterForm, {
+  ISurveyAdvancedFilters,
+  SurveyAdvancedFiltersInitialValues
+} from './SurveysListFilterForm';
 
-export interface ISurveyAdvancedFilters {
-  start_date: string;
-  end_date: string;
+// Supported URL parameters for the project table
+type SurveyDataTableURLParams = {
+  // search filter
   keyword: string;
-  project_name: string;
-  system_user_id: number;
-  itis_tsns: number[];
-}
+  species: string;
+  person: string;
+  // pagination
+  s_page: string;
+  s_limit: string;
+  s_sort?: string;
+  s_order?: 'asc' | 'desc';
+};
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -40,10 +48,19 @@ interface ISurveysListContainerProps {
   showSearch: boolean;
 }
 
-const tableHeight = '589px';
+const rowHeight = 70;
+const tableHeight = rowHeight * 5.5;
+
+// Default pagination parameters
+const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
+  page: 0,
+  limit: 10,
+  sort: 'survey_id',
+  order: 'desc'
+};
 
 /**
- * List of Surveys belonging to a Project.
+ * Displays a list of surveys.
  *
  * @return {*}
  */
@@ -51,23 +68,27 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
-  const taxonomyContext = useTaxonomyContext();
   const codesContext = useCodesContext();
+  const taxonomyContext = useTaxonomyContext();
 
-  const searchParams = new URLSearchParams(location.search);
+  const { urlParams } = UseURLParams<SurveyDataTableURLParams>();
 
-  console.log(searchParams);
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
-  const initialPaginationModel = {
-    page: parseInt(searchParams.get('page') || '0', 10),
-    pageSize: parseInt(searchParams.get('pageSize')?.toString() || pageSizeOptions[0].toString(), 10)
-  };
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    pageSize: Number(urlParams.get('s_limit') ?? initialPaginationParams.limit),
+    page: Number(urlParams.get('s_page') ?? initialPaginationParams.page)
+  });
 
-  const initialSortModel = JSON.parse(searchParams.get('sortModel') || '[{"field":"project_id","sort":"desc"}]');
+  const [sortModel, setSortModel] = useState<GridSortModel>([
+    {
+      field: urlParams.get('s_sort') ?? initialPaginationParams.sort,
+      sort: (urlParams.get('s_order') ?? initialPaginationParams.order) as GridSortDirection
+    }
+  ]);
 
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>(initialPaginationModel);
-
-  const [sortModel, setSortModel] = useState<GridSortModel>(initialSortModel);
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ISurveyAdvancedFilters>(
     SurveyAdvancedFiltersInitialValues
   );
@@ -216,9 +237,8 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
         <StyledDataGrid
           noRowsMessage="No surveys found"
           columns={columns}
-          rowHeight={70}
+          rowHeight={rowHeight}
           getRowHeight={() => 'auto'}
-          getEstimatedRowHeight={() => 500}
           rows={surveyRows ?? []}
           rowCount={surveysDataLoader.data?.surveys.length ?? 0}
           loading={!surveysDataLoader.data}

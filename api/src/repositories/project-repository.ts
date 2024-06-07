@@ -37,7 +37,7 @@ export class ProjectRepository extends BaseRepository {
    * @return {*}  Promise<Knex.QueryBuilder>
    * @memberof ProjectRepository
    */
-  _makeProjectListQuery(
+  _makeFindProjectsQuery(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters
@@ -66,10 +66,7 @@ export class ProjectRepository extends BaseRepository {
       .leftJoin('project_participation as ppa', 'p.project_id', 'ppa.project_id')
       .groupBy(['p.project_id', 'p.name', 'p.objectives', 'p.start_date', 'p.end_date']);
 
-    /*
-     * Ensure that users can only see project that they are participating in, unless
-     * they are an administrator.
-     */
+    // Ensure that users can only see projects that they are participating in, unless they are an administrator.
     if (!isUserAdmin) {
       query.whereIn('p.project_id', (subQueryBuilder) => {
         subQueryBuilder.select('project_id').from('project_participation').where('system_user_id', systemUserId);
@@ -84,11 +81,6 @@ export class ProjectRepository extends BaseRepository {
     // End Date filter
     if (filterFields.end_date) {
       query.andWhere('p.end_date', '<=', filterFields.end_date);
-    }
-
-    // Project Member filter (exact match)
-    if (filterFields.system_user_id) {
-      query.andWhere('system_user_id', filterFields.system_user_id);
     }
 
     // Project Name filter (like match)
@@ -135,17 +127,16 @@ export class ProjectRepository extends BaseRepository {
    * @return {*}  {Promise<ProjectListData[]>}
    * @memberof ProjectRepository
    */
-  async getProjectList(
+  async findProjects(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<ProjectListData[]> {
-    defaultLog.debug({ label: 'getProjectList', pagination });
+    defaultLog.debug({ label: 'findProjects', pagination });
 
-    const query = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields);
+    const query = this._makeFindProjectsQuery(isUserAdmin, systemUserId, filterFields);
 
-    // Pagination
     if (pagination) {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
@@ -168,12 +159,12 @@ export class ProjectRepository extends BaseRepository {
    * @return {*}  {Promise<number>}
    * @memberof ProjectRepository
    */
-  async getProjectCount(
+  async findProjectCount(
     filterFields: IProjectAdvancedFilters,
     isUserAdmin: boolean,
     systemUserId: number | null
   ): Promise<number> {
-    const projectsListQuery = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields);
+    const projectsListQuery = this._makeFindProjectsQuery(isUserAdmin, systemUserId, filterFields);
 
     const knex = getKnex();
 
@@ -184,7 +175,7 @@ export class ProjectRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get project count', [
-        'ProjectRepository->getProjectCount',
+        'ProjectRepository->findProjectCount',
         'rows was null or undefined, expected rows != null'
       ]);
     }

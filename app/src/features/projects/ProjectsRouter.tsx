@@ -5,7 +5,6 @@ import { ObservationsContextProvider } from 'contexts/observationsContext';
 import { ProjectAuthStateContextProvider } from 'contexts/projectAuthStateContext';
 import { ProjectContextProvider } from 'contexts/projectContext';
 import { SurveyContextProvider } from 'contexts/surveyContext';
-import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import ProjectPage from 'features/projects/view/ProjectPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
@@ -17,7 +16,6 @@ import { getTitle } from 'utils/Utils';
 import CreateProjectPage from './create/CreateProjectPage';
 import EditProjectPage from './edit/EditProjectPage';
 import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
-import ProjectsPage from './ProjectPage';
 
 /**
  * Router for all `/admin/projects/*` pages.
@@ -27,15 +25,6 @@ import ProjectsPage from './ProjectPage';
 const ProjectsRouter: React.FC = () => {
   return (
     <Switch>
-      {/* Project List Routes */}
-      <RouteWithTitle exact path="/admin/projects" title={getTitle('Projects')}>
-        <DialogContextProvider>
-          <TaxonomyContextProvider>
-            <ProjectsPage />
-          </TaxonomyContextProvider>
-        </DialogContextProvider>
-      </RouteWithTitle>
-
       {/* Create Project Route */}
       <RouteWithTitle exact path="/admin/projects/create" title={getTitle('Create Project')}>
         <SystemRoleRouteGuard

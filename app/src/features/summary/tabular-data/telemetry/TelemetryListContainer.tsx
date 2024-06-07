@@ -35,7 +35,8 @@ interface ITelemetryListContainerProps {
   showSearch: boolean;
 }
 
-const tableHeight = '589px';
+const rowHeight = 70;
+const tableHeight = rowHeight * 5.5;
 
 /**
  * List of Surveys belonging to a Project.
@@ -83,7 +84,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
 
   const rows = telemetryDataLoader.data?.telemetry.map((telemetry, index) => ({ ...telemetry, id: index + 1 })) ?? [];
 
-  console.log(rows);
+  //   console.log(rows);
 
   const columns: GridColDef<ITelemetryTableRow>[] = [
     {
@@ -151,9 +152,8 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
         <StyledDataGrid
           noRowsMessage="No telemetry found"
           columns={columns}
-          rowHeight={70}
+          rowHeight={rowHeight}
           getRowHeight={() => 'auto'}
-          getEstimatedRowHeight={() => 500}
           rows={rows ?? []}
           loading={!telemetryDataLoader.data}
           rowCount={telemetryDataLoader.data?.telemetry.length ?? 0}

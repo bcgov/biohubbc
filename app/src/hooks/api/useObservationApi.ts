@@ -1,6 +1,5 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
-import { IObservationsAdvancedFilters } from 'features/surveys/observations/list/ObservationsListContainer';
-
+import { IObservationsAdvancedFilters } from 'features/summary/tabular-data/observation/ObservationsListFilterForm';
 import {
   IGetSurveyObservationsGeometryResponse,
   IGetSurveyObservationsResponse,
@@ -66,7 +65,7 @@ const useObservationApi = (axios: AxiosInstance) => {
    * Get observations for a system user id.
    *
    * @param {ApiPaginationRequestOptions} [pagination]
-   * @param {ISurveyAdvancedFilters} filterFieldData
+   * @param {IObservationsAdvancedFilters} filterFieldData
    * @return {*} {Promise<IgetProjectsForUserIdResponse[]>}
    */
   const getObservationsForUserId = async (
@@ -94,7 +93,7 @@ const useObservationApi = (axios: AxiosInstance) => {
 
     const urlParamsString = `?${params.toString()}`;
 
-    const { data } = await axios.get(`/api/observation/list${urlParamsString}`);
+    const { data } = await axios.get(`/api/observation${urlParamsString}`);
 
     return data;
   };

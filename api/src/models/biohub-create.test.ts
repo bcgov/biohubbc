@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { FeatureCollection } from 'geojson';
 import { describe } from 'mocha';
-import { ObservationRecord } from '../repositories/observation-repository';
+import { ObservationRecord } from '../repositories/observation-repository/observation-repository';
 import {
   PostSurveyObservationToBiohubObject,
   PostSurveySubmissionToBioHubObject,

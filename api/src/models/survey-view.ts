@@ -16,7 +16,6 @@ export interface ISurveyAdvancedFilters {
   keyword?: string;
   project_name?: string;
   itis_tsns?: number[];
-  system_user_id?: string;
 }
 
 export const SurveyListData = z.object({

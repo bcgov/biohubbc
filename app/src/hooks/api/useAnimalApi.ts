@@ -1,10 +1,13 @@
 import { AxiosInstance } from 'axios';
-import { IAnimalsAdvancedFilters } from 'features/surveys/animals/list/AnimalsListContainer';
+import { IAnimalsAdvancedFilters } from 'features/summary/tabular-data/animal/AnimalsListContainer';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
- * Returns a set of supported api methods for working with animals.
+ * Returns a set of supported api methods for working with SIMS animal (critter) records.
+ *
+ * Note: Not to be confused with the useCritterApi hook, which is for working with CritterBase animal (critter) records.
+ * Note: SIMS animal records are linked to CritterBase animal records.
  *
  * @param {AxiosInstance} axios
  * @return {*} object whose properties are supported api methods.
@@ -14,7 +17,7 @@ const useAnimalApi = (axios: AxiosInstance) => {
    * Get animals for a system user id.
    *
    * @param {ApiPaginationRequestOptions} [pagination]
-   * @param {ISurveyAdvancedFilters} filterFieldData
+   * @param {IAnimalsAdvancedFilters} filterFieldData
    * @return {*} {Promise<IgetProjectsForUserIdResponse[]>}
    */
   const getAnimalsList = async (
@@ -42,7 +45,7 @@ const useAnimalApi = (axios: AxiosInstance) => {
 
     const urlParamsString = `?${params.toString()}`;
 
-    const { data } = await axios.get(`/api/animal/list${urlParamsString}`);
+    const { data } = await axios.get(`/api/animal${urlParamsString}`);
 
     return data;
   };

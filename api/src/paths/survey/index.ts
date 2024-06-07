@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
@@ -6,6 +6,7 @@ import { ISurveyAdvancedFilters } from '../../models/survey-view';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { SurveyService } from '../../services/survey-service';
+import { setCacheControl } from '../../utils/api-utils';
 import { getLogger } from '../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -13,7 +14,7 @@ import {
   makePaginationResponse
 } from '../../utils/pagination';
 
-const defaultLog = getLogger('paths/project');
+const defaultLog = getLogger('paths/survey/index');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
@@ -25,64 +26,82 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveysForUserId()
+  getSurveys()
 ];
 
 GET.apiDoc = {
-  description: 'Gets a list of surveys based on search parameters if passed in.',
+  description: "Gets a list of surveys based on the user's permissions and search criteria.",
   tags: ['surveys'],
   security: [
     {
       Bearer: []
     }
   ],
-  parameters: [...paginationRequestQueryParamSchema],
-  requestBody: {
-    description: 'Project list search filter criteria object.',
-    content: {
-      'application/json': {
-        schema: {
-          properties: {
-            start_date: {
-              type: 'string',
-              nullable: true
-            },
-            end_date: {
-              type: 'string',
-              nullable: true
-            },
-            project_programs: {
-              type: 'array',
-              items: {
-                type: 'integer'
-              },
-              nullable: true
-            },
-            keyword: {
-              type: 'string',
-              nullable: true
-            },
-            project_name: {
-              type: 'string',
-              nullable: true
-            },
-            itis_tsns: {
-              type: 'array',
-              items: {
-                type: 'integer'
-              }
-            },
-            system_user_id: {
-              type: 'integer'
-            }
-          }
+  parameters: [
+    {
+      in: 'query',
+      name: 'start_date',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'end_date',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'project_programs',
+      required: false,
+      schema: {
+        type: 'array',
+        items: {
+          type: 'integer'
+        },
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'keyword',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'project_name',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'itis_tsns',
+      required: false,
+      schema: {
+        type: 'array',
+        items: {
+          type: 'integer'
         }
       }
-    }
-  },
+    },
+    ...paginationRequestQueryParamSchema
+  ],
   responses: {
     200: {
-      description: 'Project response object.',
+      description: 'Survey response object.',
       content: {
         'application/json': {
           schema: {
@@ -95,19 +114,32 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: ['project_id', 'survey_id', 'name', 'start_date', 'end_date', 'focal_species', 'regions'],
+                  required: [
+                    'project_id',
+                    'survey_id',
+                    'name',
+                    'progress_id',
+                    'start_date',
+                    'end_date',
+                    'regions',
+                    'focal_species',
+                    'types'
+                  ],
                   properties: {
                     project_id: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
                     survey_id: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
                     name: {
                       type: 'string'
                     },
                     progress_id: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
                     start_date: {
                       oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
@@ -168,61 +200,71 @@ GET.apiDoc = {
 };
 
 /**
- * Get all surveys (potentially based on filter criteria) from any project.
+ * Get surveys for the current user, based on their permissions and search criteria.
  *
  * @returns {RequestHandler}
  */
-export function getSurveysForUserId(): RequestHandler {
+export function getSurveys(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getSurveysForUserId' });
+    defaultLog.debug({ label: 'getSurveys' });
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
+      const systemUserId = connection.systemUserId();
+
       const isUserAdmin = userHasValidRole(
         [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
         req['system_user']['role_names']
       );
-      const systemUserId = connection.systemUserId();
-      const filterFields: ISurveyAdvancedFilters = {
-        keyword: req.query.keyword && String(req.query.keyword),
-        project_name: req.query.project_name && String(req.query.project_name),
-        project_programs: req.query.project_programs
-          ? String(req.query.project_programs).split(',').map(Number)
-          : undefined,
-        itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined,
-        start_date: req.query.start_date && String(req.query.start_date),
-        end_date: req.query.end_date && String(req.query.end_date),
-        system_user_id: req.query.system_user_id && String(req.query.system_user_id)
+
+      const filterFields = {
+        ...parseQueryParams(req)
       };
 
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const surveyService = new SurveyService(connection);
-      const surveys = await surveyService.getSurveysForUserId(
+
+      const surveys = await surveyService.findSurveys(
         isUserAdmin,
         systemUserId,
         filterFields,
         ensureCompletePaginationOptions(paginationOptions)
       );
 
-      const surveysTotalCount = await surveyService.getSurveyCountByUserId(isUserAdmin, systemUserId, filterFields);
+      const surveysTotalCount = await surveyService.findSurveyCount(isUserAdmin, systemUserId, filterFields);
+
+      await connection.commit();
 
       const response = {
         surveys,
         pagination: makePaginationResponse(surveysTotalCount, paginationOptions)
       };
 
-      await connection.commit();
+      setCacheControl(res, 30);
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getSurveysForUserId', message: 'error', error });
+      defaultLog.error({ label: 'getSurveys', message: 'error', error });
       throw error;
     } finally {
       connection.release();
     }
+  };
+}
+
+function parseQueryParams(req: Request): ISurveyAdvancedFilters {
+  return {
+    keyword: req.params.keyword && String(req.params.keyword),
+    project_name: req.params.project_name && String(req.params.project_name),
+    project_programs: req.params.project_programs
+      ? String(req.params.project_programs).split(',').map(Number)
+      : undefined,
+    itis_tsns: req.params.itis_tsns ? String(req.params.itis_tsns).split(',').map(Number) : undefined,
+    start_date: req.params.start_date && String(req.params.start_date),
+    end_date: req.params.end_date && String(req.params.end_date)
   };
 }

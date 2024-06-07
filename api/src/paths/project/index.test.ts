@@ -9,20 +9,20 @@ import { HTTPError } from '../../errors/http-error';
 import * as authorization from '../../request-handlers/security/authorization';
 import { COMPLETION_STATUS, ProjectService } from '../../services/project-service';
 import { getMockDBConnection } from '../../__mocks__/db';
-import * as list from './list';
+import * as index from './index';
 
 chai.use(sinonChai);
 
-describe('list', () => {
+describe('index', () => {
   describe('openapi schema', () => {
     const ajv = new Ajv();
 
     it('is valid openapi v3 schema', () => {
-      expect(ajv.validateSchema(list.GET.apiDoc as unknown as object)).to.be.true;
+      expect(ajv.validateSchema(index.GET.apiDoc as unknown as object)).to.be.true;
     });
   });
 
-  describe('getProjectList', () => {
+  describe('getProjectindex', () => {
     const dbConnectionObj = getMockDBConnection();
 
     const sampleReq = {
@@ -61,10 +61,10 @@ describe('list', () => {
         }
       });
       sinon.stub(authorization, 'userHasValidRole').returns(true);
-      sinon.stub(ProjectService.prototype, 'getProjectList').resolves([]);
-      sinon.stub(ProjectService.prototype, 'getProjectCount').resolves(0);
+      sinon.stub(ProjectService.prototype, 'getProjectindex').resolves([]);
+      sinon.stub(ProjectService.prototype, 'findProjectCount').resolves(0);
 
-      const result = list.getProjectList();
+      const result = index.getProjectindex();
 
       await result(sampleReq, sampleRes as any, null as unknown as any);
 
@@ -90,7 +90,7 @@ describe('list', () => {
       });
       sinon.stub(authorization, 'userHasValidRole').returns(true);
 
-      const getProjectListStub = sinon.stub(ProjectService.prototype, 'getProjectList').resolves([
+      const getProjectindexStub = sinon.stub(ProjectService.prototype, 'getProjectindex').resolves([
         {
           project_id: 1,
           name: 'myproject',
@@ -103,9 +103,9 @@ describe('list', () => {
           completion_status: COMPLETION_STATUS.COMPLETED
         }
       ]);
-      sinon.stub(ProjectService.prototype, 'getProjectCount').resolves(1);
+      sinon.stub(ProjectService.prototype, 'findProjectCount').resolves(1);
 
-      const result = list.getProjectList();
+      const result = index.getProjectindex();
 
       await result(sampleReq, sampleRes as unknown as any, null as unknown as any);
 
@@ -130,7 +130,7 @@ describe('list', () => {
           }
         ]
       });
-      expect(getProjectListStub).to.be.calledOnce;
+      expect(getProjectindexStub).to.be.calledOnce;
     });
 
     it('catches error, calls rollback, and re-throws error', async () => {
@@ -138,10 +138,10 @@ describe('list', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(ProjectService.prototype, 'getProjectList').rejects(new Error('a test error'));
+      sinon.stub(ProjectService.prototype, 'getProjectindex').rejects(new Error('a test error'));
 
       try {
-        const requestHandler = list.getProjectList();
+        const requestHandler = index.getProjectindex();
 
         await requestHandler(sampleReq, sampleRes as any, null as unknown as any);
         expect.fail();

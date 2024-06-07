@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
@@ -6,6 +6,7 @@ import { IProjectAdvancedFilters } from '../../models/project-view';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
+import { setCacheControl } from '../../utils/api-utils';
 import { getLogger } from '../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -13,7 +14,7 @@ import {
   makePaginationResponse
 } from '../../utils/pagination';
 
-const defaultLog = getLogger('paths/project');
+const defaultLog = getLogger('paths/project/index');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
@@ -25,18 +26,79 @@ export const GET: Operation = [
       ]
     };
   }),
-  getProjectList()
+  getProjects()
 ];
 
 GET.apiDoc = {
-  description: 'Gets a list of projects based on search parameters if passed in.',
+  description: "Gets a list of projects based on the user's permissions and search criteria.",
   tags: ['projects'],
   security: [
     {
       Bearer: []
     }
   ],
-  parameters: [...paginationRequestQueryParamSchema],
+  parameters: [
+    {
+      in: 'query',
+      name: 'start_date',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'end_date',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'project_programs',
+      required: false,
+      schema: {
+        type: 'array',
+        items: {
+          type: 'integer'
+        },
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'keyword',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'project_name',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'itis_tsns',
+      required: false,
+      schema: {
+        type: 'array',
+        items: {
+          type: 'integer'
+        }
+      }
+    },
+    ...paginationRequestQueryParamSchema
+  ],
   requestBody: {
     description: 'Project list search filter criteria object.',
     content: {
@@ -71,9 +133,6 @@ GET.apiDoc = {
               items: {
                 type: 'integer'
               }
-            },
-            system_user_id: {
-              type: 'integer'
             }
           }
         }
@@ -181,61 +240,70 @@ GET.apiDoc = {
 };
 
 /**
- * Get all projects (potentially based on filter criteria).
+ * Get projects for the current user, based on their permissions and search criteria.
  *
  * @returns {RequestHandler}
  */
-export function getProjectList(): RequestHandler {
+export function getProjects(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getProjectList' });
+    defaultLog.debug({ label: 'getProjects' });
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
+      const systemUserId = connection.systemUserId();
+
       const isUserAdmin = userHasValidRole(
         [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
         req['system_user']['role_names']
       );
-      const systemUserId = connection.systemUserId();
-      const filterFields: IProjectAdvancedFilters = {
-        keyword: req.query.keyword && String(req.query.keyword),
-        project_name: req.query.project_name && String(req.query.project_name),
-        project_programs: req.query.project_programs
-          ? String(req.query.project_programs).split(',').map(Number)
-          : undefined,
-        itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined,
-        start_date: req.query.start_date && String(req.query.start_date),
-        end_date: req.query.end_date && String(req.query.end_date),
-        system_user_id: req.query.system_user_id && String(req.query.system_user_id)
-      };
+
+      const filterFields = parseQueryParams(req);
 
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const projectService = new ProjectService(connection);
-      const projects = await projectService.getProjectList(
+
+      const projects = await projectService.findProjects(
         isUserAdmin,
         systemUserId,
         filterFields,
         ensureCompletePaginationOptions(paginationOptions)
       );
 
-      const projectsTotalCount = await projectService.getProjectCount(filterFields, isUserAdmin, systemUserId);
+      const projectsTotalCount = await projectService.findProjectCount(filterFields, isUserAdmin, systemUserId);
+
+      await connection.commit();
 
       const response = {
         projects,
         pagination: makePaginationResponse(projectsTotalCount, paginationOptions)
       };
 
-      await connection.commit();
+      // Allow browsers to cache this response for 30 seconds
+      setCacheControl(res, 30);
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getProjectList', message: 'error', error });
+      defaultLog.error({ label: 'getProjects', message: 'error', error });
       throw error;
     } finally {
       connection.release();
     }
+  };
+}
+
+function parseQueryParams(req: Request): IProjectAdvancedFilters {
+  return {
+    keyword: req.params.keyword && String(req.params.keyword),
+    project_name: req.params.project_name && String(req.params.project_name),
+    project_programs: req.params.project_programs
+      ? String(req.params.project_programs).split(',').map(Number)
+      : undefined,
+    itis_tsns: req.params.itis_tsns ? String(req.params.itis_tsns).split(',').map(Number) : undefined,
+    start_date: req.params.start_date && String(req.params.start_date),
+    end_date: req.params.end_date && String(req.params.end_date)
   };
 }

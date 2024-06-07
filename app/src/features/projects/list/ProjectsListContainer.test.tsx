@@ -7,7 +7,7 @@ import { MemoryRouter, Router } from 'react-router-dom';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
-import ProjectsListContainer from './ProjectsListContainer';
+import ProjectsListContainer from '../../summary/list-data/project/ProjectsListContainer';
 
 const history = createMemoryHistory();
 

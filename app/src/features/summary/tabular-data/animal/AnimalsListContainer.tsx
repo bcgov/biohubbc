@@ -30,7 +30,8 @@ interface IAnimalsListContainerProps {
   showSearch: boolean;
 }
 
-const tableHeight = '589px';
+const rowHeight = 70;
+const tableHeight = rowHeight * 5.5;
 
 /**
  * List of Surveys belonging to a Project.
@@ -79,7 +80,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
   // TODO: CHANGE SIMPLE RESPONSE TO DETAILED TO INCLUDE ECOLOGICAL UNITS
   const rows = animalsDataLoader.data ?? [];
 
-  console.log(rows);
+  //   console.log(rows);
 
   const columns: GridColDef<IAnimalTableRow>[] = [
     {
@@ -136,9 +137,8 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
         <StyledDataGrid
           noRowsMessage="No animals found"
           columns={columns}
-          rowHeight={70}
+          rowHeight={rowHeight}
           getRowHeight={() => 'auto'}
-          getEstimatedRowHeight={() => 500}
           rows={rows ?? []}
           loading={!animalsDataLoader.data}
           rowCount={animalsDataLoader.data?.length ?? 0}

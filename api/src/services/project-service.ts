@@ -56,7 +56,8 @@ export class ProjectService extends DBService {
   }
 
   /**
-   * Retrieves the paginated list of all projects that are available to the user.
+   * Retrieves the paginated list of all projects that are available to the user, based on their permissions and
+   * provided filter criteria.
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId
@@ -65,13 +66,13 @@ export class ProjectService extends DBService {
    * @return {*}  {(Promise<(ProjectListData & { completion_status: COMPLETION_STATUS })[]>)}
    * @memberof ProjectService
    */
-  async getProjectList(
+  async findProjects(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<(ProjectListData & { completion_status: COMPLETION_STATUS })[]> {
-    const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields, pagination);
+    const response = await this.projectRepository.findProjects(isUserAdmin, systemUserId, filterFields, pagination);
 
     return response.map((row) => ({
       ...row,
@@ -82,7 +83,8 @@ export class ProjectService extends DBService {
   }
 
   /**
-   * Returns the total count of projects that are visible to the given user.
+   * Retrieves the count of all projects that are available to the user, based on their permissions and provided
+   * filter criteria.
    *
    * @param {IProjectAdvancedFilters} filterFields
    * @param {boolean} isUserAdmin
@@ -90,12 +92,12 @@ export class ProjectService extends DBService {
    * @return {*}  {Promise<number>}
    * @memberof ProjectService
    */
-  async getProjectCount(
+  async findProjectCount(
     filterFields: IProjectAdvancedFilters,
     isUserAdmin: boolean,
     systemUserId: number | null
   ): Promise<number> {
-    return this.projectRepository.getProjectCount(filterFields, isUserAdmin, systemUserId);
+    return this.projectRepository.findProjectCount(filterFields, isUserAdmin, systemUserId);
   }
 
   /**

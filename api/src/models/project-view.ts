@@ -9,7 +9,6 @@ export interface IProjectAdvancedFilters {
   keyword?: string;
   project_name?: string;
   itis_tsns?: number[];
-  system_user_id?: string;
 }
 
 export interface IGetProject {

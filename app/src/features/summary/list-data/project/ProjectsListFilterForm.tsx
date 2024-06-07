@@ -1,53 +1,51 @@
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import CustomTextField from 'components/fields/CustomTextField';
+import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
-import SearchFilters from 'features/projects/components/SearchFilters';
-import SystemUserAutocomplete from 'features/projects/components/SystemUserAutocomplete';
 import { Formik, FormikProps } from 'formik';
 import { debounce } from 'lodash-es';
 import React, { useMemo, useRef } from 'react';
-import { ISurveyAdvancedFilters } from './SurveysListContainer';
+import SearchFilters from '../../../projects/components/SearchFilters';
+import SystemUserAutocomplete from '../../../projects/components/SystemUserAutocomplete';
 
-export interface ISurveysListFilterFormProps {
-  handleSubmit: (filterValues: ISurveyAdvancedFilters) => void;
+export interface IProjectsListFilterFormProps {
+  handleSubmit: (filterValues: IProjectAdvancedFilters) => void;
   handleReset: () => void;
+  //   params: URLSearchParams;
+  paginationSort: {
+    limit?: number;
+    page?: number;
+    sort?: string;
+    order?: 'desc' | 'asc';
+  };
 }
 
-export const SurveyAdvancedFiltersInitialValues: ISurveyAdvancedFilters = {
-  start_date: '',
-  end_date: '',
-  keyword: '',
-  project_name: '',
-  system_user_id: '' as unknown as number,
-  itis_tsns: []
-};
-
-const SurveysListFilterForm: React.FC<ISurveysListFilterFormProps> = (props) => {
-  const formikRef = useRef<FormikProps<ISurveyAdvancedFilters>>(null);
+const ProjectsListFilterForm: React.FC<IProjectsListFilterFormProps> = (props) => {
+  const formikRef = useRef<FormikProps<IProjectAdvancedFilters>>(null);
 
   const searchBackgroundColor = grey[50];
 
   const debounced = useMemo(
     () =>
-      debounce((values: ISurveyAdvancedFilters) => {
-        props.handleSubmit(values);
+      debounce((_values: IProjectAdvancedFilters) => {
+        // props.handleSubmit(values);
+        // console.log(values);
+        // updateUrl(values);
       }, 300),
     []
   );
 
   return (
     <Box p={2} bgcolor={searchBackgroundColor}>
-      <Formik innerRef={formikRef} initialValues={SurveyAdvancedFiltersInitialValues} onSubmit={props.handleSubmit}>
+      <Formik innerRef={formikRef} initialValues={props.paginationSort} onSubmit={props.handleSubmit}>
         <SearchFilters
           onChange={debounced}
           fields={[
             {
               id: 1,
               name: '',
-              component: (
-                <CustomTextField placeholder="Enter any keyword or a Survey ID" name="keyword" label="Keyword" />
-              )
+              component: <CustomTextField placeholder="Search by keyword" name="keyword" label="Keyword" />
             },
             {
               id: 2,
@@ -56,12 +54,14 @@ const SurveysListFilterForm: React.FC<ISurveysListFilterFormProps> = (props) => 
                 <SpeciesAutocompleteField
                   formikFieldName={'itis_tsns'}
                   label={'Species'}
-                  placeholder="Find Surveys relating to a specific taxon"
+                  placeholder="Search by user"
                   handleSpecies={(value) => {
                     formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
+                    formikRef.current?.submitForm();
                   }}
                   handleClear={() => {
                     formikRef.current?.setFieldValue('itis_tsns', '');
+                    formikRef.current?.submitForm();
                   }}
                   clearOnSelect={true}
                   showSelectedValue={true}
@@ -74,8 +74,9 @@ const SurveysListFilterForm: React.FC<ISurveysListFilterFormProps> = (props) => 
               component: (
                 <SystemUserAutocomplete
                   label="Person"
-                  placeholder="Find Projects that a person has access to"
+                  placeholder="Search by user"
                   formikFieldName="system_user_id"
+                  required={false}
                   showSelectedValue={true}
                 />
               )
@@ -87,4 +88,4 @@ const SurveysListFilterForm: React.FC<ISurveysListFilterFormProps> = (props) => 
   );
 };
 
-export default SurveysListFilterForm;
+export default ProjectsListFilterForm;

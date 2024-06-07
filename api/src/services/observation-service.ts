@@ -9,7 +9,7 @@ import {
   ObservationRepository,
   ObservationSubmissionRecord,
   UpdateObservation
-} from '../repositories/observation-repository';
+} from '../repositories/observation-repository/observation-repository';
 import {
   InsertObservationSubCountQualitativeEnvironmentRecord,
   InsertObservationSubCountQuantitativeEnvironmentRecord,
@@ -129,43 +129,37 @@ export class ObservationService extends DBService {
    * @returns {*} {Promise<{id: number}[]>}
    * @memberof ObservationService
    */
-  async getObservationsForUserId(
+  async findObservations(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IObservationAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<{
-    surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
-    supplementaryObservationData: AllObservationSupplementaryData;
-  }> {
-    const surveyObservations = await this.observationRepository.getObservationsForUserId(
+  ): Promise<ObservationRecordWithSamplingAndSubcountData[]> {
+    const surveyObservations = await this.observationRepository.findObservations(
       isUserAdmin,
       systemUserId,
       filterFields,
       pagination
     );
 
-    // Get supplementary observation data
-    const observationCount = await this.observationRepository.getSurveyObservationCountByUserId(
-      isUserAdmin,
-      systemUserId,
-      filterFields
-    );
-    // const subCountService = new SubCountService(this.connection);
+    return surveyObservations;
 
+    // // Get supplementary observation data
+    // const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
+    // const subCountService = new SubCountService(this.connection);
     // const measurementTypeDefinitions = await subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId);
     // const environmentTypeDefinitions = await subCountService.getEnvironmentTypeDefinitionsForSurvey(surveyId);
 
-    return {
-      surveyObservations: surveyObservations,
-      supplementaryObservationData: {
-        observationCount,
-        qualitative_measurements: [], //measurementTypeDefinitions.qualitative_measurements,
-        quantitative_measurements: [], //measurementTypeDefinitions.quantitative_measurements,
-        qualitative_environments: [], //environmentTypeDefinitions.qualitative_environments,
-        quantitative_environments: [] // environmentTypeDefinitions.quantitative_environments
-      }
-    };
+    // return {
+    //   surveyObservations: surveyObservations,
+    //   supplementaryObservationData: {
+    //     observationCount,
+    //     qualitative_measurements: measurementTypeDefinitions.qualitative_measurements,
+    //     quantitative_measurements: measurementTypeDefinitions.quantitative_measurements,
+    //     qualitative_environments: environmentTypeDefinitions.qualitative_environments,
+    //     quantitative_environments: environmentTypeDefinitions.quantitative_environments
+    //   }
+    // };
   }
 
   /**
@@ -384,12 +378,12 @@ export class ObservationService extends DBService {
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationCountByUserId(
+  async findObservationCount(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IObservationAdvancedFilters
   ): Promise<number> {
-    return this.observationRepository.getSurveyObservationCountByUserId(isUserAdmin, systemUserId, filterFields);
+    return this.observationRepository.findObservationCount(isUserAdmin, systemUserId, filterFields);
   }
 
   /**

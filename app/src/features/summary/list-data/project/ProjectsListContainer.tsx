@@ -10,26 +10,35 @@ import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
 import { SystemRoleGuard } from 'components/security/Guards';
-import { ListProjectsI18N } from 'constants/i18n';
 import { getNrmRegionColour } from 'constants/regions';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import useDataLoaderError from 'hooks/useDataLoaderError';
-import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
+import { UseURLParams } from 'hooks/useURLParams';
 import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
-import { useEffect, useRef, useState } from 'react';
-import { Link as RouterLink, useHistory, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getCodesName } from 'utils/Utils';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
 
+// Supported URL parameters for the project table
+type ProjectDataTableURLParams = {
+  // search filter
+  keyword: string;
+  species: string;
+  person: string;
+  // pagination
+  p_page: string;
+  p_limit: string;
+  p_sort?: string;
+  p_order?: 'asc' | 'desc';
+};
+
 /**
  * `Natural Resource Regions` appended text
  * ie: `Cariboo Natural Resource Region`
- *
  */
 export const NRM_REGION_APPENDED_TEXT = ' Natural Resource Region';
 
@@ -41,115 +50,66 @@ interface IProjectsListContainerProps {
   showSearch: boolean;
 }
 
-// const limitOptions = [10, 25, 50];
+const rowHeight = 70;
+const tableHeight = rowHeight * 5.5;
 
-const tableHeight = '589px';
-
-const initialParams = {
-  page: 1,
+// Default pagination parameters
+const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
+  page: 0,
   limit: 10,
-  field: 'project_id',
-  sort: 'desc' as GridSortDirection
+  sort: 'project_id',
+  order: 'desc'
 };
 
 /**
- * Page to display a list of projects.
+ * Displays a list of projects.
  *
  * @return {*}
  */
 const ProjectsListContainer = (props: IProjectsListContainerProps) => {
   const { showSearch } = props;
 
-  const history = useHistory();
-  const location = useLocation();
-  const ref = useRef(true);
+  const biohubApi = useBiohubApi();
+  const codesContext = useCodesContext();
+  const taxonomyContext = useTaxonomyContext();
 
-  // const query = useQuery();
-  // console.log(query);
-  // const paramss = useParams();
-  // console.log(paramss);
+  const { urlParams } = UseURLParams<ProjectDataTableURLParams>();
 
-  // Object of existing params
-  // const paramsObject = useParams();
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
-  // Get the current URL params
-  const params = new URLSearchParams(location.search);
-
-  // Pagination and sort state
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    pageSize: Number(params.get('limit') ?? initialParams.limit),
-    page: Number(params.get('page') ?? initialParams.page)
+    pageSize: Number(urlParams.get('p_limit') ?? initialPaginationParams.limit),
+    page: Number(urlParams.get('p_page') ?? initialPaginationParams.page)
   });
+
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
-      field: params.get('field') ?? initialParams.field,
-      sort: (params.get('sort') as GridSortDirection) ?? (initialParams.sort as GridSortDirection)
+      field: urlParams.get('p_sort') ?? initialPaginationParams.sort,
+      sort: (urlParams.get('p_order') ?? initialPaginationParams.order) as GridSortDirection
     }
   ]);
 
   // Advanced filters state
-  // Initial value depends on URL params
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IProjectAdvancedFilters>();
+
+  console.log(advancedFiltersModel);
 
   const sort = firstOrNull(sortModel);
   const paginationSort: ApiPaginationRequestOptions = {
     limit: paginationModel.pageSize,
     sort: sort?.field || undefined,
     order: sort?.sort || undefined,
-
     // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
     page: paginationModel.page + 1
   };
-
-  useDeepCompareEffect(() => {
-    console.log(advancedFiltersModel);
-    // When pagination, sort, or advanced filters change, refresh the data
-    // if (!ref.current) {
-    //   // projectsDataLoader.re(paginationSort, advancedFiltersModel);
-    //   return;
-    // }
-
-    projectsDataLoader.refresh(paginationSort, advancedFiltersModel);
-
-    // When the pagination or sort change, update the URL
-    params.set('field', sortModel[0]?.field);
-    params.set('sort', sortModel[0]?.sort ?? 'asc');
-    params.set('page', String(paginationModel.page));
-    params.set('limit', String(paginationModel.pageSize));
-
-    // Update URL
-    history.push({ pathname: location.pathname, search: params.toString() });
-  }, [advancedFiltersModel, sortModel, paginationModel]);
-
-  // // // Set the formik state based on the URL
-  useDeepCompareEffect(() => {
-    ref.current = false;
-    // projectsDataLoader.refresh(paginationSort, advancedFiltersModel);
-  }, [params]);
-
-  const biohubApi = useBiohubApi();
-
-  const codesContext = useCodesContext();
-  const taxonomyContext = useTaxonomyContext();
-
-  useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, []);
 
   const projectsDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) => {
       return biohubApi.project.getProjectsForUserId(pagination, filter);
     }
   );
-
-  useDataLoaderError(projectsDataLoader, (dataLoader) => {
-    return {
-      dialogTitle: ListProjectsI18N.listProjectsErrorDialogTitle,
-      dialogText: ListProjectsI18N.listProjectsErrorDialogText,
-      dialogError: (dataLoader.error as APIError).message,
-      dialogErrorDetails: (dataLoader.error as APIError).errors
-    };
-  });
 
   const getProjectPrograms = (project: IProjectsListItemData) => {
     return (
@@ -178,6 +138,12 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     // Should not re-run this effect on `taxonomyContext` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectsDataLoader.data]);
+
+  useEffect(() => {
+    projectsDataLoader.load(paginationSort, advancedFiltersModel);
+    // Should not re-run this effect on `projectsDataLoader` changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [advancedFiltersModel, paginationSort]);
 
   const projectRows =
     projectsDataLoader.data?.projects.map((project) => {
@@ -269,26 +235,6 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     }
   ];
 
-  // // Refresh projects when pagination or sort changes
-  // useEffect(() => {
-  //   const sort = firstOrNull(sortModel);
-  //   const pagination = {
-  //     limit: paginationModel.limit,
-  //     sort: sort?.field || undefined,
-  //     order: sort?.sort || undefined,
-
-  //     // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-  //     page: paginationModel.page + 1
-  //   };
-
-  //   projectsDataLoader.refresh(pagination, advancedFiltersModel);
-
-  //   // Update URL
-
-  //   // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [sortModel, paginationModel, advancedFiltersModel]);
-
   /**
    * Displays project list.
    */
@@ -299,22 +245,20 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
           paginationSort={paginationSort}
           handleSubmit={setAdvancedFiltersModel}
           handleReset={() => setAdvancedFiltersModel({})}
-          params={params}
         />
         <Divider />
       </Collapse>
       <Box p={2}>
         <StyledDataGrid
           noRowsMessage="No projects found"
-          rowHeight={70}
+          rowHeight={rowHeight}
           getRowHeight={() => 'auto'}
-          getEstimatedRowHeight={() => 500}
+          getEstimatedRowHeight={() => rowHeight}
           rows={projectRows}
           rowCount={projectsDataLoader.data?.pagination.total ?? 0}
           getRowId={(row) => row.project_id}
           loading={!projectsDataLoader.data}
           columns={columns}
-          // limitOptions={[6]}
           paginationMode="server"
           sortingMode="server"
           sortModel={sortModel}
@@ -330,7 +274,6 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
           sortingOrder={['asc', 'desc']}
           sx={{
             '& .MuiDataGrid-virtualScroller': {
-              // Height is an odd number to help the list obviously scrollable by likely cutting off the last visible row
               height: tableHeight,
               overflowY: 'auto !important',
               overflowX: 'hidden',

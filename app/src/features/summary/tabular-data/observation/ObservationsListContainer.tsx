@@ -3,29 +3,37 @@ import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { UseURLParams } from 'hooks/useURLParams';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 import { useCallback, useEffect, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import ObservationsListFilterForm, { ObservationAdvancedFiltersInitialValues } from './ObservationsListFilterForm';
+import {
+  IObservationsAdvancedFilters,
+  ObservationAdvancedFiltersInitialValues,
+  ObservationsListFilterForm
+} from './ObservationsListFilterForm';
 
-export interface IObservationsAdvancedFilters {
-  minimum_date: string;
-  maximum_date: string;
+// Supported URL parameters for the observation table
+type ObservationDataTableURLParams = {
+  // search filter
   keyword: string;
-  minimum_count: string;
-  minimum_time: string;
-  maximum_time: string;
-  system_user_id: number;
-  itis_tsns: number[];
-}
+  species: string;
+  person: string;
+  // pagination
+  o_page: string;
+  o_limit: string;
+  o_sort?: string;
+  o_order?: 'asc' | 'desc';
+};
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -33,10 +41,19 @@ interface IObservationsListContainerProps {
   showSearch: boolean;
 }
 
-const tableHeight = '589px';
+const rowHeight = 70;
+const tableHeight = rowHeight * 5.5;
+
+// Default pagination parameters
+const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
+  page: 0,
+  limit: 10,
+  sort: 'survey_observation_id',
+  order: 'desc'
+};
 
 /**
- * List of Surveys belonging to a Project.
+ * Displays a list of observations.
  *
  * @return {*}
  */
@@ -44,38 +61,51 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
+  const codesContext = useCodesContext();
+
+  const { urlParams } = UseURLParams<ObservationDataTableURLParams>();
+
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: pageSizeOptions[0]
+    pageSize: Number(urlParams.get('o_limit') ?? initialPaginationParams.limit),
+    page: Number(urlParams.get('o_page') ?? initialPaginationParams.page)
   });
-  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'survey_observation_id', sort: 'desc' }]);
-  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IObservationsAdvancedFilters>(
-    ObservationAdvancedFiltersInitialValues
-  );
+
+  const [sortModel, setSortModel] = useState<GridSortModel>([
+    {
+      field: urlParams.get('o_sort') ?? initialPaginationParams.sort,
+      sort: (urlParams.get('o_order') ?? initialPaginationParams.order) as GridSortDirection
+    }
+  ]);
+
+  // Advanced filters state
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IObservationsAdvancedFilters>();
+
+  console.log(advancedFiltersModel);
+
+  const sort = firstOrNull(sortModel);
+  const paginationSort: ApiPaginationRequestOptions = {
+    limit: paginationModel.pageSize,
+    sort: sort?.field || undefined,
+    order: sort?.sort || undefined,
+    // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+    page: paginationModel.page + 1
+  };
 
   const observationsDataLoader = useDataLoader(
-    (pagination?: ApiPaginationRequestOptions, filter?: IObservationsAdvancedFilters) =>
-      biohubApi.observation.getObservationsForUserId(pagination, filter)
+    (pagination: ApiPaginationRequestOptions, filter?: IObservationsAdvancedFilters) => {
+      return biohubApi.observation.getObservationsForUserId(pagination, filter);
+    }
   );
 
-  // Refresh survey list when pagination or sort changes
   useEffect(() => {
-    const sort = firstOrNull(sortModel);
-    const pagination: ApiPaginationRequestOptions = {
-      limit: paginationModel.pageSize,
-      sort: sort?.field || undefined,
-      order: sort?.sort || undefined,
-
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    };
-
-    observationsDataLoader.refresh(pagination, advancedFiltersModel);
-
-    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
+    observationsDataLoader.load(paginationSort, advancedFiltersModel);
+    // Should not re-run this effect on `observationsDataLoader` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortModel, paginationModel, advancedFiltersModel]);
+  }, [advancedFiltersModel, paginationSort]);
 
   const getRowsFromObservations = useCallback(
     (observationsData: IGetSurveyObservationsResponse): IObservationTableRow[] =>
@@ -122,7 +152,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
     []
   );
 
-  const rows = observationsDataLoader.data ? getRowsFromObservations(observationsDataLoader.data) : [];
+  const observationRows = observationsDataLoader.data ? getRowsFromObservations(observationsDataLoader.data) : [];
 
   const columns: GridColDef<IObservationTableRow>[] = [
     {
@@ -195,10 +225,9 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
         <StyledDataGrid
           noRowsMessage="No observations found"
           columns={columns}
-          rowHeight={70}
+          rowHeight={rowHeight}
           getRowHeight={() => 'auto'}
-          getEstimatedRowHeight={() => 500}
-          rows={rows ?? []}
+          rows={observationRows ?? []}
           loading={!observationsDataLoader.data}
           rowCount={observationsDataLoader.data?.pagination.total ?? 0}
           getRowId={(row) => row.observation_subcount_id}

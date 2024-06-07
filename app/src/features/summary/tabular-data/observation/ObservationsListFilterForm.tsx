@@ -7,11 +7,21 @@ import SearchFilters from 'features/projects/components/SearchFilters';
 import { Formik, FormikProps } from 'formik';
 import { debounce } from 'lodash-es';
 import React, { useMemo, useRef } from 'react';
-import { IObservationsAdvancedFilters } from './ObservationsListContainer';
 
 export interface IObservationsListFilterFormProps {
   handleSubmit: (filterValues: IObservationsAdvancedFilters) => void;
   handleReset: () => void;
+}
+
+export interface IObservationsAdvancedFilters {
+  minimum_date: string;
+  maximum_date: string;
+  keyword: string;
+  minimum_count: string;
+  minimum_time: string;
+  maximum_time: string;
+  system_user_id: number;
+  itis_tsns: number[];
 }
 
 export const ObservationAdvancedFiltersInitialValues: IObservationsAdvancedFilters = {
@@ -25,7 +35,13 @@ export const ObservationAdvancedFiltersInitialValues: IObservationsAdvancedFilte
   itis_tsns: []
 };
 
-const ObservationsListFilterForm: React.FC<IObservationsListFilterFormProps> = (props) => {
+/**
+ * Observation advanced filters
+ *
+ * @param {*} props
+ * @return {*}
+ */
+export const ObservationsListFilterForm: React.FC<IObservationsListFilterFormProps> = (props) => {
   const formikRef = useRef<FormikProps<IObservationsAdvancedFilters>>(null);
 
   const searchBackgroundColor = grey[50];
@@ -52,7 +68,7 @@ const ObservationsListFilterForm: React.FC<IObservationsListFilterFormProps> = (
               name: '',
               component: (
                 <Box>
-                  <CustomTextField placeholder="Enter any keyword or Observation ID" name="keyword" label="Keyword" />
+                  <CustomTextField placeholder="Search by keyword" name="keyword" label="Keyword" />
                 </Box>
               )
             },
@@ -63,7 +79,7 @@ const ObservationsListFilterForm: React.FC<IObservationsListFilterFormProps> = (
                 <SpeciesAutocompleteField
                   formikFieldName={'itis_tsns'}
                   label={'Species'}
-                  placeholder="Find observations of a specific taxon"
+                  placeholder="Search by taxon"
                   handleSpecies={(value) => {
                     if (value?.tsn) {
                       formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
@@ -93,5 +109,3 @@ const ObservationsListFilterForm: React.FC<IObservationsListFilterFormProps> = (
     </Box>
   );
 };
-
-export default ObservationsListFilterForm;

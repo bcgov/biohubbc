@@ -14,6 +14,7 @@ import {
   GetSurveyPurposeAndMethodologyData,
   ISurveyAdvancedFilters,
   ISurveyPartnerships,
+  SurveyListData,
   SurveyObject,
   SurveySupplementaryData
 } from '../models/survey-view';
@@ -330,7 +331,8 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Returns the total number of surveys that the user has access to
+   * Retrieves the count of all surveys that are available to the user, based on their permissions and provided filter
+   * criteria.
    *
    * @param {ISurveyAdvancedFilters} filterFields
    * @param {boolean} isUserAdmin
@@ -338,12 +340,12 @@ export class SurveyService extends DBService {
    * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
-  async getSurveyCountByUserId(
+  async findSurveyCount(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: ISurveyAdvancedFilters
   ): Promise<number> {
-    return this.surveyRepository.getSurveyCountByUserId(isUserAdmin, systemUserId, filterFields);
+    return this.surveyRepository.findSurveyCount(isUserAdmin, systemUserId, filterFields);
   }
 
   /**
@@ -1168,5 +1170,25 @@ export class SurveyService extends DBService {
    */
   async deleteSurvey(surveyId: number): Promise<void> {
     return this.surveyRepository.deleteSurvey(surveyId);
+  }
+
+  /**
+   * Retrieves the paginated list of all surveys that are available to the user, based on their permissions and provided
+   * filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof SurveyRepository
+   */
+  async findSurveys(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<SurveyListData[]> {
+    return this.surveyRepository.findSurveys(isUserAdmin, systemUserId, filterFields, pagination);
   }
 }

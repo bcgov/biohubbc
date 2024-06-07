@@ -144,7 +144,7 @@ export class SurveyRepository extends BaseRepository {
    * @return {*}  Promise<Knex.QueryBuilder>
    * @memberof SurveyRepository
    */
-  _makeSurveyListQuery(
+  _makeFindSurveysQuery(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: ISurveyAdvancedFilters
@@ -172,10 +172,7 @@ export class SurveyRepository extends BaseRepository {
       .leftJoin('project_participation as ppa', 'ppa.project_id', 's.project_id')
       .groupBy('s.survey_id', 's.project_id', 's.name', 's.progress_id', 's.start_date', 's.end_date');
 
-    /*
-     * Ensure that users can only see project that they are participating in, unless
-     * they are an administrator.
-     */
+    // Ensure that users can only see surveys that they are participating in, unless they are an administrator.
     if (!isUserAdmin) {
       query.whereIn('p.project_id', (subQueryBuilder) => {
         subQueryBuilder.select('project_id').from('project_participation').where('system_user_id', systemUserId);
@@ -190,11 +187,6 @@ export class SurveyRepository extends BaseRepository {
     // End Date filter
     if (filterFields.end_date) {
       query.andWhere('s.end_date', '<=', filterFields.end_date);
-    }
-
-    // Project Member filter (exact match)
-    if (filterFields.system_user_id) {
-      query.andWhere('system_user_id', filterFields.system_user_id);
     }
 
     // Project Name filter (like match)
@@ -241,13 +233,13 @@ export class SurveyRepository extends BaseRepository {
    * @returns {*} {Promise<{id: number}[]>}
    * @memberof SurveyRepository
    */
-  async getSurveysForUserId(
+  async findSurveys(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: ISurveyAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<SurveyListData[]> {
-    const query = this._makeSurveyListQuery(isUserAdmin, systemUserId, filterFields);
+    const query = this._makeFindSurveysQuery(isUserAdmin, systemUserId, filterFields);
 
     // Pagination
     if (pagination) {
@@ -615,12 +607,12 @@ export class SurveyRepository extends BaseRepository {
    * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
-  async getSurveyCountByUserId(
+  async findSurveyCount(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: ISurveyAdvancedFilters
   ): Promise<number> {
-    const surveyListQuery = this._makeSurveyListQuery(isUserAdmin, systemUserId, filterFields);
+    const surveyListQuery = this._makeFindSurveysQuery(isUserAdmin, systemUserId, filterFields);
 
     const knex = getKnex();
 
@@ -630,7 +622,7 @@ export class SurveyRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get survey count', [
-        'SurveyRepository->getSurveyCountByUserId',
+        'SurveyRepository->findSurveyCount',
         'rows was null or undefined, expected rows != null'
       ]);
     }
