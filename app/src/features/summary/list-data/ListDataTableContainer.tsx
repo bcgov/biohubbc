@@ -36,10 +36,10 @@ const buttonSx = {
 };
 
 export const ListDataTableContainer = () => {
-  const { urlParams, setURLParams } = useSearchParams<ListDataTableURLParams>();
+  const { searchParams, setSearchParams } = useSearchParams<ListDataTableURLParams>();
 
-  const activeView = urlParams.get(LIST_VIEW_PARAM_KEY) ?? LIST_VIEW_PARAM_VALUE.projects;
-  const showSearch = !!urlParams.get(LIST_VIEW_SEARCH_PARAM_KEY) ?? false;
+  const activeView = searchParams.get(LIST_VIEW_PARAM_KEY) ?? LIST_VIEW_PARAM_VALUE.projects;
+  const showSearch = !!searchParams.get(LIST_VIEW_SEARCH_PARAM_KEY) ?? false;
 
   const views = [
     { value: LIST_VIEW_PARAM_VALUE.projects, label: 'projects', icon: mdiFolder },
@@ -51,7 +51,7 @@ export const ListDataTableContainer = () => {
       return;
     }
 
-    setURLParams(urlParams.set(LIST_VIEW_PARAM_KEY, value));
+    setSearchParams(searchParams.set(LIST_VIEW_PARAM_KEY, value));
   };
 
   return (
@@ -82,9 +82,9 @@ export const ListDataTableContainer = () => {
           color="primary"
           sx={buttonSx}
           onClick={() => {
-            setURLParams(
-              (showSearch && urlParams.delete(LIST_VIEW_SEARCH_PARAM_KEY)) ||
-                urlParams.set(LIST_VIEW_SEARCH_PARAM_KEY, LIST_VIEW_SEARCH_PARAM_VALUE.showFilters)
+            setSearchParams(
+              (showSearch && searchParams.delete(LIST_VIEW_SEARCH_PARAM_KEY)) ||
+                searchParams.set(LIST_VIEW_SEARCH_PARAM_KEY, LIST_VIEW_SEARCH_PARAM_VALUE.showFilters)
             );
           }}
           component={Button}

@@ -73,21 +73,21 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
   const codesContext = useCodesContext();
   const taxonomyContext = useTaxonomyContext();
 
-  const { urlParams } = useSearchParams<ProjectDataTableURLParams>();
+  const { searchParams } = useSearchParams<ProjectDataTableURLParams>();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    pageSize: Number(urlParams.get('p_limit') ?? initialPaginationParams.limit),
-    page: Number(urlParams.get('p_page') ?? initialPaginationParams.page)
+    pageSize: Number(searchParams.get('p_limit') ?? initialPaginationParams.limit),
+    page: Number(searchParams.get('p_page') ?? initialPaginationParams.page)
   });
 
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
-      field: urlParams.get('p_sort') ?? initialPaginationParams.sort,
-      sort: (urlParams.get('p_order') ?? initialPaginationParams.order) as GridSortDirection
+      field: searchParams.get('p_sort') ?? initialPaginationParams.sort,
+      sort: (searchParams.get('p_order') ?? initialPaginationParams.order) as GridSortDirection
     }
   ]);
 

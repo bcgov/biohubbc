@@ -63,21 +63,21 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
   const biohubApi = useBiohubApi();
   const codesContext = useCodesContext();
 
-  const { urlParams } = useSearchParams<ObservationDataTableURLParams>();
+  const { searchParams } = useSearchParams<ObservationDataTableURLParams>();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    pageSize: Number(urlParams.get('o_limit') ?? initialPaginationParams.limit),
-    page: Number(urlParams.get('o_page') ?? initialPaginationParams.page)
+    pageSize: Number(searchParams.get('o_limit') ?? initialPaginationParams.limit),
+    page: Number(searchParams.get('o_page') ?? initialPaginationParams.page)
   });
 
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
-      field: urlParams.get('o_sort') ?? initialPaginationParams.sort,
-      sort: (urlParams.get('o_order') ?? initialPaginationParams.order) as GridSortDirection
+      field: searchParams.get('o_sort') ?? initialPaginationParams.sort,
+      sort: (searchParams.get('o_order') ?? initialPaginationParams.order) as GridSortDirection
     }
   ]);
 

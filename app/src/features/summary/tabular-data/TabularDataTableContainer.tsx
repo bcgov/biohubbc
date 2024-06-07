@@ -38,10 +38,10 @@ const buttonsx = {
 };
 
 export const TabularDataTableContainer = () => {
-  const { urlParams, setURLParams } = useSearchParams<TabularDataTableURLParams>();
+  const { searchParams, setSearchParams } = useSearchParams<TabularDataTableURLParams>();
 
-  const activeView = urlParams.get(TABULAR_VIEW_PARAM_KEY) ?? TABULAR_VIEW_PARAM_VALUE.observations;
-  const showSearch = !!urlParams.get(TABULAR_VIEW_SEARCH_PARAM_KEY) ?? false;
+  const activeView = searchParams.get(TABULAR_VIEW_PARAM_KEY) ?? TABULAR_VIEW_PARAM_VALUE.observations;
+  const showSearch = !!searchParams.get(TABULAR_VIEW_SEARCH_PARAM_KEY) ?? false;
 
   const views = [
     { value: TABULAR_VIEW_PARAM_VALUE.observations, label: 'observations', icon: mdiEye },
@@ -54,7 +54,7 @@ export const TabularDataTableContainer = () => {
       return;
     }
 
-    setURLParams(urlParams.set(TABULAR_VIEW_PARAM_KEY, value));
+    setSearchParams(searchParams.set(TABULAR_VIEW_PARAM_KEY, value));
   };
 
   return (
@@ -85,9 +85,9 @@ export const TabularDataTableContainer = () => {
           color="primary"
           sx={buttonsx}
           onClick={() => {
-            setURLParams(
-              (showSearch && urlParams.delete(TABULAR_VIEW_SEARCH_PARAM_KEY)) ||
-                urlParams.set(TABULAR_VIEW_SEARCH_PARAM_KEY, TABULAR_VIEW_SEARCH_PARAM_VALUE.showFilters)
+            setSearchParams(
+              (showSearch && searchParams.delete(TABULAR_VIEW_SEARCH_PARAM_KEY)) ||
+                searchParams.set(TABULAR_VIEW_SEARCH_PARAM_KEY, TABULAR_VIEW_SEARCH_PARAM_VALUE.showFilters)
             );
           }}
           component={Button}

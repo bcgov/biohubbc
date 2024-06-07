@@ -71,21 +71,21 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   const codesContext = useCodesContext();
   const taxonomyContext = useTaxonomyContext();
 
-  const { urlParams } = useSearchParams<SurveyDataTableURLParams>();
+  const { searchParams } = useSearchParams<SurveyDataTableURLParams>();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    pageSize: Number(urlParams.get('s_limit') ?? initialPaginationParams.limit),
-    page: Number(urlParams.get('s_page') ?? initialPaginationParams.page)
+    pageSize: Number(searchParams.get('s_limit') ?? initialPaginationParams.limit),
+    page: Number(searchParams.get('s_page') ?? initialPaginationParams.page)
   });
 
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
-      field: urlParams.get('s_sort') ?? initialPaginationParams.sort,
-      sort: (urlParams.get('s_order') ?? initialPaginationParams.order) as GridSortDirection
+      field: searchParams.get('s_sort') ?? initialPaginationParams.sort,
+      sort: (searchParams.get('s_order') ?? initialPaginationParams.order) as GridSortDirection
     }
   ]);
 

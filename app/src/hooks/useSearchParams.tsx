@@ -5,15 +5,15 @@ import { useHistory } from 'react-router';
  * A hook that provides methods for reading and writing URL search params.
  *
  * @example
- * const { urlParams, setURLParams } = useSearchParams();
- * urlParams.set('key', 'value');
- * setURLParams(urlParams);
+ * const { searchParams, setSearchParams } = useSearchParams();
+ * searchParams.set('key', 'value');
+ * setSearchParams(searchParams);
  *
  * @example
  * type MyType = { key1: 'value1' | 'value2' }
- * const { urlParams, setURLParams } = useSearchParams<MyType>();
- * const key1Value = urlParams.get('key1');
- * setURLParams(urlParams.set('key1', 'value2'));
+ * const { searchParams, setSearchParams } = useSearchParams<MyType>();
+ * const key1Value = searchParams.get('key1');
+ * setSearchParams(searchParams.set('key1', 'value2'));
  *
  * @export
  * @return {*}
@@ -21,16 +21,16 @@ import { useHistory } from 'react-router';
 export function useSearchParams<ParamType extends Record<string, string> = Record<string, string>>() {
   const history = useHistory();
 
-  const urlParams = new TypedURLSearchParams<ParamType>(history.location.search);
+  const searchParams = new TypedURLSearchParams<ParamType>(history.location.search);
 
-  const setURLParams = (urlSearchParams: TypedURLSearchParams<ParamType>) => {
+  const setSearchParams = (urlSearchParams: TypedURLSearchParams<ParamType>) => {
     history.push({
       ...location,
       search: urlSearchParams.toString()
     });
   };
 
-  return { urlParams, setURLParams };
+  return { searchParams, setSearchParams };
 }
 
 /**
