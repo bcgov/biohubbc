@@ -11,7 +11,7 @@ import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { UseURLParams } from 'hooks/useURLParams';
+import { useSearchParams } from 'hooks/useSearchParams';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 import { useCallback, useEffect, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
@@ -63,7 +63,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
   const biohubApi = useBiohubApi();
   const codesContext = useCodesContext();
 
-  const { urlParams } = UseURLParams<ObservationDataTableURLParams>();
+  const { urlParams } = useSearchParams<ObservationDataTableURLParams>();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();

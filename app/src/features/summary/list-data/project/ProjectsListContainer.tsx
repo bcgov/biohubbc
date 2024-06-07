@@ -15,7 +15,7 @@ import { SYSTEM_ROLE } from 'constants/roles';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { UseURLParams } from 'hooks/useURLParams';
+import { useSearchParams } from 'hooks/useSearchParams';
 import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -73,7 +73,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
   const codesContext = useCodesContext();
   const taxonomyContext = useTaxonomyContext();
 
-  const { urlParams } = UseURLParams<ProjectDataTableURLParams>();
+  const { urlParams } = useSearchParams<ProjectDataTableURLParams>();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();

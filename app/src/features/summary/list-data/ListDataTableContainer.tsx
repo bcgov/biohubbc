@@ -7,7 +7,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Toolbar from '@mui/material/Toolbar';
 import ProjectsListContainer from 'features/summary/list-data/project/ProjectsListContainer';
 import SurveysListContainer from 'features/summary/list-data/survey/SurveysListContainer';
-import { UseURLParams } from 'hooks/useURLParams';
+import { useSearchParams } from 'hooks/useSearchParams';
 
 export const LIST_VIEW_PARAM_KEY = 'lvk';
 export enum LIST_VIEW_PARAM_VALUE {
@@ -36,7 +36,7 @@ const buttonSx = {
 };
 
 export const ListDataTableContainer = () => {
-  const { urlParams, setURLParams } = UseURLParams<ListDataTableURLParams>();
+  const { urlParams, setURLParams } = useSearchParams<ListDataTableURLParams>();
 
   const activeView = urlParams.get(LIST_VIEW_PARAM_KEY) ?? LIST_VIEW_PARAM_VALUE.projects;
   const showSearch = !!urlParams.get(LIST_VIEW_SEARCH_PARAM_KEY) ?? false;

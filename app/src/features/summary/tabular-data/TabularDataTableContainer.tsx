@@ -8,7 +8,7 @@ import Toolbar from '@mui/material/Toolbar';
 import AnimalsListContainer from 'features/summary/tabular-data/animal/AnimalsListContainer';
 import ObservationsListContainer from 'features/summary/tabular-data/observation/ObservationsListContainer';
 import TelemetryListContainer from 'features/summary/tabular-data/telemetry/TelemetryListContainer';
-import { UseURLParams } from 'hooks/useURLParams';
+import { useSearchParams } from 'hooks/useSearchParams';
 
 export const TABULAR_VIEW_PARAM_KEY = 'tvk';
 export enum TABULAR_VIEW_PARAM_VALUE {
@@ -38,7 +38,7 @@ const buttonsx = {
 };
 
 export const TabularDataTableContainer = () => {
-  const { urlParams, setURLParams } = UseURLParams<TabularDataTableURLParams>();
+  const { urlParams, setURLParams } = useSearchParams<TabularDataTableURLParams>();
 
   const activeView = urlParams.get(TABULAR_VIEW_PARAM_KEY) ?? TABULAR_VIEW_PARAM_VALUE.observations;
   const showSearch = !!urlParams.get(TABULAR_VIEW_SEARCH_PARAM_KEY) ?? false;

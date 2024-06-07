@@ -17,7 +17,7 @@ import { NRM_REGION_APPENDED_TEXT } from 'features/summary/list-data/project/Pro
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { UseURLParams } from 'hooks/useURLParams';
+import { useSearchParams } from 'hooks/useSearchParams';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -71,7 +71,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   const codesContext = useCodesContext();
   const taxonomyContext = useTaxonomyContext();
 
-  const { urlParams } = UseURLParams<SurveyDataTableURLParams>();
+  const { urlParams } = useSearchParams<SurveyDataTableURLParams>();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
