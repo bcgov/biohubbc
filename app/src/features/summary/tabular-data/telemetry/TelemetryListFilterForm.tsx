@@ -27,7 +27,7 @@ const TelemetryListFilterForm: React.FC<ITelemetryListFilterFormProps> = (props)
       debounce((values: ITelemetryAdvancedFilters) => {
         props.handleSubmit(values);
       }, 300),
-    []
+    [props]
   );
 
   return (

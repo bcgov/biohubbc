@@ -3,7 +3,7 @@ import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridSortDirection } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
@@ -22,7 +22,7 @@ import {
   ObservationsListFilterForm
 } from './ObservationsListFilterForm';
 
-// Supported URL parameters for the observation table
+// Supported URL parameters
 type ObservationDataTableURLParams = {
   // search filter
   keyword: string;
@@ -40,9 +40,6 @@ const pageSizeOptions = [10, 25, 50];
 interface IObservationsListContainerProps {
   showSearch: boolean;
 }
-
-const rowHeight = 70;
-const tableHeight = rowHeight * 5.5;
 
 // Default pagination parameters
 const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
@@ -63,28 +60,25 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
   const biohubApi = useBiohubApi();
   const codesContext = useCodesContext();
 
-  const { searchParams } = useSearchParams<ObservationDataTableURLParams>();
+  const { searchParams, setSearchParams } = useSearchParams<ObservationDataTableURLParams>();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+  const paginationModel = {
     pageSize: Number(searchParams.get('o_limit') ?? initialPaginationParams.limit),
     page: Number(searchParams.get('o_page') ?? initialPaginationParams.page)
-  });
+  };
 
-  const [sortModel, setSortModel] = useState<GridSortModel>([
+  const sortModel = [
     {
       field: searchParams.get('o_sort') ?? initialPaginationParams.sort,
       sort: (searchParams.get('o_order') ?? initialPaginationParams.order) as GridSortDirection
     }
-  ]);
+  ];
 
-  // Advanced filters state
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IObservationsAdvancedFilters>();
-
-  console.log(advancedFiltersModel);
 
   const sort = firstOrNull(sortModel);
   const paginationSort: ApiPaginationRequestOptions = {
@@ -221,40 +215,43 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
         />
         <Divider />
       </Collapse>
-      <Box p={2}>
+      <Box height="500px">
         <StyledDataGrid
           noRowsMessage="No observations found"
-          columns={columns}
-          rowHeight={rowHeight}
-          getRowHeight={() => 'auto'}
-          rows={observationRows ?? []}
           loading={!observationsDataLoader.data}
+          // Columns
+          columns={columns}
+          // Rows
+          rows={observationRows}
           rowCount={observationsDataLoader.data?.pagination.total ?? 0}
           getRowId={(row) => row.observation_subcount_id}
-          pageSizeOptions={[...pageSizeOptions]}
+          // Pagination
           paginationMode="server"
+          pageSizeOptions={pageSizeOptions}
+          paginationModel={paginationModel}
+          onPaginationModelChange={(model) => {
+            setSearchParams(searchParams.set('o_page', String(model.page)).set('o_limit', String(model.pageSize)));
+          }}
+          // Sorting
           sortingMode="server"
           sortModel={sortModel}
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
-          onSortModelChange={setSortModel}
-          rowSelection={false}
+          sortingOrder={['asc', 'desc']}
+          onSortModelChange={(model) => {
+            setSearchParams(searchParams.set('o_sort', model[0].field).set('o_order', model[0].sort ?? 'desc'));
+          }}
+          // Row options
           checkboxSelection={false}
           disableRowSelectionOnClick
+          rowSelection={false}
+          // Column options
           disableColumnSelector
           disableColumnFilter
           disableColumnMenu
-          sortingOrder={['asc', 'desc']}
+          // Styling
+          rowHeight={70}
+          getRowHeight={() => 'auto'}
+          autoHeight={false}
           sx={{
-            '& .MuiDataGrid-virtualScroller': {
-              // Height is an odd number to help the list obviously scrollable by likely cutting off the last visible row
-              height: tableHeight,
-              overflowY: 'auto !important',
-              background: grey[50]
-            },
-            '& .MuiDataGrid-overlayWrapperInner': {
-              height: `${tableHeight} !important`
-            },
             '& .MuiDataGrid-overlay': {
               background: grey[50]
             },

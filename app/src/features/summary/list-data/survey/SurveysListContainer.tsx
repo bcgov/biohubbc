@@ -5,7 +5,7 @@ import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridSortDirection } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SystemRoleGuard } from 'components/security/Guards';
@@ -29,7 +29,7 @@ import SurveysListFilterForm, {
   SurveyAdvancedFiltersInitialValues
 } from './SurveysListFilterForm';
 
-// Supported URL parameters for the project table
+// Supported URL parameters
 type SurveyDataTableURLParams = {
   // search filter
   keyword: string;
@@ -47,9 +47,6 @@ const pageSizeOptions = [10, 25, 50];
 interface ISurveysListContainerProps {
   showSearch: boolean;
 }
-
-const rowHeight = 70;
-const tableHeight = rowHeight * 5.5;
 
 // Default pagination parameters
 const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
@@ -71,51 +68,48 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   const codesContext = useCodesContext();
   const taxonomyContext = useTaxonomyContext();
 
-  const { searchParams } = useSearchParams<SurveyDataTableURLParams>();
+  const { searchParams, setSearchParams } = useSearchParams<SurveyDataTableURLParams>();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+  const paginationModel = {
     pageSize: Number(searchParams.get('s_limit') ?? initialPaginationParams.limit),
     page: Number(searchParams.get('s_page') ?? initialPaginationParams.page)
-  });
+  };
 
-  const [sortModel, setSortModel] = useState<GridSortModel>([
+  const sortModel = [
     {
       field: searchParams.get('s_sort') ?? initialPaginationParams.sort,
       sort: (searchParams.get('s_order') ?? initialPaginationParams.order) as GridSortDirection
     }
-  ]);
+  ];
 
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ISurveyAdvancedFilters>(
     SurveyAdvancedFiltersInitialValues
   );
 
+  const sort = firstOrNull(sortModel);
+  const paginationSort: ApiPaginationRequestOptions = {
+    limit: paginationModel.pageSize,
+    sort: sort?.field || undefined,
+    order: sort?.sort || undefined,
+    // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+    page: paginationModel.page + 1
+  };
+
   const surveysDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions, filter?: ISurveyAdvancedFilters) =>
     biohubApi.survey.getSurveysForUserId(pagination, filter)
   );
 
-  // Refresh survey list when pagination or sort changes
   useEffect(() => {
-    const sort = firstOrNull(sortModel);
-    const pagination: ApiPaginationRequestOptions = {
-      limit: paginationModel.pageSize,
-      sort: sort?.field || undefined,
-      order: sort?.sort || undefined,
-
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    };
-
-    surveysDataLoader.refresh(pagination, advancedFiltersModel);
-
-    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
+    surveysDataLoader.load(paginationSort, advancedFiltersModel);
+    // Should not re-run this effect on `surveysDataLoader` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortModel, paginationModel, advancedFiltersModel]);
+  }, [advancedFiltersModel, paginationSort]);
 
-  const surveyRows = surveysDataLoader.data?.surveys;
+  const surveyRows = surveysDataLoader.data?.surveys ?? [];
 
   const columns: GridColDef<SurveyBasicFieldsObject>[] = [
     {
@@ -233,41 +227,43 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
         />
         <Divider />
       </Collapse>
-      <Box p={2}>
+      <Box height="500px">
         <StyledDataGrid
           noRowsMessage="No surveys found"
-          columns={columns}
-          rowHeight={rowHeight}
-          getRowHeight={() => 'auto'}
-          rows={surveyRows ?? []}
-          rowCount={surveysDataLoader.data?.surveys.length ?? 0}
           loading={!surveysDataLoader.data}
+          // Columns
+          columns={columns}
+          // Rows
+          rows={surveyRows}
+          rowCount={surveysDataLoader.data?.surveys.length ?? 0}
           getRowId={(row) => row.survey_id}
-          pageSizeOptions={[...pageSizeOptions]}
+          // Pagination
           paginationMode="server"
+          paginationModel={paginationModel}
+          pageSizeOptions={pageSizeOptions}
+          onPaginationModelChange={(model) => {
+            setSearchParams(searchParams.set('s_page', String(model.page)).set('s_limit', String(model.pageSize)));
+          }}
+          // Sorting
           sortingMode="server"
           sortModel={sortModel}
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
-          onSortModelChange={setSortModel}
-          rowSelection={false}
+          sortingOrder={['asc', 'desc']}
+          onSortModelChange={(model) => {
+            setSearchParams(searchParams.set('s_sort', model[0].field).set('s_order', model[0].sort ?? 'desc'));
+          }}
+          // Row options
           checkboxSelection={false}
           disableRowSelectionOnClick
+          rowSelection={false}
+          // Column options
           disableColumnSelector
           disableColumnFilter
           disableColumnMenu
-          sortingOrder={['asc', 'desc']}
+          // Styling
+          rowHeight={70}
+          getRowHeight={() => 'auto'}
+          autoHeight={false}
           sx={{
-            '& .MuiDataGrid-virtualScroller': {
-              // Height is an odd number to help the list obviously scrollable by likely cutting off the last visible row
-              height: tableHeight,
-              overflowX: 'hidden',
-              overflowY: 'auto !important',
-              background: grey[50]
-            },
-            '& .MuiDataGrid-overlayWrapperInner': {
-              height: `${tableHeight} !important`
-            },
             '& .MuiDataGrid-overlay': {
               background: grey[50]
             },

@@ -16,11 +16,12 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
 
   return (
     <DataGrid<R>
-      {...props}
       autoHeight
+      {...props}
       slots={{
         loadingOverlay: StyledLoadingOverlay,
-        noRowsOverlay: noRowsOverlay
+        noRowsOverlay: noRowsOverlay,
+        ...props.slots
       }}
       sx={{
         border: 'none',

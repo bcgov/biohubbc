@@ -3,10 +3,11 @@ import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridSortDirection } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { useSearchParams } from 'hooks/useSearchParams';
 import { useEffect, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
@@ -20,6 +21,19 @@ interface IAnimalTableRow {
   wlh_id: string;
 }
 
+// Supported URL parameters
+type AnimalDataTableURLParams = {
+  // search filter
+  keyword: string;
+  species: string;
+  person: string;
+  // pagination
+  a_page: string;
+  a_limit: string;
+  a_sort?: string;
+  a_order?: 'asc' | 'desc';
+};
+
 export interface IAnimalsAdvancedFilters {
   itis_tsns: number[];
 }
@@ -30,11 +44,16 @@ interface IAnimalsListContainerProps {
   showSearch: boolean;
 }
 
-const rowHeight = 70;
-const tableHeight = rowHeight * 5.5;
+// Default pagination parameters
+const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
+  page: 0,
+  limit: 10,
+  sort: 'survey_critter_id',
+  order: 'desc'
+};
 
 /**
- * List of Surveys belonging to a Project.
+ * Displays a list of animals (critters).
  *
  * @return {*}
  */
@@ -42,45 +61,46 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
-  // const taxonomyContext = useTaxonomyContext();
-  // const codesContext = useCodesContext();
 
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: pageSizeOptions[0]
-  });
-  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'survey_critter_id', sort: 'desc' }]);
+  const { searchParams, setSearchParams } = useSearchParams<AnimalDataTableURLParams>();
+
+  const paginationModel = {
+    pageSize: Number(searchParams.get('a_limit') ?? initialPaginationParams.limit),
+    page: Number(searchParams.get('a_page') ?? initialPaginationParams.page)
+  };
+
+  const sortModel = [
+    {
+      field: searchParams.get('a_sort') ?? initialPaginationParams.sort,
+      sort: (searchParams.get('a_order') ?? initialPaginationParams.order) as GridSortDirection
+    }
+  ];
+
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IAnimalsAdvancedFilters>(
     AnimalsAdvancedFiltersInitialValues
   );
+
+  const sort = firstOrNull(sortModel);
+  const paginationSort: ApiPaginationRequestOptions = {
+    limit: paginationModel.pageSize,
+    sort: sort?.field || undefined,
+    order: sort?.sort || undefined,
+    // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+    page: paginationModel.page + 1
+  };
 
   const animalsDataLoader = useDataLoader(
     (pagination?: ApiPaginationRequestOptions, filter?: IAnimalsAdvancedFilters) =>
       biohubApi.animal.getAnimalsList(pagination, filter)
   );
 
-  // Refresh survey list when pagination or sort changes
   useEffect(() => {
-    const sort = firstOrNull(sortModel);
-    const pagination: ApiPaginationRequestOptions = {
-      limit: paginationModel.pageSize,
-      sort: sort?.field || undefined,
-      order: sort?.sort || undefined,
-
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    };
-
-    animalsDataLoader.refresh(pagination, advancedFiltersModel);
-
-    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
+    animalsDataLoader.load(paginationSort, advancedFiltersModel);
+    // Should not re-run this effect on `animalsDataLoader` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortModel, paginationModel, advancedFiltersModel]);
+  }, [advancedFiltersModel, paginationSort]);
 
-  // TODO: CHANGE SIMPLE RESPONSE TO DETAILED TO INCLUDE ECOLOGICAL UNITS
-  const rows = animalsDataLoader.data ?? [];
-
-  //   console.log(rows);
+  const animalRows = animalsDataLoader.data ?? [];
 
   const columns: GridColDef<IAnimalTableRow>[] = [
     {
@@ -133,40 +153,43 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
         />
         <Divider />
       </Collapse>
-      <Box p={2}>
+      <Box height="500px">
         <StyledDataGrid
           noRowsMessage="No animals found"
-          columns={columns}
-          rowHeight={rowHeight}
-          getRowHeight={() => 'auto'}
-          rows={rows ?? []}
           loading={!animalsDataLoader.data}
+          // Columns
+          columns={columns}
+          // Rows
+          rows={animalRows}
           rowCount={animalsDataLoader.data?.length ?? 0}
-          getRowId={(row) => row.critter_id}
-          pageSizeOptions={[...pageSizeOptions]}
+          getRowId={(row) => row.survey_critter_id}
+          // Pagination
           paginationMode="server"
+          pageSizeOptions={pageSizeOptions}
+          paginationModel={paginationModel}
+          onPaginationModelChange={(model) => {
+            setSearchParams(searchParams.set('a_page', String(model.page)).set('a_limit', String(model.pageSize)));
+          }}
+          // Sorting
           sortingMode="server"
           sortModel={sortModel}
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
-          onSortModelChange={setSortModel}
-          rowSelection={false}
+          sortingOrder={['asc', 'desc']}
+          onSortModelChange={(model) => {
+            setSearchParams(searchParams.set('a_sort', model[0].field).set('a_order', model[0].sort ?? 'desc'));
+          }}
+          // Row options
           checkboxSelection={false}
           disableRowSelectionOnClick
+          rowSelection={false}
+          // Column options
           disableColumnSelector
           disableColumnFilter
           disableColumnMenu
-          sortingOrder={['asc', 'desc']}
+          // Styling
+          rowHeight={70}
+          getRowHeight={() => 'auto'}
+          autoHeight={false}
           sx={{
-            '& .MuiDataGrid-virtualScroller': {
-              // Height is an odd number to help the list obviously scrollable by likely cutting off the last visible row
-              height: tableHeight,
-              overflowY: 'auto !important',
-              background: grey[50]
-            },
-            '& .MuiDataGrid-overlayWrapperInner': {
-              height: `${tableHeight} !important`
-            },
             '& .MuiDataGrid-overlay': {
               background: grey[50]
             },

@@ -5,15 +5,15 @@ import { useHistory } from 'react-router';
  * A hook that provides methods for reading and writing URL search params.
  *
  * @example
- * const { searchParams, setSearchParams } = useSearchParams();
+ * const { searchParams} = useSearchParams();
  * searchParams.set('key', 'value');
- * setSearchParams(searchParams);
+ * //setSearchParams(searchParams);
  *
  * @example
  * type MyType = { key1: 'value1' | 'value2' }
- * const { searchParams, setSearchParams } = useSearchParams<MyType>();
+ * const { searchParams} = useSearchParams<MyType>();
  * const key1Value = searchParams.get('key1');
- * setSearchParams(searchParams.set('key1', 'value2'));
+ * //setSearchParams(searchParams.set('key1', 'value2'));
  *
  * @export
  * @return {*}
@@ -25,12 +25,15 @@ export function useSearchParams<ParamType extends Record<string, string> = Recor
 
   const setSearchParams = (urlSearchParams: TypedURLSearchParams<ParamType>) => {
     history.push({
-      ...location,
+      ...history.location,
       search: urlSearchParams.toString()
     });
   };
 
-  return { searchParams, setSearchParams };
+  return {
+    searchParams,
+    setSearchParams
+  };
 }
 
 /**

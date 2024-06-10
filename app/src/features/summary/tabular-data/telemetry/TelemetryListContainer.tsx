@@ -3,12 +3,13 @@ import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridSortDirection } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { useSearchParams } from 'hooks/useSearchParams';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { useEffect, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
@@ -25,6 +26,19 @@ interface ITelemetryTableRow {
   device_id: string;
 }
 
+// Supported URL parameters
+type TelemetryDataTableURLParams = {
+  // search filter
+  keyword: string;
+  species: string;
+  person: string;
+  // pagination
+  t_page: string;
+  t_limit: string;
+  t_sort?: string;
+  t_order?: 'asc' | 'desc';
+};
+
 export interface ITelemetryAdvancedFilters {
   itis_tsns: number[];
 }
@@ -35,11 +49,16 @@ interface ITelemetryListContainerProps {
   showSearch: boolean;
 }
 
-const rowHeight = 70;
-const tableHeight = rowHeight * 5.5;
+// Default pagination parameters
+const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
+  page: 0,
+  limit: 10,
+  sort: 'acquisition_date',
+  order: 'desc'
+};
 
 /**
- * List of Surveys belonging to a Project.
+ * Displays a list of telemtry.
  *
  * @return {*}
  */
@@ -47,44 +66,47 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
-  // const taxonomyContext = useTaxonomyContext();
-  // const codesContext = useCodesContext();
 
-  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: pageSizeOptions[0]
-  });
-  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'acquisition_date', sort: 'desc' }]);
+  const { searchParams, setSearchParams } = useSearchParams<TelemetryDataTableURLParams>();
+
+  const paginationModel = {
+    pageSize: Number(searchParams.get('t_limit') ?? initialPaginationParams.limit),
+    page: Number(searchParams.get('t_page') ?? initialPaginationParams.page)
+  };
+
+  const sortModel = [
+    {
+      field: searchParams.get('t_sort') ?? initialPaginationParams.sort,
+      sort: (searchParams.get('t_order') ?? initialPaginationParams.order) as GridSortDirection
+    }
+  ];
+
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ITelemetryAdvancedFilters>(
     TelemetryAdvancedFiltersInitialValues
   );
+
+  const sort = firstOrNull(sortModel);
+  const paginationSort: ApiPaginationRequestOptions = {
+    limit: paginationModel.pageSize,
+    sort: sort?.field || undefined,
+    order: sort?.sort || undefined,
+    // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+    page: paginationModel.page + 1
+  };
 
   const telemetryDataLoader = useDataLoader(
     (pagination?: ApiPaginationRequestOptions, filter?: ITelemetryAdvancedFilters) =>
       biohubApi.telemetry.getTelemetryList(pagination, filter)
   );
 
-  // Refresh survey list when pagination or sort changes
   useEffect(() => {
-    const sort = firstOrNull(sortModel);
-    const pagination: ApiPaginationRequestOptions = {
-      limit: paginationModel.pageSize,
-      sort: sort?.field || undefined,
-      order: sort?.sort || undefined,
-
-      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-      page: paginationModel.page + 1
-    };
-
-    telemetryDataLoader.refresh(pagination, advancedFiltersModel);
-
-    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
+    telemetryDataLoader.load(paginationSort, advancedFiltersModel);
+    // Should not re-run this effect on `telemetryDataLoader` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortModel, paginationModel, advancedFiltersModel]);
+  }, [advancedFiltersModel, paginationSort]);
 
-  const rows = telemetryDataLoader.data?.telemetry.map((telemetry, index) => ({ ...telemetry, id: index + 1 })) ?? [];
-
-  //   console.log(rows);
+  const telemetryRows =
+    telemetryDataLoader.data?.telemetry.map((telemetry, index) => ({ ...telemetry, id: index + 1 })) ?? [];
 
   const columns: GridColDef<ITelemetryTableRow>[] = [
     {
@@ -148,40 +170,43 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
         />
         <Divider />
       </Collapse>
-      <Box p={2}>
+      <Box height="500px">
         <StyledDataGrid
           noRowsMessage="No telemetry found"
-          columns={columns}
-          rowHeight={rowHeight}
-          getRowHeight={() => 'auto'}
-          rows={rows ?? []}
           loading={!telemetryDataLoader.data}
+          // Columns
+          columns={columns}
+          // Rows
+          rows={telemetryRows}
           rowCount={telemetryDataLoader.data?.telemetry.length ?? 0}
           getRowId={(row) => row.id}
-          pageSizeOptions={[...pageSizeOptions]}
+          // Pagination
           paginationMode="server"
+          pageSizeOptions={pageSizeOptions}
+          paginationModel={paginationModel}
+          onPaginationModelChange={(model) => {
+            setSearchParams(searchParams.set('t_page', String(model.page)).set('t_limit', String(model.pageSize)));
+          }}
+          // Sorting
           sortingMode="server"
           sortModel={sortModel}
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
-          onSortModelChange={setSortModel}
-          rowSelection={false}
+          sortingOrder={['asc', 'desc']}
+          onSortModelChange={(model) => {
+            setSearchParams(searchParams.set('t_sort', model[0].field).set('t_order', model[0].sort ?? 'desc'));
+          }}
+          // Row options
           checkboxSelection={false}
           disableRowSelectionOnClick
+          rowSelection={false}
+          // Column options
           disableColumnSelector
           disableColumnFilter
           disableColumnMenu
-          sortingOrder={['asc', 'desc']}
+          // Styling
+          rowHeight={70}
+          getRowHeight={() => 'auto'}
+          autoHeight={false}
           sx={{
-            '& .MuiDataGrid-virtualScroller': {
-              // Height is an odd number to help the list obviously scrollable by likely cutting off the last visible row
-              height: tableHeight,
-              overflowY: 'auto !important',
-              background: grey[50]
-            },
-            '& .MuiDataGrid-overlayWrapperInner': {
-              height: `${tableHeight} !important`
-            },
             '& .MuiDataGrid-overlay': {
               background: grey[50]
             },
