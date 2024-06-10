@@ -339,7 +339,6 @@ const SamplingSiteList = () => {
                 <Divider flexItem></Divider>
                 <Box
                   flex="1 1 auto"
-                  // overflow="hidden"
                   sx={{
                     background: grey[100]
                   }}>

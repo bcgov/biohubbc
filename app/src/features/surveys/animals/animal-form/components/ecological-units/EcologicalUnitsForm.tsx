@@ -26,7 +26,7 @@ export const EcologicalUnitsForm = () => {
 
   const critterbaseApi = useCritterbaseApi();
 
-  const ecologicalUnitsDataLoader = useDataLoader((tsn: number) => critterbaseApi.xref.getCollectionCategories(tsn));
+  const ecologicalUnitsDataLoader = useDataLoader((tsn: number) => critterbaseApi.xref.getTsnCollectionCategories(tsn));
 
   useEffect(() => {
     if (values.species?.tsn) {

@@ -26,7 +26,7 @@ const useMarkingApi = (axios: AxiosInstance) => {
    * @param {number} tsn
    * @returns {Promise<IMarkingTypeResponse>} - The created marking.
    */
-  const getMarkingBodyLocationOptions = async (tsn: number): Promise<IMarkingBodyLocationResponse[]> => {
+  const getTsnMarkingBodyLocationOptions = async (tsn: number): Promise<IMarkingBodyLocationResponse[]> => {
     const { data } = await axios.get(`api/critterbase/xref/taxon-marking-body-locations?tsn=${tsn}`);
     return data;
   };
@@ -84,7 +84,7 @@ const useMarkingApi = (axios: AxiosInstance) => {
     updateMarking,
     deleteMarking,
     getMarkingTypeOptions,
-    getMarkingBodyLocationOptions,
+    getTsnMarkingBodyLocationOptions,
     getMarkingColourOptions
   };
 };

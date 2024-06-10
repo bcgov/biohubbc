@@ -3,7 +3,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { CreateCapturePage } from 'features/surveys/animals/profile/captures/capture-form/create/CreateCapturePage';
 import { EditCapturePage } from 'features/surveys/animals/profile/captures/capture-form/edit/EditCapturePage';
-import CreateMortalityPage from 'features/surveys/animals/profile/mortality/mortality-form/create/CreateMortalityPage';
+import { CreateMortalityPage } from 'features/surveys/animals/profile/mortality/mortality-form/create/CreateMortalityPage';
 import { EditMortalityPage } from 'features/surveys/animals/profile/mortality/mortality-form/edit/EditMortalityPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
