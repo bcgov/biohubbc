@@ -44,34 +44,38 @@ export const ReleaseDetails = (props: IReleaseDetailsProps) => {
           </Box>
         )}
 
+        {releaseLocation && (
+          <Box>
+            <Typography
+              color="textSecondary"
+              fontWeight={700}
+              fontSize="0.75rem"
+              sx={{ textTransform: 'uppercase', mb: 0.5 }}>
+              Release location
+            </Typography>
+            {releaseLocation && (
+              <Typography color="textSecondary" variant="body2">
+                {releaseLocation.longitude},&nbsp;{releaseLocation.latitude}
+              </Typography>
+            )}
+          </Box>
+        )}
+      </Stack>
+
+      {releaseComment && (
         <Box>
           <Typography
             color="textSecondary"
             fontWeight={700}
             fontSize="0.75rem"
             sx={{ textTransform: 'uppercase', mb: 0.5 }}>
-            Release location
+            Release comment
           </Typography>
-          {releaseLocation && (
-            <Typography color="textSecondary" variant="body2">
-              {releaseLocation.longitude},&nbsp;{releaseLocation.latitude}
-            </Typography>
-          )}
+          <Typography color="textSecondary" variant="body2">
+            {releaseComment ? releaseComment : 'None'}
+          </Typography>
         </Box>
-      </Stack>
-
-      <Box>
-        <Typography
-          color="textSecondary"
-          fontWeight={700}
-          fontSize="0.75rem"
-          sx={{ textTransform: 'uppercase', mb: 0.5 }}>
-          Release comment
-        </Typography>
-        <Typography color="textSecondary" variant="body2">
-          {releaseComment ? releaseComment : 'None'}
-        </Typography>
-      </Box>
+      )}
     </Stack>
   );
 };

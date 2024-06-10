@@ -29,35 +29,31 @@ export const CaptureDetails = (props: ICaptureDetailsProps) => {
   return (
     <Stack gap={2}>
       <Stack direction="row" spacing={3}>
-        {captureTimestamp && (
-          <Box>
-            <Typography
-              color="textSecondary"
-              fontWeight={700}
-              fontSize="0.75rem"
-              sx={{ textTransform: 'uppercase', mb: 0.5 }}>
-              Capture time
-            </Typography>
-            <Typography color="textSecondary" variant="body2">
-              {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, captureTimestamp)}
-            </Typography>
-          </Box>
-        )}
+        <Box>
+          <Typography
+            color="textSecondary"
+            fontWeight={700}
+            fontSize="0.75rem"
+            sx={{ textTransform: 'uppercase', mb: 0.5 }}>
+            Capture time
+          </Typography>
+          <Typography color="textSecondary" variant="body2">
+            {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, captureTimestamp)}
+          </Typography>
+        </Box>
 
-        {captureLocation && (
-          <Box>
-            <Typography
-              color="textSecondary"
-              fontWeight={700}
-              fontSize="0.75rem"
-              sx={{ textTransform: 'uppercase', mb: 0.5 }}>
-              Capture location
-            </Typography>
-            <Typography color="textSecondary" variant="body2">
-              {captureLocation.longitude},&nbsp;{captureLocation.latitude}
-            </Typography>
-          </Box>
-        )}
+        <Box>
+          <Typography
+            color="textSecondary"
+            fontWeight={700}
+            fontSize="0.75rem"
+            sx={{ textTransform: 'uppercase', mb: 0.5 }}>
+            Capture location
+          </Typography>
+          <Typography color="textSecondary" variant="body2">
+            {captureLocation.longitude},&nbsp;{captureLocation.latitude}
+          </Typography>
+        </Box>
       </Stack>
 
       {captureComment && (
@@ -70,7 +66,7 @@ export const CaptureDetails = (props: ICaptureDetailsProps) => {
             Capture comment
           </Typography>
           <Typography color="textSecondary" variant="body2">
-            {captureComment}
+            {captureComment ? captureComment : 'None'}
           </Typography>
         </Box>
       )}
