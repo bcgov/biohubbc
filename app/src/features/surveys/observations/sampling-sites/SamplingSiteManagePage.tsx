@@ -10,12 +10,7 @@ const SamplingSiteManagePage = () => {
   const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
   return (
-    <Stack
-      sx={{
-        '& .MuiContainer-root': {
-          maxWidth: 'none'
-        }
-      }}>
+    <Stack>
       <SamplingSiteManagerHeader
         project_id={surveyContext.projectId}
         project_name={projectContext.projectDataLoader.data?.projectData.project.project_name ?? ''}

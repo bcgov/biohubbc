@@ -97,4 +97,15 @@ export class TechniqueService extends DBService {
   async getAttributesForMethodLookupIds(method_lookup_ids: number[]): Promise<IGetTechniqueAttributes[]> {
     return this.techniqueRepository.getAttributesForMethodLookupIds(method_lookup_ids);
   }
+
+  /**
+   * Delete a technique from a Survey
+   *
+   * @param {number} methodTechniqueId
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof TechniqueService
+   */
+  async deleteTechnique(methodTechniqueId: number): Promise<number> {
+    return this.techniqueRepository.deleteTechnique(methodTechniqueId);
+  }
 }

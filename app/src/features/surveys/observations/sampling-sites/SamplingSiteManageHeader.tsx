@@ -15,7 +15,7 @@ const SamplingSiteManagerHeader: React.FC<SamplingSiteManagerHeaderProps> = (pro
   const { project_id, project_name, survey_id, survey_name } = props;
   return (
     <PageHeader
-      title="Manage Sampling Sites"
+      title="Manage Sampling Information"
       breadCrumbJSX={
         <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
           <Link component={RouterLink} underline="hover" to={`/admin/projects/${project_id}`}>
@@ -27,14 +27,8 @@ const SamplingSiteManagerHeader: React.FC<SamplingSiteManagerHeaderProps> = (pro
             to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
             {survey_name}
           </Link>
-          <Link
-            component={RouterLink}
-            underline="hover"
-            to={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}>
-            Observations
-          </Link>
           <Typography component="span" variant="inherit" color="textSecondary">
-            Manage Sampling Sites
+            Manage Sampling Information
           </Typography>
         </Breadcrumbs>
       }

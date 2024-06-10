@@ -1,5 +1,7 @@
+import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
@@ -11,8 +13,11 @@ export interface IGetTechnique {
   description: string | null;
   distance_threshold: number | null;
   method_lookup_id: number;
-  quantitative_attributes: { method_lookup_attribute_quantitative_id: string }[];
-  qualitative_attributes: { method_lookup_attribute_qualitative_id: string }[];
+  quantitative_attributes: { method_technique_attribute_quantitative_id: string; value: number }[];
+  qualitative_attributes: {
+    method_technique_attribute_qualitative_id: string;
+    method_lookup_attribute_qualitative_id: string;
+  }[];
   attractants: { attractant_lookup_id: number }[];
 }
 
@@ -102,8 +107,15 @@ export const TechniqueObject = z.object({
   distance_threshold: z.number().nullable(),
   method_lookup_id: z.number(),
   attractants: z.array(z.object({ attractant_lookup_id: z.number() })),
-  quantitative_attributes: z.array(z.object({ method_lookup_attribute_quantitative_id: z.string().uuid() })),
-  qualitative_attributes: z.array(z.object({ method_lookup_attribute_qualitative_id: z.string().uuid() }))
+  quantitative_attributes: z.array(
+    z.object({ method_technique_attribute_quantitative_id: z.string().uuid(), value: z.number() })
+  ),
+  qualitative_attributes: z.array(
+    z.object({
+      method_technique_attribute_qualitative_id: z.string().uuid(),
+      method_lookup_attribute_qualitative_id: z.string().uuid()
+    })
+  )
 });
 
 export type TechniqueObject = z.infer<typeof TechniqueObject>;
@@ -139,29 +151,29 @@ export class TechniqueRepository extends BaseRepository {
         'w_quantitative_attributes',
         knex
           .select(
-            'method_lookup_id',
+            'method_technique_id',
             knex.raw(`
           json_agg(json_build_object(
-            'method_lookup_attribute_quantitative_id', method_lookup_attribute_quantitative_id
+            'method_technique_attribute_quantitative_id', method_technique_attribute_quantitative_id
           )) as quantitative_attributes
         `)
           )
-          .from('method_lookup_attribute_quantitative')
-          .groupBy('method_lookup_id')
+          .from('method_technique_attribute_quantitative')
+          .groupBy('method_technique_id')
       )
       .with(
         'w_qualitative_attributes',
         knex
           .select(
-            'method_lookup_id',
+            'method_technique_id',
             knex.raw(`
           json_agg(json_build_object(
-            'method_lookup_attribute_qualitative_id', method_lookup_attribute_qualitative_id
+            'method_technique_attribute_qualitative_id', method_technique_attribute_qualitative_id
           )) as qualitative_attributes
         `)
           )
-          .from('method_lookup_attribute_qualitative')
-          .groupBy('method_lookup_id')
+          .from('method_technique_attribute_qualitative')
+          .groupBy('method_technique_id')
       )
       .select(
         'mt.method_technique_id',
@@ -175,8 +187,8 @@ export class TechniqueRepository extends BaseRepository {
       )
       .from('method_technique as mt')
       .leftJoin('w_attractants', 'w_attractants.method_technique_id', 'mt.method_technique_id')
-      .leftJoin('w_qualitative_attributes', 'w_qualitative_attributes.method_lookup_id', 'mt.method_lookup_id')
-      .leftJoin('w_quantitative_attributes', 'w_quantitative_attributes.method_lookup_id', 'mt.method_lookup_id')
+      .leftJoin('w_qualitative_attributes', 'w_qualitative_attributes.method_technique_id', 'mt.method_technique_id')
+      .leftJoin('w_quantitative_attributes', 'w_quantitative_attributes.method_technique_id', 'mt.method_technique_id')
       .where('mt.survey_id', surveyId);
 
     const response = await this.connection.knex(queryBuilder, TechniqueObject);
@@ -352,5 +364,36 @@ export class TechniqueRepository extends BaseRepository {
     const response = await this.connection.knex(queryBuilder, TechniqueAttributesObject);
 
     return response.rows;
+  }
+
+  /**
+   * Delete a technique
+   *
+   * @param {number} methodTechniqueId
+   * @returns {*}
+   * @memberof TechniqueRepository
+   */
+  async deleteTechnique(methodTechniqueId: number): Promise<number> {
+    defaultLog.debug({ label: 'deleteTechnique', methodTechniqueId });
+
+    const sqlStatement = SQL`
+      DELETE
+        from method_technique
+      WHERE
+        method_technique_id = ${methodTechniqueId}
+      RETURNING
+        method_technique_id
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete technique', [
+        'TechniqueRepository->deleteTechnique',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
   }
 }

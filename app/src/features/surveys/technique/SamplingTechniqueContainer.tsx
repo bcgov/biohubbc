@@ -1,20 +1,15 @@
-import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import Menu, { MenuProps } from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
-import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { useEffect, useState } from 'react';
+import { useCodesContext, useSurveyContext } from 'hooks/useContext';
+import { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { SamplingTechniqueCardContainer } from './components/SamplingTechniqueCardContainer';
 
@@ -26,7 +21,6 @@ import { SamplingTechniqueCardContainer } from './components/SamplingTechniqueCa
 const SamplingSiteTechniqueContainer = () => {
   const surveyContext = useSurveyContext();
   const codesContext = useCodesContext();
-  const dialogContext = useDialogContext();
   // const biohubApi = useBiohubApi();
 
   useEffect(() => {
@@ -38,213 +32,13 @@ const SamplingSiteTechniqueContainer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [techniqueAnchorEl, setTechniqueAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [headerAnchorEl, setHeaderAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [selectedTechniqueId, setSelectedTechniqueId] = useState<number | undefined>();
-  const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
-
   const techniqueDataLoaderData = surveyContext.techniqueDataLoader.data;
 
   const techniqueCount = techniqueDataLoaderData?.count ?? 0;
   const techniques = techniqueDataLoaderData?.techniques ?? [];
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleTechniqueMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sample_site_id: number) => {
-    setTechniqueAnchorEl(event.currentTarget);
-    setSelectedTechniqueId(sample_site_id);
-  };
-
-  const handleHeaderMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    setHeaderAnchorEl(event.currentTarget);
-  };
-
-  /**
-   * Handle the delete technique API call.
-   *
-   */
-  const handleDeleteTechnique = async () => {
-    // await biohubApi.samplingSite
-    //   .deleteTechnique(surveyContext.projectId, surveyContext.surveyId, Number(selectedTechniqueId))
-    //   .then(() => {
-    //     dialogContext.setYesNoDialog({ open: false });
-    //     setTechniqueAnchorEl(null);
-    //     surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    //   })
-    //   .catch((error: any) => {
-    //     dialogContext.setYesNoDialog({ open: false });
-    //     setTechniqueAnchorEl(null);
-    //     dialogContext.setSnackbar({
-    //       snackbarMessage: (
-    //         <>
-    //           <Typography variant="body2" component="div">
-    //             <strong>Error Deleting Technique</strong>
-    //           </Typography>
-    //           <Typography variant="body2" component="div">
-    //             {String(error)}
-    //           </Typography>
-    //         </>
-    //       ),
-    //       open: true
-    //     });
-    //   });
-  };
-
-  /**
-   * Display the delete technique dialog.
-   *
-   */
-  const deleteTechniqueDialog = () => {
-    dialogContext.setYesNoDialog({
-      dialogTitle: 'Delete Technique?',
-      dialogContent: (
-        <Typography variant="body1" component="div" color="textSecondary">
-          Are you sure you want to delete this technique?
-        </Typography>
-      ),
-      yesButtonLabel: 'Delete Technique',
-      noButtonLabel: 'Cancel',
-      yesButtonProps: { color: 'error' },
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      open: true,
-      onYes: () => {
-        handleDeleteTechnique();
-      }
-    });
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleCheckboxChange = (techniqueId: number) => {
-    setCheckboxSelectedIds((prev) => {
-      if (prev.includes(techniqueId)) {
-        return prev.filter((item) => item !== techniqueId);
-      } else {
-        return [...prev, techniqueId];
-      }
-    });
-  };
-
-  const handleBulkDeleteTechniques = async () => {
-    // await biohubApi.samplingSite
-    //   .deleteTechniques(surveyContext.projectId, surveyContext.surveyId, checkboxSelectedIds)
-    //   .then(() => {
-    //     dialogContext.setYesNoDialog({ open: false });
-    //     setCheckboxSelectedIds([]);
-    //     setHeaderAnchorEl(null);
-    //     surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    //   })
-    //   .catch((error: any) => {
-    //     dialogContext.setYesNoDialog({ open: false });
-    //     setCheckboxSelectedIds([]);
-    //     setHeaderAnchorEl(null);
-    //     dialogContext.setSnackbar({
-    //       snackbarMessage: (
-    //         <>
-    //           <Typography variant="body2" component="div">
-    //             <strong>Error Deleting Techniques</strong>
-    //           </Typography>
-    //           <Typography variant="body2" component="div">
-    //             {String(error)}
-    //           </Typography>
-    //         </>
-    //       ),
-    //       open: true
-    //     });
-    //   });
-  };
-
-  const handlePromptConfirmBulkDelete = () => {
-    dialogContext.setYesNoDialog({
-      dialogTitle: 'Delete Techniques?',
-      dialogContent: (
-        <Typography variant="body1" component="div" color="textSecondary">
-          Are you sure you want to delete the selected techniques?
-        </Typography>
-      ),
-      yesButtonLabel: 'Delete Techniques',
-      noButtonLabel: 'Cancel',
-      yesButtonProps: { color: 'error' },
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      open: true,
-      onYes: () => {
-        handleBulkDeleteTechniques();
-      }
-    });
-  };
-
   return (
     <>
-      <Menu
-        open={Boolean(techniqueAnchorEl)}
-        onClose={() => setTechniqueAnchorEl(null)}
-        anchorEl={techniqueAnchorEl}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}>
-        <MenuItem
-          sx={{
-            p: 0,
-            '& a': {
-              display: 'flex',
-              px: 2,
-              py: '6px',
-              textDecoration: 'none',
-              color: 'text.primary',
-              borderRadius: 0,
-              '&:focus': {
-                outline: 'none'
-              }
-            }
-          }}>
-          <RouterLink to={`sampling/${selectedTechniqueId}/edit`}>
-            <ListItemIcon>
-              <Icon path={mdiPencilOutline} size={1} />
-            </ListItemIcon>
-            <ListItemText>Edit Details</ListItemText>
-          </RouterLink>
-        </MenuItem>
-        <MenuItem onClick={deleteTechniqueDialog}>
-          <ListItemIcon>
-            <Icon path={mdiTrashCanOutline} size={1} />
-          </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
-        </MenuItem>
-      </Menu>
-
-      <Menu
-        open={Boolean(headerAnchorEl)}
-        onClose={() => setHeaderAnchorEl(null)}
-        anchorEl={headerAnchorEl}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}>
-        <MenuItem onClick={handlePromptConfirmBulkDelete}>
-          <ListItemIcon>
-            <Icon path={mdiTrashCanOutline} size={1} />
-          </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
-        </MenuItem>
-      </Menu>
-
       <Stack
         flexDirection="column"
         height="100%"
@@ -259,7 +53,7 @@ const SamplingSiteTechniqueContainer = () => {
             pl: 2
           }}>
           <Typography variant="h3" component="h2" flexGrow={1}>
-            Sampling Techniques &zwnj;
+            Techniques &zwnj;
             <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
               ({techniqueCount})
             </Typography>
@@ -272,49 +66,37 @@ const SamplingSiteTechniqueContainer = () => {
             startIcon={<Icon path={mdiPlus} size={0.8} />}>
             Add
           </Button>
-          <IconButton
-            edge="end"
-            sx={{
-              ml: 1
-            }}
-            aria-label="header-settings"
-            disabled={!checkboxSelectedIds.length}
-            onClick={handleHeaderMenuClick}
-            title="Bulk Actions">
-            <Icon path={mdiDotsVertical} size={1} />
-          </IconButton>
         </Toolbar>
         {surveyContext.techniqueDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
           <SkeletonList />
         ) : (
           <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
             <Divider flexItem></Divider>
-            <Box
-              flex="1 1 auto"
-              sx={{
-                background: grey[100]
-              }}>
-              {/* Display text if the sample site data loader has no items in it */}
+            <Box flex="1 1 auto">
+              {/* Display text if the technique data loader has no items in it */}
               {!techniqueCount && (
-                <Stack
-                  sx={{
-                    background: grey[50]
-                  }}
-                  display="flex"
-                  alignItems="center"
+                <Box
+                  height="250px"
                   justifyContent="center"
-                  flex="1 1 auto"
-                  position="absolute"
-                  top={0}
-                  right={0}
-                  left={0}
-                  bottom={0}
-                  height="100%">
-                  <Typography variant="body2">No Techniques</Typography>
-                </Stack>
+                  alignItems="center"
+                  display="flex"
+                  bgcolor={grey[100]}
+                  position="relative">
+                  {/* <Box component="img" src={datagridOverlayImage} position="absolute" width="700px" /> */}
+                  <Box justifyContent="center" display="flex" flexDirection="column">
+                    <Typography mb={1} variant="h4" color="textSecondary" textAlign="center">
+                      Add a technique&nbsp;
+                      <Icon path={mdiArrowTopRight} size={1} />
+                    </Typography>
+                    <Typography color="textSecondary" textAlign="center" maxWidth="80ch">
+                      Techniques describe how you collected data. You can apply your techniques to sampling sites,
+                      during which you'll also create sampling periods that describe when a technique was conducted.
+                    </Typography>
+                  </Box>
+                </Box>
               )}
 
-              <SamplingTechniqueCardContainer techniques={techniques} handleDelete={() => {}} />
+              <SamplingTechniqueCardContainer techniques={techniques} />
             </Box>
           </Stack>
         )}

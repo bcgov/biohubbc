@@ -1,7 +1,12 @@
+import { mdiArrowTopRight } from '@mdi/js';
+import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
-import { GridColDef, GridSortModel } from '@mui/x-data-grid';
+import Typography from '@mui/material/Typography';
+import { GridColDef, GridOverlay, GridSortModel } from '@mui/x-data-grid';
+import datagridOverlayImage from 'assets/images/observations-overlay.png';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
@@ -222,6 +227,38 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
           disableColumnMenu
           disableVirtualization
           data-testid="survey-spatial-observation-data-table"
+          noRowsOverlay={
+            <GridOverlay sx={{ position: 'relative' }}>
+              <Box
+                sx={{ opacity: 0.15 }}
+                component="img"
+                src={datagridOverlayImage}
+                position="absolute"
+                width="1400px"
+              />
+              <Box justifyContent="center" display="flex" flexDirection="column">
+                <Typography mb={1} variant="h4" color="textSecondary" textAlign="center">
+                  Add observations after sampling information&nbsp;
+                  <Icon path={mdiArrowTopRight} size={1} />
+                </Typography>
+                <Typography color="textSecondary" textAlign="center">
+                  After adding sampling information, add observations and assign them to a sampling period
+                </Typography>
+              </Box>
+            </GridOverlay>
+          }
+          sx={{
+            '& .MuiDataGrid-virtualScroller': {
+              height: '250px',
+              overflowY: 'auto !important'
+            },
+            '& .MuiDataGrid-overlay': {
+              height: '250px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }
+          }}
         />
       )}
     </>

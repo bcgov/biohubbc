@@ -3,21 +3,17 @@ import { blue } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import { useCodesContext } from 'hooks/useContext';
 import { IGetTechnique } from 'interfaces/useTechniqueApi.interface';
-import { getCodesName } from 'utils/Utils';
 import AccordionCard from './AccordionCard';
 
 interface ISamplingTechniqueCardProps {
   technique: IGetTechnique;
   method_lookup_name: string;
-  handleMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+  handleMenuClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 const SamplingTechniqueCard = (props: ISamplingTechniqueCardProps) => {
   const { technique, method_lookup_name, handleMenuClick } = props;
-
-  const codesContext = useCodesContext();
 
   const attributes = [...technique.qualitative_attributes, ...technique.qualitative_attributes];
 
@@ -27,14 +23,11 @@ const SamplingTechniqueCard = (props: ISamplingTechniqueCardProps) => {
         <Stack gap={0.5} display="flex">
           <Stack direction="row" gap={1}>
             <Typography variant="h5">{technique.name}</Typography>
-            <ColouredRectangleChip
-              colour={blue}
-              label={
-                getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id) ?? ''
-              }
-            />
+            <ColouredRectangleChip colour={blue} label={method_lookup_name} />
           </Stack>
-          <Typography color="textSecondary">{method_lookup_name}</Typography>
+          <Typography color="textSecondary" variant="body2">
+            {technique.description}
+          </Typography>
         </Stack>
       }
       detailsContent={

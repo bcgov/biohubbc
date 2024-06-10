@@ -261,7 +261,7 @@ const SamplingSiteManageSiteList = () => {
             pl: 2
           }}>
           <Typography variant="h3" component="h2" flexGrow={1}>
-            Sampling Sites &zwnj;
+            Sites &zwnj;
             <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
               ({samplingSiteCount})
             </Typography>

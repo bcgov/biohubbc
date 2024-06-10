@@ -1,14 +1,13 @@
 import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import grey from '@mui/material/colors/grey';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import YesNoDialog from 'components/dialog/YesNoDialog';
-import { useCodesContext, useSurveyContext } from 'hooks/useContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { IGetTechnique } from 'interfaces/useTechniqueApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -17,7 +16,6 @@ import SamplingTechniqueCard from './SamplingTechniqueCard';
 
 interface ISamplingTechniqueCardContainer {
   techniques: IGetTechnique[];
-  handleDelete: (selectedTechnique: number) => void; //Promise<void>;
 }
 /**
  * Returns accordian cards for displaying technique technique details on the technique profile page
@@ -25,14 +23,74 @@ interface ISamplingTechniqueCardContainer {
  * @returns
  */
 export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardContainer) => {
-  const { techniques, handleDelete } = props;
+  const { techniques } = props;
 
   const [selectedTechnique, setSelectedTechnique] = useState<number | null>(null);
   const [techniqueAnchorEl, setTechniqueAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [techniqueForDelete, setTechniqueForDelete] = useState<boolean>();
 
-  const { projectId, surveyId } = useSurveyContext();
+  const surveyContext = useSurveyContext();
+  const dialogContext = useDialogContext();
   const codesContext = useCodesContext();
+  const biohubApi = useBiohubApi();
+
+  /**
+   * Handle the delete technique API call.
+   *
+   */
+  const handleDeleteTechnique = async () => {
+    await biohubApi.technique
+      .deleteTechnique(surveyContext.projectId, surveyContext.surveyId, Number(selectedTechnique))
+      .then(() => {
+        dialogContext.setYesNoDialog({ open: false });
+        setTechniqueAnchorEl(null);
+        surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      })
+      .catch((error: any) => {
+        dialogContext.setYesNoDialog({ open: false });
+        setTechniqueAnchorEl(null);
+        dialogContext.setSnackbar({
+          snackbarMessage: (
+            <>
+              <Typography variant="body2" component="div">
+                <strong>Error Deleting Technique</strong>
+              </Typography>
+              <Typography variant="body2" component="div">
+                {String(error)}
+              </Typography>
+            </>
+          ),
+          open: true
+        });
+      });
+  };
+
+  /**
+   * Display the delete technique dialog.
+   *
+   */
+  const deleteTechniqueDialog = () => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Delete Technique?',
+      dialogContent: (
+        <Typography variant="body1" component="div" color="textSecondary">
+          Are you sure you want to delete this technique?
+        </Typography>
+      ),
+      yesButtonLabel: 'Delete Technique',
+      noButtonLabel: 'Cancel',
+      yesButtonProps: { color: 'error' },
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      open: true,
+      onYes: () => {
+        handleDeleteTechnique();
+      }
+    });
+  };
 
   return (
     <>
@@ -65,7 +123,8 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
                 }
               }
             }}>
-            <RouterLink to={`/admin/projects/${projectId}/surveys/${surveyId}/technique/${selectedTechnique}/edit`}>
+            <RouterLink
+              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/technique/${selectedTechnique}/edit`}>
               <ListItemIcon>
                 <Icon path={mdiPencilOutline} size={1} />
               </ListItemIcon>
@@ -75,7 +134,7 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
           <MenuItem
             onClick={() => {
               setTechniqueAnchorEl(null);
-              setTechniqueForDelete(true);
+              deleteTechniqueDialog();
             }}>
             <ListItemIcon>
               <Icon path={mdiTrashCanOutline} size={1} />
@@ -85,56 +144,20 @@ export const SamplingTechniqueCardContainer = (props: ISamplingTechniqueCardCont
         </Menu>
       )}
 
-      {/* DELETE CONFIRMATION DIALOG */}
-      {techniqueForDelete && selectedTechnique && (
-        <YesNoDialog
-          dialogTitle={'Delete technique?'}
-          dialogText={
-            'Are you sure you want to permanently delete this technique? All information associated with the technique will be deleted.'
-          }
-          yesButtonProps={{ color: 'error' }}
-          yesButtonLabel={'Delete'}
-          noButtonProps={{ color: 'primary', variant: 'outlined' }}
-          noButtonLabel={'Cancel'}
-          open={Boolean(techniqueForDelete)}
-          onYes={() => {
-            setTechniqueForDelete(false);
-            handleDelete(selectedTechnique);
-          }}
-          onClose={() => setTechniqueForDelete(false)}
-          onNo={() => setTechniqueForDelete(false)}
-        />
-      )}
-
-      {techniques.length ? (
-        techniques.map((technique) => (
-          <Box m={2} key={technique.method_technique_id}>
-            <SamplingTechniqueCard
-              technique={technique}
-              method_lookup_name={
-                getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id) ?? ''
-              }
-              handleMenuClick={(event) => {
-                setTechniqueAnchorEl(event.currentTarget);
-                setSelectedTechnique(technique.method_technique_id);
-              }}
-            />
-          </Box>
-        ))
-      ) : (
-        <Box
-          flex="1 1 auto"
-          borderRadius="5px"
-          minHeight="150px"
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-          bgcolor={grey[200]}>
-          <Typography variant="body2" color="textSecondary">
-            This Survey has no techniques
-          </Typography>
+      {techniques.map((technique) => (
+        <Box m={2} key={technique.method_technique_id}>
+          <SamplingTechniqueCard
+            technique={technique}
+            method_lookup_name={
+              getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id) ?? ''
+            }
+            handleMenuClick={(event) => {
+              setTechniqueAnchorEl(event.currentTarget);
+              setSelectedTechnique(technique.method_technique_id);
+            }}
+          />
         </Box>
-      )}
+      ))}
     </>
   );
 };

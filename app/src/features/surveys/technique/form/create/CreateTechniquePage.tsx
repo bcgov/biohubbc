@@ -200,7 +200,7 @@ export const CreateTechniquePage = () => {
               component={RouterLink}
               to={`/admin/projects/${projectId}/surveys/${surveyId}/manage-sampling`}
               underline="none">
-              Manage Sampling Sites
+              Manage Sampling Information
             </Link>
             <Typography component="span" variant="body2" color="textSecondary">
               Create New Technique

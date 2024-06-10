@@ -102,7 +102,7 @@ const SurveyRouter: React.FC = () => {
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/manage-sampling"
-        title={getTitle('Manage Sampling Sites')}>
+        title={getTitle('Manage Sampling Information')}>
         <DialogContextProvider>
           <SamplingSiteManagePage />
         </DialogContextProvider>
