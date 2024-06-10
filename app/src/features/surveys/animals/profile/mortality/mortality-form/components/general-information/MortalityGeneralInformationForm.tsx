@@ -7,6 +7,11 @@ import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { useFormikContext } from 'formik';
 import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 
+/**
+ * Returns the form for entering general information about an animal mortality.
+ *
+ * @return {*}
+ */
 export const MortalityGeneralInformationForm = () => {
   const formikProps = useFormikContext<ICreateEditMortalityRequest>();
 

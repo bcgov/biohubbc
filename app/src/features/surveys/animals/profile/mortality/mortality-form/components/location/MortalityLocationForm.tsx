@@ -2,6 +2,11 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/system/Box';
 import { MortalityLocationMapControl } from './MortalityLocationMapControl';
 
+/**
+ * Returns the form for entering the location of an animal mortality.
+ *
+ * @return {*}
+ */
 export const MortalityLocationForm = () => {
   return (
     <Box component="fieldset">

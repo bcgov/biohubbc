@@ -35,7 +35,7 @@ export interface IMortalityLocationMapControlProps {
 }
 
 /**
- * Sampling site map component.
+ * Control for selecting a mortality location on a map.
  *
  * @param {IMortalityLocationMapControlProps} props
  * @return {*}

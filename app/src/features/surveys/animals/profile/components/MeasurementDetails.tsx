@@ -3,6 +3,7 @@ import grey from '@mui/material/colors/grey';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { IQualitativeMeasurementResponse, IQuantitativeMeasurementResponse } from 'interfaces/useCritterApi.interface';
+import { v4 } from 'uuid';
 
 interface IMeasurementDetailsProps {
   measurements: { qualitative: IQualitativeMeasurementResponse[]; quantitative: IQuantitativeMeasurementResponse[] };
@@ -29,11 +30,8 @@ export const MeasurementDetails = (props: IMeasurementDetailsProps) => {
         Measurements
       </Typography>
       <Box maxHeight="300px" sx={{ overflow: 'auto', pr: 1 }}>
-        {allMeasurements.map((measurement, index) => (
-          <Paper
-            variant="outlined"
-            sx={{ px: 3, py: 2, bgcolor: grey[100], mt: 1 }}
-            key={`${measurement.taxon_measurement_id}-${index}`}>
+        {allMeasurements.map((measurement) => (
+          <Paper variant="outlined" sx={{ px: 3, py: 2, bgcolor: grey[100], mt: 1 }} key={v4()}>
             <Typography fontWeight={700}>
               {measurement.measurement_name}: <Typography component="span">{measurement.value}</Typography>
             </Typography>

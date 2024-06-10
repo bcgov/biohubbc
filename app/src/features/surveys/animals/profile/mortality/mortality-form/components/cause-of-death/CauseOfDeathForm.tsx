@@ -7,6 +7,11 @@ import useDataLoader from 'hooks/useDataLoader';
 import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect } from 'react';
 
+/**
+ * Returns the control for selecting the cause of death for an animal mortality.
+ *
+ * @return {*}
+ */
 export const CauseOfDeathForm = () => {
   const { setFieldValue } = useFormikContext<ICreateEditMortalityRequest>();
 
