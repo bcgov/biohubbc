@@ -26,7 +26,9 @@ describe('ProjectService', () => {
           project_programs: [],
           regions: [],
           start_date: '1900-01-01',
-          end_date: '2200-10-10'
+          end_date: '2200-10-10',
+          focal_species: [],
+          types: []
         },
         {
           project_id: 456,
@@ -34,7 +36,9 @@ describe('ProjectService', () => {
           project_programs: [],
           regions: [],
           start_date: '1900-01-01',
-          end_date: '2000-12-31'
+          end_date: '2000-12-31',
+          focal_species: [],
+          types: []
         }
       ];
 

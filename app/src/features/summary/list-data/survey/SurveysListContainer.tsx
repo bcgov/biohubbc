@@ -212,7 +212,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
           {params.row.regions.map((region) => {
             const label = region.replace(NRM_REGION_APPENDED_TEXT, '');
             return <ColouredRectangleChip key={region} colour={getNrmRegionColour(region)} label={label} />;
-          })}{' '}
+          })}
         </Stack>
       )
     }

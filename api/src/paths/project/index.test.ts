@@ -22,7 +22,7 @@ describe('index', () => {
     });
   });
 
-  describe('getProjectindex', () => {
+  describe('findProjects', () => {
     const dbConnectionObj = getMockDBConnection();
 
     const sampleReq = {
@@ -61,10 +61,10 @@ describe('index', () => {
         }
       });
       sinon.stub(authorization, 'userHasValidRole').returns(true);
-      sinon.stub(ProjectService.prototype, 'getProjectindex').resolves([]);
+      sinon.stub(ProjectService.prototype, 'findProjects').resolves([]);
       sinon.stub(ProjectService.prototype, 'findProjectCount').resolves(0);
 
-      const result = index.getProjectindex();
+      const result = index.getProjects();
 
       await result(sampleReq, sampleRes as any, null as unknown as any);
 
@@ -90,7 +90,7 @@ describe('index', () => {
       });
       sinon.stub(authorization, 'userHasValidRole').returns(true);
 
-      const getProjectindexStub = sinon.stub(ProjectService.prototype, 'getProjectindex').resolves([
+      const getProjectindexStub = sinon.stub(ProjectService.prototype, 'findProjects').resolves([
         {
           project_id: 1,
           name: 'myproject',
@@ -105,7 +105,7 @@ describe('index', () => {
       ]);
       sinon.stub(ProjectService.prototype, 'findProjectCount').resolves(1);
 
-      const result = index.getProjectindex();
+      const result = index.getProjects();
 
       await result(sampleReq, sampleRes as unknown as any, null as unknown as any);
 
@@ -138,10 +138,10 @@ describe('index', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(ProjectService.prototype, 'getProjectindex').rejects(new Error('a test error'));
+      sinon.stub(ProjectService.prototype, 'findProjects').rejects(new Error('a test error'));
 
       try {
-        const requestHandler = index.getProjectindex();
+        const requestHandler = index.getProjects();
 
         await requestHandler(sampleReq, sampleRes as any, null as unknown as any);
         expect.fail();
