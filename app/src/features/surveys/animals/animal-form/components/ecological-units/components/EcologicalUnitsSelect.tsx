@@ -1,7 +1,6 @@
 import { mdiClose } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Card from '@mui/material/Card';
-import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
@@ -89,45 +88,43 @@ export const EcologicalUnitsSelect = (props: IEcologicalUnitsSelect) => {
   );
 
   return (
-    <Collapse in={Boolean(values.species)}>
-      <Card
-        component={Stack}
-        variant="outlined"
-        flexDirection="row"
-        alignItems="flex-start"
-        gap={2}
+    <Card
+      component={Stack}
+      variant="outlined"
+      flexDirection="row"
+      alignItems="flex-start"
+      gap={2}
+      sx={{
+        width: '100%',
+        p: 2,
+        backgroundColor: grey[100]
+      }}>
+      <AutocompleteField
+        id={`ecological_units.[${index}].collection_category_id`}
+        name={`ecological_units.[${index}].collection_category_id`}
+        label="Ecological Unit"
+        options={filteredCategories}
+        loading={ecologicalUnitOptionDataLoader.isLoading}
+        onChange={(_, option) => {
+          if (option?.value) {
+            setFieldValue(`ecological_units.[${index}].collection_category_id`, option.value);
+            setEcologicalUnitOptionLabel(option.label);
+          }
+        }}
+        required
         sx={{
-          width: '100%',
-          p: 2,
-          backgroundColor: grey[100]
-        }}>
-        <AutocompleteField
-          id={`ecological_units.[${index}].collection_category_id`}
-          name={`ecological_units.[${index}].collection_category_id`}
-          label="Ecological Unit"
-          options={filteredCategories}
-          loading={ecologicalUnitOptionDataLoader.isLoading}
-          onChange={(_, option) => {
-            if (option?.value) {
-              setFieldValue(`ecological_units.[${index}].collection_category_id`, option.value);
-              setEcologicalUnitOptionLabel(option.label);
-            }
-          }}
-          required
-          sx={{
-            flex: '1 1 auto'
-          }}
-        />
-        <EcologicalUnitsOptionSelect index={index} options={ecologicalUnitOptions} label={ecologicalUnitOptionLabel} />
-        <IconButton
-          data-testid={`ecological-unit-delete-button-${index}`}
-          title="Remove Ecological Unit"
-          aria-label="Remove Ecological Unit"
-          onClick={() => props.arrayHelpers.remove(index)}
-          sx={{ mt: 1.125 }}>
-          <Icon path={mdiClose} size={1} />
-        </IconButton>
-      </Card>
-    </Collapse>
+          flex: '1 1 auto'
+        }}
+      />
+      <EcologicalUnitsOptionSelect index={index} options={ecologicalUnitOptions} label={ecologicalUnitOptionLabel} />
+      <IconButton
+        data-testid={`ecological-unit-delete-button-${index}`}
+        title="Remove Ecological Unit"
+        aria-label="Remove Ecological Unit"
+        onClick={() => props.arrayHelpers.remove(index)}
+        sx={{ mt: 1.125 }}>
+        <Icon path={mdiClose} size={1} />
+      </IconButton>
+    </Card>
   );
 };

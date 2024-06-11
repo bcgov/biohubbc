@@ -3,6 +3,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import RadioGroup from '@mui/material/RadioGroup';
 import Box from '@mui/system/Box';
+import booleanEqual from '@turf/boolean-equal';
+import { useFormikContext } from 'formik';
+import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import { CaptureLocationMapControl } from './CaptureLocationMapControl';
 
@@ -11,8 +14,13 @@ import { CaptureLocationMapControl } from './CaptureLocationMapControl';
  *
  * @return {*}
  */
-export const ReleaseLocationForm = () => {
-  const [isReleaseSameAsCapture, setIsReleaseSameAsCapture] = useState<boolean>(true);
+export const ReleaseLocationForm = <FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest>() => {
+  const { values } = useFormikContext<FormikValuesType>();
+
+  const [isReleaseSameAsCapture, setIsReleaseSameAsCapture] = useState<boolean>(
+    !(values.capture.release_location && values.capture.capture_location) ||
+      booleanEqual(values.capture.release_location, values.capture.capture_location)
+  );
 
   return (
     <>
@@ -21,9 +29,8 @@ export const ReleaseLocationForm = () => {
       </Typography>
       <RadioGroup
         aria-label="release-location"
-        value={isReleaseSameAsCapture} // assuming you have a state variable for the selected value
-        onChange={() => setIsReleaseSameAsCapture(!isReleaseSameAsCapture)} // assuming you have a function to handle value change
-      >
+        value={isReleaseSameAsCapture}
+        onChange={(event) => setIsReleaseSameAsCapture(event.target.value === 'true')}>
         <FormControlLabel value="true" control={<Radio color="primary" />} label="Yes" />
         <FormControlLabel value="false" control={<Radio color="primary" />} label="No" />
       </RadioGroup>

@@ -14,7 +14,8 @@ export interface IAnimalGeneralInformationFormProps {
 /**
  * Returns components for setting general information fields when creating or editing an animal
  *
- * @returns
+ * @param {IAnimalGeneralInformationFormProps} props
+ * @return {*}
  */
 export const AnimalGeneralInformationForm = (props: IAnimalGeneralInformationFormProps) => {
   const { isEdit } = props;
@@ -38,16 +39,11 @@ export const AnimalGeneralInformationForm = (props: IAnimalGeneralInformationFor
             error={errors.species}
           />
           {values.species && (
-            <Collapse in={Boolean(values.species)}>
+            <Collapse in={Boolean(values.species)} key={values.species.tsn}>
               <SelectedSpecies
                 selectedSpecies={[values.species]}
-                handleRemoveSpecies={
-                  isEdit
-                    ? undefined
-                    : () => {
-                        setFieldValue('species', null);
-                      }
-                }
+                // Disable remove button if editing
+                handleRemoveSpecies={isEdit ? undefined : () => setFieldValue('species', null)}
               />
             </Collapse>
           )}

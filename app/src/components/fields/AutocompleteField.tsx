@@ -52,7 +52,6 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
 
   return (
     <Autocomplete
-      autoSelect
       clearOnBlur
       blurOnSelect
       handleHomeEndKeys
