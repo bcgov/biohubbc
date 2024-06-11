@@ -95,11 +95,12 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TYPE environment_unit ADD VALUE 'seconds';
     ALTER TYPE environment_unit ADD VALUE 'meters squared';
     ALTER TYPE environment_unit ADD VALUE 'count';
-    ALTER TYPE environment_unit ADD VALUE 'MHz';
+    ALTER TYPE environment_unit ADD VALUE 'GHz';
     ALTER TYPE environment_unit ADD VALUE 'Hz';
     ALTER TYPE environment_unit ADD VALUE 'amps';
     ALTER TYPE environment_unit ADD VALUE 'volts';
     ALTER TYPE environment_unit ADD VALUE 'megapixels';
+    COMMIT;
 
     ----------------------------------------------------------------------------------------
     -- Populate lookup tables.
@@ -160,8 +161,8 @@ export async function up(knex: Knex): Promise<void> {
       'Number of entrances',
       'The count of entry points into the capture mechanism.'),
     (
-    'Leader length',
-    'The length of the guiding structure that directs fish into the trap net.'),
+      'Leader length',
+      'The length of the guiding structure that directs fish into the trap net.'),
     (
       'Hook size',
       'Numerical scale where smaller numbers indicate larger hooks based on the gap and shank length.'),
@@ -295,7 +296,7 @@ export async function up(knex: Knex): Promise<void> {
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Camera trap'),
         0,
         50,
-        NULL
+        'count'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Field of view'),
@@ -335,51 +336,51 @@ export async function up(knex: Knex): Promise<void> {
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Mesh size'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Gill net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        100,
+        'centimeter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Set depth'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Gill net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        10000,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Net size'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trawling'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        500,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Mesh size'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trawling'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        100,
+        'centimeter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Trawling depth'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trawling'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        10000,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Length'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Mist net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        250,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Height'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Mist net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        100,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Mesh size'),
@@ -391,205 +392,205 @@ export async function up(knex: Knex): Promise<void> {
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Width'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Pitfall trap'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        100,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Depth'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Pitfall trap'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        100,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Length'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        100,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Height'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        10000,
+        'centimeter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Width'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        10000,
+        'centimeter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Mesh size'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        100,
+        'centimeter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Diameter of opening'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        200,
+        'centimeter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Number of entrances'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        10,
+        'count'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Leader length'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        10,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Depth'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Trap net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        10000,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Diameter of opening'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Rotary screw trap'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        10,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Depth'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Handheld net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        30,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Diameter of opening'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Handheld net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        1000,
+        'centimeter'
       ), 
       (
        (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Hook size'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Angling'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        64,
+        'count'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Radio frequency'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Radio signal tower'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        30,
+        'GHz'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Pulse repetition frequency'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Radar'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        10000,
+        'Hz'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Range resolution'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Radar'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        1000,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Current'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Electrofishing'),
-        NULL,
-        NULL,
-        NULL
+        5,
+        0,
+       'amps'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Voltage'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Electrofishing'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        1000,
+        'volts'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Electrical frequency'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Electrofishing'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        1000,
+        'Hz'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Duty cycle'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Electrofishing'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        100,
+        'seconds'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Length'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Seine net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        10000,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Height'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Seine net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        1000,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Mesh size'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Seine net'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        100,
+        'centimeter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Width'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Fish weir'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        10,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Surface area'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Egg mats'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        400,
+        'meters squared'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Length'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Setline'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        100000,
+        'meter'
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Hook size'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Setline'),
-        NULL,
-        NULL,
+        0,
+        64,
         NULL
       ),
       (
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Number of hooks'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Setline'),
-        NULL,
-        NULL,
-        NULL
+        0,
+        1000,
+        'count'
       );
 
     ----------------------------------------------------------------------------------------
