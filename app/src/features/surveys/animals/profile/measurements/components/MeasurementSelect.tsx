@@ -16,12 +16,12 @@ import { FieldArrayRenderProps, useFormikContext } from 'formik';
 import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition,
-  ICreateCaptureRequest,
-  IEditCaptureRequest
+  IMeasurementsCreate,
+  IMeasurementsUpdate
 } from 'interfaces/useCritterApi.interface';
 import { useMemo } from 'react';
 
-interface ICaptureMeasurementSelectProps {
+interface IMeasurementSelectProps {
   // The collection units (categories) available to select from
   measurements: (CBQuantitativeMeasurementTypeDefinition | CBQualitativeMeasurementTypeDefinition)[];
   // Formik field array helpers
@@ -34,11 +34,11 @@ interface ICaptureMeasurementSelectProps {
  * Returns a component for selecting ecological (ie. collection) units for a given species.
  *
  * @template FormikValuesType
- * @param {ICaptureMeasurementSelectProps} props
+ * @param {IMeasurementSelectProps} props
  * @return {*}
  */
-export const MeasurementSelect = <FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest>(
-  props: ICaptureMeasurementSelectProps
+export const MeasurementSelect = <FormikValuesType extends IMeasurementsCreate | IMeasurementsUpdate>(
+  props: IMeasurementSelectProps
 ) => {
   const { index, measurements, arrayHelpers } = props;
 

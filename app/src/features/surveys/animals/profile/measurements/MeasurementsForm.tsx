@@ -8,7 +8,7 @@ import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useAnimalPageContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { IMeasurementsCreate, IMeasurementsUpdate } from 'interfaces/useCritterApi.interface';
 import { useEffect } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
@@ -19,12 +19,12 @@ export const initialMeasurementValues = {
 };
 
 /**
- * Returns the control for applying measurements to an animal on the animal capture form
+ * Returns form controls for applying measurements.
  *
  * @template FormikValuesType
  * @return {*}
  */
-export const MeasurementsForm = <FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest>() => {
+export const MeasurementsForm = <FormikValuesType extends IMeasurementsCreate | IMeasurementsUpdate>() => {
   const { values } = useFormikContext<FormikValuesType>();
 
   const critterbaseApi = useCritterbaseApi();

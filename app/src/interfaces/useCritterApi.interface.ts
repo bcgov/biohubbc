@@ -66,28 +66,32 @@ export interface ILocationPostData {
   coordinate_uncertainty_unit: string;
 }
 
-export interface ICreateCaptureRequest {
-  capture: ICapturePostData;
+export interface IMarkings {
   markings: IMarkingPostData[];
+}
+
+export interface IMeasurementsCreate {
   measurements: (IQuantitativeMeasurementCreate | IQualitativeMeasurementCreate)[];
 }
 
-export interface IEditCaptureRequest {
-  capture: ICapturePostData;
-  markings: IMarkingPostData[];
+export interface IMeasurementsUpdate {
   measurements: (IQuantitativeMeasurementUpdate | IQualitativeMeasurementUpdate)[];
 }
 
-export interface ICreateMortalityRequest {
-  mortality: IMortalityPostData;
-  markings: IMarkingPostData[];
-  measurements: (IQualitativeMeasurementCreate | IQuantitativeMeasurementCreate)[];
+export interface ICreateCaptureRequest extends IMarkings, IMeasurementsCreate {
+  capture: ICapturePostData;
 }
 
-export interface IEditMortalityRequest {
+export interface IEditCaptureRequest extends IMarkings, IMeasurementsUpdate {
+  capture: ICapturePostData;
+}
+
+export interface ICreateMortalityRequest extends IMarkings, IMeasurementsCreate {
   mortality: IMortalityPostData;
-  markings: IMarkingPostData[];
-  measurements: (IQualitativeMeasurementUpdate | IQuantitativeMeasurementUpdate)[];
+}
+
+export interface IEditMortalityRequest extends IMarkings, IMeasurementsUpdate {
+  mortality: IMortalityPostData;
 }
 
 export interface ICollectionCategory {

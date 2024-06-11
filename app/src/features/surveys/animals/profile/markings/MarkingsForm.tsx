@@ -12,7 +12,7 @@ import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useAnimalPageContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { IMarkings } from 'interfaces/useCritterApi.interface';
 import { useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { MarkingCard } from './MarkingCard';
@@ -23,7 +23,7 @@ import { MarkingCard } from './MarkingCard';
  * @template FormikValuesType
  * @return {*}
  */
-export const MarkingsForm = <FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest>() => {
+export const MarkingsForm = <FormikValuesType extends IMarkings>() => {
   const { values } = useFormikContext<FormikValuesType>();
 
   const animalPageContext = useAnimalPageContext();
