@@ -39,47 +39,44 @@ export const MeasurementsForm = <FormikValuesType extends ICreateCaptureRequest 
   const initialMeasurementValues = {};
 
   return (
-    <>
-      <FieldArray
-        name="measurements"
-        render={(arrayHelpers: FieldArrayRenderProps) => (
-          <>
-            <TransitionGroup>
-              {values.measurements.map((measurement, index) => (
-                <Collapse
-                  in={true}
-                  key={
-                    ('measurement_quantitative_id' in measurement && measurement.measurement_quantitative_id) ||
-                    ('measurement_qualitative_id' in measurement && measurement.measurement_qualitative_id) ||
-                    index
-                  }>
-                  <Box mb={2}>
-                    <MeasurementSelect
-                      measurements={[
-                        ...(measurementsDataLoader.data?.quantitative ?? []),
-                        ...(measurementsDataLoader.data?.qualitative ?? [])
-                      ]}
-                      arrayHelpers={arrayHelpers}
-                      index={index}
-                    />
-                  </Box>
-                </Collapse>
-              ))}
-            </TransitionGroup>
+    <FieldArray
+      name="measurements"
+      render={(arrayHelpers: FieldArrayRenderProps) => (
+        <>
+          <TransitionGroup>
+            {values.measurements.map((measurement, index) => (
+              <Collapse
+                key={
+                  ('measurement_quantitative_id' in measurement && measurement.measurement_quantitative_id) ||
+                  ('measurement_qualitative_id' in measurement && measurement.measurement_qualitative_id) ||
+                  index
+                }>
+                <Box mb={2}>
+                  <MeasurementSelect
+                    measurements={[
+                      ...(measurementsDataLoader.data?.quantitative ?? []),
+                      ...(measurementsDataLoader.data?.qualitative ?? [])
+                    ]}
+                    arrayHelpers={arrayHelpers}
+                    index={index}
+                  />
+                </Box>
+              </Collapse>
+            ))}
+          </TransitionGroup>
 
-            <Button
-              color="primary"
-              variant="outlined"
-              startIcon={<Icon path={mdiPlus} size={1} />}
-              aria-label="add marking"
-              onClick={() => {
-                arrayHelpers.push(initialMeasurementValues);
-              }}>
-              Add Measurement
-            </Button>
-          </>
-        )}
-      />
-    </>
+          <Button
+            color="primary"
+            variant="outlined"
+            startIcon={<Icon path={mdiPlus} size={1} />}
+            aria-label="add marking"
+            onClick={() => {
+              arrayHelpers.push(initialMeasurementValues);
+            }}>
+            Add Measurement
+          </Button>
+        </>
+      )}
+    />
   );
 };

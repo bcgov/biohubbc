@@ -54,29 +54,29 @@ export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never,
   }
 
   // The currently selected animal
-  const [_selectedAnimal, _setSelectedAnimal] = useState<ISurveyCritter | undefined>();
+  const [selectedAnimal, setSelectedAnimal] = useState<ISurveyCritter | undefined>();
 
-  const setSelectedAnimal = useCallback(
+  const _setSelectedAnimal = useCallback(
     (animal?: ISurveyCritter) => {
-      if (isEqual(animal, _selectedAnimal)) {
+      if (isEqual(animal, selectedAnimal)) {
         // No change
         return;
       }
 
       // Update the selected animal
-      _setSelectedAnimal(animal);
+      setSelectedAnimal(animal);
 
       if (animal) {
         // Load the critter data for the new animal
         critterDataLoader.refresh(animal.critterbase_critter_id);
       }
     },
-    [_selectedAnimal, critterDataLoader]
+    [selectedAnimal, critterDataLoader]
   );
 
   const setSelectedAnimalFromSurveyCritterId = useCallback(
     (surveyCritterId: number) => {
-      if (_selectedAnimal?.survey_critter_id === surveyCritterId) {
+      if (selectedAnimal?.survey_critter_id === surveyCritterId) {
         // No change
         return;
       }
@@ -84,23 +84,23 @@ export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never,
       const critter = surveyCrittersDataLoader.data?.find((critter) => critter.survey_critter_id === surveyCritterId);
 
       if (critter) {
-        setSelectedAnimal({
+        _setSelectedAnimal({
           survey_critter_id: critter.survey_critter_id,
           critterbase_critter_id: critter.critter_id
         });
       }
     },
-    [_selectedAnimal?.survey_critter_id, surveyCrittersDataLoader.data, setSelectedAnimal]
+    [selectedAnimal?.survey_critter_id, surveyCrittersDataLoader.data, _setSelectedAnimal]
   );
 
   const animalPageContext: IAnimalPageContext = useMemo(
     () => ({
-      selectedAnimal: _selectedAnimal,
-      setSelectedAnimal,
+      selectedAnimal,
+      setSelectedAnimal: _setSelectedAnimal,
       critterDataLoader,
       setSelectedAnimalFromSurveyCritterId
     }),
-    [_selectedAnimal, setSelectedAnimal, critterDataLoader, setSelectedAnimalFromSurveyCritterId]
+    [selectedAnimal, _setSelectedAnimal, critterDataLoader, setSelectedAnimalFromSurveyCritterId]
   );
 
   return <AnimalPageContext.Provider value={animalPageContext}>{props.children}</AnimalPageContext.Provider>;

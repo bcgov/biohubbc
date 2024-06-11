@@ -285,7 +285,7 @@ const calculateBoundingBoxFromPoints = (features: Feature[]): LatLngBoundsExpres
  * @returns The Lat/Long bounding box, or undefined if a bounding box cannot be calculated.
  */
 export const calculateUpdatedMapBounds = (features: Feature[] | undefined): LatLngBoundsExpression | undefined => {
-  if (!features || !features.length) {
+  if (!features?.length) {
     return;
   }
 

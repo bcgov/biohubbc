@@ -90,6 +90,7 @@ export const EditCapturePage = () => {
 
     try {
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
+
       if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
         return;
       }
@@ -103,19 +104,13 @@ export const EditCapturePage = () => {
         : values.capture.capture_location;
 
       // Format capture timestamp
-      const captureTimestamp = dayjs(
-        `${values.capture.capture_date}${
-          values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00'
-        }`
-      ).toDate();
+      const captureTime = values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00';
+      const captureTimestamp = dayjs(`${values.capture.capture_date}${captureTime}`).toDate();
 
       // If release timestamp is null, use the capture timestamp, otherwise format release location
+      const releaseTime = (values.capture.release_time && ` ${values.capture.release_time}-07:00`) || 'T00:00:00-07:00';
       const releaseTimestamp = values.capture.release_date
-        ? dayjs(
-            `${values.capture.release_date}${
-              values.capture.release_time ? ` ${values.capture.release_time}-07:00` : 'T00:00:00-07:00'
-            }`
-          ).toDate()
+        ? dayjs(`${values.capture.release_date}${releaseTime}`).toDate()
         : captureTimestamp;
 
       const {

@@ -217,7 +217,7 @@ export const EditAnimalPage = () => {
                 critter_comment: critter.critter_comment
               } as ICreateEditAnimalRequest
             }
-            handleSubmit={(formikData) => handleSubmit(formikData as ICreateEditAnimalRequest)}
+            handleSubmit={handleSubmit}
             formikRef={formikRef}
             isEdit={true}
           />

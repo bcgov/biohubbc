@@ -123,9 +123,7 @@ export const CreateCapturePage = () => {
 
       // if release location is null, use the capture location, otherwise format it for critterbase
       const releaseLocation =
-        values.capture.release_location &&
-        values.capture.release_location.geometry &&
-        values.capture.release_location.geometry.type === 'Point'
+        values.capture.release_location?.geometry?.type === 'Point'
           ? {
               longitude: values.capture.release_location.geometry.coordinates[0],
               latitude: values.capture.release_location.geometry.coordinates[1],
@@ -134,19 +132,13 @@ export const CreateCapturePage = () => {
             }
           : captureLocation;
 
-      const captureTimestamp = dayjs(
-        `${values.capture.capture_date}${
-          values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00'
-        }`
-      ).toDate();
+      const captureTime = values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00';
+      const captureTimestamp = dayjs(`${values.capture.capture_date}${captureTime}`).toDate();
 
       // if release timestamp is null, use the capture timestamp, otherwise format it for critterbase
+      const releaseTime = values.capture.release_time ? ` ${values.capture.release_time}-07:00` : captureTime;
       const releaseTimestamp = values.capture.release_date
-        ? dayjs(
-            `${values.capture.release_date}${
-              values.capture.release_time ? ` ${values.capture.release_time}-07:00` : 'T00:00:00-07:00'
-            }`
-          ).toDate()
+        ? dayjs(`${values.capture.release_date}${releaseTime}`).toDate()
         : captureTimestamp;
 
       // Must create capture first to avoid foreign key constraints. Can't guarantee that the capture is

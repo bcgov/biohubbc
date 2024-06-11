@@ -181,7 +181,7 @@ export const CreateAnimalPage = () => {
         <Paper sx={{ p: 5 }}>
           <AnimalFormContainer
             initialAnimalData={defaultAnimalDataFormValues}
-            handleSubmit={(formikData) => handleSubmit(formikData as ICreateEditAnimalRequest)}
+            handleSubmit={handleSubmit}
             formikRef={formikRef}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>

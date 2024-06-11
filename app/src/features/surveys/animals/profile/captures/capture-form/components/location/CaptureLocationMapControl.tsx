@@ -74,8 +74,6 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
     if ('type' in location) {
       return location;
     }
-
-    return;
   }, [name, values]);
 
   useEffect(() => {
@@ -111,9 +109,7 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
               setFieldError(name, undefined);
               // Unset last drawn to show staticlayers, where the file geometry is loaded to
               lastDrawn && drawControlsRef?.current?.deleteLayer(lastDrawn);
-              drawControlsRef?.current?.addLayer(features[0], () => {
-                1;
-              });
+              drawControlsRef?.current?.addLayer(features[0], () => 1);
               setLastDrawn(1);
             }}
             onFailure={(message) => {

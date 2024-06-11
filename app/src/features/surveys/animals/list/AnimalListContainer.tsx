@@ -32,7 +32,7 @@ export const AnimalListContainer = () => {
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
   const [critterAnchorEl, setCritterAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [headerAnchorEl, setHeaderAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [selectedCritterMenu, setSelectedMenuCritter] = useState<ISurveyCritter>();
+  const [selectedCritterMenu, setSelectedCritterMenu] = useState<ISurveyCritter>();
 
   const codesContext = useCodesContext();
   const surveyContext = useSurveyContext();
@@ -68,7 +68,7 @@ export const AnimalListContainer = () => {
 
   const handleCritterMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, critter: ISurveyCritter) => {
     setCritterAnchorEl(event.currentTarget);
-    setSelectedMenuCritter(critter);
+    setSelectedCritterMenu(critter);
   };
 
   /**

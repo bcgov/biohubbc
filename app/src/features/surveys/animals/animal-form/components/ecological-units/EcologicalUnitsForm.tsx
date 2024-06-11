@@ -43,7 +43,7 @@ export const EcologicalUnitsForm = () => {
         <>
           <TransitionGroup>
             {values.ecological_units.map((ecological_unit, index) => (
-              <Collapse in={true} key={ecological_unit.critter_collection_unit_id ?? index}>
+              <Collapse key={ecological_unit.critter_collection_unit_id ?? index}>
                 <Box mb={2}>
                   <EcologicalUnitsSelect
                     ecologicalUnits={ecologicalUnitsDataLoader.data ?? []}

@@ -66,7 +66,7 @@ export const CaptureDetails = (props: ICaptureDetailsProps) => {
             Capture comment
           </Typography>
           <Typography color="textSecondary" variant="body2">
-            {captureComment ? captureComment : 'None'}
+            {captureComment || 'None'}
           </Typography>
         </Box>
       )}

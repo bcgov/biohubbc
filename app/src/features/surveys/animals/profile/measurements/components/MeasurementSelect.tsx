@@ -70,7 +70,7 @@ export const MeasurementSelect = <FormikValuesType extends ICreateCaptureRequest
   );
 
   return (
-    <Collapse in role="listitem">
+    <Collapse>
       <Card
         component={Stack}
         variant="outlined"
@@ -129,7 +129,7 @@ export const MeasurementSelect = <FormikValuesType extends ICreateCaptureRequest
           ) : (
             <CustomTextField
               name={`measurements.[${index}].value`}
-              label={`Value ${selectedTaxonMeasurement?.unit ? `(${selectedTaxonMeasurement.unit})` : ''}`}
+              label={selectedTaxonMeasurement?.unit ? `Value (${selectedTaxonMeasurement.unit})` : 'Value'}
               other={{
                 required: true,
                 type: 'number',

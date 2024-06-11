@@ -75,8 +75,6 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
     if ('type' in location) {
       return location;
     }
-
-    return;
   }, [name, values]);
 
   useEffect(() => {

@@ -89,7 +89,7 @@ export const EcologicalUnitsSelect = (props: IEcologicalUnitsSelect) => {
   );
 
   return (
-    <Collapse in={Boolean(values.species)} role="listitem">
+    <Collapse in={Boolean(values.species)}>
       <Card
         component={Stack}
         variant="outlined"

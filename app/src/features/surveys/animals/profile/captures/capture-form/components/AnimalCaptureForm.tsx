@@ -4,6 +4,7 @@ import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { Formik, FormikProps } from 'formik';
 import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { isDefined } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { MarkingsForm } from '../../../markings/MarkingsForm';
 import { MeasurementsForm } from '../../../measurements/MeasurementsForm';
@@ -67,9 +68,51 @@ const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest | IEdi
         .nullable()
     }),
     measurements: yup.array(
-      yup.object({
-        // TODO
-      })
+      yup
+        .object()
+        .shape({
+          taxon_measurement_id: yup.string().required('Measurement type is required.'),
+          value: yup.mixed().test('is-valid-measurement', 'Measurement value is required.', function () {
+            const { value } = this.parent;
+            if (isDefined(value)) {
+              // Field value is defined, check if it is valid
+              return yup.number().isValidSync(value);
+            }
+            // Field value is not defined, return valid for now
+            return true;
+          }),
+          qualitative_option_id: yup
+            .mixed()
+            .test('is-valid-measurement', 'Measurement value is required.', function () {
+              const { qualitative_option_id } = this.parent;
+              if (isDefined(qualitative_option_id)) {
+                // Field value is defined, check if it is valid
+                return yup.string().isValidSync(qualitative_option_id);
+              }
+              // Field value is not defined, return valid for now
+              return true;
+            })
+        })
+        .test('is-valid-measurement', 'Measurement must have a type and a value', function (_value) {
+          const { taxon_measurement_id } = _value;
+          const path = this.path;
+          if (taxon_measurement_id && !isDefined(_value.value) && !isDefined(_value.qualitative_option_id)) {
+            // Measurement type is defined but neither value nor qualitative option is defined, add errors for both
+            const errors = [
+              this.createError({
+                path: `${path}.qualitative_option_id`,
+                message: 'Measurement value is required.'
+              }),
+              this.createError({
+                path: `${path}.value`,
+                message: 'Measurement value is required.'
+              })
+            ];
+            return new yup.ValidationError(errors);
+          }
+          // Field value is not defined, return valid
+          return true;
+        })
     ),
     markings: yup.array(
       yup.object({

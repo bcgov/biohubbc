@@ -118,11 +118,10 @@ export const CreateMortalityPage = () => {
 
       const mortalityLocation = formatLocation(values.mortality.location);
 
-      const mortalityTimestamp = dayjs(
-        `${values.mortality.mortality_date}${
-          values.mortality.mortality_time ? ` ${values.mortality.mortality_time}-07:00` : 'T00:00:00-07:00'
-        }`
-      ).toDate();
+      const mortalityTime = values.mortality.mortality_time
+        ? ` ${values.mortality.mortality_time}-07:00`
+        : 'T00:00:00-07:00';
+      const mortalityTimestamp = dayjs(`${values.mortality.mortality_date}${mortalityTime}`).toDate();
 
       const mortalityResponse = await critterbaseApi.mortality.createMortality({
         critter_id: critterbaseCritterId,

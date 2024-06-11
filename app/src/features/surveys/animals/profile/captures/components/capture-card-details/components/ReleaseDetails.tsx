@@ -72,7 +72,7 @@ export const ReleaseDetails = (props: IReleaseDetailsProps) => {
             Release comment
           </Typography>
           <Typography color="textSecondary" variant="body2">
-            {releaseComment ? releaseComment : 'None'}
+            {releaseComment || 'None'}
           </Typography>
         </Box>
       )}
