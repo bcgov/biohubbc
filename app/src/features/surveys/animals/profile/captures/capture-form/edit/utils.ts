@@ -1,8 +1,16 @@
+import {
+  isQualitativeMeasurementCreate,
+  isQualitativeMeasurementUpdate,
+  isQuantitativeMeasurementCreate,
+  isQuantitativeMeasurementUpdate
+} from 'features/surveys/animals/profile/measurements/utils';
 import { Feature } from 'geojson';
 import {
   ICritterDetailedResponse,
   IMarkingPostData,
+  IQualitativeMeasurementCreate,
   IQualitativeMeasurementUpdate,
+  IQuantitativeMeasurementCreate,
   IQuantitativeMeasurementUpdate
 } from 'interfaces/useCritterApi.interface';
 
@@ -28,14 +36,19 @@ export const formatLocation = (location: Feature) => {
  * @param {ICritterDetailedResponse} critter The critter object containing existing details.
  * @param {IMarkingPostData[]} markings Array of markings for the critter.
  * @param {((IQuantitativeMeasurementUpdate | IQualitativeMeasurementUpdate)[])} measurements Array of measurements for the critter.
- * @param {string} [captureId] The capture object containing capture details.
+ * @param {string} captureId The capture object containing capture details.
  * @return {*}  Formatted critter details for bulk update.
  */
 export const formatCritterDetailsForBulkUpdate = (
   critter: ICritterDetailedResponse,
   markings: IMarkingPostData[],
-  measurements: (IQuantitativeMeasurementUpdate | IQualitativeMeasurementUpdate)[],
-  captureId?: string
+  measurements: (
+    | IQuantitativeMeasurementCreate
+    | IQualitativeMeasurementCreate
+    | IQuantitativeMeasurementUpdate
+    | IQualitativeMeasurementUpdate
+  )[],
+  captureId: string
 ) => {
   // Find qualitative measurements to delete
   const qualitativeMeasurementsForDelete =
@@ -49,7 +62,7 @@ export const formatCritterDetailsForBulkUpdate = (
         (existingQualitativeMeasurementsOnCapture) =>
           !measurements.some(
             (incomingMeasurements) =>
-              'measurement_qualitative_id' in incomingMeasurements &&
+              isQualitativeMeasurementUpdate(incomingMeasurements) &&
               incomingMeasurements.measurement_qualitative_id ===
                 existingQualitativeMeasurementsOnCapture.measurement_qualitative_id
           )
@@ -70,7 +83,7 @@ export const formatCritterDetailsForBulkUpdate = (
         (existingQuantitativeMeasurementsOnCapture) =>
           !measurements.some(
             (incomingMeasurements) =>
-              'measurement_quantitative_id' in incomingMeasurements &&
+              isQuantitativeMeasurementUpdate(incomingMeasurements) &&
               incomingMeasurements.measurement_quantitative_id ===
                 existingQuantitativeMeasurementsOnCapture.measurement_quantitative_id
           )
@@ -114,72 +127,51 @@ export const formatCritterDetailsForBulkUpdate = (
 
   // Find qualitative measurements for create
   const qualitativeMeasurementsForCreate = measurements
-    .filter(
-      (measurement) =>
-        'qualitative_option_id' in measurement &&
-        measurement.qualitative_option_id &&
-        !measurement.measurement_qualitative_id
-    )
-    .map((measurement) => ({
+    .filter(isQualitativeMeasurementCreate)
+    .map((measurement: IQualitativeMeasurementCreate) => ({
       critter_id: critter.critter_id,
-      taxon_measurement_id: measurement.taxon_measurement_id,
-      measured_timestamp: measurement.measured_timestamp,
       capture_id: captureId,
-      measurement_qualitative_id:
-        'measurement_qualitative_id' in measurement ? measurement.measurement_qualitative_id : null,
-      mortality_id: measurement.mortality_id,
-      qualitative_option_id: 'qualitative_option_id' in measurement ? measurement.qualitative_option_id : null,
+      taxon_measurement_id: measurement.taxon_measurement_id,
+      qualitative_option_id: measurement.qualitative_option_id,
+      measured_timestamp: measurement.measured_timestamp,
       measurement_comment: measurement.measurement_comment
     }));
 
   // Find quantitative measurements for create
   const quantitativeMeasurementsForCreate = measurements
-    .filter(
-      (measurement) =>
-        'value' in measurement &&
-        measurement.taxon_measurement_id &&
-        measurement.value &&
-        !measurement.measurement_quantitative_id
-    )
-    .map((measurement) => ({
+    .filter(isQuantitativeMeasurementCreate)
+    .map((measurement: IQuantitativeMeasurementCreate) => ({
       critter_id: critter.critter_id,
-      taxon_measurement_id: measurement.taxon_measurement_id,
-      measured_timestamp: measurement.measured_timestamp,
       capture_id: captureId,
-      measurement_quantitative_id:
-        'measurement_quantitative_id' in measurement ? measurement.measurement_quantitative_id : null,
-      mortality_id: measurement.mortality_id,
-      value: 'value' in measurement ? measurement.value : 0,
+      taxon_measurement_id: measurement.taxon_measurement_id,
+      value: measurement.value,
+      measured_timestamp: measurement.measured_timestamp,
       measurement_comment: measurement.measurement_comment
     }));
 
   // Find qualitative measurements for update
-  const qualitativeMeasurementsForUpdate: IQualitativeMeasurementUpdate[] = measurements
-    .filter((measurement) => 'measurement_qualitative_id' in measurement && measurement.measurement_qualitative_id)
-    .map((measurement) => ({
-      critter_id: critter.critter_id,
-      taxon_measurement_id: measurement.taxon_measurement_id,
-      measured_timestamp: measurement.measured_timestamp,
+  const qualitativeMeasurementsForUpdate = measurements
+    .filter(isQualitativeMeasurementUpdate)
+    .map((measurement: IQualitativeMeasurementUpdate) => ({
+      //   critter_id: critter.critter_id,
       capture_id: captureId,
-      measurement_qualitative_id:
-        'measurement_qualitative_id' in measurement ? measurement.measurement_qualitative_id : null,
-      mortality_id: measurement.mortality_id,
-      qualitative_option_id: 'qualitative_option_id' in measurement ? measurement.qualitative_option_id : null,
+      measurement_qualitative_id: measurement.measurement_qualitative_id,
+      taxon_measurement_id: measurement.taxon_measurement_id,
+      qualitative_option_id: measurement.qualitative_option_id,
+      measured_timestamp: measurement.measured_timestamp,
       measurement_comment: measurement.measurement_comment
     }));
 
   // Find quantitative measurements for update
   const quantitativeMeasurementsForUpdate = measurements
-    .filter((measurement) => 'measurement_quantitative_id' in measurement && measurement.measurement_quantitative_id)
-    .map((measurement) => ({
+    .filter(isQuantitativeMeasurementUpdate)
+    .map((measurement: IQuantitativeMeasurementUpdate) => ({
       critter_id: critter.critter_id,
-      taxon_measurement_id: measurement.taxon_measurement_id,
-      measured_timestamp: measurement.measured_timestamp,
+      measurement_quantitative_id: measurement.measurement_quantitative_id,
       capture_id: captureId,
-      measurement_quantitative_id:
-        'measurement_quantitative_id' in measurement ? measurement.measurement_quantitative_id : null,
-      mortality_id: measurement.mortality_id,
-      value: 'value' in measurement ? measurement.value : 0,
+      taxon_measurement_id: measurement.taxon_measurement_id,
+      value: measurement.value,
+      measured_timestamp: measurement.measured_timestamp,
       measurement_comment: measurement.measurement_comment
     }));
 

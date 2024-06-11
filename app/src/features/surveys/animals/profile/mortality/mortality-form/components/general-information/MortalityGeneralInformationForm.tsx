@@ -5,15 +5,18 @@ import Box from '@mui/system/Box';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { useFormikContext } from 'formik';
-import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateMortalityRequest, IEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 
 /**
  * Returns the form for entering general information about an animal mortality.
  *
+ * @template FormikValuesType
  * @return {*}
  */
-export const MortalityGeneralInformationForm = () => {
-  const formikProps = useFormikContext<ICreateEditMortalityRequest>();
+export const MortalityGeneralInformationForm = <
+  FormikValuesType extends ICreateMortalityRequest | IEditMortalityRequest
+>() => {
+  const formikProps = useFormikContext<FormikValuesType>();
 
   return (
     <Box component="fieldset">

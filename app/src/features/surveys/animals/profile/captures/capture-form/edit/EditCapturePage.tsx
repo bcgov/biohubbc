@@ -18,14 +18,14 @@ import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyCon
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { formatCritterDetailsForBulkUpdate, formatLocation } from './utils';
 
 /**
- * Returns the page for editing an animal capture
+ * Page for editing an existing animal capture record.
  *
  * @return {*}
  */
@@ -48,7 +48,7 @@ export const EditCapturePage = () => {
 
   const [isSaving, setIsSaving] = useState(false);
 
-  const formikRef = useRef<FormikProps<ICreateEditCaptureRequest>>(null);
+  const formikRef = useRef<FormikProps<IEditCaptureRequest>>(null);
 
   const { projectId, surveyId } = surveyContext;
 
@@ -85,7 +85,7 @@ export const EditCapturePage = () => {
    *
    * @return {*}
    */
-  const handleSubmit = async (values: ICreateEditCaptureRequest) => {
+  const handleSubmit = async (values: IEditCaptureRequest) => {
     setIsSaving(true);
 
     try {
@@ -205,7 +205,7 @@ export const EditCapturePage = () => {
   const [releaseDate, releaseTime] = dayjs(capture.release_timestamp).format('YYYY-MM-DD HH:mm:ss').split(' ');
 
   // Initial formik values
-  const initialFormikValues: ICreateEditCaptureRequest = {
+  const initialFormikValues: IEditCaptureRequest = {
     capture: {
       capture_id: capture.capture_id,
       capture_comment: capture.capture_comment ?? '',

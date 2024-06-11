@@ -12,17 +12,21 @@ import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { CreateCaptureI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
 import { AnimalCaptureForm } from 'features/surveys/animals/profile/captures/capture-form/components/AnimalCaptureForm';
+import {
+  isQualitativeMeasurementCreate,
+  isQuantitativeMeasurementCreate
+} from 'features/surveys/animals/profile/measurements/utils';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
-export const defaultAnimalCaptureFormValues: ICreateEditCaptureRequest = {
+export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
   capture: {
     capture_id: '',
     capture_timestamp: '',
@@ -41,7 +45,7 @@ export const defaultAnimalCaptureFormValues: ICreateEditCaptureRequest = {
 };
 
 /**
- * Returns the page for creating a new animal capture
+ * Page for creating an animal capture record.
  *
  * @returns
  */
@@ -62,7 +66,7 @@ export const CreateCapturePage = () => {
 
   const [isSaving, setIsSaving] = useState(false);
 
-  const formikRef = useRef<FormikProps<ICreateEditCaptureRequest>>(null);
+  const formikRef = useRef<FormikProps<ICreateCaptureRequest>>(null);
 
   const { projectId, surveyId } = surveyContext;
 
@@ -100,7 +104,7 @@ export const CreateCapturePage = () => {
    *
    * @return {*}
    */
-  const handleSubmit = async (values: ICreateEditCaptureRequest) => {
+  const handleSubmit = async (values: ICreateCaptureRequest) => {
     setIsSaving(true);
 
     try {
@@ -175,24 +179,22 @@ export const CreateCapturePage = () => {
           capture_id: captureResponse.capture_id
         })),
         qualitative_measurements: values.measurements
-          .filter((measurement) => 'qualitative_option_id' in measurement && measurement.qualitative_option_id)
+          .filter(isQualitativeMeasurementCreate)
           // Format qualitative measurements for create
           .map((measurement) => ({
-            ...measurement,
+            critter_id: critterbaseCritterId,
             capture_id: captureResponse.capture_id,
-            measurement_qualitative_id:
-              'measurement_qualitative_id' in measurement ? measurement.measurement_qualitative_id : null,
-            qualitative_option_id: 'qualitative_option_id' in measurement ? measurement.qualitative_option_id : null
+            taxon_measurement_id: measurement.taxon_measurement_id,
+            qualitative_option_id: measurement.qualitative_option_id
           })),
         quantitative_measurements: values.measurements
-          .filter((measurement) => 'value' in measurement && measurement.taxon_measurement_id && measurement.value)
+          .filter(isQuantitativeMeasurementCreate)
           // Format quantitative measurements for create
           .map((measurement) => ({
-            ...measurement,
+            critter_id: critterbaseCritterId,
             capture_id: captureResponse.capture_id,
-            measurement_quantitative_id:
-              'measurement_quantitative_id' in measurement ? measurement.measurement_quantitative_id : null,
-            value: 'value' in measurement ? measurement.value : 0
+            taxon_measurement_id: measurement.taxon_measurement_id,
+            value: measurement.value
           }))
       });
 

@@ -11,6 +11,10 @@ import PageHeader from 'components/layout/PageHeader';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { CreateMortalityI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
+import {
+  isQualitativeMeasurementCreate,
+  isQuantitativeMeasurementCreate
+} from 'features/surveys/animals/profile/measurements/utils';
 import { AnimalMortalityForm } from 'features/surveys/animals/profile/mortality/mortality-form/components/AnimalMortalityForm';
 import { formatLocation } from 'features/surveys/animals/profile/mortality/mortality-form/edit/utils';
 import { FormikProps } from 'formik';
@@ -18,12 +22,12 @@ import { APIError } from 'hooks/api/useAxios';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
-export const initialAnimalMortalityFormValues: ICreateEditMortalityRequest = {
+export const initialAnimalMortalityFormValues: ICreateMortalityRequest = {
   mortality: {
     mortality_id: '',
     mortality_timestamp: '',
@@ -42,7 +46,12 @@ export const initialAnimalMortalityFormValues: ICreateEditMortalityRequest = {
   measurements: []
 };
 
-const CreateMortalityPage = () => {
+/**
+ * Page for creating a mortality record.
+ *
+ * @return {*}
+ */
+export const CreateMortalityPage = () => {
   const history = useHistory();
 
   const critterbaseApi = useCritterbaseApi();
@@ -59,7 +68,7 @@ const CreateMortalityPage = () => {
 
   const [isSaving, setIsSaving] = useState(false);
 
-  const formikRef = useRef<FormikProps<ICreateEditMortalityRequest>>(null);
+  const formikRef = useRef<FormikProps<ICreateMortalityRequest>>(null);
 
   const { projectId, surveyId } = surveyContext;
 
@@ -97,7 +106,7 @@ const CreateMortalityPage = () => {
    *
    * @return {*}
    */
-  const handleSubmit = async (values: ICreateEditMortalityRequest) => {
+  const handleSubmit = async (values: ICreateMortalityRequest) => {
     setIsSaving(true);
 
     try {
@@ -146,24 +155,22 @@ const CreateMortalityPage = () => {
           mortality_id: mortalityResponse.mortality_id
         })),
         qualitative_measurements: values.measurements
-          .filter((measurement) => 'qualitative_option_id' in measurement && measurement.qualitative_option_id)
+          .filter(isQualitativeMeasurementCreate)
           // Format qualitative measurements for create
           .map((measurement) => ({
-            ...measurement,
+            critter_id: critterbaseCritterId,
             mortality_id: mortalityResponse.mortality_id,
-            measurement_qualitative_id:
-              'measurement_qualitative_id' in measurement ? measurement.measurement_qualitative_id : null,
-            qualitative_option_id: 'qualitative_option_id' in measurement ? measurement.qualitative_option_id : null
+            taxon_measurement_id: measurement.taxon_measurement_id,
+            qualitative_option_id: measurement.qualitative_option_id
           })),
         quantitative_measurements: values.measurements
-          .filter((measurement) => 'value' in measurement && measurement.taxon_measurement_id && measurement.value)
+          .filter(isQuantitativeMeasurementCreate)
           // Format quantitative measurements for create
           .map((measurement) => ({
-            ...measurement,
+            critter_id: critterbaseCritterId,
             mortality_id: mortalityResponse.mortality_id,
-            measurement_quantitative_id:
-              'measurement_quantitative_id' in measurement ? measurement.measurement_quantitative_id : null,
-            value: 'value' in measurement ? measurement.value : 0
+            taxon_measurement_id: measurement.taxon_measurement_id,
+            value: measurement.value
           }))
       });
 
@@ -270,5 +277,3 @@ const CreateMortalityPage = () => {
     </>
   );
 };
-
-export default CreateMortalityPage;

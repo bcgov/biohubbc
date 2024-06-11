@@ -12,10 +12,10 @@ import { FieldArrayRenderProps, useFormikContext } from 'formik';
 import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition,
-  ICreateEditCaptureRequest
+  ICreateCaptureRequest,
+  IEditCaptureRequest
 } from 'interfaces/useCritterApi.interface';
 import { useMemo } from 'react';
-import { CaptureQualitativeMeasurementOptionSelect } from './QualitativeMeasurementsOptionSelect';
 
 interface ICaptureMeasurementSelectProps {
   // The collection units (categories) available to select from
@@ -29,13 +29,16 @@ interface ICaptureMeasurementSelectProps {
 /**
  * Returns a component for selecting ecological (ie. collection) units for a given species.
  *
+ * @template FormikValuesType
  * @param {ICaptureMeasurementSelectProps} props
  * @return {*}
  */
-export const MeasurementSelect = (props: ICaptureMeasurementSelectProps) => {
+export const MeasurementSelect = <FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest>(
+  props: ICaptureMeasurementSelectProps
+) => {
   const { index, measurements, arrayHelpers } = props;
 
-  const { values, setFieldValue } = useFormikContext<ICreateEditCaptureRequest>();
+  const { values, setFieldValue } = useFormikContext<FormikValuesType>();
 
   const selectedTaxonMeasurement =
     measurements.find(
@@ -86,7 +89,14 @@ export const MeasurementSelect = (props: ICaptureMeasurementSelectProps) => {
           options={filteredCategories}
           onChange={(_, option) => {
             if (option?.value) {
-              setFieldValue(`measurements.[${index}].taxon_measurement_id`, option.value);
+              const measurementTypeDefinition = measurements.find(
+                (measurement) => measurement.taxon_measurement_id === option.value
+              );
+
+              setFieldValue(`measurements.[${index}]`, {
+                ...measurementTypeDefinition,
+                taxon_measurement_id: option.value
+              });
             }
           }}
           required
@@ -96,15 +106,25 @@ export const MeasurementSelect = (props: ICaptureMeasurementSelectProps) => {
         />
 
         <Box flex="0.5">
-          {/* Qualitative measurement option select */}
           {selectedTaxonMeasurement && 'options' in selectedTaxonMeasurement ? (
-            <CaptureQualitativeMeasurementOptionSelect
-              index={index}
+            <AutocompleteField
+              id={`measurements.[${index}].qualitative_option_id`}
+              name={`measurements.${index}].qualitative_option_id`}
+              label="value"
               options={selectedTaxonMeasurement.options.map((option) => ({
                 label: option.option_label,
                 value: option.qualitative_option_id
               }))}
-              label="Value"
+              onChange={(_, option) => {
+                if (option?.value) {
+                  setFieldValue(`measurements.[${index}].qualitative_option_id`, option.value);
+                }
+              }}
+              disabled={Boolean(!values.measurements[index].taxon_measurement_id)}
+              required
+              sx={{
+                flex: '1 1 auto'
+              }}
             />
           ) : (
             <CustomTextField

@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { Formik, FormikProps } from 'formik';
-import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import yup from 'utils/YupSchema';
 import { MarkingsForm } from '../../../markings/MarkingsForm';
 import { MeasurementsForm } from '../../../measurements/MeasurementsForm';
@@ -11,19 +11,29 @@ import { CaptureGeneralInformationForm } from './general-information/CaptureGene
 import { CaptureLocationForm } from './location/CaptureLocationForm';
 import { ReleaseLocationForm } from './location/ReleaseLocationForm';
 
-export interface IAnimalCaptureFormProps {
-  initialCaptureData: ICreateEditCaptureRequest;
-  onSubmit: (formikData: ICreateEditCaptureRequest) => void;
-  formikRef: React.RefObject<FormikProps<ICreateEditCaptureRequest>>;
+export interface IAnimalCaptureFormProps<FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest> {
+  initialCaptureData: FormikValuesType;
+  onSubmit: (formikData: FormikValuesType) => void;
+  formikRef: React.RefObject<FormikProps<FormikValuesType>>;
 }
 
 /**
  * Returns the formik component for creating and editing an animal capture
  *
- * @param props
- * @returns
+ * @template FormikValuesType
+ * @param {FormikValuesType} props
+ * @return {*}
  */
-export const AnimalCaptureForm = (props: IAnimalCaptureFormProps) => {
+export /**
+ *
+ *
+ * @template FormikValuesType
+ * @param {IAnimalCaptureFormProps<FormikValuesType>} props
+ * @return {*}
+ */
+const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest>(
+  props: IAnimalCaptureFormProps<FormikValuesType>
+) => {
   const animalCaptureYupSchema = yup.object({
     capture: yup.object({
       capture_id: yup.string().nullable(),

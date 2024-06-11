@@ -18,7 +18,7 @@ import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateMortalityRequest, IEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
@@ -37,10 +37,13 @@ export interface IMortalityLocationMapControlProps {
 /**
  * Control for selecting a mortality location on a map.
  *
+ * @template FormikValuesType
  * @param {IMortalityLocationMapControlProps} props
  * @return {*}
  */
-export const MortalityLocationMapControl = (props: IMortalityLocationMapControlProps) => {
+export const MortalityLocationMapControl = <FormikValuesType extends ICreateMortalityRequest | IEditMortalityRequest>(
+  props: IMortalityLocationMapControlProps
+) => {
   const { name, title } = props;
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [lastDrawn, setLastDrawn] = useState<null | number>(null);
@@ -49,7 +52,7 @@ export const MortalityLocationMapControl = (props: IMortalityLocationMapControlP
 
   const { mapId } = props;
 
-  const { values, setFieldValue, setFieldError, errors } = useFormikContext<ICreateEditMortalityRequest>();
+  const { values, setFieldValue, setFieldError, errors } = useFormikContext<FormikValuesType>();
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 

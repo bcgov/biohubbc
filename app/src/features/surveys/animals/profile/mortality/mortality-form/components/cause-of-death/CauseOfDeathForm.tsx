@@ -4,16 +4,17 @@ import AutocompleteField from 'components/fields/AutocompleteField';
 import { useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateMortalityRequest, IEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect } from 'react';
 
 /**
  * Returns the control for selecting the cause of death for an animal mortality.
  *
+ * @template FormikValuesType
  * @return {*}
  */
-export const CauseOfDeathForm = () => {
-  const { setFieldValue } = useFormikContext<ICreateEditMortalityRequest>();
+export const CauseOfDeathForm = <FormikValuesType extends ICreateMortalityRequest | IEditMortalityRequest>() => {
+  const { setFieldValue } = useFormikContext<FormikValuesType>();
 
   const critterbaseApi = useCritterbaseApi();
 

@@ -16,9 +16,9 @@ import ImportBoundaryDialog from 'components/map/components/ImportBoundaryDialog
 import StaticLayers from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
-import { FormikContextType, useFormikContext } from 'formik';
+import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
@@ -32,7 +32,6 @@ export interface ICaptureLocationMapControlProps {
   name: string;
   title: string;
   mapId: string;
-  formikProps: FormikContextType<any>;
 }
 
 /**
@@ -41,7 +40,9 @@ export interface ICaptureLocationMapControlProps {
  * @param {ICaptureLocationMapControlProps} props
  * @return {*}
  */
-export const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps) => {
+export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest>(
+  props: ICaptureLocationMapControlProps
+) => {
   const { name, title } = props;
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [lastDrawn, setLastDrawn] = useState<null | number>(null);
@@ -50,7 +51,7 @@ export const CaptureLocationMapControl = (props: ICaptureLocationMapControlProps
 
   const { mapId } = props;
 
-  const { values, setFieldValue, setFieldError, errors } = useFormikContext<ICreateEditCaptureRequest>();
+  const { values, setFieldValue, setFieldError, errors } = useFormikContext<FormikValuesType>();
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 

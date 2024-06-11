@@ -18,14 +18,14 @@ import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyCon
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
+import { IEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { formatCritterDetailsForBulkUpdate, formatLocation } from './utils';
 
 /**
- * Returns the page for editing an animal mortality
+ * Page for editing an existing animal mortality record.
  *
  * @return {*}
  */
@@ -48,7 +48,7 @@ export const EditMortalityPage = () => {
 
   const [isSaving, setIsSaving] = useState(false);
 
-  const formikRef = useRef<FormikProps<ICreateEditMortalityRequest>>(null);
+  const formikRef = useRef<FormikProps<IEditMortalityRequest>>(null);
 
   const { projectId, surveyId } = surveyContext;
 
@@ -85,7 +85,7 @@ export const EditMortalityPage = () => {
    *
    * @return {*}
    */
-  const handleSubmit = async (values: ICreateEditMortalityRequest) => {
+  const handleSubmit = async (values: IEditMortalityRequest) => {
     setIsSaving(true);
 
     try {
@@ -195,7 +195,7 @@ export const EditMortalityPage = () => {
   const [mortalityDate, mortalityTime] = dayjs(mortality.mortality_timestamp).format('YYYY-MM-DD HH:mm:ss').split(' ');
 
   // Initial formik values
-  const initialFormikValues: ICreateEditMortalityRequest = {
+  const initialFormikValues: IEditMortalityRequest = {
     mortality: {
       mortality_id: mortality.mortality_id,
       mortality_comment: mortality.mortality_comment ?? '',

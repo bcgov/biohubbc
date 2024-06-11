@@ -3,7 +3,9 @@ import { default as dayjs } from 'dayjs';
 import {
   ICritterDetailedResponse,
   ICritterSimpleResponse,
+  IQualitativeMeasurementCreate,
   IQualitativeMeasurementUpdate,
+  IQuantitativeMeasurementCreate,
   IQuantitativeMeasurementUpdate
 } from 'interfaces/useCritterApi.interface';
 import { PROJECTION_MODE } from 'utils/mapProjectionHelpers';
@@ -237,8 +239,8 @@ export type ICreateCritterMortality = InferType<typeof CreateCritterMortalitySch
  */
 export type IBulkCreate = {
   critter?: ICritterSimpleResponse;
-  qualitative_measurements?: IQualitativeMeasurementUpdate[];
-  quantitative_measurements?: IQuantitativeMeasurementUpdate[];
+  qualitative_measurements?: IQualitativeMeasurementCreate[];
+  quantitative_measurements?: IQuantitativeMeasurementCreate[];
   capture?: ICreateCritterCapture[];
   mortality?: ICreateCritterMortality;
   markings?: ICreateCritterMarking[];

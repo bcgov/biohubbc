@@ -30,7 +30,7 @@ export interface IMarkingPostData {
 }
 
 export interface ICapturePostData {
-  capture_id?: string;
+  capture_id: string;
   capture_timestamp: string;
   capture_date?: string;
   capture_time?: string;
@@ -66,16 +66,28 @@ export interface ILocationPostData {
   coordinate_uncertainty_unit: string;
 }
 
-export interface ICreateEditCaptureRequest {
+export interface ICreateCaptureRequest {
+  capture: ICapturePostData;
+  markings: IMarkingPostData[];
+  measurements: (IQuantitativeMeasurementCreate | IQualitativeMeasurementCreate)[];
+}
+
+export interface IEditCaptureRequest {
   capture: ICapturePostData;
   markings: IMarkingPostData[];
   measurements: (IQuantitativeMeasurementUpdate | IQualitativeMeasurementUpdate)[];
 }
 
-export interface ICreateEditMortalityRequest {
+export interface ICreateMortalityRequest {
   mortality: IMortalityPostData;
   markings: IMarkingPostData[];
-  measurements: (IQuantitativeMeasurementUpdate | IQualitativeMeasurementUpdate)[];
+  measurements: (IQualitativeMeasurementCreate | IQuantitativeMeasurementCreate)[];
+}
+
+export interface IEditMortalityRequest {
+  mortality: IMortalityPostData;
+  markings: IMarkingPostData[];
+  measurements: (IQualitativeMeasurementUpdate | IQuantitativeMeasurementUpdate)[];
 }
 
 export interface ICollectionCategory {
@@ -155,24 +167,30 @@ export type IMarkingResponse = {
   comment: string | null;
 };
 
-export type IQualitativeMeasurementUpdate = {
-  measurement_qualitative_id: string | null;
+export type IQualitativeMeasurementCreate = {
   taxon_measurement_id: string;
   capture_id?: string | null;
-  mortality_id: string | null;
-  qualitative_option_id: string | null;
-  measurement_comment: string | null;
-  measured_timestamp: string | null;
+  mortality_id?: string | null;
+  qualitative_option_id: string;
+  measurement_comment?: string | null;
+  measured_timestamp?: string | null;
 };
 
-export type IQuantitativeMeasurementUpdate = {
-  measurement_quantitative_id: string | null;
+export type IQuantitativeMeasurementCreate = {
   taxon_measurement_id: string;
   capture_id?: string | null;
-  mortality_id: string | null;
-  measurement_comment: string | null;
-  measured_timestamp: string | null;
+  mortality_id?: string | null;
   value: number;
+  measurement_comment?: string | null;
+  measured_timestamp?: string | null;
+};
+
+export type IQualitativeMeasurementUpdate = IQualitativeMeasurementCreate & {
+  measurement_qualitative_id: string;
+};
+
+export type IQuantitativeMeasurementUpdate = IQuantitativeMeasurementCreate & {
+  measurement_quantitative_id: string;
 };
 
 export type IQualitativeMeasurementResponse = {

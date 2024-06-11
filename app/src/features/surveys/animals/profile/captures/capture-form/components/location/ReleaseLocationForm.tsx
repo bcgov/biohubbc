@@ -3,8 +3,6 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import RadioGroup from '@mui/material/RadioGroup';
 import Box from '@mui/system/Box';
-import { useFormikContext } from 'formik';
-import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import { CaptureLocationMapControl } from './CaptureLocationMapControl';
 
@@ -14,8 +12,6 @@ import { CaptureLocationMapControl } from './CaptureLocationMapControl';
  * @return {*}
  */
 export const ReleaseLocationForm = () => {
-  const formikProps = useFormikContext<ICreateEditCaptureRequest>();
-
   const [isReleaseSameAsCapture, setIsReleaseSameAsCapture] = useState<boolean>(true);
 
   return (
@@ -40,7 +36,6 @@ export const ReleaseLocationForm = () => {
                 mapId="release_location_map"
                 title="Release Location"
                 name="capture.release_location"
-                formikProps={formikProps}
               />
             </Grid>
           </Grid>

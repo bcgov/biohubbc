@@ -12,7 +12,7 @@ import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useAnimalPageContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ICreateEditCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { MarkingCard } from './MarkingCard';
@@ -20,10 +20,11 @@ import { MarkingCard } from './MarkingCard';
 /**
  * Returns the control for applying markings to an animal on the animal form
  *
- * @returns
+ * @template FormikValuesType
+ * @return {*}
  */
-export const MarkingsForm = () => {
-  const { values } = useFormikContext<ICreateEditCaptureRequest>();
+export const MarkingsForm = <FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest>() => {
+  const { values } = useFormikContext<FormikValuesType>();
 
   const animalPageContext = useAnimalPageContext();
 
@@ -38,7 +39,7 @@ export const MarkingsForm = () => {
 
   // Get available marking body positions
   const markingBodyLocationDataLoader = useDataLoader((tsn: number) =>
-    critterbaseApi.marking.getMarkingBodyLocationOptions(tsn)
+    critterbaseApi.marking.getTsnMarkingBodyLocationOptions(tsn)
   );
 
   // Get available marking colours

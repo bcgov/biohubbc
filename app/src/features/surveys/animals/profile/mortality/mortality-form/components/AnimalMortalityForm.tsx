@@ -5,17 +5,17 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { MarkingsForm } from 'features/surveys/animals/profile/markings/MarkingsForm';
 import { MeasurementsForm } from 'features/surveys/animals/profile/measurements/MeasurementsForm';
 import { Formik, FormikProps } from 'formik';
-import { ICreateEditMortalityRequest } from 'interfaces/useCritterApi.interface';
+import { ICreateMortalityRequest, IEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { isDefined } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { CauseOfDeathForm } from './cause-of-death/CauseOfDeathForm';
 import { MortalityGeneralInformationForm } from './general-information/MortalityGeneralInformationForm';
 import { MortalityLocationForm } from './location/MortalityLocationForm';
 
-export interface IAnimalMortalityFormProps {
-  initialMortalityData: ICreateEditMortalityRequest;
-  handleSubmit: (formikData: ICreateEditMortalityRequest) => void;
-  formikRef: React.RefObject<FormikProps<ICreateEditMortalityRequest>>;
+export interface IAnimalMortalityFormProps<FormikValuesType extends ICreateMortalityRequest | IEditMortalityRequest> {
+  initialMortalityData: FormikValuesType;
+  handleSubmit: (formikData: FormikValuesType) => void;
+  formikRef: React.RefObject<FormikProps<FormikValuesType>>;
 }
 
 /**
@@ -24,7 +24,9 @@ export interface IAnimalMortalityFormProps {
  * @param props
  * @returns
  */
-export const AnimalMortalityForm = (props: IAnimalMortalityFormProps) => {
+export const AnimalMortalityForm = <FormikValuesType extends ICreateMortalityRequest | IEditMortalityRequest>(
+  props: IAnimalMortalityFormProps<FormikValuesType>
+) => {
   const animalMortalityYupSchema = yup.object({
     mortality: yup.object({
       mortality_id: yup.string().nullable(),
