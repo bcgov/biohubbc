@@ -50,7 +50,7 @@ export const MortalityGeneralInformationForm = <
             name="mortality.mortality_comment"
             label="Mortality comments"
             maxLength={1000}
-            other={{ multiline: true, rows: 4 }}
+            other={{ multiline: true, rows: 4, required: true }}
           />
         </Grid>
       </Grid>

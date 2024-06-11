@@ -12,6 +12,12 @@ import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritte
 import { useEffect } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
+export const initialMeasurementValues = {
+  taxon_measurement_id: undefined,
+  qualitative_option_id: undefined,
+  value: undefined
+};
+
 /**
  * Returns the control for applying measurements to an animal on the animal capture form
  *
@@ -35,8 +41,6 @@ export const MeasurementsForm = <FormikValuesType extends ICreateCaptureRequest 
 
     measurementsDataLoader.load(tsn);
   }, [animalPageContext.critterDataLoader.data, measurementsDataLoader]);
-
-  const initialMeasurementValues = {};
 
   return (
     <FieldArray

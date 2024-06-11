@@ -7,6 +7,11 @@ import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
+import { initialMeasurementValues } from 'features/surveys/animals/profile/measurements/MeasurementsForm';
+import {
+  isQualitativeMeasurementUpdate,
+  isQuantitativeMeasurementUpdate
+} from 'features/surveys/animals/profile/measurements/utils';
 import { FieldArrayRenderProps, useFormikContext } from 'formik';
 import {
   CBQualitativeMeasurementTypeDefinition,
@@ -37,7 +42,7 @@ export const MeasurementSelect = <FormikValuesType extends ICreateCaptureRequest
 ) => {
   const { index, measurements, arrayHelpers } = props;
 
-  const { values, setFieldValue } = useFormikContext<FormikValuesType>();
+  const { values, setFieldValue, setFieldTouched, setFieldError } = useFormikContext<FormikValuesType>();
 
   const selectedTaxonMeasurement =
     measurements.find(
@@ -87,14 +92,12 @@ export const MeasurementSelect = <FormikValuesType extends ICreateCaptureRequest
         options={filteredCategories}
         onChange={(_, option) => {
           if (option?.value) {
-            const measurementTypeDefinition = measurements.find(
-              (measurement) => measurement.taxon_measurement_id === option.value
-            );
-
+            setFieldError(`measurements.[${index}].taxon_measurement_id`, undefined);
             setFieldValue(`measurements.[${index}]`, {
-              ...measurementTypeDefinition,
+              ...initialMeasurementValues,
               taxon_measurement_id: option.value
             });
+            setFieldTouched(`measurements.[${index}]`, true, false);
           }
         }}
         required
@@ -108,14 +111,26 @@ export const MeasurementSelect = <FormikValuesType extends ICreateCaptureRequest
           <AutocompleteField
             id={`measurements.[${index}].qualitative_option_id`}
             name={`measurements.${index}].qualitative_option_id`}
-            label="value"
+            label="Value"
             options={selectedTaxonMeasurement.options.map((option) => ({
               label: option.option_label,
               value: option.qualitative_option_id
             }))}
             onChange={(_, option) => {
               if (option?.value) {
-                setFieldValue(`measurements.[${index}].qualitative_option_id`, option.value);
+                setFieldError(`measurements.[${index}].qualitative_option_id`, undefined);
+
+                const currentMeasurementValue = values.measurements[index];
+                setFieldValue(`measurements.[${index}]`, {
+                  ...(isQualitativeMeasurementUpdate(currentMeasurementValue) && {
+                    measurement_qualitative_id: currentMeasurementValue.measurement_qualitative_id
+                  }),
+                  taxon_measurement_id: currentMeasurementValue.taxon_measurement_id,
+                  qualitative_option_id: option.value,
+                  value: undefined
+                });
+
+                setFieldTouched(`measurements.[${index}].qualitative_option_id`, true, false);
               }
             }}
             disabled={Boolean(!values.measurements[index].taxon_measurement_id)}
@@ -131,7 +146,22 @@ export const MeasurementSelect = <FormikValuesType extends ICreateCaptureRequest
             other={{
               required: true,
               type: 'number',
-              placeholder: 'Value'
+              placeholder: 'Value',
+              onChange: (event: React.ChangeEvent<any>) => {
+                setFieldError(`measurements.[${index}].value`, undefined);
+
+                const currentMeasurementValue = values.measurements[index];
+                setFieldValue(`measurements.[${index}]`, {
+                  ...(isQuantitativeMeasurementUpdate(currentMeasurementValue) && {
+                    measurement_quantitative_id: currentMeasurementValue.measurement_quantitative_id
+                  }),
+                  taxon_measurement_id: currentMeasurementValue.taxon_measurement_id,
+                  qualitative_option_id: undefined,
+                  value: Number(event.target.value)
+                });
+
+                setFieldTouched(`measurements.[${index}].value`, true, false);
+              }
             }}
           />
         )}

@@ -270,7 +270,7 @@ export const CreateCapturePage = () => {
         <Paper sx={{ p: 5 }}>
           <AnimalCaptureForm
             initialCaptureData={defaultAnimalCaptureFormValues}
-            onSubmit={(formikData) => handleSubmit(formikData)}
+            handleSubmit={(formikData) => handleSubmit(formikData)}
             formikRef={formikRef}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>

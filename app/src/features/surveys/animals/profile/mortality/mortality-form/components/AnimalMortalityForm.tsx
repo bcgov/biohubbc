@@ -21,8 +21,9 @@ export interface IAnimalMortalityFormProps<FormikValuesType extends ICreateMorta
 /**
  * Returns the formik component for creating and editing an animal mortality
  *
- * @param props
- * @returns
+ * @template FormikValuesType
+ * @param {IAnimalMortalityFormProps<FormikValuesType>} props
+ * @return {*}
  */
 export const AnimalMortalityForm = <FormikValuesType extends ICreateMortalityRequest | IEditMortalityRequest>(
   props: IAnimalMortalityFormProps<FormikValuesType>
@@ -47,6 +48,7 @@ export const AnimalMortalityForm = <FormikValuesType extends ICreateMortalityReq
         })
         .nullable()
         .default(undefined)
+        .required('mortality location is required')
     }),
     measurements: yup.array(
       yup
@@ -131,7 +133,7 @@ export const AnimalMortalityForm = <FormikValuesType extends ICreateMortalityReq
         <Divider />
         <HorizontalSplitFormComponent
           title="Mortality Location"
-          summary="Enter where the animal was mortalityd"
+          summary="Enter where the animal was found"
           component={<MortalityLocationForm />}
         />
         <Divider />

@@ -14,7 +14,7 @@ import { ReleaseLocationForm } from './location/ReleaseLocationForm';
 
 export interface IAnimalCaptureFormProps<FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest> {
   initialCaptureData: FormikValuesType;
-  onSubmit: (formikData: FormikValuesType) => void;
+  handleSubmit: (formikData: FormikValuesType) => void;
   formikRef: React.RefObject<FormikProps<FormikValuesType>>;
 }
 
@@ -22,17 +22,10 @@ export interface IAnimalCaptureFormProps<FormikValuesType extends ICreateCapture
  * Returns the formik component for creating and editing an animal capture
  *
  * @template FormikValuesType
- * @param {FormikValuesType} props
- * @return {*}
- */
-export /**
- *
- *
- * @template FormikValuesType
  * @param {IAnimalCaptureFormProps<FormikValuesType>} props
  * @return {*}
  */
-const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest>(
+export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest>(
   props: IAnimalCaptureFormProps<FormikValuesType>
 ) => {
   const animalCaptureYupSchema = yup.object({
@@ -133,7 +126,7 @@ const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest | IEdi
       validationSchema={animalCaptureYupSchema}
       validateOnBlur={false}
       validateOnChange={false}
-      onSubmit={props.onSubmit}>
+      onSubmit={props.handleSubmit}>
       <Stack gap={5}>
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
