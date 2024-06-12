@@ -790,6 +790,18 @@ export async function up(knex: Knex): Promise<void> {
           FROM method_lookup_attribute_qualitative mlaq 
           INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id 
           INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
+          WHERE taq.name = 'Model' AND ml.name = 'Camera trap'
+        
+        ),
+          'Other',
+          NULL
+        ),
+      (
+        (
+          SELECT method_lookup_attribute_qualitative_id 
+          FROM method_lookup_attribute_qualitative mlaq 
+          INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id 
+          INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
           WHERE taq.name = 'Infrared type' AND ml.name = 'Camera trap'
         
         ),
@@ -1221,10 +1233,43 @@ export async function up(knex: Knex): Promise<void> {
           FROM method_lookup_attribute_qualitative mlaq 
           INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id 
           INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
+          WHERE taq.name = 'Angling tool' AND ml.name = 'Angling'
+        ),
+         'Telescopic pole',
+         'Designed to collapse down to a shorter length for easy transportation and storage, then extend to a full-length rod for fishing, offering convenience and portability for anglers.'
+      ),
+      (
+        (
+          SELECT method_lookup_attribute_qualitative_id 
+          FROM method_lookup_attribute_qualitative mlaq 
+          INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id 
+          INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
           WHERE taq.name = 'Bait' AND ml.name = 'Angling'
         ),
         'Worms',
-        'Live bait commonly used for attracting a variety of fish species.'
+        'Bait commonly used for attracting a variety of fish species.'
+      ),
+      (
+        (
+          SELECT method_lookup_attribute_qualitative_id 
+          FROM method_lookup_attribute_qualitative mlaq 
+          INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id 
+          INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
+          WHERE taq.name = 'Bait' AND ml.name = 'Angling'
+        ),
+        'Maggots',
+        'Bait commonly used for attracting a variety of fish species.'
+      ),
+      (
+        (
+          SELECT method_lookup_attribute_qualitative_id 
+          FROM method_lookup_attribute_qualitative mlaq 
+          INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id 
+          INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
+          WHERE taq.name = 'Bait' AND ml.name = 'Angling'
+        ),
+        'Fly',
+        'An artificial lure designed to imitate insects or other prey, typically made with feathers, thread, and other materials, used primarily in fly fishing to attract fish.'
       ),
       (
         (
@@ -1234,7 +1279,7 @@ export async function up(knex: Knex): Promise<void> {
           INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
           WHERE taq.name = 'Fishing technique' AND ml.name = 'Angling'
         ),
-        'Float',
+        'Float fishing',
         'A floating device used to keep bait at a desired depth and indicate when a fish bites.'
       ),
       (
@@ -1245,7 +1290,7 @@ export async function up(knex: Knex): Promise<void> {
           INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
           WHERE taq.name = 'Fishing technique' AND ml.name = 'Angling'
         ),
-         'Sinker',
+         'Bottom fishing',
          'A weight used to take the bait to the bottom or to a specific depth in the water.'
       ),
       (
