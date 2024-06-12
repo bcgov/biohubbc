@@ -1,7 +1,9 @@
 import { AxiosInstance } from 'axios';
 import {
   CBMeasurementSearchByTermResponse,
-  CBMeasurementSearchByTsnResponse
+  CBMeasurementSearchByTsnResponse,
+  ICollectionCategory,
+  ICollectionUnit
 } from 'interfaces/useCritterApi.interface';
 
 export const useXrefApi = (axios: AxiosInstance) => {
@@ -29,8 +31,32 @@ export const useXrefApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get collection (ie. ecological) units that are available for a given taxon (by itis tsn).
+   *
+   * @param {number} tsn
+   * @return {*}  {Promise<ICollectionCategory[]>}
+   */
+  const getTsnCollectionCategories = async (tsn: number): Promise<ICollectionCategory[]> => {
+    const { data } = await axios.get(`/api/critterbase/xref/taxon-collection-categories?tsn=${tsn}`);
+    return data;
+  };
+
+  /**
+   * Get collection (ie. ecological) units that are available for a given taxon
+   *
+   * @param {string} unit_id
+   * @return {*}  {Promise<ICollectionUnit[]>}
+   */
+  const getCollectionUnits = async (unit_id: string): Promise<ICollectionUnit[]> => {
+    const { data } = await axios.get(`/api/critterbase/xref/collection-units/${unit_id}`);
+    return data;
+  };
+
   return {
     getTaxonMeasurements,
-    getMeasurementTypeDefinitionsBySearchTerm
+    getMeasurementTypeDefinitionsBySearchTerm,
+    getTsnCollectionCategories,
+    getCollectionUnits
   };
 };

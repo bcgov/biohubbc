@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { AsyncFunction, useAsync } from './useAsync';
 import useIsMounted from './useIsMounted';
 
@@ -85,35 +85,41 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
 
   const getData = useAsync(fetchData);
 
-  const loadData = async (...args: AFArgs): Promise<AFResponse | undefined> => {
-    try {
-      setIsLoading(true);
+  const loadData = useCallback(
+    async (...args: AFArgs): Promise<AFResponse | undefined> => {
+      try {
+        setIsLoading(true);
+        setError(undefined);
+        setIsReady(false);
 
-      const response = await getData(...args);
+        const response = await getData(...args);
 
-      if (!isMounted()) {
-        return;
-      }
+        if (!isMounted()) {
+          return;
+        }
 
-      setData(response);
+        setData(response);
 
-      return response;
-    } catch (error) {
-      if (!isMounted()) {
-        return;
-      }
+        return response;
+      } catch (error) {
+        if (!isMounted()) {
+          return;
+        }
 
-      setError(error);
-
-      onError?.(error);
-    } finally {
-      if (isMounted()) {
+        setError(error);
         setIsLoading(false);
-        setIsReady(true);
-        setHasLoaded(true);
+
+        onError?.(error);
+      } finally {
+        if (isMounted()) {
+          setIsLoading(false);
+          setIsReady(true);
+          setHasLoaded(true);
+        }
       }
-    }
-  };
+    },
+    [getData, isMounted, onError]
+  );
 
   const load = async (...args: AFArgs) => {
     if (oneTimeLoad) {
@@ -124,12 +130,20 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
     return loadData(...args);
   };
 
-  const refresh = async (...args: AFArgs) => {
-    setError(undefined);
-    setIsLoading(false);
-    setIsReady(false);
-    return loadData(...args);
-  };
+  const refresh = useCallback(
+    async (...args: AFArgs) => {
+      // Clear previous data and state
+      setData(undefined);
+      setError(undefined);
+      setIsLoading(false);
+      setIsReady(false);
+      setHasLoaded(false);
+
+      // Call loadData to fetch new data
+      return loadData(...args);
+    },
+    [loadData]
+  );
 
   const clearError = () => {
     setError(undefined);

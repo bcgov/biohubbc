@@ -29,7 +29,7 @@ import FormLocationPreview from './LocationEntryForm';
  * @returns {*}
  */
 const MortalityAnimalForm = (props: AnimalFormProps<IMortalityResponse>) => {
-  const cbApi = useCritterbaseApi();
+  const critterbaseApi = useCritterbaseApi();
   const dialog = useDialogContext();
 
   const [loading, setLoading] = useState(false);
@@ -41,11 +41,11 @@ const MortalityAnimalForm = (props: AnimalFormProps<IMortalityResponse>) => {
 
     try {
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-        await cbApi.mortality.createMortality(patchedValues);
+        await critterbaseApi.mortality.createMortality(patchedValues);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created mortality.` });
       }
       if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-        await cbApi.mortality.updateMortality(patchedValues);
+        await critterbaseApi.mortality.updateMortality(patchedValues);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited mortality.` });
       }
     } catch (err) {
@@ -68,13 +68,15 @@ const MortalityAnimalForm = (props: AnimalFormProps<IMortalityResponse>) => {
         initialValues: {
           critter_id: props.critter.critter_id,
           mortality_id: props.formObject?.mortality_id,
-          location: {
-            location_id: props?.formObject?.location.location_id,
-            latitude: props?.formObject?.location?.latitude ?? ('' as unknown as number),
-            longitude: props?.formObject?.location?.longitude ?? ('' as unknown as number),
-            coordinate_uncertainty: props?.formObject?.location?.coordinate_uncertainty ?? ('' as unknown as number),
-            coordinate_uncertainty_unit: props?.formObject?.location?.coordinate_uncertainty_unit ?? 'm'
-          },
+          location:
+            (props.formObject && {
+              location_id: props.formObject?.location?.location_id,
+              latitude: props.formObject?.location?.latitude ?? ('' as unknown as number),
+              longitude: props.formObject?.location?.longitude ?? ('' as unknown as number),
+              coordinate_uncertainty: props.formObject?.location?.coordinate_uncertainty ?? ('' as unknown as number),
+              coordinate_uncertainty_unit: props.formObject?.location?.coordinate_uncertainty_unit ?? 'm'
+            }) ||
+            null,
           mortality_timestamp: (props.formObject?.mortality_timestamp ?? '') as unknown as Date,
           mortality_comment: props.formObject?.mortality_comment ?? undefined,
           proximate_cause_of_death_id: props.formObject?.proximate_cause_of_death_id ?? '',
