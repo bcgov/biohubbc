@@ -4,6 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
 import { paginationRequestQueryParamSchema } from '../../../../../../openapi/schemas/pagination';
+import { techniqueDetailsSchema } from '../../../../../../openapi/schemas/technique';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { AttractantService } from '../../../../../../services/attractants-service';
 import { TechniqueAttributeService } from '../../../../../../services/technique-attributes-service';
@@ -69,103 +70,7 @@ POST.apiDoc = {
           properties: {
             techniques: {
               type: 'array',
-              items: {
-                type: 'object',
-                required: [
-                  'name',
-                  'description',
-                  'method_lookup_id',
-                  'distance_threshold',
-                  'attractants',
-                  'attributes'
-                ],
-                additionalProperties: false,
-                properties: {
-                  name: {
-                    type: 'string',
-                    description: 'Name of the technique.'
-                  },
-                  description: {
-                    type: 'string',
-                    description: 'Description of the technique.'
-                  },
-                  method_lookup_id: {
-                    type: 'integer',
-                    description: 'The ID of a known method type.',
-                    minimum: 1
-                  },
-                  distance_threshold: {
-                    type: 'number',
-                    description: 'Maximum detection distance (meters).',
-                    nullable: true
-                  },
-                  attractants: {
-                    type: 'array',
-                    description: 'Attractants used to lure species during the technique.',
-                    items: {
-                      type: 'object',
-                      required: ['attractant_lookup_id'],
-                      additionalProperties: false,
-                      properties: {
-                        attractant_lookup_id: {
-                          type: 'integer',
-                          description: 'The ID of a known attractant type.'
-                        }
-                      }
-                    }
-                  },
-                  attributes: {
-                    type: 'object',
-                    description: 'Attributes of the technique.',
-                    required: ['qualitative_attributes', 'quantitative_attributes'],
-                    additionalProperties: false,
-                    properties: {
-                      qualitative_attributes: {
-                        type: 'array',
-                        items: {
-                          type: 'object',
-                          required: [
-                            'method_lookup_attribute_qualitative_id',
-                            'method_lookup_attribute_qualitative_option_id'
-                          ],
-                          additionalProperties: false,
-                          properties: {
-                            method_lookup_attribute_qualitative_id: {
-                              type: 'string',
-                              format: 'uuid',
-                              description: 'The ID of a known qualitative attribute.'
-                            },
-                            method_lookup_attribute_qualitative_option_id: {
-                              type: 'string',
-                              format: 'uuid',
-                              description: 'The ID of a known qualitative attribute option.'
-                            }
-                          }
-                        }
-                      },
-                      quantitative_attributes: {
-                        type: 'array',
-                        items: {
-                          type: 'object',
-                          required: ['method_lookup_attribute_quantitative_id', 'value'],
-                          additionalProperties: false,
-                          properties: {
-                            method_lookup_attribute_quantitative_id: {
-                              type: 'string',
-                              format: 'uuid',
-                              description: 'The ID of a known quantitative attribute.'
-                            },
-                            value: {
-                              type: 'number',
-                              description: 'The value of the quantitative attribute.'
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              }
+              items: techniqueDetailsSchema
             }
           }
         }
@@ -323,117 +228,9 @@ GET.apiDoc = {
             properties: {
               techniques: {
                 type: 'array',
-                items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  required: [
-                    'name',
-                    'description',
-                    'distance_threshold',
-                    'method_technique_id',
-                    'attractants',
-                    'qualitative_attributes',
-                    'quantitative_attributes'
-                  ],
-                  properties: {
-                    method_technique_id: {
-                      type: 'integer',
-                      description: 'Identifier of the technique.'
-                    },
-                    name: {
-                      type: 'string',
-                      description: 'Name of the technique.'
-                    },
-                    description: {
-                      type: 'string',
-                      description: 'Description of the technique.',
-                      nullable: true
-                    },
-                    distance_threshold: {
-                      type: 'number',
-                      description: 'Distance over which data were not measured.',
-                      nullable: true
-                    },
-                    method_lookup_id: {
-                      type: 'integer',
-                      description: 'Foreign key reference to a method lookup value.'
-                    },
-                    attractants: {
-                      type: 'array',
-                      description: 'Attractants used to lure species.',
-                      items: {
-                        type: 'object',
-                        additionalProperties: false,
-                        required: ['method_technique_attractant_id', 'attractant_lookup_id'],
-                        properties: {
-                          method_technique_attractant_id: {
-                            type: 'number',
-                            description: 'Primary key of the attractant'
-                          },
-                          attractant_lookup_id: {
-                            type: 'number',
-                            description: 'Foreign key reference to a attractant lookup value.'
-                          }
-                        }
-                      }
-                    },
-                    qualitative_attributes: {
-                      type: 'array',
-                      description: 'Qualitative attributes describing the technique.',
-                      items: {
-                        type: 'object',
-                        required: [
-                          'method_technique_attribute_qualitative_id',
-                          'method_lookup_attribute_qualitative_id',
-                          'method_lookup_attribute_qualitative_option_id'
-                        ],
-                        additionalProperties: false,
-                        properties: {
-                          method_technique_attribute_qualitative_id: {
-                            type: 'number',
-                            description: 'Primary key identifying the attribute.'
-                          },
-                          method_lookup_attribute_qualitative_id: {
-                            type: 'string',
-                            description: 'Foreign key reference to a qualitative attribute lookup value.'
-                          },
-                          method_lookup_attribute_qualitative_option_id: {
-                            type: 'string',
-                            description: 'Foreign key reference to a qualitative attribute lookup value.'
-                          }
-                        }
-                      }
-                    },
-                    quantitative_attributes: {
-                      type: 'array',
-                      description: 'Quantitative attributes describing the technique.',
-                      items: {
-                        type: 'object',
-                        required: [
-                          'method_technique_attribute_quantitative_id',
-                          'method_lookup_attribute_quantitative_id',
-                          'value'
-                        ],
-                        additionalProperties: false,
-                        properties: {
-                          method_technique_attribute_quantitative_id: {
-                            type: 'number',
-                            description: 'Primary key identifying the attribute.'
-                          },
-                          method_lookup_attribute_quantitative_id: {
-                            type: 'string',
-                            description: 'Foreign key reference to a quantitative attribute lookup value.'
-                          },
-                          value: {
-                            type: 'number',
-                            description: 'Value of the attribute'
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
+                items: techniqueDetailsSchema
               },
+              
               count: {
                 type: 'number',
                 description: 'Count of method techniques in the respective survey.'

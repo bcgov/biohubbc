@@ -20,8 +20,10 @@ export interface IGetTechnique {
   description: string | null;
   distance_threshold: number | null;
   method_lookup_id: number;
-  quantitative_attributes: IQuantitativeAttributeRecord[];
-  qualitative_attributes: IQualitativeAttributeRecord[];
+  attributes: {
+    quantitative_attributes: IQuantitativeAttributeRecord[];
+    qualitative_attributes: IQualitativeAttributeRecord[];
+  };
   attractants: { attractant_lookup_id: number }[];
 }
 
@@ -57,20 +59,22 @@ export const TechniqueObject = z.object({
   distance_threshold: z.number().nullable(),
   method_lookup_id: z.number(),
   attractants: z.array(z.object({ attractant_lookup_id: z.number() })),
-  quantitative_attributes: z.array(
-    z.object({
-      method_technique_attribute_quantitative_id: z.number(),
-      method_lookup_attribute_quantitative_id: z.string().uuid(),
-      value: z.number()
-    })
-  ),
-  qualitative_attributes: z.array(
-    z.object({
-      method_technique_attribute_qualitative_id: z.number(),
-      method_lookup_attribute_qualitative_id: z.string().uuid(),
-      method_lookup_attribute_qualitative_option_id: z.string().uuid()
-    })
-  )
+  attributes: z.object({
+    quantitative_attributes: z.array(
+      z.object({
+        method_technique_attribute_quantitative_id: z.number(),
+        method_lookup_attribute_quantitative_id: z.string().uuid(),
+        value: z.number()
+      })
+    ),
+    qualitative_attributes: z.array(
+      z.object({
+        method_technique_attribute_qualitative_id: z.number(),
+        method_lookup_attribute_qualitative_id: z.string().uuid(),
+        method_lookup_attribute_qualitative_option_id: z.string().uuid()
+      })
+    )
+  })
 });
 
 export type TechniqueObject = z.infer<typeof TechniqueObject>;
@@ -133,6 +137,25 @@ export class TechniqueRepository extends BaseRepository {
           .from('method_technique_attribute_qualitative')
           .groupBy('method_technique_id')
       )
+      .with(
+        'w_attributes',
+        knex
+          .select(
+            'w_quantitative_attributes.method_technique_id',
+            knex.raw(`
+      json_build_object(
+        'quantitative_attributes', w_quantitative_attributes.quantitative_attributes,
+        'qualitative_attributes', w_qualitative_attributes.qualitative_attributes
+      ) as attributes
+    `)
+          )
+          .from('w_quantitative_attributes')
+          .leftJoin(
+            'w_qualitative_attributes',
+            'w_qualitative_attributes.method_technique_id',
+            'w_quantitative_attributes.method_technique_id'
+          )
+      )
       .select(
         'mt.method_technique_id',
         'mt.name',
@@ -140,13 +163,11 @@ export class TechniqueRepository extends BaseRepository {
         'mt.distance_threshold',
         'mt.method_lookup_id',
         knex.raw(`COALESCE(w_attractants.attractants, '[]'::json) as attractants`),
-        knex.raw(`COALESCE(w_quantitative_attributes.quantitative_attributes, '[]'::json) as quantitative_attributes`),
-        knex.raw(`COALESCE(w_qualitative_attributes.qualitative_attributes, '[]'::json) as qualitative_attributes`)
+        knex.raw(`COALESCE(w_attributes.attributes, '{}'::json) as attributes`)
       )
       .from('method_technique as mt')
       .leftJoin('w_attractants', 'w_attractants.method_technique_id', 'mt.method_technique_id')
-      .leftJoin('w_qualitative_attributes', 'w_qualitative_attributes.method_technique_id', 'mt.method_technique_id')
-      .leftJoin('w_quantitative_attributes', 'w_quantitative_attributes.method_technique_id', 'mt.method_technique_id')
+      .leftJoin('w_attributes', 'w_attributes.method_technique_id', 'mt.method_technique_id')
       .where('mt.survey_id', surveyId);
 
     return queryBuilder;

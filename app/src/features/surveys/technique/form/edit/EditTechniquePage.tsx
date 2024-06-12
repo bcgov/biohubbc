@@ -67,14 +67,14 @@ const EditTechniquePage = () => {
     method_lookup_id: technique?.method_lookup_id ?? null,
     attractants: technique?.attractants,
     attributes: [
-      ...(technique?.qualitative_attributes.map((attribute) => ({
+      ...(technique?.attributes.qualitative_attributes.map((attribute) => ({
         _id: v4(), // attribute_id, which is the PK of the attribute, is not unique, so use temporary _id for unique key
         attribute_id: attribute.method_technique_attribute_qualitative_id ?? null,
         attribute_lookup_id: attribute.method_lookup_attribute_qualitative_id,
         attribute_value: attribute.method_lookup_attribute_qualitative_option_id,
         attribute_type: 'qualitative' as const
       })) ?? []),
-      ...(technique?.quantitative_attributes.map((attribute) => ({
+      ...(technique?.attributes.quantitative_attributes.map((attribute) => ({
         _id: v4(), // attribute_id, which is the PK of the attribute, is not unique, so use temporary _id for unique key
         attribute_id: attribute.method_technique_attribute_quantitative_id ?? null,
         attribute_lookup_id: attribute.method_lookup_attribute_quantitative_id,

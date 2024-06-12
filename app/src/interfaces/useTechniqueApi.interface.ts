@@ -46,8 +46,10 @@ export interface IGetTechnique {
   description: string | null;
   method_lookup_id: number;
   distance_threshold: number | null;
-  quantitative_attributes: QuantitativeAttribute[];
-  qualitative_attributes: QualitativeAttribute[];
+  attributes: {
+    quantitative_attributes: QuantitativeAttribute[];
+    qualitative_attributes: QualitativeAttribute[];
+  };
   attractants: TechniqueAttractant[];
 }
 

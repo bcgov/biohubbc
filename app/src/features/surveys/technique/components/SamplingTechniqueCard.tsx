@@ -15,7 +15,7 @@ interface ISamplingTechniqueCardProps {
 const SamplingTechniqueCard = (props: ISamplingTechniqueCardProps) => {
   const { technique, method_lookup_name, handleMenuClick } = props;
 
-  const attributes = [...technique.qualitative_attributes, ...technique.qualitative_attributes];
+  const attributes = [...technique.attributes.qualitative_attributes, ...technique.attributes.qualitative_attributes];
 
   return (
     <AccordionCard
