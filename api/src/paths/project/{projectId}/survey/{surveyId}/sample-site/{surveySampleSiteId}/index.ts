@@ -4,6 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
 import { GeoJSONFeature } from '../../../../../../../openapi/schemas/geoJson';
+import { techniqueSimpleViewSchema } from '../../../../../../../openapi/schemas/technique';
 import { UpdateSampleLocationRecord } from '../../../../../../../repositories/sample-location-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../../services/observation-service';
@@ -478,28 +479,7 @@ GET.apiDoc = {
                       type: 'integer',
                       minimum: 1
                     },
-                    technique: {
-                      type: 'object',
-                      properties: {
-                        method_technique_id: {
-                          type: 'integer'
-                        },
-                        name: {
-                          type: 'string'
-                        },
-                        description: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        attractants: {
-                          type: 'array',
-                          items: {
-                            type: 'integer',
-                            description: 'Attractant lookup IDs'
-                          }
-                        }
-                      }
-                    },
+                    technique: techniqueSimpleViewSchema,
                     description: {
                       type: 'string',
                       maxLength: 250

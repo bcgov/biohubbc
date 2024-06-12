@@ -160,7 +160,6 @@ export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(prop
           <Box display="flex" position="fixed">
             <IconButton
               onClick={(event) => {
-                console.log(params.row);
                 setSelectedTechnique(params.row.id);
                 setTechniqueAnchorEl(event.currentTarget);
               }}>
@@ -171,8 +170,6 @@ export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(prop
       }
     }
   ];
-
-  console.log(selectedTechnique);
 
   return (
     <>

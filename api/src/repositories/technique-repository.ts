@@ -95,12 +95,9 @@ export class TechniqueRepository extends BaseRepository {
         knex
           .select(
             'method_technique_id',
-            knex.raw(`
-          json_agg(json_build_object(
-            'method_technique_attractant_id', method_technique_attractant_id,
-            'attractant_lookup_id', attractant_lookup_id
-          )) as attractants
-        `)
+            knex.raw(`json_agg(json_build_object(
+          'attractant_lookup_id', attractant_lookup_id
+        )) as attractants`)
           )
           .from('method_technique_attractant')
           .groupBy('method_technique_id')
@@ -110,13 +107,11 @@ export class TechniqueRepository extends BaseRepository {
         knex
           .select(
             'method_technique_id',
-            knex.raw(`
-          json_agg(json_build_object(
-            'method_technique_attribute_quantitative_id', method_technique_attribute_quantitative_id,
-            'method_lookup_attribute_quantitative_id', method_lookup_attribute_quantitative_id,
-            'value', value
-          )) as quantitative_attributes
-        `)
+            knex.raw(`json_agg(json_build_object(
+          'method_technique_attribute_quantitative_id', method_technique_attribute_quantitative_id,
+          'method_lookup_attribute_quantitative_id', method_lookup_attribute_quantitative_id,
+          'value', value
+        )) as quantitative_attributes`)
           )
           .from('method_technique_attribute_quantitative')
           .groupBy('method_technique_id')
@@ -126,13 +121,11 @@ export class TechniqueRepository extends BaseRepository {
         knex
           .select(
             'method_technique_id',
-            knex.raw(`
-          json_agg(json_build_object(
-            'method_technique_attribute_qualitative_id', method_technique_attribute_qualitative_id,
-            'method_lookup_attribute_qualitative_id', method_lookup_attribute_qualitative_id,
-            'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id
-          )) as qualitative_attributes
-        `)
+            knex.raw(`json_agg(json_build_object(
+          'method_technique_attribute_qualitative_id', method_technique_attribute_qualitative_id,
+          'method_lookup_attribute_qualitative_id', method_lookup_attribute_qualitative_id,
+          'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id
+        )) as qualitative_attributes`)
           )
           .from('method_technique_attribute_qualitative')
           .groupBy('method_technique_id')
@@ -142,12 +135,10 @@ export class TechniqueRepository extends BaseRepository {
         knex
           .select(
             'w_quantitative_attributes.method_technique_id',
-            knex.raw(`
-      json_build_object(
-        'quantitative_attributes', w_quantitative_attributes.quantitative_attributes,
-        'qualitative_attributes', w_qualitative_attributes.qualitative_attributes
-      ) as attributes
-    `)
+            knex.raw(`json_build_object(
+          'quantitative_attributes', COALESCE(w_quantitative_attributes.quantitative_attributes, '[]'::json),
+          'qualitative_attributes', COALESCE(w_qualitative_attributes.qualitative_attributes, '[]'::json)
+        ) as attributes`)
           )
           .from('w_quantitative_attributes')
           .leftJoin(
@@ -163,7 +154,9 @@ export class TechniqueRepository extends BaseRepository {
         'mt.distance_threshold',
         'mt.method_lookup_id',
         knex.raw(`COALESCE(w_attractants.attractants, '[]'::json) as attractants`),
-        knex.raw(`COALESCE(w_attributes.attributes, '{}'::json) as attributes`)
+        knex.raw(
+          `COALESCE(w_attributes.attributes, '{"quantitative_attributes": [], "qualitative_attributes": []}'::json) as attributes`
+        )
       )
       .from('method_technique as mt')
       .leftJoin('w_attractants', 'w_attractants.method_technique_id', 'mt.method_technique_id')
@@ -200,9 +193,12 @@ export class TechniqueRepository extends BaseRepository {
    */
   async getTechniquesForSurveyId(surveyId: number): Promise<IGetTechnique[]> {
     defaultLog.debug({ label: 'getTechniquesForSurveyId', surveyId });
+
     const queryBuilder = this._generateGetTechniqueQuery(surveyId);
 
     const response = await this.connection.knex(queryBuilder, TechniqueObject);
+
+    console.log(response.rows);
 
     return response.rows;
   }

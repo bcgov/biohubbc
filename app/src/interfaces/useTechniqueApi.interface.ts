@@ -13,7 +13,6 @@ export type QuantitativeAttribute = {
 };
 
 export type TechniqueAttractant = {
-  method_technique_attractant_id?: number;
   attractant_lookup_id: number;
 };
 

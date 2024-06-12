@@ -8,9 +8,7 @@ import {
   TechniqueFormValues
 } from 'features/surveys/technique/form/components/TechniqueForm';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
-import { useEffect, useMemo } from 'react';
+import { ITechniqueAttributeQualitative, ITechniqueAttributeQuantitative } from 'interfaces/useReferenceApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 import { v4 } from 'uuid';
 import { TechniqueAttributeForm } from './components/TechniqueAttributeForm';
@@ -24,36 +22,22 @@ const initialAttributeFormValues: Partial<TechniqueAttributeFormValues> = {
   attribute_type: undefined
 };
 
+interface ITechniqueAttributesFormProps {
+  attributeTypeDefinitions: (ITechniqueAttributeQualitative | ITechniqueAttributeQuantitative)[];
+}
+
 /**
  * Create survey - general information fields
  *
  * @return {*}
  */
-export const TechniqueAttributesForm = () => {
-  const biohubApi = useBiohubApi();
+export const TechniqueAttributesForm = (props: ITechniqueAttributesFormProps) => {
+  const attributeTypeDefinitions = props.attributeTypeDefinitions;
 
   const { values } = useFormikContext<TechniqueFormValues>();
 
-  const attributeTypeDefinitionDataLoader = useDataLoader((method_lookup_id: number) =>
-    biohubApi.reference.getTechniqueAttributes([method_lookup_id])
-  );
-
-  const attributeTypeDefinitions = useMemo(
-    () =>
-      attributeTypeDefinitionDataLoader.data?.flatMap((attribute) => [
-        ...attribute.qualitative_attributes,
-        ...attribute.quantitative_attributes
-      ]) ?? [],
-    [attributeTypeDefinitionDataLoader.data]
-  );
-
-  useEffect(() => {
-    if (!values.method_lookup_id) {
-      return;
-    }
-
-    attributeTypeDefinitionDataLoader.load(values.method_lookup_id);
-  }, [values.method_lookup_id, attributeTypeDefinitionDataLoader]);
+  console.log(attributeTypeDefinitions)
+  console.log(values)
 
   return (
     <FieldArray

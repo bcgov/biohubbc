@@ -151,8 +151,7 @@ export class SampleLocationRepository extends BaseRepository {
       JSON_BUILD_OBJECT(
         'method_technique_id', mt.method_technique_id,
         'name', mt.name,
-        'description', mt.description,
-        'attractants', COALESCE(wmta.attractants, '[]'::JSON)
+        'description', mt.description
       ) AS method_technique
     `)
           )

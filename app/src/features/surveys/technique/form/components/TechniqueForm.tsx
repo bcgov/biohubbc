@@ -3,7 +3,10 @@ import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { TechniqueAttributesForm } from 'features/surveys/technique/form/components/attributes/TechniqueAttributesForm';
 import { Formik, FormikProps } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
+import { useMemo } from 'react';
 import { isDefined } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { TechniqueAttractantsForm } from './attractants/TechniqueAttractantsForm';
@@ -49,6 +52,21 @@ interface ITechniqueFormProps {
 const TechniqueForm = (props: ITechniqueFormProps) => {
   const { initialData, handleSubmit, formikRef } = props;
 
+  const biohubApi = useBiohubApi();
+
+  const attributeTypeDefinitionDataLoader = useDataLoader((method_lookup_id: number) =>
+    biohubApi.reference.getTechniqueAttributes([method_lookup_id])
+  );
+
+  const attributeTypeDefinitions = useMemo(
+    () =>
+      attributeTypeDefinitionDataLoader.data?.flatMap((attribute) => [
+        ...(attribute.qualitative_attributes ?? []),
+        ...(attribute.quantitative_attributes ?? [])
+      ]) ?? [],
+    [attributeTypeDefinitionDataLoader.data, formikRef.current?.values.method_lookup_id]
+  );
+
   const techniqueYupSchema = yup.object({
     name: yup.string().required('Name is required.'),
     description: yup.string().nullable(),
@@ -88,14 +106,18 @@ const TechniqueForm = (props: ITechniqueFormProps) => {
         <HorizontalSplitFormComponent
           title="General Information"
           summary="Enter information about the technique"
-          component={<TechniqueGeneralInformationForm />}></HorizontalSplitFormComponent>
+          component={
+            <TechniqueGeneralInformationForm attributeTypeDefinitionsDataLoader={attributeTypeDefinitionDataLoader} />
+          }></HorizontalSplitFormComponent>
 
         <Divider />
 
         <HorizontalSplitFormComponent
           title="Details"
           summary="Enter additional information about the technique"
-          component={<TechniqueAttributesForm />}></HorizontalSplitFormComponent>
+          component={
+            <TechniqueAttributesForm attributeTypeDefinitions={attributeTypeDefinitions} />
+          }></HorizontalSplitFormComponent>
 
         <Divider />
 

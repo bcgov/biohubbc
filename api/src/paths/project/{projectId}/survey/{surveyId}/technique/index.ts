@@ -4,7 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
 import { paginationRequestQueryParamSchema } from '../../../../../../openapi/schemas/pagination';
-import { techniqueDetailsSchema } from '../../../../../../openapi/schemas/technique';
+import { techniqueDetailsSchema, techniqueViewSchema } from '../../../../../../openapi/schemas/technique';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { AttractantService } from '../../../../../../services/attractants-service';
 import { TechniqueAttributeService } from '../../../../../../services/technique-attributes-service';
@@ -12,6 +12,7 @@ import { TechniqueService } from '../../../../../../services/technique-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/technique/index');
+
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -99,6 +100,11 @@ POST.apiDoc = {
   }
 };
 
+/**
+ * Create one or more Survey techniques
+ * 
+ * @returns 
+ */
 export function createTechniques(): RequestHandler {
   return async (req, res) => {
     if (!req.params.surveyId) {
@@ -228,9 +234,9 @@ GET.apiDoc = {
             properties: {
               techniques: {
                 type: 'array',
-                items: techniqueDetailsSchema
+                items: techniqueViewSchema
               },
-              
+
               count: {
                 type: 'number',
                 description: 'Count of method techniques in the respective survey.'
@@ -280,6 +286,8 @@ export function getTechniques(): RequestHandler {
       const techniques = await techniqueService.getTechniquesForSurveyId(surveyId);
 
       const sampleSitesTotalCount = await techniqueService.getTechniquesCountForSurveyId(surveyId);
+
+      console.log(techniques);
 
       await connection.commit();
 

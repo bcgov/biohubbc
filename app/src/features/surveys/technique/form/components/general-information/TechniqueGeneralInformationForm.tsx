@@ -6,18 +6,26 @@ import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubte
 import { TechniqueFormValues } from 'features/surveys/technique/form/components/TechniqueForm';
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
+import { DataLoader } from 'hooks/useDataLoader';
+import { IGetTechniqueAttributes } from 'interfaces/useReferenceApi.interface';
 
 import { useEffect } from 'react';
+
+interface ITechniqueGeneralInformationFormProps {
+  attributeTypeDefinitionsDataLoader: DataLoader<[method_lookup_id: number], IGetTechniqueAttributes[], undefined>;
+}
 
 /**
  * Technique general information form.
  *
  * @return {*}
  */
-export const TechniqueGeneralInformationForm = () => {
+export const TechniqueGeneralInformationForm = (props: ITechniqueGeneralInformationFormProps) => {
+  const attributeTypeDefinitionDataLoader = props.attributeTypeDefinitionsDataLoader;
+
   const codesContext = useCodesContext();
 
-  const { setFieldValue } = useFormikContext<TechniqueFormValues>();
+  const { setFieldValue, values } = useFormikContext<TechniqueFormValues>();
 
   const methodOptions: ISelectWithSubtextFieldOption[] =
     codesContext.codesDataLoader.data?.sample_methods.map((option) => ({
@@ -29,6 +37,12 @@ export const TechniqueGeneralInformationForm = () => {
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
+
+  useEffect(() => {
+    if (values.method_lookup_id) {
+      attributeTypeDefinitionDataLoader.load(values.method_lookup_id);
+    }
+  }, []);
 
   if (!codesContext.codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -63,6 +77,7 @@ export const TechniqueGeneralInformationForm = () => {
             onChange={(_, value) => {
               if (value?.value) {
                 setFieldValue('method_lookup_id', value.value);
+                attributeTypeDefinitionDataLoader.refresh(Number(value.value));
               }
             }}
           />

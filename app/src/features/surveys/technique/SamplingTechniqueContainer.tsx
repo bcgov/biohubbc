@@ -82,7 +82,6 @@ const SamplingSiteTechniqueContainer = () => {
                   display="flex"
                   bgcolor={grey[100]}
                   position="relative">
-                  {/* <Box component="img" src={datagridOverlayImage} position="absolute" width="700px" /> */}
                   <Box justifyContent="center" display="flex" flexDirection="column">
                     <Typography mb={1} variant="h4" color="textSecondary" textAlign="center">
                       Add a technique&nbsp;

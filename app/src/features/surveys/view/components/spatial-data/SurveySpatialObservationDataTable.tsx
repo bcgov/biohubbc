@@ -6,7 +6,6 @@ import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridOverlay, GridSortModel } from '@mui/x-data-grid';
-import datagridOverlayImage from 'assets/images/observations-overlay.png';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
@@ -229,13 +228,6 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
           data-testid="survey-spatial-observation-data-table"
           noRowsOverlay={
             <GridOverlay sx={{ position: 'relative' }}>
-              <Box
-                sx={{ opacity: 0.15 }}
-                component="img"
-                src={datagridOverlayImage}
-                position="absolute"
-                width="1400px"
-              />
               <Box justifyContent="center" display="flex" flexDirection="column">
                 <Typography mb={1} variant="h4" color="textSecondary" textAlign="center">
                   Add observations after sampling information&nbsp;

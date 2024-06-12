@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
-import { techniqueDetailsSchema } from '../../../../../../../openapi/schemas/technique';
+import { techniqueDetailsSchema, techniqueViewSchema } from '../../../../../../../openapi/schemas/technique';
 import { ITechniquePostData } from '../../../../../../../repositories/technique-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttractantService } from '../../../../../../../services/attractants-service';
@@ -352,6 +352,15 @@ GET.apiDoc = {
         minimum: 1
       },
       required: true
+    },
+    {
+      in: 'path',
+      name: 'techniqueId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
     }
   ],
   responses: {
@@ -359,7 +368,7 @@ GET.apiDoc = {
       description: 'A survey sample site',
       content: {
         'application/json': {
-          schema: techniqueDetailsSchema
+          schema: techniqueViewSchema
         }
       }
     },
@@ -382,7 +391,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get a single survey sample site by Id
+ * Get a single technique by Id
  *
  * @returns {RequestHandler}
  */

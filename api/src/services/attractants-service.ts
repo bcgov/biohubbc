@@ -62,15 +62,17 @@ export class AttractantService extends DBService {
       await this.attractantRepository.deleteTechniqueAttractants(techniqueId, attractantIdsToDelete);
     }
 
-    // If the incoming data does not have method_technique_attractant_id, record is for insert
-    const attractantsForInsert = attractants.filter((attractant) => !attractant.method_technique_attractant_id);
+    // If the incoming data does not yet exist in the DB, insert the record
+    const attractantsForInsert = attractants.filter(
+      (incoming) =>
+        !existingAttractants.some((existing) => existing.attractant_lookup_id === incoming.attractant_lookup_id)
+    );
 
     if (attractantsForInsert.length > 0) {
       await this.attractantRepository.insertAttractantsForTechnique(techniqueId, attractantsForInsert);
     }
 
-    // If incoming records are not to be deleted or inserted, no change is necessary (ie. no need to actually update since
-    // the data is simply the join between an attractant and technique).
+    // If the incoming data already exists in the DB, do nothing
   }
 
   /**

@@ -6,7 +6,6 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridOverlay } from '@mui/x-data-grid';
-import datagridOverlayImage from 'assets/images/sample-site-overlay.png';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -106,7 +105,6 @@ export const SurveySamplingData = <T extends IGetTechnique>() => {
 
       <Divider />
 
-      {/* <Box component="img" src={datagridOverlayImage} position="absolute" zIndex={999} /> */}
       <Box p={2} position="relative">
         {activeView === SurveySamplingViewEnum.TECHNIQUES && (
           <Box position="relative">
@@ -119,7 +117,6 @@ export const SurveySamplingData = <T extends IGetTechnique>() => {
               disableRowSelectionOnClick
               noRowsOverlay={
                 <GridOverlay>
-                  <Box component="img" src={datagridOverlayImage} position="absolute" width="700px" />
                   <Box justifyContent="center" display="flex" flexDirection="column">
                     <Typography mb={1} variant="h4" color="textSecondary" textAlign="center">
                       Start by adding sampling information&nbsp;

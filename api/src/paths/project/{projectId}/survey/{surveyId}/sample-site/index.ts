@@ -8,6 +8,7 @@ import {
   paginationRequestQueryParamSchema,
   paginationResponseSchema
 } from '../../../../../../openapi/schemas/pagination';
+import { techniqueSimpleViewSchema } from '../../../../../../openapi/schemas/technique';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { PostSampleLocations, SampleLocationService } from '../../../../../../services/sample-location-service';
 import { getLogger } from '../../../../../../utils/logger';
@@ -127,28 +128,7 @@ GET.apiDoc = {
                             type: 'integer',
                             minimum: 1
                           },
-                          technique: {
-                            type: 'object',
-                            properties: {
-                              method_technique_id: {
-                                type: 'integer'
-                              },
-                              name: {
-                                type: 'string'
-                              },
-                              description: {
-                                type: 'string',
-                                nullable: true
-                              },
-                              attractants: {
-                                type: 'array',
-                                items: {
-                                  type: 'integer',
-                                  description: 'Attractant lookup IDs'
-                                }
-                              }
-                            }
-                          },
+                          technique: techniqueSimpleViewSchema,
                           method_response_metric_id: {
                             type: 'integer',
                             minimum: 1

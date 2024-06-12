@@ -16,7 +16,6 @@ export const AttractantRecord = z.object({
 export type AttractantRecord = z.infer<typeof AttractantRecord>;
 
 export interface IAttractantPostData {
-  method_technique_attractant_id?: number;
   attractant_lookup_id: number;
 }
 

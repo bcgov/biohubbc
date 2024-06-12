@@ -48,8 +48,7 @@ export const SampleMethodDetails = SampleMethodRecord.extend({
   technique: z.object({
     method_technique_id: z.number(),
     name: z.string(),
-    description: z.string().nullable(),
-    attractants: z.array(z.number())
+    description: z.string().nullable()
   })
 });
 export type SampleMethodDetails = z.infer<typeof SampleMethodDetails>;

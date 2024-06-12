@@ -53,10 +53,7 @@ export const TechniqueAttractantsForm = () => {
             }
             onChange={(_, value) => {
               if (value?.value) {
-                setFieldValue('attractants', [
-                  ...values.attractants,
-                  { method_technique_attractant_id: null, attractant_lookup_id: value.value }
-                ]);
+                setFieldValue('attractants', [...values.attractants, { attractant_lookup_id: value.value }]);
               }
             }}
           />
