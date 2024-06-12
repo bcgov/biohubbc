@@ -101,13 +101,15 @@ export const CreateTechniquePage = () => {
           qualitative_attributes: values.attributes
             .filter(({ attribute_type }) => attribute_type === 'qualitative')
             .map((item) => ({
-              method_technique_attribute_qualitative_id: item.attribute_id,
+              method_technique_attribute_qualitative_id: null,
+              method_lookup_attribute_qualitative_id: item.attribute_lookup_id,
               method_lookup_attribute_qualitative_option_id: item.attribute_value as string
             })),
           quantitative_attributes: values.attributes
             .filter(({ attribute_type }) => attribute_type === 'quantitative')
             .map((item) => ({
-              method_technique_attribute_quantitative_id: item.attribute_id,
+              method_technique_attribute_quantitative_id: null,
+              method_lookup_attribute_quantitative_id: item.attribute_lookup_id,
               value: item.attribute_value as number
             }))
         }

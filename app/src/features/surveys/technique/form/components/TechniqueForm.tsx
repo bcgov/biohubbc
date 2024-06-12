@@ -12,14 +12,22 @@ import { TechniqueGeneralInformationForm } from './general-information/Technique
 
 export type TechniqueAttributeFormValues =
   | {
-      _id?: string; // internal ID used for form control. Not to be sent to API.
-      attribute_id: string;
+      // internal ID used for form control. Not to be sent to API.
+      _id?: string;
+      // Primary key of the record. Will be null for new records.
+      attribute_id: number | null;
+      // Lookup Id
+      attribute_lookup_id: string;
       attribute_value: string;
       attribute_type: 'qualitative'; // discriminator
     }
   | {
-      _id?: string; // internal ID used for form control. Not to be sent to API.
-      attribute_id: string;
+      // internal ID used for form control. Not to be sent to API.
+      _id?: string;
+      // Primary key of the record. Will be null for new records.
+      attribute_id: number | null;
+      // Lookup Id
+      attribute_lookup_id: string;
       attribute_value: number;
       attribute_type: 'quantitative'; // discriminator
     };
@@ -47,7 +55,7 @@ const TechniqueForm = (props: ITechniqueFormProps) => {
     method_lookup_id: yup.number().required('A method type is required.'),
     attributes: yup.array(
       yup.object().shape({
-        attribute_id: yup.string().required('Attribute type is required.'),
+        attribute_lookup_id: yup.string().required('Attribute type is required.'),
         attribute_value: yup.mixed().test('is-valid-attribute', 'Attribute value is required.', function (value) {
           const { attribute_type } = this.parent;
 
@@ -64,26 +72,6 @@ const TechniqueForm = (props: ITechniqueFormProps) => {
           return yup.number().isValidSync(value);
         })
       })
-      // .test('is-valid-attribute', 'Attribute must have a type and a value', function (_value) {
-      //   const { taxon_measurement_id } = _value;
-      //   const path = this.path;
-      //   if (taxon_measurement_id && !isDefined(_value.value) && !isDefined(_value.qualitative_option_id)) {
-      //     // Attribute type is defined but neither value nor qualitative option is defined, add errors for both
-      //     const errors = [
-      //       this.createError({
-      //         path: `${path}.qualitative_option_id`,
-      //         message: 'Attribute value is required.'
-      //       }),
-      //       this.createError({
-      //         path: `${path}.value`,
-      //         message: 'Attribute value is required.'
-      //       })
-      //     ];
-      //     return new yup.ValidationError(errors);
-      //   }
-      //   // Field value is not defined, return valid
-      //   return true;
-      // })
     ),
     distance_threshold: yup.number().nullable()
   });

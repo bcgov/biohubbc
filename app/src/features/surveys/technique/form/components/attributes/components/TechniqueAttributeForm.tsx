@@ -41,17 +41,17 @@ export const TechniqueAttributeForm = (props: ITechniqueAttributeFormProps) => {
       values.attributes[index]
         ? attributeTypeDefinitions.find((attribute) => {
             if ('method_lookup_attribute_qualitative_id' in attribute) {
-              return attribute.method_lookup_attribute_qualitative_id === values.attributes[index].attribute_id;
+              return attribute.method_lookup_attribute_qualitative_id === values.attributes[index].attribute_lookup_id;
             }
 
-            return attribute.method_lookup_attribute_quantitative_id === values.attributes[index].attribute_id;
+            return attribute.method_lookup_attribute_quantitative_id === values.attributes[index].attribute_lookup_id;
           })
         : undefined,
     [attributeTypeDefinitions, index, values.attributes]
   );
 
   const unavailableAttributeIds = useMemo(() => {
-    return values.attributes.map((attribute) => attribute.attribute_id);
+    return values.attributes.map((attribute) => attribute.attribute_lookup_id);
   }, [values.attributes]);
 
   const selectedAttributeId = selectedAttributeTypeDefinition && getAttributeId(selectedAttributeTypeDefinition);
@@ -79,8 +79,8 @@ export const TechniqueAttributeForm = (props: ITechniqueAttributeFormProps) => {
         backgroundColor: grey[100]
       }}>
       <AutocompleteField
-        id={`attributes.[${index}].attribute_id`}
-        name={`attributes.[${index}].attribute_id`}
+        id={`attributes.[${index}].attribute_lookup_id`}
+        name={`attributes.[${index}].attribute_lookup_id`}
         label="Attribute"
         options={attributesOptionsForAutocomplete}
         onChange={(_, option) => {
@@ -90,7 +90,7 @@ export const TechniqueAttributeForm = (props: ITechniqueAttributeFormProps) => {
 
           setFieldValue(`attributes.[${index}]`, {
             ...values.attributes[index],
-            attribute_id: option.value,
+            attribute_lookup_id: option.value,
             attribute_type: getAttributeType(remainingAttributeTypeDefinitions, option.value)
           });
         }}

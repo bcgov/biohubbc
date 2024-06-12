@@ -36,7 +36,7 @@ export const TechniqueAttractantsForm = () => {
         <Grid item xs={12}>
           <Typography component="legend">Attractants (optional)</Typography>
           <AutocompleteField
-            id="technique_attractant_id"
+            id="method_technique_attractant_id"
             label="Enter an attractant"
             name="attractants"
             loading={codesContext.codesDataLoader.isLoading}
@@ -53,17 +53,18 @@ export const TechniqueAttractantsForm = () => {
             }
             onChange={(_, value) => {
               if (value?.value) {
-                setFieldValue('attractants', [...values.attractants, { attractant_lookup_id: value.value }]);
+                setFieldValue('attractants', [
+                  ...values.attractants,
+                  { method_technique_attractant_id: null, attractant_lookup_id: value.value }
+                ]);
               }
             }}
-            onInputChange={(_, __, ___) => {}}
           />
         </Grid>
         <Grid item xs={12}>
           <TransitionGroup>
             {values.attractants.map((attractant, index) => {
               const lookup = attractants.find((option) => option.id === attractant.attractant_lookup_id);
-              console.log(attractant);
               return (
                 <Collapse key={attractant.attractant_lookup_id}>
                   <Paper

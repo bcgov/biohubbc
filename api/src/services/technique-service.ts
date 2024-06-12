@@ -1,20 +1,34 @@
 import { IDBConnection } from '../database/db';
 import {
   IGetTechnique,
-  IGetTechniqueAttributes,
   ITechniquePostData,
-  ITechniqueRowData,
+  ITechniqueRowDataForInsert,
   TechniqueRepository
 } from '../repositories/technique-repository';
+import { AttractantService } from './attractants-service';
 import { DBService } from './db-service';
 
 export class TechniqueService extends DBService {
   techniqueRepository: TechniqueRepository;
+  attractantService: AttractantService;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
     this.techniqueRepository = new TechniqueRepository(connection);
+    this.attractantService = new AttractantService(connection);
+  }
+
+  /**
+   * Get a technique by Id
+   *
+   * @param {number} surveyId
+   * @param {number} techniqueId
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof TechniqueService
+   */
+  async getTechniqueById(surveyId: number, techniqueId: number): Promise<IGetTechnique> {
+    return this.techniqueRepository.getTechniqueById(surveyId, techniqueId);
   }
 
   /**
@@ -52,9 +66,9 @@ export class TechniqueService extends DBService {
     surveyId: number,
     techniques: ITechniquePostData[]
   ): Promise<(ITechniquePostData & { method_technique_id: number })[]> {
-    // Insert technique rows
+
     const promises = techniques.map(async (technique) => {
-      const rowForInsert: ITechniqueRowData = {
+      const rowForInsert: ITechniqueRowDataForInsert = {
         name: technique.name,
         description: technique.description,
         method_lookup_id: technique.method_lookup_id,
@@ -71,41 +85,32 @@ export class TechniqueService extends DBService {
   }
 
   /**
-   * Insert attractants for a technique
+   * Update technique in a Survey
    *
-   * @param {number} methodTechniqueId
-   * @param {number[]} attractantLookupIds
    * @param {number} surveyId
-   * @returns {*} {Promise<{id: number}[]>}
+   * @param {number} techniqueId
+   * @param {ITechniqueRowDataForInsert} technique
+   * @returns {*}
    * @memberof TechniqueService
    */
-  async insertTechniqueAttractants(
-    methodTechniqueId: number,
-    attractantLookupIds: number[],
-    surveyId: number
-  ): Promise<void> {
-    return this.techniqueRepository.insertAttractantsForTechnique(methodTechniqueId, attractantLookupIds, surveyId);
-  }
-
-  /**
-   * Get quantitative and qualitative attributes for a method lookup Id
-   *
-   * @param {number[]} method_lookup_ids
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueService
-   */
-  async getAttributesForMethodLookupIds(method_lookup_ids: number[]): Promise<IGetTechniqueAttributes[]> {
-    return this.techniqueRepository.getAttributesForMethodLookupIds(method_lookup_ids);
+  async updateTechnique(surveyId: number, techniqueId: number, technique: ITechniqueRowDataForInsert): Promise<void> {
+    return this.techniqueRepository.updateTechnique(technique, techniqueId, surveyId);
   }
 
   /**
    * Delete a technique from a Survey
    *
+   * @param {number} surveyId
    * @param {number} methodTechniqueId
    * @returns {*} {Promise<{id: number}[]>}
    * @memberof TechniqueService
    */
-  async deleteTechnique(methodTechniqueId: number): Promise<number> {
-    return this.techniqueRepository.deleteTechnique(methodTechniqueId);
+  async deleteTechnique(surveyId: number, methodTechniqueId: number): Promise<number> {
+    // Delete any attributes on the technique
+    await this.attractantService.deleteAllTechniqueAttractants(surveyId, methodTechniqueId);
+
+    const technique = await this.techniqueRepository.deleteTechnique(surveyId, methodTechniqueId);
+
+    return technique;
   }
 }

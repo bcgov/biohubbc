@@ -109,18 +109,6 @@ export const SurveySamplingData = <T extends IGetTechnique>() => {
       {/* <Box component="img" src={datagridOverlayImage} position="absolute" zIndex={999} /> */}
       <Box p={2} position="relative">
         {activeView === SurveySamplingViewEnum.TECHNIQUES && (
-          //   <>
-          //     {surveyContext.techniqueDataLoader.data?.techniques.map((technique) => (
-          //       <Box key={technique.method_technique_id}>
-          //         <SamplingTechniqueCard
-          //           technique={technique}
-          //           method_lookup_name={
-          //             getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id) ?? ''
-          //           }
-          //         />
-          //       </Box>
-          //     ))}
-          //   </>
           <Box position="relative">
             <StyledDataGrid
               rowSelection={false}
@@ -146,7 +134,8 @@ export const SurveySamplingData = <T extends IGetTechnique>() => {
               sx={{
                 '& .MuiDataGrid-virtualScroller': {
                   height: rows.length === 0 ? '250px' : 'unset',
-                  overflowY: 'auto !important'
+                  overflowY: 'auto !important',
+                  overflowX: 'hidden'
                 },
                 '& .MuiDataGrid-overlay': {
                   height: '250px',

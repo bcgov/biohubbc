@@ -9,7 +9,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
-import { CreateTechniqueI18N } from 'constants/i18n';
+import { EditTechniqueI18N } from 'constants/i18n';
 import { FormikProps } from 'formik';
 import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
@@ -19,6 +19,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
+import { v4 } from 'uuid';
 import TechniqueForm, { TechniqueFormValues } from '../components/TechniqueForm';
 
 /**
@@ -30,7 +31,7 @@ const EditTechniquePage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
   const urlParams: Record<string, string | number | undefined> = useParams();
-  const techniqueId = Number(urlParams['technique_id']);
+  const techniqueId = Number(urlParams['method_technique_id']);
 
   const surveyContext = useSurveyContext();
   const { surveyId, projectId } = surveyContext;
@@ -55,7 +56,9 @@ const EditTechniquePage = () => {
 
   const technique = techniqueDataLoader.data;
 
-  if (!technique) return <></>;
+  if (!technique) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   const initialTechniqueValues: TechniqueFormValues = {
     name: technique.name ?? null,
@@ -65,12 +68,16 @@ const EditTechniquePage = () => {
     attractants: technique?.attractants,
     attributes: [
       ...(technique?.qualitative_attributes.map((attribute) => ({
-        attribute_id: attribute.method_technique_attribute_qualitative_id,
+        _id: v4(), // attribute_id, which is the PK of the attribute, is not unique, so use temporary _id for unique key
+        attribute_id: attribute.method_technique_attribute_qualitative_id ?? null,
+        attribute_lookup_id: attribute.method_lookup_attribute_qualitative_id,
         attribute_value: attribute.method_lookup_attribute_qualitative_option_id,
         attribute_type: 'qualitative' as const
       })) ?? []),
       ...(technique?.quantitative_attributes.map((attribute) => ({
-        attribute_id: attribute.method_technique_attribute_quantitative_id,
+        _id: v4(), // attribute_id, which is the PK of the attribute, is not unique, so use temporary _id for unique key
+        attribute_id: attribute.method_technique_attribute_quantitative_id ?? null,
+        attribute_lookup_id: attribute.method_lookup_attribute_quantitative_id,
         attribute_value: attribute.value,
         attribute_type: 'quantitative' as const
       })) ?? [])
@@ -83,8 +90,8 @@ const EditTechniquePage = () => {
   };
 
   const defaultCancelDialogProps = {
-    dialogTitle: CreateTechniqueI18N.cancelTitle,
-    dialogText: CreateTechniqueI18N.cancelText,
+    dialogTitle: EditTechniqueI18N.cancelTitle,
+    dialogText: EditTechniqueI18N.cancelText,
     open: false,
     onClose: () => {
       dialogContext.setYesNoDialog({ open: false });
@@ -100,8 +107,8 @@ const EditTechniquePage = () => {
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
-      dialogTitle: CreateTechniqueI18N.createErrorTitle,
-      dialogText: CreateTechniqueI18N.createErrorText,
+      dialogTitle: EditTechniqueI18N.createErrorTitle,
+      dialogText: EditTechniqueI18N.createErrorText,
       onClose: () => {
         dialogContext.setErrorDialog({ open: false });
       },
@@ -118,19 +125,44 @@ const EditTechniquePage = () => {
       setIsSubmitting(true);
       setEnableCancelCheck(false);
 
-      // TODO: SEND VALUES
-      console.log(values);
-      await biohubApi.technique.createTechniques(surveyContext.projectId, surveyContext.surveyId, []);
+      const { attributes, ...technique } = values;
+
+      const formattedTechniqueObject = {
+        ...technique,
+        attributes: {
+          quantitative_attributes: attributes
+            .filter((attribute) => attribute.attribute_type === 'quantitative')
+            .map((attribute) => ({
+              method_technique_attribute_quantitative_id: attribute.attribute_id,
+              method_lookup_attribute_quantitative_id: attribute.attribute_lookup_id,
+              value: attribute.attribute_value as number
+            })),
+          qualitative_attributes: attributes
+            .filter((attribute) => attribute.attribute_type === 'qualitative')
+            .map((attribute) => ({
+              method_technique_attribute_qualitative_id: attribute.attribute_id,
+              method_lookup_attribute_qualitative_id: attribute.attribute_lookup_id,
+              method_lookup_attribute_qualitative_option_id: attribute.attribute_value as string
+            }))
+        }
+      };
+
+      await biohubApi.technique.updateTechnique(
+        surveyContext.projectId,
+        surveyContext.surveyId,
+        techniqueId,
+        formattedTechniqueObject
+      );
 
       // Refresh the context, so the next page loads with the latest data
-      surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
       // create complete, navigate back to observations page
       history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/manage-sampling`);
     } catch (error) {
       showCreateErrorDialog({
-        dialogTitle: CreateTechniqueI18N.createErrorTitle,
-        dialogText: CreateTechniqueI18N.createErrorText,
+        dialogTitle: EditTechniqueI18N.createErrorTitle,
+        dialogText: EditTechniqueI18N.createErrorText,
         dialogError: (error as APIError).message,
         dialogErrorDetails: (error as APIError)?.errors
       });
@@ -151,8 +183,8 @@ const EditTechniquePage = () => {
       // If the cancel dialog is not open: open it
       dialogContext.setYesNoDialog({
         open: true,
-        dialogTitle: CreateTechniqueI18N.cancelTitle,
-        dialogText: CreateTechniqueI18N.cancelText,
+        dialogTitle: EditTechniqueI18N.cancelTitle,
+        dialogText: EditTechniqueI18N.cancelText,
         onClose: () => {
           dialogContext.setYesNoDialog({ open: false });
         },
@@ -175,7 +207,7 @@ const EditTechniquePage = () => {
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
       <PageHeader
-        title="Create New Technique"
+        title="Edit Technique"
         breadCrumbJSX={
           <Breadcrumbs
             aria-label="breadcrumb"
@@ -208,7 +240,7 @@ const EditTechniquePage = () => {
               Manage Sampling Information
             </Link>
             <Typography component="span" variant="body2" color="textSecondary">
-              Create New Technique
+              Edit Technique
             </Typography>
           </Breadcrumbs>
         }

@@ -12,9 +12,9 @@ import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSit
 import SamplingSiteManagePage from './observations/sampling-sites/SamplingSiteManagePage';
 import { SurveyObservationPage } from './observations/SurveyObservationPage';
 import { CreateTechniquePage } from './technique/form/create/CreateTechniquePage';
+import EditTechniquePage from './technique/form/edit/EditTechniquePage';
 import ManualTelemetryPage from './telemetry/ManualTelemetryPage';
 import { SurveyAnimalsPage } from './view/survey-animals/SurveyAnimalsPage';
-import EditTechniquePage from './technique/form/edit/EditTechniquePage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/*` pages.
@@ -82,7 +82,7 @@ const SurveyRouter: React.FC = () => {
       {/* Technique routes */}
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/manage-sampling/technique/create"
+        path="/admin/projects/:id/surveys/:survey_id/technique/create"
         title={getTitle('Create Technique')}>
         <DialogContextProvider>
           <CreateTechniquePage />
@@ -91,7 +91,7 @@ const SurveyRouter: React.FC = () => {
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/manage-sampling/technique/:method_technique_id/edit"
+        path="/admin/projects/:id/surveys/:survey_id/technique/:method_technique_id/edit"
         title={getTitle('Edit Technique')}>
         <DialogContextProvider>
           <EditTechniquePage />

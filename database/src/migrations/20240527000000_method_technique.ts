@@ -381,7 +381,7 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE method_technique_attribute_quantitative
       ADD CONSTRAINT method_technique_attribute_quantitative_fk2
       FOREIGN KEY (method_lookup_attribute_quantitative_id)
-      REFERENCES technique_attribute_quantitative(technique_attribute_quantitative_id);
+      REFERENCES method_lookup_attribute_quantitative(method_lookup_attribute_quantitative_id);
 
     -- Add indexes for foreign keys
     CREATE INDEX method_technique_attribute_quantitative_idx1 ON method_technique_attribute_quantitative(method_technique_id);

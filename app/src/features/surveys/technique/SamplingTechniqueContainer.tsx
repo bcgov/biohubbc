@@ -62,7 +62,7 @@ const SamplingSiteTechniqueContainer = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to={'manage-sampling/technique/create'}
+            to={'technique/create'}
             startIcon={<Icon path={mdiPlus} size={0.8} />}>
             Add
           </Button>

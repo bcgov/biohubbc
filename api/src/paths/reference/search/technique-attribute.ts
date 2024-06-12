@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../../../database/db';
-import { TechniqueService } from '../../../services/technique-service';
+import { TechniqueAttributeService } from '../../../services/technique-attributes-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/reference');
@@ -155,9 +155,9 @@ export function findTechniqueAttributes(): RequestHandler {
 
       await connection.open();
 
-      const techniqueService = new TechniqueService(connection);
+      const techniqueAttributeService = new TechniqueAttributeService(connection);
 
-      const response = await techniqueService.getAttributesForMethodLookupIds(methodLookupIds);
+      const response = await techniqueAttributeService.getAttributesForMethodLookupIds(methodLookupIds);
 
       await connection.commit();
 
