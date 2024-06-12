@@ -14,11 +14,17 @@ import { AnimalFormContainer } from 'features/surveys/animals/animal-form/compon
 import { AnimalSex } from 'features/surveys/view/survey-animals/animal';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
-import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import {
+  useAnimalPageContext,
+  useDialogContext,
+  useProjectContext,
+  useSurveyContext,
+  useTaxonomyContext
+} from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -31,11 +37,11 @@ export const EditAnimalPage = () => {
   const history = useHistory();
 
   const critterbaseApi = useCritterbaseApi();
-
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
   const animalPageContext = useAnimalPageContext();
+  const taxonomyContext = useTaxonomyContext();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
   const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
@@ -54,6 +60,14 @@ export const EditAnimalPage = () => {
   }
 
   const critter = animalPageContext.critterDataLoader.data;
+
+  useEffect(() => {
+    if (!critter?.itis_tsn) {
+      return;
+    }
+
+    taxonomyContext.getCachedSpeciesTaxonomyById(critter.itis_tsn);
+  }, [critter?.itis_tsn, taxonomyContext]);
 
   // Loading spinner if the data later hasn't updated to the selected animal yet
   if (!critter || animalPageContext.selectedAnimal?.critterbase_critter_id !== critter.critter_id) {
@@ -206,11 +220,9 @@ export const EditAnimalPage = () => {
                 critter_id: critter.critter_id,
                 nickname: critter.animal_id,
                 species: {
+                  ...taxonomyContext.getCachedSpeciesTaxonomyById(critter.itis_tsn),
                   tsn: critter.itis_tsn,
-                  commonNames: [''],
-                  scientificName: critter.itis_scientific_name,
-                  rank: '',
-                  kingdom: ''
+                  scientificName: critter.itis_scientific_name
                 },
                 ecological_units: critter.collection_units.map((unit) => ({ ...unit, critter_id: critter.critter_id })),
                 wildlife_health_id: critter.wlh_id,

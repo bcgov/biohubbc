@@ -31,6 +31,7 @@ export const AnimalGeneralInformationForm = (props: IAnimalGeneralInformationFor
             label="Species"
             required={false}
             disabled={isEdit}
+            defaultSpecies={values.species ?? undefined}
             handleSpecies={(species) => {
               setFieldValue('species', species);
               setFieldValue('ecological_units', []);

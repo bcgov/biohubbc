@@ -150,7 +150,7 @@ const SurveyAnimals: React.FC = () => {
               setOpenRemoveCritterDialog(true);
             }}
             onEditCritter={() => {
-              history.push(`animals/?critter_id=${selectedCritterId}`);
+              history.push(`animals/${selectedCritterId}/edit`);
             }}
             onMapOpen={() => {
               setOpenViewTelemetryDialog(true);

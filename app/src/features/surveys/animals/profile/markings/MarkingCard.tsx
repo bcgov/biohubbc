@@ -6,6 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import startCase from 'lodash-es/startCase';
 
 interface IMarkingCardProps {
   editable: boolean;
@@ -40,7 +41,7 @@ export const MarkingCard = (props: IMarkingCardProps) => {
     <Paper variant="outlined" sx={{ px: 3, py: 2, bgcolor: grey[100] }}>
       <Box position="relative" display="flex">
         <Typography component="dd" fontWeight={700}>
-          {marking_type_label}
+          {startCase(marking_type_label)}
         </Typography>
         {editable && (
           <IconButton
