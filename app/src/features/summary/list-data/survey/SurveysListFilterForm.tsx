@@ -1,97 +1,71 @@
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import CustomTextField from 'components/fields/CustomTextField';
+import { SystemUserAutocompleteField } from 'components/fields/SystemUserAutocompleteField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
-import SearchFilters from 'features/projects/components/SearchFilters';
-import SystemUserAutocomplete from 'features/projects/components/SystemUserAutocomplete';
-import { Formik, FormikProps } from 'formik';
-import { debounce } from 'lodash-es';
-import React, { useMemo, useRef } from 'react';
 
-export interface ISurveyAdvancedFilters {
-  start_date: string;
-  end_date: string;
-  keyword: string;
-  project_name: string;
-  system_user_id: number;
-  itis_tsns: number[];
-}
+import SearchFilters from 'features/summary/components/SearchFilters';
+import { Formik, FormikProps } from 'formik';
+import { useRef } from 'react';
+
+export type ISurveyAdvancedFilters = {
+  keyword?: string;
+  start_date?: string;
+  end_date?: string;
+  person?: string;
+};
 
 export const SurveyAdvancedFiltersInitialValues: ISurveyAdvancedFilters = {
-  start_date: '',
-  end_date: '',
-  keyword: '',
-  project_name: '',
-  system_user_id: '' as unknown as number,
-  itis_tsns: []
+  keyword: undefined,
+  start_date: undefined,
+  end_date: undefined,
+  person: undefined
 };
 
 export interface ISurveysListFilterFormProps {
   handleSubmit: (filterValues: ISurveyAdvancedFilters) => void;
-  handleReset: () => void;
+  initialValues?: ISurveyAdvancedFilters;
 }
 
 /**
- * Survey advanced filters.
+ * Survey advanced filters
  *
- * @param {*} props
+ * @param {ISurveysListFilterFormProps} props
  * @return {*}
  */
-const SurveysListFilterForm: React.FC<ISurveysListFilterFormProps> = (props) => {
+const SurveysListFilterForm = (props: ISurveysListFilterFormProps) => {
+  const { handleSubmit, initialValues } = props;
+
   const formikRef = useRef<FormikProps<ISurveyAdvancedFilters>>(null);
 
-  const searchBackgroundColor = grey[50];
-
-  const debounced = useMemo(
-    () =>
-      debounce((values: ISurveyAdvancedFilters) => {
-        props.handleSubmit(values);
-      }, 300),
-    []
-  );
-
   return (
-    <Box p={2} bgcolor={searchBackgroundColor}>
-      <Formik innerRef={formikRef} initialValues={SurveyAdvancedFiltersInitialValues} onSubmit={props.handleSubmit}>
+    <Box p={2} bgcolor={grey[50]}>
+      <Formik
+        innerRef={formikRef}
+        initialValues={initialValues ?? SurveyAdvancedFiltersInitialValues}
+        onSubmit={handleSubmit}>
         <SearchFilters
-          onChange={debounced}
           fields={[
-            {
-              id: 1,
-              name: '',
-              component: <CustomTextField placeholder="Search by keyword" name="keyword" label="Keyword" />
-            },
-            {
-              id: 2,
-              name: 'species',
-              component: (
-                <SpeciesAutocompleteField
-                  formikFieldName={'itis_tsns'}
-                  label={'Species'}
-                  placeholder="Search by taxon"
-                  handleSpecies={(value) => {
-                    formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
-                  }}
-                  handleClear={() => {
-                    formikRef.current?.setFieldValue('itis_tsns', '');
-                  }}
-                  clearOnSelect={true}
-                  showSelectedValue={true}
-                />
-              )
-            },
-            {
-              id: 3,
-              name: 'system_user_id',
-              component: (
-                <SystemUserAutocomplete
-                  label="Person"
-                  placeholder="Find Projects that a person has access to"
-                  formikFieldName="system_user_id"
-                  showSelectedValue={true}
-                />
-              )
-            }
+            <CustomTextField name="keyword" label="Keyword" other={{ placeholder: 'Search by keyword' }} />,
+            <SpeciesAutocompleteField
+              formikFieldName="itis_tsns"
+              label="Species"
+              placeholder="Search by taxon"
+              handleSpecies={(value) => {
+                formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
+              }}
+              handleClear={() => {
+                formikRef.current?.setFieldValue('itis_tsns', '');
+              }}
+              clearOnSelect={true}
+              showSelectedValue={true}
+            />,
+            <SystemUserAutocompleteField
+              label="Person"
+              placeholder="Find Projects that a person has access to"
+              formikFieldName="system_user_id"
+              showSelectedValue={true}
+            />
           ]}
         />
       </Formik>

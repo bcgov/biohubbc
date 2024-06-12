@@ -25,6 +25,11 @@ import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
 const ProjectsRouter: React.FC = () => {
   return (
     <Switch>
+      {/* Summary Page Redirect */}
+      <RouteWithTitle exact path="/admin/projects" title={getTitle('Projects')}>
+        <Redirect to="/admin/summary" />
+      </RouteWithTitle>
+
       {/* Create Project Route */}
       <RouteWithTitle exact path="/admin/projects/create" title={getTitle('Create Project')}>
         <SystemRoleRouteGuard
@@ -38,7 +43,7 @@ const ProjectsRouter: React.FC = () => {
       <Redirect exact from="/admin/projects/:id" to="/admin/projects/:id/details" />
 
       {/* Project Routes */}
-      <RouteWithTitle path="/admin/projects/:id" title={getTitle('Project Details')}>
+      <RouteWithTitle path="/admin/projects/:id" title={getTitle('Project')}>
         <ProjectAuthStateContextProvider>
           <DialogContextProvider>
             <ProjectContextProvider>
@@ -80,7 +85,7 @@ const ProjectsRouter: React.FC = () => {
               </RouteWithTitle>
 
               {/* Survey Routes */}
-              <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')}>
+              <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Survey')}>
                 <ProjectRoleRouteGuard
                   validProjectPermissions={[
                     PROJECT_PERMISSION.COORDINATOR,

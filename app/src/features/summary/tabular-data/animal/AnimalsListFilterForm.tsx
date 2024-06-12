@@ -2,13 +2,14 @@ import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import CustomTextField from 'components/fields/CustomTextField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
-import SearchFilters from 'features/projects/components/SearchFilters';
+import SearchFilters from 'features/summary/components/SearchFilters';
 import { Formik, FormikProps } from 'formik';
-import { debounce } from 'lodash-es';
-import React, { useMemo, useRef } from 'react';
+import React, { useRef } from 'react';
+import { ApiPaginationRequestOptions } from 'types/misc';
 import { IAnimalsAdvancedFilters } from './AnimalsListContainer';
 
 export interface IAnimalsListFilterFormProps {
+  paginationSort: ApiPaginationRequestOptions;
   handleSubmit: (filterValues: IAnimalsAdvancedFilters) => void;
   handleReset: () => void;
 }
@@ -22,43 +23,33 @@ const AnimalsListFilterForm: React.FC<IAnimalsListFilterFormProps> = (props) => 
 
   const searchBackgroundColor = grey[50];
 
-  const debounced = useMemo(
-    () =>
-      debounce((values: IAnimalsAdvancedFilters) => {
-        props.handleSubmit(values);
-      }, 300),
-    []
-  );
+  //   const debounced = useMemo(
+  //     () =>
+  //       debounce((values: IAnimalsAdvancedFilters) => {
+  //         props.handleSubmit(values);
+  //       }, 300),
+  //     []
+  //   );
 
   return (
     <Box p={2} bgcolor={searchBackgroundColor}>
       <Formik innerRef={formikRef} initialValues={AnimalsAdvancedFiltersInitialValues} onSubmit={props.handleSubmit}>
         <SearchFilters
-          onChange={debounced}
           fields={[
-            {
-              id: 1,
-              name: '',
-              component: <CustomTextField placeholder="Type any keyword" name="keyword" label="Keyword" />
-            },
-            {
-              id: 2,
-              name: 'species',
-              component: (
-                <SpeciesAutocompleteField
-                  formikFieldName={'itis_tsns'}
-                  label={'Species'}
-                  handleSpecies={(value) => {
-                    formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
-                  }}
-                  handleClear={() => {
-                    formikRef.current?.setFieldValue('itis_tsns', '');
-                  }}
-                  clearOnSelect={true}
-                  showSelectedValue={true}
-                />
-              )
-            }
+            <CustomTextField name="keyword" label="Keyword" other={{ placeholder: 'Type any keyword' }} />,
+            <SpeciesAutocompleteField
+              formikFieldName={'itis_tsns'}
+              label={'Species'}
+              placeholder="Search by taxon"
+              handleSpecies={(value) => {
+                formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
+              }}
+              handleClear={() => {
+                formikRef.current?.setFieldValue('itis_tsns', '');
+              }}
+              clearOnSelect={true}
+              showSelectedValue={true}
+            />
           ]}
         />
       </Formik>

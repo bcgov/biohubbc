@@ -7,7 +7,7 @@ import { MemoryRouter, Router } from 'react-router-dom';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
-import ProjectsListContainer from '../../summary/list-data/project/ProjectsListContainer';
+import ProjectsListContainer from './ProjectsListContainer';
 
 const history = createMemoryHistory();
 
@@ -16,7 +16,7 @@ const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
   user: {
-    getProjectsForUserId: jest.fn()
+    findProjects: jest.fn()
   },
   codes: {
     getAllCodeSets: jest.fn()
@@ -26,7 +26,7 @@ const mockUseApi = {
 describe('ProjectsListContainer', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
-    mockUseApi.user.getProjectsForUserId.mockClear();
+    mockUseApi.user.findProjects.mockClear();
   });
 
   afterEach(() => {
@@ -34,7 +34,7 @@ describe('ProjectsListContainer', () => {
   });
 
   it('renders with the create project button', async () => {
-    mockUseApi.user.getProjectsForUserId.mockResolvedValue({
+    mockUseApi.user.findProjects.mockResolvedValue({
       projects: [],
       pagination: {
         current_page: 1,
@@ -71,7 +71,7 @@ describe('ProjectsListContainer', () => {
   });
 
   it('renders with the open advanced filters button', async () => {
-    mockUseApi.user.getProjectsForUserId.mockResolvedValue({
+    mockUseApi.user.findProjects.mockResolvedValue({
       projects: [],
       pagination: {
         current_page: 1,
@@ -108,7 +108,7 @@ describe('ProjectsListContainer', () => {
   });
 
   it('navigating to the project works', async () => {
-    mockUseApi.user.getProjectsForUserId.mockResolvedValue({
+    mockUseApi.user.findProjects.mockResolvedValue({
       projects: [
         {
           project_id: 1,

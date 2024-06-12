@@ -248,6 +248,15 @@ export function getProjects(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'getProjects' });
 
+    console.log('1=======================================');
+    console.log('---params---');
+    console.log(req.params);
+    console.log('---query---');
+    console.log(req.query);
+    console.log('---body---');
+    console.log(req.body);
+    console.log('2=======================================');
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {

@@ -1,15 +1,16 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import { IProjectAdvancedFilters } from 'components/search-filter/ProjectAdvancedFilters';
+import { IProjectAdvancedFilters } from 'features/summary/list-data/project/ProjectsListFilterForm';
+
 import {
   ICreateProjectRequest,
   ICreateProjectResponse,
+  IFindProjectsResponse,
   IGetAttachmentDetails,
   IGetProjectAttachmentsResponse,
   IGetProjectForUpdateResponse,
   IGetProjectForViewResponse,
-  IgetProjectsForUserIdResponse,
   IGetReportDetails,
   IUpdateProjectRequest,
   IUploadAttachmentResponse,
@@ -42,17 +43,17 @@ const useProjectApi = (axios: AxiosInstance) => {
    *
    * @param {ApiPaginationRequestOptions} [pagination]
    * @param {IProjectAdvancedFilters} filterFieldData
-   * @return {*}  {Promise<IgetProjectsForUserIdResponse[]>}
+   * @return {*}  {Promise<IFindProjectsResponse[]>}
    */
-  const getProjectsForUserId = async (
+  const findProjects = async (
     pagination?: ApiPaginationRequestOptions,
     filterFieldData?: IProjectAdvancedFilters
-  ): Promise<IgetProjectsForUserIdResponse> => {
+  ): Promise<IFindProjectsResponse> => {
     const params = new URLSearchParams();
 
     if (pagination) {
-      params.append('page', pagination.page.toString());
-      params.append('limit', pagination.limit.toString());
+      params.append('page', String(pagination.page));
+      params.append('limit', String(pagination.limit));
       if (pagination.sort) {
         params.append('sort', pagination.sort);
       }
@@ -63,13 +64,13 @@ const useProjectApi = (axios: AxiosInstance) => {
 
     if (filterFieldData) {
       Object.entries(filterFieldData).forEach(([key, value]) => {
-        params.append(key, value);
+        if (value) {
+          params.append(key, value);
+        }
       });
     }
 
-    const urlParamsString = `?${params.toString()}`;
-
-    const { data } = await axios.get(`/api/project${urlParamsString}`);
+    const { data } = await axios.get('/api/project', { params });
 
     return data;
   };
@@ -326,7 +327,7 @@ const useProjectApi = (axios: AxiosInstance) => {
 
   return {
     createProject,
-    getProjectsForUserId,
+    findProjects,
     getProjectForView,
     uploadProjectAttachments,
     uploadProjectReports,

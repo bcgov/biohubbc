@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { ITelemetryAdvancedFilters } from 'features/summary/tabular-data/telemetry/TelemetryListContainer';
-import { IGetTelemetryListResponse } from 'interfaces/useTelemetryApi.interface';
+import { IfindTelemetryResponse } from 'interfaces/useTelemetryApi.interface';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
@@ -17,10 +17,10 @@ const useTelemetryApi = (axios: AxiosInstance) => {
    * @param {ITelemetryAdvancedFilters} filterFieldData
    * @return {*} {Promise<IGetProjectsListResponse[]>}
    */
-  const getTelemetryList = async (
+  const findTelemetry = async (
     pagination?: ApiPaginationRequestOptions,
     filterFieldData?: ITelemetryAdvancedFilters
-  ): Promise<IGetTelemetryListResponse> => {
+  ): Promise<IfindTelemetryResponse> => {
     const params = new URLSearchParams();
 
     if (pagination) {
@@ -46,7 +46,7 @@ const useTelemetryApi = (axios: AxiosInstance) => {
 
     return data;
   };
-  return { getTelemetryList };
+  return { findTelemetry };
 };
 
 export default useTelemetryApi;

@@ -18,9 +18,9 @@ const useAnimalApi = (axios: AxiosInstance) => {
    *
    * @param {ApiPaginationRequestOptions} [pagination]
    * @param {IAnimalsAdvancedFilters} filterFieldData
-   * @return {*} {Promise<IgetProjectsForUserIdResponse[]>}
+   * @return {*} {Promise<IFindProjectsResponse[]>}
    */
-  const getAnimalsList = async (
+  const findAnimals = async (
     pagination?: ApiPaginationRequestOptions,
     filterFieldData?: IAnimalsAdvancedFilters
   ): Promise<ICritterDetailedResponse[]> => {
@@ -50,7 +50,7 @@ const useAnimalApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  return { getAnimalsList };
+  return { findAnimals };
 };
 
 export { useAnimalApi };

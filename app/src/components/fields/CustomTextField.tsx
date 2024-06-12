@@ -1,32 +1,27 @@
 import TextField from '@mui/material/TextField';
-import { FormikContextType, useFormikContext } from 'formik';
+import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 export interface ICustomTextField {
   label: string;
   name: string;
+  maxLength?: number;
   /*
    * Needed fix: Add correct hardcoded type
    * Note: TextFieldProps causes build compile issue
    * https://github.com/mui/material-ui/issues/30038
    */
   other?: any;
-  //Additionally add a handlBlur if touced properties not updating correclty.
-  handleBlur?: FormikContextType<any>['handleBlur'];
-  startIcon?: JSX.Element;
-  maxLength?: number;
-  placeholder?: string;
 }
 
-const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (props) => {
+const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
   const { touched, errors, values, handleChange, handleBlur } = useFormikContext<any>();
 
-  const { name, label, placeholder, other } = props;
+  const { name, label, other } = props;
 
   return (
     <TextField
       name={name}
       label={label}
-      placeholder={placeholder ?? undefined}
       id={name}
       inputProps={{ 'data-testid': name, maxLength: props.maxLength || undefined }} // targets the internal input rather than the react component
       onChange={handleChange}

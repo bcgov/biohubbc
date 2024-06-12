@@ -8,6 +8,7 @@ import {
   SupplementaryObservationCountData
 } from 'interfaces/useObservationApi.interface';
 import { EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
+import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
 export interface SubcountToSave {
@@ -66,34 +67,42 @@ const useObservationApi = (axios: AxiosInstance) => {
    *
    * @param {ApiPaginationRequestOptions} [pagination]
    * @param {IObservationsAdvancedFilters} filterFieldData
-   * @return {*} {Promise<IgetProjectsForUserIdResponse[]>}
+   * @return {*} {Promise<IFindProjectsResponse[]>}
    */
-  const getObservationsForUserId = async (
+  const findObservations = async (
     pagination?: ApiPaginationRequestOptions,
     filterFieldData?: IObservationsAdvancedFilters
   ): Promise<IGetSurveyObservationsResponse> => {
-    const params = new URLSearchParams();
+    // const params = new URLSearchParams();
 
-    if (pagination) {
-      params.append('page', pagination.page.toString());
-      params.append('limit', pagination.limit.toString());
-      if (pagination.sort) {
-        params.append('sort', pagination.sort);
-      }
-      if (pagination.order) {
-        params.append('order', pagination.order);
-      }
-    }
+    // if (pagination) {
+    //   params.append('page', pagination.page.toString());
+    //   params.append('limit', pagination.limit.toString());
+    //   if (pagination.sort) {
+    //     params.append('sort', pagination.sort);
+    //   }
+    //   if (pagination.order) {
+    //     params.append('order', pagination.order);
+    //   }
+    // }
 
-    if (filterFieldData) {
-      Object.entries(filterFieldData).forEach(([key, value]) => {
-        params.append(key, value);
-      });
-    }
+    // if (filterFieldData) {
+    //   Object.entries(filterFieldData).forEach(([key, value]) => {
+    //     if (value) {
+    //       params.append(key, value);
+    //     }
+    //   });
+    // }
 
-    const urlParamsString = `?${params.toString()}`;
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
 
-    const { data } = await axios.get(`/api/observation${urlParamsString}`);
+    const { data } = await axios.get('/api/observation', {
+      params,
+      paramsSerializer: (params) => qs.stringify(params)
+    });
 
     return data;
   };
@@ -307,7 +316,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     insertUpdateObservationRecords,
     getObservationRecords,
     getObservationRecord,
-    getObservationsForUserId,
+    findObservations,
     getObservationsGeometry,
     deleteObservationRecords,
     deleteObservationMeasurements,

@@ -3,7 +3,7 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import React, { PropsWithChildren } from 'react';
 
-const MultiAutocompleteStack = (props: PropsWithChildren) => {
+export const MultiAutocompleteStack = (props: PropsWithChildren) => {
   const searchBgColor = grey[50];
 
   return (
@@ -33,5 +33,3 @@ const MultiAutocompleteStack = (props: PropsWithChildren) => {
     </Stack>
   );
 };
-
-export default MultiAutocompleteStack;

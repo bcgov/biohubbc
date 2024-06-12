@@ -18,7 +18,7 @@ import { ICritterDetailedResponse, ICritterSimpleResponse } from './useCritterAp
  * Get surveys list response object.
  *
  * @export
- * @interface IgetProjectsForUserIdResponse
+ * @interface IFindProjectsResponse
  */
 export interface IGetSurveysListResponse {
   surveys: ISurveysListItemData[];
@@ -271,9 +271,9 @@ export interface ISurveySupplementaryData {
  * Get survey basic fields response object.
  *
  * @export
- * @interface IgetSurveysForUserIdResponse
+ * @interface IfindSurveysResponse
  */
-export interface IGetSurveysForUserIdResponse {
+export interface IfindSurveysResponse {
   surveys: SurveyBasicFieldsObject[];
   pagination: ApiPaginationResponseParams;
 }

@@ -3,7 +3,7 @@ import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridSortDirection } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
@@ -11,9 +11,12 @@ import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
-import { useCallback, useEffect, useState } from 'react';
+import { debounce } from 'lodash-es';
+import qs from 'qs';
+import { useCallback, useEffect, useMemo } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import {
@@ -23,12 +26,7 @@ import {
 } from './ObservationsListFilterForm';
 
 // Supported URL parameters
-type ObservationDataTableURLParams = {
-  // search filter
-  keyword: string;
-  species: string;
-  person: string;
-  // pagination
+type ObservationDataTableURLParams = { [key in keyof IObservationsAdvancedFilters]: string } & {
   o_page: string;
   o_limit: string;
   o_sort?: string;
@@ -62,23 +60,34 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
 
   const { searchParams, setSearchParams } = useSearchParams<ObservationDataTableURLParams>();
 
+  const debouncedSetSearchParams = useMemo(() => debounce(setSearchParams, 500), [setSearchParams]);
+
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const paginationModel = {
+  const paginationModel: GridPaginationModel = {
     pageSize: Number(searchParams.get('o_limit') ?? initialPaginationParams.limit),
     page: Number(searchParams.get('o_page') ?? initialPaginationParams.page)
   };
 
-  const sortModel = [
+  const sortModel: GridSortModel = [
     {
       field: searchParams.get('o_sort') ?? initialPaginationParams.sort,
       sort: (searchParams.get('o_order') ?? initialPaginationParams.order) as GridSortDirection
     }
   ];
 
-  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IObservationsAdvancedFilters>();
+  const advancedFiltersModel: IObservationsAdvancedFilters = {
+    minimum_date: searchParams.get('minimum_date') ?? ObservationAdvancedFiltersInitialValues.minimum_date,
+    maximum_date: searchParams.get('maximum_date') ?? ObservationAdvancedFiltersInitialValues.maximum_date,
+    keyword: searchParams.get('keyword') ?? ObservationAdvancedFiltersInitialValues.keyword,
+    minimum_count: searchParams.get('minimum_count') ?? ObservationAdvancedFiltersInitialValues.minimum_count,
+    minimum_time: searchParams.get('minimum_time') ?? ObservationAdvancedFiltersInitialValues.minimum_time,
+    maximum_time: searchParams.get('maximum_time') ?? ObservationAdvancedFiltersInitialValues.maximum_time,
+    system_user_id: searchParams.get('system_user_id') ? Number(searchParams.get('system_user_id')) : undefined,
+    itis_tsns: searchParams.get('itis_tsns')?.split(',').map(Number) ?? []
+  };
 
   const sort = firstOrNull(sortModel);
   const paginationSort: ApiPaginationRequestOptions = {
@@ -91,12 +100,12 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
 
   const observationsDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: IObservationsAdvancedFilters) => {
-      return biohubApi.observation.getObservationsForUserId(pagination, filter);
+      return biohubApi.observation.findObservations(pagination, filter);
     }
   );
 
-  useEffect(() => {
-    observationsDataLoader.load(paginationSort, advancedFiltersModel);
+  useDeepCompareEffect(() => {
+    observationsDataLoader.refresh(paginationSort, advancedFiltersModel);
     // Should not re-run this effect on `observationsDataLoader` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [advancedFiltersModel, paginationSort]);
@@ -209,16 +218,30 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
   return (
     <>
       <Collapse in={showSearch}>
-        <ObservationsListFilterForm
-          handleSubmit={setAdvancedFiltersModel}
-          handleReset={() => setAdvancedFiltersModel(ObservationAdvancedFiltersInitialValues)}
-        />
+        <Box p={2} bgcolor={grey[50]}>
+          <ObservationsListFilterForm
+            initialValues={advancedFiltersModel}
+            handleSubmit={(values) => {
+              debouncedSetSearchParams(
+                searchParams
+                  .setOrDelete('minimum_date', values.minimum_date)
+                  .setOrDelete('maximum_date', values.maximum_date)
+                  .setOrDelete('keyword', values.keyword)
+                  .setOrDelete('minimum_count', values.minimum_count)
+                  .setOrDelete('minimum_time', values.minimum_time)
+                  .setOrDelete('maximum_time', values.maximum_time)
+                  .setOrDelete('system_user_id', qs.stringify(values.system_user_id))
+                  .setOrDelete('itis_tsns', qs.stringify(values.itis_tsns))
+              );
+            }}
+          />
+        </Box>
         <Divider />
       </Collapse>
       <Box height="500px">
         <StyledDataGrid
           noRowsMessage="No observations found"
-          loading={!observationsDataLoader.data}
+          loading={!observationsDataLoader.isReady && !observationsDataLoader.data}
           // Columns
           columns={columns}
           // Rows
@@ -230,6 +253,9 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
           pageSizeOptions={pageSizeOptions}
           paginationModel={paginationModel}
           onPaginationModelChange={(model) => {
+            if (!model) {
+              return;
+            }
             setSearchParams(searchParams.set('o_page', String(model.page)).set('o_limit', String(model.pageSize)));
           }}
           // Sorting
@@ -237,6 +263,9 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
           sortModel={sortModel}
           sortingOrder={['asc', 'desc']}
           onSortModelChange={(model) => {
+            if (!model.length) {
+              return;
+            }
             setSearchParams(searchParams.set('o_sort', model[0].field).set('o_order', model[0].sort ?? 'desc'));
           }}
           // Row options

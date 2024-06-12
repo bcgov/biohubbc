@@ -103,23 +103,53 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            additionalProperties: false,
             properties: {
               telemetry: {
                 type: 'array',
                 items: {
                   type: 'object',
-                  //   additionalProperties: false,
+                  additionalProperties: false,
                   properties: {
-                    telemetry_id: { type: 'string', format: 'uuid' },
-                    deployment_id: { type: 'string', format: 'uuid' },
-                    collar_transaction_id: { type: 'string', format: 'uuid' },
-                    critter_id: { type: 'string', format: 'uuid' },
-                    deviceid: { type: 'number' },
-                    latitude: { type: 'number', nullable: true },
-                    longitude: { type: 'number', nullable: true },
-                    elevation: { type: 'number', nullable: true },
-                    vendor: { type: 'string', nullable: true },
-                    acquisition_date: { type: 'string', nullable: true }
+                    telemetry_id: {
+                      type: 'string',
+                      format: 'uuid'
+                    },
+                    deployment_id: {
+                      type: 'string',
+                      format: 'uuid'
+                    },
+                    collar_transaction_id: {
+                      type: 'string',
+                      format: 'uuid'
+                    },
+                    critter_id: {
+                      type: 'string',
+                      format: 'uuid'
+                    },
+                    deviceid: {
+                      type: 'number'
+                    },
+                    latitude: {
+                      type: 'number',
+                      nullable: true
+                    },
+                    longitude: {
+                      type: 'number',
+                      nullable: true
+                    },
+                    elevation: {
+                      type: 'number',
+                      nullable: true
+                    },
+                    vendor: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    acquisition_date: {
+                      type: 'string',
+                      nullable: true
+                    }
                   }
                 }
               }

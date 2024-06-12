@@ -9,9 +9,10 @@ import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import TelemetryListFilterForm, { TelemetryAdvancedFiltersInitialValues } from './TelemetryListFilterForm';
@@ -96,11 +97,11 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
 
   const telemetryDataLoader = useDataLoader(
     (pagination?: ApiPaginationRequestOptions, filter?: ITelemetryAdvancedFilters) =>
-      biohubApi.telemetry.getTelemetryList(pagination, filter)
+      biohubApi.telemetry.findTelemetry(pagination, filter)
   );
 
-  useEffect(() => {
-    telemetryDataLoader.load(paginationSort, advancedFiltersModel);
+  useDeepCompareEffect(() => {
+    telemetryDataLoader.refresh(paginationSort, advancedFiltersModel);
     // Should not re-run this effect on `telemetryDataLoader` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [advancedFiltersModel, paginationSort]);
@@ -165,6 +166,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
     <>
       <Collapse in={showSearch}>
         <TelemetryListFilterForm
+          paginationSort={paginationSort}
           handleSubmit={setAdvancedFiltersModel}
           handleReset={() => setAdvancedFiltersModel(TelemetryAdvancedFiltersInitialValues)}
         />
@@ -173,7 +175,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
       <Box height="500px">
         <StyledDataGrid
           noRowsMessage="No telemetry found"
-          loading={!telemetryDataLoader.data}
+          loading={!telemetryDataLoader.isReady && !telemetryDataLoader.data}
           // Columns
           columns={columns}
           // Rows
@@ -185,6 +187,9 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
           pageSizeOptions={pageSizeOptions}
           paginationModel={paginationModel}
           onPaginationModelChange={(model) => {
+            if (!model) {
+              return;
+            }
             setSearchParams(searchParams.set('t_page', String(model.page)).set('t_limit', String(model.pageSize)));
           }}
           // Sorting
@@ -192,6 +197,9 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
           sortModel={sortModel}
           sortingOrder={['asc', 'desc']}
           onSortModelChange={(model) => {
+            if (!model[0]) {
+              return;
+            }
             setSearchParams(searchParams.set('t_sort', model[0].field).set('t_order', model[0].sort ?? 'desc'));
           }}
           // Row options

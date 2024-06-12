@@ -47,12 +47,30 @@ export function useSearchParams<ParamType extends Record<string, string> = Recor
 export class TypedURLSearchParams<
   ParamType extends Record<string, string> = Record<string, string>
 > extends URLSearchParams {
-  constructor(search: Search) {
+  constructor(search?: Search) {
     super(search);
   }
 
   set<K extends keyof ParamType & string>(key: K, value: ParamType[K]) {
     super.set(key, value);
+    return this;
+  }
+
+  /**
+   * Set a key-value pair if the value is not null or undefined, otherwise delete the key.
+   *
+   * @template K
+   * @param {K} key
+   * @param {(ParamType[K] | null)} [value]
+   * @return {*}
+   * @memberof TypedURLSearchParams
+   */
+  setOrDelete<K extends keyof ParamType & string>(key: K, value?: ParamType[K] | null) {
+    if (value !== null && value !== undefined) {
+      super.set(key, value);
+    } else {
+      super.delete(key);
+    }
     return this;
   }
 

@@ -13,7 +13,7 @@ import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { debounce } from 'lodash-es';
 import { ChangeEvent, useMemo, useState } from 'react';
 
-interface ISystemUserAutocompleteProps {
+interface ISystemUserAutocompleteFieldProps {
   formikFieldName: string;
   required?: boolean;
   label: string;
@@ -24,7 +24,7 @@ interface ISystemUserAutocompleteProps {
   showSelectedValue?: boolean;
 }
 
-const SystemUserAutocomplete = <T extends object>(props: ISystemUserAutocompleteProps) => {
+export const SystemUserAutocompleteField = <T extends object>(props: ISystemUserAutocompleteFieldProps) => {
   const { formikFieldName, label, showStartAdornment, showSelectedValue, placeholder, handleUser, handleClear } = props;
 
   const biohubApi = useBiohubApi();
@@ -153,5 +153,3 @@ const SystemUserAutocomplete = <T extends object>(props: ISystemUserAutocomplete
     />
   );
 };
-
-export default SystemUserAutocomplete;

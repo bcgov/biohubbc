@@ -10,16 +10,17 @@ import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { getNrmRegionColour } from 'constants/regions';
+import { getNrmRegionColour, NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import { SYSTEM_ROLE } from 'constants/roles';
 import dayjs from 'dayjs';
-import { NRM_REGION_APPENDED_TEXT } from 'features/summary/list-data/project/ProjectsListContainer';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
-import { useEffect, useState } from 'react';
+import { debounce } from 'lodash-es';
+import { useEffect, useMemo } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getCodesName } from 'utils/Utils';
@@ -30,14 +31,9 @@ import SurveysListFilterForm, {
 } from './SurveysListFilterForm';
 
 // Supported URL parameters
-type SurveyDataTableURLParams = {
-  // search filter
-  keyword: string;
-  species: string;
-  person: string;
-  // pagination
-  s_page: string;
-  s_limit: string;
+type SurveyDataTableURLParams = ISurveyAdvancedFilters & {
+  s_page?: string;
+  s_limit?: string;
   s_sort?: string;
   s_order?: 'asc' | 'desc';
 };
@@ -70,9 +66,13 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
 
   const { searchParams, setSearchParams } = useSearchParams<SurveyDataTableURLParams>();
 
+  const debouncedSetSearchParams = useMemo(() => debounce(setSearchParams, 500), [setSearchParams]);
+
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
+
+  // Initialize pagination, sort, and advanced filters from URL parameters
 
   const paginationModel = {
     pageSize: Number(searchParams.get('s_limit') ?? initialPaginationParams.limit),
@@ -86,30 +86,35 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
     }
   ];
 
-  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ISurveyAdvancedFilters>(
-    SurveyAdvancedFiltersInitialValues
-  );
+  const advancedFiltersModel = {
+    keyword: searchParams.get('keyword') ?? SurveyAdvancedFiltersInitialValues.keyword,
+    start_date: searchParams.get('start_date') ?? SurveyAdvancedFiltersInitialValues.start_date,
+    end_date: searchParams.get('end_date') ?? SurveyAdvancedFiltersInitialValues.end_date,
+    person: searchParams.get('person') ?? SurveyAdvancedFiltersInitialValues.person
+  };
 
   const sort = firstOrNull(sortModel);
   const paginationSort: ApiPaginationRequestOptions = {
     limit: paginationModel.pageSize,
     sort: sort?.field || undefined,
     order: sort?.sort || undefined,
-    // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-    page: paginationModel.page + 1
+    page: paginationModel.page + 1 // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
   };
 
   const surveysDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions, filter?: ISurveyAdvancedFilters) =>
-    biohubApi.survey.getSurveysForUserId(pagination, filter)
+    biohubApi.survey.findSurveys(pagination, filter)
   );
 
-  useEffect(() => {
-    surveysDataLoader.load(paginationSort, advancedFiltersModel);
-    // Should not re-run this effect on `surveysDataLoader` changes
+  const debouncedFindSurveys = useMemo(
+    () => debounce(surveysDataLoader.refresh, 500),
     // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+  useDeepCompareEffect(() => {
+    debouncedFindSurveys(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
-  const surveyRows = surveysDataLoader.data?.surveys ?? [];
+  const rows = surveysDataLoader.data?.surveys ?? [];
 
   const columns: GridColDef<SurveyBasicFieldsObject>[] = [
     {
@@ -222,19 +227,27 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
     <>
       <Collapse in={showSearch}>
         <SurveysListFilterForm
-          handleSubmit={setAdvancedFiltersModel}
-          handleReset={() => setAdvancedFiltersModel(SurveyAdvancedFiltersInitialValues)}
+          initialValues={advancedFiltersModel}
+          handleSubmit={(values) => {
+            debouncedSetSearchParams(
+              searchParams
+                .setOrDelete('keyword', values.keyword)
+                .setOrDelete('start_date', values.start_date)
+                .setOrDelete('end_date', values.end_date)
+                .setOrDelete('person', values.person)
+            );
+          }}
         />
         <Divider />
       </Collapse>
       <Box height="500px">
         <StyledDataGrid
           noRowsMessage="No surveys found"
-          loading={!surveysDataLoader.data}
+          loading={!surveysDataLoader.isReady && !surveysDataLoader.data}
           // Columns
           columns={columns}
           // Rows
-          rows={surveyRows}
+          rows={rows}
           rowCount={surveysDataLoader.data?.surveys.length ?? 0}
           getRowId={(row) => row.survey_id}
           // Pagination
@@ -242,6 +255,9 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
           paginationModel={paginationModel}
           pageSizeOptions={pageSizeOptions}
           onPaginationModelChange={(model) => {
+            if (!model) {
+              return;
+            }
             setSearchParams(searchParams.set('s_page', String(model.page)).set('s_limit', String(model.pageSize)));
           }}
           // Sorting
@@ -249,6 +265,9 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
           sortModel={sortModel}
           sortingOrder={['asc', 'desc']}
           onSortModelChange={(model) => {
+            if (!model.length) {
+              return;
+            }
             setSearchParams(searchParams.set('s_sort', model[0].field).set('s_order', model[0].sort ?? 'desc'));
           }}
           // Row options

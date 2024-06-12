@@ -6,9 +6,9 @@ import { ICritterSimpleResponse } from './useCritterApi.interface';
  * Get survey basic fields response object.
  *
  * @export
- * @interface IGetTelemetryListResponse
+ * @interface IfindTelemetryResponse
  */
-export interface IGetTelemetryListResponse {
+export interface IfindTelemetryResponse {
   telemetry: { animal: ICritterSimpleResponse & (IVendorTelemetry | IManualTelemetry)[] }[];
   pagination: ApiPaginationResponseParams;
 }

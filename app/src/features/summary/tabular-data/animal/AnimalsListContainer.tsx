@@ -7,8 +7,9 @@ import { GridColDef, GridSortDirection } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import AnimalsListFilterForm, { AnimalsAdvancedFiltersInitialValues } from './AnimalsListFilterForm';
@@ -91,11 +92,11 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
 
   const animalsDataLoader = useDataLoader(
     (pagination?: ApiPaginationRequestOptions, filter?: IAnimalsAdvancedFilters) =>
-      biohubApi.animal.getAnimalsList(pagination, filter)
+      biohubApi.animal.findAnimals(pagination, filter)
   );
 
-  useEffect(() => {
-    animalsDataLoader.load(paginationSort, advancedFiltersModel);
+  useDeepCompareEffect(() => {
+    animalsDataLoader.refresh(paginationSort, advancedFiltersModel);
     // Should not re-run this effect on `animalsDataLoader` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [advancedFiltersModel, paginationSort]);
@@ -148,6 +149,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
     <>
       <Collapse in={showSearch}>
         <AnimalsListFilterForm
+          paginationSort={paginationSort}
           handleSubmit={setAdvancedFiltersModel}
           handleReset={() => setAdvancedFiltersModel(AnimalsAdvancedFiltersInitialValues)}
         />
@@ -156,7 +158,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
       <Box height="500px">
         <StyledDataGrid
           noRowsMessage="No animals found"
-          loading={!animalsDataLoader.data}
+          loading={!animalsDataLoader.isReady && !animalsDataLoader.data}
           // Columns
           columns={columns}
           // Rows
@@ -168,6 +170,9 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
           pageSizeOptions={pageSizeOptions}
           paginationModel={paginationModel}
           onPaginationModelChange={(model) => {
+            if (!model) {
+              return;
+            }
             setSearchParams(searchParams.set('a_page', String(model.page)).set('a_limit', String(model.pageSize)));
           }}
           // Sorting
@@ -175,6 +180,9 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
           sortModel={sortModel}
           sortingOrder={['asc', 'desc']}
           onSortModelChange={(model) => {
+            if (!model.length) {
+              return;
+            }
             setSearchParams(searchParams.set('a_sort', model[0].field).set('a_order', model[0].sort ?? 'desc'));
           }}
           // Row options
