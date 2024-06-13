@@ -186,7 +186,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       onChange={(_, option) => {
         if (option) {
           handleSpecies(option);
-          setInputValue(showSelectedValue ? option.scientificName : '');
+          setInputValue(startCase(option?.commonNames?.length ? option.commonNames[0] : option.scientificName));
         }
       }}
       renderOption={(renderProps, renderOption) => {

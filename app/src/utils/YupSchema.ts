@@ -52,7 +52,6 @@ yup.addMethod(
         // don't validate date string if it is null
         return true;
       }
-
       return dayjs(value, dateFormat, true).isValid();
     });
   }

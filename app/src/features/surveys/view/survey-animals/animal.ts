@@ -1,6 +1,13 @@
 import { DATE_LIMIT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
-import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
+import {
+  ICritterDetailedResponse,
+  ICritterSimpleResponse,
+  IQualitativeMeasurementCreate,
+  IQualitativeMeasurementUpdate,
+  IQuantitativeMeasurementCreate,
+  IQuantitativeMeasurementUpdate
+} from 'interfaces/useCritterApi.interface';
 import { PROJECTION_MODE } from 'utils/mapProjectionHelpers';
 import yup from 'utils/YupSchema';
 import { AnyObjectSchema, InferType } from 'yup';
@@ -159,7 +166,8 @@ export const CreateCritterSchema = yup.object({
   itis_tsn: yup.number().required(req),
   animal_id: yup.string().required(req),
   wlh_id: yup.string().optional(),
-  sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex)).required(req)
+  sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex)).required(req),
+  critter_comment: yup.string().optional().nullable()
 });
 
 export const CreateCritterMarkingSchema = yup.object({
@@ -174,13 +182,15 @@ export const CreateCritterMarkingSchema = yup.object({
 
 export const CreateCritterMeasurementSchema = yup.object({
   critter_id: yup.string().required().required(req),
-  measurement_qualitative_id: yup.string().optional(),
-  measurement_quantitative_id: yup.string().optional(),
+  measurement_qualitative_id: yup.string().optional().nullable(),
+  measurement_quantitative_id: yup.string().optional().nullable(),
   taxon_measurement_id: yup.string().required('Type is required'),
-  qualitative_option_id: yup.string().optional(),
-  value: numSchema.required(req).optional(),
-  measured_timestamp: dateSchema.required('Date is required'),
-  measurement_comment: yup.string().optional()
+  qualitative_option_id: yup.string().optional().nullable(),
+  value: numSchema.required(req).optional().nullable(),
+  measured_timestamp: dateSchema.required('Date is required').optional().nullable(),
+  measurement_comment: yup.string().optional().nullable(),
+  capture_id: yup.string().optional().nullable(),
+  mortality_id: yup.string().optional().nullable()
 });
 
 export const CreateCritterCollectionUnitSchema = yup.object({
@@ -191,16 +201,17 @@ export const CreateCritterCollectionUnitSchema = yup.object({
 });
 
 export const CreateCritterMortalitySchema = yup.object({
-  mortality_id: yup.string().optional(),
+  critter_id: yup.string().required(req),
+  mortality_id: yup.string().optional().nullable(),
   location: LocationSchema.required(),
   mortality_timestamp: dateSchema.required('Mortality Date is required'),
-  mortality_comment: yup.string().optional(),
-  proximate_cause_of_death_id: yup.string().uuid().required(req),
-  proximate_cause_of_death_confidence: yup.string().nullable(),
-  proximate_predated_by_itis_tsn: yup.number().optional(),
-  ultimate_cause_of_death_id: yup.string().uuid().optional(),
-  ultimate_cause_of_death_confidence: yup.string().optional(),
-  ultimate_predated_by_itis_tsn: yup.number().optional()
+  mortality_comment: yup.string().optional().nullable(),
+  proximate_cause_of_death_id: yup.string().uuid().optional().nullable(),
+  proximate_cause_of_death_confidence: yup.string().optional().nullable(),
+  proximate_predated_by_itis_tsn: yup.number().optional().nullable(),
+  ultimate_cause_of_death_id: yup.string().uuid().optional().nullable(),
+  ultimate_cause_of_death_confidence: yup.string().optional().nullable(),
+  ultimate_predated_by_itis_tsn: yup.number().optional().nullable()
 });
 
 export const CreateCritterFamilySchema = yup.object({
@@ -218,7 +229,33 @@ export type ICreateCritter = InferType<typeof CreateCritterSchema>;
 
 export type ICreateCritterMarking = InferType<typeof CreateCritterMarkingSchema>;
 export type ICreateCritterMeasurement = InferType<typeof CreateCritterMeasurementSchema>;
-export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollectionUnitSchema>;
+export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollectionUnitSchema> & { key?: string };
 export type ICreateCritterCapture = InferType<typeof CreateCritterCaptureSchema>;
 export type ICreateCritterFamily = InferType<typeof CreateCritterFamilySchema>;
 export type ICreateCritterMortality = InferType<typeof CreateCritterMortalitySchema>;
+
+/**
+ * Adding data to a critter in bulk
+ */
+export type IBulkCreate = {
+  critter?: ICritterSimpleResponse;
+  qualitative_measurements?: IQualitativeMeasurementCreate[];
+  quantitative_measurements?: IQuantitativeMeasurementCreate[];
+  capture?: ICreateCritterCapture[];
+  mortality?: ICreateCritterMortality;
+  markings?: ICreateCritterMarking[];
+  collections?: ICreateCritterCollectionUnit[];
+};
+
+/**
+ * Editing data for a critter in bulk
+ */
+export type IBulkUpdate = {
+  critter?: ICritterSimpleResponse;
+  qualitative_measurements?: IQualitativeMeasurementUpdate[];
+  quantitative_measurements?: IQuantitativeMeasurementUpdate[];
+  captures?: ICreateCritterCapture[];
+  mortality?: ICreateCritterMortality;
+  markings?: ICreateCritterMarking[];
+  collections?: ICreateCritterCollectionUnit[];
+};

@@ -11,7 +11,7 @@ import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helper
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { SurveyAnimalsPage } from './SurveyAnimalsPage';
 
-jest.mock('hooks/useQuery', () => ({ useQuery: () => ({ cid: 0 }) }));
+jest.mock('hooks/useQuery', () => ({ useQuery: () => ({ critter_id: 0 }) }));
 jest.mock('../../../../hooks/useBioHubApi.ts');
 jest.mock('../../../../hooks/useTelemetryApi');
 jest.mock('../../../../hooks/useCritterbaseApi');

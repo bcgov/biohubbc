@@ -2,6 +2,13 @@ import { IDBConnection } from '../database/db';
 import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
 import { DBService } from './db-service';
 
+/**
+ * Service layer for survey critters.
+ *
+ * @export
+ * @class SurveyCritterService
+ * @extends {DBService}
+ */
 export class SurveyCritterService extends DBService {
   critterRepository: SurveyCritterRepository;
 
@@ -12,8 +19,10 @@ export class SurveyCritterService extends DBService {
   }
   /**
    * Get all critter associations for the given survey. This only gets you critter ids, which can be used to fetch details from the external system.
+   *
    * @param {number} surveyId
-   * @returns {*}
+   * @return {*}  {Promise<SurveyCritterRecord[]>}
+   * @memberof SurveyCritterService
    */
   async getCrittersInSurvey(surveyId: number): Promise<SurveyCritterRecord[]> {
     return this.critterRepository.getCrittersInSurvey(surveyId);
@@ -33,40 +42,45 @@ export class SurveyCritterService extends DBService {
    * Add a critter as part of this survey. Does not create anything in the external system.
    *
    * @param {number} surveyId
-   * @param {string} critterId
-   * @returns {*}
+   * @param {string} critterBaseCritterId
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyCritterService
    */
-  async addCritterToSurvey(surveyId: number, critterBaseCritterId: string): Promise<void> {
+  async addCritterToSurvey(surveyId: number, critterBaseCritterId: string): Promise<number> {
     return this.critterRepository.addCritterToSurvey(surveyId, critterBaseCritterId);
   }
 
   /**
    * Update critter already in survey. Only touches audit columns.
    *
-   * @param {number} surveyId
+   * @param {number} critterId
    * @param {string} critterBaseCritterId
-   * @returns {*}
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyCritterService
    */
   async updateCritter(critterId: number, critterBaseCritterId: string): Promise<void> {
     return this.critterRepository.updateCritter(critterId, critterBaseCritterId);
   }
 
   /**
-   * Removes a critter from the survey. Does not affect the critter in the external system.
-   * @param {string} surveyId
-   * @param {string} critterId
-   * @returns {*}
+   * Removes critters from the survey. Does not affect the critters in the external system.
+   *
+   * @param {number} surveyId
+   * @param {number[]} critterIds
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyCritterService
    */
-  async removeCritterFromSurvey(surveyId: number, critterId: number): Promise<void> {
-    return this.critterRepository.removeCritterFromSurvey(surveyId, critterId);
+  async removeCrittersFromSurvey(surveyId: number, critterIds: number[]): Promise<void> {
+    return this.critterRepository.removeCrittersFromSurvey(surveyId, critterIds);
   }
 
   /**
    * Upsert a deployment row into SIMS.
    *
-   * @param {id} critterId
-   * @param {id} deplyomentId
-   * @returns {*}
+   * @param {number} critterId
+   * @param {string} deplyomentId
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyCritterService
    */
   async upsertDeployment(critterId: number, deplyomentId: string): Promise<void> {
     return this.critterRepository.upsertDeployment(critterId, deplyomentId);
@@ -75,9 +89,10 @@ export class SurveyCritterService extends DBService {
   /**
    * Removes the deployment in SIMS.
    *
-   * @param {id} critterId
+   * @param {number} critterId
    * @param {string} deploymentId the bctw deployment uuid
-   * @returns {*}
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyCritterService
    */
   async removeDeployment(critterId: number, deploymentId: string): Promise<void> {
     return this.critterRepository.removeDeployment(critterId, deploymentId);

@@ -204,30 +204,6 @@ const quantitativeMeasurmentSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
-export const critterCreateRequestObject: OpenAPIV3.SchemaObject = {
-  title: 'Create critter request object',
-  type: 'object',
-  properties: {
-    critter_id: {
-      type: 'string',
-      format: 'uuid'
-    },
-    animal_id: {
-      type: 'string'
-    },
-    wlh_id: {
-      type: 'string'
-    },
-    itis_tsn: {
-      type: 'integer'
-    },
-    sex: {
-      type: 'string'
-    }
-  },
-  additionalProperties: false
-};
-
 export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
   title: 'Bulk post request object',
   type: 'object',
