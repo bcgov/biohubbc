@@ -588,33 +588,56 @@ export async function up(knex: Knex): Promise<void> {
     -- Triggers for validating technique attributes
     ----------------------------------------------------------------------------------------
 
-    CREATE OR REPLACE FUNCTION biohub.tr_technique_attribute_check(attribute_type TEXT)
-    RETURNS trigger
+    CREATE OR REPLACE FUNCTION biohub.tr_technique_qual_attribute_check() 
+    RETURNS TRIGGER
     LANGUAGE plpgsql
-    AS $function$
+    SECURITY invoker
+    AS
+    $$
     BEGIN
-        -- Assert that the method_lookup_id can have the incoming attributes
-        IF NOT EXISTS (
-            SELECT 1 
-            FROM method_technique_attribute_ || attribute_type || ' mtaq 
-            INNER JOIN method_lookup_attribute_ || attribute_type || ' mlaq 
-                ON mlaq.method_lookup_attribute_' || attribute_type || '_id = mtaq.method_lookup_attribute_' || attribute_type || '_id 
-            INNER JOIN method_technique mt 
-                ON mlaq.method_technique_id = mt.method_technique_id
-            WHERE mtaq.method_lookup_attribute_' || attribute_type || '_id = NEW.method_lookup_attribute_' || attribute_type || '_id
-        ) THEN
-            RAISE EXCEPTION 'The method_lookup_id % does not support the incoming attribute.', NEW.method_lookup_id;
-        END IF;
-
-        RETURN NEW;
+      IF NOT EXISTS (
+        SELECT 1 
+        FROM method_technique_attribute_qualitative mtaq 
+        INNER JOIN method_lookup_attribute_qualitative mlaq 
+            ON mlaq.method_lookup_attribute_qualitative_id = mtaq.method_lookup_attribute_qualitative_id 
+        INNER JOIN method_technique mt 
+            ON mlaq.method_technique_id = mt.method_technique_id
+        WHERE mtaq.method_lookup_attribute_qualitative_id = NEW.method_lookup_attribute_qualitative_id
+      ) THEN
+          RAISE EXCEPTION 'The method_lookup_id does not support the incoming attribute.';
+      END IF;
+      RETURN NEW;
     END;
-    $function$;
+    $$;
+
+    CREATE OR REPLACE FUNCTION biohub.tr_technique_quant_attribute_check() 
+    RETURNS TRIGGER
+    LANGUAGE plpgsql
+    SECURITY invoker
+    AS
+    $$
+    BEGIN
+      IF NOT EXISTS (
+        SELECT 1 
+        FROM method_technique_attribute_quantitative mtaq 
+        INNER JOIN method_lookup_attribute_quantitative mlaq 
+            ON mlaq.method_lookup_attribute_quantitative_id = mtaq.method_lookup_attribute_quantitative_id 
+        INNER JOIN method_technique mt 
+            ON mlaq.method_technique_id = mt.method_technique_id
+        WHERE mtaq.method_lookup_attribute_quantitative_id = NEW.method_lookup_attribute_quantitative_id
+      ) THEN
+          RAISE EXCEPTION 'The method_lookup_id does not support the incoming attribute.';
+      END IF;
+      RETURN NEW;
+    END;
+    $$;
+
 
     DROP TRIGGER IF EXISTS technique_qual_attribute_val ON biohub.method_technique_qualitative_attribute;
-    CREATE TRIGGER technique_qual_attribute_val BEFORE INSERT OR UPDATE ON biohub.method_technique_qualitative_attribute FOR EACH ROW EXECUTE FUNCTION biohub.tr_technique_attribute_check('qualitative');
+    CREATE TRIGGER technique_qual_attribute_val BEFORE INSERT OR UPDATE ON biohub.method_technique_attribute_qualitative FOR EACH ROW EXECUTE FUNCTION biohub.tr_technique_qual_attribute_check();
 
     DROP TRIGGER IF EXISTS technique_quant_attribute_val ON biohub.method_technique_quantitative_attribute;
-    CREATE TRIGGER technique_quant_attribute_val BEFORE INSERT OR UPDATE ON biohub.method_technique_quantitative_attribute FOR EACH ROW EXECUTE FUNCTION biohub.tr_technique_attribute_check('quantitative');
+    CREATE TRIGGER technique_quant_attribute_val BEFORE INSERT OR UPDATE ON biohub.method_technique_attribute_quantitative FOR EACH ROW EXECUTE FUNCTION biohub.tr_technique_quant_attribute_check();
     
     ----------------------------------------------------------------------------------------
     -- Create views

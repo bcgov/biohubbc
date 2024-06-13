@@ -211,6 +211,105 @@ export class TechniqueAttributeRepository extends BaseRepository {
   }
 
   /**
+   * Get quantitative and qualitative attributes for a method lookup Id
+   *
+   * @param {number} techniqueId
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof TechniqueRepository
+   */
+  async getAttributeDefinitionsByTechniqueId(techniqueId: number): Promise<IGetTechniqueAttributes> {
+    defaultLog.debug({ label: 'getAttributesForMethodLookupId', techniqueId });
+
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .with(
+        'w_quantitative_attributes',
+        knex
+          .select(
+            'mlaq.method_lookup_id',
+            knex.raw(`
+        json_agg(json_build_object(
+          'method_lookup_attribute_quantitative_id', mlaq.method_lookup_attribute_quantitative_id,
+          'name', taq.name,
+          'description', taq.description,
+          'min', mlaq.min,
+          'max', mlaq.max,
+          'unit', mlaq.unit
+        )) as quantitative_attributes
+      `)
+          )
+          .from('method_lookup_attribute_quantitative as mlaq')
+          .leftJoin(
+            'technique_attribute_quantitative as taq',
+            'taq.technique_attribute_quantitative_id',
+            'mlaq.technique_attribute_quantitative_id'
+          )
+          .where('mlaq.record_end_date', null)
+          .groupBy('mlaq.method_lookup_id')
+      )
+      .with(
+        'w_qualitative_attributes_options',
+        knex
+          .select(
+            'method_lookup_attribute_qualitative_id',
+            knex.raw(`
+          json_agg(json_build_object(
+            'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id,
+            'name', name,
+            'description', description
+          )) as options`)
+          )
+          .from('method_lookup_attribute_qualitative_option')
+          .where('record_end_date', null)
+          .groupBy('method_lookup_attribute_qualitative_id')
+      )
+      .with(
+        'w_qualitative_attributes',
+        knex
+          .select(
+            'mlaq.method_lookup_id',
+            knex.raw(`
+            json_agg(json_build_object(
+              'method_lookup_attribute_qualitative_id', mlaq.method_lookup_attribute_qualitative_id,
+              'name', taq.name,
+              'description', taq.description,
+              'options', COALESCE(wqao.options, '[]'::json)
+            )) as qualitative_attributes
+          `)
+          )
+          .from('method_lookup_attribute_qualitative as mlaq')
+          .leftJoin(
+            'technique_attribute_qualitative as taq',
+            'taq.technique_attribute_qualitative_id',
+            'mlaq.technique_attribute_qualitative_id'
+          )
+          .innerJoin(
+            'w_qualitative_attributes_options as wqao',
+            'wqao.method_lookup_attribute_qualitative_id',
+            'mlaq.method_lookup_attribute_qualitative_id'
+          )
+          .where('mlaq.record_end_date', null)
+          .groupBy('mlaq.method_lookup_id')
+      )
+      .select(
+        'ml.method_lookup_id',
+        'mt.method_technique_id',
+        knex.raw(`COALESCE(qual.qualitative_attributes, '[]'::json) as qualitative_attributes`),
+        knex.raw(`COALESCE(quant.quantitative_attributes, '[]'::json) as quantitative_attributes`)
+      )
+      .from('method_technique as mt')
+      .leftJoin('method_lookup as ml', 'ml.method_lookup_id', 'mt_method_lookup_id')
+      .leftJoin('w_qualitative_attributes as qual', 'ml.method_lookup_id', 'qual.method_lookup_id')
+      .leftJoin('w_quantitative_attributes as quant', 'ml.method_lookup_id', 'quant.method_lookup_id')
+      .where('mt.method_technique_id', techniqueId);
+
+    const response = await this.connection.knex(queryBuilder, TechniqueAttributesLookupObject);
+
+    return response.rows[0];
+  }
+
+  /**
    * Get quantitative and qualitative attributes for a technique Id
    *
    * @param {number} techniqueId

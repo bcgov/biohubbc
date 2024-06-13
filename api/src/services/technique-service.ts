@@ -66,7 +66,6 @@ export class TechniqueService extends DBService {
     surveyId: number,
     techniques: ITechniquePostData[]
   ): Promise<(ITechniquePostData & { method_technique_id: number })[]> {
-
     const promises = techniques.map(async (technique) => {
       const rowForInsert: ITechniqueRowDataForInsert = {
         name: technique.name,

@@ -220,7 +220,7 @@ export class SampleLocationService extends DBService {
     const methodService = new SampleMethodService(this.connection);
     const blockService = new SampleBlockService(this.connection);
     const stratumService = new SampleStratumService(this.connection);
-    
+
     // Update the main sample location
     await this.sampleLocationRepository.updateSampleSite(sampleSite);
 

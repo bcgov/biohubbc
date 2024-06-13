@@ -188,7 +188,7 @@ export class TechniqueRepository extends BaseRepository {
    * Get techniques for a given survey Id
    *
    * @param {number} surveyId
-   * @returns {*} {Promise<{id: number}[]>}
+   * @returns {*}
    * @memberof TechniqueRepository
    */
   async getTechniquesForSurveyId(surveyId: number): Promise<IGetTechnique[]> {

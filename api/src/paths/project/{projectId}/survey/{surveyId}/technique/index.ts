@@ -13,7 +13,6 @@ import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/technique/index');
 
-
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
@@ -102,8 +101,8 @@ POST.apiDoc = {
 
 /**
  * Create one or more Survey techniques
- * 
- * @returns 
+ *
+ * @returns
  */
 export function createTechniques(): RequestHandler {
   return async (req, res) => {

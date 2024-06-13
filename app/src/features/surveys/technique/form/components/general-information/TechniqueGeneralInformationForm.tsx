@@ -70,14 +70,19 @@ export const TechniqueGeneralInformationForm = (props: ITechniqueGeneralInformat
             required
             loading={codesContext.codesDataLoader.isLoading}
             options={methodOptions.map((option) => ({
-              value: option.value,
+              value: option.value as number,
               label: option.label,
               description: option.subText
             }))}
             onChange={(_, value) => {
               if (value?.value) {
                 setFieldValue('method_lookup_id', value.value);
-                attributeTypeDefinitionDataLoader.refresh(Number(value.value));
+
+                // Fetch type definitions for the newly selected method_lookup_id
+                attributeTypeDefinitionDataLoader.refresh(value.value);
+
+                // Reset attributes when the method_lookup_id changes
+                setFieldValue('attributes', []);
               }
             }}
           />
