@@ -21,11 +21,10 @@ interface ISystemUserAutocompleteFieldProps {
   handleUser?: (user?: ISystemUser) => void;
   handleClear?: () => void;
   showStartAdornment?: boolean;
-  showSelectedValue?: boolean;
 }
 
 export const SystemUserAutocompleteField = <T extends object>(props: ISystemUserAutocompleteFieldProps) => {
-  const { formikFieldName, label, showStartAdornment, showSelectedValue, placeholder, handleUser, handleClear } = props;
+  const { formikFieldName, label, showStartAdornment, placeholder, handleUser, handleClear } = props;
 
   const biohubApi = useBiohubApi();
   const isMounted = useIsMounted();
@@ -96,7 +95,7 @@ export const SystemUserAutocompleteField = <T extends object>(props: ISystemUser
       }}
       onChange={(_, option) => {
         if (option) {
-          setSearchText(showSelectedValue ? option.display_name : '');
+          setSearchText(option.display_name);
 
           if (!handleUser) {
             setFieldValue(formikFieldName, option.system_user_id);

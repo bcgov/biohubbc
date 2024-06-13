@@ -3,7 +3,6 @@ import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
 import { Feature, GeoJsonProperties, Geometry } from 'geojson';
-import { History } from 'history';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 import _ from 'lodash';
@@ -481,15 +480,3 @@ export const getRandomHexColor = (seed: number, min = 100, max = 170): string =>
  * @return {*}  {value is T}
  */
 export const isDefined = <T,>(value: T | undefined | null): value is T => value !== undefined && value !== null;
-
-export const updateUrl = (history: History, field: string, value: string) => {
-  const searchParams = new URLSearchParams(location.search);
-
-  // Update query params based on form values
-  searchParams.set(field, value);
-
-  // Replace the current search params in the URL
-  history.replace({
-    search: searchParams.toString()
-  });
-};

@@ -9,7 +9,7 @@ import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import { debounce } from 'lodash-es';
+import { debounce, startCase } from 'lodash-es';
 import { ChangeEvent, useMemo, useState } from 'react';
 
 export interface ISpeciesAutocompleteFieldProps {
@@ -93,14 +93,6 @@ export interface ISpeciesAutocompleteFieldProps {
    * @memberof ISpeciesAutocompleteFieldProps
    */
   placeholder?: string;
-  /**
-   * Whether to show selected values in the textfield or not
-   * Defaults to false
-   *
-   * @type {boolean}
-   * @memberof ISpeciesAutocompleteFieldProps
-   */
-  showSelectedValue?: boolean;
 }
 
 const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
@@ -115,8 +107,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
     handleSpecies,
     handleClear,
     defaultSpecies,
-    showStartAdornment,
-    showSelectedValue
+    showStartAdornment
   } = props;
 
   const biohubApi = useBiohubApi();

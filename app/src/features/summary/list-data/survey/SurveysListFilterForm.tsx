@@ -59,14 +59,12 @@ const SurveysListFilterForm = (props: ISurveysListFilterFormProps) => {
                 formikProps.setFieldValue('itis_tsn', undefined);
               }}
               clearOnSelect={true}
-              showSelectedValue={true}
               key="survey-tsn-filter"
             />,
             <SystemUserAutocompleteField
               label="Person"
               placeholder="Find Projects that a person has access to"
               formikFieldName="system_user_id"
-              showSelectedValue={true}
               key="survey-person-filter"
             />
           ]}

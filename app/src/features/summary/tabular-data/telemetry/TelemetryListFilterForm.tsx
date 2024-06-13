@@ -44,7 +44,6 @@ const TelemetryListFilterForm = (props: ITelemetryListFilterFormProps) => {
                 formikProps.setFieldValue('itis_tsns', undefined);
               }}
               clearOnSelect={true}
-              showSelectedValue={true}
             />
           ]}
         />

@@ -59,7 +59,6 @@ const ProjectsListFilterForm = (props: IProjectsListFilterFormProps) => {
                 formikProps.setFieldValue('itis_tsn', undefined);
               }}
               clearOnSelect={true}
-              showSelectedValue={true}
               key="project-tsn-filter"
             />,
             <SystemUserAutocompleteField
@@ -67,7 +66,6 @@ const ProjectsListFilterForm = (props: IProjectsListFilterFormProps) => {
               placeholder="Search by user"
               formikFieldName="system_user_id"
               required={false}
-              showSelectedValue={true}
               key="project-person-filter"
             />
           ]}

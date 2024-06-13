@@ -59,7 +59,6 @@ export const ObservationsListFilterForm = (props: IObservationsListFilterFormPro
                 formikProps.setFieldValue('itis_tsns', undefined);
               }}
               clearOnSelect={true}
-              showSelectedValue={true}
             />,
 
             <SingleDateField name={'minimum_date'} label={'Observed after'} />,
