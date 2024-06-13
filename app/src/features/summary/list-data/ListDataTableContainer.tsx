@@ -8,50 +8,62 @@ import Toolbar from '@mui/material/Toolbar';
 import ProjectsListContainer from 'features/summary/list-data/project/ProjectsListContainer';
 import SurveysListContainer from 'features/summary/list-data/survey/SurveysListContainer';
 import { useSearchParams } from 'hooks/useSearchParams';
+import { useState } from 'react';
 
-export const LIST_VIEW_PARAM_KEY = 'lvk';
-export enum LIST_VIEW_PARAM_VALUE {
+export const ACTIVE_VIEW_KEY = 'lvk';
+export enum ACTIVE_VIEW_VALUE {
   projects = 'pv',
   surveys = 'sv'
 }
 
-export const LIST_VIEW_SEARCH_PARAM_KEY = 'lvsk';
-export enum LIST_VIEW_SEARCH_PARAM_VALUE {
-  showFilters = 'ss'
+export const SHOW_SEARCH_KEY = 'lvsk';
+export enum SHOW_SEARCH_VALUE {
+  true = 'true',
+  false = 'false'
 }
 
+// Supported URL parameters
 type ListDataTableURLParams = {
-  [LIST_VIEW_PARAM_KEY]: LIST_VIEW_PARAM_VALUE;
-  [LIST_VIEW_SEARCH_PARAM_KEY]: LIST_VIEW_SEARCH_PARAM_VALUE;
+  [ACTIVE_VIEW_KEY]: ACTIVE_VIEW_VALUE;
+  [SHOW_SEARCH_KEY]: SHOW_SEARCH_VALUE;
 };
 
 const buttonSx = {
   py: 0.5,
   px: 1.5,
-  border: 'none',
+  border: 'none !important',
   fontWeight: 700,
   borderRadius: '4px !important',
   fontSize: '0.875rem',
   letterSpacing: '0.02rem'
 };
 
+/**
+ * Data table component for list data (ie: projects, surveys).
+ *
+ * @return {*}
+ */
 export const ListDataTableContainer = () => {
   const { searchParams, setSearchParams } = useSearchParams<ListDataTableURLParams>();
 
-  const activeView = searchParams.get(LIST_VIEW_PARAM_KEY) ?? LIST_VIEW_PARAM_VALUE.projects;
-  const showSearch = !!searchParams.get(LIST_VIEW_SEARCH_PARAM_KEY) ?? false;
+  const [activeView, setActiveView] = useState(searchParams.get(ACTIVE_VIEW_KEY) ?? ACTIVE_VIEW_VALUE.projects);
+  const [showSearch, setShowSearch] = useState<boolean>(
+    searchParams.get(SHOW_SEARCH_KEY) === SHOW_SEARCH_VALUE.true ?? false
+  );
 
   const views = [
-    { value: LIST_VIEW_PARAM_VALUE.projects, label: 'projects', icon: mdiFolder },
-    { value: LIST_VIEW_PARAM_VALUE.surveys, label: 'surveys', icon: mdiListBoxOutline }
+    { value: ACTIVE_VIEW_VALUE.projects, label: 'projects', icon: mdiFolder },
+    { value: ACTIVE_VIEW_VALUE.surveys, label: 'surveys', icon: mdiListBoxOutline }
   ];
 
-  const onChangeView = (_: React.MouseEvent<HTMLElement>, value: LIST_VIEW_PARAM_VALUE) => {
+  const onChangeView = (_: React.MouseEvent<HTMLElement>, value: ACTIVE_VIEW_VALUE) => {
     if (!value) {
+      // User has clicked the active view, do nothing
       return;
     }
 
-    setSearchParams(searchParams.set(LIST_VIEW_PARAM_KEY, value));
+    setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, value));
+    setActiveView(value);
   };
 
   return (
@@ -64,7 +76,7 @@ export const ListDataTableContainer = () => {
           sx={{
             display: 'flex',
             gap: 1,
-            '& Button': buttonSx
+            '& .MuiButton-root': buttonSx
           }}>
           {views.map((view) => (
             <ToggleButton
@@ -83,9 +95,9 @@ export const ListDataTableContainer = () => {
           sx={buttonSx}
           onClick={() => {
             setSearchParams(
-              (showSearch && searchParams.delete(LIST_VIEW_SEARCH_PARAM_KEY)) ||
-                searchParams.set(LIST_VIEW_SEARCH_PARAM_KEY, LIST_VIEW_SEARCH_PARAM_VALUE.showFilters)
+              searchParams.set(SHOW_SEARCH_KEY, showSearch ? SHOW_SEARCH_VALUE.false : SHOW_SEARCH_VALUE.true)
             );
+            setShowSearch(!showSearch);
           }}
           component={Button}
           startIcon={<Icon path={mdiMagnify} size={1} />}>
@@ -93,8 +105,8 @@ export const ListDataTableContainer = () => {
         </Button>
       </Toolbar>
       <Divider />
-      {activeView === LIST_VIEW_PARAM_VALUE.projects && <ProjectsListContainer showSearch={showSearch} />}
-      {activeView === LIST_VIEW_PARAM_VALUE.surveys && <SurveysListContainer showSearch={showSearch} />}
+      {activeView === ACTIVE_VIEW_VALUE.projects && <ProjectsListContainer showSearch={showSearch} />}
+      {activeView === ACTIVE_VIEW_VALUE.surveys && <SurveysListContainer showSearch={showSearch} />}
     </>
   );
 };

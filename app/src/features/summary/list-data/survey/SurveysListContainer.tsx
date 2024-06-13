@@ -5,7 +5,7 @@ import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridSortDirection } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SystemRoleGuard } from 'components/security/Guards';
@@ -19,10 +19,9 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
-import { debounce } from 'lodash-es';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { ApiPaginationRequestOptions } from 'types/misc';
+import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull, getCodesName } from 'utils/Utils';
 import SurveyProgressChip from '../../../surveys/components/SurveyProgressChip';
 import SurveysListFilterForm, {
@@ -64,9 +63,9 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   const codesContext = useCodesContext();
   const taxonomyContext = useTaxonomyContext();
 
-  const { searchParams, setSearchParams } = useSearchParams<SurveyDataTableURLParams>();
+  const { searchParams, setSearchParams } = useSearchParams<StringValues<SurveyDataTableURLParams>>();
 
-  const debouncedSetSearchParams = useMemo(() => debounce(setSearchParams, 500), [setSearchParams]);
+  // const debouncedSetSearchParams = useMemo(() => debounce(setSearchParams, 300), [setSearchParams]);
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -74,24 +73,25 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
 
   // Initialize pagination, sort, and advanced filters from URL parameters
 
-  const paginationModel = {
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('s_limit') ?? initialPaginationParams.limit),
     page: Number(searchParams.get('s_page') ?? initialPaginationParams.page)
-  };
+  });
 
-  const sortModel = [
+  const [sortModel, setSortModel] = useState<GridSortModel>([
     {
       field: searchParams.get('s_sort') ?? initialPaginationParams.sort,
       sort: (searchParams.get('s_order') ?? initialPaginationParams.order) as GridSortDirection
     }
-  ];
+  ]);
 
-  const advancedFiltersModel = {
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ISurveyAdvancedFilters>({
     keyword: searchParams.get('keyword') ?? SurveyAdvancedFiltersInitialValues.keyword,
-    start_date: searchParams.get('start_date') ?? SurveyAdvancedFiltersInitialValues.start_date,
-    end_date: searchParams.get('end_date') ?? SurveyAdvancedFiltersInitialValues.end_date,
+    itis_tsn: searchParams.get('itis_tsn')
+      ? Number(searchParams.get('itis_tsn'))
+      : SurveyAdvancedFiltersInitialValues.itis_tsn,
     person: searchParams.get('person') ?? SurveyAdvancedFiltersInitialValues.person
-  };
+  });
 
   const sort = firstOrNull(sortModel);
   const paginationSort: ApiPaginationRequestOptions = {
@@ -105,13 +105,9 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
     biohubApi.survey.findSurveys(pagination, filter)
   );
 
-  const debouncedFindSurveys = useMemo(
-    () => debounce(surveysDataLoader.refresh, 500),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  // Fetch projects when either the pagination, sort, or advanced filters change
   useDeepCompareEffect(() => {
-    debouncedFindSurveys(paginationSort, advancedFiltersModel);
+    surveysDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
   const rows = surveysDataLoader.data?.surveys ?? [];
@@ -226,18 +222,20 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   return (
     <>
       <Collapse in={showSearch}>
-        <SurveysListFilterForm
-          initialValues={advancedFiltersModel}
-          handleSubmit={(values) => {
-            debouncedSetSearchParams(
-              searchParams
-                .setOrDelete('keyword', values.keyword)
-                .setOrDelete('start_date', values.start_date)
-                .setOrDelete('end_date', values.end_date)
-                .setOrDelete('person', values.person)
-            );
-          }}
-        />
+        <Box py={2} px={3} bgcolor={grey[50]}>
+          <SurveysListFilterForm
+            initialValues={advancedFiltersModel}
+            handleSubmit={(values) => {
+              setSearchParams(
+                searchParams
+                  .setOrDelete('keyword', values.keyword)
+                  .setOrDelete('itis_tsn', values.itis_tsn)
+                  .setOrDelete('person', values.person)
+              );
+              setAdvancedFiltersModel(values);
+            }}
+          />
+        </Box>
         <Divider />
       </Collapse>
       <Box height="500px">
@@ -259,6 +257,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
               return;
             }
             setSearchParams(searchParams.set('s_page', String(model.page)).set('s_limit', String(model.pageSize)));
+            setPaginationModel(model);
           }}
           // Sorting
           sortingMode="server"
@@ -269,6 +268,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
               return;
             }
             setSearchParams(searchParams.set('s_sort', model[0].field).set('s_order', model[0].sort ?? 'desc'));
+            setSortModel(model);
           }}
           // Row options
           checkboxSelection={false}

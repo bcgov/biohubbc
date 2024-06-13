@@ -44,3 +44,21 @@ export type ApiPaginationResponseParams = {
   sort?: string;
   order?: 'asc' | 'desc';
 };
+
+/**
+ * Converts all value types of an object to strings.
+ *
+ * @example
+ * type MyObject = {
+ *   a: number;
+ *   b: boolean;
+ * };
+ *
+ * type MyObjectStringValues = StringValues<MyObject>;
+ *
+ * // MyObjectStringValues = {
+ * //   a: string;
+ * //   b: string;
+ * // }
+ */
+export type StringValues<T extends Record<any, any>> = { [key in keyof T]: string };

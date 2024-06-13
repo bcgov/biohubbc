@@ -80,28 +80,33 @@ const useSurveyApi = (axios: AxiosInstance) => {
     pagination?: ApiPaginationRequestOptions,
     filterFieldData?: ISurveyAdvancedFilters
   ): Promise<IfindSurveysResponse> => {
-    const params = new URLSearchParams();
+    // const params = new URLSearchParams();
 
-    if (pagination) {
-      params.append('page', pagination.page.toString());
-      params.append('limit', pagination.limit.toString());
-      if (pagination.sort) {
-        params.append('sort', pagination.sort);
-      }
-      if (pagination.order) {
-        params.append('order', pagination.order);
-      }
-    }
+    // if (pagination) {
+    //   params.append('page', pagination.page.toString());
+    //   params.append('limit', pagination.limit.toString());
+    //   if (pagination.sort) {
+    //     params.append('sort', pagination.sort);
+    //   }
+    //   if (pagination.order) {
+    //     params.append('order', pagination.order);
+    //   }
+    // }
 
-    if (filterFieldData) {
-      Object.entries(filterFieldData).forEach(([key, value]) => {
-        params.append(key, value);
-      });
-    }
+    // if (filterFieldData) {
+    //   Object.entries(filterFieldData).forEach(([key, value]) => {
+    //     params.append(key, value);
+    //   });
+    // }
 
-    const urlParamsString = `?${params.toString()}`;
+    // const urlParamsString = `?${params.toString()}`;
 
-    const { data } = await axios.get(`/api/survey${urlParamsString}`);
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
+
+    const { data } = await axios.get('/api/survey', { params, paramsSerializer: (params) => qs.stringify(params) });
 
     return data;
   };

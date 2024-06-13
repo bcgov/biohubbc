@@ -1,6 +1,8 @@
 import { AxiosInstance } from 'axios';
-import { ITelemetryAdvancedFilters } from 'features/summary/tabular-data/telemetry/TelemetryListContainer';
-import { IfindTelemetryResponse } from 'interfaces/useTelemetryApi.interface';
+import { ITelemetryAdvancedFilters } from 'features/summary/tabular-data/telemetry/TelemetryListFilterForm';
+
+import { IFindTelemetryResponse } from 'interfaces/useTelemetryApi.interface';
+import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
@@ -20,32 +22,17 @@ const useTelemetryApi = (axios: AxiosInstance) => {
   const findTelemetry = async (
     pagination?: ApiPaginationRequestOptions,
     filterFieldData?: ITelemetryAdvancedFilters
-  ): Promise<IfindTelemetryResponse> => {
-    const params = new URLSearchParams();
+  ): Promise<IFindTelemetryResponse> => {
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
 
-    if (pagination) {
-      params.append('page', pagination.page.toString());
-      params.append('limit', pagination.limit.toString());
-      if (pagination.sort) {
-        params.append('sort', pagination.sort);
-      }
-      if (pagination.order) {
-        params.append('order', pagination.order);
-      }
-    }
-
-    if (filterFieldData) {
-      Object.entries(filterFieldData).forEach(([key, value]) => {
-        params.append(key, value);
-      });
-    }
-
-    const urlParamsString = `?${params.toString()}`;
-
-    const { data } = await axios.get(`/api/telemetry${urlParamsString}`);
+    const { data } = await axios.get('/api/telemetry', { params, paramsSerializer: (params) => qs.stringify(params) });
 
     return data;
   };
+
   return { findTelemetry };
 };
 

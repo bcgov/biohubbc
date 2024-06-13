@@ -1,40 +1,34 @@
-import Box from '@mui/material/Box';
-import grey from '@mui/material/colors/grey';
 import CustomTextField from 'components/fields/CustomTextField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
-import SearchFilters from 'features/summary/components/SearchFilters';
-import { Formik, FormikProps } from 'formik';
-import React, { useRef } from 'react';
-import { ApiPaginationRequestOptions } from 'types/misc';
-import { ITelemetryAdvancedFilters } from './TelemetryListContainer';
+import { FilterFieldsContainer } from 'features/summary/components/FilterFieldsContainer';
+import { Formik } from 'formik';
 
-export interface ITelemetryListFilterFormProps {
-  paginationSort: ApiPaginationRequestOptions;
-  handleSubmit: (filterValues: ITelemetryAdvancedFilters) => void;
-  handleReset: () => void;
-}
-
-export const TelemetryAdvancedFiltersInitialValues: ITelemetryAdvancedFilters = {
-  itis_tsns: []
+export type ITelemetryAdvancedFilters = {
+  itis_tsn?: number;
 };
 
-const TelemetryListFilterForm: React.FC<ITelemetryListFilterFormProps> = (props) => {
-  const formikRef = useRef<FormikProps<ITelemetryAdvancedFilters>>(null);
+export const TelemetryAdvancedFiltersInitialValues: ITelemetryAdvancedFilters = {
+  itis_tsn: undefined
+};
 
-  const searchBackgroundColor = grey[50];
+export interface ITelemetryListFilterFormProps {
+  handleSubmit: (filterValues: ITelemetryAdvancedFilters) => void;
+  initialValues?: ITelemetryAdvancedFilters;
+}
 
-  //   const debounced = useMemo(
-  //     () =>
-  //       debounce((values: ITelemetryAdvancedFilters) => {
-  //         props.handleSubmit(values);
-  //       }, 300),
-  //     [props]
-  //   );
+/**
+ * Telemetry advanced filters
+ *
+ * @param {ITelemetryListFilterFormProps} props
+ * @return {*}
+ */
+const TelemetryListFilterForm = (props: ITelemetryListFilterFormProps) => {
+  const { handleSubmit, initialValues } = props;
 
   return (
-    <Box p={2} bgcolor={searchBackgroundColor}>
-      <Formik innerRef={formikRef} initialValues={TelemetryAdvancedFiltersInitialValues} onSubmit={props.handleSubmit}>
-        <SearchFilters
+    <Formik initialValues={initialValues ?? TelemetryAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
+      {(formikProps) => (
+        <FilterFieldsContainer
           fields={[
             <CustomTextField name="keyword" label="Keyword" other={{ placeholder: 'Type any keyword' }} />,
             <SpeciesAutocompleteField
@@ -42,18 +36,20 @@ const TelemetryListFilterForm: React.FC<ITelemetryListFilterFormProps> = (props)
               label={'Species'}
               placeholder="Search by taxon"
               handleSpecies={(value) => {
-                formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
+                if (value?.tsn) {
+                  formikProps.setFieldValue('itis_tsns', value.tsn);
+                }
               }}
               handleClear={() => {
-                formikRef.current?.setFieldValue('itis_tsns', '');
+                formikProps.setFieldValue('itis_tsns', undefined);
               }}
               clearOnSelect={true}
               showSelectedValue={true}
             />
           ]}
         />
-      </Formik>
-    </Box>
+      )}
+    </Formik>
   );
 };
 

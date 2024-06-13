@@ -1,6 +1,7 @@
 import { AxiosInstance } from 'axios';
-import { IAnimalsAdvancedFilters } from 'features/summary/tabular-data/animal/AnimalsListContainer';
+import { IAnimalsAdvancedFilters } from 'features/summary/tabular-data/animal/AnimalsListFilterForm';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
+import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
@@ -24,28 +25,12 @@ const useAnimalApi = (axios: AxiosInstance) => {
     pagination?: ApiPaginationRequestOptions,
     filterFieldData?: IAnimalsAdvancedFilters
   ): Promise<ICritterDetailedResponse[]> => {
-    const params = new URLSearchParams();
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
 
-    if (pagination) {
-      params.append('page', pagination.page.toString());
-      params.append('limit', pagination.limit.toString());
-      if (pagination.sort) {
-        params.append('sort', pagination.sort);
-      }
-      if (pagination.order) {
-        params.append('order', pagination.order);
-      }
-    }
-
-    if (filterFieldData) {
-      Object.entries(filterFieldData).forEach(([key, value]) => {
-        params.append(key, value);
-      });
-    }
-
-    const urlParamsString = `?${params.toString()}`;
-
-    const { data } = await axios.get(`/api/animal${urlParamsString}`);
+    const { data } = await axios.get('/api/animal', { params, paramsSerializer: (params) => qs.stringify(params) });
 
     return data;
   };
@@ -53,4 +38,4 @@ const useAnimalApi = (axios: AxiosInstance) => {
   return { findAnimals };
 };
 
-export { useAnimalApi };
+export default useAnimalApi;

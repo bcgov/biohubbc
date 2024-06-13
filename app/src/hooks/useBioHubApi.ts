@@ -3,7 +3,7 @@ import useReferenceApi from 'hooks/api/useReferenceApi';
 import { useConfigContext } from 'hooks/useContext';
 import { useMemo } from 'react';
 import useAdminApi from './api/useAdminApi';
-import { useAnimalApi } from './api/useAnimalApi';
+import useAnimalApi from './api/useAnimalApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import useExternalApi from './api/useExternalApi';
@@ -38,8 +38,6 @@ export const useBiohubApi = () => {
 
   const survey = useSurveyApi(apiAxios);
 
-  const animal = useAnimalApi(apiAxios);
-
   const codes = useCodesApi(apiAxios);
 
   const user = useUserApi(apiAxios);
@@ -63,6 +61,8 @@ export const useBiohubApi = () => {
   const standards = useStandardsApi(apiAxios);
 
   const reference = useReferenceApi(apiAxios);
+
+  const animal = useAnimalApi(apiAxios);
 
   const telemetry = useTelemetryApi(apiAxios);
 

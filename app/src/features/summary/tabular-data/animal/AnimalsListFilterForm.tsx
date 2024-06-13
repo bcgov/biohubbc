@@ -1,40 +1,34 @@
-import Box from '@mui/material/Box';
-import grey from '@mui/material/colors/grey';
 import CustomTextField from 'components/fields/CustomTextField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
-import SearchFilters from 'features/summary/components/SearchFilters';
-import { Formik, FormikProps } from 'formik';
-import React, { useRef } from 'react';
-import { ApiPaginationRequestOptions } from 'types/misc';
-import { IAnimalsAdvancedFilters } from './AnimalsListContainer';
+import { FilterFieldsContainer } from 'features/summary/components/FilterFieldsContainer';
+import { Formik } from 'formik';
 
-export interface IAnimalsListFilterFormProps {
-  paginationSort: ApiPaginationRequestOptions;
-  handleSubmit: (filterValues: IAnimalsAdvancedFilters) => void;
-  handleReset: () => void;
-}
-
-export const AnimalsAdvancedFiltersInitialValues: IAnimalsAdvancedFilters = {
-  itis_tsns: []
+export type IAnimalsAdvancedFilters = {
+  itis_tsn?: number;
 };
 
-const AnimalsListFilterForm: React.FC<IAnimalsListFilterFormProps> = (props) => {
-  const formikRef = useRef<FormikProps<IAnimalsAdvancedFilters>>(null);
+export const AnimalsAdvancedFiltersInitialValues: IAnimalsAdvancedFilters = {
+  itis_tsn: undefined
+};
 
-  const searchBackgroundColor = grey[50];
+export interface IAnimalsListFilterFormProps {
+  handleSubmit: (filterValues: IAnimalsAdvancedFilters) => void;
+  initialValues?: IAnimalsAdvancedFilters;
+}
 
-  //   const debounced = useMemo(
-  //     () =>
-  //       debounce((values: IAnimalsAdvancedFilters) => {
-  //         props.handleSubmit(values);
-  //       }, 300),
-  //     []
-  //   );
+/**
+ * Animal advanced filters
+ *
+ * @param {IAnimalsListFilterFormProps} props
+ * @return {*}
+ */
+const AnimalsListFilterForm = (props: IAnimalsListFilterFormProps) => {
+  const { handleSubmit, initialValues } = props;
 
   return (
-    <Box p={2} bgcolor={searchBackgroundColor}>
-      <Formik innerRef={formikRef} initialValues={AnimalsAdvancedFiltersInitialValues} onSubmit={props.handleSubmit}>
-        <SearchFilters
+    <Formik initialValues={initialValues ?? AnimalsAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
+      {(formikProps) => (
+        <FilterFieldsContainer
           fields={[
             <CustomTextField name="keyword" label="Keyword" other={{ placeholder: 'Type any keyword' }} />,
             <SpeciesAutocompleteField
@@ -42,18 +36,20 @@ const AnimalsListFilterForm: React.FC<IAnimalsListFilterFormProps> = (props) => 
               label={'Species'}
               placeholder="Search by taxon"
               handleSpecies={(value) => {
-                formikRef.current?.setFieldValue('itis_tsns', value?.tsn);
+                if (value?.tsn) {
+                  formikProps.setFieldValue('itis_tsns', value.tsn);
+                }
               }}
               handleClear={() => {
-                formikRef.current?.setFieldValue('itis_tsns', '');
+                formikProps.setFieldValue('itis_tsns', undefined);
               }}
               clearOnSelect={true}
               showSelectedValue={true}
             />
           ]}
         />
-      </Formik>
-    </Box>
+      )}
+    </Formik>
   );
 };
 

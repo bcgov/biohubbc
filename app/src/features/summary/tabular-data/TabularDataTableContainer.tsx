@@ -9,25 +9,28 @@ import AnimalsListContainer from 'features/summary/tabular-data/animal/AnimalsLi
 import ObservationsListContainer from 'features/summary/tabular-data/observation/ObservationsListContainer';
 import TelemetryListContainer from 'features/summary/tabular-data/telemetry/TelemetryListContainer';
 import { useSearchParams } from 'hooks/useSearchParams';
+import { useState } from 'react';
 
-export const TABULAR_VIEW_PARAM_KEY = 'tvk';
-export enum TABULAR_VIEW_PARAM_VALUE {
+export const ACTIVE_VIEW_KEY = 'tavk';
+export enum ACTIVE_VIEW_VALUE {
   observations = 'ov',
   telemetry = 'tv',
   animals = 'av'
 }
 
-export const TABULAR_VIEW_SEARCH_PARAM_KEY = 'tvsk';
-export enum TABULAR_VIEW_SEARCH_PARAM_VALUE {
-  showFilters = 'ss'
+export const SHOW_SEARCH_KEY = 'tssk';
+export enum SHOW_SEARCH_VALUE {
+  true = 'true',
+  false = 'false'
 }
 
+// Supported URL parameters
 type TabularDataTableURLParams = {
-  [TABULAR_VIEW_PARAM_KEY]: TABULAR_VIEW_PARAM_VALUE;
-  [TABULAR_VIEW_SEARCH_PARAM_KEY]: TABULAR_VIEW_SEARCH_PARAM_VALUE;
+  [ACTIVE_VIEW_KEY]: ACTIVE_VIEW_VALUE;
+  [SHOW_SEARCH_KEY]: SHOW_SEARCH_VALUE;
 };
 
-const buttonsx = {
+const buttonSx = {
   py: 0.5,
   px: 1.5,
   border: 'none',
@@ -37,24 +40,32 @@ const buttonsx = {
   letterSpacing: '0.02rem'
 };
 
+/**
+ * Data table component for tabular data (ie: observations, animals, telemetry).
+ *
+ * @return {*}
+ */
 export const TabularDataTableContainer = () => {
   const { searchParams, setSearchParams } = useSearchParams<TabularDataTableURLParams>();
 
-  const activeView = searchParams.get(TABULAR_VIEW_PARAM_KEY) ?? TABULAR_VIEW_PARAM_VALUE.observations;
-  const showSearch = !!searchParams.get(TABULAR_VIEW_SEARCH_PARAM_KEY) ?? false;
+  const [activeView, setActiveView] = useState(searchParams.get(ACTIVE_VIEW_KEY) ?? ACTIVE_VIEW_VALUE.observations);
+  const [showSearch, setShowSearch] = useState<boolean>(
+    searchParams.get(SHOW_SEARCH_KEY) === SHOW_SEARCH_VALUE.true ?? false
+  );
 
   const views = [
-    { value: TABULAR_VIEW_PARAM_VALUE.observations, label: 'observations', icon: mdiEye },
-    { value: TABULAR_VIEW_PARAM_VALUE.animals, label: 'animals', icon: mdiPaw },
-    { value: TABULAR_VIEW_PARAM_VALUE.telemetry, label: 'telemetry', icon: mdiWifiMarker }
+    { value: ACTIVE_VIEW_VALUE.observations, label: 'observations', icon: mdiEye },
+    { value: ACTIVE_VIEW_VALUE.animals, label: 'animals', icon: mdiPaw },
+    { value: ACTIVE_VIEW_VALUE.telemetry, label: 'telemetry', icon: mdiWifiMarker }
   ];
 
-  const onChangeView = (_: React.MouseEvent<HTMLElement>, value: TABULAR_VIEW_PARAM_VALUE) => {
+  const onChangeView = (_: React.MouseEvent<HTMLElement>, value: ACTIVE_VIEW_VALUE) => {
     if (!value) {
       return;
     }
 
-    setSearchParams(searchParams.set(TABULAR_VIEW_PARAM_KEY, value));
+    setSearchParams(searchParams.set(ACTIVE_VIEW_KEY, value));
+    setActiveView(value);
   };
 
   return (
@@ -67,7 +78,7 @@ export const TabularDataTableContainer = () => {
           sx={{
             display: 'flex',
             gap: 1,
-            '& Button': buttonsx
+            '& Button': buttonSx
           }}>
           {views.map((view) => (
             <ToggleButton
@@ -83,12 +94,12 @@ export const TabularDataTableContainer = () => {
 
         <Button
           color="primary"
-          sx={buttonsx}
+          sx={buttonSx}
           onClick={() => {
             setSearchParams(
-              (showSearch && searchParams.delete(TABULAR_VIEW_SEARCH_PARAM_KEY)) ||
-                searchParams.set(TABULAR_VIEW_SEARCH_PARAM_KEY, TABULAR_VIEW_SEARCH_PARAM_VALUE.showFilters)
+              searchParams.set(SHOW_SEARCH_KEY, showSearch ? SHOW_SEARCH_VALUE.false : SHOW_SEARCH_VALUE.true)
             );
+            setShowSearch(!showSearch);
           }}
           component={Button}
           startIcon={<Icon path={mdiMagnify} size={1} />}>
@@ -96,9 +107,9 @@ export const TabularDataTableContainer = () => {
         </Button>
       </Toolbar>
       <Divider />
-      {activeView === TABULAR_VIEW_PARAM_VALUE.observations && <ObservationsListContainer showSearch={showSearch} />}
-      {activeView === TABULAR_VIEW_PARAM_VALUE.animals && <AnimalsListContainer showSearch={showSearch} />}
-      {activeView === TABULAR_VIEW_PARAM_VALUE.telemetry && <TelemetryListContainer showSearch={showSearch} />}
+      {activeView === ACTIVE_VIEW_VALUE.observations && <ObservationsListContainer showSearch={showSearch} />}
+      {activeView === ACTIVE_VIEW_VALUE.animals && <AnimalsListContainer showSearch={showSearch} />}
+      {activeView === ACTIVE_VIEW_VALUE.telemetry && <TelemetryListContainer showSearch={showSearch} />}
     </>
   );
 };

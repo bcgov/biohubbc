@@ -3,7 +3,7 @@ import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridSortDirection } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
@@ -11,38 +11,21 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
-import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
-import { ApiPaginationRequestOptions } from 'types/misc';
+import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import TelemetryListFilterForm, { TelemetryAdvancedFiltersInitialValues } from './TelemetryListFilterForm';
-
-interface ITelemetryTableRow {
-  id: number;
-  deployment_id: string;
-  latitude: number;
-  longitude: number;
-  acquisition_date: string;
-  animal: ICritterSimpleResponse;
-  device_id: string;
-}
+import TelemetryListFilterForm, {
+  ITelemetryAdvancedFilters,
+  TelemetryAdvancedFiltersInitialValues
+} from './TelemetryListFilterForm';
 
 // Supported URL parameters
-type TelemetryDataTableURLParams = {
-  // search filter
-  keyword: string;
-  species: string;
-  person: string;
-  // pagination
-  t_page: string;
-  t_limit: string;
+type TelemetryDataTableURLParams = ITelemetryAdvancedFilters & {
+  t_page?: string;
+  t_limit?: string;
   t_sort?: string;
   t_order?: 'asc' | 'desc';
 };
-
-export interface ITelemetryAdvancedFilters {
-  itis_tsns: number[];
-}
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -68,31 +51,34 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
 
   const biohubApi = useBiohubApi();
 
-  const { searchParams, setSearchParams } = useSearchParams<TelemetryDataTableURLParams>();
+  const { searchParams, setSearchParams } = useSearchParams<StringValues<TelemetryDataTableURLParams>>();
 
-  const paginationModel = {
+  // const debouncedSetSearchParams = useMemo(() => debounce(setSearchParams, 300), [setSearchParams]);
+
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('t_limit') ?? initialPaginationParams.limit),
     page: Number(searchParams.get('t_page') ?? initialPaginationParams.page)
-  };
+  });
 
-  const sortModel = [
+  const [sortModel, setSortModel] = useState<GridSortModel>([
     {
       field: searchParams.get('t_sort') ?? initialPaginationParams.sort,
       sort: (searchParams.get('t_order') ?? initialPaginationParams.order) as GridSortDirection
     }
-  ];
+  ]);
 
-  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ITelemetryAdvancedFilters>(
-    TelemetryAdvancedFiltersInitialValues
-  );
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ITelemetryAdvancedFilters>({
+    itis_tsn: searchParams.get('itis_tsn')
+      ? Number(searchParams.get('itis_tsn'))
+      : TelemetryAdvancedFiltersInitialValues.itis_tsn
+  });
 
   const sort = firstOrNull(sortModel);
   const paginationSort: ApiPaginationRequestOptions = {
     limit: paginationModel.pageSize,
     sort: sort?.field || undefined,
     order: sort?.sort || undefined,
-    // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-    page: paginationModel.page + 1
+    page: paginationModel.page + 1 // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
   };
 
   const telemetryDataLoader = useDataLoader(
@@ -102,14 +88,11 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
 
   useDeepCompareEffect(() => {
     telemetryDataLoader.refresh(paginationSort, advancedFiltersModel);
-    // Should not re-run this effect on `telemetryDataLoader` changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [advancedFiltersModel, paginationSort]);
 
-  const telemetryRows =
-    telemetryDataLoader.data?.telemetry.map((telemetry, index) => ({ ...telemetry, id: index + 1 })) ?? [];
+  const telemetryRows = telemetryDataLoader.data?.telemetry ?? [];
 
-  const columns: GridColDef<ITelemetryTableRow>[] = [
+  const columns: GridColDef[] = [
     {
       field: 'id',
       headerName: 'ID',
@@ -165,11 +148,15 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
   return (
     <>
       <Collapse in={showSearch}>
-        <TelemetryListFilterForm
-          paginationSort={paginationSort}
-          handleSubmit={setAdvancedFiltersModel}
-          handleReset={() => setAdvancedFiltersModel(TelemetryAdvancedFiltersInitialValues)}
-        />
+        <Box py={2} px={3} bgcolor={grey[50]}>
+          <TelemetryListFilterForm
+            initialValues={advancedFiltersModel}
+            handleSubmit={(values) => {
+              setSearchParams(searchParams.setOrDelete('itis_tsn', values.itis_tsn));
+              setAdvancedFiltersModel(values);
+            }}
+          />
+        </Box>
         <Divider />
       </Collapse>
       <Box height="500px">
@@ -191,6 +178,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
               return;
             }
             setSearchParams(searchParams.set('t_page', String(model.page)).set('t_limit', String(model.pageSize)));
+            setPaginationModel(model);
           }}
           // Sorting
           sortingMode="server"
@@ -201,6 +189,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
               return;
             }
             setSearchParams(searchParams.set('t_sort', model[0].field).set('t_order', model[0].sort ?? 'desc'));
+            setSortModel(model);
           }}
           // Row options
           checkboxSelection={false}

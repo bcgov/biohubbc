@@ -49,28 +49,33 @@ const useProjectApi = (axios: AxiosInstance) => {
     pagination?: ApiPaginationRequestOptions,
     filterFieldData?: IProjectAdvancedFilters
   ): Promise<IFindProjectsResponse> => {
-    const params = new URLSearchParams();
+    // const params = new URLSearchParams();
 
-    if (pagination) {
-      params.append('page', String(pagination.page));
-      params.append('limit', String(pagination.limit));
-      if (pagination.sort) {
-        params.append('sort', pagination.sort);
-      }
-      if (pagination.order) {
-        params.append('order', pagination.order);
-      }
-    }
+    // if (pagination) {
+    //   params.append('page', String(pagination.page));
+    //   params.append('limit', String(pagination.limit));
+    //   if (pagination.sort) {
+    //     params.append('sort', pagination.sort);
+    //   }
+    //   if (pagination.order) {
+    //     params.append('order', pagination.order);
+    //   }
+    // }
 
-    if (filterFieldData) {
-      Object.entries(filterFieldData).forEach(([key, value]) => {
-        if (value) {
-          params.append(key, value);
-        }
-      });
-    }
+    // if (filterFieldData) {
+    //   Object.entries(filterFieldData).forEach(([key, value]) => {
+    //     if (value) {
+    //       params.append(key, value);
+    //     }
+    //   });
+    // }
 
-    const { data } = await axios.get('/api/project', { params });
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
+
+    const { data } = await axios.get('/api/project', { params, paramsSerializer: (params) => qs.stringify(params) });
 
     return data;
   };

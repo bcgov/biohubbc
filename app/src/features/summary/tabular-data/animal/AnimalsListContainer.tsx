@@ -3,41 +3,27 @@ import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridSortDirection } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { useState } from 'react';
-import { ApiPaginationRequestOptions } from 'types/misc';
+import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import AnimalsListFilterForm, { AnimalsAdvancedFiltersInitialValues } from './AnimalsListFilterForm';
-
-interface IAnimalTableRow {
-  survey_critter_id: number;
-  critter_id: string;
-  animal_id: string | null;
-  itis_scientific_name: string;
-  wlh_id: string;
-}
+import AnimalsListFilterForm, {
+  AnimalsAdvancedFiltersInitialValues,
+  IAnimalsAdvancedFilters
+} from './AnimalsListFilterForm';
 
 // Supported URL parameters
-type AnimalDataTableURLParams = {
-  // search filter
-  keyword: string;
-  species: string;
-  person: string;
-  // pagination
-  a_page: string;
-  a_limit: string;
+type AnimalDataTableURLParams = IAnimalsAdvancedFilters & {
+  a_page?: string;
+  a_limit?: string;
   a_sort?: string;
   a_order?: 'asc' | 'desc';
 };
-
-export interface IAnimalsAdvancedFilters {
-  itis_tsns: number[];
-}
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -63,31 +49,34 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
 
   const biohubApi = useBiohubApi();
 
-  const { searchParams, setSearchParams } = useSearchParams<AnimalDataTableURLParams>();
+  const { searchParams, setSearchParams } = useSearchParams<StringValues<AnimalDataTableURLParams>>();
 
-  const paginationModel = {
+  // const debouncedSetSearchParams = useMemo(() => debounce(setSearchParams, 300), [setSearchParams]);
+
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('a_limit') ?? initialPaginationParams.limit),
     page: Number(searchParams.get('a_page') ?? initialPaginationParams.page)
-  };
+  });
 
-  const sortModel = [
+  const [sortModel, setSortModel] = useState<GridSortModel>([
     {
       field: searchParams.get('a_sort') ?? initialPaginationParams.sort,
       sort: (searchParams.get('a_order') ?? initialPaginationParams.order) as GridSortDirection
     }
-  ];
+  ]);
 
-  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IAnimalsAdvancedFilters>(
-    AnimalsAdvancedFiltersInitialValues
-  );
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IAnimalsAdvancedFilters>({
+    itis_tsn: searchParams.get('itis_tsn')
+      ? Number(searchParams.get('itis_tsn'))
+      : AnimalsAdvancedFiltersInitialValues.itis_tsn
+  });
 
   const sort = firstOrNull(sortModel);
   const paginationSort: ApiPaginationRequestOptions = {
     limit: paginationModel.pageSize,
     sort: sort?.field || undefined,
     order: sort?.sort || undefined,
-    // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-    page: paginationModel.page + 1
+    page: paginationModel.page + 1 // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
   };
 
   const animalsDataLoader = useDataLoader(
@@ -97,13 +86,11 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
 
   useDeepCompareEffect(() => {
     animalsDataLoader.refresh(paginationSort, advancedFiltersModel);
-    // Should not re-run this effect on `animalsDataLoader` changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [advancedFiltersModel, paginationSort]);
 
   const animalRows = animalsDataLoader.data ?? [];
 
-  const columns: GridColDef<IAnimalTableRow>[] = [
+  const columns: GridColDef[] = [
     {
       field: 'survey_critter_id',
       headerName: 'ID',
@@ -116,7 +103,8 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
       ),
       renderCell: (params) => (
         <Typography color={grey[500]} variant="body2">
-          {params.row.survey_critter_id}
+          {params.row.animal_id}
+          {/* {params.row.survey_critter_id} */}
         </Typography>
       )
     },
@@ -148,11 +136,15 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
   return (
     <>
       <Collapse in={showSearch}>
-        <AnimalsListFilterForm
-          paginationSort={paginationSort}
-          handleSubmit={setAdvancedFiltersModel}
-          handleReset={() => setAdvancedFiltersModel(AnimalsAdvancedFiltersInitialValues)}
-        />
+        <Box py={2} px={3} bgcolor={grey[50]}>
+          <AnimalsListFilterForm
+            initialValues={advancedFiltersModel}
+            handleSubmit={(values) => {
+              setSearchParams(searchParams.setOrDelete('itis_tsn', values.itis_tsn));
+              setAdvancedFiltersModel(values);
+            }}
+          />
+        </Box>
         <Divider />
       </Collapse>
       <Box height="500px">
@@ -174,6 +166,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
               return;
             }
             setSearchParams(searchParams.set('a_page', String(model.page)).set('a_limit', String(model.pageSize)));
+            setPaginationModel(model);
           }}
           // Sorting
           sortingMode="server"
@@ -184,6 +177,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
               return;
             }
             setSearchParams(searchParams.set('a_sort', model[0].field).set('a_order', model[0].sort ?? 'desc'));
+            setSortModel(model);
           }}
           // Row options
           checkboxSelection={false}

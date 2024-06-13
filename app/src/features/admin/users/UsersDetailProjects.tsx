@@ -51,7 +51,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
       const userProjectsListResponse = await biohubApi.user.getProjectList(systemUserId);
       setAssignedProjects(userProjectsListResponse);
     },
-    [biohubApi.project]
+    [biohubApi.user]
   );
 
   const refresh = () => handleGetUserProjects(userDetails.system_user_id);

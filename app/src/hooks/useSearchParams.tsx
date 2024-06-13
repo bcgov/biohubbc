@@ -1,4 +1,6 @@
 import { Search } from 'history';
+import qs from 'qs';
+import { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router';
 
 /**
@@ -21,14 +23,18 @@ import { useHistory } from 'react-router';
 export function useSearchParams<ParamType extends Record<string, string> = Record<string, string>>() {
   const history = useHistory();
 
-  const searchParams = new TypedURLSearchParams<ParamType>(history.location.search);
+  const searchParams = useMemo(
+    () => new TypedURLSearchParams<ParamType>(history.location.search),
+    [history.location.search]
+  );
 
-  const setSearchParams = (urlSearchParams: TypedURLSearchParams<ParamType>) => {
-    history.push({
-      ...history.location,
-      search: urlSearchParams.toString()
-    });
-  };
+  const setSearchParams = useCallback(
+    (urlSearchParams: TypedURLSearchParams<ParamType>) => {
+      const url = `${window.location.origin}${window.location.pathname}?${urlSearchParams.toString()}`;
+      window.history.pushState(history.location.state, '', url);
+    },
+    [history.location.state]
+  );
 
   return {
     searchParams,
@@ -57,20 +63,35 @@ export class TypedURLSearchParams<
   }
 
   /**
-   * Set a key-value pair if the value is not null or undefined, otherwise delete the key.
+   * Given a key and a value of unknown type:
+   * - If the value is null or undefined, the key is deleted.
+   * - If the value is not a string, it is stringified using qs.stringify and set.
+   * - If the value is an empty string, the key is deleted.
+   * - Otherwise, if the value is a non-empty string, it is set.
    *
    * @template K
    * @param {K} key
-   * @param {(ParamType[K] | null)} [value]
+   * @param {unknown} [value]
    * @return {*}
    * @memberof TypedURLSearchParams
    */
-  setOrDelete<K extends keyof ParamType & string>(key: K, value?: ParamType[K] | null) {
-    if (value !== null && value !== undefined) {
-      super.set(key, value);
-    } else {
+  setOrDelete<K extends keyof ParamType & string>(key: K, value?: unknown) {
+    if (value === null || value === undefined) {
       super.delete(key);
+      return this;
     }
+
+    if (typeof value !== 'string') {
+      super.set(key, qs.stringify(value));
+      return this;
+    }
+
+    if (value.length === 0) {
+      super.delete(key);
+      return this;
+    }
+
+    super.set(key, value);
     return this;
   }
 

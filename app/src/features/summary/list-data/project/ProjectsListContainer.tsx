@@ -5,7 +5,7 @@ import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridSortDirection } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SystemRoleGuard } from 'components/security/Guards';
@@ -17,10 +17,9 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
-import { debounce } from 'lodash-es';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { ApiPaginationRequestOptions } from 'types/misc';
+import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull, getCodesName } from 'utils/Utils';
 import ProjectsListFilterForm, {
   IProjectAdvancedFilters,
@@ -61,9 +60,9 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
   const codesContext = useCodesContext();
   const taxonomyContext = useTaxonomyContext();
 
-  const { searchParams, setSearchParams } = useSearchParams<ProjectDataTableURLParams>();
+  const { searchParams, setSearchParams } = useSearchParams<StringValues<ProjectDataTableURLParams>>();
 
-  const debouncedSetSearchParams = useMemo(() => debounce(setSearchParams, 500), [setSearchParams]);
+  // const debouncedSetSearchParams = useMemo(() => debounce(setSearchParams, 300), [setSearchParams]);
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -71,24 +70,25 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
 
   // Initialize pagination, sort, and advanced filters from URL parameters
 
-  const paginationModel = {
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('p_limit') ?? ApiPaginationRequestOptionsInitialValues.limit),
     page: Number(searchParams.get('p_page') ?? ApiPaginationRequestOptionsInitialValues.page)
-  };
+  });
 
-  const sortModel = [
+  const [sortModel, setSortModel] = useState<GridSortModel>([
     {
       field: searchParams.get('p_sort') ?? ApiPaginationRequestOptionsInitialValues.sort,
       sort: (searchParams.get('p_order') ?? ApiPaginationRequestOptionsInitialValues.order) as GridSortDirection
     }
-  ];
+  ]);
 
-  const advancedFiltersModel = {
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IProjectAdvancedFilters>({
     keyword: searchParams.get('keyword') ?? ProjectAdvancedFiltersInitialValues.keyword,
-    start_date: searchParams.get('start_date') ?? ProjectAdvancedFiltersInitialValues.start_date,
-    end_date: searchParams.get('end_date') ?? ProjectAdvancedFiltersInitialValues.end_date,
+    itis_tsn: searchParams.get('itis_tsn')
+      ? Number(searchParams.get('itis_tsn'))
+      : ProjectAdvancedFiltersInitialValues.itis_tsn,
     person: searchParams.get('person') ?? ProjectAdvancedFiltersInitialValues.person
-  };
+  });
 
   const sort = firstOrNull(sortModel);
   const paginationSort: ApiPaginationRequestOptions = {
@@ -196,17 +196,17 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
   return (
     <>
       <Collapse in={showSearch}>
-        <Box p={2} bgcolor={grey[50]}>
+        <Box py={2} px={3} bgcolor={grey[50]}>
           <ProjectsListFilterForm
             initialValues={advancedFiltersModel}
             handleSubmit={(values) => {
-              debouncedSetSearchParams(
+              setSearchParams(
                 searchParams
                   .setOrDelete('keyword', values.keyword)
-                  .setOrDelete('start_date', values.start_date)
-                  .setOrDelete('end_date', values.end_date)
+                  .setOrDelete('itis_tsn', values.itis_tsn)
                   .setOrDelete('person', values.person)
               );
+              setAdvancedFiltersModel(values);
             }}
           />
         </Box>
@@ -231,6 +231,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
               return;
             }
             setSearchParams(searchParams.set('p_page', String(model.page)).set('p_limit', String(model.pageSize)));
+            setPaginationModel(model);
           }}
           // Sorting
           sortingMode="server"
@@ -241,6 +242,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
               return;
             }
             setSearchParams(searchParams.set('p_sort', model[0].field).set('p_order', model[0].sort ?? 'desc'));
+            setSortModel(model);
           }}
           // Row options
           rowSelection={false}
