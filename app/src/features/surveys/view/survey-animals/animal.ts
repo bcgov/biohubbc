@@ -156,8 +156,10 @@ export const CreateCritterCaptureSchema = yup.object({
   capture_location: LocationSchema.required(),
   release_location: LocationSchema.optional().default(undefined),
   capture_comment: yup.string().optional(),
-  capture_timestamp: dateSchema.required(req),
-  release_timestamp: dateSchema.optional(),
+  capture_date: yup.string().required(req),
+  capture_time: yup.string().optional().nullable(),
+  release_date: yup.string().optional().nullable(),
+  release_time: yup.string().optional().nullable(),
   release_comment: yup.string().optional()
 });
 
@@ -241,7 +243,7 @@ export type IBulkCreate = {
   critter?: ICritterSimpleResponse;
   qualitative_measurements?: IQualitativeMeasurementCreate[];
   quantitative_measurements?: IQuantitativeMeasurementCreate[];
-  capture?: ICreateCritterCapture[];
+  captures?: ICreateCritterCapture[];
   mortality?: ICreateCritterMortality;
   markings?: ICreateCritterMarking[];
   collections?: ICreateCritterCollectionUnit[];

@@ -10,7 +10,6 @@ import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { EditCaptureI18N } from 'constants/i18n';
-import dayjs from 'dayjs';
 import { AnimalCaptureForm } from 'features/surveys/animals/profile/captures/capture-form/components/AnimalCaptureForm';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
@@ -103,15 +102,17 @@ export const EditCapturePage = () => {
         ? formatLocation(values.capture.release_location)
         : values.capture.capture_location;
 
-      // Format capture timestamp
-      const captureTime = values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00';
-      const captureTimestamp = dayjs(`${values.capture.capture_date}${captureTime}`).toDate();
-
-      // If release timestamp is null, use the capture timestamp, otherwise format release location
-      const releaseTime = (values.capture.release_time && ` ${values.capture.release_time}-07:00`) || 'T00:00:00-07:00';
-      const releaseTimestamp = values.capture.release_date
-        ? dayjs(`${values.capture.release_date}${releaseTime}`).toDate()
-        : captureTimestamp;
+      //TODO: remove
+      //
+      //// Format capture timestamp
+      //const captureTime = values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00';
+      //const captureTimestamp = dayjs(`${values.capture.capture_date}${captureTime}`).toDate();
+      //
+      //// If release timestamp is null, use the capture timestamp, otherwise format release location
+      //const releaseTime = (values.capture.release_time && ` ${values.capture.release_time}-07:00`) || 'T00:00:00-07:00';
+      //const releaseTimestamp = values.capture.release_date
+      //  ? dayjs(`${values.capture.release_date}${releaseTime}`).toDate()
+      //  : captureTimestamp;
 
       const {
         qualitativeMeasurementsForDelete,
@@ -143,10 +144,12 @@ export const EditCapturePage = () => {
         captures: [
           {
             capture_id: values.capture.capture_id,
-            capture_timestamp: captureTimestamp,
-            release_timestamp: releaseTimestamp,
-            capture_comment: values.capture.capture_comment ?? '',
-            release_comment: values.capture.release_comment ?? '',
+            capture_date: values.capture.capture_date,
+            capture_time: values.capture.capture_time || undefined,
+            release_date: values.capture.release_date || undefined,
+            release_time: values.capture.release_time || undefined,
+            capture_comment: values.capture.capture_comment || undefined,
+            release_comment: values.capture.release_comment || undefined,
             capture_location: captureLocation,
             release_location: releaseLocation ?? captureLocation,
             critter_id: critterbaseCritterId
@@ -196,17 +199,14 @@ export const EditCapturePage = () => {
     }
   };
 
-  const [captureDate, captureTime] = dayjs(capture.capture_timestamp).format('YYYY-MM-DD HH:mm:ss').split(' ');
-  const [releaseDate, releaseTime] = dayjs(capture.release_timestamp).format('YYYY-MM-DD HH:mm:ss').split(' ');
-
   // Initial formik values
   const initialFormikValues: IEditCaptureRequest = {
     capture: {
       capture_id: capture.capture_id,
+      capture_method_id: capture.capture_method_id ?? '',
       capture_comment: capture.capture_comment ?? '',
-      capture_timestamp: capture.capture_timestamp,
-      capture_date: captureDate,
-      capture_time: captureTime,
+      capture_date: capture.capture_date,
+      capture_time: capture.capture_time ?? '',
       capture_location: {
         type: 'Feature',
         geometry: {
@@ -223,9 +223,8 @@ export const EditCapturePage = () => {
         },
         properties: {}
       },
-      release_timestamp: capture.release_timestamp ?? '',
-      release_date: releaseDate,
-      release_time: releaseTime,
+      release_date: capture.release_date ?? '',
+      release_time: capture.release_time ?? '',
       release_comment: capture.release_comment ?? ''
     },
     markings:

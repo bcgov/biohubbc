@@ -18,7 +18,7 @@ interface IReleaseDetailsProps {
 export const ReleaseDetails = (props: IReleaseDetailsProps) => {
   const { capture } = props;
 
-  const releaseTimestamp = capture.release_timestamp;
+  const releaseTimestamp = capture.release_date;
   const releaseLocation = capture.release_location;
   const releaseComment = capture.release_comment;
 

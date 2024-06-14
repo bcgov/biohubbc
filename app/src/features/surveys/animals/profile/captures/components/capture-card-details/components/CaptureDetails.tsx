@@ -18,7 +18,7 @@ interface ICaptureDetailsProps {
 export const CaptureDetails = (props: ICaptureDetailsProps) => {
   const { capture } = props;
 
-  const captureTimestamp = capture.capture_timestamp;
+  const captureTimestamp = capture.capture_date;
   const captureLocation = capture.capture_location;
   const captureComment = capture.capture_comment;
 

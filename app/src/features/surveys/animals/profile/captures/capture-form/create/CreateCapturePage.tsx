@@ -10,7 +10,6 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { CreateCaptureI18N } from 'constants/i18n';
-import dayjs from 'dayjs';
 import { AnimalCaptureForm } from 'features/surveys/animals/profile/captures/capture-form/components/AnimalCaptureForm';
 import {
   isQualitativeMeasurementCreate,
@@ -29,10 +28,9 @@ import { Link as RouterLink } from 'react-router-dom';
 export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
   capture: {
     capture_id: '',
-    capture_timestamp: '',
     capture_date: '',
+    capture_method_id: '',
     capture_time: '',
-    release_timestamp: '',
     release_date: '',
     release_time: '',
     capture_comment: '',
@@ -132,24 +130,28 @@ export const CreateCapturePage = () => {
             }
           : captureLocation;
 
-      const captureTime = values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00';
-      const captureTimestamp = dayjs(`${values.capture.capture_date}${captureTime}`).toDate();
+      //TODO: For reference - remove after refactor
+      //
+      //const captureTime = values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00';
+      //const captureTimestamp = dayjs(`${values.capture.capture_date}${captureTime}`).toDate();
 
       // if release timestamp is null, use the capture timestamp, otherwise format it for critterbase
-      const releaseTime = values.capture.release_time ? ` ${values.capture.release_time}-07:00` : captureTime;
-      const releaseTimestamp = values.capture.release_date
-        ? dayjs(`${values.capture.release_date}${releaseTime}`).toDate()
-        : captureTimestamp;
+      //const releaseTime = values.capture.release_time ? ` ${values.capture.release_time}-07:00` : captureTime;
+      //const releaseTimestamp = values.capture.release_date
+      //  ? dayjs(`${values.capture.release_date}${releaseTime}`).toDate()
+      //  : captureTimestamp;
 
       // Must create capture first to avoid foreign key constraints. Can't guarantee that the capture is
       // inserted before the measurements/markings.
       const captureResponse = await critterbaseApi.capture.createCapture({
         critter_id: critterbaseCritterId,
         capture_id: undefined,
-        capture_timestamp: captureTimestamp,
-        release_timestamp: releaseTimestamp,
-        capture_comment: values.capture.capture_comment ?? '',
-        release_comment: values.capture.release_comment ?? '',
+        capture_date: values.capture.capture_date,
+        capture_time: values.capture.capture_time || undefined,
+        release_date: values.capture.release_date || values.capture.capture_date,
+        release_time: values.capture.release_time || values.capture.capture_time || undefined,
+        capture_comment: values.capture.capture_comment || undefined,
+        release_comment: values.capture.release_comment || undefined,
         capture_location: captureLocation,
         release_location: releaseLocation ?? captureLocation
       });

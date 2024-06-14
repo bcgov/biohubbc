@@ -159,7 +159,8 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
                   }}>
                   <Stack gap={0.5} display="flex">
                     <Typography fontWeight={700}>
-                      {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, capture.capture_timestamp)}&nbsp;
+                      {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, capture.capture_date)}
+                      &nbsp;
                     </Typography>
                     {capture.capture_location.latitude && capture.capture_location.longitude && (
                       <Box>
