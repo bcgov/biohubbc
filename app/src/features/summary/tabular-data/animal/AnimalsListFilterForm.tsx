@@ -43,7 +43,6 @@ const AnimalsListFilterForm = (props: IAnimalsListFilterFormProps) => {
               handleClear={() => {
                 formikProps.setFieldValue('itis_tsns', undefined);
               }}
-              clearOnSelect={true}
             />
           ]}
         />

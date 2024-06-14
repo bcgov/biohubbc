@@ -10,7 +10,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { debounce, startCase } from 'lodash-es';
-import { ChangeEvent, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
 export interface ISpeciesAutocompleteFieldProps {
   /**
@@ -120,7 +120,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
 
-  const search = useMemo(
+  const handleSearch = useMemo(
     () =>
       debounce(async (inputValue: string, callback: (searchedValues: ITaxonomy[]) => void) => {
         const searchTerms = inputValue.split(' ').filter(Boolean);
@@ -131,26 +131,6 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       }, 500),
     [biohubApi.taxonomy]
   );
-
-  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const input = event.target.value;
-    setInputValue(input);
-
-    if (!input) {
-      setOptions([]);
-      search.cancel();
-      handleSpecies();
-      return;
-    }
-    setIsLoading(true);
-    search(input, (speciesOptions) => {
-      if (!isMounted()) {
-        return;
-      }
-      setOptions(speciesOptions);
-      setIsLoading(false);
-    });
-  };
 
   return (
     <Autocomplete
@@ -166,19 +146,46 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       }}
       filterOptions={(item) => item}
       inputValue={inputValue}
-      onInputChange={(_, _value, reason) => {
+      // Text field value changed
+      onInputChange={(_, value, reason) => {
         if (clearOnSelect && reason === 'reset') {
           setInputValue('');
-          if (handleClear) {
-            handleClear();
+          setOptions([]);
+          handleClear?.();
+          return;
+        }
+
+        if (reason === 'clear') {
+          setInputValue('');
+          setOptions([]);
+          handleClear?.();
+          return;
+        }
+
+        setIsLoading(true);
+        setInputValue(value);
+        handleSearch(value, (newOptions) => {
+          if (!isMounted()) {
+            return;
           }
-        }
+          setOptions(() => newOptions);
+          setIsLoading(false);
+        });
       }}
+      // Option selected from dropdown
       onChange={(_, option) => {
-        if (option) {
-          handleSpecies(option);
-          setInputValue(startCase(option?.commonNames?.length ? option.commonNames[0] : option.scientificName));
+        if (!option) {
+          return;
         }
+
+        handleSpecies(option);
+
+        if (clearOnSelect) {
+          setInputValue('');
+          return;
+        }
+
+        setInputValue(startCase(option?.commonNames?.length ? option.commonNames[0] : option.scientificName));
       }}
       renderOption={(renderProps, renderOption) => {
         return (
@@ -207,7 +214,6 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
         <TextField
           {...params}
           name={formikFieldName}
-          onChange={handleOnChange}
           required={required}
           label={label}
           sx={{

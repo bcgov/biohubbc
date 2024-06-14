@@ -58,7 +58,6 @@ const SurveysListFilterForm = (props: ISurveysListFilterFormProps) => {
               handleClear={() => {
                 formikProps.setFieldValue('itis_tsn', undefined);
               }}
-              clearOnSelect={true}
               key="survey-tsn-filter"
             />,
             <SystemUserAutocompleteField

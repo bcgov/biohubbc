@@ -17,7 +17,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull, getCodesName } from 'utils/Utils';
@@ -62,13 +62,9 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<ProjectDataTableURLParams>>();
 
-  // const debouncedSetSearchParams = useMemo(() => debounce(setSearchParams, 300), [setSearchParams]);
-
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
-
-  // Initialize pagination, sort, and advanced filters from URL parameters
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('p_limit') ?? ApiPaginationRequestOptionsInitialValues.limit),
@@ -91,24 +87,27 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
   });
 
   const sort = firstOrNull(sortModel);
-  const paginationSort: ApiPaginationRequestOptions = {
-    limit: paginationModel.pageSize,
-    sort: sort?.field || undefined,
-    order: sort?.sort || undefined,
-    page: paginationModel.page + 1 // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
-  };
+  const paginationSort: ApiPaginationRequestOptions = useMemo(
+    () => ({
+      limit: paginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+      page: paginationModel.page + 1 // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+    }),
+    [paginationModel.page, paginationModel.pageSize, sort?.field, sort?.sort]
+  );
 
-  const projectsDataLoader = useDataLoader(
+  const { refresh, isReady, data } = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) =>
       biohubApi.project.findProjects(pagination, filter)
   );
 
   // Fetch projects when either the pagination, sort, or advanced filters change
   useDeepCompareEffect(() => {
-    projectsDataLoader.refresh(paginationSort, advancedFiltersModel);
+    refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
-  const rows = projectsDataLoader.data?.projects ?? [];
+  const rows = data?.projects ?? [];
 
   // Define the columns for the DataGrid
   const columns: GridColDef<IProjectsListItemData>[] = [
@@ -215,12 +214,12 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
       <Box height="500px">
         <StyledDataGrid
           noRowsMessage="No projects found"
-          loading={!projectsDataLoader.isReady && !projectsDataLoader.data}
+          loading={!isReady && !data}
           // Columns
           columns={columns}
           // Rows
           rows={rows}
-          rowCount={projectsDataLoader.data?.pagination.total ?? 0}
+          rowCount={data?.pagination.total ?? 0}
           getRowId={(row) => row.project_id}
           // Pagination
           paginationMode="server"

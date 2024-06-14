@@ -58,7 +58,6 @@ const ProjectsListFilterForm = (props: IProjectsListFilterFormProps) => {
               handleClear={() => {
                 formikProps.setFieldValue('itis_tsn', undefined);
               }}
-              clearOnSelect={true}
               key="project-tsn-filter"
             />,
             <SystemUserAutocompleteField

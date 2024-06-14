@@ -58,8 +58,6 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<ObservationDataTableURLParams>>();
 
-  // const debouncedSetSearchParams = useMemo(() => debounce(setSearchParams, 300), [setSearchParams]);
-
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);

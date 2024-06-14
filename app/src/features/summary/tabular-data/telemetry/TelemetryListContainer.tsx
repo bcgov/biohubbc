@@ -53,8 +53,6 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<TelemetryDataTableURLParams>>();
 
-  // const debouncedSetSearchParams = useMemo(() => debounce(setSearchParams, 300), [setSearchParams]);
-
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('t_limit') ?? initialPaginationParams.limit),
     page: Number(searchParams.get('t_page') ?? initialPaginationParams.page)

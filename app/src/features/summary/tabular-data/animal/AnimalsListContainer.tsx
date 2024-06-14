@@ -51,8 +51,6 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<AnimalDataTableURLParams>>();
 
-  // const debouncedSetSearchParams = useMemo(() => debounce(setSearchParams, 300), [setSearchParams]);
-
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('a_limit') ?? initialPaginationParams.limit),
     page: Number(searchParams.get('a_page') ?? initialPaginationParams.page)

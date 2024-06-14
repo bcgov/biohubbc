@@ -1,6 +1,5 @@
 import { Search } from 'history';
 import qs from 'qs';
-import { useCallback, useMemo } from 'react';
 import { useHistory } from 'react-router';
 
 /**
@@ -23,18 +22,14 @@ import { useHistory } from 'react-router';
 export function useSearchParams<ParamType extends Record<string, string> = Record<string, string>>() {
   const history = useHistory();
 
-  const searchParams = useMemo(
-    () => new TypedURLSearchParams<ParamType>(history.location.search),
-    [history.location.search]
-  );
+  const searchParams = new TypedURLSearchParams<ParamType>(history.location.search);
 
-  const setSearchParams = useCallback(
-    (urlSearchParams: TypedURLSearchParams<ParamType>) => {
-      const url = `${window.location.origin}${window.location.pathname}?${urlSearchParams.toString()}`;
-      window.history.pushState(history.location.state, '', url);
-    },
-    [history.location.state]
-  );
+  const setSearchParams = (urlSearchParams: TypedURLSearchParams<ParamType>) => {
+    history.push({
+      ...location,
+      search: urlSearchParams.toString()
+    });
+  };
 
   return {
     searchParams,

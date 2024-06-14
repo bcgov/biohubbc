@@ -43,7 +43,6 @@ const TelemetryListFilterForm = (props: ITelemetryListFilterFormProps) => {
               handleClear={() => {
                 formikProps.setFieldValue('itis_tsns', undefined);
               }}
-              clearOnSelect={true}
             />
           ]}
         />

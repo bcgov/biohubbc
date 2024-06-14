@@ -90,7 +90,11 @@ export class ProjectRepository extends BaseRepository {
 
     // Focal Species filter
     if (filterFields.itis_tsns?.length) {
+      // multiple
       query.whereIn('sp.itis_tsn', filterFields.itis_tsns);
+    } else if (filterFields.itis_tsn) {
+      // single
+      query.where('sp.itis_tsn', filterFields.itis_tsn);
     }
 
     // Keyword Search filter
@@ -109,7 +113,7 @@ export class ProjectRepository extends BaseRepository {
       });
     }
 
-    // Programs filter
+    // // Programs filter
     if (filterFields.project_programs?.length) {
       query.where('prog.program_id', 'IN', filterFields.project_programs);
     }
@@ -137,6 +141,9 @@ export class ProjectRepository extends BaseRepository {
 
     const query = this._makeFindProjectsQuery(isUserAdmin, systemUserId, filterFields);
 
+    console.log(query.toSQL().toNative().sql);
+    console.log(query.toSQL().toNative().bindings);
+
     if (pagination) {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
@@ -144,6 +151,9 @@ export class ProjectRepository extends BaseRepository {
         query.orderBy(pagination.sort, pagination.order);
       }
     }
+
+    console.log(query.toSQL().toNative().sql);
+    console.log(query.toSQL().toNative().bindings);
 
     const response = await this.connection.knex(query, ProjectListData);
 

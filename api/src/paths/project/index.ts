@@ -40,6 +40,36 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'query',
+      name: 'keyword',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'itis_tsn',
+      required: false,
+      schema: {
+        type: 'integer',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'itis_tsns',
+      required: false,
+      schema: {
+        type: 'array',
+        items: {
+          type: 'integer'
+        },
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
       name: 'start_date',
       required: false,
       schema: {
@@ -50,6 +80,16 @@ GET.apiDoc = {
     {
       in: 'query',
       name: 'end_date',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+
+    {
+      in: 'query',
+      name: 'project_name',
       required: false,
       schema: {
         type: 'string',
@@ -70,31 +110,11 @@ GET.apiDoc = {
     },
     {
       in: 'query',
-      name: 'keyword',
+      name: 'system_user_id',
       required: false,
       schema: {
-        type: 'string',
+        type: 'number',
         nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'project_name',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'itis_tsns',
-      required: false,
-      schema: {
-        type: 'array',
-        items: {
-          type: 'integer'
-        }
       }
     },
     ...paginationRequestQueryParamSchema
@@ -107,10 +127,12 @@ GET.apiDoc = {
           properties: {
             start_date: {
               type: 'string',
+              description: 'ISO 8601 date string',
               nullable: true
             },
             end_date: {
               type: 'string',
+              description: 'ISO 8601 date string',
               nullable: true
             },
             project_programs: {
@@ -169,7 +191,25 @@ GET.apiDoc = {
                       type: 'integer'
                     },
                     name: {
-                      type: 'string'
+                      type: 'string',
+                      description: 'Name of the project'
+                    },
+                    start_date: {
+                      type: 'string',
+                      description: 'ISO 8601 date string',
+                      nullable: true
+                    },
+                    end_date: {
+                      type: 'string',
+                      description: 'ISO 8601 date string',
+                      nullable: true
+                    },
+                    regions: {
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      },
+                      nullable: true
                     },
                     project_programs: {
                       type: 'array',
@@ -177,36 +217,19 @@ GET.apiDoc = {
                         type: 'integer'
                       }
                     },
-                    start_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      nullable: true,
-                      description: 'ISO 8601 date string for the funding end_date'
-                    },
-                    end_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      nullable: true,
-                      description: 'ISO 8601 date string for the funding end_date'
-                    },
-                    regions: {
-                      type: 'array',
-                      items: {
-                        type: 'string',
-                        nullable: true
-                      }
-                    },
                     focal_species: {
                       type: 'array',
                       items: {
-                        type: 'integer',
-                        nullable: true
-                      }
+                        type: 'integer'
+                      },
+                      nullable: true
                     },
                     types: {
                       type: 'array',
                       items: {
-                        type: 'integer',
-                        nullable: true
-                      }
+                        type: 'integer'
+                      },
+                      nullable: true
                     },
                     completion_status: {
                       type: 'string',
@@ -250,7 +273,7 @@ export function getProjects(): RequestHandler {
 
     console.log('1=======================================');
     console.log('---params---');
-    console.log(req.params);
+    console.log(req.query);
     console.log('---query---');
     console.log(req.query);
     console.log('---body---');
@@ -270,6 +293,8 @@ export function getProjects(): RequestHandler {
       );
 
       const filterFields = parseQueryParams(req);
+
+      console.log(filterFields);
 
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
@@ -304,15 +329,15 @@ export function getProjects(): RequestHandler {
   };
 }
 
-function parseQueryParams(req: Request): IProjectAdvancedFilters {
+function parseQueryParams(req: Request<unknown, unknown, unknown, IProjectAdvancedFilters>): IProjectAdvancedFilters {
   return {
-    keyword: req.params.keyword && String(req.params.keyword),
-    project_name: req.params.project_name && String(req.params.project_name),
-    project_programs: req.params.project_programs
-      ? String(req.params.project_programs).split(',').map(Number)
-      : undefined,
-    itis_tsns: req.params.itis_tsns ? String(req.params.itis_tsns).split(',').map(Number) : undefined,
-    start_date: req.params.start_date && String(req.params.start_date),
-    end_date: req.params.end_date && String(req.params.end_date)
+    keyword: req.query.keyword ?? undefined,
+    itis_tsns: req.query.itis_tsns ?? undefined,
+    itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
+    start_date: req.query.start_date ?? undefined,
+    end_date: req.query.end_date ?? undefined,
+    project_name: req.query.project_name ?? undefined,
+    project_programs: req.query.project_programs ?? undefined,
+    system_user_id: req.query.system_user_id ?? undefined
   };
 }
