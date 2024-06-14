@@ -10,12 +10,13 @@ import { SystemUser } from '../repositories/user-repository';
 import { ITaxonomy } from '../services/platform-service';
 
 export interface ISurveyAdvancedFilters {
-  project_programs?: number[];
+  keyword?: string;
+  itis_tsn?: number;
+  itis_tsns?: number[];
   start_date?: string;
   end_date?: string;
-  keyword?: string;
-  project_name?: string;
-  itis_tsns?: number[];
+  survey_name?: string;
+  system_user_id?: number;
 }
 
 export const SurveyListData = z.object({

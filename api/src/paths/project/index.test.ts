@@ -62,7 +62,7 @@ describe('index', () => {
       });
       sinon.stub(authorization, 'userHasValidRole').returns(true);
       sinon.stub(ProjectService.prototype, 'findProjects').resolves([]);
-      sinon.stub(ProjectService.prototype, 'findProjectCount').resolves(0);
+      sinon.stub(ProjectService.prototype, 'findProjectsCount').resolves(0);
 
       const result = index.getProjects();
 
@@ -103,7 +103,7 @@ describe('index', () => {
           completion_status: COMPLETION_STATUS.COMPLETED
         }
       ]);
-      sinon.stub(ProjectService.prototype, 'findProjectCount').resolves(1);
+      sinon.stub(ProjectService.prototype, 'findProjectsCount').resolves(1);
 
       const result = index.getProjects();
 

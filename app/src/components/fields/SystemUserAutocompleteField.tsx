@@ -6,129 +6,171 @@ import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
 import UserCard from 'components/user/UserCard';
-import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
-import { debounce } from 'lodash-es';
-import { ChangeEvent, useMemo, useState } from 'react';
+import { debounce, startCase } from 'lodash-es';
+import { useMemo, useState } from 'react';
 
 interface ISystemUserAutocompleteFieldProps {
+  /**
+   * Formik field name.
+   *
+   * @type {string}
+   * @memberof ISystemUserAutocompleteFieldProps
+   */
   formikFieldName: string;
-  required?: boolean;
+  /**
+   * The field label.
+   *
+   * @type {string}
+   * @memberof ISystemUserAutocompleteFieldProps
+   */
   label: string;
-  placeholder?: string;
-  handleUser?: (user?: ISystemUser) => void;
-  handleClear?: () => void;
+  /**
+   * Callback fired on option selection.
+   *
+   * @type {(species: ITaxonomy) => void}
+   * @memberof ISystemUserAutocompleteFieldProps
+   */
+  onSelect: (user?: ISystemUser) => void;
+  /**
+   * Optional callback fired on option de-selected/cleared.
+   *
+   * @memberof ISystemUserAutocompleteFieldProps
+   */
+  onClear?: () => void;
+  /**
+   * If field is required.
+   *
+   * @type {boolean}
+   * @memberof ISystemUserAutocompleteFieldProps
+   */
+  required?: boolean;
+  /**
+   * If field is disabled.
+   *
+   * @type {boolean}
+   * @memberof ISystemUserAutocompleteFieldProps
+   */
+  disabled?: boolean;
+  /**
+   * If `true`, clears the input field after a selection is made.
+   *
+   * @type {boolean}
+   * @memberof ISystemUserAutocompleteFieldProps
+   */
+  clearOnSelect?: boolean;
+  /**
+   * Whether to show start adornment magnifying glass or not
+   * Defaults to false
+   *
+   * @type {boolean}
+   * @memberof ISystemUserAutocompleteFieldProps
+   */
   showStartAdornment?: boolean;
+  /**
+   * Placeholder text for the TextField
+   *
+   * @type {string}
+   * @memberof ISystemUserAutocompleteFieldProps
+   */
+  placeholder?: string;
 }
 
-export const SystemUserAutocompleteField = <T extends object>(props: ISystemUserAutocompleteFieldProps) => {
-  const { formikFieldName, label, showStartAdornment, placeholder, handleUser, handleClear } = props;
+/**
+ * Autocomplete field for searching for and selecting a single system user.
+ *
+ * @param {ISystemUserAutocompleteFieldProps} props
+ * @return {*}
+ */
+export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldProps) => {
+  const { formikFieldName, disabled, label, showStartAdornment, placeholder, onSelect, onClear, clearOnSelect } = props;
 
   const biohubApi = useBiohubApi();
   const isMounted = useIsMounted();
 
-  const [searchText, setSearchText] = useState('');
-  const [sortedUsers, setSortedUsers] = useState<ISystemUser[]>([]);
+  // The input field value
+  const [inputValue, setInputValue] = useState('');
+  // The array of options to choose from
+  const [options, setOptions] = useState<ISystemUser[]>([]);
+  // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  const { setFieldValue } = useFormikContext<T>();
-
-  const search = useMemo(
+  const handleSearch = useMemo(
     () =>
       debounce(async (keyword: string, callback: (searchedValues: ISystemUser[]) => void) => {
-        setIsLoading(true);
+        const response = await biohubApi.user.searchSystemUser(keyword).catch(() => {
+          return [];
+        });
 
-        if (!isMounted) {
-          return;
-        }
-
-        const response = await biohubApi.user.searchSystemUser(keyword);
         callback(response);
       }, 500),
-    [biohubApi.user, isMounted]
+    [biohubApi.user]
   );
-
-  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const input = event.target.value;
-    setSearchText(input);
-
-    if (!input) {
-      setSortedUsers([]);
-      search.cancel();
-      // handleUser();
-      return;
-    }
-
-    setIsLoading(true);
-    search(input, (userOptions) => {
-      if (!isMounted()) {
-        return;
-      }
-      setSortedUsers(userOptions);
-      setIsLoading(false);
-    });
-  };
 
   return (
     <Autocomplete
       id={formikFieldName}
+      disabled={disabled}
       data-testid={formikFieldName}
       filterSelectedOptions
-      noOptionsText={'No matching people found'}
-      options={sortedUsers}
+      noOptionsText={'No matching options'}
+      options={options}
       getOptionLabel={(option) => option.display_name}
-      inputValue={searchText}
+      isOptionEqualToValue={(option, value) => {
+        return option.system_user_id === value.system_user_id;
+      }}
+      filterOptions={(item) => item}
+      inputValue={inputValue}
+      // Text field value changed
       onInputChange={(_, value, reason) => {
-        if (reason === 'reset' || reason === 'clear') {
-          setSearchText('');
+        if (clearOnSelect && reason === 'reset') {
+          setInputValue('');
+          setOptions([]);
+          onClear?.();
+          return;
+        }
 
-          if (!handleClear) {
-            setFieldValue(formikFieldName, '');
+        if (reason === 'clear') {
+          setInputValue('');
+          setOptions([]);
+          onClear?.();
+          return;
+        }
+
+        if (!value) {
+          setInputValue('');
+          setOptions([]);
+          return;
+        }
+
+        setIsLoading(true);
+        setInputValue(value);
+        handleSearch(value, (newOptions) => {
+          if (!isMounted()) {
             return;
           }
-          handleClear();
-        } else {
-          setSearchText(value);
-        }
+          setOptions(() => newOptions);
+          setIsLoading(false);
+        });
       }}
+      // Option selected from dropdown
       onChange={(_, option) => {
-        if (option) {
-          setSearchText(option.display_name);
-
-          if (!handleUser) {
-            setFieldValue(formikFieldName, option.system_user_id);
-            return;
-          }
-
-          handleUser(option);
+        if (!option) {
+          onClear?.();
+          return;
         }
+
+        onSelect(option);
+
+        if (clearOnSelect) {
+          setInputValue('');
+          return;
+        }
+
+        setInputValue(startCase(option.display_name));
       }}
-      renderInput={(params) => (
-        <TextField
-          {...params}
-          variant="outlined"
-          label={label}
-          onChange={handleOnChange}
-          placeholder={placeholder ? placeholder : 'Find someone'}
-          fullWidth
-          InputProps={{
-            ...params.InputProps,
-            startAdornment: showStartAdornment && (
-              <Box mx={1} mt="6px">
-                <Icon path={mdiMagnify} size={1}></Icon>
-              </Box>
-            ),
-            endAdornment: (
-              <>
-                {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
-                {params.InputProps.endAdornment}
-              </>
-            )
-          }}
-        />
-      )}
       renderOption={(renderProps, renderOption) => (
         <Box
           component="li"
@@ -148,6 +190,29 @@ export const SystemUserAutocompleteField = <T extends object>(props: ISystemUser
             />
           </Box>
         </Box>
+      )}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          variant="outlined"
+          label={label}
+          placeholder={placeholder ? placeholder : 'Search by user'}
+          fullWidth
+          InputProps={{
+            ...params.InputProps,
+            startAdornment: showStartAdornment && (
+              <Box mx={1} mt="6px">
+                <Icon path={mdiMagnify} size={1}></Icon>
+              </Box>
+            ),
+            endAdornment: (
+              <>
+                {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {params.InputProps.endAdornment}
+              </>
+            )
+          }}
+        />
       )}
     />
   );

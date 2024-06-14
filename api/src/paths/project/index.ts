@@ -26,7 +26,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getProjects()
+  findProjects()
 ];
 
 GET.apiDoc = {
@@ -86,7 +86,6 @@ GET.apiDoc = {
         nullable: true
       }
     },
-
     {
       in: 'query',
       name: 'project_name',
@@ -119,48 +118,6 @@ GET.apiDoc = {
     },
     ...paginationRequestQueryParamSchema
   ],
-  requestBody: {
-    description: 'Project list search filter criteria object.',
-    content: {
-      'application/json': {
-        schema: {
-          properties: {
-            start_date: {
-              type: 'string',
-              description: 'ISO 8601 date string',
-              nullable: true
-            },
-            end_date: {
-              type: 'string',
-              description: 'ISO 8601 date string',
-              nullable: true
-            },
-            project_programs: {
-              type: 'array',
-              items: {
-                type: 'integer'
-              },
-              nullable: true
-            },
-            keyword: {
-              type: 'string',
-              nullable: true
-            },
-            project_name: {
-              type: 'string',
-              nullable: true
-            },
-            itis_tsns: {
-              type: 'array',
-              items: {
-                type: 'integer'
-              }
-            }
-          }
-        }
-      }
-    }
-  },
   responses: {
     200: {
       description: 'Project response object.',
@@ -188,7 +145,8 @@ GET.apiDoc = {
                   ],
                   properties: {
                     project_id: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
                     name: {
                       type: 'string',
@@ -267,18 +225,9 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getProjects(): RequestHandler {
+export function findProjects(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getProjects' });
-
-    console.log('1=======================================');
-    console.log('---params---');
-    console.log(req.query);
-    console.log('---query---');
-    console.log(req.query);
-    console.log('---body---');
-    console.log(req.body);
-    console.log('2=======================================');
+    defaultLog.debug({ label: 'findProjects' });
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -294,20 +243,19 @@ export function getProjects(): RequestHandler {
 
       const filterFields = parseQueryParams(req);
 
-      console.log(filterFields);
-
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const projectService = new ProjectService(connection);
 
-      const projects = await projectService.findProjects(
-        isUserAdmin,
-        systemUserId,
-        filterFields,
-        ensureCompletePaginationOptions(paginationOptions)
-      );
-
-      const projectsTotalCount = await projectService.findProjectCount(filterFields, isUserAdmin, systemUserId);
+      const [projects, projectsTotalCount] = await Promise.all([
+        projectService.findProjects(
+          isUserAdmin,
+          systemUserId,
+          filterFields,
+          ensureCompletePaginationOptions(paginationOptions)
+        ),
+        projectService.findProjectsCount(filterFields, isUserAdmin, systemUserId)
+      ]);
 
       await connection.commit();
 
@@ -321,7 +269,7 @@ export function getProjects(): RequestHandler {
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getProjects', message: 'error', error });
+      defaultLog.error({ label: 'findProjects', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -329,6 +277,12 @@ export function getProjects(): RequestHandler {
   };
 }
 
+/**
+ * Parse the query parameters from the request into the expected format.
+ *
+ * @param {Request<unknown, unknown, unknown, IProjectAdvancedFilters>} req
+ * @return {*}  {IProjectAdvancedFilters}
+ */
 function parseQueryParams(req: Request<unknown, unknown, unknown, IProjectAdvancedFilters>): IProjectAdvancedFilters {
   return {
     keyword: req.query.keyword ?? undefined,

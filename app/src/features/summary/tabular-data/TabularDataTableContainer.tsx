@@ -61,6 +61,7 @@ export const TabularDataTableContainer = () => {
 
   const onChangeView = (_: React.MouseEvent<HTMLElement>, value: ACTIVE_VIEW_VALUE) => {
     if (!value) {
+      // User has clicked the active view, do nothing
       return;
     }
 

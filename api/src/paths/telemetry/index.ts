@@ -203,7 +203,6 @@ export function getTelemetry(): RequestHandler {
       };
 
       const filterFields = parseQueryParams(req);
-      console.log(filterFields);
 
       const surveyCritterService = new SurveyCritterService(connection);
       const bctwService = new BctwService(user);

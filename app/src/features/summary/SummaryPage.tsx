@@ -7,10 +7,11 @@ import PageHeader from 'components/layout/PageHeader';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { ListDataTableContainer } from 'features/summary/list-data/ListDataTableContainer';
+import { TabularDataTableContainer } from 'features/summary/tabular-data/TabularDataTableContainer';
 import { Link as RouterLink } from 'react-router-dom';
 
 /**
- * Page to display a summary of all a user's data.
+ * Page to display a summary of a user's field data.
  *
  * @return {*}
  */
@@ -38,7 +39,9 @@ const SummaryPage = () => {
         <Paper>
           <ListDataTableContainer />
         </Paper>
-        <Paper sx={{ mt: 3 }}>{/* <TabularDataTableContainer /> */}</Paper>
+        <Paper sx={{ mt: 3 }}>
+          <TabularDataTableContainer />
+        </Paper>
       </Container>
     </>
   );

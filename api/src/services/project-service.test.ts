@@ -57,14 +57,14 @@ describe('ProjectService', () => {
     });
   });
 
-  describe('findProjectCount', () => {
+  describe('findProjectsCount', () => {
     it('returns the total project count', async () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectService(dbConnection);
 
-      const repoStub = sinon.stub(ProjectRepository.prototype, 'findProjectCount').resolves(69);
+      const repoStub = sinon.stub(ProjectRepository.prototype, 'findProjectsCount').resolves(69);
 
-      const response = await service.findProjectCount({}, false, 1001);
+      const response = await service.findProjectsCount({}, false, 1001);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(69);

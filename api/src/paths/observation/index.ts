@@ -165,7 +165,6 @@ export function getObservations(): RequestHandler {
 
       return res.status(200).json(response);
     } catch (error) {
-      console.log(error);
       defaultLog.error({ label: 'getObservations', message: 'error', error });
       throw error;
     } finally {

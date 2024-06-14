@@ -706,7 +706,7 @@ export class ObservationRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get survey count', [
-        'SurveyRepository->findSurveyCount',
+        'SurveyRepository->findSurveysCount',
         'rows was null or undefined, expected rows != null'
       ]);
     }

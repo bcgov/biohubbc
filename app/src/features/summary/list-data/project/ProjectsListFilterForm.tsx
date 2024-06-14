@@ -61,10 +61,17 @@ const ProjectsListFilterForm = (props: IProjectsListFilterFormProps) => {
               key="project-tsn-filter"
             />,
             <SystemUserAutocompleteField
+              formikFieldName="system_user_id"
               label="Person"
               placeholder="Search by user"
-              formikFieldName="system_user_id"
-              required={false}
+              onSelect={(value) => {
+                if (value?.system_user_id) {
+                  formikProps.setFieldValue('system_user_id', value.system_user_id);
+                }
+              }}
+              onClear={() => {
+                formikProps.setFieldValue('system_user_id', undefined);
+              }}
               key="project-person-filter"
             />
           ]}

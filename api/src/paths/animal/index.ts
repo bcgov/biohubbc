@@ -135,7 +135,6 @@ export function getAnimals(): RequestHandler {
       };
 
       const filterFields = parseQueryParams(req);
-      console.log(filterFields);
 
       // Find all critters that user has access to
       const surveyService = new SurveyCritterService(connection);

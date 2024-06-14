@@ -60,7 +60,7 @@ export class ProjectService extends DBService {
    * provided filter criteria.
    *
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId
+   * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {IProjectAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {(Promise<(ProjectListData & { completion_status: COMPLETION_STATUS })[]>)}
@@ -88,16 +88,16 @@ export class ProjectService extends DBService {
    *
    * @param {IProjectAdvancedFilters} filterFields
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId
+   * @param {(number | null)} systemUserId The system user id of the user making the request
    * @return {*}  {Promise<number>}
    * @memberof ProjectService
    */
-  async findProjectCount(
+  async findProjectsCount(
     filterFields: IProjectAdvancedFilters,
     isUserAdmin: boolean,
     systemUserId: number | null
   ): Promise<number> {
-    return this.projectRepository.findProjectCount(filterFields, isUserAdmin, systemUserId);
+    return this.projectRepository.findProjectsCount(filterFields, isUserAdmin, systemUserId);
   }
 
   /**

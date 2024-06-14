@@ -336,16 +336,16 @@ export class SurveyService extends DBService {
    *
    * @param {ISurveyAdvancedFilters} filterFields
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId
+   * @param {(number | null)} systemUserId The system user id of the user making the request
    * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
-  async findSurveyCount(
+  async findSurveysCount(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: ISurveyAdvancedFilters
   ): Promise<number> {
-    return this.surveyRepository.findSurveyCount(isUserAdmin, systemUserId, filterFields);
+    return this.surveyRepository.findSurveysCount(isUserAdmin, systemUserId, filterFields);
   }
 
   /**
@@ -1177,7 +1177,7 @@ export class SurveyService extends DBService {
    * filter criteria.
    *
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId
+   * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {ISurveyAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
    * @returns {*} {Promise<{id: number}[]>}

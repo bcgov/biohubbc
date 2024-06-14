@@ -26,7 +26,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveys()
+  findSurveys()
 ];
 
 GET.apiDoc = {
@@ -38,6 +38,36 @@ GET.apiDoc = {
     }
   ],
   parameters: [
+    {
+      in: 'query',
+      name: 'keyword',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'itis_tsn',
+      required: false,
+      schema: {
+        type: 'integer',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'itis_tsns',
+      required: false,
+      schema: {
+        type: 'array',
+        items: {
+          type: 'integer'
+        },
+        nullable: true
+      }
+    },
     {
       in: 'query',
       name: 'start_date',
@@ -58,19 +88,7 @@ GET.apiDoc = {
     },
     {
       in: 'query',
-      name: 'project_programs',
-      required: false,
-      schema: {
-        type: 'array',
-        items: {
-          type: 'integer'
-        },
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'keyword',
+      name: 'survey_name',
       required: false,
       schema: {
         type: 'string',
@@ -79,22 +97,11 @@ GET.apiDoc = {
     },
     {
       in: 'query',
-      name: 'project_name',
+      name: 'system_user_id',
       required: false,
       schema: {
-        type: 'string',
+        type: 'number',
         nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'itis_tsns',
-      required: false,
-      schema: {
-        type: 'array',
-        items: {
-          type: 'integer'
-        }
       }
     },
     ...paginationRequestQueryParamSchema
@@ -142,28 +149,28 @@ GET.apiDoc = {
                       minimum: 1
                     },
                     start_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      nullable: true,
-                      description: 'ISO 8601 date string for the survey end_date'
+                      type: 'string',
+                      description: 'ISO 8601 date string',
+                      nullable: true
                     },
                     end_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      nullable: true,
-                      description: 'ISO 8601 date string for the survey end_date'
+                      type: 'string',
+                      description: 'ISO 8601 date string',
+                      nullable: true
                     },
                     regions: {
                       type: 'array',
                       items: {
-                        type: 'string',
-                        nullable: true
-                      }
+                        type: 'string'
+                      },
+                      nullable: true
                     },
                     focal_species: {
                       type: 'array',
                       items: {
-                        type: 'integer',
-                        nullable: true
-                      }
+                        type: 'integer'
+                      },
+                      nullable: true
                     },
                     types: {
                       type: 'array',
@@ -204,9 +211,9 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getSurveys(): RequestHandler {
+export function findSurveys(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getSurveys' });
+    defaultLog.debug({ label: 'findSurveys' });
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -220,22 +227,21 @@ export function getSurveys(): RequestHandler {
         req['system_user']['role_names']
       );
 
-      const filterFields = {
-        ...parseQueryParams(req)
-      };
+      const filterFields = parseQueryParams(req);
 
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const surveyService = new SurveyService(connection);
 
-      const surveys = await surveyService.findSurveys(
-        isUserAdmin,
-        systemUserId,
-        filterFields,
-        ensureCompletePaginationOptions(paginationOptions)
-      );
-
-      const surveysTotalCount = await surveyService.findSurveyCount(isUserAdmin, systemUserId, filterFields);
+      const [surveys, surveysTotalCount] = await Promise.all([
+        surveyService.findSurveys(
+          isUserAdmin,
+          systemUserId,
+          filterFields,
+          ensureCompletePaginationOptions(paginationOptions)
+        ),
+        surveyService.findSurveysCount(isUserAdmin, systemUserId, filterFields)
+      ]);
 
       await connection.commit();
 
@@ -244,11 +250,12 @@ export function getSurveys(): RequestHandler {
         pagination: makePaginationResponse(surveysTotalCount, paginationOptions)
       };
 
+      // Allow browsers to cache this response for 30 seconds
       setCacheControl(res, 30);
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getSurveys', message: 'error', error });
+      defaultLog.error({ label: 'findSurveys', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -256,15 +263,20 @@ export function getSurveys(): RequestHandler {
   };
 }
 
-function parseQueryParams(req: Request): ISurveyAdvancedFilters {
+/**
+ * Parse the query parameters from the request into the expected format.
+ *
+ * @param {Request<unknown, unknown, unknown, ISurveyAdvancedFilters>} req
+ * @return {*}  {ISurveyAdvancedFilters}
+ */
+function parseQueryParams(req: Request<unknown, unknown, unknown, ISurveyAdvancedFilters>): ISurveyAdvancedFilters {
   return {
-    keyword: req.params.keyword && String(req.params.keyword),
-    project_name: req.params.project_name && String(req.params.project_name),
-    project_programs: req.params.project_programs
-      ? String(req.params.project_programs).split(',').map(Number)
-      : undefined,
-    itis_tsns: req.params.itis_tsns ? String(req.params.itis_tsns).split(',').map(Number) : undefined,
-    start_date: req.params.start_date && String(req.params.start_date),
-    end_date: req.params.end_date && String(req.params.end_date)
+    keyword: req.query.keyword ?? undefined,
+    itis_tsns: req.query.itis_tsns ?? undefined,
+    itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
+    start_date: req.query.start_date ?? undefined,
+    end_date: req.query.end_date ?? undefined,
+    survey_name: req.query.survey_name ?? undefined,
+    system_user_id: req.query.system_user_id ?? undefined
   };
 }

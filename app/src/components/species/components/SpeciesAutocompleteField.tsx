@@ -79,7 +79,7 @@ export interface ISpeciesAutocompleteFieldProps {
    */
   clearOnSelect?: boolean;
   /**
-   * Whether to show start adnornment magnifying glass or not
+   * Whether to show start adornment magnifying glass or not
    * Defaults to false
    *
    * @type {boolean}
@@ -95,6 +95,14 @@ export interface ISpeciesAutocompleteFieldProps {
   placeholder?: string;
 }
 
+/**
+ * Autocomplete field for searching for and selecting a single taxon.
+ *
+ * Note: Depends on the external BioHub API for fetching species records.
+ *
+ * @param {ISpeciesAutocompleteFieldProps} props
+ * @return {*}
+ */
 const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   const {
     formikFieldName,
@@ -124,8 +132,9 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
     () =>
       debounce(async (inputValue: string, callback: (searchedValues: ITaxonomy[]) => void) => {
         const searchTerms = inputValue.split(' ').filter(Boolean);
-        // TODO: Add error handling if this call throws an error
-        const response = await biohubApi.taxonomy.searchSpeciesByTerms(searchTerms);
+        const response = await biohubApi.taxonomy.searchSpeciesByTerms(searchTerms).catch(() => {
+          return [];
+        });
 
         callback(response);
       }, 500),
@@ -162,6 +171,12 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
           return;
         }
 
+        if (!value) {
+          setInputValue('');
+          setOptions([]);
+          return;
+        }
+
         setIsLoading(true);
         setInputValue(value);
         handleSearch(value, (newOptions) => {
@@ -175,6 +190,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       // Option selected from dropdown
       onChange={(_, option) => {
         if (!option) {
+          handleClear?.();
           return;
         }
 

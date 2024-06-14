@@ -14,11 +14,8 @@ import {
   ProjectData,
   ProjectListData
 } from '../models/project-view';
-import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
-
-const defaultLog = getLogger('repositories/project-repository');
 
 /**
  * A repository class for accessing project data.
@@ -29,10 +26,10 @@ const defaultLog = getLogger('repositories/project-repository');
  */
 export class ProjectRepository extends BaseRepository {
   /**
-   * Constructs a non-paginated query used to get a project list for users.
+   * Constructs a non-paginated query used to get a list of projects based on the user's permissions and search criteria.
    *
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId
+   * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {IProjectAdvancedFilters} filterFields
    * @return {*}  Promise<Knex.QueryBuilder>
    * @memberof ProjectRepository
@@ -51,9 +48,9 @@ export class ProjectRepository extends BaseRepository {
         knex.raw(`MIN(s.start_date) as start_date`),
         knex.raw('MAX(s.end_date) as end_date'),
         knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
-        knex.raw('array_agg(distinct prog.program_id) as project_programs'),
-        knex.raw('array_agg(distinct sp.itis_tsn) as focal_species'),
-        knex.raw('array_agg(distinct st.type_id) as types')
+        knex.raw('array_remove(array_agg(distinct prog.program_id), null) as project_programs'),
+        knex.raw('array_remove(array_agg(distinct sp.itis_tsn), null) as focal_species'),
+        knex.raw('array_remove(array_agg(distinct st.type_id), null) as types')
       ])
       .from('project as p')
       .leftJoin('project_program as pp', 'p.project_id', 'pp.project_id')
@@ -70,6 +67,15 @@ export class ProjectRepository extends BaseRepository {
     if (!isUserAdmin) {
       query.whereIn('p.project_id', (subQueryBuilder) => {
         subQueryBuilder.select('project_id').from('project_participation').where('system_user_id', systemUserId);
+      });
+    }
+
+    if (filterFields.system_user_id) {
+      query.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
       });
     }
 
@@ -137,12 +143,7 @@ export class ProjectRepository extends BaseRepository {
     filterFields: IProjectAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<ProjectListData[]> {
-    defaultLog.debug({ label: 'findProjects', pagination });
-
     const query = this._makeFindProjectsQuery(isUserAdmin, systemUserId, filterFields);
-
-    console.log(query.toSQL().toNative().sql);
-    console.log(query.toSQL().toNative().bindings);
 
     if (pagination) {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
@@ -151,9 +152,6 @@ export class ProjectRepository extends BaseRepository {
         query.orderBy(pagination.sort, pagination.order);
       }
     }
-
-    console.log(query.toSQL().toNative().sql);
-    console.log(query.toSQL().toNative().bindings);
 
     const response = await this.connection.knex(query, ProjectListData);
 
@@ -165,11 +163,11 @@ export class ProjectRepository extends BaseRepository {
    *
    * @param {IProjectAdvancedFilters} filterFields
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId
+   * @param {(number | null)} systemUserId The system user id of the user making the request
    * @return {*}  {Promise<number>}
    * @memberof ProjectRepository
    */
-  async findProjectCount(
+  async findProjectsCount(
     filterFields: IProjectAdvancedFilters,
     isUserAdmin: boolean,
     systemUserId: number | null
@@ -185,7 +183,7 @@ export class ProjectRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get project count', [
-        'ProjectRepository->findProjectCount',
+        'ProjectRepository->findProjectsCount',
         'rows was null or undefined, expected rows != null'
       ]);
     }
