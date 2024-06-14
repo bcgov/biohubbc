@@ -6,7 +6,6 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
 import { useContext, useMemo } from 'react';
-import { ICritterDeployment } from '../../../telemetry/ManualTelemetryList';
 
 // Set height so we the skeleton loader will match table rows
 const rowHeight = 52;
@@ -59,32 +58,21 @@ const SkeletonRow = () => (
 const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTableProps) => {
   const surveyContext = useContext(SurveyContext);
 
-  const flattenedCritterDeployments: ICritterDeployment[] = useMemo(() => {
-    const data: ICritterDeployment[] = [];
-    // combine all critter and deployments into a flat list
-    surveyContext.deploymentDataLoader.data?.forEach((deployment) => {
-      const critter = surveyContext.critterDataLoader.data?.find(
-        (critter) => critter.critter_id === deployment.critter_id
-      );
-      if (critter) {
-        data.push({ critter, deployment });
-      }
-    });
-    return data;
-  }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
-
-  const tableData: ITelemetryData[] = flattenedCritterDeployments.map((item) => ({
-    id: item.critter.survey_critter_id,
-    critter_id: item.critter.animal_id,
-    device_id: item.deployment.device_id,
-    start: dayjs(item.deployment.attachment_start).format('YYYY-MM-DD'),
-    end: item.deployment.attachment_end ? dayjs(item.deployment.attachment_end).format('YYYY-MM-DD') : 'Still Active'
-  }));
+  const tableRows = useMemo(() => {
+    return surveyContext.critterDeployments.map((item) => ({
+      // critters in this table may use multiple devices accross multiple timespans
+      id: `${item.critter.survey_critter_id}-${item.deployment.device_id}-${item.deployment.attachment_start}`,
+      alias: item.critter.animal_id,
+      device_id: item.deployment.device_id,
+      start: dayjs(item.deployment.attachment_start).format('YYYY-MM-DD'),
+      end: item.deployment.attachment_end ? dayjs(item.deployment.attachment_end).format('YYYY-MM-DD') : 'Still Active'
+    }));
+  }, [surveyContext.critterDeployments]);
 
   const columns: GridColDef<ITelemetryData>[] = [
     {
       field: 'animal_id',
-      headerName: 'Alias',
+      headerName: 'Nickname',
       flex: 1
     },
     {
@@ -117,7 +105,7 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
           noRowsMessage={'No telemetry records found'}
           columnHeaderHeight={rowHeight}
           rowHeight={rowHeight}
-          rows={tableData}
+          rows={tableRows}
           getRowId={(row) => row.id}
           columns={columns}
           initialState={{

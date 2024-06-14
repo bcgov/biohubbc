@@ -8,7 +8,7 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { BrowserRouter } from 'react-router-dom';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
-import SurveyAnimals from './SurveyAnimals';
+import { SurveyAnimalsPage } from './survey-animals/SurveyAnimalsPage';
 
 jest.mock('../../../hooks/useBioHubApi');
 jest.mock('../../../hooks/useTelemetryApi');
@@ -89,7 +89,7 @@ describe('SurveyAnimals', () => {
           <ProjectContext.Provider value={mockProjectContext}>
             <SurveyContext.Provider value={mockSurveyContext}>
               <BrowserRouter>
-                <SurveyAnimals />
+                <SurveyAnimalsPage />
               </BrowserRouter>
             </SurveyContext.Provider>
           </ProjectContext.Provider>
@@ -98,7 +98,7 @@ describe('SurveyAnimals', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('No Marked or Known Animals')).toBeInTheDocument();
+      expect(getByText('No Animals')).toBeInTheDocument();
     });
   });
 
@@ -123,7 +123,7 @@ describe('SurveyAnimals', () => {
           <ProjectContext.Provider value={mockProjectContext}>
             <SurveyContext.Provider value={mockSurveyContext}>
               <BrowserRouter>
-                <SurveyAnimals />
+                <SurveyAnimalsPage />
               </BrowserRouter>
             </SurveyContext.Provider>
           </ProjectContext.Provider>

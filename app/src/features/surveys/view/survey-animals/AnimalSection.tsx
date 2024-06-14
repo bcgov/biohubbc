@@ -59,7 +59,7 @@ interface IAnimalSectionProps {
  * @returns {*}
  */
 export const AnimalSection = (props: IAnimalSectionProps) => {
-  const cbApi = useCritterbaseApi();
+  const critterbaseApi = useCritterbaseApi();
   const dialog = useDialogContext();
 
   const [formObject, setFormObject] = useState<any>(undefined);
@@ -215,7 +215,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 onClickDelete={async () => {
                   handleDelete(
                     'ecological unit',
-                    cbApi.collectionUnit.deleteCollectionUnit,
+                    critterbaseApi.collectionUnit.deleteCritterCollectionUnit,
                     unit.critter_collection_unit_id
                   );
                 }}
@@ -243,7 +243,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 subHeader={formatSubHeader({ Location: marking.body_location, Colour: marking.primary_colour })}
                 onClickEdit={() => handleOpenEditForm(marking)}
                 onClickDelete={async () => {
-                  handleDelete('marking', cbApi.marking.deleteMarking, marking.marking_id);
+                  handleDelete('marking', critterbaseApi.marking.deleteMarking, marking.marking_id);
                 }}
               />
             </Collapse>
@@ -275,7 +275,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 onClickDelete={async () => {
                   handleDelete(
                     'measurement',
-                    cbApi.measurement.deleteQuantitativeMeasurement,
+                    critterbaseApi.measurement.deleteQuantitativeMeasurement,
                     measurement.measurement_quantitative_id
                   );
                 }}
@@ -295,7 +295,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 onClickDelete={async () => {
                   handleDelete(
                     'measurement',
-                    cbApi.measurement.deleteQualitativeMeasurement,
+                    critterbaseApi.measurement.deleteQualitativeMeasurement,
                     measurement.measurement_qualitative_id
                   );
                 }}
@@ -322,13 +322,17 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
             <Collapse key={mortality.mortality_id}>
               <EditDeleteStubCard
                 header={formatDate(new Date(mortality.mortality_timestamp))}
-                subHeader={formatSubHeader({
-                  Latitude: mortality.location.latitude,
-                  Longitude: mortality.location.longitude
-                })}
+                subHeader={
+                  (mortality.location &&
+                    formatSubHeader({
+                      Latitude: mortality.location.latitude,
+                      Longitude: mortality.location.longitude
+                    })) ||
+                  ''
+                }
                 onClickEdit={() => handleOpenEditForm(mortality)}
                 onClickDelete={async () => {
-                  handleDelete('mortality', cbApi.mortality.deleteMortality, mortality.mortality_id);
+                  handleDelete('mortality', critterbaseApi.mortality.deleteMortality, mortality.mortality_id);
                 }}
               />
             </Collapse>
@@ -358,7 +362,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                   })}
                   onClickEdit={() => handleOpenEditForm({ ...family, critter_id: props.critter?.critter_id })}
                   onClickDelete={async () => {
-                    handleDelete('family relationship', cbApi.family.deleteRelationship, {
+                    handleDelete('family relationship', critterbaseApi.family.deleteRelationship, {
                       relationship: isChild ? AnimalRelationship.CHILD : AnimalRelationship.PARENT,
                       family_id: family.family_id,
                       critter_id: props.critter?.critter_id ?? ''
@@ -392,7 +396,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
                 })}
                 onClickEdit={() => handleOpenEditForm(capture)}
                 onClickDelete={async () => {
-                  handleDelete('capture', cbApi.capture.deleteCapture, capture.capture_id);
+                  handleDelete('capture', critterbaseApi.capture.deleteCapture, capture.capture_id);
                 }}
               />
             </Collapse>

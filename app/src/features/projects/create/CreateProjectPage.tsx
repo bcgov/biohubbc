@@ -11,17 +11,12 @@ import { PROJECT_ROLE } from 'constants/roles';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { FormikProps } from 'formik';
-import * as History from 'history';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import {
-  ICreateProjectRequest,
-  IGetProjectParticipant,
-  IUpdateProjectRequest
-} from 'interfaces/useProjectApi.interface';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { useHistory } from 'react-router';
-import { Prompt } from 'react-router-dom';
+import { Prompt, useHistory } from 'react-router';
 import { ProjectDetailsFormInitialValues } from '../components/ProjectDetailsForm';
 import { ProjectIUCNFormInitialValues } from '../components/ProjectIUCNForm';
 import { ProjectObjectivesFormInitialValues } from '../components/ProjectObjectivesForm';
@@ -48,6 +43,8 @@ const CreateProjectPage = () => {
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
@@ -78,22 +75,6 @@ const CreateProjectPage = () => {
     };
   }, [initialParticipants]);
 
-  const defaultCancelDialogProps = {
-    dialogTitle: CreateProjectI18N.cancelTitle,
-    dialogText: CreateProjectI18N.cancelText,
-    open: false,
-    onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onYes: () => {
-      dialogContext.setYesNoDialog({ open: false });
-      history.push('/admin/projects');
-    }
-  };
-
   const defaultErrorDialogProps = {
     onClose: () => {
       dialogContext.setErrorDialog({ open: false });
@@ -114,7 +95,6 @@ const CreateProjectPage = () => {
   };
 
   const handleCancel = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
     history.push('/admin/projects');
   };
 
@@ -137,36 +117,10 @@ const CreateProjectPage = () => {
       }
 
       setEnableCancelCheck(false);
-      history.push(`/admin/projects/${response.id}`);
+      history.push(`/admin/projects/${response.id}`, SKIP_CONFIRMATION_DIALOG);
     } finally {
       setIsSaving(false);
     }
-  };
-
-  /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location) => {
-    if (!dialogContext.yesNoDialogProps.open) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        ...defaultCancelDialogProps,
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        },
-        open: true
-      });
-      return false;
-    }
-
-    // If the cancel dialog is already open and another location change action is triggered: allow it
-    return true;
   };
 
   if (!codesContext.codesDataLoader.data) {
@@ -175,7 +129,7 @@ const CreateProjectPage = () => {
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
       <PageHeader
         title="Create New Project"
         buttonJSX={
@@ -200,8 +154,8 @@ const CreateProjectPage = () => {
         <Paper sx={{ p: 5 }}>
           <EditProjectForm
             initialProjectData={initialProjectData}
-            handleSubmit={(formikData) => createProject(formikData as ICreateProjectRequest)}
-            formikRef={formikRef as unknown as React.RefObject<FormikProps<IUpdateProjectRequest>>}
+            handleSubmit={(formikData) => createProject(formikData)}
+            formikRef={formikRef}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
             <LoadingButton

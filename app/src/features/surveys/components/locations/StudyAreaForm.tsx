@@ -156,8 +156,8 @@ const StudyAreaForm = () => {
 
       <Stack gap={3}>
         {errors.locations && !Array.isArray(errors?.locations) && (
-          <Alert severity="error" variant="outlined">
-            <AlertTitle>Study Area Missing</AlertTitle>
+          <Alert severity="error" variant="outlined" sx={{ mb: 2 }}>
+            <AlertTitle>Missing study area</AlertTitle>
             {errors.locations}
           </Alert>
         )}

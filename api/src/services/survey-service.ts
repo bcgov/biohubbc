@@ -1,4 +1,4 @@
-import { Feature } from 'geojson';
+import { flatten } from 'lodash';
 import { IDBConnection } from '../database/db';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PostSurveyLocationData, PutPartnershipsData, PutSurveyObject } from '../models/survey-update';
@@ -40,6 +40,7 @@ export class SurveyService extends DBService {
   fundingSourceService: FundingSourceService;
   siteSelectionStrategyService: SiteSelectionStrategyService;
   surveyParticipationService: SurveyParticipationService;
+  regionService: RegionService;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -51,12 +52,13 @@ export class SurveyService extends DBService {
     this.fundingSourceService = new FundingSourceService(connection);
     this.siteSelectionStrategyService = new SiteSelectionStrategyService(connection);
     this.surveyParticipationService = new SurveyParticipationService(connection);
+    this.regionService = new RegionService(connection);
   }
 
   /**
    * Get Survey IDs for a project ID
    *
-   * @param {number} projectID
+   * @param {number} projectId
    * @returns {*} {Promise<{id: number}[]>}
    * @memberof SurveyService
    */
@@ -67,23 +69,37 @@ export class SurveyService extends DBService {
   /**
    * Gets all information of a Survey for a given survey ID
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<SurveyObject>}
    * @memberof SurveyService
    */
   async getSurveyById(surveyId: number): Promise<SurveyObject> {
+    const surveyData = await Promise.all([
+      this.getSurveyData(surveyId),
+      this.getSpeciesData(surveyId),
+      this.getPermitData(surveyId),
+      this.getSurveyFundingSourceData(surveyId),
+      this.getSurveyPartnershipsData(surveyId),
+      this.getSurveyPurposeAndMethodology(surveyId),
+      this.getSurveyProprietorDataForView(surveyId),
+      this.getSurveyLocationsData(surveyId),
+      this.surveyParticipationService.getSurveyParticipants(surveyId),
+      this.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId),
+      this.getSurveyBlocksForSurveyId(surveyId)
+    ]);
+
     return {
-      survey_details: await this.getSurveyData(surveyId),
-      species: await this.getSpeciesData(surveyId),
-      permit: await this.getPermitData(surveyId),
-      funding_sources: await this.getSurveyFundingSourceData(surveyId),
-      partnerships: await this.getSurveyPartnershipsData(surveyId),
-      purpose_and_methodology: await this.getSurveyPurposeAndMethodology(surveyId),
-      proprietor: await this.getSurveyProprietorDataForView(surveyId),
-      locations: await this.getSurveyLocationsData(surveyId),
-      participants: await this.surveyParticipationService.getSurveyParticipants(surveyId),
-      site_selection: await this.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId),
-      blocks: await this.getSurveyBlocksForSurveyId(surveyId)
+      survey_details: surveyData[0],
+      species: surveyData[1],
+      permit: surveyData[2],
+      funding_sources: surveyData[3],
+      partnerships: surveyData[4],
+      purpose_and_methodology: surveyData[5],
+      proprietor: surveyData[6],
+      locations: surveyData[7],
+      participants: surveyData[8],
+      site_selection: surveyData[9],
+      blocks: surveyData[10]
     };
   }
 
@@ -118,7 +134,7 @@ export class SurveyService extends DBService {
   /**
    * Get Survey supplementary data for a given survey ID
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<SurveySupplementaryData>}
    * @memberof SurveyService
    */
@@ -131,7 +147,7 @@ export class SurveyService extends DBService {
   /**
    * Gets Survey data for a given survey ID
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<GetSurveyData>}
    * @memberof SurveyService
    */
@@ -149,7 +165,7 @@ export class SurveyService extends DBService {
   /**
    * Get associated species data for a survey from the taxonomic service for a given Survey ID
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<GetFocalSpeciesData & GetAncillarySpeciesData>}
    * @memberof SurveyService
    */
@@ -171,8 +187,10 @@ export class SurveyService extends DBService {
 
     const platformService = new PlatformService(this.connection);
 
-    const focalSpecies = await platformService.getTaxonomyByTsns(focalSpeciesIds);
-    const ancillarySpecies = await platformService.getTaxonomyByTsns(ancillarySpeciesIds);
+    const [focalSpecies, ancillarySpecies] = await Promise.all([
+      platformService.getTaxonomyByTsns(focalSpeciesIds),
+      platformService.getTaxonomyByTsns(ancillarySpeciesIds)
+    ]);
 
     return { ...new GetFocalSpeciesData(focalSpecies), ...new GetAncillarySpeciesData(ancillarySpecies) };
   }
@@ -180,7 +198,7 @@ export class SurveyService extends DBService {
   /**
    * Get Survey permit data for a given survey ID
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<GetPermitData>}
    * @memberof SurveyService
    */
@@ -195,7 +213,7 @@ export class SurveyService extends DBService {
   /**
    * Get Survey purpose and Methodology information for a given survey ID
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<GetSurveyPurposeAndMethodologyData>}
    * @memberof SurveyService
    */
@@ -206,7 +224,7 @@ export class SurveyService extends DBService {
   /**
    * Gets proprietor data for view or null for a given survey ID
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<GetSurveyProprietorData | null>}
    * @memberof SurveyService
    */
@@ -217,7 +235,7 @@ export class SurveyService extends DBService {
   /**
    * Get Survey location for a given survey ID
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<GetSurveyLocationData[]>}
    * @memberof SurveyService
    */
@@ -230,7 +248,7 @@ export class SurveyService extends DBService {
    * Gets the Proprietor Data to be be submitted
    * to BioHub as a Security Request
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<ISurveyProprietorModel>}
    * @memberof SurveyService
    */
@@ -409,7 +427,8 @@ export class SurveyService extends DBService {
       // Insert survey locations
       promises.push(Promise.all(postSurveyData.locations.map((item) => this.insertSurveyLocations(surveyId, item))));
       // Insert survey regions
-      promises.push(Promise.all(postSurveyData.locations.map((item) => this.insertRegion(surveyId, item.geojson))));
+      const features = flatten(postSurveyData.locations.map((location) => location.geojson));
+      promises.push(this.regionService.insertRegionsIntoSurveyFromFeatures(surveyId, features));
     }
 
     // Handle site selection strategies
@@ -467,22 +486,9 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Insert region data.
-   *
-   * @param {number} surveyId
-   * @param {Feature[]} features
-   * @return {*}  {Promise<void>}
-   * @memberof SurveyService
-   */
-  async insertRegion(surveyId: number, features: Feature[]): Promise<void> {
-    const regionService = new RegionService(this.connection);
-    return regionService.addRegionsToSurveyFromFeatures(surveyId, features);
-  }
-
-  /**
    * Get survey attachments data for a given survey ID
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<GetAttachmentsData>}
    * @memberof SurveyService
    */
@@ -493,7 +499,7 @@ export class SurveyService extends DBService {
   /**
    * Get survey report attachments for a given survey ID
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<GetReportAttachmentsData>}
    * @memberof SurveyService
    */
@@ -517,7 +523,7 @@ export class SurveyService extends DBService {
    * Inserts new survey_type records associated to the survey.
    *
    * @param {number[]} typeIds
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*}  {Promise<void>}
    * @memberof SurveyService
    */
@@ -529,7 +535,7 @@ export class SurveyService extends DBService {
    * Inserts a new record and associates focal species to a survey
    *
    * @param {number} focal_species_id
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<number>}
    * @memberof SurveyService
    */
@@ -541,7 +547,7 @@ export class SurveyService extends DBService {
    * Inserts a new record and associates ancillary species to a survey
    *
    * @param {number} ancillary_species_id
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<number>}
    * @memberof SurveyService
    */
@@ -553,7 +559,7 @@ export class SurveyService extends DBService {
    * Inserts new record and associated a vantage code to a survey
    *
    * @param {number} vantage_code_id
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<number>}
    * @memberof SurveyService
    */
@@ -565,7 +571,7 @@ export class SurveyService extends DBService {
    * Inserts proprietor data for a survey
    *
    * @param {PostProprietorData} survey_proprietor
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<number | undefined>}
    * @memberof SurveyService
    */
@@ -708,13 +714,15 @@ export class SurveyService extends DBService {
     const updates = data.filter((item) => item.survey_location_id);
     const updatePromises = updates.map((item) => this.updateSurveyLocation(item));
 
-    // Patch survey locations
-    await Promise.all([insertPromises, updatePromises, deletePromises]);
+    const features = flatten(data.map((item) => item.geojson));
 
-    // Patch survey regions
     await Promise.all([
-      ...inserts.map((item) => this.insertRegion(surveyId, item.geojson)),
-      ...updates.map((item) => this.insertRegion(surveyId, item.geojson))
+      // Patch survey locations
+      insertPromises,
+      updatePromises,
+      deletePromises,
+      // Insert regions into survey - maps to NRM regions
+      this.regionService.insertRegionsIntoSurveyFromFeatures(surveyId, features)
     ]);
   }
 
@@ -745,7 +753,7 @@ export class SurveyService extends DBService {
   /**
    * Updates Survey details
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @param {PutSurveyObject} surveyData
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
@@ -757,7 +765,7 @@ export class SurveyService extends DBService {
   /**
    * Updates Survey types data for a given survey ID.
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @param {PutSurveyObject} surveyData
    * @return {*}  {Promise<void>}
    * @memberof SurveyService
@@ -773,7 +781,7 @@ export class SurveyService extends DBService {
   /**
    * Updates survey species data
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @param {PutSurveyObject} surveyData
    * @returns {*} {Promise<any[]>}
    * @memberof SurveyService
@@ -797,7 +805,7 @@ export class SurveyService extends DBService {
   /**
    * Delete species data for a given survey ID
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
@@ -1005,7 +1013,7 @@ export class SurveyService extends DBService {
   /**
    * Breaks link between permit and survey for a given survey ID
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
@@ -1016,7 +1024,7 @@ export class SurveyService extends DBService {
   /**
    * Updates proprietor data on a survey
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @param {PutSurveyObject} surveyData
    * @param {PutSurveyObject}
    * @returns {*} {Promise<void>}
@@ -1035,7 +1043,7 @@ export class SurveyService extends DBService {
   /**
    * Deletes proprietor data for a given survey
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
@@ -1103,7 +1111,7 @@ export class SurveyService extends DBService {
   /**
    * Updates vantage codes associated to a survey
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @param {PutSurveyObject} surveyData
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
@@ -1125,7 +1133,7 @@ export class SurveyService extends DBService {
   /**
    * Breaks link between vantage codes and a survey fora  given survey Id
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
@@ -1136,7 +1144,7 @@ export class SurveyService extends DBService {
   /**
    * Deletes a survey for a given ID
    *
-   * @param {number} surveyID
+   * @param {number} surveyId
    * @returns {*} {Promise<void>}
    * @memberof SurveyService
    */
