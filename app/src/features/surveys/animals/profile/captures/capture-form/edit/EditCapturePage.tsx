@@ -102,18 +102,6 @@ export const EditCapturePage = () => {
         ? formatLocation(values.capture.release_location)
         : values.capture.capture_location;
 
-      //TODO: remove
-      //
-      //// Format capture timestamp
-      //const captureTime = values.capture.capture_time ? ` ${values.capture.capture_time}-07:00` : 'T00:00:00-07:00';
-      //const captureTimestamp = dayjs(`${values.capture.capture_date}${captureTime}`).toDate();
-      //
-      //// If release timestamp is null, use the capture timestamp, otherwise format release location
-      //const releaseTime = (values.capture.release_time && ` ${values.capture.release_time}-07:00`) || 'T00:00:00-07:00';
-      //const releaseTimestamp = values.capture.release_date
-      //  ? dayjs(`${values.capture.release_date}${releaseTime}`).toDate()
-      //  : captureTimestamp;
-
       const {
         qualitativeMeasurementsForDelete,
         quantitativeMeasurementsForDelete,

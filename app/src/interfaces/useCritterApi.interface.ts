@@ -33,9 +33,9 @@ export interface ICapturePostData {
   capture_id: string;
   capture_date: string;
   capture_method_id: string | null;
-  capture_time?: string;
-  release_date?: string;
-  release_time?: string;
+  capture_time?: string | null;
+  release_date?: string | null;
+  release_time?: string | null;
   capture_comment: string | null;
   release_comment: string | null;
   capture_location: Feature | null;
