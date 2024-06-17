@@ -18,18 +18,18 @@ interface IReleaseDetailsProps {
 export const ReleaseDetails = (props: IReleaseDetailsProps) => {
   const { capture } = props;
 
-  const releaseTimestamp = capture.release_date;
+  const releaseDate = capture.release_date;
   const releaseLocation = capture.release_location;
   const releaseComment = capture.release_comment;
 
-  if (!releaseTimestamp && !releaseLocation && !releaseComment) {
+  if (!releaseDate && !releaseLocation && !releaseComment) {
     return null;
   }
 
   return (
     <Stack gap={2}>
       <Stack direction="row" spacing={3}>
-        {releaseTimestamp && (
+        {releaseDate && (
           <Box>
             <Typography
               color="textSecondary"
@@ -39,7 +39,7 @@ export const ReleaseDetails = (props: IReleaseDetailsProps) => {
               Release time
             </Typography>
             <Typography color="textSecondary" variant="body2">
-              {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, releaseTimestamp)}
+              {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, releaseDate)}
             </Typography>
           </Box>
         )}

@@ -31,8 +31,8 @@ export interface IMarkingPostData {
 
 export interface ICapturePostData {
   capture_id: string;
-  capture_date: string;
   capture_method_id: string | null;
+  capture_date: string;
   capture_time?: string | null;
   release_date?: string | null;
   release_time?: string | null;

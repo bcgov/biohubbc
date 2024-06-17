@@ -18,11 +18,11 @@ interface ICaptureDetailsProps {
 export const CaptureDetails = (props: ICaptureDetailsProps) => {
   const { capture } = props;
 
-  const captureTimestamp = capture.capture_date;
+  const captureDate = capture.capture_date;
   const captureLocation = capture.capture_location;
   const captureComment = capture.capture_comment;
 
-  if (!captureTimestamp && (!captureLocation.latitude || !captureLocation.longitude) && !captureComment) {
+  if (!captureDate && (!captureLocation.latitude || !captureLocation.longitude) && !captureComment) {
     return null;
   }
 
@@ -38,7 +38,7 @@ export const CaptureDetails = (props: ICaptureDetailsProps) => {
             Capture time
           </Typography>
           <Typography color="textSecondary" variant="body2">
-            {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, captureTimestamp)}
+            {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, captureDate)}
           </Typography>
         </Box>
 
