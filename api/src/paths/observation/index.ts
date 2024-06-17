@@ -7,7 +7,6 @@ import { observervationsWithSubcountDataSchema } from '../../openapi/schemas/obs
 import { paginationRequestQueryParamSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { ObservationService } from '../../services/observation-service';
-import { setCacheControl } from '../../utils/api-utils';
 import { getLogger } from '../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -41,24 +40,6 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'query',
-      name: 'start_date',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'end_date',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
       name: 'keyword',
       required: false,
       schema: {
@@ -69,12 +50,85 @@ GET.apiDoc = {
     {
       in: 'query',
       name: 'itis_tsns',
+      description: 'ITIS TSN numbers',
       required: false,
       schema: {
         type: 'array',
         items: {
           type: 'integer'
-        }
+        },
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'itis_tsn',
+      description: 'ITIS TSN number',
+      required: false,
+      schema: {
+        type: 'integer',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'start_date',
+      description: 'ISO 8601 date string',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'end_date',
+      description: 'ISO 8601 date string',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'start_time',
+      description: 'ISO 8601 time string',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'end_time',
+      description: 'ISO 8601 time string',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'min_count',
+      description: 'Minimum observation count (inclusive).',
+      required: false,
+      schema: {
+        type: 'number',
+        minimum: 0,
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'system_user_id',
+      required: false,
+      schema: {
+        type: 'number',
+        minimum: 1,
+        nullable: true
       }
     },
     ...paginationRequestQueryParamSchema
@@ -133,18 +187,15 @@ export function getObservations(): RequestHandler {
 
       const observationService = new ObservationService(connection);
 
-      const observations = await observationService.findObservations(
-        isUserAdmin,
-        systemUserId,
-        filterFields,
-        ensureCompletePaginationOptions(paginationOptions)
-      );
-
-      const observationsTotalCount = await observationService.findObservationCount(
-        isUserAdmin,
-        systemUserId,
-        filterFields
-      );
+      const [observations, observationsTotalCount] = await Promise.all([
+        observationService.findObservations(
+          isUserAdmin,
+          systemUserId,
+          filterFields,
+          ensureCompletePaginationOptions(paginationOptions)
+        ),
+        observationService.findObservationsCount(isUserAdmin, systemUserId, filterFields)
+      ]);
 
       await connection.commit();
 
@@ -161,7 +212,7 @@ export function getObservations(): RequestHandler {
       };
 
       // Allow browsers to cache this response for 30 seconds
-      setCacheControl(res, 30);
+      res.setHeader('Cache-Control', 'private, max-age=30');
 
       return res.status(200).json(response);
     } catch (error) {
@@ -173,14 +224,24 @@ export function getObservations(): RequestHandler {
   };
 }
 
-function parseQueryParams(req: Request): IObservationAdvancedFilters {
+/**
+ * Parse the query parameters from the request into the expected format.
+ *
+ * @param {Request<unknown, unknown, unknown, IObservationAdvancedFilters>} req
+ * @return {*}  {IObservationAdvancedFilters}
+ */
+function parseQueryParams(
+  req: Request<unknown, unknown, unknown, IObservationAdvancedFilters>
+): IObservationAdvancedFilters {
   return {
-    keyword: req.query.keyword && String(req.query.keyword),
-    minimum_count: req.query.minimum_count ? Number(req.query.minimum_count) : undefined,
-    itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined,
-    minimum_date: req.query.minimum_date && String(req.query.minimum_date),
-    maximum_date: req.query.maximum_date && String(req.query.maximum_date),
-    minimum_time: req.query.minimum_time && String(req.query.minimum_time),
-    maximum_time: req.query.maximum_time && String(req.query.maximum_time)
+    keyword: req.query.keyword ?? undefined,
+    itis_tsns: req.query.itis_tsns ?? undefined,
+    itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
+    start_date: req.query.start_date ?? undefined,
+    end_date: req.query.end_date ?? undefined,
+    start_time: req.query.start_time ?? undefined,
+    end_time: req.query.end_time ?? undefined,
+    min_count: (req.query.min_count && Number(req.query.min_count)) ?? undefined,
+    system_user_id: req.query.system_user_id ?? undefined
   };
 }

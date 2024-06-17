@@ -73,27 +73,6 @@ const useObservationApi = (axios: AxiosInstance) => {
     pagination?: ApiPaginationRequestOptions,
     filterFieldData?: IObservationsAdvancedFilters
   ): Promise<IGetSurveyObservationsResponse> => {
-    // const params = new URLSearchParams();
-
-    // if (pagination) {
-    //   params.append('page', pagination.page.toString());
-    //   params.append('limit', pagination.limit.toString());
-    //   if (pagination.sort) {
-    //     params.append('sort', pagination.sort);
-    //   }
-    //   if (pagination.order) {
-    //     params.append('order', pagination.order);
-    //   }
-    // }
-
-    // if (filterFieldData) {
-    //   Object.entries(filterFieldData).forEach(([key, value]) => {
-    //     if (value) {
-    //       params.append(key, value);
-    //     }
-    //   });
-    // }
-
     const params = {
       ...pagination,
       ...filterFieldData

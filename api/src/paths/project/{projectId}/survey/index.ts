@@ -91,7 +91,7 @@ GET.apiDoc = {
                     end_date: {
                       type: 'string',
                       format: 'date',
-                      description: 'ISO 8601 date string',
+                      description: 'ISO 8601 datetime string',
                       nullable: true
                     },
                     progress_id: {

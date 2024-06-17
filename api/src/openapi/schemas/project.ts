@@ -30,7 +30,7 @@ export const projectCreatePostRequestObject = {
         },
         end_date: {
           type: 'string',
-          description: 'ISO 8601 date string',
+          description: 'ISO 8601 datetime string',
           nullable: true
         }
       }

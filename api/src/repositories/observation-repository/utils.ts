@@ -5,10 +5,10 @@ import { IObservationAdvancedFilters } from '../../models/observation-view';
 /**
  * Generate the observation list query based on user access and filters.
  *
- * @param {boolean} isUserAdmin Whether the user is an admin.
- * @param {number | null} systemUserId The user's ID.
- * @param {IObservationAdvancedFilters} filterFields The filter fields to apply.
- * @return {Knex.QueryBuilder} The generated observation list query.
+ * @param {boolean} isUserAdmin
+ * @param {number | null} systemUserId The system user id of the user making the request
+ * @param {IObservationAdvancedFilters} filterFields
+ * @return {*}  {Knex.QueryBuilder}
  */
 export function makeFindObservationsQuery(
   isUserAdmin: boolean,
@@ -30,23 +30,34 @@ export function makeFindObservationsQuery(
     );
   }
 
-  const query = getSurveyObservationsBaseQuery(knex, getSurveyIdsQuery);
-
-  // Apply filters
-  if (filterFields.minimum_count) {
-    query.andWhere('subcount', '>=', filterFields.minimum_count);
+  // Ensure that only administrators can filter observations by other users.
+  if (isUserAdmin) {
+    if (filterFields.system_user_id) {
+      getSurveyIdsQuery.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
+      });
+    }
   }
 
-  if (filterFields.minimum_date) {
-    query.andWhere('observation_date', '>=', filterFields.minimum_date);
+  const getObservationsQuery = getSurveyObservationsBaseQuery(knex, getSurveyIdsQuery);
+
+  if (filterFields.min_count) {
+    getObservationsQuery.andWhere('subcount', '>=', filterFields.min_count);
   }
 
-  if (filterFields.maximum_date) {
-    query.andWhere('observation_date', '<=', filterFields.maximum_date);
+  if (filterFields.start_date) {
+    getObservationsQuery.andWhere('observation_date', '>=', filterFields.start_date);
+  }
+
+  if (filterFields.end_date) {
+    getObservationsQuery.andWhere('observation_date', '<=', filterFields.end_date);
   }
 
   if (filterFields.keyword) {
-    query.where((subqueryBuilder) => {
+    getObservationsQuery.where((subqueryBuilder) => {
       subqueryBuilder.where('itis_scientific_name', 'ilike', `%${filterFields.keyword}%`);
       if (!isNaN(Number(filterFields.keyword))) {
         subqueryBuilder.orWhere('survey_observation.survey_observation_id', Number(filterFields.keyword));
@@ -54,19 +65,24 @@ export function makeFindObservationsQuery(
     });
   }
 
-  if (filterFields.minimum_time) {
-    query.andWhere('time', '>=', filterFields.minimum_time);
+  if (filterFields.start_time) {
+    getObservationsQuery.andWhere('time', '>=', filterFields.start_time);
   }
 
-  if (filterFields.maximum_time) {
-    query.andWhere('time', '<=', filterFields.maximum_time);
+  if (filterFields.end_time) {
+    getObservationsQuery.andWhere('time', '<=', filterFields.end_time);
   }
 
-  if (filterFields.itis_tsns) {
-    query.whereIn('itis_tsn', filterFields.itis_tsns);
+  // Focal Species filter
+  if (filterFields.itis_tsns?.length) {
+    // multiple
+    getObservationsQuery.whereIn('itis_tsn', filterFields.itis_tsns);
+  } else if (filterFields.itis_tsn) {
+    // single
+    getObservationsQuery.where('itis_tsn', filterFields.itis_tsn);
   }
 
-  return query;
+  return getObservationsQuery;
 }
 
 /**
@@ -75,7 +91,7 @@ export function makeFindObservationsQuery(
  * @param {Knex} knex The Knex instance.
  * @param {Knex.QueryBuilder} getSurveyIdsQuery A knex query builder that returns a list of survey IDs, which will be
  * used to filter the observations.
- * @return {Knex.QueryBuilder} The base query for retrieving survey observations, filtered by survey IDs returned by
+ * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey observations, filtered by survey IDs returned by
  * the getSurveyIdsQuery.
  */
 export function getSurveyObservationsBaseQuery(
@@ -309,188 +325,4 @@ export function getSurveyObservationsBaseQuery(
       .innerJoin('w_subcounts', 'w_subcounts.survey_observation_id', 'survey_observation.survey_observation_id')
       .whereIn('survey_observation.survey_id', getSurveyIdsQuery)
   );
-
-  //   return knex
-  //     .with(
-  //       'w_survey_sample_site',
-  //       knex
-  //         .select('survey_sample_site_id', 'name as survey_sample_site_name')
-  //         .from('survey_sample_site')
-  //         .whereIn('survey_id', userSurveyIds)
-  //     )
-  //     .with(
-  //       'w_survey_sample_method',
-  //       knex
-  //         .select(
-  //           'survey_sample_method.survey_sample_site_id',
-  //           'survey_sample_method.survey_sample_method_id',
-  //           'method_lookup.name as survey_sample_method_name'
-  //         )
-  //         .from('survey_sample_method')
-  //         .innerJoin('method_lookup', 'survey_sample_method.method_lookup_id', 'method_lookup.method_lookup_id')
-  //         .innerJoin(
-  //           'w_survey_sample_site',
-  //           'survey_sample_method.survey_sample_site_id',
-  //           'w_survey_sample_site.survey_sample_site_id'
-  //         )
-  //     )
-  //     .with(
-  //       'w_survey_sample_period',
-  //       knex
-  //         .select(
-  //           'w_survey_sample_method.survey_sample_site_id',
-  //           'survey_sample_period.survey_sample_method_id',
-  //           'survey_sample_period.survey_sample_period_id',
-  //           knex.raw(
-  //             `(survey_sample_period.start_date::date + COALESCE(survey_sample_period.start_time, '00:00:00')::time)::timestamp as survey_sample_period_start_datetime`
-  //           )
-  //         )
-  //         .from('survey_sample_period')
-  //         .innerJoin(
-  //           'w_survey_sample_method',
-  //           'survey_sample_period.survey_sample_method_id',
-  //           'w_survey_sample_method.survey_sample_method_id'
-  //         )
-  //     )
-  //     .with(
-  //       'w_qualitative_measurements',
-  //       knex
-  //         .select(
-  //           'observation_subcount_id',
-  //           knex.raw(`
-  //           json_agg(json_build_object(
-  //             'critterbase_taxon_measurement_id', critterbase_taxon_measurement_id,
-  //             'critterbase_measurement_qualitative_option_id', critterbase_measurement_qualitative_option_id
-  //           )) as qualitative_measurements
-  //         `)
-  //         )
-  //         .from('observation_subcount_qualitative_measurement')
-  //         .groupBy('observation_subcount_id')
-  //     )
-  //     .with(
-  //       'w_quantitative_measurements',
-  //       knex
-  //         .select(
-  //           'observation_subcount_id',
-  //           knex.raw(`
-  //           json_agg(json_build_object(
-  //             'critterbase_taxon_measurement_id', critterbase_taxon_measurement_id,
-  //             'value', value
-  //           )) as quantitative_measurements
-  //         `)
-  //         )
-  //         .from('observation_subcount_quantitative_measurement')
-  //         .groupBy('observation_subcount_id')
-  //     )
-  //     .with(
-  //       'w_qualitative_environments',
-  //       knex
-  //         .select(
-  //           'observation_subcount_id',
-  //           knex.raw(`
-  //           json_agg(json_build_object(
-  //             'observation_subcount_qualitative_environment_id', observation_subcount_qualitative_environment_id,
-  //             'environment_qualitative_id', environment_qualitative_id,
-  //             'environment_qualitative_option_id', environment_qualitative_option_id
-  //           )) as qualitative_environments
-  //         `)
-  //         )
-  //         .from('observation_subcount_qualitative_environment')
-  //         .groupBy('observation_subcount_id')
-  //     )
-  //     .with(
-  //       'w_quantitative_environments',
-  //       knex
-  //         .select(
-  //           'observation_subcount_id',
-  //           knex.raw(`
-  //           json_agg(json_build_object(
-  //             'observation_subcount_quantitative_environment_id', observation_subcount_quantitative_environment_id,
-  //             'environment_quantitative_id', environment_quantitative_id,
-  //             'value', value
-  //           )) as quantitative_environments
-  //         `)
-  //         )
-  //         .from('observation_subcount_quantitative_environment')
-  //         .groupBy('observation_subcount_id')
-  //     )
-  //     .with(
-  //       'w_subcounts',
-  //       knex
-  //         .select(
-  //           'survey_observation_id',
-  //           knex.raw(`
-  //           json_agg(json_build_object(
-  //             'observation_subcount_id', observation_subcount.observation_subcount_id,
-  //             'subcount', subcount,
-  //             'qualitative_measurements', COALESCE(w_qualitative_measurements.qualitative_measurements, '[]'::json),
-  //             'quantitative_measurements', COALESCE(w_quantitative_measurements.quantitative_measurements, '[]'::json),
-  //             'qualitative_environments', COALESCE(w_qualitative_environments.qualitative_environments, '[]'::json),
-  //             'quantitative_environments', COALESCE(w_quantitative_environments.quantitative_environments, '[]'::json)
-  //           )) as subcounts
-  //         `)
-  //         )
-  //         .from('observation_subcount')
-  //         .leftJoin(
-  //           'w_qualitative_measurements',
-  //           'observation_subcount.observation_subcount_id',
-  //           'w_qualitative_measurements.observation_subcount_id'
-  //         )
-  //         .leftJoin(
-  //           'w_quantitative_measurements',
-  //           'observation_subcount.observation_subcount_id',
-  //           'w_quantitative_measurements.observation_subcount_id'
-  //         )
-  //         .leftJoin(
-  //           'w_qualitative_environments',
-  //           'observation_subcount.observation_subcount_id',
-  //           'w_qualitative_environments.observation_subcount_id'
-  //         )
-  //         .leftJoin(
-  //           'w_quantitative_environments',
-  //           'observation_subcount.observation_subcount_id',
-  //           'w_quantitative_environments.observation_subcount_id'
-  //         )
-  //         .whereIn(
-  //           'survey_observation_id',
-  //           knex('survey_observation').select('survey_observation_id').whereIn('survey_id', userSurveyIds)
-  //         )
-  //         .groupBy('survey_observation_id')
-  //     )
-  //     .select(
-  //       'survey_observation.survey_observation_id',
-  //       'survey_observation.survey_id',
-  //       'survey_observation.itis_tsn',
-  //       'survey_observation.itis_scientific_name',
-  //       'survey_observation.survey_sample_site_id',
-  //       'survey_observation.survey_sample_method_id',
-  //       'survey_observation.survey_sample_period_id',
-  //       'survey_observation.latitude',
-  //       'survey_observation.longitude',
-  //       'survey_observation.count',
-  //       'survey_observation.observation_date',
-  //       'survey_observation.observation_time',
-  //       'w_survey_sample_site.survey_sample_site_name',
-  //       'w_survey_sample_method.survey_sample_method_name',
-  //       'w_survey_sample_period.survey_sample_period_start_datetime',
-  //       knex.raw(`COALESCE(w_subcounts.subcounts, '[]'::json) as subcounts`)
-  //     )
-  //     .from('survey_observation')
-  //     .leftJoin(
-  //       'w_survey_sample_site',
-  //       'survey_observation.survey_sample_site_id',
-  //       'w_survey_sample_site.survey_sample_site_id'
-  //     )
-  //     .leftJoin(
-  //       'w_survey_sample_method',
-  //       'survey_observation.survey_sample_method_id',
-  //       'w_survey_sample_method.survey_sample_method_id'
-  //     )
-  //     .leftJoin(
-  //       'w_survey_sample_period',
-  //       'survey_observation.survey_sample_period_id',
-  //       'w_survey_sample_period.survey_sample_period_id'
-  //     )
-  //     .innerJoin('w_subcounts', 'w_subcounts.survey_observation_id', 'survey_observation.survey_observation_id')
-  //     .whereIn('survey_observation.survey_id', userSurveyIds);
 }

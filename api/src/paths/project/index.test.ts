@@ -8,7 +8,7 @@ import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import * as authorization from '../../request-handlers/security/authorization';
 import { COMPLETION_STATUS, ProjectService } from '../../services/project-service';
-import { getMockDBConnection } from '../../__mocks__/db';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as index from './index';
 
 chai.use(sinonChai);
@@ -23,37 +23,13 @@ describe('index', () => {
   });
 
   describe('findProjects', () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const sampleReq = {
-      keycloak_token: {},
-      system_user: {
-        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
-      }
-    } as any;
-
-    sampleReq.query = {
-      page: '1',
-      limit: '10'
-    };
-
-    let actualResult: any = null;
-
-    const sampleRes = {
-      status: () => {
-        return {
-          json: (result: any) => {
-            actualResult = result;
-          }
-        };
-      }
-    };
-
     afterEach(() => {
       sinon.restore();
     });
 
     it('returns an empty array if no project ids are found', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
       sinon.stub(db, 'getDBConnection').returns({
         ...dbConnectionObj,
         systemUserId: () => {
@@ -64,11 +40,22 @@ describe('index', () => {
       sinon.stub(ProjectService.prototype, 'findProjects').resolves([]);
       sinon.stub(ProjectService.prototype, 'findProjectsCount').resolves(0);
 
-      const result = index.getProjects();
+      const requestHandler = index.findProjects();
 
-      await result(sampleReq, sampleRes as any, null as unknown as any);
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      expect(actualResult).to.eql({
+      mockReq['keycloak_token'] = {};
+      mockReq['system_user'] = {
+        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+      };
+      mockReq.query = {
+        page: '1',
+        limit: '10'
+      };
+
+      await requestHandler(mockReq, mockRes, mockNext);
+
+      expect(mockRes.jsonValue).to.eql({
         pagination: {
           current_page: 1,
           last_page: 1,
@@ -82,6 +69,8 @@ describe('index', () => {
     });
 
     it('returns an array of projects', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
       sinon.stub(db, 'getDBConnection').returns({
         ...dbConnectionObj,
         systemUserId: () => {
@@ -105,18 +94,29 @@ describe('index', () => {
       ]);
       sinon.stub(ProjectService.prototype, 'findProjectsCount').resolves(1);
 
-      const result = index.getProjects();
+      const requestHandler = index.findProjects();
 
-      await result(sampleReq, sampleRes as unknown as any, null as unknown as any);
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      expect(actualResult).to.eql({
+      mockReq['keycloak_token'] = {};
+      mockReq['system_user'] = {
+        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+      };
+      mockReq.query = {
+        page: '1',
+        limit: '10'
+      };
+
+      await requestHandler(mockReq, mockRes, mockNext);
+
+      expect(mockRes.jsonValue).to.eql({
         pagination: {
+          total: 1,
+          per_page: 10,
           current_page: 1,
           last_page: 1,
-          total: 1,
           sort: undefined,
-          order: undefined,
-          per_page: 10
+          order: undefined
         },
         projects: [
           {
@@ -124,6 +124,8 @@ describe('index', () => {
             name: 'myproject',
             project_programs: [1],
             start_date: '2022-02-02',
+            focal_species: [1],
+            types: [1],
             end_date: null,
             regions: [],
             completion_status: COMPLETION_STATUS.COMPLETED
@@ -141,9 +143,20 @@ describe('index', () => {
       sinon.stub(ProjectService.prototype, 'findProjects').rejects(new Error('a test error'));
 
       try {
-        const requestHandler = index.getProjects();
+        const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-        await requestHandler(sampleReq, sampleRes as any, null as unknown as any);
+        mockReq['keycloak_token'] = {};
+        mockReq['system_user'] = {
+          role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+        };
+        mockReq.query = {
+          page: '1',
+          limit: '10'
+        };
+
+        const requestHandler = index.findProjects();
+
+        await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
       } catch (actualError) {
         expect(dbConnectionObj.release).to.have.been.called;

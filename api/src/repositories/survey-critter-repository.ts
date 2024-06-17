@@ -39,27 +39,30 @@ export class SurveyCritterRepository extends BaseRepository {
   }
 
   /**
-   * Get critter Ids that a user has access to
+   * Retrieves all critters that are available to the user.
    *
-   * @param {number} isUserAdmin
-   * @param {number} systemUserId
-   * @returns {*}
-   * @member SurveyRepository
+   * Note: SIMS does not store critter information, beyond an ID. Critter details must be fetched from the external
+   * CritterBase API.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @return {*}  {Promise<SurveyCritterRecord[]>}
+   * @memberof SurveyCritterRepository
    */
-  async getCrittersByUserId(isUserAdmin: boolean, systemUserId: number): Promise<SurveyCritterRecord[]> {
+  async findCritters(isUserAdmin: boolean, systemUserId: number | null): Promise<SurveyCritterRecord[]> {
     defaultLog.debug({ label: 'getCrittersInSurvey', systemUserId });
 
-    const queryBuilder = getKnex().select('*').from('critter as c');
+    const queryBuilder = getKnex().select(['critter_id', 'survey_id', 'critterbase_critter_id']).from('critter');
 
     if (!isUserAdmin) {
       queryBuilder
-        .leftJoin('survey as s', 's.survey_id', 'c.survey_id')
-        .leftJoin('project as p', 'p.project_id', 's.project_id')
-        .leftJoin('project_participation as pp', 'pp.project_id', 'p.project_id')
-        .where('pp.system_user_id', systemUserId);
+        .leftJoin('survey', 'survey.survey_id', 'critter.survey_id')
+        .leftJoin('project', 'project.project_id', 'survey.project_id')
+        .leftJoin('project_participation', 'project_participation.project_id', 'project.project_id')
+        .where('project_participation.system_user_id', systemUserId);
     }
 
-    const response = await this.connection.knex(queryBuilder);
+    const response = await this.connection.knex(queryBuilder, SurveyCritterRecord);
 
     return response.rows;
   }

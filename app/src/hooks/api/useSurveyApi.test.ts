@@ -14,7 +14,7 @@ import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
 
 describe('useSurveyApi', () => {
-  let mock: any;
+  let mock: MockAdapter;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);

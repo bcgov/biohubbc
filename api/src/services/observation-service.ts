@@ -121,12 +121,14 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Gets paginated list of Observations that the user has access to
+   * Retrieves the paginated list of all observations that are available to the user, based on their permissions and
+   * provided filter criteria.
    *
-   * @param {(number | null)} systemUserId
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {IObservationAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @returns {*} {Promise<{id: number}[]>}
+   * @return {*}  {Promise<ObservationRecordWithSamplingAndSubcountData[]>}
    * @memberof ObservationService
    */
   async findObservations(
@@ -135,31 +137,7 @@ export class ObservationService extends DBService {
     filterFields: IObservationAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<ObservationRecordWithSamplingAndSubcountData[]> {
-    const surveyObservations = await this.observationRepository.findObservations(
-      isUserAdmin,
-      systemUserId,
-      filterFields,
-      pagination
-    );
-
-    return surveyObservations;
-
-    // // Get supplementary observation data
-    // const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
-    // const subCountService = new SubCountService(this.connection);
-    // const measurementTypeDefinitions = await subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId);
-    // const environmentTypeDefinitions = await subCountService.getEnvironmentTypeDefinitionsForSurvey(surveyId);
-
-    // return {
-    //   surveyObservations: surveyObservations,
-    //   supplementaryObservationData: {
-    //     observationCount,
-    //     qualitative_measurements: measurementTypeDefinitions.qualitative_measurements,
-    //     quantitative_measurements: measurementTypeDefinitions.quantitative_measurements,
-    //     qualitative_environments: environmentTypeDefinitions.qualitative_environments,
-    //     quantitative_environments: environmentTypeDefinitions.quantitative_environments
-    //   }
-    // };
+    return this.observationRepository.findObservations(isUserAdmin, systemUserId, filterFields, pagination);
   }
 
   /**
@@ -378,12 +356,12 @@ export class ObservationService extends DBService {
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async findObservationCount(
+  async findObservationsCount(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IObservationAdvancedFilters
   ): Promise<number> {
-    return this.observationRepository.findObservationCount(isUserAdmin, systemUserId, filterFields);
+    return this.observationRepository.findObservationsCount(isUserAdmin, systemUserId, filterFields);
   }
 
   /**

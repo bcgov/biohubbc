@@ -75,18 +75,18 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
   ]);
 
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IObservationsAdvancedFilters>({
-    minimum_date: searchParams.get('minimum_date') ?? ObservationAdvancedFiltersInitialValues.minimum_date,
-    maximum_date: searchParams.get('maximum_date') ?? ObservationAdvancedFiltersInitialValues.maximum_date,
     keyword: searchParams.get('keyword') ?? ObservationAdvancedFiltersInitialValues.keyword,
-    minimum_count: searchParams.get('minimum_count') ?? ObservationAdvancedFiltersInitialValues.minimum_count,
-    minimum_time: searchParams.get('minimum_time') ?? ObservationAdvancedFiltersInitialValues.minimum_time,
-    maximum_time: searchParams.get('maximum_time') ?? ObservationAdvancedFiltersInitialValues.maximum_time,
-    system_user_id: searchParams.get('system_user_id')
-      ? Number(searchParams.get('system_user_id'))
-      : ObservationAdvancedFiltersInitialValues.system_user_id,
     itis_tsn: searchParams.get('itis_tsn')
       ? Number(searchParams.get('itis_tsn'))
-      : ObservationAdvancedFiltersInitialValues.itis_tsn
+      : ObservationAdvancedFiltersInitialValues.itis_tsn,
+    start_date: searchParams.get('start_date') ?? ObservationAdvancedFiltersInitialValues.start_date,
+    end_date: searchParams.get('end_date') ?? ObservationAdvancedFiltersInitialValues.end_date,
+    start_time: searchParams.get('start_time') ?? ObservationAdvancedFiltersInitialValues.start_time,
+    end_time: searchParams.get('end_time') ?? ObservationAdvancedFiltersInitialValues.end_time,
+    min_count: searchParams.get('min_count') ?? ObservationAdvancedFiltersInitialValues.min_count,
+    system_user_id: searchParams.get('system_user_id')
+      ? Number(searchParams.get('system_user_id'))
+      : ObservationAdvancedFiltersInitialValues.system_user_id
   });
 
   const sort = firstOrNull(sortModel);
@@ -221,12 +221,12 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
             handleSubmit={(values) => {
               setSearchParams(
                 searchParams
-                  .setOrDelete('minimum_date', values.minimum_date)
-                  .setOrDelete('maximum_date', values.maximum_date)
+                  .setOrDelete('start_date', values.start_date)
+                  .setOrDelete('end_date', values.end_date)
                   .setOrDelete('keyword', values.keyword)
-                  .setOrDelete('minimum_count', values.minimum_count)
-                  .setOrDelete('minimum_time', values.minimum_time)
-                  .setOrDelete('maximum_time', values.maximum_time)
+                  .setOrDelete('min_count', values.min_count)
+                  .setOrDelete('start_time', values.start_time)
+                  .setOrDelete('end_time', values.end_time)
                   .setOrDelete('system_user_id', values.system_user_id)
                   .setOrDelete('itis_tsn', values.itis_tsn)
               );

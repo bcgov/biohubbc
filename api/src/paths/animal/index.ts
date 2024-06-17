@@ -1,13 +1,11 @@
-import { Request, RequestHandler } from 'express';
+import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { IAnimalAdvancedFilters } from '../../models/animal-view';
 import { paginationRequestQueryParamSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { CritterbaseService, ICritter, ICritterbaseUser } from '../../services/critterbase-service';
 import { SurveyCritterService } from '../../services/survey-critter-service';
-import { setCacheControl } from '../../utils/api-utils';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/animal');
@@ -22,7 +20,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getAnimals()
+  findAnimals()
 ];
 
 GET.apiDoc = {
@@ -36,24 +34,6 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'query',
-      name: 'start_date',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'end_date',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
       name: 'keyword',
       required: false,
       schema: {
@@ -64,27 +44,96 @@ GET.apiDoc = {
     {
       in: 'query',
       name: 'itis_tsns',
+      description: 'ITIS TSN numbers',
       required: false,
       schema: {
         type: 'array',
         items: {
           type: 'integer'
-        }
+        },
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'itis_tsn',
+      description: 'ITIS TSN number',
+      required: false,
+      schema: {
+        type: 'integer',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'start_date',
+      description: 'ISO 8601 datetime string',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'end_date',
+      description: 'ISO 8601 datetime string',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
       }
     },
     ...paginationRequestQueryParamSchema
   ],
   responses: {
     200: {
-      description: 'animal response object.',
+      description: 'Animal response object.',
       content: {
         'application/json': {
           schema: {
-            title: 'Bulk creation response object',
             type: 'array',
             items: {
-              title: 'Default critter response',
-              type: 'object'
+              type: 'object',
+              required: [
+                'survey_critter_id',
+                'critter_id',
+                'wlh_id',
+                'animal_id',
+                'sex',
+                'itis_tsn',
+                'itis_scientific_name',
+                'critter_comment'
+              ],
+              additionalProperties: false,
+              properties: {
+                survey_critter_id: {
+                  type: 'number',
+                  minimum: 1
+                },
+                critter_id: {
+                  type: 'string',
+                  format: 'uuid'
+                },
+                wlh_id: {
+                  type: 'string'
+                },
+                animal_id: {
+                  type: 'string'
+                },
+                sex: {
+                  type: 'string'
+                },
+                itis_tsn: {
+                  type: 'number'
+                },
+                itis_scientific_name: {
+                  type: 'string'
+                },
+                critter_comment: {
+                  type: 'string'
+                }
+              }
             }
           }
         }
@@ -113,9 +162,9 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getAnimals(): RequestHandler {
+export function findAnimals(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getAnimals' });
+    defaultLog.debug({ label: 'findAnimals' });
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -134,12 +183,14 @@ export function getAnimals(): RequestHandler {
         username: req['system_user']?.user_identifier
       };
 
-      const filterFields = parseQueryParams(req);
+      // TODO: Implement advanced filters for critters - may require changes in the CritterBase API
+      //   const filterFields = parseQueryParams(req);
 
-      // Find all critters that user has access to
+      //   const paginationOptions = makePaginationOptionsFromRequest(req);
+
       const surveyService = new SurveyCritterService(connection);
 
-      const surveyCritters = await surveyService.getCrittersByUserId(isUserAdmin, systemUserId);
+      const surveyCritters = await surveyService.findCritters(isUserAdmin, systemUserId);
 
       await connection.commit();
 
@@ -158,11 +209,12 @@ export function getAnimals(): RequestHandler {
         )?.critter_id
       }));
 
-      setCacheControl(res, 30);
+      // Allow browsers to cache this response for 30 seconds
+      res.setHeader('Cache-Control', 'private, max-age=30');
 
       return res.status(200).json(crittersWithCritterSurveyId);
     } catch (error) {
-      defaultLog.error({ label: 'getAnimals', message: 'error', error });
+      defaultLog.error({ label: 'findAnimals', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -170,8 +222,18 @@ export function getAnimals(): RequestHandler {
   };
 }
 
-function parseQueryParams(req: Request): IAnimalAdvancedFilters {
-  return {
-    itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined
-  };
-}
+/**
+ * Parse the query parameters from the request into the expected format.
+ *
+ * @param {Request<unknown, unknown, unknown, IAnimalAdvancedFilters>} req
+ * @return {*}  {IAnimalAdvancedFilters}
+ */
+// function parseQueryParams(req: Request<unknown, unknown, unknown, IAnimalAdvancedFilters>): IAnimalAdvancedFilters {
+//   return {
+//     keyword: req.query.keyword ?? undefined,
+//     itis_tsns: req.query.itis_tsns ?? undefined,
+//     itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
+//     start_date: req.query.start_date ?? undefined,
+//     end_date: req.query.end_date ?? undefined
+//   };
+// }

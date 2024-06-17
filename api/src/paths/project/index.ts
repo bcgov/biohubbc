@@ -6,7 +6,6 @@ import { IProjectAdvancedFilters } from '../../models/project-view';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
-import { setCacheControl } from '../../utils/api-utils';
 import { getLogger } from '../../utils/logger';
 import {
   ensureCompletePaginationOptions,
@@ -49,16 +48,8 @@ GET.apiDoc = {
     },
     {
       in: 'query',
-      name: 'itis_tsn',
-      required: false,
-      schema: {
-        type: 'integer',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
       name: 'itis_tsns',
+      description: 'ITIS TSN numbers',
       required: false,
       schema: {
         type: 'array',
@@ -70,7 +61,18 @@ GET.apiDoc = {
     },
     {
       in: 'query',
+      name: 'itis_tsn',
+      description: 'ITIS TSN number',
+      required: false,
+      schema: {
+        type: 'integer',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
       name: 'start_date',
+      description: 'ISO 8601 datetime string',
       required: false,
       schema: {
         type: 'string',
@@ -80,6 +82,7 @@ GET.apiDoc = {
     {
       in: 'query',
       name: 'end_date',
+      description: 'ISO 8601 datetime string',
       required: false,
       schema: {
         type: 'string',
@@ -102,7 +105,8 @@ GET.apiDoc = {
       schema: {
         type: 'array',
         items: {
-          type: 'integer'
+          type: 'integer',
+          minimum: 1
         },
         nullable: true
       }
@@ -113,6 +117,7 @@ GET.apiDoc = {
       required: false,
       schema: {
         type: 'number',
+        minimum: 1,
         nullable: true
       }
     },
@@ -154,12 +159,12 @@ GET.apiDoc = {
                     },
                     start_date: {
                       type: 'string',
-                      description: 'ISO 8601 date string',
+                      description: 'ISO 8601 datetime string',
                       nullable: true
                     },
                     end_date: {
                       type: 'string',
-                      description: 'ISO 8601 date string',
+                      description: 'ISO 8601 datetime string',
                       nullable: true
                     },
                     regions: {
@@ -265,7 +270,7 @@ export function findProjects(): RequestHandler {
       };
 
       // Allow browsers to cache this response for 30 seconds
-      setCacheControl(res, 30);
+      res.setHeader('Cache-Control', 'private, max-age=30');
 
       return res.status(200).json(response);
     } catch (error) {

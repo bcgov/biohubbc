@@ -77,6 +77,7 @@ export class TypedURLSearchParams<
     }
 
     if (typeof value !== 'string') {
+      // Note: the value will need to be parsed `qs.parse(value)` after being fetched via this classes `get(key)`
       super.set(key, qs.stringify(value));
       return this;
     }

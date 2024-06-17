@@ -15,13 +15,16 @@ const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
   user: {
-    getUserById: jest.fn<Promise<ISystemUser>, []>()
+    deleteSystemUser: jest.fn<Promise<number>, []>(),
+    getUserById: jest.fn<Promise<ISystemUser>, []>(),
+    getProjectList: jest.fn<Promise<IGetUserProjectsListResponse>, []>()
   },
   codes: {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
   },
-  project: {
-    getProjectList: jest.fn<Promise<IGetUserProjectsListResponse>, []>()
+  projectParticipants: {
+    updateProjectParticipantRole: jest.fn<Promise<boolean>, []>(),
+    removeProjectParticipant: jest.fn<Promise<boolean>, []>()
   }
 };
 
@@ -63,7 +66,7 @@ describe('UsersDetailPage', () => {
       agency: ''
     });
 
-    mockUseApi.project.getProjectList.mockResolvedValue({
+    mockUseApi.user.getProjectList.mockResolvedValue({
       project_participation_id: 3,
       project_id: 321,
       project_name: 'test',

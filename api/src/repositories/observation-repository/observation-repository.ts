@@ -16,7 +16,6 @@ import {
   ObservationSubCountQuantitativeMeasurementRecord
 } from '../observation-subcount-measurement-repository';
 import { ObservationSubCountRecord } from '../subcount-repository';
-import { applyPagination } from '../utils/pagination';
 import { getSurveyObservationsBaseQuery, makeFindObservationsQuery } from './utils';
 
 const defaultLog = getLogger('repositories/observation-repository');
@@ -186,9 +185,16 @@ export class ObservationRepository extends BaseRepository {
     filterFields: IObservationAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<ObservationRecordWithSamplingAndSubcountData[]> {
+    console.log(filterFields);
     const query = makeFindObservationsQuery(isUserAdmin, systemUserId, filterFields);
 
-    applyPagination(query, pagination);
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
 
     const response = await this.connection.knex(query, ObservationRecordWithSamplingAndSubcountData);
 
@@ -210,16 +216,20 @@ export class ObservationRepository extends BaseRepository {
   ): Promise<ObservationRecordWithSamplingAndSubcountData[]> {
     const knex = getKnex();
 
-    const baseQuery = getSurveyObservationsBaseQuery(
+    const query = getSurveyObservationsBaseQuery(
       knex,
       knex.select<any, { survey_id: number }>('survey_id').from('survey').where('survey_id', surveyId)
     );
 
     if (pagination) {
-      applyPagination(baseQuery, pagination);
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
     }
 
-    const response = await this.connection.knex(baseQuery);
+    const response = await this.connection.knex(query);
 
     return response.rows;
   }
@@ -691,7 +701,7 @@ export class ObservationRepository extends BaseRepository {
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async findObservationCount(
+  async findObservationsCount(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IObservationAdvancedFilters
@@ -706,7 +716,7 @@ export class ObservationRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get survey count', [
-        'SurveyRepository->findSurveysCount',
+        'findObservationsCount->findObservationsCount',
         'rows was null or undefined, expected rows != null'
       ]);
     }

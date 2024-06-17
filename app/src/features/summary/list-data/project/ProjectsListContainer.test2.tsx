@@ -1,5 +1,6 @@
 import { AuthStateContext } from 'contexts/authStateContext';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
+import { TaxonomyContext } from 'contexts/taxonomyContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
@@ -11,11 +12,11 @@ import ProjectsListContainer from './ProjectsListContainer';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
+jest.mock('../../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
-  user: {
+  project: {
     findProjects: jest.fn()
   },
   codes: {
@@ -26,7 +27,7 @@ const mockUseApi = {
 describe('ProjectsListContainer', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
-    mockUseApi.user.findProjects.mockClear();
+    mockUseApi.project.findProjects.mockClear();
   });
 
   afterEach(() => {
@@ -34,7 +35,7 @@ describe('ProjectsListContainer', () => {
   });
 
   it('renders with the create project button', async () => {
-    mockUseApi.user.findProjects.mockResolvedValue({
+    mockUseApi.project.findProjects.mockResolvedValue({
       projects: [],
       pagination: {
         current_page: 1,
@@ -55,12 +56,19 @@ describe('ProjectsListContainer', () => {
       projectId: 1
     } as unknown as ICodesContext;
 
+    const mockTaxonomyContext = {
+      cacheSpeciesTaxonomyByIds: jest.fn(),
+      getCachedSpeciesTaxonomyById: jest.fn()
+    };
+
     const { getByText } = render(
       <AuthStateContext.Provider value={authState}>
         <CodesContext.Provider value={mockCodesContext}>
-          <MemoryRouter>
-            <ProjectsListContainer showSearch={true} />
-          </MemoryRouter>
+          <TaxonomyContext.Provider value={mockTaxonomyContext}>
+            <MemoryRouter>
+              <ProjectsListContainer showSearch={true} />
+            </MemoryRouter>
+          </TaxonomyContext.Provider>
         </CodesContext.Provider>
       </AuthStateContext.Provider>
     );
@@ -71,7 +79,7 @@ describe('ProjectsListContainer', () => {
   });
 
   it('renders with the open advanced filters button', async () => {
-    mockUseApi.user.findProjects.mockResolvedValue({
+    mockUseApi.project.findProjects.mockResolvedValue({
       projects: [],
       pagination: {
         current_page: 1,
@@ -92,12 +100,19 @@ describe('ProjectsListContainer', () => {
       projectId: 1
     } as unknown as ICodesContext;
 
+    const mockTaxonomyContext = {
+      cacheSpeciesTaxonomyByIds: jest.fn(),
+      getCachedSpeciesTaxonomyById: jest.fn()
+    };
+
     const { getByText } = render(
       <AuthStateContext.Provider value={authState}>
         <CodesContext.Provider value={mockCodesContext}>
-          <MemoryRouter>
-            <ProjectsListContainer showSearch={true} />
-          </MemoryRouter>
+          <TaxonomyContext.Provider value={mockTaxonomyContext}>
+            <MemoryRouter>
+              <ProjectsListContainer showSearch={true} />
+            </MemoryRouter>
+          </TaxonomyContext.Provider>
         </CodesContext.Provider>
       </AuthStateContext.Provider>
     );
@@ -108,7 +123,7 @@ describe('ProjectsListContainer', () => {
   });
 
   it('navigating to the project works', async () => {
-    mockUseApi.user.findProjects.mockResolvedValue({
+    mockUseApi.project.findProjects.mockResolvedValue({
       projects: [
         {
           project_id: 1,
@@ -139,12 +154,19 @@ describe('ProjectsListContainer', () => {
       projectId: 1
     } as unknown as ICodesContext;
 
+    const mockTaxonomyContext = {
+      cacheSpeciesTaxonomyByIds: jest.fn(),
+      getCachedSpeciesTaxonomyById: jest.fn()
+    };
+
     const { findByText } = render(
       <AuthStateContext.Provider value={authState}>
         <CodesContext.Provider value={mockCodesContext}>
-          <Router history={history}>
-            <ProjectsListContainer showSearch={true} />
-          </Router>
+          <TaxonomyContext.Provider value={mockTaxonomyContext}>
+            <Router history={history}>
+              <ProjectsListContainer showSearch={true} />
+            </Router>
+          </TaxonomyContext.Provider>
         </CodesContext.Provider>
       </AuthStateContext.Provider>
     );

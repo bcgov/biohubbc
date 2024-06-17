@@ -31,7 +31,7 @@ export class ProjectRepository extends BaseRepository {
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {IProjectAdvancedFilters} filterFields
-   * @return {*}  Promise<Knex.QueryBuilder>
+   * @return {*}  {Knex.QueryBuilder}
    * @memberof ProjectRepository
    */
   _makeFindProjectsQuery(
@@ -70,13 +70,16 @@ export class ProjectRepository extends BaseRepository {
       });
     }
 
-    if (filterFields.system_user_id) {
-      query.whereIn('p.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', filterFields.system_user_id);
-      });
+    // Ensure that only administrators can filter surveys by other users.
+    if (isUserAdmin) {
+      if (filterFields.system_user_id) {
+        query.whereIn('p.project_id', (subQueryBuilder) => {
+          subQueryBuilder
+            .select('project_id')
+            .from('project_participation')
+            .where('system_user_id', filterFields.system_user_id);
+        });
+      }
     }
 
     // Start Date filter

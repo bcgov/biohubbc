@@ -10,6 +10,7 @@ export interface IProjectAdvancedFilters {
   end_date?: string;
   project_name?: string;
   project_programs?: number[];
+  // Filter by other users (admin only)
   system_user_id?: number;
 }
 

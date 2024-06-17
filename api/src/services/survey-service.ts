@@ -331,6 +331,26 @@ export class SurveyService extends DBService {
   }
 
   /**
+   * Retrieves the paginated list of all surveys that are available to the user, based on their permissions and provided
+   * filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof SurveyRepository
+   */
+  async findSurveys(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<SurveyListData[]> {
+    return this.surveyRepository.findSurveys(isUserAdmin, systemUserId, filterFields, pagination);
+  }
+
+  /**
    * Retrieves the count of all surveys that are available to the user, based on their permissions and provided filter
    * criteria.
    *
@@ -1170,25 +1190,5 @@ export class SurveyService extends DBService {
    */
   async deleteSurvey(surveyId: number): Promise<void> {
     return this.surveyRepository.deleteSurvey(surveyId);
-  }
-
-  /**
-   * Retrieves the paginated list of all surveys that are available to the user, based on their permissions and provided
-   * filter criteria.
-   *
-   * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId The system user id of the user making the request
-   * @param {ISurveyAdvancedFilters} filterFields
-   * @param {ApiPaginationOptions} [pagination]
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof SurveyRepository
-   */
-  async findSurveys(
-    isUserAdmin: boolean,
-    systemUserId: number | null,
-    filterFields: ISurveyAdvancedFilters,
-    pagination?: ApiPaginationOptions
-  ): Promise<SurveyListData[]> {
-    return this.surveyRepository.findSurveys(isUserAdmin, systemUserId, filterFields, pagination);
   }
 }

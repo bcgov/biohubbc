@@ -77,7 +77,7 @@ describe('SurveyDetails', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Survey')).toBeInTheDocument();
+      expect(getByText('Survey Details')).toBeInTheDocument();
     });
   });
 });

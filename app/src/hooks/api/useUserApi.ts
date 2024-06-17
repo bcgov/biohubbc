@@ -73,7 +73,7 @@ const useUserApi = (axios: AxiosInstance) => {
    * Get projects for a system user id.
    *
    * @param {number} systemUserId
-   * @return {*} {Promise<IFindProjectsResponse[]>}
+   * @return {*} {Promise<IGetUserProjectsListResponse[]>}
    */
   const getProjectList = async (systemUserId: number): Promise<IGetUserProjectsListResponse[]> => {
     const { data } = await axios.get(`/api/user/${systemUserId}/projects/get`);

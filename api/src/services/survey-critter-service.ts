@@ -29,13 +29,18 @@ export class SurveyCritterService extends DBService {
   }
 
   /**
-   * Get all critters that a user has access to. This only gets you critter ids, which can be used to fetch details from the external system.
+   * Retrieves all critters that are available to the user, based on their permissions.
+   *
+   * Note: SIMS does not store critter information, beyond an ID. Critter details must be fetched from the external
+   * CritterBase API.
+   *
    * @param {boolean} isUserAdmin
-   * @param {number} systemUserId
-   * @returns {*}
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @return {*}  {Promise<SurveyCritterRecord[]>}
+   * @memberof SurveyCritterService
    */
-  async getCrittersByUserId(isUserAdmin: boolean, systemUserId: number): Promise<SurveyCritterRecord[]> {
-    return this.critterRepository.getCrittersByUserId(isUserAdmin, systemUserId);
+  async findCritters(isUserAdmin: boolean, systemUserId: number | null): Promise<SurveyCritterRecord[]> {
+    return this.critterRepository.findCritters(isUserAdmin, systemUserId);
   }
 
   /**

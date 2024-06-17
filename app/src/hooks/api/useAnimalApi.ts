@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { IAnimalsAdvancedFilters } from 'features/summary/tabular-data/animal/AnimalsListFilterForm';
-import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
+import { IFindAnimalsResponse } from 'interfaces/useAnimalApi.interface';
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
@@ -19,12 +19,12 @@ const useAnimalApi = (axios: AxiosInstance) => {
    *
    * @param {ApiPaginationRequestOptions} [pagination]
    * @param {IAnimalsAdvancedFilters} filterFieldData
-   * @return {*} {Promise<IFindProjectsResponse[]>}
+   * @return {*}  {Promise<IFindAnimalsResponse>}
    */
   const findAnimals = async (
     pagination?: ApiPaginationRequestOptions,
     filterFieldData?: IAnimalsAdvancedFilters
-  ): Promise<ICritterDetailedResponse[]> => {
+  ): Promise<IFindAnimalsResponse> => {
     const params = {
       ...pagination,
       ...filterFieldData

@@ -86,7 +86,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
     itis_tsn: searchParams.get('itis_tsn')
       ? Number(searchParams.get('itis_tsn'))
       : SurveyAdvancedFiltersInitialValues.itis_tsn,
-    person: searchParams.get('person') ?? SurveyAdvancedFiltersInitialValues.person
+    system_user_id: searchParams.get('system_user_id') ?? SurveyAdvancedFiltersInitialValues.system_user_id
   });
 
   const sort = firstOrNull(sortModel);
@@ -226,7 +226,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
                 searchParams
                   .setOrDelete('keyword', values.keyword)
                   .setOrDelete('itis_tsn', values.itis_tsn)
-                  .setOrDelete('person', values.person)
+                  .setOrDelete('system_user_id', values.system_user_id)
               );
               setAdvancedFiltersModel(values);
             }}

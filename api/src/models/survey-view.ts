@@ -16,6 +16,7 @@ export interface ISurveyAdvancedFilters {
   start_date?: string;
   end_date?: string;
   survey_name?: string;
+  // Filter by other users (admin only)
   system_user_id?: number;
 }
 

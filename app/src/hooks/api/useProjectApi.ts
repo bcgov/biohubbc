@@ -49,27 +49,6 @@ const useProjectApi = (axios: AxiosInstance) => {
     pagination?: ApiPaginationRequestOptions,
     filterFieldData?: IProjectAdvancedFilters
   ): Promise<IFindProjectsResponse> => {
-    // const params = new URLSearchParams();
-
-    // if (pagination) {
-    //   params.append('page', String(pagination.page));
-    //   params.append('limit', String(pagination.limit));
-    //   if (pagination.sort) {
-    //     params.append('sort', pagination.sort);
-    //   }
-    //   if (pagination.order) {
-    //     params.append('order', pagination.order);
-    //   }
-    // }
-
-    // if (filterFieldData) {
-    //   Object.entries(filterFieldData).forEach(([key, value]) => {
-    //     if (value) {
-    //       params.append(key, value);
-    //     }
-    //   });
-    // }
-
     const params = {
       ...pagination,
       ...filterFieldData

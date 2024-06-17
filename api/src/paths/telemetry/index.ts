@@ -1,14 +1,12 @@
-import { Request, RequestHandler } from 'express';
+import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { ITelemetryAdvancedFilters } from '../../models/telemetry-view';
 import { paginationRequestQueryParamSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { BctwService } from '../../services/bctw-service';
 import { CritterbaseService, ICritter, ICritterbaseUser } from '../../services/critterbase-service';
 import { SurveyCritterService } from '../../services/survey-critter-service';
-import { setCacheControl } from '../../utils/api-utils';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/telemetry');
@@ -23,7 +21,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getTelemetry()
+  findTelemetry()
 ];
 
 GET.apiDoc = {
@@ -37,7 +35,7 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'query',
-      name: 'start_date',
+      name: 'keyword',
       required: false,
       schema: {
         type: 'string',
@@ -46,16 +44,8 @@ GET.apiDoc = {
     },
     {
       in: 'query',
-      name: 'end_date',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'project_programs',
+      name: 'itis_tsns',
+      description: 'ITIS TSN numbers',
       required: false,
       schema: {
         type: 'array',
@@ -67,7 +57,18 @@ GET.apiDoc = {
     },
     {
       in: 'query',
-      name: 'keyword',
+      name: 'itis_tsn',
+      description: 'ITIS TSN number',
+      required: false,
+      schema: {
+        type: 'integer',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'start_date',
+      description: 'ISO 8601 datetime string',
       required: false,
       schema: {
         type: 'string',
@@ -76,22 +77,12 @@ GET.apiDoc = {
     },
     {
       in: 'query',
-      name: 'project_name',
+      name: 'end_date',
+      description: 'ISO 8601 datetime string',
       required: false,
       schema: {
         type: 'string',
         nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'itis_tsns',
-      required: false,
-      schema: {
-        type: 'array',
-        items: {
-          type: 'integer'
-        }
       }
     },
     ...paginationRequestQueryParamSchema
@@ -181,9 +172,9 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getTelemetry(): RequestHandler {
+export function findTelemetry(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getTelemetry' });
+    defaultLog.debug({ label: 'findTelemetry' });
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -202,14 +193,15 @@ export function getTelemetry(): RequestHandler {
         username: req['system_user']?.user_identifier
       };
 
-      const filterFields = parseQueryParams(req);
+      // TODO: Implement advanced filters for telemetry - may require changes in the CritterBase API and BCTW API
+      //   const filterFields = parseQueryParams(req);
 
       const surveyCritterService = new SurveyCritterService(connection);
       const bctwService = new BctwService(user);
       const critterbaseService = new CritterbaseService(user);
 
       // Find all critters that the user has access to
-      const surveyCritters = await surveyCritterService.getCrittersByUserId(isUserAdmin, systemUserId);
+      const surveyCritters = await surveyCritterService.findCritters(isUserAdmin, systemUserId);
 
       await connection.commit();
 
@@ -260,11 +252,12 @@ export function getTelemetry(): RequestHandler {
         })
       ];
 
-      setCacheControl(res, 30);
+      // Allow browsers to cache this response for 30 seconds
+      res.setHeader('Cache-Control', 'private, max-age=30');
 
       return res.status(200).json({ telemetry: telemetry });
     } catch (error) {
-      defaultLog.error({ label: 'getTelemetry', message: 'error', error });
+      defaultLog.error({ label: 'findTelemetry', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -272,8 +265,19 @@ export function getTelemetry(): RequestHandler {
   };
 }
 
-function parseQueryParams(req: Request): ITelemetryAdvancedFilters {
-  return {
-    itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined
-  };
-}
+/**
+ * Parse the query parameters from the request into the expected format.
+ *
+ * @param {Request<unknown, unknown, unknown, ITelemetryAdvancedFilters>} req
+ * @return {*}  {ITelemetryAdvancedFilters}
+ */
+// function parseQueryParams(
+//   req: Request<unknown, unknown, unknown, ITelemetryAdvancedFilters>
+// ): ITelemetryAdvancedFilters {
+//   return {
+//     keyword: req.query.keyword ?? undefined,
+//     itis_tsns: req.query.itis_tsns ?? undefined,
+//     itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
+//     system_user_id: req.query.system_user_id ?? undefined
+//   };
+// }

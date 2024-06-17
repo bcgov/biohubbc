@@ -4,13 +4,13 @@ import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
-import { ICreateProjectRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import { ICreateProjectRequest, IFindProjectsResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { ISurveyPermitForm } from '../../features/surveys/SurveyPermitForm';
 import useProjectApi from './useProjectApi';
 
 describe('useProjectApi', () => {
-  let mock: any;
+  let mock: MockAdapter;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
@@ -54,6 +54,36 @@ describe('useProjectApi', () => {
         size: 3028
       }
     ]);
+  });
+
+  it('findProjects works as expected', async () => {
+    const mockResponse: IFindProjectsResponse = {
+      projects: [
+        {
+          project_id: 1,
+          name: 'name',
+          start_date: 'start_date',
+          end_date: undefined,
+          completion_status: 'status',
+          regions: [],
+          project_programs: [1, 2, 3],
+          focal_species: [123, 456],
+          types: [1, 2, 3]
+        }
+      ],
+      pagination: {
+        total: 100,
+        current_page: 2,
+        last_page: 4,
+        per_page: 25
+      }
+    };
+
+    mock.onGet('/api/project', { params: { limit: 25, page: 2, keyword: 'moose' } }).reply(200, mockResponse);
+
+    const result = await useProjectApi(axios).findProjects({ limit: 25, page: 2 }, { keyword: 'moose' });
+
+    expect(result).toEqual(mockResponse);
   });
 
   it('deleteProject works as expected', async () => {

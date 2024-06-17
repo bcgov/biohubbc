@@ -5,25 +5,25 @@ import { FilterFieldsContainer } from 'features/summary/components/FilterFieldsC
 import { Formik } from 'formik';
 
 export type IObservationsAdvancedFilters = {
-  minimum_date?: string;
-  maximum_date?: string;
   keyword?: string;
-  minimum_count?: string;
-  minimum_time?: string;
-  maximum_time?: string;
-  system_user_id?: number;
   itis_tsn?: number;
+  start_date?: string;
+  end_date?: string;
+  start_time?: string;
+  end_time?: string;
+  min_count?: string;
+  system_user_id?: number;
 };
 
 export const ObservationAdvancedFiltersInitialValues: IObservationsAdvancedFilters = {
-  minimum_date: undefined,
-  maximum_date: undefined,
   keyword: undefined,
-  minimum_count: undefined,
-  minimum_time: undefined,
-  maximum_time: undefined,
-  system_user_id: undefined,
-  itis_tsn: undefined
+  itis_tsn: undefined,
+  start_date: undefined,
+  end_date: undefined,
+  start_time: undefined,
+  end_time: undefined,
+  min_count: undefined,
+  system_user_id: undefined
 };
 
 export interface IObservationsListFilterFormProps {
@@ -47,21 +47,21 @@ export const ObservationsListFilterForm = (props: IObservationsListFilterFormPro
           fields={[
             <CustomTextField name="keyword" label="Keyword" other={{ placeholder: 'Search by keyword' }} />,
             <SpeciesAutocompleteField
-              formikFieldName={'itis_tsns'}
+              formikFieldName={'itis_tsn'}
               label={'Species'}
               placeholder="Search by taxon"
               handleSpecies={(value) => {
                 if (value?.tsn) {
-                  formikProps.setFieldValue('itis_tsns', value.tsn);
+                  formikProps.setFieldValue('itis_tsn', value.tsn);
                 }
               }}
               handleClear={() => {
-                formikProps.setFieldValue('itis_tsns', undefined);
+                formikProps.setFieldValue('itis_tsn', undefined);
               }}
             />,
 
-            <SingleDateField name={'minimum_date'} label={'Observed after'} />,
-            <SingleDateField name={'maximum_date'} label={'Observed before'} />
+            <SingleDateField name={'start_date'} label={'Observed after'} />,
+            <SingleDateField name={'end_date'} label={'Observed before'} />
           ]}
         />
       )}
