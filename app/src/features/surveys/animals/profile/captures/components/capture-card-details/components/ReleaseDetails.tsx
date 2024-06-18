@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ICaptureWithSupplementaryData } from 'features/surveys/animals/profile/captures/AnimalCaptureContainer';
+import { combineDateTime } from 'utils/datetime';
 import { getFormattedDate } from 'utils/Utils';
 
 interface IReleaseDetailsProps {
@@ -18,28 +19,29 @@ interface IReleaseDetailsProps {
 export const ReleaseDetails = (props: IReleaseDetailsProps) => {
   const { capture } = props;
 
-  const releaseTimestamp = capture.release_timestamp;
+  const releaseDate = capture.release_date;
+  const releaseTime = capture.release_time;
   const releaseLocation = capture.release_location;
   const releaseComment = capture.release_comment;
 
-  if (!releaseTimestamp && !releaseLocation && !releaseComment) {
+  if (!releaseDate && !releaseLocation && !releaseComment) {
     return null;
   }
 
   return (
     <Stack gap={2}>
       <Stack direction="row" spacing={3}>
-        {releaseTimestamp && (
+        {releaseDate && (
           <Box>
             <Typography
               color="textSecondary"
               fontWeight={700}
               fontSize="0.75rem"
               sx={{ textTransform: 'uppercase', mb: 0.5 }}>
-              Release time
+              Release date
             </Typography>
             <Typography color="textSecondary" variant="body2">
-              {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, releaseTimestamp)}
+              {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, combineDateTime(releaseDate, releaseTime))}
             </Typography>
           </Box>
         )}
