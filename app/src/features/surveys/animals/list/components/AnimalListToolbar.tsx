@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiPlus } from '@mdi/js';
+import { mdiDotsVertical, mdiFileDocumentPlusOutline, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
@@ -41,14 +41,20 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
         color="primary"
         component={RouterLink}
         to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/create`}
-        startIcon={<Icon path={mdiPlus} size={1} />}>
+        startIcon={<Icon path={mdiPlus} size={1} />}
+        sx={{ mr: 0.2, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}>
         Add
       </Button>
+      <Button
+        variant="contained"
+        color="primary"
+        component={RouterLink}
+        to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/create`}
+        startIcon={<Icon path={mdiFileDocumentPlusOutline} size={1} />}
+        sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, '& .MuiButton-startIcon': { mx: 0 } }}></Button>
       <IconButton
         edge="end"
-        sx={{
-          ml: 1
-        }}
+        sx={{ ml: 1 }}
         aria-label="header-settings"
         disabled={!props.checkboxSelectedIdsLength}
         onClick={props.handleHeaderMenuClick}
