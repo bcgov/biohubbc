@@ -1,12 +1,14 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { IAnimalAdvancedFilters } from '../../models/animal-view';
 import { paginationRequestQueryParamSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { CritterbaseService, ICritter, ICritterbaseUser } from '../../services/critterbase-service';
 import { SurveyCritterService } from '../../services/survey-critter-service';
 import { getLogger } from '../../utils/logger';
+import { ensureCompletePaginationOptions, makePaginationOptionsFromRequest } from '../../utils/pagination';
 
 const defaultLog = getLogger('paths/animal');
 
@@ -81,6 +83,16 @@ GET.apiDoc = {
       required: false,
       schema: {
         type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'system_user_id',
+      required: false,
+      schema: {
+        type: 'number',
+        minimum: 1,
         nullable: true
       }
     },
@@ -183,21 +195,25 @@ export function findAnimals(): RequestHandler {
         username: req['system_user']?.user_identifier
       };
 
-      // TODO: Implement advanced filters for critters - may require changes in the CritterBase API
-      //   const filterFields = parseQueryParams(req);
+      const filterFields = parseQueryParams(req);
 
-      //   const paginationOptions = makePaginationOptionsFromRequest(req);
+      const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const surveyService = new SurveyCritterService(connection);
 
-      const surveyCritters = await surveyService.findCritters(isUserAdmin, systemUserId);
+      const surveyCritters = await surveyService.findCritters(
+        isUserAdmin,
+        systemUserId,
+        filterFields,
+        ensureCompletePaginationOptions(paginationOptions)
+      );
 
       await connection.commit();
 
       // Request all critters from critterbase
       const critterbaseService = new CritterbaseService(user);
 
-      // TODO: SHOULD BE DETAILED CRITTER, NOT CRITTER
+      // TODO: Should be detailed critter, not critter
       const critters: ICritter[] = await critterbaseService.getMultipleCrittersByIdsDetailed(
         surveyCritters.map((critter) => critter.critterbase_critter_id)
       );
@@ -229,12 +245,13 @@ export function findAnimals(): RequestHandler {
  * @param {Request<unknown, unknown, unknown, IAnimalAdvancedFilters>} req
  * @return {*}  {IAnimalAdvancedFilters}
  */
-// function parseQueryParams(req: Request<unknown, unknown, unknown, IAnimalAdvancedFilters>): IAnimalAdvancedFilters {
-//   return {
-//     keyword: req.query.keyword ?? undefined,
-//     itis_tsns: req.query.itis_tsns ?? undefined,
-//     itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
-//     start_date: req.query.start_date ?? undefined,
-//     end_date: req.query.end_date ?? undefined
-//   };
-// }
+function parseQueryParams(req: Request<unknown, unknown, unknown, IAnimalAdvancedFilters>): IAnimalAdvancedFilters {
+  return {
+    keyword: req.query.keyword ?? undefined,
+    itis_tsns: req.query.itis_tsns ?? undefined,
+    itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
+    start_date: req.query.start_date ?? undefined,
+    end_date: req.query.end_date ?? undefined,
+    system_user_id: req.query.system_user_id ?? undefined
+  };
+}

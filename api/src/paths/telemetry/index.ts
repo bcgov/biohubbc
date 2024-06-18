@@ -85,6 +85,16 @@ GET.apiDoc = {
         nullable: true
       }
     },
+    {
+      in: 'query',
+      name: 'system_user_id',
+      required: false,
+      schema: {
+        type: 'number',
+        minimum: 1,
+        nullable: true
+      }
+    },
     ...paginationRequestQueryParamSchema
   ],
   responses: {
@@ -294,6 +304,8 @@ function parseQueryParams(
     keyword: req.query.keyword ?? undefined,
     itis_tsns: req.query.itis_tsns ?? undefined,
     itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
+    start_date: req.query.start_date ?? undefined,
+    end_date: req.query.end_date ?? undefined,
     system_user_id: req.query.system_user_id ?? undefined
   };
 }
