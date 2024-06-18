@@ -1,4 +1,4 @@
-import { mdiClose } from '@mdi/js';
+import { mdiAccountEdit, mdiClose, mdiCrown } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
@@ -69,6 +69,18 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
               {roles.map((item) => (
                 <MenuItem key={item.id} value={item.name}>
                   {item.name}
+                  {item.name == 'Coordinator' && (
+                    <>
+                      &nbsp;
+                      <Icon path={mdiCrown} size={0.75} color={grey[600]} />
+                    </>
+                  )}
+                  {item.name == 'Collaborator' && (
+                    <>
+                      &nbsp;
+                      <Icon path={mdiAccountEdit} size={0.75} color={grey[600]} />
+                    </>
+                  )}
                 </MenuItem>
               ))}
             </Select>

@@ -1012,6 +1012,96 @@ describe('ProjectParticipationService', () => {
     });
   });
 
+  describe('doProjectParticipantsHaveOneRole', () => {
+    it('should return true if one project user has one specified role', () => {
+      const projectUsers: PostParticipantData[] = [
+        {
+          project_participation_id: 23,
+          system_user_id: 22,
+          project_role_names: [PROJECT_ROLE.COLLABORATOR]
+        }
+      ];
+
+      const dbConnection = getMockDBConnection();
+      const service = new ProjectParticipationService(dbConnection);
+
+      const result = service.doProjectParticipantsHaveOneRole(projectUsers);
+
+      expect(result).to.be.true;
+    });
+
+    it('should return true if multiple project users have one specified role', () => {
+      const projectUsers: PostParticipantData[] = [
+        {
+          project_participation_id: 12,
+          system_user_id: 11,
+          project_role_names: [PROJECT_ROLE.COLLABORATOR]
+        },
+        {
+          project_participation_id: 23,
+          system_user_id: 22,
+          project_role_names: [PROJECT_ROLE.OBSERVER]
+        }
+      ];
+
+      const dbConnection = getMockDBConnection();
+      const service = new ProjectParticipationService(dbConnection);
+
+      const result = service.doProjectParticipantsHaveOneRole(projectUsers);
+
+      expect(result).to.be.true;
+    });
+
+    it('should return false if a participant has multiple specified role', () => {
+      const projectUsers: PostParticipantData[] = [
+        {
+          project_participation_id: 12,
+          system_user_id: 11,
+          project_role_names: [PROJECT_ROLE.COORDINATOR]
+        },
+        {
+          project_participation_id: 23,
+          system_user_id: 22,
+          project_role_names: [PROJECT_ROLE.OBSERVER]
+        },
+        {
+          project_participation_id: 23,
+          system_user_id: 22,
+          project_role_names: [PROJECT_ROLE.COLLABORATOR]
+        }
+      ];
+
+      const dbConnection = getMockDBConnection();
+      const service = new ProjectParticipationService(dbConnection);
+
+      const result = service.doProjectParticipantsHaveOneRole(projectUsers);
+
+      expect(result).to.be.false;
+    });
+
+    it('should return false if a participant has multiple specified roles in the same record', () => {
+      const projectUsers: PostParticipantData[] = [
+        {
+          project_participation_id: 12,
+          system_user_id: 11,
+          project_role_names: [PROJECT_ROLE.COORDINATOR]
+        },
+        {
+          project_participation_id: 23,
+          system_user_id: 22,
+          project_role_names: [PROJECT_ROLE.OBSERVER, PROJECT_ROLE.COLLABORATOR]
+        }
+      ];
+
+      const dbConnection = getMockDBConnection();
+      const service = new ProjectParticipationService(dbConnection);
+
+      const result = service.doProjectParticipantsHaveOneRole(projectUsers);
+
+      expect(result).to.be.false;
+    });
+  });
+
   describe('upsertProjectParticipantData', () => {
     it('throws an error if at least one user does not have the coordinator role', async () => {
       const dbConnection = getMockDBConnection();
@@ -1059,6 +1149,10 @@ describe('ProjectParticipationService', () => {
           project_role_names: [PROJECT_ROLE.COORDINATOR] // Existing user to be updated
         },
         {
+          system_user_id: 33,
+          project_role_names: [PROJECT_ROLE.COLLABORATOR] // Existing user to be unaffected
+        },
+        {
           system_user_id: 44,
           project_role_names: [PROJECT_ROLE.OBSERVER] // New user
         }
@@ -1072,6 +1166,25 @@ describe('ProjectParticipationService', () => {
             project_id: 1,
             system_user_id: 11,
             project_role_ids: [1],
+            project_role_names: [PROJECT_ROLE.COLLABORATOR],
+            project_role_permissions: ['Permission1'],
+            agency: null,
+            display_name: 'test user 1',
+            email: 'email@email.com',
+            family_name: 'lname',
+            given_name: 'fname',
+            identity_source: SYSTEM_IDENTITY_SOURCE.IDIR,
+            record_end_date: null,
+            role_ids: [2],
+            role_names: [SYSTEM_ROLE.PROJECT_CREATOR],
+            user_guid: '123-456-789-1',
+            user_identifier: 'testuser1'
+          },
+          {
+            project_participation_id: 6, // Existing user to be unaffected
+            project_id: 1,
+            system_user_id: 33,
+            project_role_ids: [2],
             project_role_names: [PROJECT_ROLE.COLLABORATOR],
             project_role_permissions: ['Permission1'],
             agency: null,
@@ -1121,6 +1234,8 @@ describe('ProjectParticipationService', () => {
       expect(getProjectParticipantsStub).to.have.been.calledOnceWith(projectId);
       expect(deleteProjectParticipationRecordStub).to.have.been.calledWith(1, 23);
       expect(updateProjectParticipationRoleStub).to.have.been.calledOnceWith(12, PROJECT_ROLE.COORDINATOR);
+      expect(updateProjectParticipationRoleStub).to.not.have.been.calledWith(6, PROJECT_ROLE.COLLABORATOR);
+      expect(postProjectParticipantStub).to.not.have.been.calledWith(projectId, 6, PROJECT_ROLE.COLLABORATOR);
       expect(postProjectParticipantStub).to.have.been.calledOnceWith(projectId, 44, PROJECT_ROLE.OBSERVER);
     });
   });
