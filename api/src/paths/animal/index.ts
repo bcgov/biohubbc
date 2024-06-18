@@ -215,6 +215,7 @@ export function findAnimals(): RequestHandler {
       return res.status(200).json(crittersWithCritterSurveyId);
     } catch (error) {
       defaultLog.error({ label: 'findAnimals', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

@@ -275,6 +275,7 @@ export function findProjects(): RequestHandler {
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'findProjects', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

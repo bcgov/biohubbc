@@ -260,6 +260,7 @@ export function findSurveys(): RequestHandler {
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'findSurveys', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

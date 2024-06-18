@@ -176,7 +176,7 @@ export class TelemetryService extends DBService {
   ): Promise<any[]> {
     // Find all critters that the user has access to
     const surveyCritterService = new SurveyCritterService(this.connection);
-    const surveyCritters = await surveyCritterService.findCritters(isUserAdmin, systemUserId);
+    const surveyCritters = await surveyCritterService.findCritters(isUserAdmin, systemUserId, pagination);
 
     // Exit early if there are no critters, and therefore no telemetry
     if (!surveyCritters.length) {

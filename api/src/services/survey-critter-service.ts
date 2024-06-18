@@ -1,5 +1,6 @@
 import { IDBConnection } from '../database/db';
 import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
 
 /**
@@ -36,11 +37,16 @@ export class SurveyCritterService extends DBService {
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SurveyCritterRecord[]>}
    * @memberof SurveyCritterService
    */
-  async findCritters(isUserAdmin: boolean, systemUserId: number | null): Promise<SurveyCritterRecord[]> {
-    return this.critterRepository.findCritters(isUserAdmin, systemUserId);
+  async findCritters(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    pagination?: ApiPaginationOptions
+  ): Promise<SurveyCritterRecord[]> {
+    return this.critterRepository.findCritters(isUserAdmin, systemUserId, pagination);
   }
 
   /**

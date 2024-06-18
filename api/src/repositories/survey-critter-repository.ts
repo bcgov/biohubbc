@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { getKnex } from '../database/db';
+import { ITelemetryAdvancedFilters } from '../models/telemetry-view';
 import { getLogger } from '../utils/logger';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
 const defaultLog = getLogger('repositories/survey-repository');
@@ -39,30 +41,57 @@ export class SurveyCritterRepository extends BaseRepository {
   }
 
   /**
-   * Retrieves all critters that are available to the user.
+   * Retrieves all critters that are available to the user based on the user's permissions and search criteria.
    *
    * Note: SIMS does not store critter information, beyond an ID. Critter details must be fetched from the external
    * CritterBase API.
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ITelemetryAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SurveyCritterRecord[]>}
    * @memberof SurveyCritterRepository
    */
-  async findCritters(isUserAdmin: boolean, systemUserId: number | null): Promise<SurveyCritterRecord[]> {
+  async findCritters(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ITelemetryAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<SurveyCritterRecord[]> {
     defaultLog.debug({ label: 'getCrittersInSurvey', systemUserId });
 
-    const queryBuilder = getKnex().select(['critter_id', 'survey_id', 'critterbase_critter_id']).from('critter');
+    const query = getKnex().select(['critter_id', 'survey_id', 'critterbase_critter_id']).from('critter');
 
     if (!isUserAdmin) {
-      queryBuilder
+      query
         .leftJoin('survey', 'survey.survey_id', 'critter.survey_id')
         .leftJoin('project', 'project.project_id', 'survey.project_id')
         .leftJoin('project_participation', 'project_participation.project_id', 'project.project_id')
         .where('project_participation.system_user_id', systemUserId);
     }
 
-    const response = await this.connection.knex(queryBuilder, SurveyCritterRecord);
+    // Ensure that only administrators can filter surveys by other users.
+    if (isUserAdmin) {
+      if (filterFields.system_user_id) {
+        query.whereIn('p.project_id', (subQueryBuilder) => {
+          subQueryBuilder
+            .select('project_id')
+            .from('project_participation')
+            .where('system_user_id', filterFields.system_user_id);
+        });
+      }
+    }
+
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(query, SurveyCritterRecord);
 
     return response.rows;
   }
