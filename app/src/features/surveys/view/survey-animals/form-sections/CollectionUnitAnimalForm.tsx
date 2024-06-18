@@ -4,7 +4,7 @@ import CbSelectField from 'components/fields/CbSelectField';
 import { Field, FieldProps } from 'formik';
 import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
-import { ICollectionUnitResponse } from 'interfaces/useCritterApi.interface';
+import { ICritterCollectionUnitResponse } from 'interfaces/useCritterApi.interface';
 import { get } from 'lodash-es';
 import { useState } from 'react';
 import {
@@ -18,11 +18,11 @@ import {
 /**
  * This component renders a 'critter collection unit' create / edit dialog.
  *
- * @param {AnimalFormProps<ICollectionUnitResponse>} props - Generic AnimalFormProps.
+ * @param {AnimalFormProps<ICritterCollectionUnitResponse>} props - Generic AnimalFormProps.
  * @returns {*}
  */
-export const CollectionUnitAnimalForm = (props: AnimalFormProps<ICollectionUnitResponse>) => {
-  const cbApi = useCritterbaseApi();
+export const CollectionUnitAnimalForm = (props: AnimalFormProps<ICritterCollectionUnitResponse>) => {
+  const critterbaseApi = useCritterbaseApi();
   const dialog = useDialogContext();
   //Animals may have multiple collection units, but only one instance of each category.
   //We use this and pass to the select component to ensure categories already used in the form can't be selected again.
@@ -39,11 +39,11 @@ export const CollectionUnitAnimalForm = (props: AnimalFormProps<ICollectionUnitR
     setLoading(true);
     try {
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-        await cbApi.collectionUnit.createCollectionUnit(values);
+        await critterbaseApi.collectionUnit.createCritterCollectionUnit(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created ecological unit.` });
       }
       if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-        await cbApi.collectionUnit.updateCollectionUnit(values);
+        await critterbaseApi.collectionUnit.updateCritterCollectionUnit(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited ecological unit.` });
       }
     } catch (err) {

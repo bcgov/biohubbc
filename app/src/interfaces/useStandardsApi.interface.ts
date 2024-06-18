@@ -1,7 +1,7 @@
 import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition,
-  ICollectionUnitResponse
+  ICollectionUnit
 } from './useCritterApi.interface';
 
 /**
@@ -22,5 +22,5 @@ export interface IGetSpeciesStandardsResponse {
     key: string;
     value: string;
   }[];
-  ecological_units: ICollectionUnitResponse[];
+  ecological_units: ICollectionUnit[];
 }
