@@ -2,7 +2,6 @@ import { DATE_LIMIT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
 import {
   ICritterDetailedResponse,
-  ICritterSimpleResponse,
   IQualitativeMeasurementCreate,
   IQualitativeMeasurementUpdate,
   IQuantitativeMeasurementCreate,
@@ -237,10 +236,10 @@ export type ICreateCritterFamily = InferType<typeof CreateCritterFamilySchema>;
 export type ICreateCritterMortality = InferType<typeof CreateCritterMortalitySchema>;
 
 /**
- * Adding data to a critter in bulk
+ * Adding data to a critters in bulk
  */
 export type IBulkCreate = {
-  critter?: ICritterSimpleResponse;
+  critters?: ICreateCritter[];
   qualitative_measurements?: IQualitativeMeasurementCreate[];
   quantitative_measurements?: IQuantitativeMeasurementCreate[];
   captures?: ICreateCritterCapture[];
@@ -250,14 +249,14 @@ export type IBulkCreate = {
 };
 
 /**
- * Editing data for a critter in bulk
+ * Editing data for a critters in bulk
  */
 export type IBulkUpdate = {
-  critter?: ICritterSimpleResponse;
+  critters?: ICreateCritter[];
   qualitative_measurements?: IQualitativeMeasurementUpdate[];
   quantitative_measurements?: IQuantitativeMeasurementUpdate[];
   captures?: ICreateCritterCapture[];
-  mortality?: ICreateCritterMortality;
+  mortalities?: ICreateCritterMortality[];
   markings?: ICreateCritterMarking[];
   collections?: ICreateCritterCollectionUnit[];
 };
