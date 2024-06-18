@@ -8,9 +8,27 @@ import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import SpeciesCard from './SpeciesCard';
 
 interface ISpeciesSelectedCardProps {
-  index: number;
+  /**
+   * The species to display.
+   *
+   * @type {ITaxonomy}
+   * @memberof ISpeciesSelectedCardProps
+   */
   species: ITaxonomy;
-  handleRemove: (tsn: number) => void;
+  /**
+   * Callback to remove a species from the selected species list.
+   * If not provided, the remove button will not be displayed.
+   *
+   * @memberof ISpeciesSelectedCardProps
+   */
+  handleRemove?: (tsn: number) => void;
+  /**
+   * The index of the component in the list.
+   *
+   * @type {number}
+   * @memberof ISpeciesSelectedCardProps
+   */
+  index: number;
 }
 
 const SpeciesSelectedCard = (props: ISpeciesSelectedCardProps) => {
@@ -28,17 +46,19 @@ const SpeciesSelectedCard = (props: ISpeciesSelectedCardProps) => {
             kingdom={species.kingdom}
           />
         </Box>
-        <Box flex="0 0 auto">
-          <IconButton
-            data-testid={`remove-species-button-${index}`}
-            sx={{
-              ml: 2
-            }}
-            aria-label="remove species"
-            onClick={() => handleRemove(species.tsn)}>
-            <Icon path={mdiClose} size={1}></Icon>
-          </IconButton>
-        </Box>
+        {handleRemove && (
+          <Box flex="0 0 auto">
+            <IconButton
+              data-testid={`remove-species-button-${index}`}
+              sx={{
+                ml: 2
+              }}
+              aria-label="remove species"
+              onClick={() => handleRemove(species.tsn)}>
+              <Icon path={mdiClose} size={1}></Icon>
+            </IconButton>
+          </Box>
+        )}
       </Box>
     </Paper>
   );
