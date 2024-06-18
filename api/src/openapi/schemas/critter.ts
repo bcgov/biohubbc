@@ -72,6 +72,10 @@ const captureSchema: OpenAPIV3.SchemaObject = {
       type: 'string',
       format: 'uuid'
     },
+    capture_method_id: {
+      type: 'string',
+      format: 'uuid'
+    },
     capture_location_id: {
       type: 'string',
       format: 'uuid'
@@ -82,13 +86,16 @@ const captureSchema: OpenAPIV3.SchemaObject = {
     },
     capture_location: locationSchema,
     release_location: locationSchema,
-    force_create_release: {
-      type: 'boolean'
-    },
-    capture_timestamp: {
+    capture_date: {
       type: 'string'
     },
-    release_timestamp: {
+    capture_time: {
+      type: 'string'
+    },
+    release_date: {
+      type: 'string'
+    },
+    release_time: {
       type: 'string'
     },
     capture_comment: {
