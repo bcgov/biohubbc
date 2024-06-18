@@ -414,7 +414,7 @@ export class ProjectParticipationService extends DBService {
           );
         }
       } else if (!existingParticipant) {
-        // Insert new participant if the system_user_id does not exist
+        // Insert new participant if the user does not already exist in the project, otherwise triggers database constraint error
         promises.push(
           this.projectParticipationRepository.postProjectParticipant(
             projectId,
