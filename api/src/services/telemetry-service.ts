@@ -1,6 +1,7 @@
 import { default as dayjs } from 'dayjs';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
+import { ITelemetryAdvancedFilters } from '../models/telemetry-view';
 import { TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { parseS3File } from '../utils/media/media-utils';
@@ -11,8 +12,9 @@ import {
   IXLSXCSVValidator,
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BctwService, ICreateManualTelemetry } from './bctw-service';
-import { ICritterbaseUser } from './critterbase-service';
+import { CritterbaseService, ICritter, ICritterbaseUser } from './critterbase-service';
 import { DBService } from './db-service';
 import { SurveyCritterService } from './survey-critter-service';
 
@@ -153,5 +155,92 @@ export class TelemetryService extends DBService {
 
   async getTelemetrySubmissionById(submissionId: number): Promise<TelemetrySubmissionRecord> {
     return this.repository.getTelemetrySubmissionById(submissionId);
+  }
+
+  /**
+   * Retrieves the paginated list of all telemetry records that are available to the user, based on their permissions
+   * and provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ITelemetryAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<any[]>}
+   * @memberof TelemetryService
+   */
+  async findTelemetry(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ITelemetryAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<any[]> {
+    // Find all critters that the user has access to
+    const surveyCritterService = new SurveyCritterService(this.connection);
+    const surveyCritters = await surveyCritterService.findCritters(isUserAdmin, systemUserId);
+
+    // Exit early if there are no critters, and therefore no telemetry
+    if (!surveyCritters.length) {
+      return [];
+    }
+
+    const user: ICritterbaseUser = {
+      keycloak_guid: this.connection.systemUserGUID(),
+      username: this.connection.systemUserIdentifier()
+    };
+
+    // Get critter records from Critterbase
+    const critterbaseService = new CritterbaseService(user);
+    const critters: ICritter[] = await critterbaseService.getMultipleCrittersByIdsDetailed(
+      surveyCritters.map((critter) => critter.critterbase_critter_id)
+    );
+
+    const critterIds = surveyCritters.flatMap((critter) => critter.critterbase_critter_id);
+
+    // Get deployments for critters from BCTW
+    const bctwService = new BctwService(user);
+    const results = await bctwService.getDeploymentsByCritterId(critterIds);
+
+    // Combine deployments with critter information
+    const deployments = results.flatMap((result) => ({
+      deployment_id: result.deployment_id,
+      device_id: result.device_id,
+      animal: critters.find((critter) => result.critter_id === critter.critter_id)
+    }));
+
+    const deploymentIds = deployments.map((deployment) => deployment.deployment_id);
+
+    // Get telemetry for deployments
+    const [vendorTelemetry, manualTelemetry] = await Promise.all([
+      bctwService.getVendorTelemetryByDeploymentIds(deploymentIds),
+      bctwService.getManualTelemetryByDeploymentIds(deploymentIds)
+    ]);
+
+    console.log('11----------------------------------------');
+    console.log(vendorTelemetry);
+    console.log('22----------------------------------------');
+    console.log(manualTelemetry);
+    console.log('33----------------------------------------');
+
+    // Combine telemetry with critter information
+    const telemetry = [
+      ...vendorTelemetry.map((telemetry) => {
+        const deployment = deployments.find((deployment) => deployment.animal);
+        return {
+          ...telemetry,
+          device_id: deployment?.device_id,
+          animal: deployment?.animal
+        };
+      }),
+      ...manualTelemetry.map((telemetry) => {
+        const deployment = deployments.find((deployment) => deployment.animal);
+        return {
+          ...telemetry,
+          device_id: deployment?.device_id,
+          animal: deployment?.animal
+        };
+      })
+    ];
+
+    return telemetry;
   }
 }
