@@ -19,6 +19,7 @@ import { ISurveyCritter } from 'contexts/animalPageContext';
 import { useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { combineDateTime } from 'utils/datetime';
 import { getFormattedDate } from 'utils/Utils';
 import { ICaptureWithSupplementaryData } from '../AnimalCaptureContainer';
 import { AnimalCaptureCardDetailsContainer } from './capture-card-details/AnimalCaptureCardDetailsContainer';
@@ -159,7 +160,10 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
                   }}>
                   <Stack gap={0.5} display="flex">
                     <Typography fontWeight={700}>
-                      {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, capture.capture_date)}
+                      {getFormattedDate(
+                        DATE_FORMAT.MediumDateTimeFormat,
+                        combineDateTime(capture.capture_date, capture.capture_time)
+                      )}
                       &nbsp;
                     </Typography>
                     {capture.capture_location.latitude && capture.capture_location.longitude && (

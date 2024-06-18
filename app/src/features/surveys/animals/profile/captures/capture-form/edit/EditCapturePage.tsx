@@ -135,7 +135,7 @@ export const EditCapturePage = () => {
             capture_date: values.capture.capture_date,
             capture_time: values.capture.capture_time || undefined,
             release_date: values.capture.release_date || values.capture.capture_date || undefined,
-            release_time: values.capture.release_time || values.capture.release_date || undefined,
+            release_time: values.capture.release_time || values.capture.capture_time || undefined,
             capture_comment: values.capture.capture_comment || undefined,
             release_comment: values.capture.release_comment || undefined,
             capture_location: captureLocation,
