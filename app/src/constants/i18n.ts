@@ -270,7 +270,11 @@ export const SurveyAnimalsI18N = {
   wlhIdHelp: 'An ID used to identify animals in the BC Wildlife Health Program',
   sexHelp: 'The sex of this critter. Leave as Unknown if unsure.',
   telemetryDeviceHelp:
-    'Devices transmit telemetry data while they are attached to an animal during a deployment. Animals may have multiple devices and deployments, however a single device may not have overlapping deployments.'
+    'Devices transmit telemetry data while they are attached to an animal during a deployment. Animals may have multiple devices and deployments, however a single device may not have overlapping deployments.',
+
+  importRecordsSuccessSnackbarMessage: 'Animals imported successfully.',
+  importRecordsErrorDialogTitle: 'Error Importing Animal Records',
+  importRecordsErrorDialogText: 'An error occurred while importing animal records.'
 } as const;
 
 export const FundingSourceI18N = {

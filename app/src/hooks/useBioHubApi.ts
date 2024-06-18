@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import useAdminApi from './api/useAdminApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
+import { useCsvApi } from './api/useCsvApi';
 import useExternalApi from './api/useExternalApi';
 import useFundingSourceApi from './api/useFundingSourceApi';
 import useObservationApi from './api/useObservationApi';
@@ -60,6 +61,8 @@ export const useBiohubApi = () => {
 
   const reference = useReferenceApi(apiAxios);
 
+  const csv = useCsvApi(apiAxios);
+
   return useMemo(
     () => ({
       project,
@@ -77,7 +80,8 @@ export const useBiohubApi = () => {
       funding,
       samplingSite,
       standards,
-      reference
+      reference,
+      csv
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
