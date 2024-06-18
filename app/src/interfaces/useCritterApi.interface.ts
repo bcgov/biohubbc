@@ -2,6 +2,16 @@ import { ICreateCritterCollectionUnit } from 'features/surveys/view/survey-anima
 import { Feature } from 'geojson';
 import { ITaxonomy } from './useTaxonomyApi.interface';
 
+export interface ICritterCreate {
+  critter_id?: string;
+  wlh_id?: string | null;
+  animal_id?: string | null;
+  sex: string;
+  itis_tsn: number;
+  responsible_region_nr_id?: string | null;
+  critter_comment?: string | null;
+}
+
 export interface ICreateEditAnimalRequest {
   critter_id?: string;
   nickname: string;
@@ -31,12 +41,11 @@ export interface IMarkingPostData {
 
 export interface ICapturePostData {
   capture_id: string;
-  capture_timestamp: string;
-  capture_date?: string;
-  capture_time?: string;
-  release_timestamp: string;
-  release_date?: string;
-  release_time?: string;
+  capture_method_id: string | null;
+  capture_date: string;
+  capture_time?: string | null;
+  release_date?: string | null;
+  release_time?: string | null;
   capture_comment: string | null;
   release_comment: string | null;
   capture_location: Feature | null;
@@ -139,8 +148,11 @@ type ILocationResponse = {
 
 export type ICaptureResponse = {
   capture_id: string;
-  capture_timestamp: string;
-  release_timestamp: string | null;
+  capture_date: string;
+  capture_method_id: string | null;
+  capture_time: string | null;
+  release_date: string | null;
+  release_time: string | null;
   capture_comment: string | null;
   release_comment: string | null;
   capture_location: ILocationResponse;
@@ -187,6 +199,10 @@ export type IQuantitativeMeasurementCreate = {
   value: number;
   measurement_comment?: string | null;
   measured_timestamp?: string | null;
+};
+
+export type ICritterUpdate = ICritterCreate & {
+  critter_id: string;
 };
 
 export type IQualitativeMeasurementUpdate = IQualitativeMeasurementCreate & {

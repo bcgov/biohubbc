@@ -389,7 +389,7 @@ export const AnimalSection = (props: IAnimalSectionProps) => {
           {props.critter.captures.map((capture) => (
             <Collapse key={capture.capture_id}>
               <EditDeleteStubCard
-                header={formatDate(new Date(capture.capture_timestamp))}
+                header={formatDate(new Date(capture.capture_date))}
                 subHeader={formatSubHeader({
                   Latitude: capture.capture_location?.latitude,
                   Longitude: capture.capture_location?.longitude
