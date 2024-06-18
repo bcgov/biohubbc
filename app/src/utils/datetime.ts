@@ -9,5 +9,5 @@ export const combineDateTime = (date: string, time?: string | null) => {
   if (date && time) {
     return new Date(`${date}T${time}`).toISOString();
   }
-  return new Date(date).toISOString();
+  return new Date(`${date}T00:00:00`).toISOString();
 };
