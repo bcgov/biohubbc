@@ -70,7 +70,6 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
                   <Typography alignItems="center" display="flex">
                     {selected}
                     {PROJECT_ROLE_ICONS[selected] && (
-                      // Check if there is an icon defined for the selected role
                       <>
                         &nbsp;
                         <Icon path={PROJECT_ROLE_ICONS[selected]} size={0.75} color={grey[600]} />
