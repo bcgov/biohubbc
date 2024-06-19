@@ -9,6 +9,7 @@ import {
   IDeploymentTimespan,
   ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
+import { useSurveyContext } from 'hooks/useContext';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
   ICreateSurveyRequest,
@@ -30,6 +31,8 @@ import { ApiPaginationRequestOptions } from 'types/misc';
  * @return {*} object whose properties are supported api methods.
  */
 const useSurveyApi = (axios: AxiosInstance) => {
+  const { surveyId, projectId } = useSurveyContext();
+
   /**
    * Create a new project survey
    *
@@ -512,6 +515,23 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Bulk upload Critters from CSV.
+   *
+   * @async
+   * @param {File} file - Critters CSV.
+   * @returns {Promise<>}
+   */
+  const importCrittersFromCsv = async (file: File) => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/upload`, formData);
+
+    return data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,
@@ -534,7 +554,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getDeploymentsInSurvey,
     updateDeployment,
     getCritterTelemetry,
-    removeDeployment
+    removeDeployment,
+    importCrittersFromCsv
   };
 };
 

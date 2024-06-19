@@ -8,7 +8,6 @@ import FileUploadDialog from 'components/dialog/FileUploadDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
-import { Upload } from 'hooks/api/useCsvApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import { useContext, useState } from 'react';
@@ -37,7 +36,7 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
 
   const handleImportAnimals = async (file: File) => {
     try {
-      const uploadResponse = await biohubApi.csv.uploadCsvForImport(Upload.CRITTERS, file);
+      const uploadResponse = await biohubApi.survey.importCrittersFromCsv(file);
 
       console.log(uploadResponse);
     } catch (err: any) {

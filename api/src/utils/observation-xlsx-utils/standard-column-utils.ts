@@ -1,25 +1,33 @@
 import xlsx from 'xlsx';
 import { getHeadersUpperCase, IXLSXCSVValidator } from '../xlsx-utils/worksheet-utils';
 
-// Observation CSV standard column names and aliases
+// ITIS Taxon CSV standard column names and aliases
 const ITIS_TSN = 'ITIS_TSN';
 const TAXON = 'TAXON';
 const SPECIES = 'SPECIES';
 const TSN = 'TSN';
 
-const COUNT = 'COUNT';
+// Critter CSV standard column names and aliases
+const ALIAS = 'ALIAS';
+const NICKNAME = 'NICKNAME';
+const WLH_ID = 'WLH_ID';
 
+// DateTime column names
 const DATE = 'DATE';
-
 const TIME = 'TIME';
 
+// Spatial column names and aliases
 const LATITUDE = 'LATITUDE';
 const LAT = 'LAT';
-
 const LONGITUDE = 'LONGITUDE';
 const LON = 'LON';
 const LONG = 'LONG';
 const LNG = 'LNG';
+
+// Additional column names and aliases
+const COUNT = 'COUNT';
+const COMMENT = 'COMMENT';
+const DESCRIPTION = 'DESCRIPTION';
 
 /**
  * An XLSX validation config for the standard columns of an observation CSV.
@@ -31,6 +39,19 @@ export const observationStandardColumnValidator: IXLSXCSVValidator = {
     ITIS_TSN: [TAXON, SPECIES, TSN],
     LATITUDE: [LAT],
     LONGITUDE: [LON, LONG, LNG]
+  }
+};
+
+/**
+ * An XLSX validation config for the standard columns of a critter CSV.
+ */
+export const critterStandardColumnValidator: IXLSXCSVValidator = {
+  columnNames: [ITIS_TSN, ALIAS, WLH_ID, DESCRIPTION],
+  columnTypes: ['number', 'string', 'string', 'string'],
+  columnAliases: {
+    ITIS_TSN: [TAXON, SPECIES, TSN],
+    DESCRIPTION: [COMMENT],
+    ALIAS: [NICKNAME]
   }
 };
 
@@ -131,4 +152,43 @@ export function getLatitudeFromRow(row: Record<string, any>) {
  */
 export function getLongitudeFromRow(row: Record<string, any>) {
   return row[LONGITUDE] ?? row[LON] ?? row[LONG] ?? row[LNG];
+}
+
+/**
+ * Get the comment cell value for a given row.
+ *
+ * Note: Requires the row headers to be UPPERCASE.
+ *
+ * @export
+ * @param {Record<string, any>} row
+ * @return {*}
+ */
+export function getDescriptionFromRow(row: Record<string, any>) {
+  return row[DESCRIPTION] ?? row[COMMENT];
+}
+
+/**
+ * Get the alias cell value for a given row.
+ *
+ * Note: Requires the row headers to be UPPERCASE.
+ *
+ * @export
+ * @param {Record<string, any>} row
+ * @return {*}
+ */
+export function getAliasFromRow(row: Record<string, any>) {
+  return row[ALIAS];
+}
+
+/**
+ * Get the alias cell value for a given row.
+ *
+ * Note: Requires the row headers to be UPPERCASE.
+ *
+ * @export
+ * @param {Record<string, any>} row
+ * @return {*}
+ */
+export function getWlhIdFromRow(row: Record<string, any>) {
+  return row[WLH_ID];
 }
