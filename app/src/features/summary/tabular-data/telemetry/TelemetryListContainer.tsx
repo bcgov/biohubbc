@@ -88,7 +88,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
     telemetryDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
-  const telemetryRows = telemetryDataLoader.data?.telemetry ?? [];
+  const telemetryRows = telemetryDataLoader.data?.animalTelemetry ?? [];
 
   const columns: GridColDef[] = [
     {
@@ -165,7 +165,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
           columns={columns}
           // Rows
           rows={telemetryRows}
-          rowCount={telemetryDataLoader.data?.telemetry.length ?? 0}
+          rowCount={telemetryDataLoader.data?.animalTelemetry.length ?? 0}
           getRowId={(row) => row.id}
           // Pagination
           paginationMode="server"

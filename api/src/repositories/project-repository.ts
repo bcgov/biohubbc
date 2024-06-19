@@ -70,16 +70,13 @@ export class ProjectRepository extends BaseRepository {
       });
     }
 
-    // Ensure that only administrators can filter surveys by other users.
-    if (isUserAdmin) {
-      if (filterFields.system_user_id) {
-        query.whereIn('p.project_id', (subQueryBuilder) => {
-          subQueryBuilder
-            .select('project_id')
-            .from('project_participation')
-            .where('system_user_id', filterFields.system_user_id);
-        });
-      }
+    if (filterFields.system_user_id) {
+      query.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
+      });
     }
 
     // Start Date filter

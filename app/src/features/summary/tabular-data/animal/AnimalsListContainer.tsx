@@ -86,7 +86,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
     animalsDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
-  const animalRows = animalsDataLoader.data ?? [];
+  const animalRows = animalsDataLoader.data?.animals ?? [];
 
   const columns: GridColDef[] = [
     {
@@ -153,7 +153,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
           columns={columns}
           // Rows
           rows={animalRows}
-          rowCount={animalsDataLoader.data?.length ?? 0}
+          rowCount={animalsDataLoader.data?.animals?.length ?? 0}
           getRowId={(row) => row.survey_critter_id}
           // Pagination
           paginationMode="server"

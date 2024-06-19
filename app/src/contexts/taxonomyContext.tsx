@@ -1,6 +1,6 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
-import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { get as getProperty, has as hasProperty } from 'lodash';
 import { createContext, PropsWithChildren, useCallback, useMemo, useRef, useState } from 'react';
 
@@ -10,7 +10,7 @@ export interface ITaxonomyContext {
    * is already in the cache, it is immediately available. Otherwise, `null` is
    * returned, and the  the taxonomic data is fetched and subsequently cached.
    */
-  getCachedSpeciesTaxonomyById: (id: number) => ITaxonomy | null;
+  getCachedSpeciesTaxonomyById: (id: number) => IPartialTaxonomy | null;
   /**
    * Caches taxonomy data for the given IDs.
    */
@@ -24,7 +24,7 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
 
   const isMounted = useIsMounted();
 
-  const [_taxonomyCache, _setTaxonomyCache] = useState<Record<number, ITaxonomy | null>>({});
+  const [_taxonomyCache, _setTaxonomyCache] = useState<Record<number, IPartialTaxonomy | null>>({});
   const _dispatchedIds = useRef<Set<number>>(new Set<number>([]));
 
   const cacheSpeciesTaxonomyByIds = useCallback(
@@ -37,7 +37,7 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
       await biohubApi.taxonomy
         .getSpeciesFromIds(ids)
         .then((result) => {
-          const newTaxonomyItems: Record<string, ITaxonomy> = {};
+          const newTaxonomyItems: Record<string, IPartialTaxonomy> = {};
 
           for (const item of result) {
             newTaxonomyItems[item.tsn] = item;
@@ -60,7 +60,7 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
   );
 
   const getCachedSpeciesTaxonomyById = useCallback(
-    (id: number): ITaxonomy | null => {
+    (id: number): IPartialTaxonomy | null => {
       if (hasProperty(_taxonomyCache, id)) {
         // Taxonomy id was found in the cache, return cached data
         return getProperty(_taxonomyCache, id);

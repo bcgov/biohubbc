@@ -30,16 +30,13 @@ export function makeFindObservationsQuery(
     );
   }
 
-  // Ensure that only administrators can filter observations by other users.
-  if (isUserAdmin) {
-    if (filterFields.system_user_id) {
-      getSurveyIdsQuery.whereIn('p.project_id', (subQueryBuilder) => {
-        subQueryBuilder
-          .select('project_id')
-          .from('project_participation')
-          .where('system_user_id', filterFields.system_user_id);
-      });
-    }
+  if (filterFields.system_user_id) {
+    getSurveyIdsQuery.whereIn('p.project_id', (subQueryBuilder) => {
+      subQueryBuilder
+        .select('project_id')
+        .from('project_participation')
+        .where('system_user_id', filterFields.system_user_id);
+    });
   }
 
   const getObservationsQuery = getSurveyObservationsBaseQuery(knex, getSurveyIdsQuery);

@@ -166,7 +166,7 @@ export const CreateCritterSchema = yup.object({
   critter_id: yup.string().optional(),
   itis_tsn: yup.number().required(req),
   animal_id: yup.string().required(req),
-  wlh_id: yup.string().optional(),
+  wlh_id: yup.string().optional().nullable(),
   sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex)).required(req),
   critter_comment: yup.string().optional().nullable()
 });

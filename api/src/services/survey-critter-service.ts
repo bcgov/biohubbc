@@ -38,7 +38,7 @@ export class SurveyCritterService extends DBService {
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
-   * @param {ITelemetryAdvancedFilters} filterFields
+   * @param {ITelemetryAdvancedFilters} [filterFields]
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SurveyCritterRecord[]>}
    * @memberof SurveyCritterService
@@ -46,7 +46,7 @@ export class SurveyCritterService extends DBService {
   async findCritters(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields: ITelemetryAdvancedFilters,
+    filterFields?: ITelemetryAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<SurveyCritterRecord[]> {
     return this.critterRepository.findCritters(isUserAdmin, systemUserId, filterFields, pagination);

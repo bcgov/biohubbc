@@ -48,7 +48,7 @@ export class SurveyCritterRepository extends BaseRepository {
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
-   * @param {ITelemetryAdvancedFilters} filterFields
+   * @param {ITelemetryAdvancedFilters} [filterFields]
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SurveyCritterRecord[]>}
    * @memberof SurveyCritterRepository
@@ -56,7 +56,7 @@ export class SurveyCritterRepository extends BaseRepository {
   async findCritters(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields: ITelemetryAdvancedFilters,
+    filterFields?: ITelemetryAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<SurveyCritterRecord[]> {
     defaultLog.debug({ label: 'getCrittersInSurvey', systemUserId });
@@ -71,16 +71,13 @@ export class SurveyCritterRepository extends BaseRepository {
         .where('project_participation.system_user_id', systemUserId);
     }
 
-    // Ensure that only administrators can filter surveys by other users.
-    if (isUserAdmin) {
-      if (filterFields.system_user_id) {
-        query.whereIn('p.project_id', (subQueryBuilder) => {
-          subQueryBuilder
-            .select('project_id')
-            .from('project_participation')
-            .where('system_user_id', filterFields.system_user_id);
-        });
-      }
+    if (filterFields?.system_user_id) {
+      query.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
+      });
     }
 
     if (pagination) {

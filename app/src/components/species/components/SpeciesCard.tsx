@@ -4,18 +4,17 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { taxonRankColours } from 'constants/taxon';
+import { IPartialTaxonomy, ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 
-interface ISpeciesCard {
-  commonNames: string[];
-  scientificName: string;
-  tsn: number;
-  rank: string;
-  kingdom: string;
+interface ISpeciesCardProps {
+  taxon: ITaxonomy | IPartialTaxonomy;
 }
 
-const SpeciesCard = (props: ISpeciesCard) => {
+const SpeciesCard = (props: ISpeciesCardProps) => {
+  const { taxon } = props;
+
   // combine all common names and join them with a middot
-  const commonNames = props.commonNames.filter((item) => item !== null).join(`\u00A0\u00B7\u00A0`);
+  const commonNames = taxon.commonNames.filter((item) => item !== null).join(`\u00A0\u00B7\u00A0`);
 
   return (
     <Stack flexDirection="row" justifyContent="space-between" flex="1 1 auto">
@@ -32,17 +31,19 @@ const SpeciesCard = (props: ISpeciesCard) => {
                 textTransform: 'capitalize'
               }
             }}>
-            {props.scientificName.split(' ')?.length > 1 ? (
-              <em>{props.scientificName}</em>
+            {taxon.scientificName.split(' ')?.length > 1 ? (
+              <em>{taxon.scientificName}</em>
             ) : (
-              <>{props.scientificName}</>
+              <>{taxon.scientificName}</>
             )}
           </Typography>
-          {props.rank && (
+          {taxon?.rank && (
             <ColouredRectangleChip
               sx={{ mx: 1 }}
-              label={props.rank}
-              colour={taxonRankColours.find((color) => color.ranks.includes(props.rank))?.color ?? blueGrey}
+              label={taxon.rank}
+              colour={
+                taxonRankColours.find((color) => taxon?.rank && color.ranks.includes(taxon.rank))?.color ?? blueGrey
+              }
             />
           )}
         </Stack>
@@ -51,7 +52,7 @@ const SpeciesCard = (props: ISpeciesCard) => {
         </Typography>
       </Box>
       <Typography color="textSecondary" variant="body2" title="Taxonomic Serial Number">
-        {props.tsn}
+        {taxon.tsn}
       </Typography>
     </Stack>
   );

@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
-import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { IPartialTaxonomy, ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { debounce, startCase } from 'lodash-es';
 import { useMemo, useState } from 'react';
 
@@ -30,10 +30,10 @@ export interface ISpeciesAutocompleteFieldProps {
   /**
    * Callback to fire on species option selection.
    *
-   * @type {(species: ITaxonomy) => void}
+   * @type {(species: ITaxonomy | IPartialTaxonomy) => void}
    * @memberof ISpeciesAutocompleteFieldProps
    */
-  handleSpecies: (species?: ITaxonomy) => void;
+  handleSpecies: (species?: ITaxonomy | IPartialTaxonomy) => void;
   /**
    * Optional callback to fire on species option being cleared
    *
@@ -43,10 +43,10 @@ export interface ISpeciesAutocompleteFieldProps {
   /**
    * Default species to render for input and options.
    *
-   * @type {ITaxonomy}
+   * @type {ITaxonomy | IPartialTaxonomy}
    * @memberof ISpeciesAutocompleteFieldProps
    */
-  defaultSpecies?: ITaxonomy;
+  defaultSpecies?: ITaxonomy | IPartialTaxonomy;
   /**
    * The error message to display.
    *
@@ -124,7 +124,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   // The input field value
   const [inputValue, setInputValue] = useState(defaultSpecies?.scientificName ?? '');
   // The array of options to choose from
-  const [options, setOptions] = useState<ITaxonomy[]>(defaultSpecies ? [defaultSpecies] : []);
+  const [options, setOptions] = useState<(ITaxonomy | IPartialTaxonomy)[]>(defaultSpecies ? [defaultSpecies] : []);
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
 
@@ -215,13 +215,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
             key={`${renderOption.tsn}-${renderOption.scientificName}`}
             {...renderProps}>
             <Box py={1} width={'100%'}>
-              <SpeciesCard
-                commonNames={renderOption.commonNames}
-                scientificName={renderOption.scientificName}
-                tsn={renderOption.tsn}
-                rank={renderOption.rank}
-                kingdom={renderOption.kingdom}
-              />
+              <SpeciesCard taxon={renderOption} />
             </Box>
           </Box>
         );
