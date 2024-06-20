@@ -51,11 +51,22 @@ export interface IDrawControlsRef {
   /**
    * Adds a GeoJson feature to a new layer in the draw controls layer group.
    *
-   * @memberof IDrawControlsRef
+   * @param feature The GeoJson feature to add as a layer.
+   * @param layerId A function to receive the unique ID assigned to the added layer.
    */
   addLayer: (feature: Feature, layerId: (id: number) => void) => void;
 
+  /**
+   * Deletes a layer from the draw controls layer group by its unique ID.
+   *
+   * @param layerId The unique ID of the layer to delete.
+   */
   deleteLayer: (layerId: number) => void;
+
+  /**
+   * Clears all layers from the draw controls layer group.
+   */
+  clearLayers: () => void;
 }
 
 /**
@@ -196,6 +207,10 @@ const DrawControls = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps
       deleteLayer: (layerId: number) => {
         const featureGroup = getFeatureGroup();
         featureGroup.removeLayer(layerId);
+      },
+      clearLayers: () => {
+        const featureGroup = getFeatureGroup();
+        featureGroup.clearLayers();
       }
     }),
     [getFeatureGroup]

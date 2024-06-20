@@ -6,6 +6,8 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
@@ -77,6 +79,18 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
     }
   }, [name, values]);
 
+  // Initialize state based on formik context for the edit page
+  const [latitudeInput, setLatitudeInput] = useState<string>(
+    mortalityLocationGeoJson?.geometry && 'coordinates' in mortalityLocationGeoJson.geometry
+      ? String(mortalityLocationGeoJson?.geometry.coordinates[0])
+      : ''
+  );
+  const [longitudeInput, setLongitudeInput] = useState<string>(
+    mortalityLocationGeoJson?.geometry && 'coordinates' in mortalityLocationGeoJson.geometry
+      ? String(mortalityLocationGeoJson?.geometry.coordinates[1])
+      : ''
+  );
+
   useEffect(() => {
     if (mortalityLocationGeoJson) {
       if ('type' in mortalityLocationGeoJson) {
@@ -90,6 +104,25 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
 
     setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
   }, [mortalityLocationGeoJson]);
+
+  useEffect(() => {
+    const lat = latitudeInput && parseFloat(latitudeInput);
+    const lon = longitudeInput && parseFloat(longitudeInput);
+
+    if (lat && lon && lat > -90 && lat < 90 && lon > -180 && lon < 180) {
+      const feature: Feature = {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [lon, lat]
+        },
+        properties: {}
+      };
+
+      // Update formik field value
+      setFieldValue(name, feature);
+    }
+  }, [latitudeInput, longitudeInput]);
 
   return (
     <Grid item xs={12}>
@@ -132,6 +165,40 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
               }}>
               {title}
             </Typography>
+            <Stack spacing={1} direction="row" mx={2}>
+              <Box>
+                <TextField
+                  size="small"
+                  name="Latitude"
+                  label="Latitude"
+                  value={latitudeInput ?? null}
+                  type="number"
+                  onChange={(event) => {
+                    if (event.currentTarget.value) {
+                      setLatitudeInput(event.currentTarget.value.trim());
+                    } else {
+                      setLatitudeInput('');
+                    }
+                  }}
+                />
+              </Box>
+              <Box>
+                <TextField
+                  size="small"
+                  name="longitude"
+                  label="Longitude"
+                  value={longitudeInput ?? null}
+                  type="number"
+                  onChange={(event) => {
+                    if (event.currentTarget.value) {
+                      setLongitudeInput(event.currentTarget.value.trim());
+                    } else {
+                      setLongitudeInput('');
+                    }
+                  }}
+                />
+              </Box>
+            </Stack>
             <Box display="flex">
               <Button
                 color="primary"
@@ -178,11 +245,21 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
                     setFieldValue(name, feature);
                     // Set last drawn to remove it if a subsequent shape is added. There can only be one shape.
                     setLastDrawn(id);
+                    // Update the manual input text boxes to display the drawn lat/lon
+                    if ('coordinates' in feature.geometry) {
+                      setLatitudeInput(String(feature.geometry.coordinates[1]));
+                      setLongitudeInput(String(feature.geometry.coordinates[0]));
+                    }
                   }}
                   onLayerEdit={(event: DrawEvents.Edited) => {
                     event.layers.getLayers().forEach((layer: any) => {
                       const feature = layer.toGeoJSON() as Feature;
                       setFieldValue(name, feature);
+                      // Update the manual input text boxes to display the drawn lat/lon
+                      if ('coordinates' in feature.geometry) {
+                        setLatitudeInput(String(feature.geometry.coordinates[1]));
+                        setLongitudeInput(String(feature.geometry.coordinates[0]));
+                      }
                     });
                   }}
                   onLayerDelete={() => {

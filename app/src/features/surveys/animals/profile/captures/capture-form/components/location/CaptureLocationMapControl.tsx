@@ -6,6 +6,8 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
@@ -47,15 +49,13 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [lastDrawn, setLastDrawn] = useState<null | number>(null);
 
+  const { values, setFieldValue, setFieldError, errors } = useFormikContext<FormikValuesType>();
+
   const drawControlsRef = useRef<IDrawControlsRef>();
 
   const { mapId } = props;
 
-  const { values, setFieldValue, setFieldError, errors } = useFormikContext<FormikValuesType>();
-
-  const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
-
-  //   Array of capture location features
+  // Define location as GeoJson object
   const captureLocationGeoJson: Feature | undefined = useMemo(() => {
     const location: { latitude: number; longitude: number } | Feature = get(values, name);
 
@@ -76,6 +76,21 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
     }
   }, [name, values]);
 
+  // State for tracking input values from MUI textfield, initialized with lat/lon values from the geojson object
+  const [latitudeInput, setLatitudeInput] = useState<string>(
+    captureLocationGeoJson?.geometry && 'coordinates' in captureLocationGeoJson.geometry
+      ? String(captureLocationGeoJson?.geometry.coordinates[1])
+      : ''
+  );
+  const [longitudeInput, setLongitudeInput] = useState<string>(
+    captureLocationGeoJson?.geometry && 'coordinates' in captureLocationGeoJson.geometry
+      ? String(captureLocationGeoJson?.geometry.coordinates[0])
+      : ''
+  );
+
+  const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
+
+  // Update map bounds when data changes
   useEffect(() => {
     setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
 
@@ -88,6 +103,36 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
       }
     }
   }, [captureLocationGeoJson]);
+
+  // Update formik and map when lat/lon text inputs change
+  useEffect(() => {
+    const lat = latitudeInput && parseFloat(latitudeInput);
+    const lon = longitudeInput && parseFloat(longitudeInput);
+
+    if (!(lat && lon)) {
+      return;
+    }
+
+    if (lat > -90 && lat < 90 && lon > -180 && lon < 180) {
+      const id = 1;
+      const feature: Feature = {
+        id,
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [lon, lat]
+        },
+        properties: {}
+      };
+
+      // Remove any existing drawn items in the edit layer
+      // The manually typed lat/lon is displayed as a static layer instead of an editable layer
+      drawControlsRef.current?.clearLayers();
+      setLastDrawn(null);
+
+      setFieldValue(name, feature);
+    }
+  }, [latitudeInput, longitudeInput]);
 
   return (
     <Grid item xs={12}>
@@ -116,7 +161,6 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
               setFieldError(name, message);
             }}
           />
-
           <Toolbar
             disableGutters
             sx={{
@@ -131,6 +175,40 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
               }}>
               {title}
             </Typography>
+            <Stack spacing={1} direction="row" mx={2}>
+              <Box>
+                <TextField
+                  size="small"
+                  name="Latitude"
+                  label="Latitude"
+                  value={latitudeInput}
+                  type="number"
+                  onChange={(event) => {
+                    if (event.currentTarget.value) {
+                      setLatitudeInput(event.currentTarget.value);
+                      return;
+                    }
+                    setLatitudeInput('');
+                  }}
+                />
+              </Box>
+              <Box>
+                <TextField
+                  size="small"
+                  name="longitude"
+                  label="Longitude"
+                  value={longitudeInput}
+                  type="number"
+                  onChange={(event) => {
+                    if (event.currentTarget.value) {
+                      setLongitudeInput(event.currentTarget.value);
+                      return;
+                    }
+                    setLongitudeInput('');
+                  }}
+                />
+              </Box>
+            </Stack>
             <Box display="flex">
               <Button
                 color="primary"
@@ -173,20 +251,32 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
                       drawControlsRef?.current?.deleteLayer(lastDrawn);
                     }
                     setFieldError(name, undefined);
-
-                    const feature = event.layer.toGeoJSON();
+                    const feature: Feature = event.layer.toGeoJSON();
                     setFieldValue(name, feature);
                     // Set last drawn to remove it if a subsequent shape is added. There can only be one shape.
                     setLastDrawn(id);
+                    // Update the text box lat/lon inputs
+                    if (feature.geometry && 'coordinates' in feature.geometry) {
+                      setLatitudeInput(String(feature.geometry.coordinates[1]));
+                      setLongitudeInput(String(feature.geometry.coordinates[0]));
+                    }
                   }}
                   onLayerEdit={(event: DrawEvents.Edited) => {
                     event.layers.getLayers().forEach((layer: any) => {
-                      const feature = layer.toGeoJSON() as Feature;
+                      const feature: Feature = layer.toGeoJSON() as Feature;
                       setFieldValue(name, feature);
+                      // Update the text box lat/lon inputs
+                      if (feature.geometry && 'coordinates' in feature.geometry) {
+                        setLatitudeInput(String(feature.geometry.coordinates[1]));
+                        setLongitudeInput(String(feature.geometry.coordinates[0]));
+                      }
                     });
                   }}
                   onLayerDelete={() => {
                     setFieldValue(name, null);
+                    setLastDrawn(null);
+                    setLatitudeInput('');
+                    setLongitudeInput('');
                   }}
                 />
               </FeatureGroup>
