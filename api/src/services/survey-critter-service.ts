@@ -154,7 +154,7 @@ export class SurveyCritterService extends DBService {
    * @throws {Error} - If issue validating CSV contents
    * @returns {Promise<CsvCritter[]>} CSV Critters
    */
-  async validateCritterCsvForImport(surveyId: number, mediaFile: MediaFile) {
+  async validateCritterCsvForImport(surveyId: number, mediaFile: MediaFile): Promise<CsvCritter[]> {
     const errorMessage = `Failed to import Critter CSV. Column validator failed.`;
 
     // Construct the XLSX workbook
@@ -194,21 +194,16 @@ export class SurveyCritterService extends DBService {
    * @param {number} surveyId - Survey id
    * @param {CsvCritter[]} critters - Csv critters
    * @throws {ApiGeneralError} - If length of critterbase inserts !== what was provided
-   * @returns {Promise<CsvCritter[]>} Csv critters
+   * @returns {Promise<number[]>} Survey critter ids
    */
-  async importCsvCritters(surveyId: number, critters: CsvCritter[]) {
+  async importCsvCritters(surveyId: number, critters: CsvCritter[]): Promise<number[]> {
     const critterIds = critters.map((critter) => critter.critter_id);
 
     // Add critters to Critterbase
     const bulkResponse = await this.critterbaseService.bulkCreate({ critters });
 
+    // Check critterbase inserted the full list of critters
     if (bulkResponse.created.critters !== critterIds.length) {
-      defaultLog.error({
-        label: 'import csv critters',
-        message: 'failed to fully import all critters into critterbase',
-        critter_ids: critterIds
-      });
-
       throw new ApiGeneralError('Unable to fully import critters from CSV', [
         'surveyCritterService->importCsvCritters',
         'critterbase bulk create response count !== critterIds.length'
@@ -216,8 +211,8 @@ export class SurveyCritterService extends DBService {
     }
 
     // Add Critters to SIMS survey
-    await this.addCrittersToSurvey(surveyId, critterIds);
+    const surveyCritterIds = await this.addCrittersToSurvey(surveyId, critterIds);
 
-    return critters;
+    return surveyCritterIds;
   }
 }

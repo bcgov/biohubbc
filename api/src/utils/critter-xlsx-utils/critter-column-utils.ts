@@ -36,9 +36,11 @@ const getRowValidationSchema = (critterAliasSet: Set<string>) => {
     itis_tsn: z.number(), // Validation for itis_tsn exists in Critterbase
     wlh_id: z
       .string()
-      .regex(/^\d{2}-.+/)
+      .regex(/^\d{2}-.+/, '')
       .optional(), // valid: '10-0009R' invalid: '102-' or '10-' or '1-133K2'
-    animal_id: z.string().refine((value) => !critterAliasSet.has(value)),
+    animal_id: z
+      .string()
+      .refine((value) => !critterAliasSet.has(value), 'Critter alias / nickname must be unique for Survey.'),
     critter_comment: z.string().optional()
   });
 };
@@ -83,4 +85,17 @@ export const validateCritterRows = (rows: CsvCritter[], surveyCritterAliases: Se
   }
 
   return result.success;
+};
+
+/**
+ * An XLSX validation config for the standard columns of a critter CSV.
+ */
+export const critterStandardColumnValidator: IXLSXCSVValidator = {
+  columnNames: [ITIS_TSN, SEX, ALIAS, WLH_ID, DESCRIPTION],
+  columnTypes: ['number', 'string', 'string', 'string', 'string'],
+  columnAliases: {
+    ITIS_TSN: [TAXON, SPECIES, TSN],
+    DESCRIPTION: [COMMENT],
+    ALIAS: [NICKNAME]
+  }
 };

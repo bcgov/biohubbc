@@ -130,6 +130,24 @@ export interface IBulkCreate {
   families?: IFamilyPayload[];
 }
 
+interface IBulkResponse {
+  critters: number;
+  captures: number;
+  collections: number;
+  mortalities: number;
+  locations: number;
+  markings: number;
+  quantitative_measurements: number;
+  qualitative_measurements: number;
+  families: number;
+  family_parents: number;
+  family_chidren: number;
+}
+
+export interface IBulkCreateResponse {
+  created: IBulkResponse;
+}
+
 /**
  * A Critterbase quantitative measurement.
  */
@@ -385,7 +403,7 @@ export class CritterbaseService {
     return response.data;
   }
 
-  async bulkCreate(data: IBulkCreate) {
+  async bulkCreate(data: IBulkCreate): Promise<IBulkCreateResponse> {
     const response = await this.axiosInstance.post(BULK_ENDPOINT, data);
     return response.data;
   }
