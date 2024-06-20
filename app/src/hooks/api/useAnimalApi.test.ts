@@ -18,24 +18,15 @@ describe('useAnimalApi', () => {
     const mockResponse: IFindAnimalsResponse = {
       animals: [
         {
-          critter_id: '123',
-          itis_tsn: 23456,
+          wlh_id: null,
+          animal_id: '123456',
+          sex: 'unknown',
+          itis_tsn: 123321,
           itis_scientific_name: 'scientific name',
-          wlh_id: '5678',
-          animal_id: '987978',
-          sex: 'male',
-          responsible_region_nr_id: '777',
-          critter_comment: null,
-          collection_units: [],
-          mortality: [],
-          captures: [],
-          markings: [],
-          measurements: {
-            qualitative: [],
-            quantitative: []
-          },
-          family_parent: [],
-          family_child: []
+          critter_comment: 'comment',
+          critter_id: 2,
+          survey_id: 1,
+          critterbase_critter_id: '345-345-345'
         }
       ],
       pagination: {

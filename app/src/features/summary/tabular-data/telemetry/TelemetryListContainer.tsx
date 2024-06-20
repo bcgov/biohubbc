@@ -21,7 +21,10 @@ import TelemetryListFilterForm, {
 } from './TelemetryListFilterForm';
 
 // Supported URL parameters
-type TelemetryDataTableURLParams = ITelemetryAdvancedFilters & {
+type TelemetryDataTableURLParams = {
+  // filter
+  t_itis_tsn?: string;
+  // pagination
   t_page?: string;
   t_limit?: string;
   t_sort?: string;
@@ -67,8 +70,8 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
   ]);
 
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ITelemetryAdvancedFilters>({
-    itis_tsn: searchParams.get('itis_tsn')
-      ? Number(searchParams.get('itis_tsn'))
+    itis_tsn: searchParams.get('t_itis_tsn')
+      ? Number(searchParams.get('t_itis_tsn'))
       : TelemetryAdvancedFiltersInitialValues.itis_tsn
   });
 
@@ -145,7 +148,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
           <TelemetryListFilterForm
             initialValues={advancedFiltersModel}
             handleSubmit={(values) => {
-              setSearchParams(searchParams.setOrDelete('itis_tsn', values.itis_tsn));
+              setSearchParams(searchParams.setOrDelete('t_itis_tsn', values.itis_tsn));
               setAdvancedFiltersModel(values);
             }}
           />

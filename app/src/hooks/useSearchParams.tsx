@@ -76,18 +76,23 @@ export class TypedURLSearchParams<
       return this;
     }
 
-    if (typeof value !== 'string') {
-      // Note: the value will need to be parsed `qs.parse(value)` after being fetched via this classes `get(key)`
-      super.set(key, qs.stringify(value));
+    if (typeof value === 'string') {
+      if (value.length === 0) {
+        super.delete(key);
+        return this;
+      }
+
+      super.set(key, value);
       return this;
     }
 
-    if (value.length === 0) {
-      super.delete(key);
+    if (typeof value === 'number') {
+      super.set(key, String(value));
       return this;
     }
 
-    super.set(key, value);
+    // Note: the value will need to be parsed `qs.parse(value)` after being fetched via this classes `get(key)`
+    super.set(key, qs.stringify(value));
     return this;
   }
 

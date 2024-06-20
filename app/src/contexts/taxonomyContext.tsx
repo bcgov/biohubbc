@@ -6,15 +6,21 @@ import { createContext, PropsWithChildren, useCallback, useMemo, useRef, useStat
 
 export interface ITaxonomyContext {
   /**
-   * Fetches taxonomy data for the given IDs. For each ID, if the results of its query
+   * Fetches taxonomy data for the given ITIS TSN. For each TSN, if the results of its query
    * is already in the cache, it is immediately available. Otherwise, `null` is
    * returned, and the  the taxonomic data is fetched and subsequently cached.
    */
-  getCachedSpeciesTaxonomyById: (id: number) => IPartialTaxonomy | null;
+  getCachedSpeciesTaxonomyById: (tsn: number) => IPartialTaxonomy | null;
   /**
-   * Caches taxonomy data for the given IDs.
+   * Fetches taxonomy data for the given ITIS TSN. For each TSN, if the results of its query
+   * is already in the cache, it is immediately resolved. Otherwise, a request is dispatched
+   * and the pending promise is returned.
    */
-  cacheSpeciesTaxonomyByIds: (ids: number[]) => Promise<void>;
+  getCachedSpeciesTaxonomyByIdAsync: (tsn: number) => Promise<IPartialTaxonomy | null>;
+  /**
+   * Caches taxonomy data for the given ITIS TSNs.
+   */
+  cacheSpeciesTaxonomyByIds: (tsns: number[]) => Promise<IPartialTaxonomy[] | null>;
 }
 
 export const TaxonomyContext = createContext<ITaxonomyContext | undefined>(undefined);
@@ -25,66 +31,97 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
   const isMounted = useIsMounted();
 
   const [_taxonomyCache, _setTaxonomyCache] = useState<Record<number, IPartialTaxonomy | null>>({});
-  const _dispatchedIds = useRef<Set<number>>(new Set<number>([]));
+  const _dispatchedTsnPromises = useRef<Record<number, Promise<IPartialTaxonomy | null>>>({});
 
   const cacheSpeciesTaxonomyByIds = useCallback(
-    async (ids: number[]) => {
-      if (!isMounted()) {
-        return;
+    async (tsns: number[]) => {
+      const fetchTaxonomiesPromise = biohubApi.taxonomy
+        .getSpeciesFromIds(tsns)
+        .then((taxonomies) => {
+          if (!isMounted()) {
+            return null;
+          }
+
+          // Update the sync cache for the current tsn
+          const newTaxonomyItems: Record<number, IPartialTaxonomy> = {};
+          for (const taxon of taxonomies) {
+            newTaxonomyItems[taxon.tsn] = taxon;
+          }
+          _setTaxonomyCache((previous) => ({ ...previous, ...newTaxonomyItems }));
+
+          return taxonomies;
+        })
+        .catch(() => {
+          return null;
+        });
+
+      for (const tsn of tsns) {
+        // Track the promise against each tsn, resolving the matching value for each tsn
+        _dispatchedTsnPromises.current[tsn] = fetchTaxonomiesPromise
+          .then((taxonomies) => {
+            if (!isMounted()) {
+              return null;
+            }
+
+            if (!taxonomies) {
+              return null;
+            }
+
+            // Return the taxon data for the current tsn
+            return taxonomies.find((taxonomy) => taxonomy.tsn === tsn) ?? null;
+          })
+          .catch(() => {
+            return null;
+          });
       }
 
-      ids.forEach((id) => _dispatchedIds.current.add(id));
-      await biohubApi.taxonomy
-        .getSpeciesFromIds(ids)
-        .then((result) => {
-          const newTaxonomyItems: Record<string, IPartialTaxonomy> = {};
-
-          for (const item of result) {
-            newTaxonomyItems[item.tsn] = item;
-          }
-
-          if (!isMounted()) {
-            return;
-          }
-
-          _setTaxonomyCache((previous) => ({ ...previous, ...newTaxonomyItems }));
-        })
-        .catch(() => {})
-        .finally(() => {
-          if (!isMounted()) {
-            return;
-          }
-        });
+      return fetchTaxonomiesPromise;
     },
     [biohubApi.taxonomy, isMounted]
   );
 
   const getCachedSpeciesTaxonomyById = useCallback(
-    (id: number): IPartialTaxonomy | null => {
-      if (hasProperty(_taxonomyCache, id)) {
-        // Taxonomy id was found in the cache, return cached data
-        return getProperty(_taxonomyCache, id);
+    (tsn: number): IPartialTaxonomy | null => {
+      if (hasProperty(_taxonomyCache, tsn)) {
+        // Taxonomy tsn was found in the cache, return cached data
+        return getProperty(_taxonomyCache, tsn);
       }
 
-      if (_dispatchedIds.current.has(id)) {
-        // Request to fetch this taxon id is still pending
+      if (_dispatchedTsnPromises.current[tsn] !== undefined) {
+        // Request to fetch this taxon tsn is still pending
         return null;
       }
 
       // Dispatch a request to fetch the taxonomy and cache the result
-      cacheSpeciesTaxonomyByIds([id]);
+      cacheSpeciesTaxonomyByIds([tsn]);
 
       return null;
     },
     [_taxonomyCache, cacheSpeciesTaxonomyByIds]
   );
 
+  const getCachedSpeciesTaxonomyByIdAsync = useCallback(
+    async (tsn: number): Promise<IPartialTaxonomy | null> => {
+      if (_dispatchedTsnPromises.current[tsn] !== undefined) {
+        // Return pending promise for this taxon tsn
+        return _dispatchedTsnPromises.current[tsn];
+      }
+
+      // Dispatch a request to fetch the taxonomy and cache the result
+      await cacheSpeciesTaxonomyByIds([tsn]);
+
+      return _dispatchedTsnPromises.current[tsn];
+    },
+    [cacheSpeciesTaxonomyByIds]
+  );
+
   const taxonomyContext: ITaxonomyContext = useMemo(
     () => ({
       getCachedSpeciesTaxonomyById,
+      getCachedSpeciesTaxonomyByIdAsync,
       cacheSpeciesTaxonomyByIds
     }),
-    [cacheSpeciesTaxonomyByIds, getCachedSpeciesTaxonomyById]
+    [cacheSpeciesTaxonomyByIds, getCachedSpeciesTaxonomyById, getCachedSpeciesTaxonomyByIdAsync]
   );
 
   return <TaxonomyContext.Provider value={taxonomyContext}>{props.children}</TaxonomyContext.Provider>;

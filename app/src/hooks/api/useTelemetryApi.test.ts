@@ -18,28 +18,17 @@ describe('useTelemetryApi', () => {
     const mockResponse: IFindTelemetryResponse = {
       telemetry: [
         {
-          animal: {
-            critter_id: '123',
-            wlh_id: '5678',
-            animal_id: '987978',
-            sex: 'female',
-            itis_tsn: 117233,
-            itis_scientific_name: 'scientific name',
-            responsible_region_nr_id: null,
-            critter_comment: null
-          },
-          telemetry: [
-            {
-              id: '1',
-              telemetry_id: 2,
-              telemetry_type: 'manual',
-              telemetry_manual_id: '777',
-              deployment_id: '222',
-              latitude: 49.123,
-              longitude: -126.123,
-              acquisition_date: '2021-01-01'
-            }
-          ]
+          telemetry_id: '123',
+          acquisition_date: '2021-01-01',
+          latitude: 49.123,
+          longitude: -126.123,
+          telemetry_type: 'vendor',
+          device_id: 12345,
+          bctw_deployment_id: '123-123-123',
+          critter_id: 2,
+          deployment_id: 3,
+          critterbase_critter_id: '345-345-345-',
+          animal_id: '567234-234'
         }
       ],
       pagination: {

@@ -1,8 +1,6 @@
 import CustomTextField from 'components/fields/CustomTextField';
 import { SystemUserAutocompleteField } from 'components/fields/SystemUserAutocompleteField';
-import { SystemRoleGuard } from 'components/security/Guards';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
-import { SYSTEM_ROLE } from 'constants/roles';
 import { FilterFieldsContainer } from 'features/summary/components/FilterFieldsContainer';
 import { Formik } from 'formik';
 
@@ -62,22 +60,20 @@ const SurveysListFilterForm = (props: ISurveysListFilterFormProps) => {
               }}
               key="survey-tsn-filter"
             />,
-            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <SystemUserAutocompleteField
-                formikFieldName="system_user_id"
-                label="User"
-                placeholder="Search by user"
-                onSelect={(value) => {
-                  if (value?.system_user_id) {
-                    formikProps.setFieldValue('system_user_id', value.system_user_id);
-                  }
-                }}
-                onClear={() => {
-                  formikProps.setFieldValue('system_user_id', undefined);
-                }}
-                key="survey-user-filter"
-              />
-            </SystemRoleGuard>
+            <SystemUserAutocompleteField
+              formikFieldName="system_user_id"
+              label="User"
+              placeholder="Search by user"
+              onSelect={(value) => {
+                if (value?.system_user_id) {
+                  formikProps.setFieldValue('system_user_id', value.system_user_id);
+                }
+              }}
+              onClear={() => {
+                formikProps.setFieldValue('system_user_id', undefined);
+              }}
+              key="survey-user-filter"
+            />
           ]}
         />
       )}

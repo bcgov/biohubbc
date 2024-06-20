@@ -27,7 +27,12 @@ import ProjectsListFilterForm, {
 } from './ProjectsListFilterForm';
 
 // Supported URL parameters
-type ProjectDataTableURLParams = IProjectAdvancedFilters & {
+type ProjectDataTableURLParams = {
+  // filter
+  p_keyword?: string;
+  p_itis_tsn?: number;
+  p_system_user_id?: string;
+  // pagination
   p_page?: string;
   p_limit?: string;
   p_sort?: string;
@@ -79,11 +84,11 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
   ]);
 
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IProjectAdvancedFilters>({
-    keyword: searchParams.get('keyword') ?? ProjectAdvancedFiltersInitialValues.keyword,
-    itis_tsn: searchParams.get('itis_tsn')
-      ? Number(searchParams.get('itis_tsn'))
+    keyword: searchParams.get('p_keyword') ?? ProjectAdvancedFiltersInitialValues.keyword,
+    itis_tsn: searchParams.get('p_itis_tsn')
+      ? Number(searchParams.get('p_itis_tsn'))
       : ProjectAdvancedFiltersInitialValues.itis_tsn,
-    system_user_id: searchParams.get('system_user_id') ?? ProjectAdvancedFiltersInitialValues.system_user_id
+    system_user_id: searchParams.get('p_system_user_id') ?? ProjectAdvancedFiltersInitialValues.system_user_id
   });
 
   const sort = firstOrNull(sortModel);
@@ -201,9 +206,9 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
             handleSubmit={(values) => {
               setSearchParams(
                 searchParams
-                  .setOrDelete('keyword', values.keyword)
-                  .setOrDelete('itis_tsn', values.itis_tsn)
-                  .setOrDelete('system_user_id', values.system_user_id)
+                  .setOrDelete('p_keyword', values.keyword)
+                  .setOrDelete('p_itis_tsn', values.itis_tsn)
+                  .setOrDelete('p_system_user_id', values.system_user_id)
               );
               setAdvancedFiltersModel(values);
             }}

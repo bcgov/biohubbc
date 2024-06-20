@@ -157,10 +157,12 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       inputValue={inputValue}
       // Text field value changed
       onInputChange={(_, value, reason) => {
-        if (clearOnSelect && reason === 'reset') {
-          setInputValue('');
-          setOptions([]);
-          handleClear?.();
+        if (reason === 'reset') {
+          if (clearOnSelect) {
+            setInputValue('');
+            setOptions([]);
+            handleClear?.();
+          }
           return;
         }
 

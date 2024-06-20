@@ -30,7 +30,12 @@ import SurveysListFilterForm, {
 } from './SurveysListFilterForm';
 
 // Supported URL parameters
-type SurveyDataTableURLParams = ISurveyAdvancedFilters & {
+type SurveyDataTableURLParams = {
+  // filter
+  s_keyword?: string;
+  s_itis_tsn?: number;
+  s_system_user_id?: string;
+  // pagination
   s_page?: string;
   s_limit?: string;
   s_sort?: string;
@@ -82,11 +87,11 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   ]);
 
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ISurveyAdvancedFilters>({
-    keyword: searchParams.get('keyword') ?? SurveyAdvancedFiltersInitialValues.keyword,
-    itis_tsn: searchParams.get('itis_tsn')
-      ? Number(searchParams.get('itis_tsn'))
+    keyword: searchParams.get('s_keyword') ?? SurveyAdvancedFiltersInitialValues.keyword,
+    itis_tsn: searchParams.get('s_itis_tsn')
+      ? Number(searchParams.get('s_itis_tsn'))
       : SurveyAdvancedFiltersInitialValues.itis_tsn,
-    system_user_id: searchParams.get('system_user_id') ?? SurveyAdvancedFiltersInitialValues.system_user_id
+    system_user_id: searchParams.get('s_system_user_id') ?? SurveyAdvancedFiltersInitialValues.system_user_id
   });
 
   const sort = firstOrNull(sortModel);
@@ -224,9 +229,9 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
             handleSubmit={(values) => {
               setSearchParams(
                 searchParams
-                  .setOrDelete('keyword', values.keyword)
-                  .setOrDelete('itis_tsn', values.itis_tsn)
-                  .setOrDelete('system_user_id', values.system_user_id)
+                  .setOrDelete('s_keyword', values.keyword)
+                  .setOrDelete('s_itis_tsn', values.itis_tsn)
+                  .setOrDelete('s_system_user_id', values.system_user_id)
               );
               setAdvancedFiltersModel(values);
             }}

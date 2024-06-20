@@ -24,7 +24,17 @@ import {
 } from './ObservationsListFilterForm';
 
 // Supported URL parameters
-type ObservationDataTableURLParams = IObservationsAdvancedFilters & {
+type ObservationDataTableURLParams = {
+  // filter
+  o_keyword?: string;
+  o_itis_tsn?: number;
+  o_start_date?: string;
+  o_end_date?: string;
+  o_start_time?: string;
+  o_end_time?: string;
+  o_min_count?: string;
+  o_system_user_id?: number;
+  // pagination
   o_page?: string;
   o_limit?: string;
   o_sort?: string;
@@ -75,17 +85,17 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
   ]);
 
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IObservationsAdvancedFilters>({
-    keyword: searchParams.get('keyword') ?? ObservationAdvancedFiltersInitialValues.keyword,
-    itis_tsn: searchParams.get('itis_tsn')
-      ? Number(searchParams.get('itis_tsn'))
+    keyword: searchParams.get('o_keyword') ?? ObservationAdvancedFiltersInitialValues.keyword,
+    itis_tsn: searchParams.get('o_itis_tsn')
+      ? Number(searchParams.get('o_itis_tsn'))
       : ObservationAdvancedFiltersInitialValues.itis_tsn,
-    start_date: searchParams.get('start_date') ?? ObservationAdvancedFiltersInitialValues.start_date,
-    end_date: searchParams.get('end_date') ?? ObservationAdvancedFiltersInitialValues.end_date,
-    start_time: searchParams.get('start_time') ?? ObservationAdvancedFiltersInitialValues.start_time,
-    end_time: searchParams.get('end_time') ?? ObservationAdvancedFiltersInitialValues.end_time,
-    min_count: searchParams.get('min_count') ?? ObservationAdvancedFiltersInitialValues.min_count,
-    system_user_id: searchParams.get('system_user_id')
-      ? Number(searchParams.get('system_user_id'))
+    start_date: searchParams.get('o_start_date') ?? ObservationAdvancedFiltersInitialValues.start_date,
+    end_date: searchParams.get('o_end_date') ?? ObservationAdvancedFiltersInitialValues.end_date,
+    start_time: searchParams.get('o_start_time') ?? ObservationAdvancedFiltersInitialValues.start_time,
+    end_time: searchParams.get('o_end_time') ?? ObservationAdvancedFiltersInitialValues.end_time,
+    min_count: searchParams.get('o_min_count') ?? ObservationAdvancedFiltersInitialValues.min_count,
+    system_user_id: searchParams.get('o_system_user_id')
+      ? Number(searchParams.get('o_system_user_id'))
       : ObservationAdvancedFiltersInitialValues.system_user_id
   });
 
@@ -221,14 +231,14 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
             handleSubmit={(values) => {
               setSearchParams(
                 searchParams
-                  .setOrDelete('start_date', values.start_date)
-                  .setOrDelete('end_date', values.end_date)
-                  .setOrDelete('keyword', values.keyword)
-                  .setOrDelete('min_count', values.min_count)
-                  .setOrDelete('start_time', values.start_time)
-                  .setOrDelete('end_time', values.end_time)
-                  .setOrDelete('system_user_id', values.system_user_id)
-                  .setOrDelete('itis_tsn', values.itis_tsn)
+                  .setOrDelete('o_start_date', values.start_date)
+                  .setOrDelete('o_end_date', values.end_date)
+                  .setOrDelete('o_keyword', values.keyword)
+                  .setOrDelete('o_min_count', values.min_count)
+                  .setOrDelete('o_start_time', values.start_time)
+                  .setOrDelete('o_end_time', values.end_time)
+                  .setOrDelete('o_system_user_id', values.system_user_id)
+                  .setOrDelete('o_itis_tsn', values.itis_tsn)
               );
               setAdvancedFiltersModel(values);
             }}

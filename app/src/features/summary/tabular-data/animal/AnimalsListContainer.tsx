@@ -19,7 +19,10 @@ import AnimalsListFilterForm, {
 } from './AnimalsListFilterForm';
 
 // Supported URL parameters
-type AnimalDataTableURLParams = IAnimalsAdvancedFilters & {
+type AnimalDataTableURLParams = {
+  // filter
+  a_itis_tsn?: string;
+  // pagination
   a_page?: string;
   a_limit?: string;
   a_sort?: string;
@@ -65,8 +68,8 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
   ]);
 
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IAnimalsAdvancedFilters>({
-    itis_tsn: searchParams.get('itis_tsn')
-      ? Number(searchParams.get('itis_tsn'))
+    itis_tsn: searchParams.get('a_itis_tsn')
+      ? Number(searchParams.get('a_itis_tsn'))
       : AnimalsAdvancedFiltersInitialValues.itis_tsn
   });
 
@@ -141,7 +144,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
           <AnimalsListFilterForm
             initialValues={advancedFiltersModel}
             handleSubmit={(values) => {
-              setSearchParams(searchParams.setOrDelete('itis_tsn', values.itis_tsn));
+              setSearchParams(searchParams.setOrDelete('a_itis_tsn', values.itis_tsn));
               setAdvancedFiltersModel(values);
             }}
           />
