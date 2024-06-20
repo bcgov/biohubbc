@@ -18,7 +18,7 @@ import ImportBoundaryDialog from 'components/map/components/ImportBoundaryDialog
 import StaticLayers from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
-import { useFormikContext } from 'formik';
+import { getIn, useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import { ICreateMortalityRequest, IEditMortalityRequest } from 'interfaces/useCritterApi.interface';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
@@ -82,12 +82,12 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
   // Initialize state based on formik context for the edit page
   const [latitudeInput, setLatitudeInput] = useState<string>(
     mortalityLocationGeoJson?.geometry && 'coordinates' in mortalityLocationGeoJson.geometry
-      ? String(mortalityLocationGeoJson?.geometry.coordinates[0])
+      ? String(mortalityLocationGeoJson?.geometry.coordinates[1])
       : ''
   );
   const [longitudeInput, setLongitudeInput] = useState<string>(
     mortalityLocationGeoJson?.geometry && 'coordinates' in mortalityLocationGeoJson.geometry
-      ? String(mortalityLocationGeoJson?.geometry.coordinates[1])
+      ? String(mortalityLocationGeoJson?.geometry.coordinates[0])
       : ''
   );
 
@@ -105,31 +105,54 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
     setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
   }, [mortalityLocationGeoJson]);
 
+  // Update formik and map when latitude/longitude text inputs change
   useEffect(() => {
     const lat = latitudeInput && parseFloat(latitudeInput);
     const lon = longitudeInput && parseFloat(longitudeInput);
 
-    if (lat && lon && lat > -90 && lat < 90 && lon > -180 && lon < 180) {
-      const feature: Feature = {
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [lon, lat]
-        },
-        properties: {}
-      };
-
-      // Update formik field value
-      setFieldValue(name, feature);
+    if (!(lat && lon)) {
+      setFieldValue(name, undefined);
+      return;
     }
+
+    const id = 1;
+    const feature: Feature = {
+      id,
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [lon, lat]
+      },
+      properties: {}
+    };
+
+    // Remove any existing drawn items in the edit layer
+    drawControlsRef.current?.clearLayers();
+    setLastDrawn(null);
+
+    if (!(lat > -90 && lat < 90 && lon > -180 && lon < 180)) {
+      drawControlsRef.current?.clearLayers();
+      // lastDrawn controls the visibility of the formik data (i.e., static layer) on the map.
+      // When lastDrawn !== null, the capture location in formik is hidden. If the coordinates are invalid, hide the coordinates.
+      setLastDrawn(1);
+    }
+
+    setFieldValue(name, feature);
   }, [latitudeInput, longitudeInput]);
 
   return (
     <Grid item xs={12}>
-      {get(errors, name) && !Array.isArray(get(errors, name)) && (
+      {typeof get(errors, name) == 'string' && !Array.isArray(get(errors, name)) && (
         <Alert severity="error" variant="outlined" sx={{ mb: 2 }}>
           <AlertTitle>Missing mortality location</AlertTitle>
-          {get(errors, name) as string}
+          {get(errors, name)}
+        </Alert>
+      )}
+
+      {getIn(errors, `${name}.geometry.coordinates`) && (
+        <Alert severity="error" variant="outlined" sx={{ mb: 2 }}>
+          <AlertTitle>Invalid coordinates</AlertTitle>
+          {getIn(errors, `${name}.geometry.coordinates`)}
         </Alert>
       )}
 
@@ -171,11 +194,11 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
                   size="small"
                   name="Latitude"
                   label="Latitude"
-                  value={latitudeInput ?? null}
+                  value={latitudeInput}
                   type="number"
                   onChange={(event) => {
                     if (event.currentTarget.value) {
-                      setLatitudeInput(event.currentTarget.value.trim());
+                      setLatitudeInput(event.currentTarget.value);
                     } else {
                       setLatitudeInput('');
                     }
@@ -187,11 +210,11 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
                   size="small"
                   name="longitude"
                   label="Longitude"
-                  value={longitudeInput ?? null}
+                  value={longitudeInput}
                   type="number"
                   onChange={(event) => {
                     if (event.currentTarget.value) {
-                      setLongitudeInput(event.currentTarget.value.trim());
+                      setLongitudeInput(event.currentTarget.value);
                     } else {
                       setLongitudeInput('');
                     }
@@ -264,6 +287,9 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
                   }}
                   onLayerDelete={() => {
                     setFieldValue(name, null);
+                    setLastDrawn(null);
+                    setLatitudeInput('');
+                    setLongitudeInput('');
                   }}
                 />
               </FeatureGroup>

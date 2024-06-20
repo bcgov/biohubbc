@@ -18,7 +18,7 @@ import ImportBoundaryDialog from 'components/map/components/ImportBoundaryDialog
 import StaticLayers from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
-import { useFormikContext } from 'formik';
+import { getIn, useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
@@ -37,7 +37,7 @@ export interface ICaptureLocationMapControlProps {
 }
 
 /**
- * Capture location map control
+ * Capture location map control component.
  *
  * @param {ICaptureLocationMapControlProps} props
  * @return {*}
@@ -55,7 +55,7 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
 
   const { mapId } = props;
 
-  // Define location as GeoJson object
+  // Define location as a GeoJson object using useMemo to memoize the value
   const captureLocationGeoJson: Feature | undefined = useMemo(() => {
     const location: { latitude: number; longitude: number } | Feature = get(values, name);
 
@@ -76,7 +76,7 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
     }
   }, [name, values]);
 
-  // State for tracking input values from MUI textfield, initialized with lat/lon values from the geojson object
+  // Initialize state for tracking latitude and longitude input values from MUI textfields
   const [latitudeInput, setLatitudeInput] = useState<string>(
     captureLocationGeoJson?.geometry && 'coordinates' in captureLocationGeoJson.geometry
       ? String(captureLocationGeoJson?.geometry.coordinates[1])
@@ -90,56 +90,67 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 
-  // Update map bounds when data changes
+  // Update map bounds when the data changes
   useEffect(() => {
     setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
 
     if (captureLocationGeoJson) {
       if ('type' in captureLocationGeoJson) {
-        if (captureLocationGeoJson.geometry.type === 'Point')
-          if (captureLocationGeoJson?.geometry.coordinates[0] !== 0) {
-            setUpdatedBounds(calculateUpdatedMapBounds([captureLocationGeoJson]));
-          }
+        if (captureLocationGeoJson.geometry.type === 'Point' && captureLocationGeoJson?.geometry.coordinates[0] !== 0) {
+          setUpdatedBounds(calculateUpdatedMapBounds([captureLocationGeoJson]));
+        }
       }
     }
   }, [captureLocationGeoJson]);
 
-  // Update formik and map when lat/lon text inputs change
+  // Update formik and map when latitude/longitude text inputs change
   useEffect(() => {
     const lat = latitudeInput && parseFloat(latitudeInput);
     const lon = longitudeInput && parseFloat(longitudeInput);
 
     if (!(lat && lon)) {
+      setFieldValue(name, undefined);
       return;
     }
 
-    if (lat > -90 && lat < 90 && lon > -180 && lon < 180) {
-      const id = 1;
-      const feature: Feature = {
-        id,
-        type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [lon, lat]
-        },
-        properties: {}
-      };
+    const id = 1;
+    const feature: Feature = {
+      id,
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [lon, lat]
+      },
+      properties: {}
+    };
 
-      // Remove any existing drawn items in the edit layer
-      // The manually typed lat/lon is displayed as a static layer instead of an editable layer
+    // Remove any existing drawn items in the edit layer
+    drawControlsRef.current?.clearLayers();
+    setLastDrawn(null);
+
+    if (!(lat > -90 && lat < 90 && lon > -180 && lon < 180)) {
       drawControlsRef.current?.clearLayers();
-      setLastDrawn(null);
-
-      setFieldValue(name, feature);
+      // lastDrawn controls the visibility of the formik data (i.e., static layer) on the map.
+      // When lastDrawn !== null, the capture location in formik is hidden. If the coordinates are invalid, hide the coordinates.
+      setLastDrawn(1);
     }
+
+    setFieldValue(name, feature);
   }, [latitudeInput, longitudeInput]);
 
   return (
     <Grid item xs={12}>
-      {get(errors, name) && !Array.isArray(get(errors, name)) && (
+      {typeof get(errors, name) == 'string' && !Array.isArray(get(errors, name)) && (
         <Alert severity="error" variant="outlined" sx={{ mb: 2 }}>
           <AlertTitle>Missing capture location</AlertTitle>
-          {get(errors, name) as string}
+          {get(errors, name)}
+        </Alert>
+      )}
+
+      {getIn(errors, `${name}.geometry.coordinates`) && (
+        <Alert severity="error" variant="outlined" sx={{ mb: 2 }}>
+          <AlertTitle>Invalid coordinates</AlertTitle>
+          {getIn(errors, `${name}.geometry.coordinates`)}
         </Alert>
       )}
 
@@ -256,7 +267,7 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
                     // Set last drawn to remove it if a subsequent shape is added. There can only be one shape.
                     setLastDrawn(id);
                     // Update the text box lat/lon inputs
-                    if (feature.geometry && 'coordinates' in feature.geometry) {
+                    if ('coordinates' in feature.geometry) {
                       setLatitudeInput(String(feature.geometry.coordinates[1]));
                       setLongitudeInput(String(feature.geometry.coordinates[0]));
                     }
@@ -266,7 +277,7 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
                       const feature: Feature = layer.toGeoJSON() as Feature;
                       setFieldValue(name, feature);
                       // Update the text box lat/lon inputs
-                      if (feature.geometry && 'coordinates' in feature.geometry) {
+                      if ('coordinates' in feature.geometry) {
                         setLatitudeInput(String(feature.geometry.coordinates[1]));
                         setLongitudeInput(String(feature.geometry.coordinates[0]));
                       }

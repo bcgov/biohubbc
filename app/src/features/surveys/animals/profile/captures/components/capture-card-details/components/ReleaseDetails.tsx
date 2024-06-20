@@ -57,7 +57,7 @@ export const ReleaseDetails = (props: IReleaseDetailsProps) => {
             </Typography>
             {releaseLocation && (
               <Typography color="textSecondary" variant="body2">
-                {releaseLocation.longitude},&nbsp;{releaseLocation.latitude}
+                {releaseLocation.latitude},&nbsp;{releaseLocation.longitude}
               </Typography>
             )}
           </Box>
