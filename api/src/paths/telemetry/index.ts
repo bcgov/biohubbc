@@ -3,11 +3,15 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { ITelemetryAdvancedFilters } from '../../models/telemetry-view';
-import { paginationRequestQueryParamSchema } from '../../openapi/schemas/pagination';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { TelemetryService } from '../../services/telemetry-service';
 import { getLogger } from '../../utils/logger';
-import { ensureCompletePaginationOptions, makePaginationOptionsFromRequest } from '../../utils/pagination';
+import {
+  ensureCompletePaginationOptions,
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
+} from '../../utils/pagination';
 
 const defaultLog = getLogger('paths/telemetry');
 
@@ -105,6 +109,7 @@ GET.apiDoc = {
           schema: {
             type: 'object',
             additionalProperties: false,
+            required: ['telemetry', 'pagination'],
             properties: {
               telemetry: {
                 type: 'array',
@@ -113,47 +118,61 @@ GET.apiDoc = {
                   additionalProperties: false,
                   properties: {
                     telemetry_id: {
-                      type: 'string',
-                      format: 'uuid'
-                    },
-                    deployment_id: {
-                      type: 'string',
-                      format: 'uuid'
-                    },
-                    collar_transaction_id: {
-                      type: 'string',
-                      format: 'uuid'
-                    },
-                    critter_id: {
-                      type: 'string',
-                      format: 'uuid'
-                    },
-                    deviceid: {
-                      type: 'number'
-                    },
-                    latitude: {
                       type: 'number',
-                      nullable: true
-                    },
-                    longitude: {
-                      type: 'number',
-                      nullable: true
-                    },
-                    elevation: {
-                      type: 'number',
-                      nullable: true
-                    },
-                    vendor: {
-                      type: 'string',
-                      nullable: true
+                      description: 'The BCTW telemetry record ID.'
                     },
                     acquisition_date: {
                       type: 'string',
-                      nullable: true
+                      nullable: true,
+                      description: 'The BCTW telemetry record acquisition date.'
+                    },
+                    latitude: {
+                      type: 'number',
+                      nullable: true,
+                      description: 'The BCTW telemetry record latitude.'
+                    },
+                    longitude: {
+                      type: 'number',
+                      nullable: true,
+                      description: 'The BCTW telemetry record longitude.'
+                    },
+                    telemetry_type: {
+                      type: 'string',
+                      description: 'The BCTW telemetry type.'
+                    },
+                    device_id: {
+                      type: 'number',
+                      description: 'The BCTW device ID.'
+                    },
+                    bctw_deployment_id: {
+                      type: 'string',
+                      format: 'uuid',
+                      description: 'The BCTW deployment ID.'
+                    },
+                    critter_id: {
+                      type: 'number',
+                      minimum: 1,
+                      description: 'The SIMS critter record ID.'
+                    },
+                    deployment_id: {
+                      type: 'number',
+                      minimum: 1,
+                      description: 'The SIMS deployment record ID.'
+                    },
+                    critterbase_critter_id: {
+                      type: 'string',
+                      format: 'uuid',
+                      description: 'The Critterbase critter ID.'
+                    },
+                    animal_id: {
+                      type: 'string',
+                      nullable: true,
+                      description: 'The Critterbase animal ID.'
                     }
                   }
                 }
-              }
+              },
+              pagination: { ...paginationResponseSchema }
             }
           }
         }
@@ -211,76 +230,14 @@ export function findTelemetry(): RequestHandler {
         ensureCompletePaginationOptions(paginationOptions)
       );
 
-      //   const user: ICritterbaseUser = {
-      //     keycloak_guid: req['system_user']?.user_guid,
-      //     username: req['system_user']?.user_identifier
-      //   };
-
-      //   // TODO: Implement advanced filters for telemetry - may require changes in the CritterBase API and BCTW API
-      //   //   const filterFields = parseQueryParams(req);
-
-      //   const surveyCritterService = new SurveyCritterService(connection);
-      //   const bctwService = new BctwService(user);
-      //   const critterbaseService = new CritterbaseService(user);
-
-      //   // Find all critters that the user has access to
-      //   const surveyCritters = await surveyCritterService.findCritters(isUserAdmin, systemUserId);
-
-      //   await connection.commit();
-
-      //   // Exit early if there are no critters, and therefore no telemetry
-      //   if (!surveyCritters.length) {
-      //     return res.status(200).json({ telemetry: [] });
-      //   }
-
-      //   // Get details for all critters
-      //   const critters: ICritter[] = await critterbaseService.getMultipleCrittersByIdsDetailed(
-      //     surveyCritters.map((critter) => critter.critterbase_critter_id)
-      //   );
-
-      //   // Get deployments for critters in Survey
-      //   const results = await bctwService.getDeploymentsByCritterId(
-      //     surveyCritters.flatMap((critter) => critter.critterbase_critter_id)
-      //   );
-
-      //   // Combine deployments with critter information
-      //   const deployments = results.flatMap((result) => ({
-      //     deployment_id: result.deployment_id,
-      //     device_id: result.device_id,
-      //     animal: critters.find((critter) => result.critter_id === critter.critter_id)
-      //   }));
-
-      //   // Get telemetry for deployments
-      //   const deploymentIds = deployments.map((deployment) => deployment.deployment_id);
-      //   const vendor = await bctwService.getVendorTelemetryByDeploymentIds(deploymentIds);
-      //   const manual = await bctwService.getManualTelemetryByDeploymentIds(deploymentIds);
-
-      //   // Combine telemetry with critter information
-      //   const telemetry = [
-      //     ...vendor.map((telemetry) => {
-      //       const deployment = deployments.find((deployment) => deployment.animal);
-      //       return {
-      //         ...telemetry,
-      //         device_id: deployment?.device_id,
-      //         animal: deployment?.animal
-      //       };
-      //     }),
-      //     ...manual.map((telemetry) => {
-      //       const deployment = deployments.find((deployment) => deployment.animal);
-      //       return {
-      //         ...telemetry,
-      //         device_id: deployment?.device_id,
-      //         animal: deployment?.animal
-      //       };
-      //     })
-      //   ];
-
       await connection.commit();
 
       // Allow browsers to cache this response for 30 seconds
       res.setHeader('Cache-Control', 'private, max-age=30');
 
-      return res.status(200).json({ telemetry: telemetry });
+      return res
+        .status(200)
+        .json({ telemetry: telemetry, pagination: makePaginationResponse(telemetry.length, paginationOptions) });
     } catch (error) {
       defaultLog.error({ label: 'findTelemetry', message: 'error', error });
       await connection.rollback();

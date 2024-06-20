@@ -11,6 +11,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
+import { IFindTelementryObj } from 'interfaces/useTelemetryApi.interface';
 import { useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
@@ -88,9 +89,9 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
     telemetryDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
-  const telemetryRows = telemetryDataLoader.data?.animalTelemetry ?? [];
+  const telemetryRows = telemetryDataLoader.data?.telemetry ?? [];
 
-  const columns: GridColDef[] = [
+  const columns: GridColDef<IFindTelementryObj>[] = [
     {
       field: 'id',
       headerName: 'ID',
@@ -111,7 +112,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
       field: 'nickname',
       headerName: 'Nickname',
       flex: 1,
-      renderCell: (params) => <Typography variant="body2">{params.row.animal.animal_id}</Typography>
+      renderCell: (params) => <Typography variant="body2">{params.row.animal_id}</Typography>
     },
     {
       field: 'device_id',
@@ -165,8 +166,8 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
           columns={columns}
           // Rows
           rows={telemetryRows}
-          rowCount={telemetryDataLoader.data?.animalTelemetry.length ?? 0}
-          getRowId={(row) => row.id}
+          rowCount={telemetryDataLoader.data?.telemetry.length ?? 0}
+          getRowId={(row: IFindTelementryObj) => row.telemetry_id}
           // Pagination
           paginationMode="server"
           pageSizeOptions={pageSizeOptions}

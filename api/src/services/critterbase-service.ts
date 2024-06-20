@@ -17,7 +17,7 @@ export interface QueryParam {
 
 export interface ICritter {
   critter_id?: string;
-  wlh_id: string;
+  wlh_id: string | null;
   animal_id: string;
   sex: string;
   itis_tsn: number;

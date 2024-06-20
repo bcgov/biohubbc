@@ -34,7 +34,7 @@ export class SurveyCritterService extends DBService {
    * Retrieves all critters that are available to the user, based on their permissions.
    *
    * Note: SIMS does not store critter information, beyond an ID. Critter details must be fetched from the external
-   * CritterBase API.
+   * Critterbase API.
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request

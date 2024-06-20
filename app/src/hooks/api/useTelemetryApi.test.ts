@@ -16,7 +16,7 @@ describe('useTelemetryApi', () => {
 
   it('findTelemetry works as expected', async () => {
     const mockResponse: IFindTelemetryResponse = {
-      animalTelemetry: [
+      telemetry: [
         {
           animal: {
             critter_id: '123',

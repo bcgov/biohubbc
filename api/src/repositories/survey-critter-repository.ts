@@ -44,7 +44,7 @@ export class SurveyCritterRepository extends BaseRepository {
    * Retrieves all critters that are available to the user based on the user's permissions and search criteria.
    *
    * Note: SIMS does not store critter information, beyond an ID. Critter details must be fetched from the external
-   * CritterBase API.
+   * Critterbase API.
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
@@ -83,12 +83,12 @@ export class SurveyCritterRepository extends BaseRepository {
     if (pagination) {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
-      if (pagination.sort && pagination.order) {
-        query.orderBy(pagination.sort, pagination.order);
-      }
+      //   if (pagination.sort && pagination.order) {
+      //     query.orderBy(pagination.sort, pagination.order);
+      //   }
     }
 
-    const response = await this.connection.knex(query, SurveyCritterRecord);
+    const response = await this.connection.knex(query);
 
     return response.rows;
   }

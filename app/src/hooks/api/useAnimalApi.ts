@@ -7,8 +7,8 @@ import { ApiPaginationRequestOptions } from 'types/misc';
 /**
  * Returns a set of supported api methods for working with SIMS animal (critter) records.
  *
- * Note: Not to be confused with the useCritterApi hook, which is for working with CritterBase animal (critter) records.
- * Note: SIMS animal records are linked to CritterBase animal records.
+ * Note: Not to be confused with the useCritterApi hook, which is for working with Critterbase animal (critter) records.
+ * Note: SIMS animal records are linked to Critterbase animal records.
  *
  * @param {AxiosInstance} axios
  * @return {*} object whose properties are supported api methods.

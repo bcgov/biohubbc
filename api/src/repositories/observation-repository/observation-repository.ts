@@ -185,7 +185,6 @@ export class ObservationRepository extends BaseRepository {
     filterFields: IObservationAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<ObservationRecordWithSamplingAndSubcountData[]> {
-    console.log(filterFields);
     const query = makeFindObservationsQuery(isUserAdmin, systemUserId, filterFields);
 
     if (pagination) {
