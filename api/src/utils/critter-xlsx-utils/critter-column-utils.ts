@@ -25,13 +25,14 @@ export type CsvCritter = z.infer<ReturnType<typeof getRowValidationSchema>>;
  * Note: Survey critters may not share animal aliases. 1 alias per survey.
  *
  * @param {Set<string>} critterAliasSet - Set of allowed survey critter aliases
+ * @param {Set<number>} matchingTsnSet - Set of matching TSNS from critter rows
  * @returns {z.ZodObject} CsvCritter
  */
-const getRowValidationSchema = (critterAliasSet: Set<string>) => {
+const getRowValidationSchema = (critterAliasSet: Set<string>, matchingTsnSet: Set<number>) => {
   return z.object({
     critter_id: z.string(),
     sex: z.enum(['Unknown', 'Male', 'Female']),
-    itis_tsn: z.number(),
+    itis_tsn: z.number().refine((tsn) => matchingTsnSet.has(tsn), `Invalid ITIS TSN.`),
     wlh_id: z
       .string()
       .regex(/^\d{2}-.+/, `Invalid WLH_ID. Example '10-1000R'`)
@@ -39,7 +40,7 @@ const getRowValidationSchema = (critterAliasSet: Set<string>) => {
     animal_id: z
       .string()
       .refine(
-        (value) => process.env.NODE_ENV === 'development' || !critterAliasSet.has(value),
+        (alias) => process.env.NODE_ENV === 'development' || !critterAliasSet.has(alias),
         'Critter alias / nickname must be unique for Survey.'
       ),
     critter_comment: z.string().optional()
@@ -55,7 +56,7 @@ const getRowValidationSchema = (critterAliasSet: Set<string>) => {
 
 // TODO: Support ecological units (population units)
 
-const getCritterRowsToValidate = (rows: Row[]): Partial<CsvCritter>[] => {
+export const getCritterRowsToValidate = (rows: Row[]): Partial<CsvCritter>[] => {
   return rows.map((row) => ({
     critter_id: uuid(), // Generate a uuid for each critter for convienence
     sex: getSexFromRow(row),
@@ -73,16 +74,16 @@ const getCritterRowsToValidate = (rows: Row[]): Partial<CsvCritter>[] => {
  * alias as long as it is not in the same survey ie: different project
  *
  * @param {CsvCritter[]} rows - Critter rows
- * @param {Set<string>} surveyCritterAliases - Unique survey critter aliases
+ * @param {Set<string>} surveyCritterAliasSet - Unique survey critter aliases
+ * @param {Set<number>} matchingTsnSet - Set of matching TSNS from critter rows
  * @returns {boolean} Validated
  */
 export const validateCritterRows = (
-  rows: Row[],
-  surveyCritterAliases: Set<string>
+  rows: Partial<CsvCritter>[],
+  surveyCritterAliasSet: Set<string>,
+  matchingTsnSet: Set<number>
 ): z.SafeParseReturnType<Partial<CsvCritter>[], CsvCritter[]> => {
-  const critterRows = getCritterRowsToValidate(rows);
+  const critterRowValidationSchema = getRowValidationSchema(surveyCritterAliasSet, matchingTsnSet);
 
-  const critterRowValidationSchema = getRowValidationSchema(surveyCritterAliases);
-
-  return z.array(critterRowValidationSchema).safeParse(critterRows);
+  return z.array(critterRowValidationSchema).safeParse(rows);
 };

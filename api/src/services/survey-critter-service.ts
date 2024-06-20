@@ -1,7 +1,11 @@
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
-import { CsvCritter, validateCritterRows } from '../utils/critter-xlsx-utils/critter-column-utils';
+import {
+  CsvCritter,
+  getCritterRowsToValidate,
+  validateCritterRows
+} from '../utils/critter-xlsx-utils/critter-column-utils';
 import { MediaFile } from '../utils/media/media-file';
 import { critterStandardColumnValidator } from '../utils/xlsx-utils/column-validators';
 import {
@@ -12,6 +16,7 @@ import {
 } from '../utils/xlsx-utils/worksheet-utils';
 import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
+import { PlatformService } from './platform-service';
 
 /**
  * Service layer for survey critters.
@@ -22,12 +27,14 @@ import { DBService } from './db-service';
  */
 export class SurveyCritterService extends DBService {
   critterRepository: SurveyCritterRepository;
+  platformService: PlatformService;
   critterbaseService: CritterbaseService;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
     this.critterRepository = new SurveyCritterRepository(connection);
+    this.platformService = new PlatformService(connection);
     this.critterbaseService = new CritterbaseService({
       keycloak_guid: connection.systemUserGUID(),
       username: connection.systemUserIdentifier()
@@ -167,11 +174,23 @@ export class SurveyCritterService extends DBService {
     // Get the worksheet row objects
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheet);
 
+    // Pre parse the rows into critters
+    const critterRows = getCritterRowsToValidate(worksheetRowObjects);
+
+    // Get a list of unique tsns from the incomming row objects
+    const critterRowTsns = [...new Set(critterRows.filter(Boolean).map((critter) => String(critter.itis_tsn)))];
+
+    // Query the platform service (taxonomy) for matching tsns
+    const taxonomy = await this.platformService.getTaxonomyByTsns(critterRowTsns);
+
+    // Convert to a unique set
+    const matchingTsnSet = new Set(taxonomy.map((taxon) => Number(taxon.tsn)));
+
     // Get all aliases / nicknames / animal ids of critters in survey
     const surveyCritterAliases = await this.getUniqueSurveyCritterAliases(surveyId);
 
     // Validate critter row data
-    const validation = validateCritterRows(worksheetRowObjects, surveyCritterAliases);
+    const validation = validateCritterRows(critterRows, surveyCritterAliases, matchingTsnSet);
 
     // Throw error and include zod row validation issues
     if (!validation.success) {
