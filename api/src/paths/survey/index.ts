@@ -29,7 +29,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: "Gets a list of surveys based on the user's permissions and search criteria.",
+  description: "Gets a list of surveys based on the user's permissions and filter criteria.",
   tags: ['surveys'],
   security: [
     {
@@ -211,7 +211,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get surveys for the current user, based on their permissions and search criteria.
+ * Get surveys for the current user, based on their permissions and filter criteria.
  *
  * @returns {RequestHandler}
  */

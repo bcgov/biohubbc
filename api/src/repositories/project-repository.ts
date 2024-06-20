@@ -26,7 +26,7 @@ import { BaseRepository } from './base-repository';
  */
 export class ProjectRepository extends BaseRepository {
   /**
-   * Constructs a non-paginated query used to get a list of projects based on the user's permissions and search criteria.
+   * Constructs a non-paginated query used to get a list of projects based on the user's permissions and filter criteria.
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request

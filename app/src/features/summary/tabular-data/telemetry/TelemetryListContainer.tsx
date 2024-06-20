@@ -5,7 +5,7 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -35,11 +35,11 @@ interface ITelemetryListContainerProps {
 }
 
 // Default pagination parameters
-const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
+const initialPaginationParams: ApiPaginationRequestOptions = {
   page: 0,
   limit: 10,
-  sort: 'acquisition_date',
-  order: 'desc'
+  sort: undefined,
+  order: undefined
 };
 
 /**
@@ -61,7 +61,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
 
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
-      field: searchParams.get('t_sort') ?? initialPaginationParams.sort,
+      field: searchParams.get('t_sort') ?? initialPaginationParams.sort ?? '',
       sort: (searchParams.get('t_order') ?? initialPaginationParams.order) as GridSortDirection
     }
   ]);
@@ -93,10 +93,11 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
 
   const columns: GridColDef<IFindTelementryObj>[] = [
     {
-      field: 'id',
+      field: 'telemetry_id',
       headerName: 'ID',
       width: 50,
       minWidth: 50,
+      sortable: false,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
@@ -104,44 +105,37 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
       ),
       renderCell: (params) => (
         <Typography color={grey[500]} variant="body2">
-          {params.row.id}
+          {params.row.telemetry_id}
         </Typography>
       )
     },
     {
-      field: 'nickname',
+      field: 'animal_id',
       headerName: 'Nickname',
       flex: 1,
+      sortable: false,
       renderCell: (params) => <Typography variant="body2">{params.row.animal_id}</Typography>
     },
     {
       field: 'device_id',
       headerName: 'Device',
       flex: 1,
+      sortable: false,
       renderCell: (params) => <Typography variant="body2">{params.row.device_id}</Typography>
     },
     {
-      field: 'date',
+      field: 'acquisition_date',
       headerName: 'Date',
       flex: 1,
+      sortable: false,
       renderCell: (params) => (
         <Typography variant="body2">
-          {dayjs(params.row.acquisition_date).format(DATE_FORMAT.MediumDateFormat)}
+          {dayjs(params.row.acquisition_date).format(DATE_FORMAT.MediumDateTimeFormat)}
         </Typography>
       )
     },
-    {
-      field: 'time',
-      headerName: 'Time',
-      flex: 1,
-      renderCell: (params) => (
-        <Typography variant="body2">
-          {dayjs(params.row.acquisition_date).format(TIME_FORMAT.LongTimeFormat24Hour)}
-        </Typography>
-      )
-    },
-    { field: 'latitude', headerName: 'Latitude', flex: 1 },
-    { field: 'longitude', headerName: 'Longitude', flex: 1 }
+    { field: 'latitude', headerName: 'Latitude', flex: 1, sortable: false },
+    { field: 'longitude', headerName: 'Longitude', flex: 1, sortable: false }
   ];
 
   return (

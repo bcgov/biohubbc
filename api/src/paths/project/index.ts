@@ -29,7 +29,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: "Gets a list of projects based on the user's permissions and search criteria.",
+  description: "Gets a list of projects based on the user's permissions and filter criteria.",
   tags: ['projects'],
   security: [
     {
@@ -226,7 +226,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get projects for the current user, based on their permissions and search criteria.
+ * Get projects for the current user, based on their permissions and filter criteria.
  *
  * @returns {RequestHandler}
  */

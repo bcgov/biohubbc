@@ -3,12 +3,15 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { IAnimalAdvancedFilters } from '../../models/animal-view';
-import { paginationRequestQueryParamSchema } from '../../openapi/schemas/pagination';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
-import { CritterbaseService, ICritter, ICritterbaseUser } from '../../services/critterbase-service';
 import { SurveyCritterService } from '../../services/survey-critter-service';
 import { getLogger } from '../../utils/logger';
-import { ensureCompletePaginationOptions, makePaginationOptionsFromRequest } from '../../utils/pagination';
+import {
+  ensureCompletePaginationOptions,
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
+} from '../../utils/pagination';
 
 const defaultLog = getLogger('paths/animal');
 
@@ -26,7 +29,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: "Gets a list of animals based on the user's permissions and search criteria.",
+  description: "Gets a list of animals based on the user's permissions and filter criteria.",
   tags: ['animals'],
   security: [
     {
@@ -104,48 +107,71 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: [
-                'survey_critter_id',
-                'critter_id',
-                'wlh_id',
-                'animal_id',
-                'sex',
-                'itis_tsn',
-                'itis_scientific_name',
-                'critter_comment'
-              ],
-              additionalProperties: false,
-              properties: {
-                survey_critter_id: {
-                  type: 'number',
-                  minimum: 1
-                },
-                critter_id: {
-                  type: 'string',
-                  format: 'uuid'
-                },
-                wlh_id: {
-                  type: 'string'
-                },
-                animal_id: {
-                  type: 'string'
-                },
-                sex: {
-                  type: 'string'
-                },
-                itis_tsn: {
-                  type: 'number'
-                },
-                itis_scientific_name: {
-                  type: 'string'
-                },
-                critter_comment: {
-                  type: 'string'
+            type: 'object',
+            required: ['animals', 'pagination'],
+            additionalProperties: false,
+            properties: {
+              animals: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: [
+                    'wlh_id',
+                    'animal_id',
+                    'sex',
+                    'itis_tsn',
+                    'itis_scientific_name',
+                    'critter_comment',
+                    'critter_id',
+                    'survey_id',
+                    'critterbase_critter_id'
+                  ],
+                  additionalProperties: false,
+                  properties: {
+                    wlh_id: {
+                      type: 'string',
+                      nullable: true,
+                      description: 'The Critterbase critter wildlife health ID.'
+                    },
+                    animal_id: {
+                      type: 'string',
+                      description: 'The Critterbase critter animal ID.'
+                    },
+                    sex: {
+                      type: 'string',
+                      description: 'The Critterbase critter sex.'
+                    },
+                    itis_tsn: {
+                      type: 'number',
+                      description: 'The Critterbase critter ITIS TSN.'
+                    },
+                    itis_scientific_name: {
+                      type: 'string',
+                      description: 'The Critterbase critter scientific name.'
+                    },
+                    critter_comment: {
+                      type: 'string',
+                      description: 'The Critterbase critter comment.'
+                    },
+                    critter_id: {
+                      type: 'integer',
+                      minimum: 1,
+                      description: 'The SIMS critter ID.'
+                    },
+                    survey_id: {
+                      type: 'integer',
+                      minimum: 1,
+                      description: 'The SIMS survey ID.'
+                    },
+                    critterbase_critter_id: {
+                      type: 'string',
+                      format: 'uuid',
+                      description: 'The Critterbase critter ID.'
+                    }
+                  }
                 }
-              }
+              },
+              pagination: { ...paginationResponseSchema }
             }
           }
         }
@@ -170,7 +196,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get animals for the current user, based on their permissions and search criteria.
+ * Get animals for the current user, based on their permissions and filter criteria.
  *
  * @returns {RequestHandler}
  */
@@ -190,45 +216,30 @@ export function findAnimals(): RequestHandler {
         req['system_user']['role_names']
       );
 
-      const user: ICritterbaseUser = {
-        keycloak_guid: req['system_user']?.user_guid,
-        username: req['system_user']?.user_identifier
-      };
-
       const filterFields = parseQueryParams(req);
 
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const surveyService = new SurveyCritterService(connection);
 
-      const surveyCritters = await surveyService.findCritters(
-        isUserAdmin,
-        systemUserId,
-        filterFields,
-        ensureCompletePaginationOptions(paginationOptions)
-      );
+      const [critters, crittersCount] = await Promise.all([
+        surveyService.findCritters(
+          isUserAdmin,
+          systemUserId,
+          filterFields,
+          ensureCompletePaginationOptions(paginationOptions)
+        ),
+        surveyService.findCrittersCount(isUserAdmin, systemUserId, filterFields)
+      ]);
 
       await connection.commit();
-
-      // Request all critters from critterbase
-      const critterbaseService = new CritterbaseService(user);
-
-      // TODO: Should be detailed critter, not critter
-      const critters: ICritter[] = await critterbaseService.getMultipleCrittersByIdsDetailed(
-        surveyCritters.map((critter) => critter.critterbase_critter_id)
-      );
-
-      const crittersWithCritterSurveyId = critters.map((critter) => ({
-        ...critter,
-        survey_critter_id: surveyCritters.find(
-          (surveyCritter) => surveyCritter.critterbase_critter_id === critter.critter_id
-        )?.critter_id
-      }));
 
       // Allow browsers to cache this response for 30 seconds
       res.setHeader('Cache-Control', 'private, max-age=30');
 
-      return res.status(200).json(crittersWithCritterSurveyId);
+      return res
+        .status(200)
+        .json({ animals: critters, pagination: makePaginationResponse(crittersCount, paginationOptions) });
     } catch (error) {
       defaultLog.error({ label: 'findAnimals', message: 'error', error });
       await connection.rollback();
@@ -250,8 +261,6 @@ function parseQueryParams(req: Request<unknown, unknown, unknown, IAnimalAdvance
     keyword: req.query.keyword ?? undefined,
     itis_tsns: req.query.itis_tsns ?? undefined,
     itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
-    start_date: req.query.start_date ?? undefined,
-    end_date: req.query.end_date ?? undefined,
     system_user_id: req.query.system_user_id ?? undefined
   };
 }

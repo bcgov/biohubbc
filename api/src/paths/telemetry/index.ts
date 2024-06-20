@@ -29,7 +29,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: "Gets a list of telemetry based on the user's permissions and search criteria.",
+  description: "Gets a list of telemetry based on the user's permissions and filter criteria.",
   tags: ['telemetry'],
   security: [
     {
@@ -197,7 +197,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get telemetry for the current user, based on their permissions and search criteria.
+ * Get telemetry for the current user, based on their permissions and filter criteria.
  *
  * @returns {RequestHandler}
  */
@@ -261,8 +261,6 @@ function parseQueryParams(
     keyword: req.query.keyword ?? undefined,
     itis_tsns: req.query.itis_tsns ?? undefined,
     itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
-    start_date: req.query.start_date ?? undefined,
-    end_date: req.query.end_date ?? undefined,
     system_user_id: req.query.system_user_id ?? undefined
   };
 }

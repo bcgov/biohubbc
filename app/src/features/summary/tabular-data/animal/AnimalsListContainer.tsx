@@ -9,6 +9,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
+import { IFindAnimalObj } from 'interfaces/useAnimalApi.interface';
 import { useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
@@ -32,11 +33,11 @@ interface IAnimalsListContainerProps {
 }
 
 // Default pagination parameters
-const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
+const initialPaginationParams: ApiPaginationRequestOptions = {
   page: 0,
   limit: 10,
-  sort: 'survey_critter_id',
-  order: 'desc'
+  sort: undefined,
+  order: undefined
 };
 
 /**
@@ -58,7 +59,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
 
   const [sortModel, setSortModel] = useState<GridSortModel>([
     {
-      field: searchParams.get('a_sort') ?? initialPaginationParams.sort,
+      field: searchParams.get('a_sort') ?? initialPaginationParams.sort ?? '',
       sort: (searchParams.get('a_order') ?? initialPaginationParams.order) as GridSortDirection
     }
   ]);
@@ -88,12 +89,13 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
 
   const animalRows = animalsDataLoader.data?.animals ?? [];
 
-  const columns: GridColDef[] = [
+  const columns: GridColDef<IFindAnimalObj>[] = [
     {
-      field: 'survey_critter_id',
+      field: 'critter_id',
       headerName: 'ID',
       width: 70,
       minWidth: 70,
+      sortable: false,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
           ID
@@ -101,16 +103,16 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
       ),
       renderCell: (params) => (
         <Typography color={grey[500]} variant="body2">
-          {params.row.animal_id}
-          {/* {params.row.survey_critter_id} */}
+          {params.row.critter_id}
         </Typography>
       )
     },
-    { field: 'animal_id', headerName: 'Nickname', flex: 1 },
+    { field: 'animal_id', headerName: 'Nickname', flex: 1, sortable: false },
     {
       field: 'itis_scientific_name',
       headerName: 'Species',
       flex: 1,
+      sortable: false,
       renderCell: (params) => (
         <Typography fontStyle={params.row.itis_scientific_name.split(' ').length > 1 ? 'italic' : 'normal'}>
           {params.row.itis_scientific_name}
@@ -121,6 +123,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
       field: 'wlh_id',
       headerName: 'Wildlife Health ID',
       flex: 1,
+      sortable: false,
       renderCell: (params) =>
         params.row.wlh_id ? (
           <Typography>{params.row.wlh_id}</Typography>
@@ -128,7 +131,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
           <Typography color={grey[400]}>None</Typography>
         )
     },
-    { field: 'critter_id', headerName: 'Unique ID', flex: 1 }
+    { field: 'critterbase_critter_id', headerName: 'Unique ID', flex: 1, sortable: false }
   ];
 
   return (
@@ -154,7 +157,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
           // Rows
           rows={animalRows}
           rowCount={animalsDataLoader.data?.animals?.length ?? 0}
-          getRowId={(row) => row.survey_critter_id}
+          getRowId={(row) => row.critter_id}
           // Pagination
           paginationMode="server"
           pageSizeOptions={pageSizeOptions}

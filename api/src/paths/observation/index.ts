@@ -30,7 +30,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: "Gets a list of observations based on the user's permissions and search criteria.",
+  description: "Gets a list of observations based on the user's permissions and filter criteria.",
   tags: ['observations'],
   security: [
     {
@@ -161,7 +161,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get observations for the current user, based on their permissions and search criteria.
+ * Get observations for the current user, based on their permissions and filter criteria.
  *
  * @returns {RequestHandler}
  */

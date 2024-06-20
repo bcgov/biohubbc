@@ -15,7 +15,7 @@ import {
 } from '../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BctwService, IAllTelemetry, ICreateManualTelemetry, IDeploymentRecord } from './bctw-service';
-import { CritterbaseService, ICritter, ICritterbaseUser } from './critterbase-service';
+import { ICritter, ICritterbaseUser } from './critterbase-service';
 import { DBService } from './db-service';
 import { SurveyCritterService } from './survey-critter-service';
 
@@ -199,89 +199,106 @@ export class TelemetryService extends DBService {
     filterFields?: ITelemetryAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<IFindTelemetryResponse[]> {
-    // --- Step 1 ------------------------------
+    // --- Step 1 -----------------------------
 
-    // Find all critters that the user has access to
     const surveyCritterService = new SurveyCritterService(this.connection);
-    // The sims critter records the user has access to, based on their permissions and filter criteria
-    const simsCritters = await surveyCritterService.findCritters(isUserAdmin, systemUserId, filterFields, pagination);
+    // The SIMS critter records the user has access to
+    const simsCritters = await surveyCritterService.findCritters(
+      isUserAdmin,
+      systemUserId,
+      filterFields,
+      // Remove the sort and order from the pagination object as these are based on the telemetry sort columns and
+      // may not be valid for the critter columns
+      // TODO: Is there a better way to achieve this pagination safety?
+      pagination
+        ? {
+            ...pagination,
+            sort: undefined,
+            order: undefined
+          }
+        : undefined
+    );
 
     if (!simsCritters.length) {
-      // Exit early if there are no critters, and therefore no telemetry
+      // Exit early if there are no SIMS critters, and therefore no telemetry
       return [];
     }
 
     // --- Step 2 ------------------------------
 
     const simsCritterIds = simsCritters.map((critter) => critter.critter_id);
-    // The sims deployment records for the critters the user has access to
+    // The sims deployment records the user has access to
     const simsDeployments = await this.telemetryRepository.getDeploymentsByCritterIds(simsCritterIds);
 
     if (!simsDeployments.length) {
-      // Exit early if there are no deployments, and therefore no telemetry
+      // Exit early if there are no SIMS deployments, and therefore no telemetry
       return [];
     }
 
     // --- Step 3 ------------------------------
 
-    // The critterbase critter ids for the critters with deployments the user has access to
     const critterbaseCritterIds = simsCritters
       .filter((simsCritter) =>
         simsDeployments.some((surveyDeployment) => surveyDeployment.critter_id === simsCritter.critter_id)
       )
       .map((critter) => critter.critterbase_critter_id);
 
-    const user: ICritterbaseUser = {
+    if (!critterbaseCritterIds.length) {
+      // Exit early if there are no critterbase critters, and therefore no telemetry
+      return [];
+    }
+
+    const bctwService = new BctwService({
       keycloak_guid: this.connection.systemUserGUID(),
       username: this.connection.systemUserIdentifier()
-    };
-
-    // Get critter records from Critterbase
-    const critterbaseService = new CritterbaseService(user);
-    const critterbaseCritters = await critterbaseService.getMultipleCrittersByIdsDetailed(critterbaseCritterIds);
-
-    // --- Step 4 ------------------------------
-
-    const bctwService = new BctwService(user);
-    // The detailed deployment records for the critters with deployments the user has access to
+    });
+    // The detailed deployment records from BCTW
+    // Note: This may include records the user does not have acces to (A critter may have multiple deployments over its
+    // lifespan, but the user may only have access to a subset of them).
     const allBctwDeploymentsForCritters = await bctwService.getDeploymentsByCritterId(critterbaseCritterIds);
 
+    // Remove records the user does not have access to
     const usersBctwDeployments = allBctwDeploymentsForCritters.filter((deployment) =>
       simsDeployments.some((item) => item.bctw_deployment_id === deployment.deployment_id)
     );
     const usersBctwDeploymentIds = usersBctwDeployments.map((deployment) => deployment.deployment_id);
 
-    // --- Step 5 ------------------------------
+    if (!usersBctwDeploymentIds.length) {
+      // Exit early if there are no BCTW deployments the user has access to, and therefore no telemetry
+      return [];
+    }
 
-    // The telemetry records for the deployments for the critters the user has access to
+    // --- Step 4 ------------------------------
+
+    // The telemetry records for the deployments the user has access to
     const allTelemetryRecords = await bctwService.getAllTelemetryByDeploymentIds(usersBctwDeploymentIds);
 
-    // --- Step 6 ------------------------------
+    // --- Step 5 ------------------------------
 
     // Parse/combine the telemetry, deployment, and critter records into the final response
     const response: IFindTelemetryResponse[] = [];
     for (const telemetryRecord of allTelemetryRecords) {
-      const bctwDeployment = usersBctwDeployments.find(
+      const usersBctwDeployment = usersBctwDeployments.find(
         (usersBctwDeployment) => usersBctwDeployment.deployment_id === telemetryRecord.deployment_id
       );
 
-      if (!bctwDeployment) {
+      if (!usersBctwDeployment) {
         continue;
       }
 
-      const surveyDeployment = simsDeployments.find(
+      const simsDeployment = simsDeployments.find(
         (simsDeployment) => simsDeployment.bctw_deployment_id === telemetryRecord.deployment_id
       );
 
-      if (!surveyDeployment) {
+      if (!simsDeployment) {
         continue;
       }
 
-      const critterbaseCritter = critterbaseCritters.find(
-        (critterbaseCritter) => critterbaseCritter.critter_id === bctwDeployment?.critter_id
+      const simsCritter = simsCritters.find(
+        (simsCritter) => simsCritter.critterbase_critter_id === usersBctwDeployment?.critter_id
       );
 
-      if (!critterbaseCritter) {
+      if (!simsCritter) {
         continue;
       }
 
@@ -293,15 +310,15 @@ export class TelemetryService extends DBService {
         longitude: telemetryRecord.longitude,
         telemetry_type: telemetryRecord.telemetry_type,
         // IDeploymentRecord
-        device_id: bctwDeployment.device_id,
+        device_id: usersBctwDeployment.device_id,
         // Deployment
         bctw_deployment_id: telemetryRecord.deployment_id,
-        critter_id: surveyDeployment.critter_id,
-        deployment_id: surveyDeployment.deployment_id,
+        critter_id: simsDeployment.critter_id,
+        deployment_id: simsDeployment.deployment_id,
         // SurveyCritterRecord
-        critterbase_critter_id: bctwDeployment.critter_id,
+        critterbase_critter_id: usersBctwDeployment.critter_id,
         // ICritter
-        animal_id: critterbaseCritter.animal_id
+        animal_id: simsCritter.animal_id
       });
     }
 

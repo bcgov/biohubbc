@@ -1,8 +1,16 @@
 import { IDBConnection } from '../database/db';
+import { IAnimalAdvancedFilters } from '../models/animal-view';
 import { ITelemetryAdvancedFilters } from '../models/telemetry-view';
 import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
+import { CritterbaseService, ICritter } from './critterbase-service';
 import { DBService } from './db-service';
+
+export type IFindCrittersResponse = Pick<
+  ICritter,
+  'wlh_id' | 'animal_id' | 'sex' | 'itis_tsn' | 'itis_scientific_name' | 'critter_comment'
+> &
+  Pick<SurveyCritterRecord, 'critter_id' | 'survey_id' | 'critterbase_critter_id'>;
 
 /**
  * Service layer for survey critters.
@@ -20,7 +28,8 @@ export class SurveyCritterService extends DBService {
     this.critterRepository = new SurveyCritterRepository(connection);
   }
   /**
-   * Get all critter associations for the given survey. This only gets you critter ids, which can be used to fetch details from the external system.
+   * Get all critter associations for the given survey. This only gets you critter ids, which can be used to fetch
+   * details from the external system.
    *
    * @param {number} surveyId
    * @return {*}  {Promise<SurveyCritterRecord[]>}
@@ -33,23 +42,83 @@ export class SurveyCritterService extends DBService {
   /**
    * Retrieves all critters that are available to the user, based on their permissions.
    *
-   * Note: SIMS does not store critter information, beyond an ID. Critter details must be fetched from the external
-   * Critterbase API.
-   *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
-   * @param {ITelemetryAdvancedFilters} [filterFields]
+   * @param {IAnimalAdvancedFilters} [filterFields]
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<SurveyCritterRecord[]>}
+   * @return {*}  {Promise<IFindCrittersResponse[]>}
    * @memberof SurveyCritterService
    */
   async findCritters(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields?: ITelemetryAdvancedFilters,
+    filterFields?: IAnimalAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<SurveyCritterRecord[]> {
-    return this.critterRepository.findCritters(isUserAdmin, systemUserId, filterFields, pagination);
+  ): Promise<IFindCrittersResponse[]> {
+    // --- Step 1 -----------------------------
+
+    // The SIMS critter records the user has access to
+    const simsCritters = await this.critterRepository.findCritters(isUserAdmin, systemUserId, filterFields, pagination);
+
+    if (!simsCritters.length) {
+      // Exit early if there are no SIMS critters
+      return [];
+    }
+
+    // --- Step 2 -----------------------------
+
+    const critterbaseCritterIds = simsCritters.map((critter) => critter.critterbase_critter_id);
+
+    const critterbaseService = new CritterbaseService({
+      keycloak_guid: this.connection.systemUserGUID(),
+      username: this.connection.systemUserIdentifier()
+    });
+    // The detailed critter records from Critterbase
+    const critterbaseCritters = await critterbaseService.getMultipleCrittersByIds(critterbaseCritterIds);
+
+    // --- Step 3 -----------------------------
+
+    // Parse/combine the telemetry, deployment, and critter records into the final response
+    const response: IFindCrittersResponse[] = [];
+    for (const critterbaseCritter of critterbaseCritters) {
+      const simsCritter = simsCritters.find(
+        (critter) => critter.critterbase_critter_id === critterbaseCritter.critter_id
+      );
+
+      if (!simsCritter) {
+        continue;
+      }
+
+      response.push({
+        wlh_id: critterbaseCritter.wlh_id,
+        animal_id: critterbaseCritter.animal_id,
+        sex: critterbaseCritter.sex,
+        itis_tsn: critterbaseCritter.itis_tsn,
+        itis_scientific_name: critterbaseCritter.itis_scientific_name,
+        critter_comment: critterbaseCritter.critter_comment,
+        ...simsCritter
+      });
+    }
+
+    return response;
+  }
+
+  /**
+   * Retrieves the count of all critters that are available to the user, based on their permissions and provided
+   * filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ITelemetryAdvancedFilters} [filterFields]
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyCritterService
+   */
+  async findCrittersCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields?: ITelemetryAdvancedFilters
+  ): Promise<number> {
+    return this.critterRepository.findCrittersCount(isUserAdmin, systemUserId, filterFields);
   }
 
   /**

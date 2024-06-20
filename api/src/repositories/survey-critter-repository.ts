@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import { getKnex } from '../database/db';
+import { ApiExecuteSQLError } from '../errors/api-error';
+import { IAnimalAdvancedFilters } from '../models/animal-view';
 import { ITelemetryAdvancedFilters } from '../models/telemetry-view';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
@@ -41,26 +43,16 @@ export class SurveyCritterRepository extends BaseRepository {
   }
 
   /**
-   * Retrieves all critters that are available to the user based on the user's permissions and search criteria.
-   *
-   * Note: SIMS does not store critter information, beyond an ID. Critter details must be fetched from the external
-   * Critterbase API.
+   * Constructs a non-paginated query to retrieve critters that are available to the user based on the user's
+   * permissions and filter criteria.
    *
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId The system user id of the user making the request
-   * @param {ITelemetryAdvancedFilters} [filterFields]
-   * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<SurveyCritterRecord[]>}
+   * @param {(number | null)} systemUserId
+   * @param {IAnimalAdvancedFilters} [filterFields]
+   * @return {*}
    * @memberof SurveyCritterRepository
    */
-  async findCritters(
-    isUserAdmin: boolean,
-    systemUserId: number | null,
-    filterFields?: ITelemetryAdvancedFilters,
-    pagination?: ApiPaginationOptions
-  ): Promise<SurveyCritterRecord[]> {
-    defaultLog.debug({ label: 'getCrittersInSurvey', systemUserId });
-
+  _makeFindCrittersQuery(isUserAdmin: boolean, systemUserId: number | null, filterFields?: IAnimalAdvancedFilters) {
     const query = getKnex().select(['critter_id', 'survey_id', 'critterbase_critter_id']).from('critter');
 
     if (!isUserAdmin) {
@@ -80,17 +72,75 @@ export class SurveyCritterRepository extends BaseRepository {
       });
     }
 
+    return query;
+  }
+
+  /**
+   * Retrieves all critters that are available to the user based on the user's permissions and filter criteria.
+   *
+   * Note: SIMS does not store critter information, beyond an ID. Critter details must be fetched from the external
+   * Critterbase API.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ITelemetryAdvancedFilters} [filterFields]
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<SurveyCritterRecord[]>}
+   * @memberof SurveyCritterRepository
+   */
+  async findCritters(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields?: ITelemetryAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<SurveyCritterRecord[]> {
+    const query = this._makeFindCrittersQuery(isUserAdmin, systemUserId, filterFields);
+
     if (pagination) {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
-      //   if (pagination.sort && pagination.order) {
-      //     query.orderBy(pagination.sort, pagination.order);
-      //   }
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
     }
 
     const response = await this.connection.knex(query);
 
     return response.rows;
+  }
+
+  /**
+   * Retrieves the total count of all critters that are available to the user based on the user's permissions and
+   * filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ITelemetryAdvancedFilters} [filterFields]
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyCritterRepository
+   */
+  async findCrittersCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields?: ITelemetryAdvancedFilters
+  ): Promise<number> {
+    const findCrittersQuery = this._makeFindCrittersQuery(isUserAdmin, systemUserId, filterFields);
+
+    const knex = getKnex();
+
+    // See https://knexjs.org/guide/query-builder.html#usage-with-typescript-3 for details on count() usage
+    const query = knex.from(findCrittersQuery.as('fcq')).select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(query, z.object({ count: z.number() }));
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get critter count', [
+        'SurveyCritterRepository->findCrittersCount',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].count;
   }
 
   /**

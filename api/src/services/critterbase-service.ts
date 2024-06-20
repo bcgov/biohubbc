@@ -379,22 +379,8 @@ export class CritterbaseService {
     return response.data;
   }
 
-  async getMultipleCrittersByIds(critter_ids: string[]) {
+  async getMultipleCrittersByIds(critter_ids: string[]): Promise<ICritter[]> {
     const response = await this.axiosInstance.post(CRITTER_ENDPOINT, { critter_ids });
-    return response.data;
-  }
-
-  /**
-   * Fetch multiple critters by their Critterbase ids.
-   *
-   * TODO: Bug fix - not returning any critters with ?format=detailed
-   *
-   * @param {string[]} critter_ids
-   * @return {*}  {Promise<ICritter[]>}
-   * @memberof CritterbaseService
-   */
-  async getMultipleCrittersByIdsDetailed(critter_ids: string[]): Promise<ICritter[]> {
-    const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}`, { critter_ids }); //?format=detailed
     return response.data;
   }
 
