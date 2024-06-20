@@ -6,9 +6,8 @@ import {
   getCritterRowsToValidate,
   validateCritterRows
 } from '../utils/critter-xlsx-utils/critter-column-utils';
-import { getLogger } from '../utils/logger';
 import { MediaFile } from '../utils/media/media-file';
-import { critterStandardColumnValidator } from '../utils/observation-xlsx-utils/standard-column-utils';
+import { critterStandardColumnValidator } from '../utils/xlsx-utils/column-validators';
 import {
   constructXLSXWorkbook,
   getDefaultWorksheet,
@@ -17,8 +16,6 @@ import {
 } from '../utils/xlsx-utils/worksheet-utils';
 import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
-
-const defaultLog = getLogger('services/survey-critter-service');
 
 /**
  * Service layer for survey critters.

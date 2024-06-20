@@ -40,16 +40,16 @@ import {
   TsnMeasurementTypeDefinitionMap,
   validateMeasurements
 } from '../utils/observation-xlsx-utils/measurement-column-utils';
+import { getNonStandardColumnNamesFromWorksheet } from '../utils/observation-xlsx-utils/standard-column-utils';
 import {
   getCountFromRow,
   getDateFromRow,
   getLatitudeFromRow,
   getLongitudeFromRow,
-  getNonStandardColumnNamesFromWorksheet,
   getTimeFromRow,
   getTsnFromRow,
   observationStandardColumnValidator
-} from '../utils/observation-xlsx-utils/standard-column-utils';
+} from '../utils/xlsx-utils/column-validators';
 import {
   constructXLSXWorkbook,
   getDefaultWorksheet,
@@ -716,7 +716,7 @@ export class ObservationService extends DBService {
    * name to match its ITIS TSN.
    *
    * @template RecordWithTaxonFields
-   * @param {RecordWithTaxonFields[]} records
+   * @param {RecordWithTaxonFields[]} recordsToPatch
    * @return {*}  {Promise<RecordWithTaxonFields[]>}
    * @memberof ObservationService
    */

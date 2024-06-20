@@ -7,7 +7,7 @@ import {
   getSexFromRow,
   getTsnFromRow,
   getWlhIdFromRow
-} from '../observation-xlsx-utils/standard-column-utils';
+} from '../xlsx-utils/column-validators';
 
 const defaultLog = getLogger('utils/critter-xlsx-utils/critter-column-utils');
 
@@ -85,17 +85,4 @@ export const validateCritterRows = (rows: CsvCritter[], surveyCritterAliases: Se
   }
 
   return result.success;
-};
-
-/**
- * An XLSX validation config for the standard columns of a critter CSV.
- */
-export const critterStandardColumnValidator: IXLSXCSVValidator = {
-  columnNames: [ITIS_TSN, SEX, ALIAS, WLH_ID, DESCRIPTION],
-  columnTypes: ['number', 'string', 'string', 'string', 'string'],
-  columnAliases: {
-    ITIS_TSN: [TAXON, SPECIES, TSN],
-    DESCRIPTION: [COMMENT],
-    ALIAS: [NICKNAME]
-  }
 };
