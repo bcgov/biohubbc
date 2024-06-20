@@ -71,26 +71,6 @@ GET.apiDoc = {
     },
     {
       in: 'query',
-      name: 'start_date',
-      description: 'ISO 8601 datetime string',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'end_date',
-      description: 'ISO 8601 datetime string',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
       name: 'system_user_id',
       required: false,
       schema: {

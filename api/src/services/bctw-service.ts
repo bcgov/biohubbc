@@ -88,7 +88,6 @@ export type IKeyXDetails = z.infer<typeof IKeyXDetails>;
 
 export const IAllTelemetry = z
   .object({
-    id: z.number(),
     deployment_id: z.string().uuid(),
     latitude: z.number(),
     longitude: z.number(),

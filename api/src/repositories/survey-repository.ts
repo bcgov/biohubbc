@@ -6,12 +6,12 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
+  FindSurveysResponse,
   GetAttachmentsData,
   GetReportAttachmentsData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
-  ISurveyAdvancedFilters,
-  SurveyListData
+  ISurveyAdvancedFilters
 } from '../models/survey-view';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
@@ -235,7 +235,7 @@ export class SurveyRepository extends BaseRepository {
    * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {ISurveyAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<SurveyListData[]>}
+   * @return {*}  {Promise<FindSurveysResponse[]>}
    * @memberof SurveyRepository
    */
   async findSurveys(
@@ -243,7 +243,7 @@ export class SurveyRepository extends BaseRepository {
     systemUserId: number | null,
     filterFields: ISurveyAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<SurveyListData[]> {
+  ): Promise<FindSurveysResponse[]> {
     const query = this._makeFindSurveysQuery(isUserAdmin, systemUserId, filterFields);
 
     // Pagination
@@ -255,7 +255,7 @@ export class SurveyRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(query, SurveyListData);
+    const response = await this.connection.knex(query, FindSurveysResponse);
 
     return response.rows;
   }

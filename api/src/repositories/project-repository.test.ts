@@ -85,7 +85,7 @@ describe('ProjectRepository', () => {
 
       const repository = new ProjectRepository(dbConnection);
 
-      const response = await repository.findProjectsCount({}, false, 1001);
+      const response = await repository.findProjectsCount(false, 1001, {});
 
       expect(response).to.eql(69);
     });
@@ -97,7 +97,7 @@ describe('ProjectRepository', () => {
       const repository = new ProjectRepository(dbConnection);
 
       try {
-        await repository.findProjectsCount({}, true, 1001);
+        await repository.findProjectsCount(true, 1001, {});
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to get project count');

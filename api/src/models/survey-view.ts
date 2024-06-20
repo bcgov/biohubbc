@@ -20,7 +20,7 @@ export interface ISurveyAdvancedFilters {
   system_user_id?: number;
 }
 
-export const SurveyListData = z.object({
+export const FindSurveysResponse = z.object({
   project_id: z.number(),
   survey_id: z.number(),
   name: z.string(),
@@ -32,7 +32,7 @@ export const SurveyListData = z.object({
   types: z.array(z.number().nullable())
 });
 
-export type SurveyListData = z.infer<typeof SurveyListData>;
+export type FindSurveysResponse = z.infer<typeof FindSurveysResponse>;
 
 export type SurveyObject = {
   survey_details: GetSurveyData;

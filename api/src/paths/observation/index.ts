@@ -26,7 +26,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getObservations()
+  findObservations()
 ];
 
 GET.apiDoc = {
@@ -165,7 +165,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getObservations(): RequestHandler {
+export function findObservations(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'getObservations' });
 
@@ -217,6 +217,7 @@ export function getObservations(): RequestHandler {
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getObservations', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

@@ -161,16 +161,16 @@ export class ProjectRepository extends BaseRepository {
   /**
    * Returns the total count of projects that are visible to the given user.
    *
-   * @param {IProjectAdvancedFilters} filterFields
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IProjectAdvancedFilters} filterFields
    * @return {*}  {Promise<number>}
    * @memberof ProjectRepository
    */
   async findProjectsCount(
-    filterFields: IProjectAdvancedFilters,
     isUserAdmin: boolean,
-    systemUserId: number | null
+    systemUserId: number | null,
+    filterFields: IProjectAdvancedFilters
   ): Promise<number> {
     const projectsListQuery = this._makeFindProjectsQuery(isUserAdmin, systemUserId, filterFields);
 

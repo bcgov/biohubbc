@@ -8,7 +8,7 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import yup from 'utils/YupSchema';
 
 declare module 'yup' {
-  export class StringSchema extends yup.StringSchema {
+  interface StringSchema {
     /**
      * Determine if the string is a valid date string. Does nothing if the string is null.
      *
@@ -99,7 +99,7 @@ declare module 'yup' {
     ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
   }
 
-  export class ArraySchema extends yup.ArraySchema {
+  interface ArraySchema {
     /**
      * Determine if the array of classification details has duplicates
      *

@@ -3,6 +3,7 @@ import { IDBConnection } from '../database/db';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PostSurveyLocationData, PutPartnershipsData, PutSurveyObject } from '../models/survey-update';
 import {
+  FindSurveysResponse,
   GetAncillarySpeciesData,
   GetAttachmentsData,
   GetFocalSpeciesData,
@@ -14,7 +15,6 @@ import {
   GetSurveyPurposeAndMethodologyData,
   ISurveyAdvancedFilters,
   ISurveyPartnerships,
-  SurveyListData,
   SurveyObject,
   SurveySupplementaryData
 } from '../models/survey-view';
@@ -346,7 +346,7 @@ export class SurveyService extends DBService {
     systemUserId: number | null,
     filterFields: ISurveyAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<SurveyListData[]> {
+  ): Promise<FindSurveysResponse[]> {
     return this.surveyRepository.findSurveys(isUserAdmin, systemUserId, filterFields, pagination);
   }
 

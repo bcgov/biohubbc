@@ -6,7 +6,7 @@ import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { CritterbaseService, ICritter } from './critterbase-service';
 import { DBService } from './db-service';
 
-export type IFindCrittersResponse = Pick<
+export type FindCrittersResponse = Pick<
   ICritter,
   'wlh_id' | 'animal_id' | 'sex' | 'itis_tsn' | 'itis_scientific_name' | 'critter_comment'
 > &
@@ -46,7 +46,7 @@ export class SurveyCritterService extends DBService {
    * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {IAnimalAdvancedFilters} [filterFields]
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<IFindCrittersResponse[]>}
+   * @return {*}  {Promise<FindCrittersResponse[]>}
    * @memberof SurveyCritterService
    */
   async findCritters(
@@ -54,7 +54,7 @@ export class SurveyCritterService extends DBService {
     systemUserId: number | null,
     filterFields?: IAnimalAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<IFindCrittersResponse[]> {
+  ): Promise<FindCrittersResponse[]> {
     // --- Step 1 -----------------------------
 
     // The SIMS critter records the user has access to
@@ -79,7 +79,7 @@ export class SurveyCritterService extends DBService {
     // --- Step 3 -----------------------------
 
     // Parse/combine the telemetry, deployment, and critter records into the final response
-    const response: IFindCrittersResponse[] = [];
+    const response: FindCrittersResponse[] = [];
     for (const critterbaseCritter of critterbaseCritters) {
       const simsCritter = simsCritters.find(
         (critter) => critter.critterbase_critter_id === critterbaseCritter.critter_id

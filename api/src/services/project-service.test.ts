@@ -64,7 +64,7 @@ describe('ProjectService', () => {
 
       const repoStub = sinon.stub(ProjectRepository.prototype, 'findProjectsCount').resolves(69);
 
-      const response = await service.findProjectsCount({}, false, 1001);
+      const response = await service.findProjectsCount(false, 1001, {});
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(69);

@@ -19,7 +19,7 @@ import { ICritter, ICritterbaseUser } from './critterbase-service';
 import { DBService } from './db-service';
 import { SurveyCritterService } from './survey-critter-service';
 
-export type IFindTelemetryResponse = { telemetry_id: string } & Pick<
+export type FindTelemetryResponse = { telemetry_id: string } & Pick<
   IAllTelemetry,
   'acquisition_date' | 'latitude' | 'longitude' | 'telemetry_type'
 > &
@@ -190,7 +190,7 @@ export class TelemetryService extends DBService {
    * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {ITelemetryAdvancedFilters} [filterFields]
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<IFindTelemetryResponse[]>}
+   * @return {*}  {Promise<FindTelemetryResponse[]>}
    * @memberof TelemetryService
    */
   async findTelemetry(
@@ -198,7 +198,7 @@ export class TelemetryService extends DBService {
     systemUserId: number | null,
     filterFields?: ITelemetryAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<IFindTelemetryResponse[]> {
+  ): Promise<FindTelemetryResponse[]> {
     // --- Step 1 -----------------------------
 
     const surveyCritterService = new SurveyCritterService(this.connection);
@@ -276,7 +276,7 @@ export class TelemetryService extends DBService {
     // --- Step 5 ------------------------------
 
     // Parse/combine the telemetry, deployment, and critter records into the final response
-    const response: IFindTelemetryResponse[] = [];
+    const response: FindTelemetryResponse[] = [];
     for (const telemetryRecord of allTelemetryRecords) {
       const usersBctwDeployment = usersBctwDeployments.find(
         (usersBctwDeployment) => usersBctwDeployment.deployment_id === telemetryRecord.deployment_id

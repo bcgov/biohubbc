@@ -259,7 +259,7 @@ export function findProjects(): RequestHandler {
           filterFields,
           ensureCompletePaginationOptions(paginationOptions)
         ),
-        projectService.findProjectsCount(filterFields, isUserAdmin, systemUserId)
+        projectService.findProjectsCount(isUserAdmin, systemUserId, filterFields)
       ]);
 
       await connection.commit();

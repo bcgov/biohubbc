@@ -86,18 +86,18 @@ export class ProjectService extends DBService {
    * Retrieves the count of all projects that are available to the user, based on their permissions and provided
    * filter criteria.
    *
-   * @param {IProjectAdvancedFilters} filterFields
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IProjectAdvancedFilters} filterFields
    * @return {*}  {Promise<number>}
    * @memberof ProjectService
    */
   async findProjectsCount(
-    filterFields: IProjectAdvancedFilters,
     isUserAdmin: boolean,
-    systemUserId: number | null
+    systemUserId: number | null,
+    filterFields: IProjectAdvancedFilters
   ): Promise<number> {
-    return this.projectRepository.findProjectsCount(filterFields, isUserAdmin, systemUserId);
+    return this.projectRepository.findProjectsCount(isUserAdmin, systemUserId, filterFields);
   }
 
   /**
