@@ -3,6 +3,7 @@ import SingleDateField from 'components/fields/SingleDateField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import { FilterFieldsContainer } from 'features/summary/components/FilterFieldsContainer';
 import { Formik } from 'formik';
+import { useTaxonomyContext } from 'hooks/useContext';
 
 export type IObservationsAdvancedFilters = {
   keyword?: string;
@@ -40,6 +41,8 @@ export interface IObservationsListFilterFormProps {
 export const ObservationsListFilterForm = (props: IObservationsListFilterFormProps) => {
   const { handleSubmit, initialValues } = props;
 
+  const taxonomyContext = useTaxonomyContext();
+
   return (
     <Formik initialValues={initialValues ?? ObservationAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
       {(formikProps) => (
@@ -50,6 +53,11 @@ export const ObservationsListFilterForm = (props: IObservationsListFilterFormPro
               formikFieldName={'itis_tsn'}
               label={'Species'}
               placeholder="Search by taxon"
+              defaultSpecies={
+                (initialValues?.itis_tsn &&
+                  taxonomyContext.getCachedSpeciesTaxonomyByIdAsync(Number(initialValues.itis_tsn))) ||
+                undefined
+              }
               handleSpecies={(value) => {
                 if (value?.tsn) {
                   formikProps.setFieldValue('itis_tsn', value.tsn);

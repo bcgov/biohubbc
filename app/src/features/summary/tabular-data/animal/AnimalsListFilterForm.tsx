@@ -2,6 +2,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import { FilterFieldsContainer } from 'features/summary/components/FilterFieldsContainer';
 import { Formik } from 'formik';
+import { useTaxonomyContext } from 'hooks/useContext';
 
 export type IAnimalsAdvancedFilters = {
   itis_tsn?: number;
@@ -25,6 +26,8 @@ export interface IAnimalsListFilterFormProps {
 const AnimalsListFilterForm = (props: IAnimalsListFilterFormProps) => {
   const { handleSubmit, initialValues } = props;
 
+  const taxonomyContext = useTaxonomyContext();
+
   return (
     <Formik initialValues={initialValues ?? AnimalsAdvancedFiltersInitialValues} onSubmit={handleSubmit}>
       {(formikProps) => (
@@ -35,6 +38,11 @@ const AnimalsListFilterForm = (props: IAnimalsListFilterFormProps) => {
               formikFieldName={'itis_tsns'}
               label={'Species'}
               placeholder="Search by taxon"
+              defaultSpecies={
+                (initialValues?.itis_tsn &&
+                  taxonomyContext.getCachedSpeciesTaxonomyByIdAsync(Number(initialValues.itis_tsn))) ||
+                undefined
+              }
               handleSpecies={(value) => {
                 if (value?.tsn) {
                   formikProps.setFieldValue('itis_tsns', value.tsn);

@@ -3,6 +3,7 @@ import { SystemUserAutocompleteField } from 'components/fields/SystemUserAutocom
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import { FilterFieldsContainer } from 'features/summary/components/FilterFieldsContainer';
 import { Formik } from 'formik';
+import { useTaxonomyContext } from 'hooks/useContext';
 
 export type ISurveyAdvancedFilters = {
   keyword?: string;
@@ -30,6 +31,8 @@ export interface ISurveysListFilterFormProps {
 const SurveysListFilterForm = (props: ISurveysListFilterFormProps) => {
   const { handleSubmit, initialValues } = props;
 
+  const taxonomyContext = useTaxonomyContext();
+
   return (
     <Formik
       initialValues={initialValues ?? SurveyAdvancedFiltersInitialValues}
@@ -50,6 +53,11 @@ const SurveysListFilterForm = (props: ISurveysListFilterFormProps) => {
               formikFieldName="itis_tsn"
               label="Species"
               placeholder="Search by taxon"
+              defaultSpecies={
+                (initialValues?.itis_tsn &&
+                  taxonomyContext.getCachedSpeciesTaxonomyByIdAsync(Number(initialValues.itis_tsn))) ||
+                undefined
+              }
               handleSpecies={(value) => {
                 if (value?.tsn) {
                   formikProps.setFieldValue('itis_tsn', value.tsn);

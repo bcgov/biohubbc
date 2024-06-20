@@ -10,7 +10,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import { IPartialTaxonomy, ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { debounce, startCase } from 'lodash-es';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export interface ISpeciesAutocompleteFieldProps {
   /**
@@ -46,7 +46,11 @@ export interface ISpeciesAutocompleteFieldProps {
    * @type {ITaxonomy | IPartialTaxonomy}
    * @memberof ISpeciesAutocompleteFieldProps
    */
-  defaultSpecies?: ITaxonomy | IPartialTaxonomy;
+  defaultSpecies?:
+    | ITaxonomy
+    | IPartialTaxonomy
+    | Promise<ITaxonomy | null | undefined>
+    | Promise<IPartialTaxonomy | null | undefined>;
   /**
    * The error message to display.
    *
@@ -121,12 +125,38 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   const biohubApi = useBiohubApi();
   const isMounted = useIsMounted();
 
+  // A default species has been provided and it is not a promise
+  const isDefaultSpecies = defaultSpecies && !('then' in defaultSpecies);
+
   // The input field value
-  const [inputValue, setInputValue] = useState(defaultSpecies?.scientificName ?? '');
+  const [inputValue, setInputValue] = useState<string>(isDefaultSpecies ? defaultSpecies?.scientificName : '');
   // The array of options to choose from
-  const [options, setOptions] = useState<(ITaxonomy | IPartialTaxonomy)[]>(defaultSpecies ? [defaultSpecies] : []);
+  const [options, setOptions] = useState<(ITaxonomy | IPartialTaxonomy)[]>(isDefaultSpecies ? [defaultSpecies] : []);
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (defaultSpecies && 'then' in defaultSpecies) {
+      // A default species has been provided and it is a promise
+      defaultSpecies.then((taxonomy) => {
+        if (!isMounted()) {
+          return;
+        }
+
+        if (inputValue !== '') {
+          // Input value has been set by the user, do not override it
+          return;
+        }
+
+        if (!taxonomy) {
+          return;
+        }
+
+        setInputValue(taxonomy.scientificName);
+        setOptions([taxonomy]);
+      });
+    }
+  }, [defaultSpecies, inputValue, isMounted]);
 
   const handleSearch = useMemo(
     () =>
