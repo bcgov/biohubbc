@@ -1,15 +1,32 @@
-import { get } from 'lodash';
 import { IXLSXCSVValidator } from './worksheet-utils';
 
 type Row = Record<string, any>;
 
-// Shared taxon / species aliases
+// Taxon / species aliases
 const ITIS_TSN = 'ITIS_TSN';
 const TAXON = 'TAXON';
 const SPECIES = 'SPECIES';
 const TSN = 'TSN';
 
-// Critter columns and aliases
+// DateTime
+const DATE = 'DATE';
+const TIME = 'TIME';
+
+// Latitude and aliases
+const LATITUDE = 'LATITUDE';
+const LAT = 'LAT';
+
+// Longitude and aliases
+const LONGITUDE = 'LONGITUDE';
+const LON = 'LON';
+const LONG = 'LONG';
+const LNG = 'LNG';
+
+// Comment aliases
+const COMMENT = 'COMMENT';
+const DESCRIPTION = 'DESCRIPTION';
+
+// Critter nickname and aliases
 const ALIAS = 'ALIAS';
 const NICKNAME = 'NICKNAME';
 
@@ -19,25 +36,7 @@ const SEX = 'SEX';
 // Critter Wildlife Health ID
 const WLH_ID = 'WLH_ID';
 
-// Shared comment aliases
-const COMMENT = 'COMMENT';
-const DESCRIPTION = 'DESCRIPTION';
-
-// DateTime column names
-const DATE = 'DATE';
-const TIME = 'TIME';
-
-// Latitude aliases
-const LATITUDE = 'LATITUDE';
-const LAT = 'LAT';
-
-// Longitude aliases
-const LONGITUDE = 'LONGITUDE';
-const LON = 'LON';
-const LONG = 'LONG';
-const LNG = 'LNG';
-
-// Observation sub-count aliases
+// Observation sub-count
 const COUNT = 'COUNT';
 
 /**
@@ -76,14 +75,22 @@ export const critterStandardColumnValidator: IXLSXCSVValidator = {
  * @param {string[]} headers - Column headers
  * @returns {(row: Row) => any} Row value getter function
  */
-const generateCellValueGetter = (headers: string[]) => {
-  return (row: Row) => get(row, headers);
+const generateCellValueGetter = <T = any /* Temp default*/>(headers: string[]) => {
+  return (row: Row) => {
+    for (const header of headers) {
+      if (row[header]) {
+        return row[header] as T;
+      }
+    }
+  };
 };
 
 /**
  * Row cell value getters.
  *
  * Retrieve a specific row cell value from a list of provided headers.
+ *
+ * TODO: update generic types for getters (existing validators would need updating)
  */
 export const getTsnFromRow = generateCellValueGetter([ITIS_TSN, TSN, TAXON, SPECIES]);
 
@@ -97,10 +104,10 @@ export const getLatitudeFromRow = generateCellValueGetter([LATITUDE, LAT]);
 
 export const getLongitudeFromRow = generateCellValueGetter([LONGITUDE, LONG, LON, LNG]);
 
-export const getDescriptionFromRow = generateCellValueGetter([DESCRIPTION, COMMENT]);
+export const getDescriptionFromRow = generateCellValueGetter<string>([DESCRIPTION, COMMENT]);
 
-export const getAliasFromRow = generateCellValueGetter([ALIAS, NICKNAME]);
+export const getAliasFromRow = generateCellValueGetter<string>([ALIAS, NICKNAME]);
 
-export const getWlhIdFromRow = generateCellValueGetter([WLH_ID]);
+export const getWlhIdFromRow = generateCellValueGetter<string>([WLH_ID]);
 
-export const getSexFromRow = generateCellValueGetter([SEX]);
+export const getSexFromRow = generateCellValueGetter<'Male' | 'Female' | 'Unknown'>([SEX]);

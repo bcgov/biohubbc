@@ -7,7 +7,7 @@ import { authorizeRequestHandler } from '../../../../../../request-handlers/secu
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { scanFileForVirus } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
-import { MediaFile } from '../../../../../../utils/media/media-file';
+import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/critters/import');
 
@@ -60,7 +60,7 @@ POST.apiDoc = {
           required: ['media'],
           properties: {
             media: {
-              description: 'A survey critters submission file.',
+              description: 'Survey Critters submission import file.',
               type: 'string',
               format: 'binary'
             }
@@ -71,15 +71,18 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Upload OK',
+      description: 'Import OK',
       content: {
         'application/json': {
           schema: {
             type: 'object',
             additionalProperties: false,
             properties: {
-              submissionId: {
-                type: 'number'
+              survey_critter_ids: {
+                type: 'array',
+                items: {
+                  type: 'number'
+                }
               }
             }
           }
@@ -105,25 +108,23 @@ POST.apiDoc = {
 };
 
 /**
- * Uploads a media file to S3 and inserts a matching record in the `survey_observation_submission` table.
+ * Imports a `Critter CSV` which adds critters to `survey_critter` table and creates critters in Critterbase.
  *
  * @return {*}  {RequestHandler}
  */
 export function importCsv(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const files = req.files as Express.Multer.File[];
-    const rawFile = files[0];
+    const rawFiles = req.files as Express.Multer.File[];
+    const rawFile = rawFiles[0];
 
     const connection = getDBConnection(req['keycloak_token']);
-
-    const surveyCritterService = new SurveyCritterService(connection);
 
     try {
       await connection.open();
 
-      if (files?.length !== 1) {
-        throw new HTTP400('Invalid amount of files. Expected single CSV file.');
+      if (rawFiles.length !== 1) {
+        throw new HTTP400('Invalid number of files included. Expected 1 CSV file.');
       }
 
       if (!rawFile?.originalname.endsWith('.csv')) {
@@ -133,23 +134,27 @@ export function importCsv(): RequestHandler {
       const virusScanResult = await scanFileForVirus(rawFile);
 
       // Check for viruses
-      if (virusScanResult) {
+      if (!virusScanResult) {
         throw new HTTP400('Malicious content detected, import cancelled.');
       }
 
-      const mediaFile = new MediaFile(rawFile.filename, rawFile.mimetype, rawFile.buffer);
+      const mediaFile = parseMulterFile(rawFile);
+
+      const surveyCritterService = new SurveyCritterService(connection);
 
       // Validate the critters CSV
       const csvCritters = await surveyCritterService.validateCritterCsvForImport(surveyId, mediaFile);
 
       // Import the critters into SIMS and Critterbase
-      const critters = await surveyCritterService.importCsvCritters(surveyId, csvCritters);
+      const surveyCritterIds = await surveyCritterService.importCsvCritters(surveyId, csvCritters);
 
-      defaultLog.info({ label: 'importCritterCsv', message: 'result', result: critters });
+      const result = { survey_critter_ids: surveyCritterIds };
+
+      defaultLog.info({ label: 'importCritterCsv', message: 'result', result });
 
       await connection.commit();
 
-      return res.status(200).json({ critters });
+      return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();

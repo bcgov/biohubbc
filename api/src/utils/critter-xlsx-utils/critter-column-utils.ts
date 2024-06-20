@@ -1,6 +1,5 @@
 import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
-import { getLogger } from '../logger';
 import {
   getAliasFromRow,
   getDescriptionFromRow,
@@ -9,22 +8,21 @@ import {
   getWlhIdFromRow
 } from '../xlsx-utils/column-validators';
 
-const defaultLog = getLogger('utils/critter-xlsx-utils/critter-column-utils');
-
 /**
- * Type wrapper for unknown CSV rows or records
+ * Type wrapper for unknown CSV rows/records
  *
  */
 type Row = Record<string, any>;
 
 /**
- * Inferred type from return of getRowSchema
+ * Inferred zod schema type from return of getRowValidationSchema
  *
  */
 export type CsvCritter = z.infer<ReturnType<typeof getRowValidationSchema>>;
 
 /**
- * Get critter row validation schema with dynamic critter alias.
+ * Get critter row validation schema and inject existing survey critter aliases.
+ * Note: Survey critters may not share animal aliases. 1 alias per survey.
  *
  * @param {Set<string>} critterAliasSet - Set of allowed survey critter aliases
  * @returns {z.ZodObject} CsvCritter
@@ -33,14 +31,17 @@ const getRowValidationSchema = (critterAliasSet: Set<string>) => {
   return z.object({
     critter_id: z.string(),
     sex: z.enum(['Unknown', 'Male', 'Female']),
-    itis_tsn: z.number(), // Validation for itis_tsn exists in Critterbase
+    itis_tsn: z.number(),
     wlh_id: z
       .string()
-      .regex(/^\d{2}-.+/, '')
+      .regex(/^\d{2}-.+/, `Invalid WLH_ID. Example '10-1000R'`)
       .optional(), // valid: '10-0009R' invalid: '102-' or '10-' or '1-133K2'
     animal_id: z
       .string()
-      .refine((value) => !critterAliasSet.has(value), 'Critter alias / nickname must be unique for Survey.'),
+      .refine(
+        (value) => process.env.NODE_ENV === 'development' || !critterAliasSet.has(value),
+        'Critter alias / nickname must be unique for Survey.'
+      ),
     critter_comment: z.string().optional()
   });
 };
@@ -54,7 +55,7 @@ const getRowValidationSchema = (critterAliasSet: Set<string>) => {
 
 // TODO: Support ecological units (population units)
 
-export const getCritterRowsToValidate = (rows: Row[]): CsvCritter[] => {
+const getCritterRowsToValidate = (rows: Row[]): Partial<CsvCritter>[] => {
   return rows.map((row) => ({
     critter_id: uuid(), // Generate a uuid for each critter for convienence
     sex: getSexFromRow(row),
@@ -75,14 +76,13 @@ export const getCritterRowsToValidate = (rows: Row[]): CsvCritter[] => {
  * @param {Set<string>} surveyCritterAliases - Unique survey critter aliases
  * @returns {boolean} Validated
  */
-export const validateCritterRows = (rows: CsvCritter[], surveyCritterAliases: Set<string>) => {
-  const schema = getRowValidationSchema(surveyCritterAliases);
+export const validateCritterRows = (
+  rows: Row[],
+  surveyCritterAliases: Set<string>
+): z.SafeParseReturnType<Partial<CsvCritter>[], CsvCritter[]> => {
+  const critterRows = getCritterRowsToValidate(rows);
 
-  const result = z.array(schema).safeParse(rows);
+  const critterRowValidationSchema = getRowValidationSchema(surveyCritterAliases);
 
-  if (!result.success) {
-    defaultLog.debug({ label: 'validateCritterRows', message: 'invalid row', error: result.error });
-  }
-
-  return result.success;
+  return z.array(critterRowValidationSchema).safeParse(critterRows);
 };

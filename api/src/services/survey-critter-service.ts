@@ -1,11 +1,7 @@
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
-import {
-  CsvCritter,
-  getCritterRowsToValidate,
-  validateCritterRows
-} from '../utils/critter-xlsx-utils/critter-column-utils';
+import { CsvCritter, validateCritterRows } from '../utils/critter-xlsx-utils/critter-column-utils';
 import { MediaFile } from '../utils/media/media-file';
 import { critterStandardColumnValidator } from '../utils/xlsx-utils/column-validators';
 import {
@@ -33,8 +29,8 @@ export class SurveyCritterService extends DBService {
 
     this.critterRepository = new SurveyCritterRepository(connection);
     this.critterbaseService = new CritterbaseService({
-      keycloak_guid: this.connection.systemUserGUID(),
-      username: this.connection.systemUserIdentifier()
+      keycloak_guid: connection.systemUserGUID(),
+      username: connection.systemUserIdentifier()
     });
   }
 
@@ -64,7 +60,7 @@ export class SurveyCritterService extends DBService {
   }
 
   /**
-   * Add critters to a survey. Does not create anything in the external system.
+   * Add multiple critters to a survey. Does not create anything in the external system.
    *
    * @param {number} surveyId
    * @param {string} critterBaseCritterIds
@@ -161,6 +157,7 @@ export class SurveyCritterService extends DBService {
     const xlsxWorksheet = getDefaultWorksheet(xlsxWorkBook);
 
     // Validate the standard columns in the CSV file
+    // and insure the cell properties match the defined type
     if (!validateCsvFile(xlsxWorksheet, critterStandardColumnValidator)) {
       throw new ApiGeneralError(
         `${errorMessage} Expecting columns ${critterStandardColumnValidator.columnNames.toString()}`
@@ -170,18 +167,18 @@ export class SurveyCritterService extends DBService {
     // Get the worksheet row objects
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheet);
 
-    // Get all critter rows to validate
-    const critterRows = getCritterRowsToValidate(worksheetRowObjects);
-
     // Get all aliases / nicknames / animal ids of critters in survey
     const surveyCritterAliases = await this.getUniqueSurveyCritterAliases(surveyId);
 
     // Validate critter row data
-    if (!validateCritterRows(critterRows, surveyCritterAliases)) {
-      throw new Error(errorMessage);
+    const validation = validateCritterRows(worksheetRowObjects, surveyCritterAliases);
+
+    // Throw error and include zod row validation issues
+    if (!validation.success) {
+      throw new ApiGeneralError(errorMessage, validation.error.issues);
     }
 
-    return critterRows;
+    return validation.data;
   }
 
   /**
@@ -194,6 +191,7 @@ export class SurveyCritterService extends DBService {
    * @returns {Promise<number[]>} Survey critter ids
    */
   async importCsvCritters(surveyId: number, critters: CsvCritter[]): Promise<number[]> {
+    // Get list of Critterbase critter_ids(uuid) - different than SIMS critter_ids(number)
     const critterIds = critters.map((critter) => critter.critter_id);
 
     // Add critters to Critterbase

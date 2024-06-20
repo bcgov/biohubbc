@@ -51,12 +51,12 @@ export class SurveyCritterRepository extends BaseRepository {
 
     const queryBuilder = getKnex()
       .table('critter')
-      .insert({ survey_id: surveyId, critterbase_critter_id: critterIds })
+      .insert(critterIds.map((critterId) => ({ survey_id: surveyId, critterbase_critter_id: critterId })))
       .returning('critter_id');
 
     const response = await this.connection.knex(queryBuilder);
 
-    return response.rows[0].critter_id;
+    return response.rows.map((row) => row.critter_id);
   }
 
   /**
