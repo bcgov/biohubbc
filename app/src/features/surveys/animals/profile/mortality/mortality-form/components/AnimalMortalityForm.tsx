@@ -47,7 +47,7 @@ export const AnimalMortalityForm = <FormikValuesType extends ICreateMortalityReq
               .of(yup.number())
               .min(2)
               .max(3)
-              .test('is-valid-coordinates', 'Invalid coordinates', (value) => {
+              .test('is-valid-coordinates', 'Latitude or longitude values are outside of the valid range.', (value) => {
                 if (!value) {
                   return false;
                 }
@@ -59,7 +59,7 @@ export const AnimalMortalityForm = <FormikValuesType extends ICreateMortalityReq
         })
         .nullable()
         .default(undefined)
-        .required('mortality location is required')
+        .required('Mortality location is required')
     }),
     measurements: yup.array(
       yup

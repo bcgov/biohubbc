@@ -24,8 +24,8 @@ import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import 'leaflet/dist/leaflet.css';
-import { get } from 'lodash-es';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { debounce, get } from 'lodash-es';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { getCoordinatesFromGeoJson, isValidCoordinates } from 'utils/Utils';
@@ -79,13 +79,11 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
     }
   }, [name, values]);
 
+  const coordinates = mortalityLocationGeoJson && getCoordinatesFromGeoJson(mortalityLocationGeoJson);
+
   // Initialize state based on formik context for the edit page
-  const [latitudeInput, setLatitudeInput] = useState<string>(
-    mortalityLocationGeoJson ? String(getCoordinatesFromGeoJson(mortalityLocationGeoJson)?.latitude) ?? '' : ''
-  );
-  const [longitudeInput, setLongitudeInput] = useState<string>(
-    mortalityLocationGeoJson ? String(getCoordinatesFromGeoJson(mortalityLocationGeoJson)?.longitude) ?? '' : ''
-  );
+  const [latitudeInput, setLatitudeInput] = useState<string>(coordinates ? String(coordinates.latitude) : '');
+  const [longitudeInput, setLongitudeInput] = useState<string>(coordinates ? String(coordinates.longitude) : '');
 
   useEffect(() => {
     if (mortalityLocationGeoJson) {
@@ -99,6 +97,13 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
       setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
     }
   }, [mortalityLocationGeoJson]);
+
+  const updateFormikLocationFromLatLon = useCallback(
+    debounce((name, feature) => {
+      setFieldValue(name, feature);
+    }, 600),
+    []
+  );
 
   // Update formik and map when latitude/longitude text inputs change
   useEffect(() => {
@@ -120,7 +125,7 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
       properties: {}
     };
 
-    setFieldValue(name, feature);
+    updateFormikLocationFromLatLon(name, feature);
 
     // If coordinates are invalid, reset the map to show nothing
     if (!isValidCoordinates(lat, lon)) {
@@ -271,9 +276,6 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
                   }}
                   onLayerDelete={() => {
                     setFieldValue(name, null);
-                    setLastDrawn(null);
-                    setLatitudeInput('');
-                    setLongitudeInput('');
                   }}
                 />
               </FeatureGroup>

@@ -24,8 +24,8 @@ import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import 'leaflet/dist/leaflet.css';
-import { get } from 'lodash-es';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { debounce, get } from 'lodash-es';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { getCoordinatesFromGeoJson, isValidCoordinates } from 'utils/Utils';
@@ -76,13 +76,11 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
     }
   }, [name, values]);
 
-  // Initialize state for tracking latitude and longitude input values from MUI textfields
-  const [latitudeInput, setLatitudeInput] = useState<string>(
-    captureLocationGeoJson ? String(getCoordinatesFromGeoJson(captureLocationGeoJson)?.latitude) ?? '' : ''
-  );
-  const [longitudeInput, setLongitudeInput] = useState<string>(
-    captureLocationGeoJson ? String(getCoordinatesFromGeoJson(captureLocationGeoJson)?.longitude) ?? '' : ''
-  );
+  const coordinates = captureLocationGeoJson && getCoordinatesFromGeoJson(captureLocationGeoJson);
+
+  // Initialize state based on formik context for the edit page
+  const [latitudeInput, setLatitudeInput] = useState<string>(coordinates ? String(coordinates.latitude) : '');
+  const [longitudeInput, setLongitudeInput] = useState<string>(coordinates ? String(coordinates.longitude) : '');
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 
@@ -99,6 +97,13 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
       setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
     }
   }, [captureLocationGeoJson]);
+
+  const updateFormikLocationFromLatLon = useCallback(
+    debounce((name, feature) => {
+      setFieldValue(name, feature);
+    }, 600),
+    []
+  );
 
   // Update formik and map when latitude/longitude text inputs change
   useEffect(() => {
@@ -120,7 +125,8 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
       properties: {}
     };
 
-    setFieldValue(name, feature);
+    // Update formik through debounce function
+    updateFormikLocationFromLatLon(name, feature);
 
     // If coordinates are invalid, reset the map to show nothing
     if (!isValidCoordinates(lat, lon)) {
@@ -187,7 +193,6 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
               }}>
               {title}
             </Typography>
-
             <LatitudeLongitudeTextFields
               sx={{ mx: 1 }}
               latitudeValue={latitudeInput}
@@ -272,9 +277,6 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
                   }}
                   onLayerDelete={() => {
                     setFieldValue(name, null);
-                    setLastDrawn(null);
-                    setLatitudeInput('');
-                    setLongitudeInput('');
                   }}
                 />
               </FeatureGroup>

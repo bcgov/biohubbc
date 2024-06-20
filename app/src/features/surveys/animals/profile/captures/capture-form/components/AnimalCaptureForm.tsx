@@ -55,7 +55,7 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
                 }
                 return isValidCoordinates(value[1], value[0]);
               })
-              .required('Coordinates are invalid')
+              .required('Latitude or longitude values are outside of the valid range.')
           }),
           properties: yup.object().optional()
         })
