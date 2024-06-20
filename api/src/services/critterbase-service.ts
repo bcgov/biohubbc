@@ -16,13 +16,22 @@ export interface QueryParam {
 }
 
 export interface ICritter {
-  critter_id?: string;
-  wlh_id: string;
-  animal_id: string;
+  critter_id: string;
+  wlh_id: string | null;
+  animal_id: string | null;
   sex: string;
   itis_tsn: number;
   itis_scientific_name: string;
-  critter_comment: string;
+  critter_comment: string | null;
+}
+
+interface ICreateCritter {
+  critter_id?: string;
+  wlh_id?: string | null;
+  animal_id: string; // NOTE: In critterbase this is optional. For SIMS it should be required.
+  sex: string;
+  itis_tsn: number;
+  critter_comment?: string | null;
 }
 
 export interface ICapture {
@@ -110,15 +119,15 @@ export interface ICollection {
 }
 
 export interface IBulkCreate {
-  critters: ICritter[];
-  captures: ICapture[];
-  collections: ICollection[];
-  mortalities: IMortality[];
-  locations: ILocation[];
-  markings: IMarking[];
-  quantitative_measurements: IQuantMeasurement[];
-  qualitative_measurements: IQualMeasurement[];
-  families: IFamilyPayload[];
+  critters?: ICreateCritter[];
+  captures?: ICapture[];
+  collections?: ICollection[];
+  mortalities?: IMortality[];
+  locations?: ILocation[];
+  markings?: IMarking[];
+  quantitative_measurements?: IQuantMeasurement[];
+  qualitative_measurements?: IQualMeasurement[];
+  families?: IFamilyPayload[];
 }
 
 /**
@@ -376,7 +385,12 @@ export class CritterbaseService {
     return response.data;
   }
 
-  async getMultipleCrittersByIds(critter_ids: string[]) {
+  async bulkCreate(data: IBulkCreate) {
+    const response = await this.axiosInstance.post(BULK_ENDPOINT, data);
+    return response.data;
+  }
+
+  async getMultipleCrittersByIds(critter_ids: string[]): Promise<ICritter[]> {
     const response = await this.axiosInstance.post(CRITTER_ENDPOINT, { critter_ids });
     return response.data;
   }

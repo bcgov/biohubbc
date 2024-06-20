@@ -1,39 +1,47 @@
 import { v4 as uuid } from 'uuid';
+import { z } from 'zod';
 import { getLogger } from '../logger';
 import {
   getAliasFromRow,
   getDescriptionFromRow,
+  getSexFromRow,
   getTsnFromRow,
   getWlhIdFromRow
 } from '../observation-xlsx-utils/standard-column-utils';
 
 const defaultLog = getLogger('utils/critter-xlsx-utils/critter-column-utils');
 
+/**
+ * Type wrapper for unknown CSV rows or records
+ *
+ */
 type Row = Record<string, any>;
 
-type CsvCritter = {
-  critter_id: string;
-  itis_tsn?: number;
-  wlh_id?: string;
-  animal_id?: string;
-  critter_comment?: string;
-};
+/**
+ * Inferred type from return of getRowSchema
+ *
+ */
+export type CsvCritter = z.infer<ReturnType<typeof getRowValidationSchema>>;
 
 /**
- * Checks if input string is a `Wildlife Health ID`.
+ * Get critter row validation schema with dynamic critter alias.
  *
- * Rules:
- *  1. Starts with two digits
- *  2. Followed by a hyphen
- *  3. Followed by at least one character
- *
- * Valid: 10-0009R
- * Invalid: 102- || 10- || 1-133K2 || 102-3234A
- *
- * @param {string} wildlifeHealthId - Wildlife Health Identifier String
- * @returns {boolean} Is Wildlife Health ID
+ * @param {Set<string>} critterAliasSet - Set of allowed survey critter aliases
+ * @returns {z.ZodObject} CsvCritter
  */
-export const isWildlifeHealthId = (wildlifeHealthId: string): boolean => /^\d{2}-.+/.test(wildlifeHealthId);
+const getRowValidationSchema = (critterAliasSet: Set<string>) => {
+  return z.object({
+    critter_id: z.string(),
+    sex: z.enum(['Unknown', 'Male', 'Female']),
+    itis_tsn: z.number(), // Validation for itis_tsn exists in Critterbase
+    wlh_id: z
+      .string()
+      .regex(/^\d{2}-.+/)
+      .optional(), // valid: '10-0009R' invalid: '102-' or '10-' or '1-133K2'
+    animal_id: z.string().refine((value) => !critterAliasSet.has(value)),
+    critter_comment: z.string().optional()
+  });
+};
 
 /**
  * Parse the CSV rows into the Critterbase critter format.
@@ -41,11 +49,13 @@ export const isWildlifeHealthId = (wildlifeHealthId: string): boolean => /^\d{2}
  * @param {Row[]} rows - CSV rows
  * @returns {CsvCritter[]} Critterbase critters
  */
-//TODO: Support ecological units (population units)
+
+// TODO: Support ecological units (population units)
 
 export const getCritterRowsToValidate = (rows: Row[]): CsvCritter[] => {
   return rows.map((row) => ({
     critter_id: uuid(), // Generate a uuid for each critter for convienence
+    sex: getSexFromRow(row),
     itis_tsn: getTsnFromRow(row),
     wlh_id: getWlhIdFromRow(row),
     animal_id: getAliasFromRow(row),
@@ -54,46 +64,23 @@ export const getCritterRowsToValidate = (rows: Row[]): CsvCritter[] => {
 };
 
 /**
- * Validate critter rows are correct format.
+ * Validate critter CSV rows.
+ *
+ * Note: Business rules require unique critter aliases for surveys. Meaning a critter can have a duplicated
+ * alias as long as it is not in the same survey ie: different project
  *
  * @param {CsvCritter[]} rows - Critter rows
+ * @param {Set<string>} surveyCritterAliases - Unique survey critter aliases
  * @returns {boolean} Validated
  */
-//TODO: Validate the critter alias against survey critter (1 alias per survey)
-export const validateCritterRows = (rows: CsvCritter[]) => {
-  const validated = rows.every((row) => {
-    if (!row.itis_tsn || typeof row.itis_tsn !== 'number') {
-      defaultLog.debug({ label: 'validateCritterRows', message: 'invalid tsn', itis_tsn: row.itis_tsn });
+export const validateCritterRows = (rows: CsvCritter[], surveyCritterAliases: Set<string>) => {
+  const schema = getRowValidationSchema(surveyCritterAliases);
 
-      // ITIS tsn / species / taxon is required
-      return false;
-    }
+  const result = z.array(schema).safeParse(rows);
 
-    if (row.wlh_id && isWildlifeHealthId(row.wlh_id)) {
-      defaultLog.debug({ label: 'validateCritterRows', message: 'invalid wlh id', wlh_id: row.wlh_id });
+  if (!result.success) {
+    defaultLog.debug({ label: 'validateCritterRows', message: 'invalid row', error: result.error });
+  }
 
-      // Wildlife Health ID is invalid format
-      return false;
-    }
-
-    if (row.animal_id && typeof row.animal_id !== 'string') {
-      defaultLog.debug({ label: 'validateCritterRows', message: 'invalid alias', alias: row.animal_id });
-
-      // Alias / nickname is invalid format
-      return false;
-    }
-
-    if (row.critter_comment && typeof row.critter_comment !== 'string') {
-      defaultLog.debug({ label: 'validateCritterRows', message: 'invalid comment', comment: row.critter_comment });
-
-      // Description / comment is invalid format
-      return false;
-    }
-
-    return true;
-  });
-
-  return validated;
+  return result.success;
 };
-
-//export const validateAliasAgainstSurveyCritters = (surveyCritters: any) => {};

@@ -111,48 +111,45 @@ POST.apiDoc = {
  */
 export function importCsv(): RequestHandler {
   return async (req, res) => {
-    const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
-
-    if (!rawMediaArray?.length) {
-      // no media objects included, skipping media import step
-      throw new HTTP400('Missing import data');
-    }
-
-    if (rawMediaArray.length !== 1) {
-      // no media objects included
-      throw new HTTP400('Too many files uploaded, expected 1');
-    }
+    const surveyId = Number(req.params.surveyId);
+    const files = req.files as Express.Multer.File[];
+    const rawFile = files[0];
 
     const connection = getDBConnection(req['keycloak_token']);
 
+    const surveyCritterService = new SurveyCritterService(connection);
+
     try {
-      const rawMediaFile = rawMediaArray[0];
-
-      if (!rawMediaFile?.originalname.endsWith('.csv')) {
-        throw new HTTP400('Invalid file type, expected a CSV file.');
-      }
-
       await connection.open();
 
-      // Scan file for viruses using ClamAV
-      const virusScanResult = await scanFileForVirus(rawMediaFile);
-
-      if (!virusScanResult) {
-        throw new HTTP400('Malicious content detected, import cancelled');
+      if (files?.length !== 1) {
+        throw new HTTP400('Invalid amount of files. Expected single CSV file.');
       }
 
-      // Convert multer file to media file
-      const mediaFile = new MediaFile(rawMediaFile.filename, rawMediaFile.mimetype, rawMediaFile.buffer);
+      if (!rawFile?.originalname.endsWith('.csv')) {
+        throw new HTTP400('Invalid file type. Expected a CSV file.');
+      }
 
-      const surveyCritterService = new SurveyCritterService(connection);
+      const virusScanResult = await scanFileForVirus(rawFile);
 
-      await surveyCritterService.importCrittersFromCsv(mediaFile);
+      // Check for viruses
+      if (virusScanResult) {
+        throw new HTTP400('Malicious content detected, import cancelled.');
+      }
 
-      defaultLog.info({ label: 'importCsv', message: 'result', result });
+      const mediaFile = new MediaFile(rawFile.filename, rawFile.mimetype, rawFile.buffer);
+
+      // Validate the critters CSV
+      const csvCritters = await surveyCritterService.validateCritterCsvForImport(surveyId, mediaFile);
+
+      // Import the critters into SIMS and Critterbase
+      const critters = await surveyCritterService.importCsvCritters(surveyId, csvCritters);
+
+      defaultLog.info({ label: 'importCritterCsv', message: 'result', result: critters });
 
       await connection.commit();
 
-      return res.status(200).json({ submissionId });
+      return res.status(200).json({ critters });
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();

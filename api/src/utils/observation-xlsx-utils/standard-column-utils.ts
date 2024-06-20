@@ -1,5 +1,8 @@
+import { get } from 'lodash';
 import xlsx from 'xlsx';
 import { getHeadersUpperCase, IXLSXCSVValidator } from '../xlsx-utils/worksheet-utils';
+
+type Row = Record<string, any>;
 
 // ITIS Taxon CSV standard column names and aliases
 const ITIS_TSN = 'ITIS_TSN';
@@ -9,6 +12,7 @@ const TSN = 'TSN';
 
 // Critter CSV standard column names and aliases
 const ALIAS = 'ALIAS';
+const SEX = 'SEX';
 const NICKNAME = 'NICKNAME';
 const WLH_ID = 'WLH_ID';
 
@@ -46,8 +50,8 @@ export const observationStandardColumnValidator: IXLSXCSVValidator = {
  * An XLSX validation config for the standard columns of a critter CSV.
  */
 export const critterStandardColumnValidator: IXLSXCSVValidator = {
-  columnNames: [ITIS_TSN, ALIAS, WLH_ID, DESCRIPTION],
-  columnTypes: ['number', 'string', 'string', 'string'],
+  columnNames: [ITIS_TSN, SEX, ALIAS, WLH_ID, DESCRIPTION],
+  columnTypes: ['number', 'string', 'string', 'string', 'string'],
   columnAliases: {
     ITIS_TSN: [TAXON, SPECIES, TSN],
     DESCRIPTION: [COMMENT],
@@ -77,118 +81,38 @@ export function getNonStandardColumnNamesFromWorksheet(xlsxWorksheet: xlsx.WorkS
 }
 
 /**
- * Get the TSN cell value for a given row.
+ * Generate a row value getter function from array of allowed column values.
  *
- * Note: Requires the row headers to be UPPERCASE.
+ * NOTE: Should this be typesafe? Or should the validator logic handle the typing?
  *
- * @export
- * @param {Record<string, any>} row
- * @return {*}
+ * @param {string[]} headers - Column headers
+ * @returns {(row: Row) => any} Row value getter function
  */
-export function getTsnFromRow(row: Record<string, any>) {
-  return row[ITIS_TSN] ?? row[TSN] ?? row[TAXON] ?? row[SPECIES];
-}
+const generateCellValueGetter = (headers: string[]) => {
+  return (row: Row) => get(row, headers);
+};
 
 /**
- * Get the count cell value for a given row.
+ * Row cell value getters.
  *
- * Note: Requires the row headers to be UPPERCASE.
- *
- * @export
- * @param {Record<string, any>} row
- * @return {*}
+ * Retrieve a specific row cell value from a list of provided headers.
  */
-export function getCountFromRow(row: Record<string, any>) {
-  return row[COUNT];
-}
+export const getTsnFromRow = generateCellValueGetter([ITIS_TSN, TSN, TAXON, SPECIES]);
 
-/**
- * Get the date cell value for a given row.
- *
- * Note: Requires the row headers to be UPPERCASE.
- *
- * @export
- * @param {Record<string, any>} row
- * @return {*}
- */
-export function getDateFromRow(row: Record<string, any>) {
-  return row[DATE];
-}
+export const getCountFromRow = generateCellValueGetter([COUNT]);
 
-/**
- * Get the time cell value for a given row.
- *
- * Note: Requires the row headers to be UPPERCASE.
- *
- * @export
- * @param {Record<string, any>} row
- * @return {*}
- */
-export function getTimeFromRow(row: Record<string, any>) {
-  return row[TIME];
-}
+export const getDateFromRow = generateCellValueGetter([DATE]);
 
-/**
- * Get the latitude cell value for a given row.
- *
- * Note: Requires the row headers to be UPPERCASE.
- *
- * @export
- * @param {Record<string, any>} row
- * @return {*}
- */
-export function getLatitudeFromRow(row: Record<string, any>) {
-  return row[LATITUDE] ?? row[LAT];
-}
+export const getTimeFromRow = generateCellValueGetter([TIME]);
 
-/**
- * Get the longitude cell value for a given row.
- *
- * Note: Requires the row headers to be UPPERCASE.
- *
- * @export
- * @param {Record<string, any>} row
- * @return {*}
- */
-export function getLongitudeFromRow(row: Record<string, any>) {
-  return row[LONGITUDE] ?? row[LON] ?? row[LONG] ?? row[LNG];
-}
+export const getLatitudeFromRow = generateCellValueGetter([LATITUDE, LAT]);
 
-/**
- * Get the comment cell value for a given row.
- *
- * Note: Requires the row headers to be UPPERCASE.
- *
- * @export
- * @param {Record<string, any>} row
- * @return {*}
- */
-export function getDescriptionFromRow(row: Record<string, any>) {
-  return row[DESCRIPTION] ?? row[COMMENT];
-}
+export const getLongitudeFromRow = generateCellValueGetter([LONGITUDE, LONG, LON, LNG]);
 
-/**
- * Get the alias cell value for a given row.
- *
- * Note: Requires the row headers to be UPPERCASE.
- *
- * @export
- * @param {Record<string, any>} row
- * @return {*}
- */
-export function getAliasFromRow(row: Record<string, any>) {
-  return row[ALIAS];
-}
+export const getDescriptionFromRow = generateCellValueGetter([DESCRIPTION, COMMENT]);
 
-/**
- * Get the alias cell value for a given row.
- *
- * Note: Requires the row headers to be UPPERCASE.
- *
- * @export
- * @param {Record<string, any>} row
- * @return {*}
- */
-export function getWlhIdFromRow(row: Record<string, any>) {
-  return row[WLH_ID];
-}
+export const getAliasFromRow = generateCellValueGetter([ALIAS, NICKNAME]);
+
+export const getWlhIdFromRow = generateCellValueGetter([WLH_ID]);
+
+export const getSexFromRow = generateCellValueGetter([SEX]);
