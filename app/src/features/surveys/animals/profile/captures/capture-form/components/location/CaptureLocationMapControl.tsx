@@ -6,8 +6,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
@@ -18,6 +16,7 @@ import ImportBoundaryDialog from 'components/map/components/ImportBoundaryDialog
 import StaticLayers from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
+import LatitudeLongitudeTextFields from 'features/surveys/animals/profile/components/LatitudeLongitudeTextFields';
 import { getIn, useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
@@ -29,6 +28,7 @@ import { get } from 'lodash-es';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { getCoordinatesFromGeoJson, isValidCoordinates } from 'utils/Utils';
 
 export interface ICaptureLocationMapControlProps {
   name: string;
@@ -63,7 +63,7 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
       return;
     }
 
-    if ('latitude' in location && location.latitude !== 0 && location.longitude !== 0) {
+    if ('latitude' in location && isValidCoordinates(location.latitude, location.longitude)) {
       return {
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [location.longitude, location.latitude] },
@@ -78,28 +78,25 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
 
   // Initialize state for tracking latitude and longitude input values from MUI textfields
   const [latitudeInput, setLatitudeInput] = useState<string>(
-    captureLocationGeoJson?.geometry && 'coordinates' in captureLocationGeoJson.geometry
-      ? String(captureLocationGeoJson?.geometry.coordinates[1])
-      : ''
+    captureLocationGeoJson ? String(getCoordinatesFromGeoJson(captureLocationGeoJson)?.latitude) ?? '' : ''
   );
   const [longitudeInput, setLongitudeInput] = useState<string>(
-    captureLocationGeoJson?.geometry && 'coordinates' in captureLocationGeoJson.geometry
-      ? String(captureLocationGeoJson?.geometry.coordinates[0])
-      : ''
+    captureLocationGeoJson ? String(getCoordinatesFromGeoJson(captureLocationGeoJson)?.longitude) ?? '' : ''
   );
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 
   // Update map bounds when the data changes
   useEffect(() => {
-    setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
-
     if (captureLocationGeoJson) {
       if ('type' in captureLocationGeoJson) {
-        if (captureLocationGeoJson.geometry.type === 'Point' && captureLocationGeoJson?.geometry.coordinates[0] !== 0) {
+        const coordinates = getCoordinatesFromGeoJson(captureLocationGeoJson);
+        if (isValidCoordinates(coordinates?.latitude, coordinates?.longitude)) {
           setUpdatedBounds(calculateUpdatedMapBounds([captureLocationGeoJson]));
         }
       }
+    } else {
+      setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
     }
   }, [captureLocationGeoJson]);
 
@@ -113,9 +110,8 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
       return;
     }
 
-    const id = 1;
     const feature: Feature = {
-      id,
+      id: 1,
       type: 'Feature',
       geometry: {
         type: 'Point',
@@ -124,18 +120,19 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
       properties: {}
     };
 
+    setFieldValue(name, feature);
+
+    // If coordinates are invalid, reset the map to show nothing
+    if (!isValidCoordinates(lat, lon)) {
+      drawControlsRef.current?.clearLayers();
+      setLastDrawn(1);
+      setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
+      return;
+    }
+
     // Remove any existing drawn items in the edit layer
     drawControlsRef.current?.clearLayers();
     setLastDrawn(null);
-
-    if (!(lat > -90 && lat < 90 && lon > -180 && lon < 180)) {
-      drawControlsRef.current?.clearLayers();
-      // lastDrawn controls the visibility of the formik data (i.e., static layer) on the map.
-      // When lastDrawn !== null, the capture location in formik is hidden. If the coordinates are invalid, hide the coordinates.
-      setLastDrawn(1);
-    }
-
-    setFieldValue(name, feature);
   }, [latitudeInput, longitudeInput]);
 
   return (
@@ -167,6 +164,10 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
               lastDrawn && drawControlsRef?.current?.deleteLayer(lastDrawn);
               drawControlsRef?.current?.addLayer(features[0], () => 1);
               setLastDrawn(1);
+              if ('coordinates' in features[0].geometry) {
+                setLatitudeInput(String(features[0].geometry.coordinates[1]));
+                setLongitudeInput(String(features[0].geometry.coordinates[0]));
+              }
             }}
             onFailure={(message) => {
               setFieldError(name, message);
@@ -186,40 +187,26 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
               }}>
               {title}
             </Typography>
-            <Stack spacing={1} direction="row" mx={2}>
-              <Box>
-                <TextField
-                  size="small"
-                  name="Latitude"
-                  label="Latitude"
-                  value={latitudeInput}
-                  type="number"
-                  onChange={(event) => {
-                    if (event.currentTarget.value) {
-                      setLatitudeInput(event.currentTarget.value);
-                      return;
-                    }
-                    setLatitudeInput('');
-                  }}
-                />
-              </Box>
-              <Box>
-                <TextField
-                  size="small"
-                  name="longitude"
-                  label="Longitude"
-                  value={longitudeInput}
-                  type="number"
-                  onChange={(event) => {
-                    if (event.currentTarget.value) {
-                      setLongitudeInput(event.currentTarget.value);
-                      return;
-                    }
-                    setLongitudeInput('');
-                  }}
-                />
-              </Box>
-            </Stack>
+
+            <LatitudeLongitudeTextFields
+              sx={{ mx: 1 }}
+              latitudeValue={latitudeInput}
+              longitudeValue={longitudeInput}
+              onLatitudeChange={(event) => {
+                if (event.currentTarget.value) {
+                  setLatitudeInput(event.currentTarget.value);
+                } else {
+                  setLatitudeInput('');
+                }
+              }}
+              onLongitudeChange={(event) => {
+                if (event.currentTarget.value) {
+                  setLongitudeInput(event.currentTarget.value);
+                } else {
+                  setLongitudeInput('');
+                }
+              }}
+            />
             <Box display="flex">
               <Button
                 color="primary"

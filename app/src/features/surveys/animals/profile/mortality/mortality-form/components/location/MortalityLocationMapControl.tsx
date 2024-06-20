@@ -6,8 +6,6 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
@@ -18,6 +16,7 @@ import ImportBoundaryDialog from 'components/map/components/ImportBoundaryDialog
 import StaticLayers from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
+import LatitudeLongitudeTextFields from 'features/surveys/animals/profile/components/LatitudeLongitudeTextFields';
 import { getIn, useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import { ICreateMortalityRequest, IEditMortalityRequest } from 'interfaces/useCritterApi.interface';
@@ -29,6 +28,7 @@ import { get } from 'lodash-es';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { getCoordinatesFromGeoJson, isValidCoordinates } from 'utils/Utils';
 
 export interface IMortalityLocationMapControlProps {
   name: string;
@@ -66,7 +66,7 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
       return;
     }
 
-    if ('latitude' in location && location.latitude !== 0 && location.longitude !== 0) {
+    if ('latitude' in location && isValidCoordinates(location.latitude, location.longitude)) {
       return {
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [location.longitude, location.latitude] },
@@ -81,28 +81,23 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
 
   // Initialize state based on formik context for the edit page
   const [latitudeInput, setLatitudeInput] = useState<string>(
-    mortalityLocationGeoJson?.geometry && 'coordinates' in mortalityLocationGeoJson.geometry
-      ? String(mortalityLocationGeoJson?.geometry.coordinates[1])
-      : ''
+    mortalityLocationGeoJson ? String(getCoordinatesFromGeoJson(mortalityLocationGeoJson)?.latitude) ?? '' : ''
   );
   const [longitudeInput, setLongitudeInput] = useState<string>(
-    mortalityLocationGeoJson?.geometry && 'coordinates' in mortalityLocationGeoJson.geometry
-      ? String(mortalityLocationGeoJson?.geometry.coordinates[0])
-      : ''
+    mortalityLocationGeoJson ? String(getCoordinatesFromGeoJson(mortalityLocationGeoJson)?.longitude) ?? '' : ''
   );
 
   useEffect(() => {
     if (mortalityLocationGeoJson) {
       if ('type' in mortalityLocationGeoJson) {
-        if (mortalityLocationGeoJson.geometry.type === 'Point')
-          if (mortalityLocationGeoJson?.geometry.coordinates[0] !== 0) {
-            setUpdatedBounds(calculateUpdatedMapBounds([mortalityLocationGeoJson]));
-            return;
-          }
+        const coordinates = getCoordinatesFromGeoJson(mortalityLocationGeoJson);
+        if (isValidCoordinates(coordinates?.latitude, coordinates?.longitude)) {
+          setUpdatedBounds(calculateUpdatedMapBounds([mortalityLocationGeoJson]));
+        }
       }
+    } else {
+      setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
     }
-
-    setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
   }, [mortalityLocationGeoJson]);
 
   // Update formik and map when latitude/longitude text inputs change
@@ -115,9 +110,8 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
       return;
     }
 
-    const id = 1;
     const feature: Feature = {
-      id,
+      id: 1,
       type: 'Feature',
       geometry: {
         type: 'Point',
@@ -126,18 +120,19 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
       properties: {}
     };
 
+    setFieldValue(name, feature);
+
+    // If coordinates are invalid, reset the map to show nothing
+    if (!isValidCoordinates(lat, lon)) {
+      drawControlsRef.current?.clearLayers();
+      setLastDrawn(1);
+      setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
+      return;
+    }
+
     // Remove any existing drawn items in the edit layer
     drawControlsRef.current?.clearLayers();
     setLastDrawn(null);
-
-    if (!(lat > -90 && lat < 90 && lon > -180 && lon < 180)) {
-      drawControlsRef.current?.clearLayers();
-      // lastDrawn controls the visibility of the formik data (i.e., static layer) on the map.
-      // When lastDrawn !== null, the capture location in formik is hidden. If the coordinates are invalid, hide the coordinates.
-      setLastDrawn(1);
-    }
-
-    setFieldValue(name, feature);
   }, [latitudeInput, longitudeInput]);
 
   return (
@@ -162,13 +157,17 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
             isOpen={isOpen}
             onClose={() => setIsOpen(false)}
             onSuccess={(features) => {
-              // Map features into form data
-              const formData = features.map((item: Feature) => ({
-                geojson: [item],
-                revision_count: 0
-              }));
               setUpdatedBounds(calculateUpdatedMapBounds(features));
-              setFieldValue(name, formData[0].geojson);
+              setFieldValue(name, features[0]);
+              setFieldError(name, undefined);
+              // Unset last drawn to show staticlayers, where the file geometry is loaded to
+              lastDrawn && drawControlsRef?.current?.deleteLayer(lastDrawn);
+              drawControlsRef?.current?.addLayer(features[0], () => 1);
+              setLastDrawn(1);
+              if ('coordinates' in features[0].geometry) {
+                setLatitudeInput(String(features[0].geometry.coordinates[1]));
+                setLongitudeInput(String(features[0].geometry.coordinates[0]));
+              }
             }}
             onFailure={(message) => {
               setFieldError(name, message);
@@ -188,40 +187,25 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
               }}>
               {title}
             </Typography>
-            <Stack spacing={1} direction="row" mx={2}>
-              <Box>
-                <TextField
-                  size="small"
-                  name="Latitude"
-                  label="Latitude"
-                  value={latitudeInput}
-                  type="number"
-                  onChange={(event) => {
-                    if (event.currentTarget.value) {
-                      setLatitudeInput(event.currentTarget.value);
-                    } else {
-                      setLatitudeInput('');
-                    }
-                  }}
-                />
-              </Box>
-              <Box>
-                <TextField
-                  size="small"
-                  name="longitude"
-                  label="Longitude"
-                  value={longitudeInput}
-                  type="number"
-                  onChange={(event) => {
-                    if (event.currentTarget.value) {
-                      setLongitudeInput(event.currentTarget.value);
-                    } else {
-                      setLongitudeInput('');
-                    }
-                  }}
-                />
-              </Box>
-            </Stack>
+            <LatitudeLongitudeTextFields
+              sx={{ mx: 1 }}
+              latitudeValue={latitudeInput}
+              longitudeValue={longitudeInput}
+              onLatitudeChange={(event) => {
+                if (event.currentTarget.value) {
+                  setLatitudeInput(event.currentTarget.value);
+                } else {
+                  setLatitudeInput('');
+                }
+              }}
+              onLongitudeChange={(event) => {
+                if (event.currentTarget.value) {
+                  setLongitudeInput(event.currentTarget.value);
+                } else {
+                  setLongitudeInput('');
+                }
+              }}
+            />
             <Box display="flex">
               <Button
                 color="primary"
@@ -295,14 +279,16 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
               </FeatureGroup>
 
               <LayersControl position="bottomright">
-                <StaticLayers
-                  layers={[
-                    {
-                      layerName: 'Sampling Sites',
-                      features: get(values, name) ? [{ geoJSON: get(values, name), key: Math.random() }] : []
-                    }
-                  ]}
-                />
+                {!lastDrawn && (
+                  <StaticLayers
+                    layers={[
+                      {
+                        layerName: 'Sampling Sites',
+                        features: get(values, name) ? [{ geoJSON: get(values, name), key: Math.random() }] : []
+                      }
+                    ]}
+                  />
+                )}
                 <BaseLayerControls />
               </LayersControl>
             </LeafletMapContainer>

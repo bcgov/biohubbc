@@ -4,7 +4,7 @@ import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { Formik, FormikProps } from 'formik';
 import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
-import { isDefined } from 'utils/Utils';
+import { isDefined, isValidCoordinates } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { MarkingsForm } from '../../../markings/MarkingsForm';
 import { MeasurementsForm } from '../../../measurements/MeasurementsForm';
@@ -49,20 +49,11 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
               .of(yup.number())
               .min(2)
               .max(3)
-              .test('is-valid-coordinates', 'Invalid coordinates', function (value) {
+              .test('is-valid-coordinates', 'Latitude or longitude values are outside of the valid range.', (value) => {
                 if (!value) {
                   return false;
                 }
-
-                const [lon, lat] = value;
-
-                if (!(lat && lon && lat > -90 && lat < 90 && lon > -180 && lon < 180)) {
-                  return this.createError({
-                    message: 'The latitude or longitude values are outside of the valid range.'
-                  });
-                }
-
-                return true;
+                return isValidCoordinates(value[1], value[0]);
               })
               .required('Coordinates are invalid')
           }),

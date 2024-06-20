@@ -6,7 +6,7 @@ import { MarkingsForm } from 'features/surveys/animals/profile/markings/Markings
 import { MeasurementsForm } from 'features/surveys/animals/profile/measurements/MeasurementsForm';
 import { Formik, FormikProps } from 'formik';
 import { ICreateMortalityRequest, IEditMortalityRequest } from 'interfaces/useCritterApi.interface';
-import { isDefined } from 'utils/Utils';
+import { isDefined, isValidCoordinates } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { CauseOfDeathForm } from './cause-of-death/CauseOfDeathForm';
 import { MortalityGeneralInformationForm } from './general-information/MortalityGeneralInformationForm';
@@ -47,22 +47,13 @@ export const AnimalMortalityForm = <FormikValuesType extends ICreateMortalityReq
               .of(yup.number())
               .min(2)
               .max(3)
-              .test('is-valid-coordinates', 'Invalid coordinates', function (value) {
+              .test('is-valid-coordinates', 'Invalid coordinates', (value) => {
                 if (!value) {
                   return false;
                 }
-
-                const [lon, lat] = value;
-
-                if (!(lat && lon && lat > -90 && lat < 90 && lon > -180 && lon < 180)) {
-                  return this.createError({
-                    message: 'The latitude or longitude values are outside of the valid range.'
-                  });
-                }
-
-                return true;
+                return isValidCoordinates(value[1], value[0]);
               })
-              .required('Coordinates are invalid')
+              .required('Latitude or longitude values are outside of the valid range.')
           }),
           properties: yup.object().optional()
         })
