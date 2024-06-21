@@ -44,11 +44,12 @@ export const FilterFieldsContainer = <FormikValues extends Record<string, string
           item
           key={`search-filters-${field.key ?? index}`}
           sx={{
+            '& .MuiOutlinedInput-root': { background: grey[50] },
+            '& .MuiInputLabel-root': { ml: -0.75, px: 1, background: grey[50] },
             minWidth: '200px',
-            maxWidth: '400px',
             flex: '1 1 200px',
-            border: `1px solid ${grey[300]}`,
-            borderRadius: '5px'
+            border: `1px solid ${grey[400]}`,
+            borderRadius: '4px'
           }}>
           {field}
         </Grid>

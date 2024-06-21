@@ -115,7 +115,7 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
       disabled={disabled}
       data-testid={formikFieldName}
       filterSelectedOptions
-      noOptionsText={'No matching options'}
+      noOptionsText={inputValue.length > 2 ? 'No matching options' : 'Enter at least 3 letters'}
       options={options}
       getOptionLabel={(option) => option.display_name}
       isOptionEqualToValue={(option, value) => {
@@ -148,6 +148,9 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
         setIsLoading(true);
         setInputValue(value);
         handleSearch(value, (newOptions) => {
+          if (value.length < 3) {
+            return;
+          }
           if (!isMounted()) {
             return;
           }
