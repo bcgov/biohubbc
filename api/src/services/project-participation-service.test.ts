@@ -944,7 +944,7 @@ describe('ProjectParticipationService', () => {
     });
   });
 
-  describe('doProjectParticipantsHaveARole', () => {
+  describe('_doProjectParticipantsHaveARole', () => {
     it('should return true if one project user has a specified role', () => {
       const projectUsers: PostParticipantData[] = [
         {
@@ -962,7 +962,7 @@ describe('ProjectParticipationService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
-      const result = service.doProjectParticipantsHaveARole(projectUsers, PROJECT_ROLE.COLLABORATOR);
+      const result = service._doProjectParticipantsHaveARole(projectUsers, PROJECT_ROLE.COLLABORATOR);
 
       expect(result).to.be.true;
     });
@@ -984,7 +984,7 @@ describe('ProjectParticipationService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
-      const result = service.doProjectParticipantsHaveARole(projectUsers, PROJECT_ROLE.COLLABORATOR);
+      const result = service._doProjectParticipantsHaveARole(projectUsers, PROJECT_ROLE.COLLABORATOR);
 
       expect(result).to.be.true;
     });
@@ -1006,13 +1006,13 @@ describe('ProjectParticipationService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
-      const result = service.doProjectParticipantsHaveARole(projectUsers, PROJECT_ROLE.COLLABORATOR);
+      const result = service._doProjectParticipantsHaveARole(projectUsers, PROJECT_ROLE.COLLABORATOR);
 
       expect(result).to.be.false;
     });
   });
 
-  describe('doProjectParticipantsHaveOneRole', () => {
+  describe('_doProjectParticipantsHaveOneRole', () => {
     it('should return true if one project user has one specified role', () => {
       const projectUsers: PostParticipantData[] = [
         {
@@ -1025,7 +1025,7 @@ describe('ProjectParticipationService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
-      const result = service.doProjectParticipantsHaveOneRole(projectUsers);
+      const result = service._doProjectParticipantsHaveOneRole(projectUsers);
 
       expect(result).to.be.true;
     });
@@ -1047,7 +1047,7 @@ describe('ProjectParticipationService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
-      const result = service.doProjectParticipantsHaveOneRole(projectUsers);
+      const result = service._doProjectParticipantsHaveOneRole(projectUsers);
 
       expect(result).to.be.true;
     });
@@ -1074,7 +1074,7 @@ describe('ProjectParticipationService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
-      const result = service.doProjectParticipantsHaveOneRole(projectUsers);
+      const result = service._doProjectParticipantsHaveOneRole(projectUsers);
 
       expect(result).to.be.false;
     });
@@ -1096,7 +1096,7 @@ describe('ProjectParticipationService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectParticipationService(dbConnection);
 
-      const result = service.doProjectParticipantsHaveOneRole(projectUsers);
+      const result = service._doProjectParticipantsHaveOneRole(projectUsers);
 
       expect(result).to.be.false;
     });

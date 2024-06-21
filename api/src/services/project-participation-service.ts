@@ -317,57 +317,63 @@ export class ProjectParticipationService extends DBService {
   /**
    * Internal function for validating that all Project members have a role
    *
-   * @param participants
-   * @param roleToCheck
-   * @returns boolean
+   * @param {PostParticipantData[]} participants
+   * @param {PROJECT_ROLE} roleToCheck
+   * @return {*}  {boolean}
+   * @memberof ProjectParticipationService
    */
-  doProjectParticipantsHaveARole(participants: PostParticipantData[], roleToCheck: PROJECT_ROLE): boolean {
+  _doProjectParticipantsHaveARole(participants: PostParticipantData[], roleToCheck: PROJECT_ROLE): boolean {
     return participants.some((item) => item.project_role_names.some((role) => role === roleToCheck));
   }
 
   /**
-   * Internal function for validating that all Project members have one role in the incoming payload
-   * @param participants
-   * @returns boolean
+   * Internal function for validating that all project participants have one unique role.
+   *
+   * @param {PostParticipantData[]} participants
+   * @return {*}  {boolean}
+   * @memberof ProjectParticipationService
    */
-  doProjectParticipantsHaveOneRole(participants: PostParticipantData[]): boolean {
-    // Use reduce to count occurrences of each participant
-    const participantCounts = participants.reduce((acc, participant) => {
-      const id = participant.system_user_id;
-      const existingParticipant = acc.find((item) => item.system_user_id === id);
+  _doProjectParticipantsHaveOneRole(participants: PostParticipantData[]): boolean {
+    // Map of system_user_id to set of unique role names
+    const participantUniqueRoles = new Map<number, Set<string>>();
 
-      if (existingParticipant) {
-        // If participant already exists, increment count if it has one role or more than one role (to indicate multiple roles)
-        existingParticipant.count += participant.project_role_names.length;
-      } else {
-        // If participant does not exist, add it with initial count based on its role count
-        acc.push({ system_user_id: id, count: participant.project_role_names.length });
-      }
+    for (const participant of participants) {
+      const system_user_id = participant.system_user_id;
+      const project_role_names = participant.project_role_names;
 
-      return acc;
-    }, [] as { system_user_id: number; count: number }[]);
+      // Get the set of unique role names, or initialize a new set if the user is not in the map
+      const uniqueRoleNamesForParticipant = participantUniqueRoles.get(system_user_id) ?? new Set<string>();
 
-    return participantCounts.filter((participant) => participant.count > 1).length < 1;
+      // Add the role names to the set
+      participantUniqueRoles.set(
+        system_user_id,
+        uniqueRoleNamesForParticipant.add(String(project_role_names).toLowerCase())
+      );
+    }
+
+    // Returns true if all participants have one unique role
+    return Array.from(participantUniqueRoles.values()).every((roleNames) => roleNames.size === 1);
   }
 
   /**
-   * Updates existing participants, deletes those not in the incoming list,
-   * and inserts new participants
+   * Updates existing participants, deletes those participants not in the incoming list, and inserts new participants.
    *
-   * @param projectId
-   * @param participants
+   * @param {number} projectId
+   * @param {PostParticipantData[]} incomingParticipants
+   * @return {*}  {Promise<void>}
    * @throws ApiGeneralError If no participant has a coordinator role or if any participant has multiple roles.
+   * @memberof ProjectParticipationService
    */
-  async upsertProjectParticipantData(projectId: number, participants: PostParticipantData[]): Promise<void> {
+  async upsertProjectParticipantData(projectId: number, incomingParticipants: PostParticipantData[]): Promise<void> {
     // Confirm that at least one participant has a coordinator role
-    if (!this.doProjectParticipantsHaveARole(participants, PROJECT_ROLE.COORDINATOR)) {
+    if (!this._doProjectParticipantsHaveARole(incomingParticipants, PROJECT_ROLE.COORDINATOR)) {
       throw new ApiGeneralError(
         `Projects require that at least one participant has a ${PROJECT_ROLE.COORDINATOR} role.`
       );
     }
 
     // Check for multiple roles for any participant
-    if (!this.doProjectParticipantsHaveOneRole(participants)) {
+    if (!this._doProjectParticipantsHaveOneRole(incomingParticipants)) {
       throw new ApiGeneralError(
         'Users can only have one role per Project but multiple roles were specified for at least one user.'
       );
@@ -381,35 +387,39 @@ export class ProjectParticipationService extends DBService {
 
     // Identify participants to delete
     const participantsToDelete = existingParticipants.filter(
-      (existing) => !participants.some((incoming) => incoming.system_user_id === existing.system_user_id)
+      (existingParticipant) =>
+        !incomingParticipants.some(
+          (incomingParticipant) => incomingParticipant.system_user_id === existingParticipant.system_user_id
+        )
     );
 
     // Delete participants not present in the incoming payload
-    participantsToDelete.forEach((participant) => {
+    participantsToDelete.forEach((participantToDelete) => {
       promises.push(
         this.projectParticipationRepository.deleteProjectParticipationRecord(
           projectId,
-          participant.project_participation_id
+          participantToDelete.project_participation_id
         )
       );
     });
 
     // Upsert participants based on conditions
-    participants.forEach((item) => {
+    incomingParticipants.forEach((incomingParticipant) => {
       const existingParticipant = existingParticipants.find(
-        (existing) => existing.system_user_id === item.system_user_id
+        (existingParticipant) => existingParticipant.system_user_id === incomingParticipant.system_user_id
       );
 
       if (existingParticipant) {
         // Update existing participant's role
         if (
-          !existingParticipant.project_role_names.some((role) => item.project_role_names.includes(role as PROJECT_ROLE))
+          !existingParticipant.project_role_names.some((existingRole) =>
+            incomingParticipant.project_role_names.includes(existingRole as PROJECT_ROLE)
+          )
         ) {
-          const existingProjectParticipantId = existingParticipant.project_participation_id;
           promises.push(
             this.projectParticipationRepository.updateProjectParticipationRole(
-              item.project_participation_id ?? existingProjectParticipantId,
-              item.project_role_names[0]
+              incomingParticipant.project_participation_id ?? existingParticipant.project_participation_id,
+              incomingParticipant.project_role_names[0]
             )
           );
         }
@@ -418,8 +428,8 @@ export class ProjectParticipationService extends DBService {
         promises.push(
           this.projectParticipationRepository.postProjectParticipant(
             projectId,
-            item.system_user_id,
-            item.project_role_names[0]
+            incomingParticipant.system_user_id,
+            incomingParticipant.project_role_names[0]
           )
         );
       }
