@@ -128,6 +128,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   // A default species has been provided and it is not a promise
   const isDefaultSpecies = defaultSpecies && !('then' in defaultSpecies);
 
+  const [hasLoadedDefaultSpecies, setHasLoadedDefaultSpecies] = useState(false);
   // The input field value
   const [inputValue, setInputValue] = useState<string>(isDefaultSpecies ? defaultSpecies?.scientificName : '');
   // The array of options to choose from
@@ -139,7 +140,8 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
     if (defaultSpecies && 'then' in defaultSpecies) {
       // A default species has been provided and it is a promise
       defaultSpecies.then((taxonomy) => {
-        if (!isMounted()) {
+        if (hasLoadedDefaultSpecies) {
+          // Only ever run this once
           return;
         }
 
@@ -149,14 +151,22 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
         }
 
         if (!taxonomy) {
+          // No default taxon returned from promise
           return;
         }
 
+        if (!isMounted()) {
+          // Component has been unmounted
+          return;
+        }
+
+        // Set the default taxon as the input value and options
+        setHasLoadedDefaultSpecies(true);
         setInputValue(taxonomy.scientificName);
         setOptions([taxonomy]);
       });
     }
-  }, [defaultSpecies, inputValue, isMounted]);
+  }, [defaultSpecies, hasLoadedDefaultSpecies, inputValue, isMounted]);
 
   const handleSearch = useMemo(
     () =>
@@ -215,6 +225,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
           if (!isMounted()) {
             return;
           }
+
           setOptions(() => newOptions);
           setIsLoading(false);
         });
