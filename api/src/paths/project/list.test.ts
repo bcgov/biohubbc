@@ -134,7 +134,7 @@ describe('list', () => {
         const requestHandler = list.getProjectList();
 
         await requestHandler(sampleReq, sampleRes as any, null as unknown as any);
-        expect.fail();
+        expect.fail('Expected an error to be thrown');
       } catch (actualError) {
         expect(dbConnectionObj.release).to.have.been.called;
 
