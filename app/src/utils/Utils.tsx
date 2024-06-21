@@ -412,8 +412,6 @@ export const shapeFileFeatureDesc = (geometry: Feature<Geometry, GeoJsonProperti
   return descKey && geometry.properties ? geometry.properties[descKey].substring(0, 250) : undefined;
 };
 
-// JSX Functions //
-//
 /**
  * Simple reusable method to make a snackbar appear with a string of your choice.
  *
@@ -462,30 +460,3 @@ export const getRandomHexColor = (seed: number, min = 100, max = 170): string =>
  * @return {*}  {value is T}
  */
 export const isDefined = <T,>(value: T | undefined | null): value is T => value !== undefined && value !== null;
-
-/**
- * Checks whether a latitude-longitude pair of coordinates is valid
- *
- * @param {number} latitude
- * @param {number} longitude
- * @returns boolean
- */
-export const isValidCoordinates = (latitude: number | undefined, longitude: number | undefined) => {
-  return latitude && longitude && latitude > -90 && latitude < 90 && longitude > -180 && longitude < 180 ? true : false;
-};
-
-/**
- * Gets latitude and longitude values from a GeoJson
- *
- * @param {Feature} feature
- * @param {'string' | 'number'} type
- * @returns boolean
- */
-export const getCoordinatesFromGeoJson = (feature: Feature): { latitude: number; longitude: number } | undefined => {
-  if (feature.geometry && 'coordinates' in feature.geometry) {
-    const lon = feature.geometry.coordinates[0];
-    const lat = feature.geometry.coordinates[1];
-
-    return { latitude: lat as number, longitude: lon as number };
-  }
-};
