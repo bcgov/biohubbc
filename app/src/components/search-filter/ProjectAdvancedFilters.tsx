@@ -1,4 +1,3 @@
-import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteFieldVariableSize, {
@@ -99,19 +98,6 @@ const ProjectAdvancedFilters = () => {
             getInitList={handleGetInitList}
             search={handleSearch}
           />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <FormControl fullWidth variant="outlined" required={false}>
-            <MultiAutocompleteFieldVariableSize
-              id={'project_programs'}
-              label={'Project Programs'}
-              options={
-                codesContext.codesDataLoader.data?.program?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) ?? []
-              }
-            />
-          </FormControl>
         </Grid>
         <Grid item xs={12} md={8}>
           <StartEndDateFields

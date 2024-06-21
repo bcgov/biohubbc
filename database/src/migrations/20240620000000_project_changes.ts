@@ -1,11 +1,17 @@
 import { Knex } from 'knex';
 
 /**
- * Optimize geometry related columns
+ * Drop deprecated columns, tables, and triggers.
  *
- * Remove:
- *  - Project start date
- *  - Project end date
+ * Remove `project` columns
+ *  - start_date
+ *  - end_date
+ * Remove tables
+ *  - project_program
+ *  - program
+ * Remove triggers
+ *  - project_val
+ *  - permit_val
  *
  * @export
  * @param {Knex} knex
@@ -19,19 +25,19 @@ export async function up(knex: Knex): Promise<void> {
   -- Drop the views
   DROP VIEW IF EXISTS biohub_dapi_v1.project;
   DROP VIEW IF EXISTS biohub_dapi_v1.project_program;
+  DROP VIEW IF EXISTS biohub_dapi_v1.program;
 
-  -- Drop the project_program table if it exists
+  -- Drop the project_program table and program codes table
   DROP TABLE IF EXISTS biohub.project_program;
+  DROP TABLE IF EXISTS biohub.program;
 
   -- Drop the triggers
   DROP TRIGGER IF EXISTS project_val ON biohub.project;
-  DROP TRIGGER IF EXISTS survey_val ON biohub.survey;
   DROP TRIGGER IF EXISTS permit_val ON biohub.permit;
 
   -- Drop the functions associated with the triggers
   DROP FUNCTION IF EXISTS biohub.tr_project();
   DROP FUNCTION IF EXISTS biohub.tr_permit();
-  DROP FUNCTION IF EXISTS biohub.tr_survey();
 
   -- Drop columns start_date and end_date from the project table
   ALTER TABLE biohub.project DROP COLUMN start_date;
@@ -39,7 +45,6 @@ export async function up(knex: Knex): Promise<void> {
 
   -- Recreate the view
   CREATE OR REPLACE VIEW biohub_dapi_v1.project AS SELECT * FROM biohub.project;
-
   `);
 }
 

@@ -345,61 +345,6 @@ export class ProjectRepository extends BaseRepository {
     return result.id;
   }
 
-  /**
-   * Links a given project with a list of given programs.
-   * This insert assumes previous records for a project have been removed first
-   *
-   * @param {number} projectId Project to add programs to
-   * @param {number[]} programs Programs to be added to a project
-   * @returns {*} {Promise<void>}
-   */
-  async insertProgram(projectId: number, programs: number[]): Promise<void> {
-    if (programs.length < 1) {
-      return;
-    }
-
-    const sql = SQL`
-      INSERT INTO project_program (project_id, program_id)
-      VALUES `;
-
-    programs.forEach((programId, index) => {
-      sql.append(`(${projectId}, ${programId})`);
-
-      if (index !== programs.length - 1) {
-        sql.append(',');
-      }
-    });
-
-    sql.append(';');
-
-    try {
-      await this.connection.sql(sql);
-    } catch (error) {
-      throw new ApiExecuteSQLError('Failed to execute insert SQL for project_program', [
-        'ProjectRepository->insertProgram'
-      ]);
-    }
-  }
-
-  /**
-   * Removes program links for a given project.
-   *
-   * @param {number} projectId Project id to remove programs from
-   * @returns {*} {Promise<void>}
-   */
-  async deletePrograms(projectId: number): Promise<void> {
-    const sql = SQL`
-      DELETE FROM project_program WHERE project_id = ${projectId};
-    `;
-    try {
-      await this.connection.sql(sql);
-    } catch (error) {
-      throw new ApiExecuteSQLError('Failed to execute delete SQL for project_program', [
-        'ProjectRepository->deletePrograms'
-      ]);
-    }
-  }
-
   async deleteIUCNData(projectId: number): Promise<void> {
     const sqlDeleteStatement = SQL`
       DELETE

@@ -46,7 +46,6 @@ describe('PostProjectData', () => {
 
     const obj = {
       project_name: 'name_test_data',
-      project_programs: [1],
       start_date: 'start_date_test_data',
       end_date: 'end_date_test_data',
       comments: 'comments_test_data'

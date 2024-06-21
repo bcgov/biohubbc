@@ -240,19 +240,6 @@ export class ProjectService extends DBService {
   }
 
   /**
-   * Insert programs data.
-   *
-   * @param {number} projectId
-   * @param {number[]} projectPrograms
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectService
-   */
-  async insertPrograms(projectId: number, projectPrograms: number[]): Promise<void> {
-    await this.projectRepository.deletePrograms(projectId);
-    await this.projectRepository.insertProgram(projectId, projectPrograms);
-  }
-
-  /**
    * Updates the project
    *
    * @param {number} projectId
@@ -269,10 +256,6 @@ export class ProjectService extends DBService {
 
     if (entities?.iucn) {
       promises.push(this.updateIUCNData(projectId, entities));
-    }
-
-    if (entities?.project?.project_programs) {
-      promises.push(this.insertPrograms(projectId, entities?.project?.project_programs));
     }
 
     if (entities?.participants) {

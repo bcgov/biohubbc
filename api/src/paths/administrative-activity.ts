@@ -48,7 +48,7 @@ POST.apiDoc = {
               },
               date: {
                 description: 'The date this administrative activity was made',
-                oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }]
+                type: 'string'
               }
             }
           }

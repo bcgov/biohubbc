@@ -32,10 +32,6 @@ import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
 import ProjectsListFilterForm from './ProjectsListFilterForm';
 
-interface IProjectsListTableRow extends Omit<IProjectsListItemData, 'project_programs'> {
-  project_programs: string;
-}
-
 const pageSizeOptions = [10, 25, 50];
 
 /**
@@ -78,7 +74,7 @@ const ProjectsListPage = () => {
 
   const projectRows = projectsDataLoader.data?.projects ?? [];
 
-  const columns: GridColDef<IProjectsListTableRow>[] = [
+  const columns: GridColDef<IProjectsListItemData>[] = [
     {
       field: 'name',
       headerName: 'Name',
@@ -95,11 +91,6 @@ const ProjectsListPage = () => {
           children={params.row.name}
         />
       )
-    },
-    {
-      field: 'project_programs',
-      headerName: 'Programs',
-      flex: 1
     },
     {
       field: 'regions',

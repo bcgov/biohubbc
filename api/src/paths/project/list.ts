@@ -51,13 +51,6 @@ GET.apiDoc = {
               type: 'string',
               nullable: true
             },
-            project_programs: {
-              type: 'array',
-              items: {
-                type: 'integer'
-              },
-              nullable: true
-            },
             keyword: {
               type: 'string',
               nullable: true
