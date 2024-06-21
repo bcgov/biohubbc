@@ -66,13 +66,13 @@ const ProjectDetails = () => {
           Project Details
         </Typography>
       </Toolbar>
-      <Divider></Divider>
+      <Divider />
       <Box p={3} sx={classes.projectMetadata}>
         <Box component="section">
           <Typography component="h3" sx={classes.projectMetaSectionHeader}>
             Project Objectives
           </Typography>
-          <Divider></Divider>
+          <Divider />
           <ProjectObjectives />
         </Box>
 
@@ -80,7 +80,7 @@ const ProjectDetails = () => {
           <Typography component="h4" sx={classes.projectMetaSectionHeader}>
             Team Members
           </Typography>
-          <Divider></Divider>
+          <Divider />
           <TeamMembers />
         </Box>
 
@@ -89,7 +89,7 @@ const ProjectDetails = () => {
           <Typography component="h4" sx={classes.projectMetaSectionHeader}>
             IUCN Classification
           </Typography>
-          <Divider></Divider>
+          <Divider/>
           <IUCNClassification />
         </Box> */}
       </Box>

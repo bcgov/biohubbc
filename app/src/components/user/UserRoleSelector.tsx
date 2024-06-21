@@ -72,7 +72,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
                     {PROJECT_ROLE_ICONS[selected] && (
                       <>
                         &nbsp;
-                        <Icon path={PROJECT_ROLE_ICONS[selected]} size={0.75} color={grey[600]} />
+                        <Icon path={PROJECT_ROLE_ICONS[selected] ?? ''} size={0.75} color={grey[600]} />
                       </>
                     )}
                   </Typography>
@@ -84,7 +84,7 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
                   {PROJECT_ROLE_ICONS[item.name] && (
                     <>
                       &nbsp;
-                      <Icon path={PROJECT_ROLE_ICONS[item.name]} size={0.75} color={grey[600]} />
+                      <Icon path={PROJECT_ROLE_ICONS[item.name] ?? ''} size={0.75} color={grey[600]} />
                     </>
                   )}
                 </MenuItem>

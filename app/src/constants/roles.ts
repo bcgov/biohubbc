@@ -41,7 +41,7 @@ export enum PROJECT_PERMISSION {
  *
  * @export
  */
-export const PROJECT_ROLE_ICONS = {
+export const PROJECT_ROLE_ICONS: Record<string, string | undefined> = {
   Coordinator: mdiCrown,
   Collaborator: mdiAccountEdit,
   Observer: undefined
