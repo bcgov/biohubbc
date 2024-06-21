@@ -327,7 +327,9 @@ export class CodeRepository extends BaseRepository {
         project_role_id as id,
         name
       FROM project_role
-      WHERE record_end_date is null;
+      WHERE record_end_date is null
+      ORDER BY 
+        CASE WHEN name = 'Coordinator' THEN 0 ELSE 1 END;
     `;
 
     const response = await this.connection.sql(sqlStatement, ICode);
