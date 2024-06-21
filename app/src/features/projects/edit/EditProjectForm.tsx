@@ -53,13 +53,7 @@ const EditProjectForm = <InitialValuesType extends IUpdateProjectRequest | ICrea
           summary="Enter general information, objectives and timelines for the project."
           component={
             <>
-              <ProjectDetailsForm
-                program={
-                  codes?.program?.map((item) => {
-                    return { value: item.id, label: item.name };
-                  }) || []
-                }
-              />
+              <ProjectDetailsForm />
               <Box mt={3}>
                 <ProjectObjectivesForm />
               </Box>

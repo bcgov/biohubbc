@@ -89,12 +89,10 @@ GET.apiDoc = {
                   },
                   start_date: {
                     type: 'string',
-                    format: 'date',
                     nullable: true
                   },
                   end_date: {
                     type: 'string',
-                    format: 'date',
                     nullable: true
                   }
                 }
@@ -252,12 +250,10 @@ PUT.apiDoc = {
             },
             start_date: {
               type: 'string',
-              format: 'date',
               nullable: true
             },
             end_date: {
               type: 'string',
-              format: 'date',
               nullable: true
             },
             revision_count: {

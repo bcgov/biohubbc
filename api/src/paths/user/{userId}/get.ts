@@ -85,7 +85,7 @@ GET.apiDoc = {
                 nullable: true
               },
               record_end_date: {
-                oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                type: 'string',
                 nullable: true,
                 description: 'Determines if the user record has expired'
               },
