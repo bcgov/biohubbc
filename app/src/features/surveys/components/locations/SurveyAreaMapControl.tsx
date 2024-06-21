@@ -49,6 +49,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
   return (
     <>
       <ImportBoundaryDialog
+        dialogTitle="Import Study Area"
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
         onSuccess={(features) => {

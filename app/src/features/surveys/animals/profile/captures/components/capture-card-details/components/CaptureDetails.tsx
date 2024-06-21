@@ -53,7 +53,7 @@ export const CaptureDetails = (props: ICaptureDetailsProps) => {
             Capture location
           </Typography>
           <Typography color="textSecondary" variant="body2">
-            {captureLocation.longitude},&nbsp;{captureLocation.latitude}
+            {captureLocation.latitude},&nbsp;{captureLocation.longitude}
           </Typography>
         </Box>
       </Stack>
