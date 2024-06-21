@@ -344,11 +344,13 @@ export class ProjectParticipationService extends DBService {
       // Get the set of unique role names, or initialize a new set if the user is not in the map
       const uniqueRoleNamesForParticipant = participantUniqueRoles.get(system_user_id) ?? new Set<string>();
 
-      // Add the role names to the set
-      participantUniqueRoles.set(
-        system_user_id,
-        uniqueRoleNamesForParticipant.add(String(project_role_names).toLowerCase())
-      );
+      for (const role of project_role_names) {
+        // Add the role names to the set, converting to lowercase to ensure case-insensitive comparison
+        uniqueRoleNamesForParticipant.add(role.toLowerCase());
+      }
+
+      // Update the map with the new set of unique role names
+      participantUniqueRoles.set(system_user_id, uniqueRoleNamesForParticipant);
     }
 
     // Returns true if all participants have one unique role
