@@ -22,6 +22,7 @@ import SampleSiteFileUploadItemProgressBar from 'features/surveys/observations/s
 import SampleSiteFileUploadItemSubtext from 'features/surveys/observations/sampling-sites/components/map/file-upload/SampleSiteFileUploadItemSubtext';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
+import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
@@ -53,7 +54,7 @@ export interface ISamplingSiteMapControlProps {
   name: string;
   title: string;
   mapId: string;
-  formikProps: FormikContextType<any>;
+  formikProps: FormikContextType<ICreateSamplingSiteRequest>;
 }
 
 /**

@@ -412,8 +412,6 @@ export const shapeFileFeatureDesc = (geometry: Feature<Geometry, GeoJsonProperti
   return descKey && geometry.properties ? geometry.properties[descKey].substring(0, 250) : undefined;
 };
 
-// JSX Functions //
-//
 /**
  * Simple reusable method to make a snackbar appear with a string of your choice.
  *

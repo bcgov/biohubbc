@@ -1,4 +1,3 @@
-import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteFieldVariableSize, {
@@ -13,9 +12,6 @@ import { debounce } from 'lodash-es';
 import { useMemo } from 'react';
 
 export interface IProjectAdvancedFilters {
-  project_programs: number[];
-  start_date: string;
-  end_date: string;
   keyword: string;
   project_name: string;
   agency_id: number;
@@ -24,9 +20,6 @@ export interface IProjectAdvancedFilters {
 }
 
 export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {
-  project_programs: [],
-  start_date: '',
-  end_date: '',
   keyword: '',
   project_name: '',
   agency_id: '' as unknown as number,
@@ -105,19 +98,6 @@ const ProjectAdvancedFilters = () => {
             getInitList={handleGetInitList}
             search={handleSearch}
           />
-        </Grid>
-        <Grid item xs={12} md={4}>
-          <FormControl fullWidth variant="outlined" required={false}>
-            <MultiAutocompleteFieldVariableSize
-              id={'project_programs'}
-              label={'Project Programs'}
-              options={
-                codesContext.codesDataLoader.data?.program?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) ?? []
-              }
-            />
-          </FormControl>
         </Grid>
         <Grid item xs={12} md={8}>
           <StartEndDateFields

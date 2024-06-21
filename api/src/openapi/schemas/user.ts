@@ -68,7 +68,7 @@ export const systemUserSchema: OpenAPIV3.SchemaObject = {
       type: 'string'
     },
     record_end_date: {
-      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+      type: 'string',
       description: 'Determines if the user record has expired',
       nullable: true
     },
@@ -203,7 +203,7 @@ export const projectAndSystemUserSchema: OpenAPIV3.SchemaObject = {
       type: 'string'
     },
     record_end_date: {
-      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+      type: 'string',
       description: 'Determines if the user record has expired',
       nullable: true
     },
@@ -277,7 +277,7 @@ export const surveyParticipationAndSystemUserSchema: OpenAPIV3.SchemaObject = {
       type: 'string'
     },
     record_end_date: {
-      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+      type: 'string',
       description: 'Determines if the user record has expired',
       nullable: true
     },

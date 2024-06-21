@@ -137,7 +137,6 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
       setError(undefined);
       setIsLoading(false);
       setIsReady(false);
-      setHasLoaded(false);
 
       // Call loadData to fetch new data
       return loadData(...args);
