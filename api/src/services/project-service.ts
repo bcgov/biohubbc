@@ -1,4 +1,3 @@
-import { default as dayjs } from 'dayjs';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
 import { IPostIUCN, PostProjectObject } from '../models/project-create';
@@ -26,17 +25,6 @@ import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
 import { SurveyService } from './survey-service';
 
-/**
- * Project Completion Status
- *
- * @export
- * @enum {string}
- */
-export enum COMPLETION_STATUS {
-  COMPLETED = 'Completed',
-  ACTIVE = 'Active'
-}
-
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
   projectRepository: ProjectRepository;
@@ -62,7 +50,7 @@ export class ProjectService extends DBService {
    * @param {(number | null)} systemUserId
    * @param {IProjectAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {(Promise<(ProjectListData & { completion_status: COMPLETION_STATUS })[]>)}
+   * @return {*}  {(Promise<(ProjectListData)[]>)}
    * @memberof ProjectService
    */
   async getProjectList(
@@ -70,15 +58,10 @@ export class ProjectService extends DBService {
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<(ProjectListData & { completion_status: COMPLETION_STATUS })[]> {
+  ): Promise<ProjectListData[]> {
     const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields, pagination);
 
-    return response.map((row) => ({
-      ...row,
-      completion_status:
-        (row.end_date && dayjs(row.end_date).endOf('day').isBefore(dayjs()) && COMPLETION_STATUS.COMPLETED) ||
-        COMPLETION_STATUS.ACTIVE
-    }));
+    return response;
   }
 
   /**
@@ -211,9 +194,6 @@ export class ProjectService extends DBService {
         )
       )
     );
-
-    // Handle project programs
-    promises.push(this.insertPrograms(projectId, postProjectData.project.project_programs));
 
     //Handle project participants
     promises.push(this.projectParticipationService.postProjectParticipants(projectId, postProjectData.participants));

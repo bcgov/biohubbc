@@ -13,9 +13,6 @@ import { debounce } from 'lodash-es';
 import { useMemo } from 'react';
 
 export interface IProjectAdvancedFilters {
-  project_programs: number[];
-  start_date: string;
-  end_date: string;
   keyword: string;
   project_name: string;
   agency_id: number;
@@ -24,9 +21,6 @@ export interface IProjectAdvancedFilters {
 }
 
 export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {
-  project_programs: [],
-  start_date: '',
-  end_date: '',
   keyword: '',
   project_name: '',
   agency_id: '' as unknown as number,

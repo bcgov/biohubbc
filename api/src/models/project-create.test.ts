@@ -36,18 +36,6 @@ describe('PostProjectData', () => {
       expect(projectPostData.name).to.equal(null);
     });
 
-    it('sets programs', function () {
-      expect(projectPostData.project_programs).to.have.length(0);
-    });
-
-    it('sets start_date', function () {
-      expect(projectPostData.start_date).to.equal(null);
-    });
-
-    it('sets end_date', function () {
-      expect(projectPostData.end_date).to.equal(null);
-    });
-
     it('sets comments', function () {
       expect(projectPostData.comments).to.equal(null);
     });
@@ -70,18 +58,6 @@ describe('PostProjectData', () => {
 
     it('sets name', function () {
       expect(projectPostData.name).to.equal('name_test_data');
-    });
-
-    it('sets type', function () {
-      expect(projectPostData.project_programs).to.eql([1]);
-    });
-
-    it('sets start_date', function () {
-      expect(projectPostData.start_date).to.equal('start_date_test_data');
-    });
-
-    it('sets end_date', function () {
-      expect(projectPostData.end_date).to.equal('end_date_test_data');
     });
 
     it('sets comments', function () {

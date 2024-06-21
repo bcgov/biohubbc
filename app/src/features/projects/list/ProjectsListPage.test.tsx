@@ -116,8 +116,7 @@ describe('ProjectsListPage', () => {
           start_date: null,
           end_date: null,
           project_programs: [1],
-          regions: ['region'],
-          completion_status: 'Completed'
+          regions: ['region']
         }
       ],
       pagination: {

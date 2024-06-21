@@ -34,18 +34,12 @@ export class PostProjectObject {
  */
 export class PostProjectData {
   name: string;
-  project_programs: number[];
-  start_date: string;
-  end_date: string;
   comments: string;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostProjectData', message: 'params', obj });
 
     this.name = obj?.project_name || null;
-    this.project_programs = obj?.project_programs || [];
-    this.start_date = obj?.start_date || null;
-    this.end_date = obj?.end_date || null;
     this.comments = obj?.comments || null;
   }
 }

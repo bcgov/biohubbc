@@ -6,7 +6,6 @@ import Typography from '@mui/material/Typography';
 import assert from 'assert';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext } from 'react';
-import GeneralInformation from './components/GeneralInformation';
 import ProjectObjectives from './components/ProjectObjectives';
 import TeamMembers from './components/TeamMember';
 
@@ -75,14 +74,6 @@ const ProjectDetails = () => {
           </Typography>
           <Divider></Divider>
           <ProjectObjectives />
-        </Box>
-
-        <Box component="section">
-          <Typography component="h3" sx={classes.projectMetaSectionHeader}>
-            General Information
-          </Typography>
-          <Divider></Divider>
-          <GeneralInformation />
         </Box>
 
         <Box component="section">

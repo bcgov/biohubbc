@@ -76,22 +76,7 @@ const ProjectsListPage = () => {
     };
   });
 
-  const getProjectPrograms = (project: IProjectsListItemData) => {
-    return (
-      codesContext.codesDataLoader.data?.program
-        .filter((code) => project.project_programs.includes(code.id))
-        .map((code) => code.name)
-        .join(', ') || ''
-    );
-  };
-
-  const projectRows =
-    projectsDataLoader.data?.projects.map((project) => {
-      return {
-        ...project,
-        project_programs: getProjectPrograms(project)
-      };
-    }) ?? [];
+  const projectRows = projectsDataLoader.data?.projects ?? [];
 
   const columns: GridColDef<IProjectsListTableRow>[] = [
     {

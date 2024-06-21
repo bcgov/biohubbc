@@ -25,8 +25,6 @@ describe('ProjectRepository', () => {
       const repository = new ProjectRepository(dbConnection);
 
       const input = {
-        start_date: 'start',
-        end_date: undefined,
         project_name: 'string',
         agency_project_id: 1,
         agency_id: 1,
@@ -46,9 +44,6 @@ describe('ProjectRepository', () => {
       const repository = new ProjectRepository(dbConnection);
 
       const input = {
-        start_date: undefined,
-        end_date: 'end',
-        project_programs: [1],
         project_name: 'string',
         agency_project_id: 1,
         agency_id: 1,
@@ -68,8 +63,7 @@ describe('ProjectRepository', () => {
       const repository = new ProjectRepository(dbConnection);
 
       const input = {
-        start_date: 'start',
-        end_date: 'end'
+        keyword: 'a'
       };
 
       const response = await repository.getProjectList(true, 1, input);
@@ -246,10 +240,7 @@ describe('ProjectRepository', () => {
 
       const input = {
         project: {
-          project_programs: [1],
           name: 'name',
-          start_date: 'start_date',
-          end_date: 'end_date',
           comments: 'comments'
         },
         objectives: { objectives: '' }
@@ -268,10 +259,7 @@ describe('ProjectRepository', () => {
 
       const input = {
         project: {
-          project_programs: [1],
           name: 'name',
-          start_date: 'start_date',
-          end_date: 'end_date',
           comments: 'comments'
         },
         objectives: { objectives: '' }
@@ -290,10 +278,7 @@ describe('ProjectRepository', () => {
 
       const input = {
         project: {
-          project_programs: [1],
           name: 'name',
-          start_date: 'start_date',
-          end_date: 'end_date',
           comments: 'comments'
         },
         objectives: { objectives: '' }
