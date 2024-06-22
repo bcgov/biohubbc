@@ -23,18 +23,14 @@ describe('ProjectService', () => {
         {
           project_id: 123,
           name: 'Project 1',
-          end_date: '2200-10-10'
           regions: [],
-          focal_species: [],
-          types: []
+          focal_species: []
         },
         {
           project_id: 456,
           name: 'Project 2',
-          end_date: '2000-12-31'
           regions: [],
-          focal_species: [],
-          types: []
+          focal_species: []
         }
       ];
 
