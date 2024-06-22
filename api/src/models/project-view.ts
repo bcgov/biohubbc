@@ -6,10 +6,8 @@ export interface IProjectAdvancedFilters {
   keyword?: string;
   itis_tsn?: number;
   itis_tsns?: number[];
-  project_name?: string;
-  itis_tsns?: number[];
-  // Filter by other users (admin only)
   system_user_id?: number;
+  project_name?: string;
 }
 
 export interface IGetProject {
@@ -33,8 +31,7 @@ export const ProjectListData = z.object({
   project_id: z.number(),
   name: z.string(),
   regions: z.array(z.string()),
-  focal_species: z.array(z.number().nullable()),
-  types: z.array(z.number().nullable())
+  focal_species: z.array(z.number().nullable())
 });
 
 export type ProjectListData = z.infer<typeof ProjectListData>;

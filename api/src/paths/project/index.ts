@@ -71,43 +71,10 @@ GET.apiDoc = {
     },
     {
       in: 'query',
-      name: 'start_date',
-      description: 'ISO 8601 datetime string',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'end_date',
-      description: 'ISO 8601 datetime string',
-      required: false,
-      schema: {
-        type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
       name: 'project_name',
       required: false,
       schema: {
         type: 'string',
-        nullable: true
-      }
-    },
-    {
-      in: 'query',
-      name: 'project_programs',
-      required: false,
-      schema: {
-        type: 'array',
-        items: {
-          type: 'integer',
-          minimum: 1
-        },
         nullable: true
       }
     },
@@ -138,16 +105,7 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: [
-                    'project_id',
-                    'name',
-                    'project_programs',
-                    'completion_status',
-                    'start_date',
-                    'end_date',
-                    'focal_species',
-                    'regions'
-                  ],
+                  required: ['project_id', 'name', 'focal_species', 'regions'],
                   properties: {
                     project_id: {
                       type: 'integer',
@@ -157,28 +115,12 @@ GET.apiDoc = {
                       type: 'string',
                       description: 'Name of the project'
                     },
-                    start_date: {
-                      type: 'string',
-                      description: 'ISO 8601 datetime string',
-                      nullable: true
-                    },
-                    end_date: {
-                      type: 'string',
-                      description: 'ISO 8601 datetime string',
-                      nullable: true
-                    },
                     regions: {
                       type: 'array',
                       items: {
                         type: 'string'
                       },
                       nullable: true
-                    },
-                    project_programs: {
-                      type: 'array',
-                      items: {
-                        type: 'integer'
-                      }
                     },
                     focal_species: {
                       type: 'array',
@@ -193,10 +135,6 @@ GET.apiDoc = {
                         type: 'integer'
                       },
                       nullable: true
-                    },
-                    completion_status: {
-                      type: 'string',
-                      enum: ['Completed', 'Active']
                     }
                   }
                 }
@@ -294,10 +232,7 @@ function parseQueryParams(req: Request<unknown, unknown, unknown, IProjectAdvanc
     keyword: req.query.keyword ?? undefined,
     itis_tsns: req.query.itis_tsns ?? undefined,
     itis_tsn: (req.query.itis_tsn && Number(req.query.itis_tsn)) ?? undefined,
-    start_date: req.query.start_date ?? undefined,
-    end_date: req.query.end_date ?? undefined,
     project_name: req.query.project_name ?? undefined,
-    project_programs: req.query.project_programs ?? undefined,
     system_user_id: req.query.system_user_id ?? undefined
   };
 }

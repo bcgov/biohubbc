@@ -51,11 +51,6 @@ describe('findTelemetry', () => {
     mockReq.query = {
       keyword: 'keyword',
       itis_tsns: ['123456'],
-      start_date: '2021-01-01',
-      end_date: '2021-01-31',
-      start_time: '00:00:00',
-      end_time: '23:59:59',
-      min_count: '5',
       system_user_id: '11',
       page: '2',
       limit: '10',
@@ -102,11 +97,6 @@ describe('findTelemetry', () => {
     mockReq.query = {
       keyword: 'keyword',
       itis_tsns: ['123456'],
-      start_date: '2021-01-01',
-      end_date: '2021-01-31',
-      start_time: '00:00:00',
-      end_time: '23:59:59',
-      min_count: '5',
       system_user_id: '11',
       page: '2',
       limit: '10',

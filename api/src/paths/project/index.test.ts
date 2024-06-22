@@ -6,7 +6,7 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { ProjectListData } from '../../models/project-view';
-import { COMPLETION_STATUS, ProjectService } from '../../services/project-service';
+import { ProjectService } from '../../services/project-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { findProjects } from './index';
 
@@ -18,17 +18,12 @@ describe('findProjects', () => {
   });
 
   it('finds and returns projects', async () => {
-    const mockFindProjectsResponse: (ProjectListData & { completion_status: COMPLETION_STATUS })[] = [
+    const mockFindProjectsResponse: ProjectListData[] = [
       {
         project_id: 1,
         name: 'project name',
-        project_programs: [1, 2],
         regions: ['region1'],
-        start_date: '2021-01-01',
-        end_date: '2021-01-31',
-        focal_species: [123, 456],
-        types: [3, 4],
-        completion_status: COMPLETION_STATUS.ACTIVE
+        focal_species: [123, 456]
       }
     ];
 
@@ -50,12 +45,8 @@ describe('findProjects', () => {
     mockReq.query = {
       keyword: 'keyword',
       itis_tsns: ['123456'],
-      start_date: '2021-01-01',
-      end_date: '2021-01-31',
-      start_time: '00:00:00',
-      end_time: '23:59:59',
-      min_count: '5',
       system_user_id: '11',
+      project_name: 'project name',
       page: '2',
       limit: '10',
       sort: undefined,
@@ -83,17 +74,12 @@ describe('findProjects', () => {
   });
 
   it('catches and re-throws error', async () => {
-    const mockFindProjectsResponse: (ProjectListData & { completion_status: COMPLETION_STATUS })[] = [
+    const mockFindProjectsResponse: ProjectListData[] = [
       {
         project_id: 1,
         name: 'project name',
-        project_programs: [1, 2],
         regions: ['region1'],
-        start_date: '2021-01-01',
-        end_date: '2021-01-31',
-        focal_species: [123, 456],
-        types: [3, 4],
-        completion_status: COMPLETION_STATUS.ACTIVE
+        focal_species: [123, 456]
       }
     ];
 
@@ -118,12 +104,8 @@ describe('findProjects', () => {
     mockReq.query = {
       keyword: 'keyword',
       itis_tsns: ['123456'],
-      start_date: '2021-01-01',
-      end_date: '2021-01-31',
-      start_time: '00:00:00',
-      end_time: '23:59:59',
-      min_count: '5',
       system_user_id: '11',
+      project_name: 'project name',
       page: '2',
       limit: '10',
       sort: undefined,

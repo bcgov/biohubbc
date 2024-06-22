@@ -7,6 +7,5 @@ export interface IObservationAdvancedFilters {
   start_time?: string;
   end_time?: string;
   min_count?: number;
-  // Filter by other users (admin only)
   system_user_id?: number;
 }

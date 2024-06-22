@@ -289,14 +289,6 @@ export interface IGetSurveyForViewResponse {
   surveySupplementaryData: SurveySupplementaryData;
 }
 
-export interface IGetSurveyDetailsResponse {
-  id: number;
-  name: string;
-  start_date: string;
-  end_date: string;
-  completion_status: string;
-}
-
 export interface IGetSpecies {
   focal_species: ITaxonomy[];
   ancillary_species: ITaxonomy[];
