@@ -160,5 +160,16 @@ declare module 'yup' {
       startKey: string,
       endKey: string
     ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
+
+    /**
+     * Validates that the GeoJson point coordinates (latitude/longitude) are valid
+     *
+     * @param {string} message Error message to display
+     * @return {*}  {(yup.NumberSchema<number | undefined, Record<string, any>, number | undefined>)}
+     * @memberof ArraySchema
+     */
+    isValidPointCoordinates(
+      message: string
+    ): yup.NumberSchema<number | undefined, Record<string, any>, number | undefined>;
   }
 }

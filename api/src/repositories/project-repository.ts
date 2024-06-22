@@ -48,20 +48,17 @@ export class ProjectRepository extends BaseRepository {
         knex.raw(`MIN(s.start_date) as start_date`),
         knex.raw('MAX(s.end_date) as end_date'),
         knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
-        knex.raw('array_remove(array_agg(distinct prog.program_id), null) as project_programs'),
         knex.raw('array_remove(array_agg(distinct sp.itis_tsn), null) as focal_species'),
         knex.raw('array_remove(array_agg(distinct st.type_id), null) as types')
       ])
       .from('project as p')
-      .leftJoin('project_program as pp', 'p.project_id', 'pp.project_id')
       .leftJoin('survey as s', 's.project_id', 'p.project_id')
       .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
       .leftJoin('survey_type as st', 'sp.survey_id', 'st.survey_id')
-      .leftJoin('program as prog', 'prog.program_id', 'pp.program_id')
       .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
       .leftJoin('region_lookup as rl', 'sr.region_id', 'rl.region_id')
       .leftJoin('project_participation as ppa', 'p.project_id', 'ppa.project_id')
-      .groupBy(['p.project_id', 'p.name', 'p.objectives', 'p.start_date', 'p.end_date']);
+      .groupBy(['p.project_id', 'p.name', 'p.objectives']);
 
     // Ensure that users can only see projects that they are participating in, unless they are an administrator.
     if (!isUserAdmin) {
@@ -77,16 +74,6 @@ export class ProjectRepository extends BaseRepository {
           .from('project_participation')
           .where('system_user_id', filterFields.system_user_id);
       });
-    }
-
-    // Start Date filter
-    if (filterFields.start_date) {
-      query.andWhere('p.start_date', '>=', filterFields.start_date);
-    }
-
-    // End Date filter
-    if (filterFields.end_date) {
-      query.andWhere('p.end_date', '<=', filterFields.end_date);
     }
 
     // Project Name filter (like match)
@@ -117,11 +104,6 @@ export class ProjectRepository extends BaseRepository {
           subQueryBuilder.orWhere('p.project_id', Number(filterFields.keyword));
         }
       });
-    }
-
-    // // Programs filter
-    if (filterFields.project_programs?.length) {
-      query.where('prog.program_id', 'IN', filterFields.project_programs);
     }
 
     return query;
@@ -197,19 +179,10 @@ export class ProjectRepository extends BaseRepository {
         p.project_id,
         p.uuid,
         p.name as project_name,
-        p.start_date,
-        p.end_date,
         p.comments,
-        p.revision_count,
-        pp.project_programs
+        p.revision_count
       FROM
         project p
-      LEFT JOIN (
-        SELECT array_remove(array_agg(p.program_id), NULL) as project_programs, pp.project_id
-        FROM program p, project_program pp
-        WHERE p.program_id = pp.program_id
-        GROUP BY pp.project_id
-      ) as pp on pp.project_id = p.project_id
       WHERE
         p.project_id = ${projectId};
     `;
@@ -338,14 +311,10 @@ export class ProjectRepository extends BaseRepository {
       INSERT INTO project (
         name,
         objectives,
-        start_date,
-        end_date,
         comments
       ) VALUES (
         ${postProjectData.project.name},
         ${postProjectData.objectives.objectives},
-        ${postProjectData.project.start_date},
-        ${postProjectData.project.end_date},
         ${postProjectData.project.comments}
       )
       RETURNING project_id as id;`;
@@ -390,61 +359,6 @@ export class ProjectRepository extends BaseRepository {
     return result.id;
   }
 
-  /**
-   * Links a given project with a list of given programs.
-   * This insert assumes previous records for a project have been removed first
-   *
-   * @param {number} projectId Project to add programs to
-   * @param {number[]} programs Programs to be added to a project
-   * @returns {*} {Promise<void>}
-   */
-  async insertProgram(projectId: number, programs: number[]): Promise<void> {
-    if (programs.length < 1) {
-      return;
-    }
-
-    const sql = SQL`
-      INSERT INTO project_program (project_id, program_id)
-      VALUES `;
-
-    programs.forEach((programId, index) => {
-      sql.append(`(${projectId}, ${programId})`);
-
-      if (index !== programs.length - 1) {
-        sql.append(',');
-      }
-    });
-
-    sql.append(';');
-
-    try {
-      await this.connection.sql(sql);
-    } catch (error) {
-      throw new ApiExecuteSQLError('Failed to execute insert SQL for project_program', [
-        'ProjectRepository->insertProgram'
-      ]);
-    }
-  }
-
-  /**
-   * Removes program links for a given project.
-   *
-   * @param {number} projectId Project id to remove programs from
-   * @returns {*} {Promise<void>}
-   */
-  async deletePrograms(projectId: number): Promise<void> {
-    const sql = SQL`
-      DELETE FROM project_program WHERE project_id = ${projectId};
-    `;
-    try {
-      await this.connection.sql(sql);
-    } catch (error) {
-      throw new ApiExecuteSQLError('Failed to execute delete SQL for project_program', [
-        'ProjectRepository->deletePrograms'
-      ]);
-    }
-  }
-
   async deleteIUCNData(projectId: number): Promise<void> {
     const sqlDeleteStatement = SQL`
       DELETE
@@ -476,8 +390,6 @@ export class ProjectRepository extends BaseRepository {
 
     if (project) {
       sqlSetStatements.push(SQL`name = ${project.name}`);
-      sqlSetStatements.push(SQL`start_date = ${project.start_date}`);
-      sqlSetStatements.push(SQL`end_date = ${project.end_date}`);
     }
 
     if (objectives) {

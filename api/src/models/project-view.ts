@@ -6,10 +6,8 @@ export interface IProjectAdvancedFilters {
   keyword?: string;
   itis_tsn?: number;
   itis_tsns?: number[];
-  start_date?: string;
-  end_date?: string;
   project_name?: string;
-  project_programs?: number[];
+  itis_tsns?: number[];
   // Filter by other users (admin only)
   system_user_id?: number;
 }
@@ -25,9 +23,6 @@ export const ProjectData = z.object({
   project_id: z.number(),
   uuid: z.string().uuid(),
   project_name: z.string(),
-  project_programs: z.array(z.number()),
-  start_date: z.string(),
-  end_date: z.string().nullable(),
   comments: z.string().nullable(),
   revision_count: z.number()
 });
@@ -37,10 +32,7 @@ export type ProjectData = z.infer<typeof ProjectData>;
 export const ProjectListData = z.object({
   project_id: z.number(),
   name: z.string(),
-  project_programs: z.array(z.number()),
   regions: z.array(z.string()),
-  start_date: z.string().nullable(),
-  end_date: z.string().nullable().optional().nullable(),
   focal_species: z.array(z.number().nullable()),
   types: z.array(z.number().nullable())
 });

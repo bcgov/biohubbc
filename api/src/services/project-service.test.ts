@@ -23,20 +23,16 @@ describe('ProjectService', () => {
         {
           project_id: 123,
           name: 'Project 1',
-          project_programs: [],
+          end_date: '2200-10-10'
           regions: [],
-          start_date: '1900-01-01',
-          end_date: '2200-10-10',
           focal_species: [],
           types: []
         },
         {
           project_id: 456,
           name: 'Project 2',
-          project_programs: [],
+          end_date: '2000-12-31'
           regions: [],
-          start_date: '1900-01-01',
-          end_date: '2000-12-31',
           focal_species: [],
           types: []
         }
@@ -49,11 +45,9 @@ describe('ProjectService', () => {
       expect(repoStub).to.be.calledOnce;
       expect(response[0].project_id).to.equal(123);
       expect(response[0].name).to.equal('Project 1');
-      expect(response[0].completion_status).to.equal('Active');
 
       expect(response[1].project_id).to.equal(456);
       expect(response[1].name).to.equal('Project 2');
-      expect(response[1].completion_status).to.equal('Completed');
     });
   });
 

@@ -6,6 +6,7 @@ import { Feature } from 'geojson';
 import { boundaryUploadHelper } from 'utils/mapBoundaryUploadHelpers';
 
 export interface IImportBoundaryDialogProps {
+  dialogTitle: string;
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (features: Feature[]) => void;
@@ -13,9 +14,9 @@ export interface IImportBoundaryDialogProps {
 }
 
 const ImportBoundaryDialog = (props: IImportBoundaryDialogProps) => {
-  const { isOpen, onClose, onSuccess, onFailure } = props;
+  const { dialogTitle, isOpen, onClose, onSuccess, onFailure } = props;
   return (
-    <ComponentDialog open={isOpen} dialogTitle="Import Boundary" onClose={onClose}>
+    <ComponentDialog open={isOpen} dialogTitle={dialogTitle} onClose={onClose}>
       <Box>
         <Box mb={3}>
           <Alert severity="info">
