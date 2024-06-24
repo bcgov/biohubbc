@@ -51,13 +51,6 @@ GET.apiDoc = {
               type: 'string',
               nullable: true
             },
-            project_programs: {
-              type: 'array',
-              items: {
-                type: 'integer'
-              },
-              nullable: true
-            },
             keyword: {
               type: 'string',
               nullable: true
@@ -92,15 +85,7 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: [
-                    'project_id',
-                    'name',
-                    'project_programs',
-                    'completion_status',
-                    'start_date',
-                    'end_date',
-                    'regions'
-                  ],
+                  required: ['project_id', 'name', 'regions'],
                   properties: {
                     project_id: {
                       type: 'integer'
@@ -108,30 +93,11 @@ GET.apiDoc = {
                     name: {
                       type: 'string'
                     },
-                    project_programs: {
-                      type: 'array',
-                      items: {
-                        type: 'integer'
-                      }
-                    },
-                    start_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      description: 'ISO 8601 date string for the funding end_date'
-                    },
-                    end_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      nullable: true,
-                      description: 'ISO 8601 date string for the funding end_date'
-                    },
                     regions: {
                       type: 'array',
                       items: {
                         type: 'string'
                       }
-                    },
-                    completion_status: {
-                      type: 'string',
-                      enum: ['Completed', 'Active']
                     }
                   }
                 }
@@ -182,12 +148,7 @@ export function getProjectList(): RequestHandler {
       const filterFields: IProjectAdvancedFilters = {
         keyword: req.query.keyword && String(req.query.keyword),
         project_name: req.query.project_name && String(req.query.project_name),
-        project_programs: req.query.project_programs
-          ? String(req.query.project_programs).split(',').map(Number)
-          : undefined,
-        itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined,
-        start_date: req.query.start_date && String(req.query.start_date),
-        end_date: req.query.end_date && String(req.query.end_date)
+        itis_tsns: req.query.itis_tsns ? String(req.query.itis_tsns).split(',').map(Number) : undefined
       };
 
       const paginationOptions = makePaginationOptionsFromRequest(req);
