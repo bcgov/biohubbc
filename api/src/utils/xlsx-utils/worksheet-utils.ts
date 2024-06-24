@@ -4,7 +4,6 @@ import { getLogger } from '../logger';
 import { MediaFile } from '../media/media-file';
 import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
 import { safeToLowerCase } from '../string-utils';
-import { observationStandardColumnValidator } from '../xlsx-utils/column-cell-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
 
 const defaultLog = getLogger('src/utils/xlsx-utils/worksheet-utils');
@@ -342,7 +341,7 @@ export function getNonStandardColumnNamesFromWorksheet(
     aliasColumns = Object.values(columnValidator.columnAliases).flat();
   }
 
-  const standardColumNames = [...observationStandardColumnValidator.columnNames, ...aliasColumns];
+  const standardColumNames = [...columnValidator.columnNames, ...aliasColumns];
 
   // Only return column names not in the validation CSV Column validator (ie: only return the non-standard columns)
   return columns.filter((column) => !standardColumNames.includes(column));

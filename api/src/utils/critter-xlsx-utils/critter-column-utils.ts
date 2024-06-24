@@ -24,30 +24,40 @@ export type CsvCritter = z.infer<ReturnType<typeof getRowValidationSchema>>;
  * Get critter row validation schema and inject existing survey critter aliases and matching TSNS.
  * Note: Survey critters may not share animal aliases. 1 alias per survey.
  *
- * @param {Set<string>} critterAliasSet - Set of allowed survey critter aliases
+ * @param {Set<string>} aliases - Set of existing survey critter aliases
  * @param {Set<number>} matchingTsnSet - Set of matching TSNS from critter rows
  * @returns {z.ZodObject} CsvCritter
  */
-const getRowValidationSchema = (critterAliasSet: Set<string>, matchingTsnSet: Set<number>) => {
-  return z.intersection(
-    z.object({
-      critter_id: z.string(),
-      sex: z.enum(['Unknown', 'Male', 'Female']),
-      itis_tsn: z.number().refine((tsn) => matchingTsnSet.has(tsn), `Invalid ITIS TSN.`),
-      wlh_id: z // valid: '10-0009R' invalid: '102-' or '10-' or '1-133K2'
-        .string()
-        .regex(/^\d{2}-.+/, `Invalid WLH_ID. Example '10-1000R'`)
-        .optional(),
-      animal_id: z
-        .string()
-        .refine(
-          (alias) => process.env.NODE_ENV === 'development' || !critterAliasSet.has(alias),
-          'Invalid ALIAS. Must be unique for survey.'
-        ),
-      critter_comment: z.string().optional()
-    }),
-    z.record(z.string(), z.string()) // Allow collection units to be passed through
-  );
+const getRowValidationSchema = (config: {
+  aliases: Set<string>;
+  tsns: Set<number>;
+  collectionUnits: Map<string, string[]>;
+}) => {
+  const rowSchema = {
+    critter_id: z.string().uuid(),
+    sex: z.enum(['Unknown', 'Male', 'Female']),
+    itis_tsn: z.number().refine((tsn) => config.tsns.has(tsn), `Invalid 'ITIS_TSN'.`),
+    wlh_id: z // valid: '10-0009R' invalid: '102-' or '10-' or '1-133K2'
+      .string()
+      .regex(/^\d{2}-.+/, `Invalid 'WLH_ID'. Example '10-1000R'`)
+      .optional(),
+    animal_id: z
+      .string()
+      .refine(
+        (alias) => process.env.NODE_ENV === 'development' || !config.aliases.has(alias),
+        `Invalid 'ALIAS'. Must be unique for survey.`
+      ),
+    critter_comment: z.string().optional()
+  };
+
+  config.collectionUnits.forEach((units, key) => {
+    rowSchema[key] = z
+      .string()
+      .refine((unit) => units.includes(unit), `Invalid '${key}'.`)
+      .optional();
+  });
+
+  return z.object(rowSchema);
 };
 
 /**
@@ -69,8 +79,8 @@ export const getCritterRowsToValidate = (rows: Row[], collectionUnitColumns: str
     };
 
     // All other properties must be collection units ie: `population unit` or `herd unit` etc...
-    collectionUnitColumns.forEach((collectionUnit) => {
-      standardCritterRow[collectionUnit] = row[collectionUnit];
+    collectionUnitColumns.forEach((categoryHeader) => {
+      standardCritterRow[categoryHeader] = row[categoryHeader];
     });
 
     return standardCritterRow;
@@ -93,7 +103,11 @@ export const validateCritterRows = (
   surveyCritterAliasSet: Set<string>,
   matchingTsnSet: Set<number>
 ): z.SafeParseReturnType<Partial<CsvCritter>[], CsvCritter[]> => {
-  const critterRowValidationSchema = getRowValidationSchema(surveyCritterAliasSet, matchingTsnSet);
+  const critterRowValidationSchema = getRowValidationSchema({
+    aliases: surveyCritterAliasSet,
+    tsns: matchingTsnSet,
+    collectionUnits: new Map([['POPULATION UNIT', ['A', 'B']]])
+  });
 
   return z.array(critterRowValidationSchema).safeParse(rows);
 };

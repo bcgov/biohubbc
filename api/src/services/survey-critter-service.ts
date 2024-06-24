@@ -160,7 +160,7 @@ export class SurveyCritterService extends DBService {
 
     /**
      * ------------------------------------------------------------
-     *                    CSV PARSING / VALIDATION
+     *                    CSV VALIDATION
      * ------------------------------------------------------------
      */
 
