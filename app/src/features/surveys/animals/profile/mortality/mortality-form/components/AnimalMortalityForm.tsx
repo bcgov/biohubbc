@@ -42,13 +42,19 @@ export const AnimalMortalityForm = <FormikValuesType extends ICreateMortalityReq
           // Points may have 3 coords for [lon, lat, elevation]
           geometry: yup.object({
             type: yup.string(),
-            coordinates: yup.array().of(yup.number()).min(2).max(3)
+            coordinates: yup
+              .array()
+              .of(yup.number())
+              .min(2)
+              .max(3)
+              .isValidPointCoordinates('Latitude or longitude values are outside of the valid range.')
+              .required('Latitude or longitude values are outside of the valid range.')
           }),
           properties: yup.object().optional()
         })
         .nullable()
         .default(undefined)
-        .required('mortality location is required')
+        .required('Mortality location is required')
     }),
     measurements: yup.array(
       yup

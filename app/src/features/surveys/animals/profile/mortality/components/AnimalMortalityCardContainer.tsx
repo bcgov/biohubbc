@@ -162,8 +162,8 @@ export const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContaine
                     {mortality.location?.latitude && mortality.location?.longitude && (
                       <Box>
                         <Typography color="textSecondary" variant="body2">
-                          {mortality.location.longitude},&nbsp;
-                          {mortality.location.latitude}
+                          {mortality.location.latitude},&nbsp;
+                          {mortality.location.longitude}
                         </Typography>
                       </Box>
                     )}

@@ -91,11 +91,7 @@ export interface IGetProjectsListResponse {
 export interface IProjectsListItemData {
   project_id: number;
   name: string;
-  start_date: string;
-  end_date?: string;
-  completion_status: string;
   regions: string[];
-  project_programs: number[];
 }
 
 export interface IProjectUserRoles {
@@ -143,9 +139,6 @@ export interface IGetProjectForUpdateResponse {
 
 export interface IGetProjectForUpdateResponseDetails {
   project_name: string;
-  project_programs: number[];
-  start_date: string;
-  end_date: string;
   revision_count: number;
 }
 export interface IGetProjectForUpdateResponseObjectives {
@@ -199,10 +192,6 @@ export interface ProjectViewObject {
 export interface IGetProjectForViewResponseDetails {
   project_id: number;
   project_name: string;
-  project_programs: number[];
-  start_date: string;
-  end_date: string;
-  completion_status: string;
 }
 export interface IGetProjectForViewResponseObjectives {
   objectives: string;

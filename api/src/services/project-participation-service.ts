@@ -314,50 +314,128 @@ export class ProjectParticipationService extends DBService {
     return true;
   }
 
-  doProjectParticipantsHaveARole(participants: PostParticipantData[], roleToCheck: PROJECT_ROLE): boolean {
+  /**
+   * Internal function for validating that all Project members have a role
+   *
+   * @param {PostParticipantData[]} participants
+   * @param {PROJECT_ROLE} roleToCheck
+   * @return {*}  {boolean}
+   * @memberof ProjectParticipationService
+   */
+  _doProjectParticipantsHaveARole(participants: PostParticipantData[], roleToCheck: PROJECT_ROLE): boolean {
     return participants.some((item) => item.project_role_names.some((role) => role === roleToCheck));
   }
 
-  async upsertProjectParticipantData(projectId: number, participants: PostParticipantData[]): Promise<void> {
-    if (!this.doProjectParticipantsHaveARole(participants, PROJECT_ROLE.COORDINATOR)) {
+  /**
+   * Internal function for validating that all project participants have one unique role.
+   *
+   * @param {PostParticipantData[]} participants
+   * @return {*}  {boolean}
+   * @memberof ProjectParticipationService
+   */
+  _doProjectParticipantsHaveOneRole(participants: PostParticipantData[]): boolean {
+    // Map of system_user_id to set of unique role names
+    const participantUniqueRoles = new Map<number, Set<string>>();
+
+    for (const participant of participants) {
+      const system_user_id = participant.system_user_id;
+      const project_role_names = participant.project_role_names;
+
+      // Get the set of unique role names, or initialize a new set if the user is not in the map
+      const uniqueRoleNamesForParticipant = participantUniqueRoles.get(system_user_id) ?? new Set<string>();
+
+      for (const role of project_role_names) {
+        // Add the role names to the set, converting to lowercase to ensure case-insensitive comparison
+        uniqueRoleNamesForParticipant.add(role.toLowerCase());
+      }
+
+      // Update the map with the new set of unique role names
+      participantUniqueRoles.set(system_user_id, uniqueRoleNamesForParticipant);
+    }
+
+    // Returns true if all participants have one unique role
+    return Array.from(participantUniqueRoles.values()).every((roleNames) => roleNames.size === 1);
+  }
+
+  /**
+   * Updates existing participants, deletes those participants not in the incoming list, and inserts new participants.
+   *
+   * @param {number} projectId
+   * @param {PostParticipantData[]} incomingParticipants
+   * @return {*}  {Promise<void>}
+   * @throws ApiGeneralError If no participant has a coordinator role or if any participant has multiple roles.
+   * @memberof ProjectParticipationService
+   */
+  async upsertProjectParticipantData(projectId: number, incomingParticipants: PostParticipantData[]): Promise<void> {
+    // Confirm that at least one participant has a coordinator role
+    if (!this._doProjectParticipantsHaveARole(incomingParticipants, PROJECT_ROLE.COORDINATOR)) {
       throw new ApiGeneralError(
         `Projects require that at least one participant has a ${PROJECT_ROLE.COORDINATOR} role.`
       );
     }
 
-    // all actions to take
-    const promises: Promise<any>[] = [];
+    // Check for multiple roles for any participant
+    if (!this._doProjectParticipantsHaveOneRole(incomingParticipants)) {
+      throw new ApiGeneralError(
+        'Users can only have one role per Project but multiple roles were specified for at least one user.'
+      );
+    }
 
-    // get the existing participants for a project
+    // Fetch existing participants for the project
     const existingParticipants = await this.projectParticipationRepository.getProjectParticipants(projectId);
 
-    // Compare incoming with existing to find any outliers to delete
+    // Prepare promises for all database operations
+    const promises: Promise<any>[] = [];
+
+    // Identify participants to delete
     const participantsToDelete = existingParticipants.filter(
-      (item) => !participants.find((incoming) => incoming.system_user_id === item.system_user_id)
+      (existingParticipant) =>
+        !incomingParticipants.some(
+          (incomingParticipant) => incomingParticipant.system_user_id === existingParticipant.system_user_id
+        )
     );
 
-    // delete
-    participantsToDelete.forEach((item) => {
+    // Delete participants not present in the incoming payload
+    participantsToDelete.forEach((participantToDelete) => {
       promises.push(
-        this.projectParticipationRepository.deleteProjectParticipationRecord(projectId, item.project_participation_id)
+        this.projectParticipationRepository.deleteProjectParticipationRecord(
+          projectId,
+          participantToDelete.project_participation_id
+        )
       );
     });
 
-    participants.forEach((item) => {
-      if (item.project_participation_id) {
+    // Upsert participants based on conditions
+    incomingParticipants.forEach((incomingParticipant) => {
+      const existingParticipant = existingParticipants.find(
+        (existingParticipant) => existingParticipant.system_user_id === incomingParticipant.system_user_id
+      );
+
+      if (existingParticipant) {
+        // Update existing participant's role
+        if (
+          !existingParticipant.project_role_names.some((existingRole) =>
+            incomingParticipant.project_role_names.includes(existingRole as PROJECT_ROLE)
+          )
+        ) {
+          promises.push(
+            this.projectParticipationRepository.updateProjectParticipationRole(
+              incomingParticipant.project_participation_id ?? existingParticipant.project_participation_id,
+              incomingParticipant.project_role_names[0]
+            )
+          );
+        }
+      } else if (!existingParticipant) {
+        // Insert new participant if the user does not already exist in the project, otherwise triggers database constraint error
         promises.push(
-          this.projectParticipationRepository.updateProjectParticipationRole(
-            item.project_participation_id,
-            item.project_role_names[0]
+          this.projectParticipationRepository.postProjectParticipant(
+            projectId,
+            incomingParticipant.system_user_id,
+            incomingParticipant.project_role_names[0]
           )
         );
-      } else {
-        this.projectParticipationRepository.postProjectParticipant(
-          projectId,
-          item.system_user_id,
-          item.project_role_names[0]
-        );
       }
+      // If the participant already exists with the desired role, do nothing
     });
 
     await Promise.all(promises);
