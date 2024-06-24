@@ -71,9 +71,9 @@ const CreateSurveyPage = () => {
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
-  const [isSaving, setIsSaving] = useState(false);
-
   const { locationChangeInterceptor } = useUnsavedChangesDialog();
+
+  const [isSaving, setIsSaving] = useState(false);
 
   const dialogContext = useContext(DialogContext);
 

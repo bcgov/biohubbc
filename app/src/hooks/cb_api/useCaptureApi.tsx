@@ -5,6 +5,18 @@ import { isEqual } from 'lodash-es';
 
 const useCaptureApi = (axios: AxiosInstance) => {
   /**
+   * Get a critter's Capture.
+   *
+   * @async
+   * @param {string} captureId
+   * @returns {Promise<ICaptureResponse>} - The requested capture.
+   */
+  const getCapture = async (captureId: string): Promise<ICaptureResponse> => {
+    const { data } = await axios.get(`/api/critterbase/captures/${captureId}`);
+    return data;
+  };
+
+  /**
    * Create a critter Capture.
    *
    * @async
@@ -48,7 +60,7 @@ const useCaptureApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  return { createCapture, updateCapture, deleteCapture };
+  return { createCapture, updateCapture, deleteCapture, getCapture };
 };
 
 export { useCaptureApi };

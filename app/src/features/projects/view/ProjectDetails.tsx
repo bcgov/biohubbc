@@ -6,7 +6,6 @@ import Typography from '@mui/material/Typography';
 import assert from 'assert';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext } from 'react';
-import GeneralInformation from './components/GeneralInformation';
 import ProjectObjectives from './components/ProjectObjectives';
 import TeamMembers from './components/TeamMember';
 
@@ -67,29 +66,21 @@ const ProjectDetails = () => {
           Project Details
         </Typography>
       </Toolbar>
-      <Divider></Divider>
+      <Divider />
       <Box p={3} sx={classes.projectMetadata}>
         <Box component="section">
           <Typography component="h3" sx={classes.projectMetaSectionHeader}>
             Project Objectives
           </Typography>
-          <Divider></Divider>
+          <Divider />
           <ProjectObjectives />
-        </Box>
-
-        <Box component="section">
-          <Typography component="h3" sx={classes.projectMetaSectionHeader}>
-            General Information
-          </Typography>
-          <Divider></Divider>
-          <GeneralInformation />
         </Box>
 
         <Box component="section">
           <Typography component="h4" sx={classes.projectMetaSectionHeader}>
             Team Members
           </Typography>
-          <Divider></Divider>
+          <Divider />
           <TeamMembers />
         </Box>
 
@@ -98,7 +89,7 @@ const ProjectDetails = () => {
           <Typography component="h4" sx={classes.projectMetaSectionHeader}>
             IUCN Classification
           </Typography>
-          <Divider></Divider>
+          <Divider/>
           <IUCNClassification />
         </Box> */}
       </Box>

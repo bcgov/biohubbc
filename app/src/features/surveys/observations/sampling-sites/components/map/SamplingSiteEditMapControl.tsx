@@ -24,6 +24,7 @@ import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import get from 'lodash-es/get';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -51,7 +52,7 @@ const useStyles = () => {
 export interface ISamplingSiteEditMapControlProps {
   name: string;
   mapId: string;
-  formikProps: FormikContextType<any>;
+  formikProps: FormikContextType<IGetSampleLocationDetails>;
 }
 
 /**

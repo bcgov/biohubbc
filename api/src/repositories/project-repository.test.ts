@@ -1,9 +1,7 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import { QueryResult } from 'pg';
-import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProjectObject } from '../models/project-create';
 import {
   GetAttachmentsData,
@@ -25,8 +23,6 @@ describe('ProjectRepository', () => {
       const repository = new ProjectRepository(dbConnection);
 
       const input = {
-        start_date: 'start',
-        end_date: undefined,
         project_name: 'string',
         agency_project_id: 1,
         agency_id: 1,
@@ -46,9 +42,6 @@ describe('ProjectRepository', () => {
       const repository = new ProjectRepository(dbConnection);
 
       const input = {
-        start_date: undefined,
-        end_date: 'end',
-        project_programs: [1],
         project_name: 'string',
         agency_project_id: 1,
         agency_id: 1,
@@ -68,8 +61,7 @@ describe('ProjectRepository', () => {
       const repository = new ProjectRepository(dbConnection);
 
       const input = {
-        start_date: 'start',
-        end_date: 'end'
+        keyword: 'a'
       };
 
       const response = await repository.getProjectList(true, 1, input);
@@ -246,10 +238,7 @@ describe('ProjectRepository', () => {
 
       const input = {
         project: {
-          project_programs: [1],
           name: 'name',
-          start_date: 'start_date',
-          end_date: 'end_date',
           comments: 'comments'
         },
         objectives: { objectives: '' }
@@ -268,10 +257,7 @@ describe('ProjectRepository', () => {
 
       const input = {
         project: {
-          project_programs: [1],
           name: 'name',
-          start_date: 'start_date',
-          end_date: 'end_date',
           comments: 'comments'
         },
         objectives: { objectives: '' }
@@ -290,10 +276,7 @@ describe('ProjectRepository', () => {
 
       const input = {
         project: {
-          project_programs: [1],
           name: 'name',
-          start_date: 'start_date',
-          end_date: 'end_date',
           comments: 'comments'
         },
         objectives: { objectives: '' }
@@ -358,66 +341,6 @@ describe('ProjectRepository', () => {
       const response = await repository.deleteProject(1);
 
       expect(response).to.eql(undefined);
-    });
-  });
-
-  describe('insertProgram', () => {
-    it('should return early', async () => {
-      const dbConnection = getMockDBConnection();
-      const mockSql = sinon.stub(dbConnection, 'sql').resolves();
-      const repository = new ProjectRepository(dbConnection);
-
-      await repository.insertProgram(1, []);
-
-      expect(mockSql).to.not.be.called;
-    });
-
-    it('should run properly', async () => {
-      const dbConnection = getMockDBConnection();
-      const mockSql = sinon.stub(dbConnection, 'sql').resolves();
-      const repository = new ProjectRepository(dbConnection);
-
-      await repository.insertProgram(1, [1]);
-
-      expect(mockSql).to.be.called;
-    });
-
-    it('should throw an SQL error', async () => {
-      const dbConnection = getMockDBConnection();
-      sinon.stub(dbConnection, 'sql').rejects();
-      const repository = new ProjectRepository(dbConnection);
-
-      try {
-        await repository.insertProgram(1, [1]);
-        expect.fail();
-      } catch (error) {
-        expect((error as ApiExecuteSQLError).message).to.equal('Failed to execute insert SQL for project_program');
-      }
-    });
-  });
-
-  describe('deletePrograms', () => {
-    it('should run without issue', async () => {
-      const dbConnection = getMockDBConnection();
-      const mockSql = sinon.stub(dbConnection, 'sql').resolves();
-      const repository = new ProjectRepository(dbConnection);
-
-      await repository.deletePrograms(1);
-
-      expect(mockSql).to.be.called;
-    });
-
-    it('should throw an SQL error', async () => {
-      const dbConnection = getMockDBConnection();
-      sinon.stub(dbConnection, 'sql').rejects();
-      const repository = new ProjectRepository(dbConnection);
-
-      try {
-        await repository.deletePrograms(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as ApiExecuteSQLError).message).to.equal('Failed to execute delete SQL for project_program');
-      }
     });
   });
 });

@@ -24,10 +24,11 @@ export class AttractantRepository extends BaseRepository {
    * Get attractants for a technique
    *
    * @param {number} techniqueId
-   * @returns {*}
-   * @memberof TechniqueRepository
+   * @param {number} surveyId
+   * @return {*}  {Promise<AttractantRecord[]>}
+   * @memberof AttractantRepository
    */
-  async getAttractantsByTechniqueId(techniqueId: number): Promise<AttractantRecord[]> {
+  async getAttractantsByTechniqueId(techniqueId: number, _surveyId: number): Promise<AttractantRecord[]> {
     defaultLog.debug({ label: 'getAttractantsByTechniqueId', techniqueId });
 
     const sqlStatement = SQL`
@@ -49,8 +50,8 @@ export class AttractantRepository extends BaseRepository {
    *
    * @param {number} techniqueId
    * @param {IAttractantPostData[]} attractants
-   * @returns {*}
-   * @memberof TechniqueRepository
+   * @return {*}  {Promise<void>}
+   * @memberof AttractantRepository
    */
   async insertAttractantsForTechnique(techniqueId: number, attractants: IAttractantPostData[]): Promise<void> {
     defaultLog.debug({ label: 'insertTechnique', techniqueId });
@@ -75,8 +76,8 @@ export class AttractantRepository extends BaseRepository {
    *
    * @param {number} techniqueId
    * @param {number[]} attractantLookupIds
-   * @returns {*}
-   * @memberof TechniqueRepository
+   * @return {*}  {Promise<void>}
+   * @memberof AttractantRepository
    */
   async deleteTechniqueAttractants(techniqueId: number, attractantLookupIds: number[]): Promise<void> {
     defaultLog.debug({ label: 'deleteTechniqueAttractants', techniqueId });
@@ -92,7 +93,7 @@ export class AttractantRepository extends BaseRepository {
 
       if (!response.rowCount) {
         throw new ApiExecuteSQLError('Failed to delete technique', [
-          'TechniqueRepository->deleteTechnique',
+          'AttractantRepository->deleteTechnique',
           'rows was null or undefined, expected rows != null'
         ]);
       }
@@ -104,8 +105,8 @@ export class AttractantRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} methodTechniqueId
-   * @returns {*}
-   * @memberof TechniqueRepository
+   * @return {*}  {Promise<void>}
+   * @memberof AttractantRepository
    */
   async deleteAllTechniqueAttractants(surveyId: number, methodTechniqueId: number): Promise<void> {
     defaultLog.debug({ label: 'deleteTechnique', methodTechniqueId });
@@ -125,7 +126,7 @@ export class AttractantRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete technique', [
-        'TechniqueRepository->deleteTechnique',
+        'AttractantRepository->deleteTechnique',
         'rows was null or undefined, expected rows != null'
       ]);
     }

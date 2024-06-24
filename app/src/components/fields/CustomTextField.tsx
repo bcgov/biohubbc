@@ -16,12 +16,6 @@ export interface ICustomTextField {
    * @memberof ICustomTextField
    */
   name: string;
-  /*
-   * TODO: Needed fix: Add correct hardcoded type
-   * Note: TextFieldProps causes build compile issue
-   * https://github.com/mui/material-ui/issues/30038
-   */
-  other?: any;
   /**
    * Optional maxLength for the text field.
    *
@@ -29,6 +23,12 @@ export interface ICustomTextField {
    * @memberof ICustomTextField
    */
   maxLength?: number;
+  /*
+   * TODO: Needed fix: Add correct hardcoded type
+   * Note: TextFieldProps causes build compile issue
+   * https://github.com/mui/material-ui/issues/30038
+   */
+  other?: any;
 }
 
 const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (props) => {
@@ -48,7 +48,7 @@ const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (pr
       value={get(values, name) ?? ''}
       fullWidth={true}
       error={get(touched, name) && Boolean(get(errors, name))}
-      helperText={get(touched, name) && (get(errors, name) as string)}
+      helperText={get(touched, name) && get(errors, name)}
       {...other}
     />
   );

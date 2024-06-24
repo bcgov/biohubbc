@@ -117,8 +117,8 @@ export class TechniqueAttributeRepository extends BaseRepository {
    * Get quantitative and qualitative attributes for a method lookup Id
    *
    * @param {number[]} methodLookupIds
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueRepository
+   * @return {*}  {Promise<IGetTechniqueAttributes[]>}
+   * @memberof TechniqueAttributeRepository
    */
   async getAttributesForMethodLookupIds(methodLookupIds: number[]): Promise<IGetTechniqueAttributes[]> {
     defaultLog.debug({ label: 'getAttributesForMethodLookupId', methodLookupIds });
@@ -215,7 +215,7 @@ export class TechniqueAttributeRepository extends BaseRepository {
    *
    * @param {number} techniqueId
    * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueRepository
+   * @memberof TechniqueAttributeRepository
    */
   async getAttributeDefinitionsByTechniqueId(techniqueId: number): Promise<IGetTechniqueAttributes> {
     defaultLog.debug({ label: 'getAttributesForMethodLookupId', techniqueId });
@@ -314,7 +314,7 @@ export class TechniqueAttributeRepository extends BaseRepository {
    *
    * @param {number} techniqueId
    * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueRepository
+   * @memberof TechniqueAttributeRepository
    */
   async getAttributesByTechniqueId(techniqueId: number): Promise<ITechniqueAttributesObject> {
     defaultLog.debug({ label: 'getAttributesByTechniqueId', techniqueId });
@@ -370,7 +370,7 @@ export class TechniqueAttributeRepository extends BaseRepository {
    * @param {number} techniqueId
    * @param {IQualitativeAttributePostData[]} attributes
    * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueRepository
+   * @memberof TechniqueAttributeRepository
    */
   async insertQualitativeAttributesForTechnique(
     techniqueId: number,
@@ -400,7 +400,7 @@ export class TechniqueAttributeRepository extends BaseRepository {
    * @param {number} techniqueId
    * @param {IQuantitativeAttributePostData[]} attributes
    * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueRepository
+   * @memberof TechniqueAttributeRepository
    */
   async insertQuantitativeAttributesForTechnique(
     techniqueId: number,
@@ -432,7 +432,7 @@ export class TechniqueAttributeRepository extends BaseRepository {
    * @param {number} techniqueId
    * @param {IQuantitativeAttributePostData} attribute
    * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueRepository
+   * @memberof TechniqueAttributeRepository
    */
   async updateQuantitativeAttributeForTechnique(
     techniqueId: number,
@@ -457,7 +457,7 @@ export class TechniqueAttributeRepository extends BaseRepository {
    * @param {number} techniqueId
    * @param {IQualitativeAttributePostData} attribute
    * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueRepository
+   * @memberof TechniqueAttributeRepository
    */
   async updateQualitativeAttributeForTechnique(
     techniqueId: number,
@@ -482,7 +482,7 @@ export class TechniqueAttributeRepository extends BaseRepository {
    * @param {number} techniqueId
    * @param {number[]}  methodTechniqueAttributeQualitativeIds
    * @returns {*}
-   * @memberof TechniqueRepository
+   * @memberof TechniqueAttributeRepository
    */
   async deleteQualitativeAttributesForTechnique(
     surveyId: number,
@@ -496,8 +496,8 @@ export class TechniqueAttributeRepository extends BaseRepository {
       .from('method_technique_attribute_qualitative as mtaq')
       .leftJoin('method_technique as mt', 'mt.method_technique_id', 'mtaq.method_technique_id')
       .whereIn('method_technique_attribute_qualitative_id', methodTechniqueAttributeQualitativeIds)
-      // .andWhere('mtaq.method_technique_id', techniqueId)
-      // .andWhere('mt.survey_id', surveyId)
+      .andWhere('mtaq.method_technique_id', techniqueId)
+      .andWhere('mt.survey_id', surveyId)
       .returning('*');
 
     const response = await this.connection.knex(queryBuilder);
@@ -516,7 +516,7 @@ export class TechniqueAttributeRepository extends BaseRepository {
    * @param {number} techniqueId
    * @param {number[]} methodTechniqueAttributeQuantitativeIds
    * @returns {*}
-   * @memberof TechniqueRepository
+   * @memberof TechniqueAttributeRepository
    */
   async deleteQuantitativeAttributesForTechnique(
     surveyId: number,
@@ -530,8 +530,8 @@ export class TechniqueAttributeRepository extends BaseRepository {
       .from('method_technique_attribute_quantitative as mtaq')
       .leftJoin('method_technique as mt', 'mt.method_technique_id', 'mtaq.method_technique_id')
       .whereIn('method_technique_attribute_quantitative_id', methodTechniqueAttributeQuantitativeIds)
-      // .andWhere('mtaq.method_technique_id', techniqueId)
-      // .andWhere('mt.survey_id', surveyId)
+      .andWhere('mtaq.method_technique_id', techniqueId)
+      .andWhere('mt.survey_id', surveyId)
       .returning('*');
 
     const response = await this.connection.knex(queryBuilder);

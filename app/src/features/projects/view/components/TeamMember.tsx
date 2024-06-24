@@ -1,9 +1,10 @@
-import { mdiAccountEdit, mdiCrown } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
+import grey from '@mui/material/colors/grey';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import assert from 'assert';
+import { PROJECT_ROLE_ICONS } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext, useMemo } from 'react';
 import { getRandomHexColor } from 'utils/Utils';
@@ -55,30 +56,34 @@ const TeamMembers = () => {
   return (
     <Stack spacing={1}>
       {projectTeamMembers.map((member) => {
-        const isCoordinator = member.roles.includes('Coordinator');
-        const isCollaborator = member.roles.includes('Collaborator');
         return (
           <Box display="flex" alignItems="center" key={member.display_name}>
+            {/* Avatar Box */}
             <Box
-              sx={{ height: '35px', width: '35px', minWidth: '35px', borderRadius: '50%' }}
-              bgcolor={member.avatarColor}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              mr={1}>
+              sx={{
+                height: '35px',
+                width: '35px',
+                minWidth: '35px',
+                borderRadius: '50%',
+                bgcolor: member.avatarColor,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                mr: 1
+              }}>
               <Typography sx={{ fontSize: '0.8rem', color: '#fff' }}>{member.initials}</Typography>
             </Box>
-            <Typography variant="body2" color="textSecondary" alignItems="center" display="flex">
+
+            {/* Member Display Name and Roles */}
+            <Typography variant="body2" color="textSecondary" display="flex" alignItems="center">
               {member.display_name}
-              {(isCoordinator || isCollaborator) && (
-                <Icon
-                  title={member.roles.join(', ')}
-                  color="gray"
-                  path={isCoordinator ? mdiCrown : mdiAccountEdit}
-                  size={0.8}
-                  style={{ marginLeft: '6px' }}
-                />
-              )}
+
+              {/* Roles with Icons */}
+              {member.roles.map((role) => (
+                <Box key={role} ml={0.75} mt={0.5}>
+                  <Icon path={PROJECT_ROLE_ICONS[role] ?? ''} size={0.75} color={grey[600]} />
+                </Box>
+              ))}
             </Typography>
           </Box>
         );

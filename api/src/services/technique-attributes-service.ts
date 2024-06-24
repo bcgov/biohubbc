@@ -21,8 +21,8 @@ export class TechniqueAttributeService extends DBService {
    * Lookup quantitative and qualitative attributes for a method lookup Id
    *
    * @param {number[]} method_lookup_ids
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueService
+   * @return {*}  {Promise<IGetTechniqueAttributes[]>}
+   * @memberof TechniqueAttributeService
    */
   async getAttributesForMethodLookupIds(method_lookup_ids: number[]): Promise<IGetTechniqueAttributes[]> {
     return this.techniqueAttributeRepository.getAttributesForMethodLookupIds(method_lookup_ids);
@@ -32,8 +32,8 @@ export class TechniqueAttributeService extends DBService {
    * Lookup quantitative and qualitative attributes for a method lookup Id
    *
    * @param {number} techniqueId
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueService
+   * @return {*}  {Promise<ITechniqueAttributesObject>}
+   * @memberof TechniqueAttributeService
    */
   async getAttributesByTechniqueId(techniqueId: number): Promise<ITechniqueAttributesObject> {
     return this.techniqueAttributeRepository.getAttributesByTechniqueId(techniqueId);
@@ -43,9 +43,9 @@ export class TechniqueAttributeService extends DBService {
    * Validate that the technique can have all incoming attributes. Throws an error if any attributes are invalid.
    *
    * @param {number} techniqueId
-   * @param {(IQualitativeAttributePostData | IQuantitativeAttributePostData)[]} attributes
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueService
+   * @param {((IQualitativeAttributePostData | IQuantitativeAttributePostData)[])} attributes
+   * @return {*}  {Promise<void>}
+   * @memberof TechniqueAttributeService
    */
   async _validAttributesForTechnique(
     techniqueId: number,
@@ -77,9 +77,9 @@ export class TechniqueAttributeService extends DBService {
    * Insert quantitative attributes for a technique
    *
    * @param {number} techniqueId
-   * @param {number[]} attributes
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueService
+   * @param {IQuantitativeAttributePostData[]} attributes
+   * @return {*}  {Promise<void>}
+   * @memberof TechniqueAttributeService
    */
   async insertQuantitativeAttributesForTechnique(
     techniqueId: number,
@@ -96,8 +96,8 @@ export class TechniqueAttributeService extends DBService {
    *
    * @param {number} techniqueId
    * @param {IQualitativeAttributePostData[]} attributes
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueService
+   * @return {*}  {Promise<void>}
+   * @memberof TechniqueAttributeService
    */
   async insertQualitativeAttributesForTechnique(
     techniqueId: number,
@@ -115,8 +115,8 @@ export class TechniqueAttributeService extends DBService {
    * @param {number} surveyId
    * @param {number} techniqueId
    * @param {number[]} methodLookupAttributeQuantitativeIds
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueService
+   * @return {*}  {Promise<void>}
+   * @memberof TechniqueAttributeService
    */
   async deleteQuantitativeAttributesForTechnique(
     surveyId: number,
@@ -136,8 +136,8 @@ export class TechniqueAttributeService extends DBService {
    * @param {number} surveyId
    * @param {number} techniqueId
    * @param {number[]} methodLookupAttributeQualitativeIds
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueService
+   * @return {*}  {Promise<void>}
+   * @memberof TechniqueAttributeService
    */
   async deleteQualitativeAttributesForTechnique(
     surveyId: number,
@@ -157,8 +157,8 @@ export class TechniqueAttributeService extends DBService {
    * @param {number} surveyId
    * @param {number} techniqueId
    * @param {IQuantitativeAttributePostData[]} attributes
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueService
+   * @return {*}  {Promise<void>}
+   * @memberof TechniqueAttributeService
    */
   async updateDeleteQuantitativeAttributesForTechnique(
     surveyId: number,
@@ -225,9 +225,9 @@ export class TechniqueAttributeService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} techniqueId
-   * @param { IQualitativeAttributePostData[]} attributes
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueService
+   * @param {IQualitativeAttributePostData[]} attributes
+   * @return {*}  {Promise<void>}
+   * @memberof TechniqueAttributeService
    */
   async updateDeleteQualitativeAttributesForTechnique(
     surveyId: number,

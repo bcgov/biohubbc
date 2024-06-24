@@ -15,20 +15,21 @@ export class AttractantService extends DBService {
    * Get attractants for a technique id
    *
    * @param {number} techniqueId
-   * @returns {*} {Promise<IAttractantRowData[]>}
-   * @memberof TechniqueService
+   * @param {number} surveyId
+   * @return {*}  {Promise<AttractantRecord[]>}
+   * @memberof AttractantService
    */
-  async getAttractantsByTechniqueId(techniqueId: number): Promise<AttractantRecord[]> {
-    return this.attractantRepository.getAttractantsByTechniqueId(techniqueId);
+  async getAttractantsByTechniqueId(techniqueId: number, surveyId: number): Promise<AttractantRecord[]> {
+    return this.attractantRepository.getAttractantsByTechniqueId(techniqueId, surveyId);
   }
 
   /**
    * Insert attractants for a technique
    *
-   * @param { IAttractantPostData[]} attractants
+   * @param {IAttractantPostData[]} attractants
    * @param {number} surveyId
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueService
+   * @return {*}  {Promise<void>}
+   * @memberof AttractantService
    */
   async insertTechniqueAttractants(attractants: IAttractantPostData[], surveyId: number): Promise<void> {
     return this.attractantRepository.insertAttractantsForTechnique(surveyId, attractants);
@@ -40,8 +41,8 @@ export class AttractantService extends DBService {
    * @param {number} techniqueId
    * @param {IAttractantPostData[]} attractants
    * @param {number} surveyId
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueService
+   * @return {*}  {Promise<void>}
+   * @memberof AttractantService
    */
   async updateTechniqueAttractants(
     techniqueId: number,
@@ -49,7 +50,7 @@ export class AttractantService extends DBService {
     surveyId: number
   ): Promise<void> {
     // Get existing attractants associated with the technique
-    const existingAttractants = await this.attractantRepository.getAttractantsByTechniqueId(techniqueId);
+    const existingAttractants = await this.attractantRepository.getAttractantsByTechniqueId(techniqueId, surveyId);
 
     // Find existing attractants to delete
     const attractantsToDelete = existingAttractants.filter(
@@ -80,8 +81,8 @@ export class AttractantService extends DBService {
    *
    * @param {number} methodTechniqueId
    * @param {number[]} attractantLookupIds
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueService
+   * @return {*}  {Promise<void>}
+   * @memberof AttractantService
    */
   async deleteTechniqueAttractants(methodTechniqueId: number, attractantLookupIds: number[]): Promise<void> {
     await this.attractantRepository.deleteTechniqueAttractants(methodTechniqueId, attractantLookupIds);
@@ -92,8 +93,8 @@ export class AttractantService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} methodTechniqueId
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof TechniqueService
+   * @return {*}  {Promise<void>}
+   * @memberof AttractantService
    */
   async deleteAllTechniqueAttractants(surveyId: number, methodTechniqueId: number): Promise<void> {
     await this.attractantRepository.deleteAllTechniqueAttractants(surveyId, methodTechniqueId);

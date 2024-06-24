@@ -19,6 +19,7 @@ export interface IAutocompleteField<T extends string | number> {
   label: string;
   name: string;
   options: IAutocompleteFieldOption<T>[];
+  disabled?: boolean;
   loading?: boolean;
   sx?: TextFieldProps['sx']; //https://github.com/TypeStrong/fork-ts-checker-webpack-plugin/issues/271#issuecomment-1561891271
   required?: boolean;
@@ -69,6 +70,7 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
       isOptionEqualToValue={handleGetOptionSelected}
       getOptionDisabled={props.getOptionDisabled}
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
+      disabled={props?.disabled || false}
       sx={props.sx}
       loading={props.loading}
       onInputChange={(_event, _value, reason) => {

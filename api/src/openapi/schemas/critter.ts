@@ -72,6 +72,10 @@ const captureSchema: OpenAPIV3.SchemaObject = {
       type: 'string',
       format: 'uuid'
     },
+    capture_method_id: {
+      type: 'string',
+      format: 'uuid'
+    },
     capture_location_id: {
       type: 'string',
       format: 'uuid'
@@ -82,13 +86,16 @@ const captureSchema: OpenAPIV3.SchemaObject = {
     },
     capture_location: locationSchema,
     release_location: locationSchema,
-    force_create_release: {
-      type: 'boolean'
-    },
-    capture_timestamp: {
+    capture_date: {
       type: 'string'
     },
-    release_timestamp: {
+    capture_time: {
+      type: 'string'
+    },
+    release_date: {
+      type: 'string'
+    },
+    release_time: {
       type: 'string'
     },
     capture_comment: {
@@ -202,30 +209,6 @@ const quantitativeMeasurmentSchema: OpenAPIV3.SchemaObject = {
     measured_timestamp: { type: 'string' },
     measurement_comment: { type: 'string' }
   }
-};
-
-export const critterCreateRequestObject: OpenAPIV3.SchemaObject = {
-  title: 'Create critter request object',
-  type: 'object',
-  properties: {
-    critter_id: {
-      type: 'string',
-      format: 'uuid'
-    },
-    animal_id: {
-      type: 'string'
-    },
-    wlh_id: {
-      type: 'string'
-    },
-    itis_tsn: {
-      type: 'integer'
-    },
-    sex: {
-      type: 'string'
-    }
-  },
-  additionalProperties: false
 };
 
 export const critterBulkRequestObject: OpenAPIV3.SchemaObject = {
