@@ -25,7 +25,7 @@ export interface ICritter {
   critter_comment: string | null;
 }
 
-interface ICreateCritter {
+export interface ICreateCritter {
   critter_id?: string;
   wlh_id?: string | null;
   animal_id: string; // NOTE: In critterbase this is optional. For SIMS it should be required.
@@ -393,7 +393,7 @@ export class CritterbaseService {
     return this._makeGetRequest(`${CRITTER_ENDPOINT}/${critter_id}`, [{ key: 'format', value: 'detail' }]);
   }
 
-  async createCritter(data: ICritter) {
+  async createCritter(data: ICreateCritter) {
     const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}/create`, data);
     return response.data;
   }
@@ -448,6 +448,19 @@ export class CritterbaseService {
     const { data } = await this.axiosInstance.post(`/xref/taxon-quantitative-measurements`, {
       taxon_measurement_ids: taxon_measurement_ids
     });
+
+    return data;
+  }
+
+  /**
+   * Get collection categories by tsn. Includes hierarchies.
+   *
+   * @async
+   * @param {string} tsn - ITIS TSN
+   * @returns {Promise<>} Collection categories
+   */
+  async getTaxonCollectionCategories(tsn: string) {
+    const { data } = await this._makeGetRequest(CbRoutes['taxon-collection-categories'], [{ key: 'tsn', value: tsn }]);
 
     return data;
   }

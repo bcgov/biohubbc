@@ -68,14 +68,12 @@ export const critterStandardColumnValidator: IXLSXCSVValidator = {
 /**
  * Generate a row value getter function from array of allowed column values.
  *
- * NOTE: Should this be typesafe? Or should the validator logic handle the typing?
- *
  * @example const getTsnFromRow = generateCellValueGetter([ITIS_TSN, TSN, TAXON, SPECIES]);
  *
  * @param {string[]} headers - Column headers
  * @returns {(row: Row) => any} Row value getter function
  */
-const generateCellValueGetter = <T = any /* Temp default*/>(headers: string[]) => {
+export const generateCellValueGetter = <T = any /* Temp default*/>(headers: string[]) => {
   return (row: Row) => {
     for (const header of headers) {
       if (row[header]) {

@@ -49,7 +49,7 @@ import {
   getTimeFromRow,
   getTsnFromRow,
   observationStandardColumnValidator
-} from '../utils/xlsx-utils/column-validators';
+} from '../utils/xlsx-utils/column-cell-utils';
 import {
   constructXLSXWorkbook,
   getDefaultWorksheet,

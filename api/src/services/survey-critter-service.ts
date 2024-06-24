@@ -7,10 +7,11 @@ import {
   validateCritterRows
 } from '../utils/critter-xlsx-utils/critter-column-utils';
 import { MediaFile } from '../utils/media/media-file';
-import { critterStandardColumnValidator } from '../utils/xlsx-utils/column-validators';
+import { critterStandardColumnValidator } from '../utils/xlsx-utils/column-cell-utils';
 import {
   constructXLSXWorkbook,
   getDefaultWorksheet,
+  getNonStandardColumnNamesFromWorksheet,
   getWorksheetRowObjects,
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
@@ -157,6 +158,12 @@ export class SurveyCritterService extends DBService {
   async validateCritterCsvForImport(surveyId: number, mediaFile: MediaFile): Promise<CsvCritter[]> {
     const errorMessage = `Failed to import Critter CSV. Column validator failed.`;
 
+    /**
+     * ------------------------------------------------------------
+     *                    CSV PARSING / VALIDATION
+     * ------------------------------------------------------------
+     */
+
     // Construct the XLSX workbook
     const xlsxWorkBook = constructXLSXWorkbook(mediaFile);
 
@@ -174,23 +181,38 @@ export class SurveyCritterService extends DBService {
     // Get the worksheet row objects
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheet);
 
-    // Pre parse the rows into critters
-    const critterRows = getCritterRowsToValidate(worksheetRowObjects);
+    /**
+     * ------------------------------------------------------------
+     *                    CRITTER DATA VALIDATION
+     * ------------------------------------------------------------
+     */
 
-    // Get a list of unique tsns from the incomming row objects
-    const critterRowTsns = [...new Set(critterRows.filter(Boolean).map((critter) => String(critter.itis_tsn)))];
+    // This assumes all other columns are collection unit columns
+    const collectionUnitColumns = getNonStandardColumnNamesFromWorksheet(xlsxWorksheet, critterStandardColumnValidator);
+
+    // Pre parse the rows into critters
+    const critterRows = getCritterRowsToValidate(worksheetRowObjects, collectionUnitColumns);
+
+    // Get a list of unique tsns from the incoming critter row tsns
+    const critterTsns = [...new Set(critterRows.filter(Boolean).map((critter) => String(critter.itis_tsn)))];
 
     // Query the platform service (taxonomy) for matching tsns
-    const taxonomy = await this.platformService.getTaxonomyByTsns(critterRowTsns);
+    const taxonomy = await this.platformService.getTaxonomyByTsns(critterTsns);
 
-    // Convert to a unique set
-    const matchingTsnSet = new Set(taxonomy.map((taxon) => Number(taxon.tsn)));
+    // Convert to a unique Set of matching TSNs
+    const validTsns = new Set(taxonomy.map((taxon) => Number(taxon.tsn)));
+
+    const categories = await Promise.all(
+      Array.from(validTsns).map((tsn) => this.critterbaseService.getTaxonCollectionCategories(String(tsn)))
+    );
+
+    console.log(categories);
 
     // Get all aliases / nicknames / animal ids of critters in survey
     const surveyCritterAliases = await this.getUniqueSurveyCritterAliases(surveyId);
 
     // Validate critter row data
-    const validation = validateCritterRows(critterRows, surveyCritterAliases, matchingTsnSet);
+    const validation = validateCritterRows(critterRows, surveyCritterAliases, validTsns);
 
     // Throw error and include zod row validation issues
     if (!validation.success) {

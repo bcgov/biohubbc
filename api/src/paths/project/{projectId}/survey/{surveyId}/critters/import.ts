@@ -148,13 +148,11 @@ export function importCsv(): RequestHandler {
       // Import the critters into SIMS and Critterbase
       const surveyCritterIds = await surveyCritterService.importCsvCritters(surveyId, csvCritters);
 
-      const result = { survey_critter_ids: surveyCritterIds };
-
-      defaultLog.info({ label: 'importCritterCsv', message: 'result', result });
+      defaultLog.info({ label: 'importCritterCsv', message: 'result', survey_critter_ids: surveyCritterIds });
 
       await connection.commit();
 
-      return res.status(200).json(result);
+      return res.status(200).json({ survey_critter_ids: surveyCritterIds });
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();

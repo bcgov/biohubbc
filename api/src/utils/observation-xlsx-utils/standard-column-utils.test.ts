@@ -2,7 +2,8 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import xlsx from 'xlsx';
 
-import * as standard_column_utils from './standard-column-utils';
+import * as standard_column_utils from '../xlsx-utils/column-cell-utils';
+import * as observation_column_utils from './standard-column-utils';
 
 describe('standard-column-utils', () => {
   describe('getNonStandardColumnNamesFromWorksheet', () => {
@@ -41,7 +42,7 @@ describe('standard-column-utils', () => {
         '!ref': 'A1:H9'
       };
 
-      const result = standard_column_utils.getNonStandardColumnNamesFromWorksheet(xlsxWorksheet);
+      const result = observation_column_utils.getNonStandardColumnNamesFromWorksheet(xlsxWorksheet);
 
       expect(result).to.eql(['ANTLER CONFIGURATION', 'WIND DIRECTION']);
     });

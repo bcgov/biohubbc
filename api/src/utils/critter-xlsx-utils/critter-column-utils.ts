@@ -6,7 +6,7 @@ import {
   getSexFromRow,
   getTsnFromRow,
   getWlhIdFromRow
-} from '../xlsx-utils/column-validators';
+} from '../xlsx-utils/column-cell-utils';
 
 /**
  * Type wrapper for unknown CSV rows/records
@@ -21,7 +21,7 @@ type Row = Record<string, any>;
 export type CsvCritter = z.infer<ReturnType<typeof getRowValidationSchema>>;
 
 /**
- * Get critter row validation schema and inject existing survey critter aliases.
+ * Get critter row validation schema and inject existing survey critter aliases and matching TSNS.
  * Note: Survey critters may not share animal aliases. 1 alias per survey.
  *
  * @param {Set<string>} critterAliasSet - Set of allowed survey critter aliases
@@ -29,22 +29,25 @@ export type CsvCritter = z.infer<ReturnType<typeof getRowValidationSchema>>;
  * @returns {z.ZodObject} CsvCritter
  */
 const getRowValidationSchema = (critterAliasSet: Set<string>, matchingTsnSet: Set<number>) => {
-  return z.object({
-    critter_id: z.string(),
-    sex: z.enum(['Unknown', 'Male', 'Female']),
-    itis_tsn: z.number().refine((tsn) => matchingTsnSet.has(tsn), `Invalid ITIS TSN.`),
-    wlh_id: z
-      .string()
-      .regex(/^\d{2}-.+/, `Invalid WLH_ID. Example '10-1000R'`)
-      .optional(), // valid: '10-0009R' invalid: '102-' or '10-' or '1-133K2'
-    animal_id: z
-      .string()
-      .refine(
-        (alias) => process.env.NODE_ENV === 'development' || !critterAliasSet.has(alias),
-        'Critter alias / nickname must be unique for Survey.'
-      ),
-    critter_comment: z.string().optional()
-  });
+  return z.intersection(
+    z.object({
+      critter_id: z.string(),
+      sex: z.enum(['Unknown', 'Male', 'Female']),
+      itis_tsn: z.number().refine((tsn) => matchingTsnSet.has(tsn), `Invalid ITIS TSN.`),
+      wlh_id: z // valid: '10-0009R' invalid: '102-' or '10-' or '1-133K2'
+        .string()
+        .regex(/^\d{2}-.+/, `Invalid WLH_ID. Example '10-1000R'`)
+        .optional(),
+      animal_id: z
+        .string()
+        .refine(
+          (alias) => process.env.NODE_ENV === 'development' || !critterAliasSet.has(alias),
+          'Invalid ALIAS. Must be unique for survey.'
+        ),
+      critter_comment: z.string().optional()
+    }),
+    z.record(z.string(), z.string()) // Allow collection units to be passed through
+  );
 };
 
 /**
@@ -53,18 +56,25 @@ const getRowValidationSchema = (critterAliasSet: Set<string>, matchingTsnSet: Se
  * @param {Row[]} rows - CSV rows
  * @returns {CsvCritter[]} Critterbase critters
  */
+export const getCritterRowsToValidate = (rows: Row[], collectionUnitColumns: string[]): Partial<CsvCritter>[] => {
+  return rows.map((row) => {
+    // Standard critter properties from CSV
+    const standardCritterRow = {
+      critter_id: uuid(), // Generate a uuid for each critter for convienence
+      sex: getSexFromRow(row),
+      itis_tsn: getTsnFromRow(row),
+      wlh_id: getWlhIdFromRow(row),
+      animal_id: getAliasFromRow(row),
+      critter_comment: getDescriptionFromRow(row)
+    };
 
-// TODO: Support ecological units (population units)
+    // All other properties must be collection units ie: `population unit` or `herd unit` etc...
+    collectionUnitColumns.forEach((collectionUnit) => {
+      standardCritterRow[collectionUnit] = row[collectionUnit];
+    });
 
-export const getCritterRowsToValidate = (rows: Row[]): Partial<CsvCritter>[] => {
-  return rows.map((row) => ({
-    critter_id: uuid(), // Generate a uuid for each critter for convienence
-    sex: getSexFromRow(row),
-    itis_tsn: getTsnFromRow(row),
-    wlh_id: getWlhIdFromRow(row),
-    animal_id: getAliasFromRow(row),
-    critter_comment: getDescriptionFromRow(row)
-  }));
+    return standardCritterRow;
+  });
 };
 
 /**

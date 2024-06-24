@@ -1,5 +1,5 @@
 import xlsx from 'xlsx';
-import { observationStandardColumnValidator } from '../xlsx-utils/column-validators';
+import { observationStandardColumnValidator } from '../xlsx-utils/column-cell-utils';
 import { getHeadersUpperCase } from '../xlsx-utils/worksheet-utils';
 
 /**

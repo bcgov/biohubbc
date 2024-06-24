@@ -34,12 +34,12 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('addCritterToSurvey', () => {
+  describe('addCrittersToSurvey', () => {
     it('returns the first row on success', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyCritterService(dbConnection);
 
-      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'addCritterToSurvey').resolves();
+      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'addCrittersToSurvey').resolves();
 
       const response = await service.addCritterToSurvey(1, 'critter_id');
 
