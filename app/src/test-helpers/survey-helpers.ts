@@ -1,5 +1,5 @@
 import {
-  IfindSurveysResponse,
+  IFindSurveysResponse,
   IGetSurveyForViewResponse,
   SurveySupplementaryData,
   SurveyViewObject
@@ -123,7 +123,7 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
   surveySupplementaryData: surveySupplementaryData
 };
 
-export const getSurveyForListResponse: IfindSurveysResponse = {
+export const getSurveyForListResponse: IFindSurveysResponse = {
   surveys: [
     {
       survey_id: 1,

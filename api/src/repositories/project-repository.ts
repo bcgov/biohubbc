@@ -6,13 +6,13 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProjectObject } from '../models/project-create';
 import { PutObjectivesData, PutProjectData } from '../models/project-update';
 import {
+  FindProjectsResponse,
   GetAttachmentsData,
   GetIUCNClassificationData,
   GetObjectivesData,
   GetReportAttachmentsData,
   IProjectAdvancedFilters,
-  ProjectData,
-  ProjectListData
+  ProjectData
 } from '../models/project-view';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
@@ -116,7 +116,7 @@ export class ProjectRepository extends BaseRepository {
    * @param {(number | null)} systemUserId
    * @param {IProjectAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<ProjectListData[]>}
+   * @return {*}  {Promise<FindProjectsResponse[]>}
    * @memberof ProjectRepository
    */
   async findProjects(
@@ -124,7 +124,7 @@ export class ProjectRepository extends BaseRepository {
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<ProjectListData[]> {
+  ): Promise<FindProjectsResponse[]> {
     const query = this._makeFindProjectsQuery(isUserAdmin, systemUserId, filterFields);
 
     if (pagination) {
@@ -135,7 +135,7 @@ export class ProjectRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(query, ProjectListData);
+    const response = await this.connection.knex(query, FindProjectsResponse);
 
     return response.rows;
   }

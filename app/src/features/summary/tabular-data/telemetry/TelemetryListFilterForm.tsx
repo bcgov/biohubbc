@@ -20,6 +20,9 @@ export interface ITelemetryListFilterFormProps {
 /**
  * Telemetry advanced filters
  *
+ * TODO: The filter fields are disabled for now. The fields are functional (the values are captured and passed to the
+ * backend), but the backend does not currently use them for filtering.
+ *
  * @param {ITelemetryListFilterFormProps} props
  * @return {*}
  */
@@ -33,7 +36,14 @@ const TelemetryListFilterForm = (props: ITelemetryListFilterFormProps) => {
       {(formikProps) => (
         <FilterFieldsContainer
           fields={[
-            <CustomTextField name="keyword" label="Keyword" other={{ placeholder: 'Type any keyword' }} />,
+            <CustomTextField
+              name="keyword"
+              label="Keyword"
+              other={{
+                placeholder: 'Type any keyword',
+                disabled: true // See TODO
+              }}
+            />,
             <SpeciesAutocompleteField
               formikFieldName={'itis_tsns'}
               label={'Species'}
@@ -51,6 +61,7 @@ const TelemetryListFilterForm = (props: ITelemetryListFilterFormProps) => {
               handleClear={() => {
                 formikProps.setFieldValue('itis_tsns', undefined);
               }}
+              disabled={true} // See TODO
             />
           ]}
         />

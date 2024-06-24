@@ -3,14 +3,14 @@ import { HTTP400 } from '../errors/http-error';
 import { IPostIUCN, PostProjectObject } from '../models/project-create';
 import { IPutIUCN, PutIUCNData, PutObjectivesData, PutProjectData } from '../models/project-update';
 import {
+  FindProjectsResponse,
   GetAttachmentsData,
   GetIUCNClassificationData,
   GetObjectivesData,
   GetReportAttachmentsData,
   IGetProject,
   IProjectAdvancedFilters,
-  ProjectData,
-  ProjectListData
+  ProjectData
 } from '../models/project-view';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { ProjectUser } from '../repositories/project-participation-repository';
@@ -51,7 +51,7 @@ export class ProjectService extends DBService {
    * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {IProjectAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {(Promise<(ProjectListData)[]>)}
+   * @return {*}  {(Promise<(FindProjectsResponse)[]>)}
    * @memberof ProjectService
    */
   async findProjects(
@@ -59,7 +59,7 @@ export class ProjectService extends DBService {
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<ProjectListData[]> {
+  ): Promise<FindProjectsResponse[]> {
     const response = await this.projectRepository.findProjects(isUserAdmin, systemUserId, filterFields, pagination);
 
     return response;

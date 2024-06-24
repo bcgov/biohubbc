@@ -5,7 +5,7 @@ import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
-import { ProjectListData } from '../../models/project-view';
+import { FindProjectsResponse } from '../../models/project-view';
 import { ProjectService } from '../../services/project-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { findProjects } from './index';
@@ -18,12 +18,15 @@ describe('findProjects', () => {
   });
 
   it('finds and returns projects', async () => {
-    const mockFindProjectsResponse: ProjectListData[] = [
+    const mockFindProjectsResponse: FindProjectsResponse[] = [
       {
         project_id: 1,
         name: 'project name',
+        start_date: '2021-01-01',
+        end_date: '2021-12-31',
         regions: ['region1'],
-        focal_species: [123, 456]
+        focal_species: [123, 456],
+        types: [1, 2, 3]
       }
     ];
 
@@ -74,12 +77,15 @@ describe('findProjects', () => {
   });
 
   it('catches and re-throws error', async () => {
-    const mockFindProjectsResponse: ProjectListData[] = [
+    const mockFindProjectsResponse: FindProjectsResponse[] = [
       {
         project_id: 1,
         name: 'project name',
+        start_date: '2021-01-01',
+        end_date: '2021-12-31',
         regions: ['region1'],
-        focal_species: [123, 456]
+        focal_species: [123, 456],
+        types: [1, 2, 3]
       }
     ];
 

@@ -105,36 +105,47 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: ['project_id', 'name', 'focal_species', 'regions'],
+                  required: ['project_id', 'name', 'start_date', 'end_date', 'focal_species', 'regions', 'types'],
                   properties: {
                     project_id: {
                       type: 'integer',
-                      minimum: 1
+                      minimum: 1,
+                      description: 'The primary id for the project'
                     },
                     name: {
                       type: 'string',
-                      description: 'Name of the project'
+                      description: 'The name of the project'
+                    },
+                    start_date: {
+                      type: 'string',
+                      description: 'The earliest start date of the surveys in the project. ISO 8601 date string.',
+                      nullable: true
+                    },
+                    end_date: {
+                      type: 'string',
+                      description: 'The latest end date of the surveys in the project. ISO 8601 date string.',
+                      nullable: true
                     },
                     regions: {
                       type: 'array',
+                      description: 'The regions of the surveys in the project',
                       items: {
                         type: 'string'
-                      },
-                      nullable: true
+                      }
                     },
                     focal_species: {
                       type: 'array',
+                      description: 'The focal species of the surveys in the project',
                       items: {
                         type: 'integer'
-                      },
-                      nullable: true
+                      }
                     },
                     types: {
                       type: 'array',
+                      description: 'The types of the surveys in the project',
                       items: {
                         type: 'integer'
-                      },
-                      nullable: true
+                      }
                     }
                   }
                 }

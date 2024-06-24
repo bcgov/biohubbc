@@ -27,14 +27,17 @@ export const ProjectData = z.object({
 
 export type ProjectData = z.infer<typeof ProjectData>;
 
-export const ProjectListData = z.object({
+export const FindProjectsResponse = z.object({
   project_id: z.number(),
   name: z.string(),
+  start_date: z.string().nullable(),
+  end_date: z.string().nullable(),
   regions: z.array(z.string()),
-  focal_species: z.array(z.number().nullable())
+  focal_species: z.array(z.number()),
+  types: z.array(z.number())
 });
 
-export type ProjectListData = z.infer<typeof ProjectListData>;
+export type FindProjectsResponse = z.infer<typeof FindProjectsResponse>;
 
 /**
  * Pre-processes GET /projects/{id} objectives data

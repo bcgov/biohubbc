@@ -2,7 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { GetIUCNClassificationData, GetObjectivesData, ProjectData, ProjectListData } from '../models/project-view';
+import {
+  FindProjectsResponse,
+  GetIUCNClassificationData,
+  GetObjectivesData,
+  ProjectData
+} from '../models/project-view';
 import { ProjectRepository } from '../repositories/project-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ProjectService } from './project-service';
@@ -19,18 +24,24 @@ describe('ProjectService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectService(dbConnection);
 
-      const data: ProjectListData[] = [
+      const data: FindProjectsResponse[] = [
         {
           project_id: 123,
           name: 'Project 1',
+          start_date: '2021-01-01',
+          end_date: '2021-12-31',
           regions: [],
-          focal_species: []
+          focal_species: [],
+          types: [1, 2, 3]
         },
         {
           project_id: 456,
           name: 'Project 2',
+          start_date: '2021-01-01',
+          end_date: '2021-12-31',
           regions: [],
-          focal_species: []
+          focal_species: [],
+          types: [1, 2, 3]
         }
       ];
 

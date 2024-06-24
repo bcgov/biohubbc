@@ -538,7 +538,7 @@ export class ObservationService extends DBService {
 
     const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
 
-    // Fetch all measurement type definitions from Critterbase for all unique environment column names in the CSV file
+    // Fetch all environment type definitions from SIMS for all unique environment column names in the CSV file
     const environmentTypeDefinitions = await getEnvironmentTypeDefinitionsFromColumnNames(
       environmentColumnNames,
       observationSubCountEnvironmentService

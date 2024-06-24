@@ -94,7 +94,7 @@ export interface IProjectSupplementaryData {
 }
 
 /**
- * Get projects list response object.
+ * Find projects response object.
  *
  * @export
  * @interface IFindProjectsResponse
@@ -106,9 +106,29 @@ export interface IFindProjectsResponse {
 
 export interface IProjectsListItemData {
   project_id: number;
+  /**
+   * The name of the project.
+   */
   name: string;
+  /**
+   * The earliest start date of the surveys in the project.
+   */
+  start_date: string | null;
+  /**
+   * The latest end date of the surveys in the project.
+   */
+  end_date: string | null;
+  /**
+   * The regions of the surveys in the project.
+   */
   regions: string[];
+  /**
+   * The focal species of the surveys in the project.
+   */
   focal_species: number[];
+  /**
+   * The types of the surveys in the project.
+   */
   types: number[];
 }
 

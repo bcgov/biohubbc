@@ -62,6 +62,8 @@ describe('useProjectApi', () => {
         {
           project_id: 1,
           name: 'name',
+          start_date: '2021-01-01',
+          end_date: '2021-12-31',
           regions: [],
           focal_species: [123, 456],
           types: [1, 2, 3]

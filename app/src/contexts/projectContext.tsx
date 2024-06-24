@@ -4,7 +4,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import useDataLoaderError from 'hooks/useDataLoaderError';
 import { IGetProjectAttachmentsResponse, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IfindSurveysResponse } from 'interfaces/useSurveyApi.interface';
+import { IFindSurveysResponse } from 'interfaces/useSurveyApi.interface';
 import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
 import { ApiPaginationRequestOptions } from 'types/misc';
@@ -27,10 +27,10 @@ export interface IProjectContext {
   /**
    * The Data Loader used to load project data
    *
-   * @type {DataLoader<[pagination?: ApiPaginationRequestOptions], IfindSurveysResponse, unknown>}
+   * @type {DataLoader<[pagination?: ApiPaginationRequestOptions], IFindSurveysResponse, unknown>}
    * @memberof IProjectContext
    */
-  surveysListDataLoader: DataLoader<[pagination?: ApiPaginationRequestOptions], IfindSurveysResponse, unknown>;
+  surveysListDataLoader: DataLoader<[pagination?: ApiPaginationRequestOptions], IFindSurveysResponse, unknown>;
 
   /**
    * The Data Loader used to load project data
@@ -51,7 +51,7 @@ export interface IProjectContext {
 
 export const ProjectContext = createContext<IProjectContext>({
   projectDataLoader: {} as DataLoader<[project_id: number], IGetProjectForViewResponse, unknown>,
-  surveysListDataLoader: {} as DataLoader<[pagination?: ApiPaginationRequestOptions], IfindSurveysResponse, unknown>,
+  surveysListDataLoader: {} as DataLoader<[pagination?: ApiPaginationRequestOptions], IFindSurveysResponse, unknown>,
   artifactDataLoader: {} as DataLoader<[project_id: number], IGetProjectAttachmentsResponse, unknown>,
   projectId: -1
 });

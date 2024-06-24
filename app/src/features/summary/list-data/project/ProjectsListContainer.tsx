@@ -138,10 +138,6 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params) => {
-        const dates = [params.row.start_date?.split('-')[0], params.row.end_date?.split('-')[0]]
-          .filter(Boolean)
-          .join(' \u2013 '); // n-dash with spaces
-
         const focalSpecies = params.row.focal_species
           .map((species) => taxonomyContext.getCachedSpeciesTaxonomyById(species)?.commonNames)
           .filter(Boolean)
@@ -152,7 +148,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
           .filter(Boolean)
           .join(' \u2013 '); // n-dash with spaces
 
-        const detailsArray = [dates, focalSpecies, types].filter(Boolean).join(' \u2013 ');
+        const detailsArray = [focalSpecies, types].filter(Boolean).join(' \u2013 ');
 
         return (
           <Stack mb={0.25}>

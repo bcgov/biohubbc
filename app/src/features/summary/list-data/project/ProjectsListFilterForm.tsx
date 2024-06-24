@@ -51,7 +51,6 @@ const ProjectsListFilterForm = (props: IProjectsListFilterFormProps) => {
               other={{ placeholder: 'Search by keyword' }}
               key="project-keyword-filter"
             />,
-            // <AwaitTaxonomyCache tsns={initialValues?.itis_tsn ? [Number(initialValues.itis_tsn)] : []}>
             <SpeciesAutocompleteField
               formikFieldName="itis_tsn"
               label="Species"
@@ -71,7 +70,6 @@ const ProjectsListFilterForm = (props: IProjectsListFilterFormProps) => {
               }}
               key="project-tsn-filter"
             />,
-            // </AwaitTaxonomyCache>,
             <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <SystemUserAutocompleteField
                 formikFieldName="system_user_id"
