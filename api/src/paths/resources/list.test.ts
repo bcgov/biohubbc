@@ -93,7 +93,7 @@ describe('listResources', () => {
       files: [
         {
           fileName: 'key1',
-          url: 's3.host.example.com/test-bucket/key1',
+          url: 'https://s3.host.example.com/test-bucket/key1',
           lastModified: new Date('2023-01-01').toISOString(),
           fileSize: 5,
           metadata: {
@@ -104,7 +104,7 @@ describe('listResources', () => {
         },
         {
           fileName: 'key2',
-          url: 's3.host.example.com/test-bucket/key2',
+          url: 'https://s3.host.example.com/test-bucket/key2',
           lastModified: new Date('2023-01-02').toISOString(),
           fileSize: 10,
           metadata: {
@@ -115,7 +115,7 @@ describe('listResources', () => {
         },
         {
           fileName: 'key3',
-          url: 's3.host.example.com/test-bucket/key3',
+          url: 'https://s3.host.example.com/test-bucket/key3',
           lastModified: new Date('2023-01-03').toISOString(),
           fileSize: 15,
           metadata: {

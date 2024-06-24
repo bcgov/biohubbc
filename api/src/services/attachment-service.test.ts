@@ -1,4 +1,4 @@
-import { DeleteObjectCommandOutput, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommandOutput } from '@aws-sdk/client-s3';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import { QueryResult } from 'pg';
@@ -17,6 +17,7 @@ import {
 } from '../repositories/attachment-repository';
 import { SurveyAttachmentPublish, SurveyReportPublish } from '../repositories/history-publish-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import * as fileUtils from './../utils/file-utils';
 import { AttachmentService } from './attachment-service';
 import { HistoryPublishService } from './history-publish-service';
 
@@ -289,7 +290,7 @@ describe('AttachmentService', () => {
             const getProjectReportStub = sinon
               .stub(AttachmentService.prototype, 'getProjectReportAttachmentById')
               .resolves({
-                key: 'key',
+                key: 's3_key',
                 uuid: 'uuid',
                 project_report_attachment_id: 1
               } as unknown as IProjectReportAttachment);
@@ -306,17 +307,20 @@ describe('AttachmentService', () => {
               .stub(AttachmentService.prototype, '_deleteProjectAttachmentRecord')
               .resolves();
 
-            const mockS3Client = new S3Client();
-            const deleteS3 = sinon
-              .stub(mockS3Client, 'send')
-              .resolves({ DeleteMarker: true } as DeleteObjectCommandOutput);
+            const mockDeleteResponse: DeleteObjectCommandOutput = {
+              $metadata: {},
+              DeleteMarker: true,
+              RequestCharged: 'requester',
+              VersionId: '123456'
+            };
+            const deleteFileFromS3Stub = sinon.stub(fileUtils, 'deleteFileFromS3').resolves(mockDeleteResponse);
 
             await service.deleteProjectAttachment(1, 1, ATTACHMENT_TYPE.REPORT);
 
             expect(getProjectReportStub).to.be.called;
             expect(deleteProjectReportAuthorsStub).to.be.called;
             expect(deleteProjectReportAttachmentStub).to.be.called;
-            expect(deleteS3).to.be.called;
+            expect(deleteFileFromS3Stub).to.be.calledOnceWith('s3_key');
 
             expect(deleteProjectAttachmentStub).to.not.be.called;
             expect(getProjectAttachmentStub).to.not.be.called;
@@ -331,7 +335,7 @@ describe('AttachmentService', () => {
             const getProjectReportStub = sinon
               .stub(AttachmentService.prototype, 'getProjectReportAttachmentById')
               .resolves({
-                key: 'key',
+                key: 's3_key',
                 uuid: 'uuid',
                 project_report_attachment_id: 1
               } as unknown as IProjectReportAttachment);
@@ -344,7 +348,7 @@ describe('AttachmentService', () => {
             const getProjectAttachmentStub = sinon
               .stub(AttachmentService.prototype, 'getProjectAttachmentById')
               .resolves({
-                key: 'key',
+                key: 's3_key',
                 uuid: 'uuid',
                 project_attachment_id: 1
               } as unknown as IProjectAttachment);
@@ -352,16 +356,19 @@ describe('AttachmentService', () => {
               .stub(AttachmentService.prototype, '_deleteProjectAttachmentRecord')
               .resolves();
 
-            const mockS3Client = new S3Client();
-            const deleteS3 = sinon
-              .stub(mockS3Client, 'send')
-              .resolves({ DeleteMarker: true } as DeleteObjectCommandOutput);
+            const mockDeleteResponse: DeleteObjectCommandOutput = {
+              $metadata: {},
+              DeleteMarker: true,
+              RequestCharged: 'requester',
+              VersionId: '123456'
+            };
+            const deleteFileFromS3Stub = sinon.stub(fileUtils, 'deleteFileFromS3').resolves(mockDeleteResponse);
 
             await service.deleteProjectAttachment(1, 1, ATTACHMENT_TYPE.OTHER);
 
             expect(getProjectAttachmentStub).to.be.called;
             expect(deleteProjectAttachmentStub).to.be.called;
-            expect(deleteS3).to.be.called;
+            expect(deleteFileFromS3Stub).to.be.calledOnceWith('s3_key');
 
             expect(getProjectReportStub).to.not.be.called;
             expect(deleteProjectReportAuthorsStub).to.not.be.called;
@@ -731,7 +738,7 @@ describe('AttachmentService', () => {
                 survey_report_attachment_id: 1,
                 survey_attachment_id: 1,
                 uuid: 'uuid',
-                key: 's3/key'
+                key: 's3_key'
               } as unknown as ISurveyAttachment);
             const deleteSurveyReportPublishStub = sinon
               .stub(HistoryPublishService.prototype, 'deleteSurveyReportAttachmentPublishRecord')
@@ -756,20 +763,23 @@ describe('AttachmentService', () => {
                 survey_report_attachment_id: 1,
                 survey_attachment_id: 1,
                 uuid: 'uuid',
-                key: 's3/key'
+                key: 's3_key'
               } as unknown as ISurveyReportAttachment);
 
-            const mockS3Client = new S3Client();
-            const deleteS3 = sinon
-              .stub(mockS3Client, 'send')
-              .resolves({ DeleteMarker: true } as DeleteObjectCommandOutput);
+            const mockDeleteResponse: DeleteObjectCommandOutput = {
+              $metadata: {},
+              DeleteMarker: true,
+              RequestCharged: 'requester',
+              VersionId: '123456'
+            };
+            const deleteFileFromS3Stub = sinon.stub(fileUtils, 'deleteFileFromS3').resolves(mockDeleteResponse);
 
             await service.deleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.OTHER);
 
             expect(getSurveyAttachmentStub).to.be.called;
             expect(attachmentPublishDeleteStub).to.be.called;
             expect(deleteSurveyAttachmentStub).to.be.called;
-            expect(deleteS3).to.be.called;
+            expect(deleteFileFromS3Stub).to.be.calledOnceWith('s3_key');
 
             expect(getSurveyReportStub).to.be.not.called;
             expect(deleteSurveyReportPublishStub).to.be.not.called;
@@ -789,7 +799,7 @@ describe('AttachmentService', () => {
                 survey_report_attachment_id: 1,
                 survey_attachment_id: 1,
                 uuid: 'uuid',
-                key: 's3/key'
+                key: 's3_key'
               } as unknown as ISurveyAttachment);
             const attachmentPublishStatusStub = sinon
               .stub(HistoryPublishService.prototype, 'getSurveyAttachmentPublishRecord')
@@ -815,13 +825,16 @@ describe('AttachmentService', () => {
                 survey_report_attachment_id: 1,
                 survey_attachment_id: 1,
                 uuid: 'uuid',
-                key: 's3/key'
+                key: 's3_key'
               } as unknown as ISurveyReportAttachment);
 
-            const mockS3Client = new S3Client();
-            const deleteS3 = sinon
-              .stub(mockS3Client, 'send')
-              .resolves({ DeleteMarker: true } as DeleteObjectCommandOutput);
+            const mockDeleteResponse: DeleteObjectCommandOutput = {
+              $metadata: {},
+              DeleteMarker: true,
+              RequestCharged: 'requester',
+              VersionId: '123456'
+            };
+            const deleteFileFromS3Stub = sinon.stub(fileUtils, 'deleteFileFromS3').resolves(mockDeleteResponse);
 
             await service.deleteSurveyAttachment(1, 1, ATTACHMENT_TYPE.REPORT);
 
@@ -829,7 +842,7 @@ describe('AttachmentService', () => {
             expect(deleteSurveyReportPublishStub).to.be.called;
             expect(deleteSurveyReportAuthorsStub).to.be.called;
             expect(deleteSurveyReportStub).to.be.called;
-            expect(deleteS3).to.be.called;
+            expect(deleteFileFromS3Stub).to.be.calledOnceWith('s3_key');
 
             expect(getSurveyAttachmentStub).to.be.not.called;
             expect(attachmentPublishStatusStub).to.be.not.called;

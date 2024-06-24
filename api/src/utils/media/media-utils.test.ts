@@ -65,9 +65,11 @@ describe('parseUnknownMulterFile', () => {
 
 describe('parseUnknownS3File', () => {
   it('returns a MediaFile', async () => {
-    const s3File = {
+    const s3File: GetObjectCommandOutput = {
       Metadata: { filename: 'file1.txt' },
-      Body: Buffer.from('file1data')
+      Body: {
+        transformToByteArray: sinon.stub().resolves(Buffer.from('file1data'))
+      }
     } as unknown as GetObjectCommandOutput;
 
     const response = await media_utils.parseUnknownS3File(s3File);
@@ -85,7 +87,9 @@ describe('parseUnknownS3File', () => {
     const s3File = {
       Metadata: { filename: 'zipFile.zip' },
       ContentType: 'application/zip',
-      Body: zipFile.toBuffer()
+      Body: {
+        transformToByteArray: sinon.stub().resolves(zipFile.toBuffer())
+      }
     } as unknown as GetObjectCommandOutput;
 
     const response = await media_utils.parseUnknownS3File(s3File);
@@ -169,7 +173,9 @@ describe('parseS3File', () => {
     const s3File = {
       Metadata: { filename: 'file1.csv' },
       ContentType: 'text/csv',
-      Body: Buffer.from('file1data')
+      Body: {
+        transformToByteArray: sinon.stub().resolves(Buffer.from('file1data'))
+      }
     } as unknown as GetObjectCommandOutput;
 
     const response = await media_utils.parseS3File(s3File);
@@ -181,7 +187,9 @@ describe('parseS3File', () => {
     const s3File = {
       Metadata: { filename: 'file1.notAKnownMimeTypecsv' },
       ContentType: 'notAKnownMimeTypecsv',
-      Body: Buffer.from('file1data')
+      Body: {
+        transformToByteArray: sinon.stub().resolves(Buffer.from('file1data'))
+      }
     } as unknown as GetObjectCommandOutput;
 
     const response = await media_utils.parseS3File(s3File);
@@ -193,7 +201,9 @@ describe('parseS3File', () => {
     const s3File = {
       Metadata: { filename: 'file1.csv' },
       ContentType: 'text/csv',
-      Body: null
+      Body: {
+        transformToByteArray: sinon.stub().resolves(null)
+      }
     } as unknown as GetObjectCommandOutput;
 
     const response = await media_utils.parseS3File(s3File);

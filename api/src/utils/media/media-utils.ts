@@ -56,9 +56,6 @@ export const parseUnknownS3File = async (rawMedia: GetObjectCommandOutput): Prom
     }
 
     const archiveFile = await parseS3File(rawMedia);
-    // TODO: Cast to unknown required due to issue in aws-sdk v3 typings
-    // See https://stackoverflow.com/questions/76142043/getting-a-readable-from-getobject-in-aws-s3-sdk-v3
-    // See https://github.com/aws/aws-sdk-js-v3/issues/4720
     const mediaFiles = parseUnknownZipFile((await rawMedia.Body.transformToByteArray()) as Buffer);
 
     return new ArchiveFile(archiveFile.fileName, archiveFile.mimetype, archiveFile.buffer, mediaFiles);
