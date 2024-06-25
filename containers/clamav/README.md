@@ -2,34 +2,80 @@
 
 ClamAV® is an open source antivirus engine for detecting trojans, viruses, malware & other malicious threats.
 
-This is a repo setup for utilization in Red Hat Openshift. This solution allows you to create a pod in your openshift environment to scan any file for known virus signatures, quickly and effectively.
+See this repo for the OpenShift templates needed to deploy ClamAV: https://github.com/bcgov/clamav
 
-The builds package the barebones service, and the deployment config will download latest signatures on first run.
+The source repo should be used as it will have the latest versions, etc.  
+Note: at the time of writing this, the `clamav-dc.conf` in the source repo has the `IMAGE_NAMESPACE` variable hard-coded to a random project, which will need to be updated to this projects tools environment. Similarly, depending on the current version of OpenShift, some of the `apiVersion` in the build config and/or deploy config may be out of date and need updating.
 
-Freshclam can be run within the container at any time to update the existing signatures. Alternatively, you can re-deploy which will fetch the latest into the running container.
+A copy of the templates patched templates (converted to yaml) are included here as backup, in case the source repo is moved or becomes unavailable.
 
-This clamav setup is cloned from the repo: https://github.com/bcgov/clamav
+## Installation
 
-## Prerequisites For Deploying On OpenShift
+### Checkout the clamav repo.
 
-### Import Base Image for `ubi8/ubi` Used By `clamav-bc.yaml`
+### Import the Build Config
 
-- Fetch latest version
+1. Log into OpenShift
+2. Switch to your tools environment.
 
-  ```
-  oc import-image ubi8/ubi:latest --from=registry.access.redhat.com/ubi8/ubi:latest --confirm
-  ```
+   ```
+   oc project <name>-tools
+   ```
 
-Openshift documentation on importing images
+3. Navigate to the `<clamav_repo>/openshift/templates` folder
+4. Import the clamav build config (clamav-bc.yaml)
 
-- https://catalog.redhat.com/software/containers/ubi8/ubi/5c359854d70cc534b3a3784e?tag=latest&push_date=1673532745000&architecture=amd64&container-tabs=gti&gti-tabs=unauthenticated
+   ```
+   oc process -f clamav-bc.conf | oc create -f -
+   ```
 
-  - See `oc import-image` command
+   This will create a new BuildConfig (`clamav-build`) and ImageStream (`clamav`).
 
-## Build/Deployment
+#### Build the Image
 
-The templates in the `./openshift/templates` will build and deploy the app. Modify to suit your own environment.
+1. Run the build
 
-The build config `./openshift/templates/clamav-bc.yaml` will create your builder image (ideally in your tools project), and the deployment config `./openshift/templates/clamav-dc.yaml` will create the pod deployment.
+   ```
+   OpenShift Web UI (Administrator) -> Builds -> BuildConfigs -> clamav-build -> Actions -> Start build
+   ```
 
-Modify the environment variables defined in both the build config and deployment config appropriately.
+   This will build the image, adding a new tag to the `clamav` ImageStream (`clamav:latest`)
+
+### Import the Deployment Config
+
+1. Log into OpenShift
+2. Switch to your dev environment.
+
+   ```
+   oc project <name>-dev
+   ```
+
+3. Navigate to the `<clamav_repo>/openshift/templates` folder
+4. Import the clamav deployment config (clamav-dc.yaml)
+
+   ```
+   oc process -f clamav-dc.conf | oc create -f -
+   ```
+
+   This will create a new DeploymentConfig (`clamav`) and Service (`clamav`).
+
+#### Deploy the Image
+
+1. Deploy the image
+
+   ```
+   OpenShift Web UI (Administrator) -> Workloads -> DeploymentConfigs -> clamav -> Actions -> Start Rollout
+   ```
+
+   This will deploy a Pod running the ClamaAV image.
+
+#### Repeat for the Test and Prod environments
+
+## Testing Files For Viruses Against ClamAV
+
+See NPM Package: [clamscan](https://www.npmjs.com/package/clamscan)
+
+When creating a new instance of clamscan, the default Host and Port of the above installation are:
+
+- Host: `clamav`
+- Port: `3310`
