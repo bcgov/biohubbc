@@ -50,7 +50,6 @@ export interface ISurveyProprietorModel {
 const SurveyRecord = z.object({
   survey_id: z.number(),
   project_id: z.number(),
-  field_method_id: z.number().nullable(),
   uuid: z.string().uuid().nullable(),
   name: z.string().nullable(),
   additional_details: z.string().nullable(),

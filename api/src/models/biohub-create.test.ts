@@ -16,7 +16,6 @@ describe('PostSurveyObservationToBiohubObject', () => {
     const obj = {
       survey_observation_id: 1,
       survey_id: 1,
-      wldtaxonomic_units_id: 1,
       survey_sample_site_id: 1,
       survey_sample_method_id: 1,
       survey_sample_period_id: 1,
@@ -159,7 +158,6 @@ describe('PostSurveySubmissionToBioHubObject', () => {
       {
         survey_observation_id: 1,
         survey_id: 1,
-        wldtaxonomic_units_id: 1,
         survey_sample_site_id: 1,
         survey_sample_method_id: 1,
         survey_sample_period_id: 1,
