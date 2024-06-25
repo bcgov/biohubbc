@@ -6,11 +6,11 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import { TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
 import { useContext, useMemo } from 'react';
-import ManualTelemetryHeader from './ManualTelemetryHeader';
-import ManualTelemetryList from './ManualTelemetryList';
-import ManualTelemetryTableContainer from './telemetry-table/ManualTelemetryTableContainer';
+import ManualTelemetryHeader from './TelemetryHeader';
+import ManualTelemetryList from './list/TelemetryList';
+import ManualTelemetryTableContainer from './table/TelemetryTableContainer';
 
-const ManualTelemetryPage = () => {
+const TelemetryPage = () => {
   const surveyContext = useContext(SurveyContext);
   const projectContext = useContext(ProjectContext);
 
@@ -56,4 +56,4 @@ const ManualTelemetryPage = () => {
   );
 };
 
-export default ManualTelemetryPage;
+export default TelemetryPage;

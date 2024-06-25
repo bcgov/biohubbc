@@ -12,7 +12,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import { useCallback, useContext } from 'react';
-import { DeploymentColDef, TelemetryTypeColDef } from './utils/GridColumnDefinitions';
+import { DeploymentColDef, DeviceColDef, TelemetryTypeColDef } from './utils/GridColumnDefinitions';
 
 const MANUAL_TELEMETRY_TYPE = 'MANUAL';
 
@@ -36,6 +36,7 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
 
   const columns: GridColDef<IManualTelemetryTableRow>[] = [
     DeploymentColDef({ critterDeployments, hasError: telemetryTableContext.hasError }),
+    DeviceColDef({ critterDeployments }),
     TelemetryTypeColDef(),
     GenericDateColDef({ field: 'date', headerName: 'Date', hasError: telemetryTableContext.hasError }),
     GenericTimeColDef({ field: 'time', headerName: 'Time', hasError: telemetryTableContext.hasError }),

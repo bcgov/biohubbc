@@ -24,6 +24,7 @@ import { TelemetryDataContext } from './telemetryDataContext';
 
 export interface IManualTelemetryRecord {
   deployment_id: string;
+  device_id: string;
   latitude: number;
   longitude: number;
   date: string;
@@ -353,13 +354,17 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
    * @returns {Promise<void>}
    */
   const refreshRecords = useCallback(async () => {
-    const telemetry = (await telemetryDataContext.telemetryDataLoader.refresh(deployment_ids)) ?? [];
+    const telemetry =
+      (deployment_ids.length && (await telemetryDataContext.telemetryDataLoader.refresh(deployment_ids))) || [];
+
+      console.log(telemetry)
 
     // Format the rows to use date and time
     const rows: IManualTelemetryTableRow[] = telemetry.map((item) => {
       return {
         id: item.id,
         deployment_id: item.deployment_id,
+        device_id: item.device_id,
         latitude: item.latitude,
         longitude: item.longitude,
         date: dayjs(item.acquisition_date).format('YYYY-MM-DD'),
@@ -367,6 +372,8 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
         telemetry_type: item.telemetry_type
       };
     });
+
+    console.log(rows)
 
     // Set initial rows for the table context
     setRows(rows);

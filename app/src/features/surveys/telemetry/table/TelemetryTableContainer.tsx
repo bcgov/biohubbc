@@ -26,7 +26,7 @@ import { useTelemetryTableContext } from 'hooks/useContext';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useContext, useDeferredValue, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
-import ManualTelemetryTable from './ManualTelemetryTable';
+import ManualTelemetryTable from './TelemetryTable';
 
 const ManualTelemetryTableContainer = () => {
   const telemetryApi = useTelemetryApi();

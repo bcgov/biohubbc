@@ -1,9 +1,10 @@
+import { Typography } from '@mui/material';
 import { GridCellParams, GridColDef } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
 import { capitalize } from 'lodash-es';
-import { ICritterDeployment } from '../../ManualTelemetryList';
+import { ICritterDeployment } from '../../list/TelemetryList';
 
 export const TelemetryTypeColDef = (): GridColDef<IManualTelemetryTableRow> => {
   return {
@@ -63,5 +64,28 @@ export const DeploymentColDef = (props: {
         />
       );
     }
+  };
+};
+
+export const DeviceColDef = (props: {
+  critterDeployments: ICritterDeployment[];
+}): GridColDef<IManualTelemetryTableRow> => {
+  return {
+    field: 'device_id',
+    headerName: 'Device',
+    hideable: true,
+    minWidth: 120,
+    disableColumnMenu: true,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => (
+      <Typography>
+        {
+          props.critterDeployments.find(
+            (deployment) => deployment.deployment.deployment_id === params.row.deployment_id
+          )?.deployment.device_id
+        }
+      </Typography>
+    )
   };
 };

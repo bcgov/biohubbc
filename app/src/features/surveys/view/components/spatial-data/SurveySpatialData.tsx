@@ -57,7 +57,9 @@ const SurveySpatialData = () => {
   useEffect(() => {
     if (surveyContext.deploymentDataLoader.data) {
       const deploymentIds = surveyContext.deploymentDataLoader.data.map((item) => item.deployment_id);
-      telemetryContext.telemetryDataLoader.refresh(deploymentIds);
+      if (deploymentIds.length) {
+        telemetryContext.telemetryDataLoader.refresh(deploymentIds);
+      }
     }
     // Should not re-run this effect on `telemetryContext.telemetryDataLoader.refresh` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps

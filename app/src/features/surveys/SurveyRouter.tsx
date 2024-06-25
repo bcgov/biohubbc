@@ -12,7 +12,7 @@ import EditSurveyPage from './edit/EditSurveyPage';
 import SamplingSitePage from './observations/sampling-sites/create/SamplingSitePage';
 import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
 import { SurveyObservationPage } from './observations/SurveyObservationPage';
-import ManualTelemetryPage from './telemetry/ManualTelemetryPage';
+import TelemetryPage from './telemetry/TelemetryPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/*` pages.
@@ -72,7 +72,7 @@ const SurveyRouter: React.FC = () => {
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
-            <ManualTelemetryPage />
+            <TelemetryPage />
           </DialogContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>

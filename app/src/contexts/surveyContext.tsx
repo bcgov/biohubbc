@@ -1,4 +1,4 @@
-import { ICritterDeployment } from 'features/surveys/telemetry/ManualTelemetryList';
+import { ICritterDeployment } from 'features/surveys/telemetry/list/TelemetryList';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';

@@ -1,8 +1,9 @@
-import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
 import grey from '@mui/material/colors/grey';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -10,7 +11,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import Divider from '@mui/material/Divider';
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
 import FormHelperText from '@mui/material/FormHelperText';
+import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu, { MenuProps } from '@mui/material/Menu';
@@ -23,12 +27,11 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useOnMount } from '@mui/x-data-grid/internals';
-import { SkeletonListStack } from 'components/loading/SkeletonLoaders';
+import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { AttachmentType } from 'constants/attachments';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContext } from 'contexts/telemetryDataContext';
-import { default as dayjs } from 'dayjs';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
@@ -36,13 +39,18 @@ import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface'
 import { isEqual as _deepEquals } from 'lodash';
 import { get } from 'lodash-es';
 import { useContext, useMemo, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import { datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { InferType } from 'yup';
-import { ANIMAL_FORM_MODE } from '../view/survey-animals/animal';
-import { AnimalTelemetryDeviceSchema, Device, IAnimalDeployment } from '../view/survey-animals/telemetry-device/device';
-import TelemetryDeviceForm from '../view/survey-animals/telemetry-device/TelemetryDeviceForm';
-import ManualTelemetryCard from './ManualTelemetryCard';
+import { ANIMAL_FORM_MODE } from '../../view/survey-animals/animal';
+import {
+  AnimalTelemetryDeviceSchema,
+  Device,
+  IAnimalDeployment
+} from '../../view/survey-animals/telemetry-device/device';
+import TelemetryDeviceForm from '../../view/survey-animals/telemetry-device/TelemetryDeviceForm';
+import { TelemetryListItem } from './TelemetryListItem';
 
 export const AnimalDeploymentSchema = AnimalTelemetryDeviceSchema.shape({
   survey_critter_id: yup.number().required('An animal selection is required'), // add survey critter id to form
@@ -93,19 +101,23 @@ const ManualTelemetryList = () => {
   const [critterId, setCritterId] = useState<number | string>('');
   const [deviceId, setDeviceId] = useState<number>(0);
   const [formData, setFormData] = useState<AnimalDeployment>(defaultFormValues);
+  const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<string[]>([]);
+  const [selectedDeploymentId, setSelectedDeploymentId] = useState<string | undefined>();
+
+  console.log(selectedDeploymentId)
 
   useOnMount(() => {
     surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   });
 
-  const deployments = surveyContext.deploymentDataLoader.data;
+  const deployments = surveyContext.deploymentDataLoader.data ?? [];
   const critters = surveyContext.critterDataLoader.data;
 
   const critterDeployments: ICritterDeployment[] = useMemo(() => {
     const data: ICritterDeployment[] = [];
     // combine all critter and deployments into a flat list
-    surveyContext.deploymentDataLoader.data?.forEach((deployment) => {
+    deployments?.forEach((deployment) => {
       const critter = surveyContext.critterDataLoader.data?.find(
         (critter) => critter.critter_id === deployment.critter_id
       );
@@ -114,43 +126,58 @@ const ManualTelemetryList = () => {
       }
     });
     return data;
-  }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data]);
+  }, [surveyContext.critterDataLoader.data, deployments]);
 
-  const handleMenuOpen = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, device_id: number) => {
+  // const handleMenuOpen = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, device_id: number) => {
+  //   setAnchorEl(event.currentTarget);
+  //   setDeviceId(device_id);
+
+  //   const critterDeployment = critterDeployments.find((item) => item.deployment.device_id === device_id);
+
+  //   // need to map deployment back into object for initial values
+  //   if (critterDeployment) {
+  //     const deviceDetails = await telemetryApi.devices.getDeviceDetails(
+  //       device_id,
+  //       critterDeployment.deployment.device_make
+  //     );
+  //     const editData: AnimalDeployment = {
+  //       survey_critter_id: Number(critterDeployment.critter?.survey_critter_id),
+  //       deployments: [
+  //         {
+  //           deployment_id: critterDeployment.deployment.deployment_id,
+  //           attachment_start: dayjs(critterDeployment.deployment.attachment_start).format('YYYY-MM-DD'),
+  //           attachment_end: critterDeployment.deployment.attachment_end
+  //             ? dayjs(critterDeployment.deployment.attachment_end).format('YYYY-MM-DD')
+  //             : null
+  //         }
+  //       ],
+  //       device_id: critterDeployment.deployment.device_id,
+  //       device_make: deviceDetails.device?.device_make ? String(deviceDetails.device?.device_make) : '',
+  //       device_model: deviceDetails.device?.device_model ? String(deviceDetails.device?.device_model) : '',
+  //       frequency: deviceDetails.device?.frequency ? Number(deviceDetails.device?.frequency) : undefined,
+  //       frequency_unit: deviceDetails.device?.frequency_unit ? String(deviceDetails.device?.frequency_unit) : '',
+  //       attachmentType: undefined,
+  //       attachmentFile: undefined,
+  //       critter_id: critterDeployment.deployment.critter_id
+  //     };
+  //     setCritterId(critterDeployment.critter?.survey_critter_id);
+  //     setFormData(editData);
+  //   }
+  // };
+
+  const handleSampleSiteMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, deploymentId: string) => {
     setAnchorEl(event.currentTarget);
-    setDeviceId(device_id);
+    setSelectedDeploymentId(deploymentId);
+  };
 
-    const critterDeployment = critterDeployments.find((item) => item.deployment.device_id === device_id);
-
-    // need to map deployment back into object for initial values
-    if (critterDeployment) {
-      const deviceDetails = await telemetryApi.devices.getDeviceDetails(
-        device_id,
-        critterDeployment.deployment.device_make
-      );
-      const editData: AnimalDeployment = {
-        survey_critter_id: Number(critterDeployment.critter?.survey_critter_id),
-        deployments: [
-          {
-            deployment_id: critterDeployment.deployment.deployment_id,
-            attachment_start: dayjs(critterDeployment.deployment.attachment_start).format('YYYY-MM-DD'),
-            attachment_end: critterDeployment.deployment.attachment_end
-              ? dayjs(critterDeployment.deployment.attachment_end).format('YYYY-MM-DD')
-              : null
-          }
-        ],
-        device_id: critterDeployment.deployment.device_id,
-        device_make: deviceDetails.device?.device_make ? String(deviceDetails.device?.device_make) : '',
-        device_model: deviceDetails.device?.device_model ? String(deviceDetails.device?.device_model) : '',
-        frequency: deviceDetails.device?.frequency ? Number(deviceDetails.device?.frequency) : undefined,
-        frequency_unit: deviceDetails.device?.frequency_unit ? String(deviceDetails.device?.frequency_unit) : '',
-        attachmentType: undefined,
-        attachmentFile: undefined,
-        critter_id: critterDeployment.deployment.critter_id
-      };
-      setCritterId(critterDeployment.critter?.survey_critter_id);
-      setFormData(editData);
-    }
+  const handleCheckboxChange = (deploymentId: string) => {
+    setCheckboxSelectedIds((prev) => {
+      if (prev.includes(deploymentId)) {
+        return prev.filter((item) => item !== deploymentId);
+      } else {
+        return [...prev, deploymentId];
+      }
+    });
   };
 
   const handleSubmit = async (data: AnimalDeployment) => {
@@ -373,6 +400,8 @@ const ManualTelemetryList = () => {
     }
   };
 
+  const deploymentCount = deployments?.length ?? 0;
+
   return (
     <>
       <Menu
@@ -511,7 +540,13 @@ const ManualTelemetryList = () => {
                 </DialogActions>
               </Dialog>
 
-              <Paper component={Stack} flexDirection="column" height="100%" overflow="hidden">
+              <Paper
+                component={Stack}
+                flexDirection="column"
+                height="100%"
+                sx={{
+                  overflow: 'hidden'
+                }}>
                 <Toolbar
                   disableGutters
                   sx={{
@@ -522,70 +557,132 @@ const ManualTelemetryList = () => {
                   <Typography variant="h3" component="h2" flexGrow={1}>
                     Deployments &zwnj;
                     <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-                      ({Number(critterDeployments?.length ?? 0).toLocaleString()})
+                      ({deploymentCount ?? 0})
                     </Typography>
                   </Typography>
                   <Button
-                    sx={{
-                      mr: -1
-                    }}
                     variant="contained"
                     color="primary"
-                    startIcon={<Icon path={mdiPlus} size={1} />}
-                    onClick={() => {
-                      setFormMode(ANIMAL_FORM_MODE.ADD);
-                      setShowDialog(true);
-                    }}>
+                    component={RouterLink}
+                    to={'sampling'}
+                    startIcon={<Icon path={mdiPlus} size={1} />}>
                     Add
                   </Button>
-                </Toolbar>
-                <Divider flexItem></Divider>
-                <Box position="relative" display="flex" flex="1 1 auto" overflow="auto">
-                  <Box
-                    position="absolute"
-                    top="0"
-                    right="0"
-                    bottom="0"
-                    left="0"
+                  <IconButton
+                    edge="end"
                     sx={{
-                      background: grey[100]
-                    }}>
+                      ml: 1
+                    }}
+                    aria-label="header-settings"
+                    disabled={!checkboxSelectedIds.length}
+                    // onClick={handleHeaderMenuClick} // BULK ACTIONS BUTTON
+                    title="Bulk Actions">
+                    <Icon path={mdiDotsVertical} size={1} />
+                  </IconButton>
+                </Toolbar>
+                <Divider flexItem />
+                <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
+                  <Box position="absolute" top="0" right="0" bottom="0" left="0">
                     {surveyContext.deploymentDataLoader.isLoading ? (
-                      <SkeletonListStack />
+                      <SkeletonList />
                     ) : (
-                      <>
-                        {!critterDeployments.length && (
-                          <Stack
-                            sx={{
-                              background: grey[100]
-                            }}
-                            display="flex"
-                            alignItems="center"
-                            justifyContent="center"
-                            flex="1 1 auto"
-                            position="absolute"
-                            top={0}
-                            right={0}
-                            left={0}
-                            bottom={0}
-                            height="100%">
-                            <Typography variant="body2">No Deployments</Typography>
-                          </Stack>
-                        )}
-                        {critterDeployments?.map((item) => (
-                          <ManualTelemetryCard
-                            key={`${item.deployment.device_id}:${item.deployment.device_make}:${item.deployment.attachment_start}`}
-                            device_id={item.deployment.device_id}
-                            device_make={item.deployment.device_make}
-                            name={String(item.critter.animal_id ?? item.critter.itis_scientific_name)}
-                            start_date={item.deployment.attachment_start}
-                            end_date={item.deployment.attachment_end}
-                            onMenu={(event, id) => {
-                              handleMenuOpen(event, id);
-                            }}
-                          />
-                        ))}
-                      </>
+                      <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
+                        <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
+                          <FormGroup>
+                            <FormControlLabel
+                              label={
+                                <Typography
+                                  variant="body2"
+                                  component="span"
+                                  color="textSecondary"
+                                  fontWeight={700}
+                                  sx={{ textTransform: 'uppercase' }}>
+                                  Select All
+                                </Typography>
+                              }
+                              control={
+                                <Checkbox
+                                  sx={{
+                                    mr: 0.75
+                                  }}
+                                  checked={
+                                    checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === deploymentCount
+                                  }
+                                  indeterminate={
+                                    checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < deploymentCount
+                                  }
+                                  onClick={() => {
+                                    if (checkboxSelectedIds.length === deploymentCount) {
+                                      setCheckboxSelectedIds([]);
+                                      return;
+                                    }
+
+                                    const deploymentIds = deployments.map((deployment) => deployment.deployment_id);
+                                    setCheckboxSelectedIds(deploymentIds);
+                                  }}
+                                  inputProps={{ 'aria-label': 'controlled' }}
+                                />
+                              }
+                            />
+                          </FormGroup>
+                        </Box>
+                        <Divider flexItem></Divider>
+                        <Box
+                          flex="1 1 auto"
+                          sx={{
+                            background: grey[100]
+                          }}>
+                          {/* Display text if the sample site data loader has no items in it */}
+                          {!deploymentCount && (
+                            <Stack
+                              sx={{
+                                background: grey[100]
+                              }}
+                              display="flex"
+                              alignItems="center"
+                              justifyContent="center"
+                              flex="1 1 auto"
+                              position="absolute"
+                              top={0}
+                              right={0}
+                              left={0}
+                              bottom={0}
+                              height="100%">
+                              <Typography variant="body2">No Sampling Sites</Typography>
+                            </Stack>
+                          )}
+
+                          {deployments.map((deployment) => {
+                            return (
+                              // <SamplingSiteListSite
+                              //   deployment={deployment}
+                              //   isChecked={checkboxSelectedIds.includes(deployment.survey_sample_site_id)}
+                              //   handledeploymentMenuClick={handledeploymentMenuClick}
+                              //   handleCheckboxChange={handleCheckboxChange}
+                              //   key={`${deployment.survey_sample_site_id}-${deployment.name}`}
+                              // />
+                              <TelemetryListItem
+                                deployment={deployment}
+                                isChecked={checkboxSelectedIds.includes(deployment.deployment_id)}
+                                handleDeploymentMenuClick={handleSampleSiteMenuClick}
+                                handleCheckboxChange={handleCheckboxChange}
+                                key={deployment.deployment_id}
+                              />
+                            );
+                          })}
+                        </Box>
+                        {/* TODO how should we handle controlling pagination? */}
+                        {/* <Paper square sx={{ position: 'sticky', bottom: 0, marginTop: '-1px' }}>
+                <Divider flexItem></Divider>
+                  <TablePagination
+                    rowsPerPage={10}
+                    page={1}
+                    onPageChange={(event) => {}}
+                    rowsPerPageOptions={[10, 50]}
+                    count={69}
+                  />
+                </Paper> */}
+                      </Stack>
                     )}
                   </Box>
                 </Box>

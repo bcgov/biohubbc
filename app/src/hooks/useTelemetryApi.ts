@@ -39,6 +39,7 @@ export interface IVendorTelemetry extends ICreateManualTelemetry {
 export interface ITelemetry {
   id: string;
   deployment_id: string;
+  device_id: string;
   telemetry_manual_id: string;
   telemetry_id: number | null;
   latitude: number;
