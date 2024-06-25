@@ -47,9 +47,7 @@ export const ListDataTableContainer = () => {
   const { searchParams, setSearchParams } = useSearchParams<ListDataTableURLParams>();
 
   const [activeView, setActiveView] = useState(searchParams.get(ACTIVE_VIEW_KEY) ?? ACTIVE_VIEW_VALUE.projects);
-  const [showSearch, setShowSearch] = useState<boolean>(
-    searchParams.get(SHOW_SEARCH_KEY) === SHOW_SEARCH_VALUE.true ?? false
-  );
+  const [showSearch, setShowSearch] = useState<boolean>(searchParams.get(SHOW_SEARCH_KEY) === SHOW_SEARCH_VALUE.true);
 
   const views = [
     { value: ACTIVE_VIEW_VALUE.projects, label: 'projects', icon: mdiFolder },

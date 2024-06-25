@@ -30,7 +30,7 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
 
   const isMounted = useIsMounted();
 
-  const [_taxonomyCache, _setTaxonomyCache] = useState<Record<number, IPartialTaxonomy | null>>({});
+  const [taxonomyCache, setTaxonomyCache] = useState<Record<number, IPartialTaxonomy | null>>({});
   const _dispatchedTsnPromises = useRef<Record<number, Promise<IPartialTaxonomy | null>>>({});
 
   const cacheSpeciesTaxonomyByIds = useCallback(
@@ -47,7 +47,7 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
           for (const taxon of taxonomies) {
             newTaxonomyItems[taxon.tsn] = taxon;
           }
-          _setTaxonomyCache((previous) => ({ ...previous, ...newTaxonomyItems }));
+          setTaxonomyCache((previous) => ({ ...previous, ...newTaxonomyItems }));
 
           return taxonomies;
         })
@@ -82,9 +82,9 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
 
   const getCachedSpeciesTaxonomyById = useCallback(
     (tsn: number): IPartialTaxonomy | null => {
-      if (hasProperty(_taxonomyCache, tsn)) {
+      if (hasProperty(taxonomyCache, tsn)) {
         // Taxonomy tsn was found in the cache, return cached data
-        return getProperty(_taxonomyCache, tsn);
+        return getProperty(taxonomyCache, tsn);
       }
 
       if (_dispatchedTsnPromises.current[tsn] !== undefined) {
@@ -97,7 +97,7 @@ export const TaxonomyContextProvider = (props: PropsWithChildren) => {
 
       return null;
     },
-    [_taxonomyCache, cacheSpeciesTaxonomyByIds]
+    [taxonomyCache, cacheSpeciesTaxonomyByIds]
   );
 
   const getCachedSpeciesTaxonomyByIdAsync = useCallback(

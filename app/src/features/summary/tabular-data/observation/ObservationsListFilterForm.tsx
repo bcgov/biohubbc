@@ -48,7 +48,12 @@ export const ObservationsListFilterForm = (props: IObservationsListFilterFormPro
       {(formikProps) => (
         <FilterFieldsContainer
           fields={[
-            <CustomTextField name="keyword" label="Keyword" other={{ placeholder: 'Search by keyword' }} />,
+            <CustomTextField
+              name="keyword"
+              label="Keyword"
+              other={{ placeholder: 'Search by keyword' }}
+              key="observations-keyword-filter"
+            />,
             <SpeciesAutocompleteField
               formikFieldName={'itis_tsn'}
               label={'Species'}
@@ -66,10 +71,11 @@ export const ObservationsListFilterForm = (props: IObservationsListFilterFormPro
               handleClear={() => {
                 formikProps.setFieldValue('itis_tsn', undefined);
               }}
+              key="observations-tsn-filter"
             />,
 
-            <SingleDateField name={'start_date'} label={'Observed after'} />,
-            <SingleDateField name={'end_date'} label={'Observed before'} />
+            <SingleDateField name={'start_date'} label={'Observed after'} key="observations-date-filter" />,
+            <SingleDateField name={'end_date'} label={'Observed before'} key="observations-time-filter" />
           ]}
         />
       )}

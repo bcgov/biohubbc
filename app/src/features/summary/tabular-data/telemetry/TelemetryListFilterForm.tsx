@@ -43,6 +43,7 @@ const TelemetryListFilterForm = (props: ITelemetryListFilterFormProps) => {
                 placeholder: 'Type any keyword',
                 disabled: true // See TODO
               }}
+              key="telemetry-keyword-filter"
             />,
             <SpeciesAutocompleteField
               formikFieldName={'itis_tsns'}
@@ -62,6 +63,7 @@ const TelemetryListFilterForm = (props: ITelemetryListFilterFormProps) => {
                 formikProps.setFieldValue('itis_tsns', undefined);
               }}
               disabled={true} // See TODO
+              key="telemetry-tsn-filter"
             />
           ]}
         />

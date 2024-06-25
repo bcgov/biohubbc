@@ -1,4 +1,3 @@
-import { Search } from 'history';
 import qs from 'qs';
 import { useHistory } from 'react-router';
 
@@ -48,10 +47,6 @@ export function useSearchParams<ParamType extends Record<string, string> = Recor
 export class TypedURLSearchParams<
   ParamType extends Record<string, string> = Record<string, string>
 > extends URLSearchParams {
-  constructor(search?: Search) {
-    super(search);
-  }
-
   set<K extends keyof ParamType & string>(key: K, value: ParamType[K]) {
     super.set(key, value);
     return this;

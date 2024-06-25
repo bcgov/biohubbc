@@ -43,6 +43,7 @@ const AnimalsListFilterForm = (props: IAnimalsListFilterFormProps) => {
                 placeholder: 'Type any keyword',
                 disabled: true // See TODO
               }}
+              key="animal-keyword-filter"
             />,
             <SpeciesAutocompleteField
               formikFieldName={'itis_tsns'}
@@ -62,6 +63,7 @@ const AnimalsListFilterForm = (props: IAnimalsListFilterFormProps) => {
                 formikProps.setFieldValue('itis_tsns', undefined);
               }}
               disabled={true} // See TODO
+              key="animal-tsn-filter"
             />
           ]}
         />
