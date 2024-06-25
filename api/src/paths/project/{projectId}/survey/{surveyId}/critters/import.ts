@@ -138,15 +138,10 @@ export function importCsv(): RequestHandler {
         throw new HTTP400('Malicious content detected, import cancelled.');
       }
 
-      const mediaFile = parseMulterFile(rawFile);
-
       const surveyCritterService = new SurveyCritterService(connection);
 
-      // Validate the critters CSV
-      const csvCritters = await surveyCritterService.validateCritterCsvForImport(surveyId, mediaFile);
-
       // Import the critters into SIMS and Critterbase
-      const surveyCritterIds = await surveyCritterService.importCsvCritters(surveyId, csvCritters);
+      const surveyCritterIds = await surveyCritterService.importCritterCsv(surveyId, parseMulterFile(rawFile));
 
       defaultLog.info({ label: 'importCritterCsv', message: 'result', survey_critter_ids: surveyCritterIds });
 

@@ -453,15 +453,15 @@ export class CritterbaseService {
   }
 
   /**
-   * Get collection categories by tsn. Includes hierarchies.
+   * Find collection categories by tsn. Includes hierarchies.
    *
    * @async
    * @param {string} tsn - ITIS TSN
    * @returns {Promise<>} Collection categories
    */
-  async getTaxonCollectionCategories(tsn: string) {
-    const { data } = await this._makeGetRequest(CbRoutes['taxon-collection-categories'], [{ key: 'tsn', value: tsn }]);
+  async findTaxonCollectionCategories(tsn: string) {
+    const response = await this.axiosInstance.get(`/xref/taxon-collection-categories?tsn=${tsn}`);
 
-    return data;
+    return response.data;
   }
 }

@@ -20,20 +20,32 @@ type Row = Record<string, any>;
  */
 export type CsvCritter = z.infer<ReturnType<typeof getRowValidationSchema>>;
 
+type RowValidationConfig = {
+  /**
+   * Existing survey critter aliases
+   *
+   */
+  aliases: Set<string>;
+  /**
+   * Valid TSNS
+   *
+   */
+  tsns: Set<number>;
+  /**
+   * A Map of collection categories with associated collection units (Set)
+   *
+   */
+  collectionUnits: Map<string, Set<string>>;
+};
+
 /**
  * Get critter row validation schema and inject existing survey critter aliases and matching TSNS.
  * Note: Survey critters may not share animal aliases. 1 alias per survey.
  *
- * @param {Set<string>} aliases - Set of existing survey critter aliases
- * @param {Set<number>} matchingTsnSet - Set of matching TSNS from critter rows
  * @returns {z.ZodObject} CsvCritter
  */
-const getRowValidationSchema = (config: {
-  aliases: Set<string>;
-  tsns: Set<number>;
-  collectionUnits: Map<string, string[]>;
-}) => {
-  const rowSchema = {
+export const getRowValidationSchema = (config: RowValidationConfig) => {
+  const validationSchema = {
     critter_id: z.string().uuid(),
     sex: z.enum(['Unknown', 'Male', 'Female']),
     itis_tsn: z.number().refine((tsn) => config.tsns.has(tsn), `Invalid 'ITIS_TSN'.`),
@@ -51,13 +63,13 @@ const getRowValidationSchema = (config: {
   };
 
   config.collectionUnits.forEach((units, key) => {
-    rowSchema[key] = z
+    validationSchema[key] = z
       .string()
-      .refine((unit) => units.includes(unit), `Invalid '${key}'.`)
+      .refine((unit) => units.has(unit), `Invalid value for '${key}'.`)
       .optional();
   });
 
-  return z.object(rowSchema);
+  return z.object(validationSchema);
 };
 
 /**
@@ -94,20 +106,14 @@ export const getCritterRowsToValidate = (rows: Row[], collectionUnitColumns: str
  * alias as long as it is not in the same survey ie: different project
  *
  * @param {CsvCritter[]} rows - Critter rows
- * @param {Set<string>} surveyCritterAliasSet - Unique survey critter aliases
- * @param {Set<number>} matchingTsnSet - Set of matching TSNS from critter rows
+ * @param {RowValidationConfig} config - Row validation config
  * @returns {boolean} Validated
  */
 export const validateCritterRows = (
   rows: Partial<CsvCritter>[],
-  surveyCritterAliasSet: Set<string>,
-  matchingTsnSet: Set<number>
+  config: RowValidationConfig
 ): z.SafeParseReturnType<Partial<CsvCritter>[], CsvCritter[]> => {
-  const critterRowValidationSchema = getRowValidationSchema({
-    aliases: surveyCritterAliasSet,
-    tsns: matchingTsnSet,
-    collectionUnits: new Map([['POPULATION UNIT', ['A', 'B']]])
-  });
+  const critterRowValidationSchema = getRowValidationSchema(config);
 
   return z.array(critterRowValidationSchema).safeParse(rows);
 };

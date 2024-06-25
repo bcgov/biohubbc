@@ -141,7 +141,7 @@ export class SurveyCritterService extends DBService {
 
     const critters = await this.critterbaseService.getMultipleCrittersByIds(critterbaseCritterIds);
 
-    // Return a unique Set of non null critterbase aliases
+    // Return a unique Set of non-null critterbase aliases of a Survey
     // Note: The type from filtered critters should be Set<string> not Set<string | null>
     return new Set(critters.filter(Boolean).map((critter) => critter.animal_id)) as Set<string>;
   }
@@ -155,13 +155,11 @@ export class SurveyCritterService extends DBService {
    * @throws {Error} - If issue validating CSV contents
    * @returns {Promise<CsvCritter[]>} CSV Critters
    */
-  async validateCritterCsvForImport(surveyId: number, mediaFile: MediaFile): Promise<CsvCritter[]> {
-    const errorMessage = `Failed to import Critter CSV. Column validator failed.`;
-
+  async validateCsvRowsForImport(surveyId: number, mediaFile: MediaFile): Promise<CsvCritter[]> {
     /**
-     * ------------------------------------------------------------
-     *                    CSV VALIDATION
-     * ------------------------------------------------------------
+     * ----------------------------------------------------------------
+     *                            STEP 1
+     * ----------------------------------------------------------------
      */
 
     // Construct the XLSX workbook
@@ -174,7 +172,7 @@ export class SurveyCritterService extends DBService {
     // and insure the cell properties match the defined type
     if (!validateCsvFile(xlsxWorksheet, critterStandardColumnValidator)) {
       throw new ApiGeneralError(
-        `${errorMessage} Expecting columns ${critterStandardColumnValidator.columnNames.toString()}`
+        `Failed to import Critter CSV. Column validator failed. Expecting columns ${critterStandardColumnValidator.columnNames.toString()}`
       );
     }
 
@@ -182,9 +180,9 @@ export class SurveyCritterService extends DBService {
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheet);
 
     /**
-     * ------------------------------------------------------------
-     *                    CRITTER DATA VALIDATION
-     * ------------------------------------------------------------
+     * ----------------------------------------------------------------
+     *                            STEP 2
+     * ----------------------------------------------------------------
      */
 
     // This assumes all other columns are collection unit columns
@@ -194,7 +192,7 @@ export class SurveyCritterService extends DBService {
     const critterRows = getCritterRowsToValidate(worksheetRowObjects, collectionUnitColumns);
 
     // Get a list of unique tsns from the incoming critter row tsns
-    const critterTsns = [...new Set(critterRows.filter(Boolean).map((critter) => String(critter.itis_tsn)))];
+    const critterTsns = [...new Set(critterRows.map((row) => String(row.itis_tsn)))];
 
     // Query the platform service (taxonomy) for matching tsns
     const taxonomy = await this.platformService.getTaxonomyByTsns(critterTsns);
@@ -203,20 +201,24 @@ export class SurveyCritterService extends DBService {
     const validTsns = new Set(taxonomy.map((taxon) => Number(taxon.tsn)));
 
     const categories = await Promise.all(
-      Array.from(validTsns).map((tsn) => this.critterbaseService.getTaxonCollectionCategories(String(tsn)))
+      taxonomy.map((taxon) => this.critterbaseService.findTaxonCollectionCategories(taxon.tsn))
     );
 
-    console.log(categories);
+    console.log({ categories });
 
     // Get all aliases / nicknames / animal ids of critters in survey
     const surveyCritterAliases = await this.getUniqueSurveyCritterAliases(surveyId);
 
-    // Validate critter row data
-    const validation = validateCritterRows(critterRows, surveyCritterAliases, validTsns);
+    // Generate the row validation schema with injected configuration
+    const validation = validateCritterRows(critterRows, {
+      aliases: surveyCritterAliases,
+      tsns: validTsns,
+      collectionUnits: new Map([['POPULATION UNIT', new Set(['A', 'B'])]])
+    });
 
-    // Throw error and include zod row validation issues
+    // Collect and throw errors and include zod row validation issues
     if (!validation.success) {
-      throw new ApiGeneralError(errorMessage, validation.error.issues);
+      throw new ApiGeneralError(`Failed to import Critter CSV. Column data validator failed.`, validation.error.issues);
     }
 
     return validation.data;
@@ -231,7 +233,7 @@ export class SurveyCritterService extends DBService {
    * @throws {ApiGeneralError} - If length of critterbase inserts !== what was provided
    * @returns {Promise<number[]>} Survey critter ids
    */
-  async importCsvCritters(surveyId: number, critters: CsvCritter[]): Promise<number[]> {
+  async importCsvCrittersIntoSimsAndCritterbase(surveyId: number, critters: CsvCritter[]): Promise<number[]> {
     // Get list of Critterbase critter_ids(uuid) - different than SIMS critter_ids(number)
     const critterIds = critters.map((critter) => critter.critter_id);
 
@@ -250,5 +252,11 @@ export class SurveyCritterService extends DBService {
     const surveyCritterIds = await this.addCrittersToSurvey(surveyId, critterIds);
 
     return surveyCritterIds;
+  }
+
+  async importCritterCsv(surveyId: number, mediaFile: MediaFile): Promise<number[]> {
+    const importData = await this.validateCsvRowsForImport(surveyId, mediaFile);
+
+    return this.importCsvCrittersIntoSimsAndCritterbase(surveyId, importData);
   }
 }
