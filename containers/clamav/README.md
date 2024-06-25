@@ -79,3 +79,7 @@ When creating a new instance of clamscan, the default Host and Port of the above
 
 - Host: `clamav`
 - Port: `3310`
+
+## Other
+
+Depending on your OpenShift setup, you may need to add a NetworkPolicy to allow dev/test/prod to see images from tools, etc.
