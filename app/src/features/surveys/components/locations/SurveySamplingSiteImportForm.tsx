@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import SamplingSiteMapControl from 'features/surveys/observations/sampling-sites/components/map/SamplingSiteMapControl';
+import SamplingSiteMapControl from 'features/surveys/sampling-information/sites/components/map/SamplingSiteMapControl';
 import { useFormikContext } from 'formik';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 

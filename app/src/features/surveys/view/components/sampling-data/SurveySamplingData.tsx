@@ -30,6 +30,8 @@ export const SurveySamplingData = <T extends IGetTechnique>() => {
 
   useEffect(() => {
     samplingSitesDataLoader.load();
+    // Should not re-run this effect on `samplingSitesDataLoader` changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const rows =

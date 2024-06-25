@@ -14,7 +14,7 @@ export type StyledDataGridProps = DataGridProps & {
 export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledDataGridProps) => {
   const noRowsOverlay = useCallback(
     () => props.noRowsOverlay ?? <StyledDataGridOverlay message={props.noRowsMessage} />,
-    [props.noRowsMessage]
+    [props.noRowsMessage, props.noRowsOverlay]
   );
 
   return (
@@ -36,7 +36,7 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
         },
         '& .MuiDataGrid-columnHeaderTitle': {
           textTransform: 'uppercase',
-          fontWeight: 700,
+          fontWeight: 700
         },
         '& .MuiDataGrid-row:last-of-type': {
           '& .MuiDataGrid-cell': {
