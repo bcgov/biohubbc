@@ -100,7 +100,7 @@ const phases = {
     memoryRequest: '100Mi',
     memoryLimit: '4Gi',
     replicas: '1',
-    replicasMax: (isStaticDeployment && '2') || '1'
+    replicasMax: '1'
   },
   test: {
     namespace: 'af2668-test',
@@ -135,7 +135,7 @@ const phases = {
     cpuLimit: '1000m',
     memoryRequest: '100Mi',
     memoryLimit: '4Gi',
-    replicas: '1',
+    replicas: '2',
     replicasMax: '2'
   },
   prod: {
@@ -171,7 +171,7 @@ const phases = {
     cpuLimit: '2000m',
     memoryRequest: '100Mi',
     memoryLimit: '8Gi',
-    replicas: '1',
+    replicas: '2',
     replicasMax: '2'
   }
 };
