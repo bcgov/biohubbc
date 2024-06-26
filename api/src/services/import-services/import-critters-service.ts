@@ -1,26 +1,26 @@
 import { keys, omit, toUpper, uniq } from 'lodash';
 import { WorkSheet } from 'xlsx';
-import { IDBConnection } from '../database/db';
-import { ApiGeneralError } from '../errors/api-error';
+import { IDBConnection } from '../../database/db';
+import { ApiGeneralError } from '../../errors/api-error';
 import {
   CritterRowValidationConfig,
   CsvCritter,
   getCritterRowsToValidate,
   validateCritterRows
-} from '../utils/critter-xlsx-utils/critter-column-utils';
-import { MediaFile } from '../utils/media/media-file';
-import { critterStandardColumnValidator } from '../utils/xlsx-utils/column-cell-utils';
+} from '../../utils/critter-xlsx-utils/critter-column-utils';
+import { MediaFile } from '../../utils/media/media-file';
+import { critterStandardColumnValidator } from '../../utils/xlsx-utils/column-cell-utils';
 import {
   constructXLSXWorkbook,
   getDefaultWorksheet,
   getNonStandardColumnNamesFromWorksheet,
   getWorksheetRowObjects,
   validateCsvFile
-} from '../utils/xlsx-utils/worksheet-utils';
-import { CritterbaseService, ICollectionUnitWithCategory, ICreateCritter } from './critterbase-service';
-import { DBService } from './db-service';
-import { PlatformService } from './platform-service';
-import { SurveyCritterService } from './survey-critter-service';
+} from '../../utils/xlsx-utils/worksheet-utils';
+import { CritterbaseService, ICollection, ICollectionUnitWithCategory, ICreateCritter } from '../critterbase-service';
+import { DBService } from '../db-service';
+import { PlatformService } from '../platform-service';
+import { SurveyCritterService } from '../survey-critter-service';
 
 /**
  *
@@ -69,6 +69,7 @@ export class ImportCrittersService extends DBService {
   /**
    * Get the critter rows from the xlsx worksheet.
    *
+   * @param {WorkSheet} worksheet
    * @returns {Partial<CsvCritter>[]} List of partial CSV Critters
    */
   _getRows(worksheet: WorkSheet) {
@@ -107,18 +108,24 @@ export class ImportCrittersService extends DBService {
   }
 
   /**
-   * Get collection unit properties from row.
+   * Get list of collection units from row.
    *
    * @param {CsvCritter} row - Row object as a CsvCritter
-   * TODO: type this
+   * @returns {ICollection[]} Array of collection units
    */
-  _getCollectionUnitsFromRow(row: CsvCritter) {
-    //const critterId = row.critter_id;
+  _getCollectionUnitsFromRow(row: CsvCritter): ICollection[] {
+    const critterId = row.critter_id;
 
     // Get portion of row object that is not a critter
     const partialRow = omit(row, keys(this._getCritterFromRow(row)));
 
-    return partialRow;
+    // Keys of collection units
+    const collectionUnitKeys = keys(partialRow);
+
+    // Return an array of formatted collection units for bulk create
+    return collectionUnitKeys
+      .filter((key) => partialRow[key])
+      .map((key) => ({ collection_unit_id: partialRow[key], critter_id: critterId }));
   }
 
   /**
@@ -239,19 +246,20 @@ export class ImportCrittersService extends DBService {
    * @returns {Promise<number[]>} List of inserted survey critter ids
    */
   async _insertCsvCrittersIntoSimsAndCritterbase(surveyId: number, critterRows: CsvCritter[]): Promise<number[]> {
-    console.log(critterRows);
-
-    const critterIds = [];
-    const critters = [];
-    //const collectionUnits = [];
+    const critterIds: string[] = [];
+    const critters: ICreateCritter[] = [];
+    let collectionUnits: ICollection[] = [];
 
     for (const row of critterRows) {
       critterIds.push(row.critter_id);
       critters.push(this._getCritterFromRow(row));
+      collectionUnits = collectionUnits.concat(this._getCollectionUnitsFromRow(row));
     }
 
+    console.log({ critterIds, critters, collectionUnits });
+
     // Add critters to Critterbase
-    const bulkResponse = await this.critterbaseService.bulkCreate({ critters });
+    const bulkResponse = await this.critterbaseService.bulkCreate({ critters: critters, collections: collectionUnits });
 
     // Check critterbase inserted the full list of critters
     if (bulkResponse.created.critters !== critterIds.length) {

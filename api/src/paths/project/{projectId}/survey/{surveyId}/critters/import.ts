@@ -4,7 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ImportCrittersService } from '../../../../../../services/import-critters-service';
+import { ImportCrittersService } from '../../../../../../services/import-services/import-critters-service';
 import { scanFileForVirus } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
