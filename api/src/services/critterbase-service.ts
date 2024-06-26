@@ -148,6 +148,14 @@ export interface IBulkCreateResponse {
   created: IBulkResponse;
 }
 
+export interface ICollectionUnitWithCategory {
+  collection_unit_id: string;
+  collection_category_id: string;
+  category_name: string;
+  unit_name: string;
+  description: string | null;
+}
+
 /**
  * A Critterbase quantitative measurement.
  */
@@ -461,6 +469,19 @@ export class CritterbaseService {
    */
   async findTaxonCollectionCategories(tsn: string) {
     const response = await this.axiosInstance.get(`/xref/taxon-collection-categories?tsn=${tsn}`);
+
+    return response.data;
+  }
+
+  /**
+   * Find collection units by tsn. Includes hierarchies.
+   *
+   * @async
+   * @param {string} tsn - ITIS TSN
+   * @returns {Promise<ICollectionUnitWithCategory[]>} Collection units
+   */
+  async findTaxonCollectionUnits(tsn: string): Promise<ICollectionUnitWithCategory[]> {
+    const response = await this.axiosInstance.get(`/xref/taxon-collection-units?tsn=${tsn}`);
 
     return response.data;
   }

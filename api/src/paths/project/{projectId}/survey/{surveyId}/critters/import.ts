@@ -131,16 +131,17 @@ export function importCsv(): RequestHandler {
         throw new HTTP400('Invalid file type. Expected a CSV file.');
       }
 
+      // Check for viruses / malware
       const virusScanResult = await scanFileForVirus(rawFile);
 
-      // Check for viruses
       if (!virusScanResult) {
         throw new HTTP400('Malicious content detected, import cancelled.');
       }
 
-      const csvImporter = new ImportCrittersService(connection, parseMulterFile(rawFile));
+      const csvImporter = new ImportCrittersService(connection);
 
-      const surveyCritterIds = await csvImporter.import(surveyId);
+      // Pass the survey id and the csv (MediaFile) to the importer
+      const surveyCritterIds = await csvImporter.import(surveyId, parseMulterFile(rawFile));
 
       defaultLog.info({ label: 'importCritterCsv', message: 'result', survey_critter_ids: surveyCritterIds });
 

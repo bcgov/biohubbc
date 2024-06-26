@@ -45,6 +45,7 @@ export type CritterRowValidationConfig = {
  * @returns {z.ZodObject} CsvCritter
  */
 export const getRowValidationSchema = (config: CritterRowValidationConfig) => {
+  // Standard column validatons
   const validationSchema = {
     critter_id: z.string().uuid(),
     sex: z.enum(['Unknown', 'Male', 'Female']),
@@ -62,6 +63,8 @@ export const getRowValidationSchema = (config: CritterRowValidationConfig) => {
     critter_comment: z.string().optional()
   };
 
+  // Non-standard / dynamic column validations
+  // Dynamically adds validation to the collection unit columns
   config.collectionUnits.forEach((units, key) => {
     validationSchema[key] = z
       .string()
