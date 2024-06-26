@@ -79,7 +79,7 @@ export const GeneralInformationYupSchema = () => {
       survey_details: yup.object().shape({
         survey_name: yup.string().required('Survey Name is Required'),
         start_date: yup.string().isValidDateString().required('Start Date is Required'),
-        end_date: yup.string().nullable().isValidDateString().isEndDateSameOrAfterStartDate('start_date'),
+        end_date: yup.string().nullable().isValidDateString(),
         survey_types: yup
           .array(yup.number())
           .min(1, 'One or more Types are required')
@@ -100,8 +100,6 @@ export const GeneralInformationYupSchema = () => {
 
 export interface IGeneralInformationFormProps {
   type: IMultiAutocompleteFieldOption[];
-  projectStartDate: string;
-  projectEndDate: string;
   progress: ISelectWithSubtextFieldOption[];
 }
 

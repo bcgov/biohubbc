@@ -4,6 +4,7 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
 import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+
 import _ from 'lodash';
 import { IDialogContext } from '../contexts/dialogContext';
 
@@ -411,8 +412,6 @@ export const shapeFileFeatureDesc = (geometry: Feature<Geometry, GeoJsonProperti
   return descKey && geometry.properties ? geometry.properties[descKey].substring(0, 250) : undefined;
 };
 
-// JSX Functions //
-//
 /**
  * Simple reusable method to make a snackbar appear with a string of your choice.
  *
@@ -452,3 +451,12 @@ export const getRandomHexColor = (seed: number, min = 100, max = 170): string =>
 
   return `#${randomChannel()}${randomChannel()}${randomChannel()}`;
 };
+
+/**
+ * Returns true if the value is defined (not null and not undefined).
+ *
+ * @template T
+ * @param {(T | undefined | null)} value
+ * @return {*}  {value is T}
+ */
+export const isDefined = <T,>(value: T | undefined | null): value is T => value !== undefined && value !== null;

@@ -464,23 +464,24 @@ objects:
     status:
       ingress: null
 
-  - kind: HorizontalPodAutoscaler
-    apiVersion: autoscaling/v2
-    metadata:
-      annotations: {}
-      labels: {}
-      name: ${NAME}${SUFFIX}
-    spec:
-      minReplicas: ${{REPLICAS}}
-      maxReplicas: ${{REPLICAS_MAX}}
-      scaleTargetRef:
-        apiVersion: apps.openshift.io/v1
-        kind: DeploymentConfig
-        name: ${NAME}${SUFFIX}
-      metrics:
-        - type: Resource
-          resource:
-            name: cpu
-            target:
-              type: Utilization
-              averageUtilization: 80
+  # Disable the HPA for now, as it is preferrable to run an exact number of pods (e.g. min:2, max:2)
+  # - kind: HorizontalPodAutoscaler
+  #   apiVersion: autoscaling/v2
+  #   metadata:
+  #     annotations: {}
+  #     labels: {}
+  #     name: ${NAME}${SUFFIX}
+  #   spec:
+  #     minReplicas: ${{REPLICAS}}
+  #     maxReplicas: ${{REPLICAS_MAX}}
+  #     scaleTargetRef:
+  #       apiVersion: apps.openshift.io/v1
+  #       kind: DeploymentConfig
+  #       name: ${NAME}${SUFFIX}
+  #     metrics:
+  #       - type: Resource
+  #         resource:
+  #           name: cpu
+  #           target:
+  #             type: Utilization
+  #             averageUtilization: 80

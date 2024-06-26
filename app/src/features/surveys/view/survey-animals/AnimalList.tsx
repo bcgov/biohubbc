@@ -82,9 +82,9 @@ const AnimalList = (props: IAnimalListProps) => {
   const { isLoading, selectedSection, onSelectSection, refreshCritter, surveyCritters, onAddButton } = props;
 
   const history = useHistory();
-  const { cid } = useQuery();
+  const { critter_id } = useQuery();
 
-  const survey_critter_id = Number(cid);
+  const survey_critter_id = Number(critter_id);
 
   const getSectionIcon = (section: ANIMAL_SECTION) => {
     switch (section) {
@@ -112,7 +112,7 @@ const AnimalList = (props: IAnimalListProps) => {
       history.replace(history.location.pathname);
     } else {
       refreshCritter(critter.critter_id);
-      history.push(`?cid=${critter.survey_critter_id}`);
+      history.push(`?critter_id=${critter.survey_critter_id}`);
     }
     onSelectSection(ANIMAL_SECTION.GENERAL);
   };

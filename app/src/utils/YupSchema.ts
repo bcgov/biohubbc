@@ -5,6 +5,7 @@
 
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
+import { isValidCoordinates } from 'utils/spatial-utils';
 import * as yup from 'yup';
 
 yup.addMethod(yup.array, 'isUniqueIUCNClassificationDetail', function (message: string) {
@@ -52,7 +53,6 @@ yup.addMethod(
         // don't validate date string if it is null
         return true;
       }
-
       return dayjs(value, dateFormat, true).isValid();
     });
   }
@@ -227,6 +227,15 @@ yup.addMethod(yup.array, 'hasUniqueDateRanges', function (message: string, start
     }
 
     return true;
+  });
+});
+
+yup.addMethod(yup.array, 'isValidPointCoordinates', function (message: string) {
+  return this.test('has-at-least-one-value', message, (value) => {
+    if (!value || !value.length) {
+      return false;
+    }
+    return isValidCoordinates(value[1], value[0]);
   });
 });
 

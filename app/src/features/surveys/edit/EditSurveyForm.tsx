@@ -84,8 +84,6 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
                   return { value: item.id, label: item.name, subText: item.description };
                 }) || []
               }
-              projectStartDate={projectData.project.start_date}
-              projectEndDate={projectData.project.end_date}
             />
           }></HorizontalSplitFormComponent>
 
