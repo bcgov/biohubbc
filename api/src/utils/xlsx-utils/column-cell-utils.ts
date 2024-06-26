@@ -66,6 +66,20 @@ export const critterStandardColumnValidator: IXLSXCSVValidator = {
 };
 
 /**
+ * Get column validator specification. Useful for error handling / logging.
+ *
+ * @param {IXLSXCSVValidator} columnValidator - Standard column validator
+ * @returns {*}
+ */
+export const getColumnValidatorSpecification = (columnValidator: IXLSXCSVValidator) => {
+  return columnValidator.columnNames.map((column, index) => ({
+    columnName: column,
+    columnType: columnValidator.columnTypes[index],
+    columnAliases: columnValidator.columnAliases?.[column]
+  }));
+};
+
+/**
  * Generate a row value getter function from array of allowed column values.
  *
  * @example const getTsnFromRow = generateCellValueGetter([ITIS_TSN, TSN, TAXON, SPECIES]);

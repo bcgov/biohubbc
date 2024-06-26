@@ -9,7 +9,10 @@ import {
   validateCritterRows
 } from '../../utils/critter-xlsx-utils/critter-column-utils';
 import { MediaFile } from '../../utils/media/media-file';
-import { critterStandardColumnValidator } from '../../utils/xlsx-utils/column-cell-utils';
+import {
+  critterStandardColumnValidator,
+  getColumnValidatorSpecification
+} from '../../utils/xlsx-utils/column-cell-utils';
 import {
   constructXLSXWorkbook,
   getDefaultWorksheet,
@@ -17,7 +20,13 @@ import {
   getWorksheetRowObjects,
   validateCsvFile
 } from '../../utils/xlsx-utils/worksheet-utils';
-import { CritterbaseService, ICollection, ICollectionUnitWithCategory, ICreateCritter } from '../critterbase-service';
+import {
+  CritterbaseService,
+  IBulkCreate,
+  ICollection,
+  ICollectionUnitWithCategory,
+  ICreateCritter
+} from '../critterbase-service';
 import { DBService } from '../db-service';
 import { PlatformService } from '../platform-service';
 import { SurveyCritterService } from '../survey-critter-service';
@@ -219,16 +228,27 @@ export class ImportCrittersService extends DBService {
 
     // Validate the standard columns in the CSV file
     if (!validateCsvFile(worksheet, critterStandardColumnValidator)) {
-      throw new ApiGeneralError(`Column validator failed.`);
+      throw new ApiGeneralError(`Column validator failed. Column headers or cell data types are incorrect.`, [
+        { column_specification: getColumnValidatorSpecification(critterStandardColumnValidator) }
+      ]);
     }
 
-    // Get the validation config for the generated zod schema
-    const rowValidationConfig = await this._getRowValidationConfig(surveyId, worksheet);
+    // Retrieve the dynamic validation config
+    const [validRowTsns, surveyCritterAliases] = await Promise.all([
+      this._getValidTsns(worksheet),
+      this.surveyCritterService.getUniqueSurveyCritterAliases(surveyId)
+    ]);
 
-    // Generate the row validation schema with injected configuration
-    const validation = validateCritterRows(rows, rowValidationConfig);
+    const collectionUnitMap = await this._getCollectionUnitMap(worksheet, validRowTsns);
 
-    // Collect and throw errors and include zod row validation issues
+    // Generate the row validation schema and inject config
+    const validation = validateCritterRows(rows, {
+      aliases: surveyCritterAliases,
+      tsns: new Set(validRowTsns.map((tsn) => Number(tsn))),
+      collectionUnits: collectionUnitMap
+    });
+
+    // Throw zod errors from safe parse
     if (!validation.success) {
       throw new ApiGeneralError(`Failed to import Critter CSV. Column data validator failed.`, validation.error.issues);
     }
@@ -246,23 +266,21 @@ export class ImportCrittersService extends DBService {
    * @returns {Promise<number[]>} List of inserted survey critter ids
    */
   async _insertCsvCrittersIntoSimsAndCritterbase(surveyId: number, critterRows: CsvCritter[]): Promise<number[]> {
-    const critterIds: string[] = [];
-    const critters: ICreateCritter[] = [];
-    let collectionUnits: ICollection[] = [];
+    const simsPayload: string[] = [];
+    const critterbasePayload: IBulkCreate = { critters: [], collections: [] };
 
     for (const row of critterRows) {
-      critterIds.push(row.critter_id);
-      critters.push(this._getCritterFromRow(row));
-      collectionUnits = collectionUnits.concat(this._getCollectionUnitsFromRow(row));
+      simsPayload.push(row.critter_id);
+
+      critterbasePayload.critters?.push(this._getCritterFromRow(row));
+      critterbasePayload.collections = critterbasePayload.collections?.concat(this._getCollectionUnitsFromRow(row));
     }
 
-    console.log({ critterIds, critters, collectionUnits });
-
     // Add critters to Critterbase
-    const bulkResponse = await this.critterbaseService.bulkCreate({ critters: critters, collections: collectionUnits });
+    const bulkResponse = await this.critterbaseService.bulkCreate(critterbasePayload);
 
     // Check critterbase inserted the full list of critters
-    if (bulkResponse.created.critters !== critterIds.length) {
+    if (bulkResponse.created.critters !== simsPayload.length) {
       throw new ApiGeneralError('Unable to fully import critters from CSV', [
         'importCritterService->insertCsvCrittersIntoSimsAndCritterbase',
         'critterbase bulk create response count !== critterIds.length'
@@ -270,7 +288,7 @@ export class ImportCrittersService extends DBService {
     }
 
     // Add Critters to SIMS survey
-    return this.surveyCritterService.addCrittersToSurvey(surveyId, critterIds);
+    return this.surveyCritterService.addCrittersToSurvey(surveyId, simsPayload);
   }
 
   /**
