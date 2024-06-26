@@ -286,8 +286,6 @@ export function getTechniques(): RequestHandler {
 
       const sampleSitesTotalCount = await techniqueService.getTechniquesCountForSurveyId(surveyId);
 
-      console.log(techniques);
-
       await connection.commit();
 
       return res.status(200).json({

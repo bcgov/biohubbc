@@ -199,7 +199,9 @@ export class TechniqueRepository extends BaseRepository {
 
     const queryBuilder = this._generateGetTechniqueQuery(surveyId);
 
-    return this.connection.knex(queryBuilder, TechniqueObject);
+    const response = await this.connection.knex(queryBuilder, TechniqueObject);
+
+    return response.rows;
   }
 
   /**

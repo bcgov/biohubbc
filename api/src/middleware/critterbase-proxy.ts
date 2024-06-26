@@ -38,8 +38,6 @@ const allowedDeleteRoutesRegex: RegExp[] = [
 export const proxyFilter = (pathname: string, req: Request) => {
   const origin = (req.headers.origin ?? '').replace('https://', '');
 
-  console.log('proxyFilter', req.method, pathname, origin, getSimsAppHost());
-
   // Reject requests NOT coming directly from SIMS APP / frontend.
   if (origin !== getSimsAppHost()) {
     defaultLog.debug({
