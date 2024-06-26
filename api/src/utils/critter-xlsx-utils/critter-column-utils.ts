@@ -1,5 +1,6 @@
 import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
+import { ICollectionUnitWithCategory } from '../../services/critterbase-service';
 import {
   getAliasFromRow,
   getDescriptionFromRow,
@@ -35,17 +36,21 @@ export type CritterRowValidationConfig = {
    * A Map of collection categories with associated collection units (Set)
    *
    */
-  collectionUnits: Map<string, Set<string>>;
+  collectionUnits: Map<string, ICollectionUnitWithCategory[]>;
 };
 
 /**
- * Get critter row validation schema and inject existing survey critter aliases and matching TSNS.
- * Note: Survey critters may not share animal aliases. 1 alias per survey.
+ * Get critter row validation schema.
+ *
+ * Additional validation notes:
+ *  1. Survey critters may use an existing animal alias, only one alias per survey.
+ *  2. TSN's must be valid ie: ITIS has a reference for.
+ *  3. Dynamic collection unit columns must contain correct reference values.
  *
  * @returns {z.ZodObject} CsvCritter
  */
 export const getRowValidationSchema = (config: CritterRowValidationConfig) => {
-  // Standard column validatons
+  // Standard column validation with injected Sets of allowed values
   const validationSchema = {
     critter_id: z.string().uuid(),
     sex: z.enum(['Unknown', 'Male', 'Female']),
@@ -63,12 +68,21 @@ export const getRowValidationSchema = (config: CritterRowValidationConfig) => {
     critter_comment: z.string().optional()
   };
 
-  // Non-standard / dynamic column validations
   // Dynamically adds validation to the collection unit columns
-  config.collectionUnits.forEach((units, key) => {
-    validationSchema[key] = z
+  config.collectionUnits.forEach((collectionUnits, collectionUnitHeader) => {
+    // Set at top level to prevent having to search / find value multiple times
+    let collectionUnitMatch: ICollectionUnitWithCategory | undefined;
+
+    // Set the validation property name to be the cell header
+    validationSchema[collectionUnitHeader] = z
       .string()
-      .refine((unit) => units.has(unit), `Invalid value for '${key}'.`)
+      // Search collection units for a match on the cell value
+      .refine((cellValue) => {
+        collectionUnitMatch = collectionUnits.find((unit) => unit.unit_name === cellValue);
+        return Boolean(collectionUnitMatch);
+      }, `Invalid value for '${collectionUnitHeader}'.`)
+      // Transform the return of the validation to be the id of the collection unit
+      .transform(() => collectionUnitMatch?.collection_unit_id)
       .optional();
   });
 

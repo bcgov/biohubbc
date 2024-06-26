@@ -17,7 +17,7 @@ import {
   getWorksheetRowObjects,
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
-import { CritterbaseService, ICreateCritter } from './critterbase-service';
+import { CritterbaseService, ICollectionUnitWithCategory, ICreateCritter } from './critterbase-service';
 import { DBService } from './db-service';
 import { PlatformService } from './platform-service';
 import { SurveyCritterService } from './survey-critter-service';
@@ -72,7 +72,7 @@ export class ImportCrittersService extends DBService {
    * @returns {Partial<CsvCritter>[]} List of partial CSV Critters
    */
   _getRows(worksheet: WorkSheet) {
-    // Attempt to retrieve from rows property to prevent unnessecary parsing
+    // Attempt to retrieve from rows property to prevent unnecessary parsing
     if (this._rows) {
       return this._rows;
     }
@@ -112,7 +112,7 @@ export class ImportCrittersService extends DBService {
    * @param {CsvCritter} row - Row object as a CsvCritter
    * TODO: type this
    */
-  _getCollectionUnitFromRow(row: CsvCritter) {
+  _getCollectionUnitsFromRow(row: CsvCritter) {
     //const critterId = row.critter_id;
 
     // Get portion of row object that is not a critter
@@ -149,10 +149,10 @@ export class ImportCrittersService extends DBService {
    * @async
    * @param {WorkSheet} worksheet - Xlsx Worksheet
    * @param {string[]} tsns - List of unique and valid TSNS
-   * @returns {Promise<Map<string, Set<string>>>} Collection unit mapping
+   * @returns {Promise<Map<string, ICollectionUnitWithCategory[]>} Collection unit mapping
    */
   async _getCollectionUnitMap(worksheet: WorkSheet, tsns: string[]) {
-    const collectionUnitMap = new Map<string, Set<string>>();
+    const collectionUnitMap = new Map<string, ICollectionUnitWithCategory[]>();
 
     const collectionUnitColumns = this._getCollectionUnitColumns(worksheet);
 
@@ -168,10 +168,7 @@ export class ImportCrittersService extends DBService {
 
     for (const collectionUnits of tsnCollectionUnits) {
       if (collectionUnits.length) {
-        collectionUnitMap.set(
-          toUpper(collectionUnits[0].category_name),
-          new Set(collectionUnits.map((collectionUnit) => collectionUnit.unit_name))
-        );
+        collectionUnitMap.set(toUpper(collectionUnits[0].category_name), collectionUnits);
       }
     }
 
