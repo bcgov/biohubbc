@@ -18,18 +18,18 @@ export class TechniqueAttributeService extends DBService {
   }
 
   /**
-   * Lookup quantitative and qualitative attributes for a method lookup Id
+   * Get quantitative and qualitative attributes for a method lookup id.
    *
-   * @param {number[]} method_lookup_ids
+   * @param {number[]} methodLookupIds
    * @return {*}  {Promise<IGetTechniqueAttributes[]>}
    * @memberof TechniqueAttributeService
    */
-  async getAttributesForMethodLookupIds(method_lookup_ids: number[]): Promise<IGetTechniqueAttributes[]> {
-    return this.techniqueAttributeRepository.getAttributesForMethodLookupIds(method_lookup_ids);
+  async getAttributesForMethodLookupIds(methodLookupIds: number[]): Promise<IGetTechniqueAttributes[]> {
+    return this.techniqueAttributeRepository.getAttributesForMethodLookupIds(methodLookupIds);
   }
 
   /**
-   * Lookup quantitative and qualitative attributes for a method lookup Id
+   * Get quantitative and qualitative attributes for a technique id.
    *
    * @param {number} techniqueId
    * @return {*}  {Promise<ITechniqueAttributesObject>}
@@ -40,41 +40,7 @@ export class TechniqueAttributeService extends DBService {
   }
 
   /**
-   * Validate that the technique can have all incoming attributes. Throws an error if any attributes are invalid.
-   *
-   * @param {number} techniqueId
-   * @param {((IQualitativeAttributePostData | IQuantitativeAttributePostData)[])} attributes
-   * @return {*}  {Promise<void>}
-   * @memberof TechniqueAttributeService
-   */
-  async _validAttributesForTechnique(
-    techniqueId: number,
-    attributes: (IQualitativeAttributePostData | IQuantitativeAttributePostData)[]
-  ): Promise<void> {
-    // Validate that the method lookup id can have the incoming attributes
-    const allowedAttributes = await this.techniqueAttributeRepository.getAttributeDefinitionsByTechniqueId(techniqueId);
-
-    const invalidAttributes = attributes.filter(
-      (attribute) =>
-        !allowedAttributes.qualitative_attributes.some(
-          (allowedAttribute) =>
-            'method_lookup_attribute_qualitative_id' in attribute &&
-            allowedAttribute.method_lookup_attribute_qualitative_id === attribute.method_lookup_attribute_qualitative_id
-        ) ||
-        !allowedAttributes.qualitative_attributes.some(
-          (allowedAttribute) =>
-            'method_lookup_attribute_qualitative_id' in attribute &&
-            allowedAttribute.method_lookup_attribute_qualitative_id === attribute.method_lookup_attribute_qualitative_id
-        )
-    );
-
-    if (invalidAttributes.length > 0) {
-      throw new Error('Invalid attributes for method_lookup_id');
-    }
-  }
-
-  /**
-   * Insert quantitative attributes for a technique
+   * Insert quantitative attributes for a technique.
    *
    * @param {number} techniqueId
    * @param {IQuantitativeAttributePostData[]} attributes
@@ -92,7 +58,7 @@ export class TechniqueAttributeService extends DBService {
   }
 
   /**
-   * Insert qualitative attributes for a technique
+   * Insert qualitative attributes for a technique.
    *
    * @param {number} techniqueId
    * @param {IQualitativeAttributePostData[]} attributes
@@ -110,7 +76,7 @@ export class TechniqueAttributeService extends DBService {
   }
 
   /**
-   * Delete quantitative attributes for a technique
+   * Delete quantitative attributes for a technique.
    *
    * @param {number} surveyId
    * @param {number} techniqueId
@@ -131,7 +97,7 @@ export class TechniqueAttributeService extends DBService {
   }
 
   /**
-   * Delete qualitative attributes for a technique
+   * Delete qualitative attributes for a technique.
    *
    * @param {number} surveyId
    * @param {number} techniqueId
@@ -152,7 +118,7 @@ export class TechniqueAttributeService extends DBService {
   }
 
   /**
-   * Update quantitative attributes for a technique
+   * Update quantitative attributes for a technique.
    *
    * @param {number} surveyId
    * @param {number} techniqueId
@@ -221,7 +187,7 @@ export class TechniqueAttributeService extends DBService {
   }
 
   /**
-   * Update qualitative attributes for a technique
+   * Update qualitative attributes for a technique.
    *
    * @param {number} surveyId
    * @param {number} techniqueId
@@ -284,5 +250,39 @@ export class TechniqueAttributeService extends DBService {
     }
 
     await Promise.all(promises);
+  }
+
+  /**
+   * Validate that the technique can have all incoming attributes. Throws an error if any attributes are invalid.
+   *
+   * @param {number} techniqueId
+   * @param {((IQualitativeAttributePostData | IQuantitativeAttributePostData)[])} attributes
+   * @return {*}  {Promise<void>}
+   * @memberof TechniqueAttributeService
+   */
+  async _validAttributesForTechnique(
+    techniqueId: number,
+    attributes: (IQualitativeAttributePostData | IQuantitativeAttributePostData)[]
+  ): Promise<void> {
+    // Validate that the method lookup id can have the incoming attributes
+    const allowedAttributes = await this.techniqueAttributeRepository.getAttributeDefinitionsByTechniqueId(techniqueId);
+
+    const invalidAttributes = attributes.filter(
+      (attribute) =>
+        !allowedAttributes.qualitative_attributes.some(
+          (allowedAttribute) =>
+            'method_lookup_attribute_qualitative_id' in attribute &&
+            allowedAttribute.method_lookup_attribute_qualitative_id === attribute.method_lookup_attribute_qualitative_id
+        ) ||
+        !allowedAttributes.qualitative_attributes.some(
+          (allowedAttribute) =>
+            'method_lookup_attribute_qualitative_id' in attribute &&
+            allowedAttribute.method_lookup_attribute_qualitative_id === attribute.method_lookup_attribute_qualitative_id
+        )
+    );
+
+    if (invalidAttributes.length > 0) {
+      throw new Error('Invalid attributes for method_lookup_id');
+    }
   }
 }

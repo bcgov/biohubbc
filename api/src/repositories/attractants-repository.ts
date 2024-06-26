@@ -21,23 +21,30 @@ export interface IAttractantPostData {
 
 export class AttractantRepository extends BaseRepository {
   /**
-   * Get attractants for a technique
+   * Get attractants for a technique.
    *
-   * @param {number} techniqueId
    * @param {number} surveyId
+   * @param {number} techniqueId
    * @return {*}  {Promise<AttractantRecord[]>}
    * @memberof AttractantRepository
    */
-  async getAttractantsByTechniqueId(techniqueId: number, _surveyId: number): Promise<AttractantRecord[]> {
+  async getAttractantsByTechniqueId(surveyId: number, techniqueId: number): Promise<AttractantRecord[]> {
     defaultLog.debug({ label: 'getAttractantsByTechniqueId', techniqueId });
 
     const sqlStatement = SQL`
       SELECT 
-        method_technique_attractant_id, 
-        method_technique_id,
-        attractant_lookup_id
-      FROM method_technique_attractant 
-      WHERE method_technique_id = ${techniqueId};
+        method_technique_attractant.method_technique_attractant_id, 
+        method_technique_attractant.method_technique_id,
+        method_technique_attractant.attractant_lookup_id
+      FROM 
+        method_technique_attractant 
+      INNER 
+        JOIN method_technique
+          ON method_technique.method_technique_id = method_technique_attractant.method
+      WHERE 
+        method_technique_attractant.method_technique_id = ${techniqueId};
+      AND 
+        method_technique.survey_id = ${surveyId};
     `;
 
     const response = await this.connection.sql(sqlStatement, AttractantRecord);
@@ -46,7 +53,7 @@ export class AttractantRepository extends BaseRepository {
   }
 
   /**
-   * Insert attractants for a technique
+   * Insert attractants for a technique.
    *
    * @param {number} techniqueId
    * @param {IAttractantPostData[]} attractants
@@ -72,22 +79,33 @@ export class AttractantRepository extends BaseRepository {
   }
 
   /**
-   * Delete technique attractants
+   * Delete technique attractants.
    *
+   * @param {number} surveyId
    * @param {number} techniqueId
    * @param {number[]} attractantLookupIds
    * @return {*}  {Promise<void>}
    * @memberof AttractantRepository
    */
-  async deleteTechniqueAttractants(techniqueId: number, attractantLookupIds: number[]): Promise<void> {
+  async deleteTechniqueAttractants(
+    surveyId: number,
+    techniqueId: number,
+    attractantLookupIds: number[]
+  ): Promise<void> {
     defaultLog.debug({ label: 'deleteTechniqueAttractants', techniqueId });
 
     if (attractantLookupIds.length > 0) {
       const queryBuilder = getKnex()
+        .delete()
         .table('method_technique_attractant')
-        .whereIn('attractant_lookup_id', attractantLookupIds)
-        .andWhere('method_technique_id', techniqueId)
-        .del();
+        .join(
+          'method_technique',
+          'method_technique.method_technique_id',
+          'method_technique_attractant.method_technique_id'
+        )
+        .whereIn('method_technique_attractant.attractant_lookup_id', attractantLookupIds)
+        .andWhere('method_technique_attractant.method_technique_id', techniqueId)
+        .andWhere('method_technique.survey_id', surveyId);
 
       const response = await this.connection.knex(queryBuilder);
 
@@ -101,7 +119,7 @@ export class AttractantRepository extends BaseRepository {
   }
 
   /**
-   * Delete technique attractants
+   * Delete all technique attractants.
    *
    * @param {number} surveyId
    * @param {number} methodTechniqueId

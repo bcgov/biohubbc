@@ -132,7 +132,7 @@ export function createTechniques(): RequestHandler {
 
         // Insert attractants
         if (technique.attractants.length) {
-          promises.push(attractantsService.insertTechniqueAttractants(attractants, surveyId));
+          promises.push(attractantsService.insertTechniqueAttractants(surveyId, attractants));
         }
 
         // Insert qualitative attributes

@@ -20,7 +20,7 @@ export class TechniqueService extends DBService {
   }
 
   /**
-   * Get a technique by Id
+   * Get a technique by id.
    *
    * @param {number} surveyId
    * @param {number} techniqueId
@@ -32,7 +32,7 @@ export class TechniqueService extends DBService {
   }
 
   /**
-   * Get techniques for a survey ID
+   * Get all technique records for a survey.
    *
    * @param {number} surveyId
    * @returns {*} {Promise<{id: number}[]>}
@@ -43,11 +43,10 @@ export class TechniqueService extends DBService {
   }
 
   /**
-   * Get count of techniques for a survey ID
+   * Get the count of all technique records for a survey.
    *
    * @param {number} surveyId
-   * @param
-   * @returns {*} {Promise<{id: number}[]>}
+   * @return {*}  {Promise<number>}
    * @memberof TechniqueService
    */
   async getTechniquesCountForSurveyId(surveyId: number): Promise<number> {
@@ -55,11 +54,11 @@ export class TechniqueService extends DBService {
   }
 
   /**
-   * Insert techniques for a survey
+   * Insert technique records.
    *
    * @param {number} surveyId
    * @param {ITechniquePostData[]} techniques
-   * @returns {Promise<(ITechniquePostData & { method_technique_id: number })[]>}
+   * @return {*}  {(Promise<(ITechniquePostData & { method_technique_id: number })[]>)}
    * @memberof TechniqueService
    */
   async insertTechniquesForSurvey(
@@ -75,7 +74,7 @@ export class TechniqueService extends DBService {
         survey_id: surveyId
       };
 
-      const { method_technique_id } = await this.techniqueRepository.insertTechnique(rowForInsert, surveyId);
+      const { method_technique_id } = await this.techniqueRepository.insertTechnique(surveyId, rowForInsert);
 
       return { ...technique, method_technique_id };
     });
@@ -84,32 +83,30 @@ export class TechniqueService extends DBService {
   }
 
   /**
-   * Update technique in a Survey
+   * Update a technique record.
    *
    * @param {number} surveyId
    * @param {number} techniqueId
    * @param {ITechniqueRowDataForInsert} technique
-   * @returns {*}
+   * @return {*}  {Promise<void>}
    * @memberof TechniqueService
    */
   async updateTechnique(surveyId: number, techniqueId: number, technique: ITechniqueRowDataForInsert): Promise<void> {
-    return this.techniqueRepository.updateTechnique(technique, techniqueId, surveyId);
+    return this.techniqueRepository.updateTechnique(surveyId, technique, techniqueId);
   }
 
   /**
-   * Delete a technique from a Survey
+   * Delete a technique record.
    *
    * @param {number} surveyId
    * @param {number} methodTechniqueId
-   * @returns {*} {Promise<{id: number}[]>}
+   * @return {*}  {Promise<number>}
    * @memberof TechniqueService
    */
   async deleteTechnique(surveyId: number, methodTechniqueId: number): Promise<number> {
     // Delete any attributes on the technique
     await this.attractantService.deleteAllTechniqueAttractants(surveyId, methodTechniqueId);
 
-    const technique = await this.techniqueRepository.deleteTechnique(surveyId, methodTechniqueId);
-
-    return technique;
+    return this.techniqueRepository.deleteTechnique(surveyId, methodTechniqueId);
   }
 }

@@ -233,8 +233,8 @@ export class TechniqueRepository extends BaseRepository {
    * @memberof TechniqueRepository
    */
   async insertTechnique(
-    techniqueObject: ITechniqueRowDataForInsert,
-    surveyId: number
+    surveyId: number,
+    techniqueObject: ITechniqueRowDataForInsert
   ): Promise<{ method_technique_id: number }> {
     defaultLog.debug({ label: 'insertTechnique', surveyId });
 
@@ -255,9 +255,9 @@ export class TechniqueRepository extends BaseRepository {
    * @memberof TechniqueRepository
    */
   async updateTechnique(
+    surveyId: number,
     techniqueObject: ITechniqueRowDataForInsert,
-    techniqueId: number,
-    surveyId: number
+    techniqueId: number
   ): Promise<void> {
     defaultLog.debug({ label: 'insertTechnique', surveyId });
 

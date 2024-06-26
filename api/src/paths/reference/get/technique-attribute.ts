@@ -6,7 +6,7 @@ import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/reference');
 
-export const GET: Operation = [findTechniqueAttributes()];
+export const GET: Operation = [getTechniqueAttributes()];
 
 GET.apiDoc = {
   description: 'Find technique attributes',
@@ -14,25 +14,27 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'query',
-      name: 'methodLookupIds',
+      name: 'methodLookupId',
       schema: {
-        type: 'string'
+        type: 'array',
+        items: {
+          type: 'string'
+        },
+        minItems: 1
       },
-      style: 'form',
-      explode: false,
-      required: true,
-      description: 'Comma-separated list of method lookup IDs to retrieve attributes for'
+      required: true
     }
   ],
   responses: {
     200: {
-      description: 'Attribute techniques for a method lookup id',
+      description: 'Attribute techniques for a method lookup id.',
       content: {
         'application/json': {
           schema: {
             type: 'array',
             items: {
               type: 'object',
+              additionalProperties: false,
               properties: {
                 qualitative_attributes: {
                   type: 'array',
@@ -57,7 +59,12 @@ GET.apiDoc = {
                         items: {
                           type: 'object',
                           additionalProperties: false,
-                          required: ['method_lookup_attribute_qualitative_option_id', 'name', 'description'],
+                          required: [
+                            'method_lookup_attribute_qualitative_option_id',
+                            'environment_qualitative_id',
+                            'name',
+                            'description'
+                          ],
                           properties: {
                             method_lookup_attribute_qualitative_option_id: {
                               type: 'string',
@@ -138,20 +145,16 @@ GET.apiDoc = {
 };
 
 /**
- * Find all techniques attributes for multiple method lookup ids
+ * Get all technique attributes for multiple method lookup ids.
  *
  * @returns {RequestHandler}
  */
-export function findTechniqueAttributes(): RequestHandler {
+export function getTechniqueAttributes(): RequestHandler {
   return async (req, res) => {
     const connection = getAPIUserDBConnection();
 
     try {
-      let methodLookupIds: number[] = [];
-
-      if (typeof req.query.methodLookupIds === 'string') {
-        methodLookupIds = req.query.methodLookupIds.split(',').map((id) => Number(id));
-      }
+      const methodLookupIds: number[] = (req.query.methodLookupIds as string[]).map(Number);
 
       await connection.open();
 
@@ -163,7 +166,7 @@ export function findTechniqueAttributes(): RequestHandler {
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'findTechniqueAttributes', message: 'error', error });
+      defaultLog.error({ label: 'getTechniqueAttributes', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

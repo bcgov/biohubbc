@@ -268,7 +268,7 @@ export function updateTechnique(): RequestHandler {
       const promises = [];
 
       // Update attractants
-      promises.push(attractantsService.updateTechniqueAttractants(techniqueId, attractants, surveyId));
+      promises.push(attractantsService.updateTechniqueAttractants(surveyId, techniqueId, attractants));
 
       // Update qualitative attributes. This step deletes attributes and inserts new attributes.
       promises.push(

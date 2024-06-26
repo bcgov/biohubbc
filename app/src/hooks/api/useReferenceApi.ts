@@ -28,7 +28,7 @@ const useReferenceApi = (axios: AxiosInstance) => {
    */
   const getTechniqueAttributes = async (methodLookupIds: number[]): Promise<IGetTechniqueAttributes[]> => {
     const { data } = await axios.get(
-      `/api/reference/search/technique-attribute?methodLookupIds=${methodLookupIds.join(',')}`
+      `/api/reference/get/technique-attribute?methodLookupIds=${methodLookupIds.join(',')}`
     );
 
     return data;
