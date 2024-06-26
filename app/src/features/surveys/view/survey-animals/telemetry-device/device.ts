@@ -13,23 +13,22 @@ export type ICreateAnimalDeployment = InferType<typeof CreateAnimalDeployment>;
 
 export type ITelemetryPointCollection = { points: FeatureCollection; tracks: FeatureCollection };
 
-const req = 'Required.';
 const mustBeNum = 'Must be a number';
 const mustBePos = 'Must be positive';
 const mustBeInt = 'Must be an integer';
 const maxInt = 2147483647;
 const numSchema = yup.number().typeError(mustBeNum).min(0, mustBePos);
-const intSchema = numSchema.max(maxInt, `Must be less than ${maxInt}`).integer(mustBeInt).required(req);
+const intSchema = numSchema.max(maxInt, `Must be less than ${maxInt}`).integer(mustBeInt).required();
 
 export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
   deployment_id: yup.string(),
-  attachment_start: yup.string().isValidDateString().required(req).typeError(req),
+  attachment_start: yup.string().isValidDateString().required().typeError('Type error'),
   attachment_end: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('attachment_start').nullable()
 });
 
 export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
   device_id: intSchema,
-  device_make: yup.string().required(req),
+  device_make: yup.string().required('Device make is required.'),
   frequency: numSchema.nullable(),
   frequency_unit: yup.string().nullable(),
   device_model: yup.string().nullable(),
@@ -51,15 +50,19 @@ export const AnimalDeploymentSchema = yup.object({}).shape({
 });
 
 export const CreateAnimalDeployment = yup.object({
-  critter_id: yup.string().uuid().required(req), // Critterbase critter_id
-  device_id: intSchema,
-  device_make: yup.string().required(req),
-  frequency: numSchema.optional(),
-  frequency_unit: yup.string().optional(),
-  device_model: yup.string().optional(),
-  attachment_start: yup.string().isValidDateString(),
+  critter_id: yup.string().uuid().required('You must select the animal that the device is associated to.'), // Critterbase critter_id
+  device_id: yup.string().required('You must enter device ID that identifies the device.'),
+  device_make: yup.string().required('You must enter the make of the device.'),
+  frequency: numSchema,
+  frequency_unit: yup.string(),
+  device_model: yup.string(),
+  attachment_start: yup.string().isValidDateString().required('You must select a start date for the deployment.'),
   attachment_end: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('attachment_start')
 });
+
+export interface ICreateAnimalDeploymentPostData extends Omit<ICreateAnimalDeployment, 'device_id'> {
+  device_id: number;
+}
 
 export interface IAnimalTelemetryDeviceFile extends IAnimalTelemetryDevice {
   attachmentFile?: File;

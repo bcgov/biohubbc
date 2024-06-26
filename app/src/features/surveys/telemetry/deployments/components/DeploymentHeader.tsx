@@ -7,13 +7,14 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useFormikContext } from 'formik';
-import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
-export interface ISamplingSiteHeaderProps {
+export interface IDeploymentHeaderProps {
   project_id: number;
+  project_name: string;
   survey_id: number;
   survey_name: string;
   is_submitting: boolean;
@@ -27,11 +28,11 @@ export interface ISamplingSiteHeaderProps {
  * @param {*} props
  * @return {*}
  */
-export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) => {
+export const DeploymentHeader: React.FC<IDeploymentHeaderProps> = (props) => {
   const history = useHistory();
-  const formikProps = useFormikContext<ICreateSamplingSiteRequest>();
+  const formikProps = useFormikContext<ICreateAnimalDeployment>();
 
-  const { project_id, survey_id, survey_name, is_submitting, title, breadcrumb } = props;
+  const { project_id, survey_id, survey_name, project_name, is_submitting, title, breadcrumb } = props;
 
   return (
     <>
@@ -50,6 +51,9 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
             sx={{
               typography: 'body2'
             }}>
+            <Link component={RouterLink} to={`/admin/projects/${project_id}`} underline="none">
+              {project_name}
+            </Link>
             <Link
               component={RouterLink}
               to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}
@@ -58,9 +62,9 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
             </Link>
             <Link
               component={RouterLink}
-              to={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}
+              to={`/admin/projects/${project_id}/surveys/${survey_id}/telemetry`}
               underline="none">
-              Manage Survey Observations
+              Manage Telemetry
             </Link>
             <Typography component="span" variant="body2" color="textSecondary">
               {breadcrumb}
@@ -101,4 +105,4 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
   );
 };
 
-export default SamplingSiteHeader;
+export default DeploymentHeader;

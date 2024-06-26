@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios';
 import { Device, IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 
-interface ICodeResponse {
+export interface ICodeResponse {
   code_header_title: string;
   code_header_name: string;
   id: number;

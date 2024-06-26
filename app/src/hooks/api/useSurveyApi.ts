@@ -5,7 +5,7 @@ import { ISurveyCritter } from 'contexts/animalPageContext';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import {
   IAnimalDeployment,
-  ICreateAnimalDeployment,
+  ICreateAnimalDeploymentPostData,
   IDeploymentTimespan,
   ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
@@ -426,7 +426,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     critterId: number, // Survey critter_id
-    body: ICreateAnimalDeployment // Critterbase critter_id
+    body: ICreateAnimalDeploymentPostData // Critterbase critter_id
   ): Promise<number> => {
     const { data } = await axios.post(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,

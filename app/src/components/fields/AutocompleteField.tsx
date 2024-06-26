@@ -1,9 +1,9 @@
-import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import Autocomplete, { AutocompleteRenderOptionState, createFilterOptions } from '@mui/material/Autocomplete';
 import CircularProgress from '@mui/material/CircularProgress';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
-import { SyntheticEvent } from 'react';
+import { HTMLAttributes, ReactNode, SyntheticEvent } from 'react';
 
 export interface IAutocompleteFieldOption<T extends string | number> {
   value: T;
@@ -23,6 +23,11 @@ export interface IAutocompleteField<T extends string | number> {
   optionFilter?: 'value' | 'label'; // used to filter existing/ set data for the AutocompleteField, defaults to value in getExistingValue function
   getOptionDisabled?: (option: IAutocompleteFieldOption<T>) => boolean;
   onChange?: (event: SyntheticEvent<Element, Event>, option: IAutocompleteFieldOption<T> | null) => void;
+  renderOption?: (
+    props: HTMLAttributes<HTMLLIElement>,
+    option: IAutocompleteFieldOption<T>,
+    state: AutocompleteRenderOptionState
+  ) => ReactNode;
 }
 
 // To be used when you want an autocomplete field with no freesolo allowed but only one option can be selected
@@ -64,8 +69,9 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
       getOptionDisabled={props.getOptionDisabled}
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
       disabled={props?.disabled || false}
-      sx={props.sx}
+      sx={{ flex: '1 1 auto', ...props.sx }}
       loading={props.loading}
+      renderOption={props.renderOption}
       onChange={(event, option) => {
         if (props.onChange) {
           props.onChange(event, option);

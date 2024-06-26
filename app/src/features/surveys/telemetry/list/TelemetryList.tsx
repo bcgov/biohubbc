@@ -104,7 +104,7 @@ const ManualTelemetryList = () => {
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<string[]>([]);
   const [selectedDeploymentId, setSelectedDeploymentId] = useState<string | undefined>();
 
-  console.log(selectedDeploymentId)
+  console.log(selectedDeploymentId);
 
   useOnMount(() => {
     surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
@@ -271,22 +271,22 @@ const ManualTelemetryList = () => {
         throw new Error('Invalid critter data');
       }
 
-      await biohubApi.survey.addDeployment(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        Number(data.survey_critter_id),
-        //Being explicit here for simplicity.
-        {
-          critter_id: critter.critter_id,
-          device_id: Number(data.device_id),
-          device_make: data.device_make ?? undefined,
-          frequency: data.frequency ?? undefined,
-          frequency_unit: data.frequency_unit ?? undefined,
-          device_model: data.device_model ?? undefined,
-          attachment_start: data.deployments?.[0].attachment_start,
-          attachment_end: data.deployments?.[0].attachment_end ?? undefined
-        }
-      );
+      // await biohubApi.survey.addDeployment(
+      //   surveyContext.projectId,
+      //   surveyContext.surveyId,
+      //   Number(data.survey_critter_id),
+      //   //Being explicit here for simplicity.
+      //   {
+      //     critter_id: critter.critter_id,
+      //     device_id: data.device_id,
+      //     device_make: data.device_make ?? undefined,
+      //     frequency: data.frequency ?? undefined,
+      //     frequency_unit: data.frequency_unit ?? undefined,
+      //     device_model: data.device_model ?? undefined,
+      //     attachment_start: data.deployments?.[0].attachment_start,
+      //     attachment_end: data.deployments?.[0].attachment_end ?? undefined
+      //   }
+      // );
       surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       // success snack bar
       dialogContext.setSnackbar({
@@ -564,7 +564,7 @@ const ManualTelemetryList = () => {
                     variant="contained"
                     color="primary"
                     component={RouterLink}
-                    to={'sampling'}
+                    to={'deployment/create'}
                     startIcon={<Icon path={mdiPlus} size={1} />}>
                     Add
                   </Button>

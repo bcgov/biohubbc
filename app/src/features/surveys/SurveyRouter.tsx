@@ -12,6 +12,7 @@ import EditSurveyPage from './edit/EditSurveyPage';
 import SamplingSitePage from './observations/sampling-sites/create/SamplingSitePage';
 import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
 import { SurveyObservationPage } from './observations/SurveyObservationPage';
+import DeploymentPage from './telemetry/deployments/create/DeploymentPage';
 import TelemetryPage from './telemetry/TelemetryPage';
 
 /**
@@ -73,6 +74,19 @@ const SurveyRouter: React.FC = () => {
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <TelemetryPage />
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
+      <RouteWithTitle
+        exact
+        path="/admin/projects/:id/surveys/:survey_id/deployment/create"
+        title={getTitle('Add Deployment')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <DeploymentPage />
           </DialogContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>

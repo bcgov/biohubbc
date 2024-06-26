@@ -121,7 +121,7 @@ const SamplingSitePage = () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={handleSubmit}>
-        <Box display="flex" flexDirection="column" height="100%">
+        <Box display="flex" flexDirection="column">
           <SamplingSiteHeader
             project_id={surveyContext.projectId}
             survey_id={surveyContext.surveyId}
