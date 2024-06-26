@@ -20,7 +20,7 @@ type Row = Record<string, any>;
  */
 export type CsvCritter = z.infer<ReturnType<typeof getRowValidationSchema>>;
 
-type RowValidationConfig = {
+export type CritterRowValidationConfig = {
   /**
    * Existing survey critter aliases
    *
@@ -44,7 +44,7 @@ type RowValidationConfig = {
  *
  * @returns {z.ZodObject} CsvCritter
  */
-export const getRowValidationSchema = (config: RowValidationConfig) => {
+export const getRowValidationSchema = (config: CritterRowValidationConfig) => {
   const validationSchema = {
     critter_id: z.string().uuid(),
     sex: z.enum(['Unknown', 'Male', 'Female']),
@@ -111,7 +111,7 @@ export const getCritterRowsToValidate = (rows: Row[], collectionUnitColumns: str
  */
 export const validateCritterRows = (
   rows: Partial<CsvCritter>[],
-  config: RowValidationConfig
+  config: CritterRowValidationConfig
 ): z.SafeParseReturnType<Partial<CsvCritter>[], CsvCritter[]> => {
   const critterRowValidationSchema = getRowValidationSchema(config);
 

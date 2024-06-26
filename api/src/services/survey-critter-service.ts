@@ -171,9 +171,7 @@ export class SurveyCritterService extends DBService {
     // Validate the standard columns in the CSV file
     // and insure the cell properties match the defined type
     if (!validateCsvFile(xlsxWorksheet, critterStandardColumnValidator)) {
-      throw new ApiGeneralError(
-        `Failed to import Critter CSV. Column validator failed. Expecting columns ${critterStandardColumnValidator.columnNames.toString()}`
-      );
+      throw new ApiGeneralError(`Column validator failed.`);
     }
 
     // Get the worksheet row objects

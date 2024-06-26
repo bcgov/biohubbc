@@ -4,7 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
+import { ImportCrittersService } from '../../../../../../services/import-critters-service';
 import { scanFileForVirus } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
@@ -138,10 +138,9 @@ export function importCsv(): RequestHandler {
         throw new HTTP400('Malicious content detected, import cancelled.');
       }
 
-      const surveyCritterService = new SurveyCritterService(connection);
+      const csvImporter = new ImportCrittersService(connection, parseMulterFile(rawFile));
 
-      // Import the critters into SIMS and Critterbase
-      const surveyCritterIds = await surveyCritterService.importCritterCsv(surveyId, parseMulterFile(rawFile));
+      const surveyCritterIds = await csvImporter.import(surveyId);
 
       defaultLog.info({ label: 'importCritterCsv', message: 'result', survey_critter_ids: surveyCritterIds });
 
