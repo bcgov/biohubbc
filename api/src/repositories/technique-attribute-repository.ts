@@ -408,8 +408,6 @@ export class TechniqueAttributeRepository extends BaseRepository {
   ): Promise<void> {
     defaultLog.debug({ label: 'insertQuantitativeAttributesForTechnique', methodTechniqueId });
 
-    console.log(methodTechniqueId);
-
     if (attributes.length > 0) {
       const queryBuilder = getKnex()
         .insert(

@@ -35,8 +35,6 @@ export const TechniqueAttributeForm = (props: ITechniqueAttributeFormProps) => {
 
   const { values, setFieldValue } = useFormikContext<TechniqueFormValues>();
 
-  console.log(attributeTypeDefinitions);
-
   // The type definition for the currently selected attribute, if one has been selected
   const selectedAttributeTypeDefinition = useMemo(
     () =>
@@ -67,9 +65,6 @@ export const TechniqueAttributeForm = (props: ITechniqueAttributeFormProps) => {
   const attributesOptionsForAutocomplete = useMemo(() => {
     return formatAttributesForAutoComplete(remainingAttributeTypeDefinitions);
   }, [remainingAttributeTypeDefinitions]);
-
-  console.log(values.attributes[index]);
-  console.log(selectedAttributeTypeDefinition);
 
   return (
     <Card

@@ -36,9 +36,6 @@ export const TechniqueAttributesForm = (props: ITechniqueAttributesFormProps) =>
 
   const { values } = useFormikContext<TechniqueFormValues>();
 
-  console.log(attributeTypeDefinitions);
-  console.log(values);
-
   return (
     <FieldArray
       name="attributes"
