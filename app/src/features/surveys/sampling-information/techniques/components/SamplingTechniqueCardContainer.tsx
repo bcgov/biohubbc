@@ -203,7 +203,7 @@ export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(prop
               }
             }}>
             <RouterLink
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/techniques/${selectedTechnique}/edit`}>
+              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/techniques/${selectedTechnique}/edit`}>
               <ListItemIcon>
                 <Icon path={mdiPencilOutline} size={1} />
               </ListItemIcon>

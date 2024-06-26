@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/http-error';
 import { techniqueDetailsSchema, techniqueViewSchema } from '../../../../../../../openapi/schemas/technique';
 import { ITechniquePostData } from '../../../../../../../repositories/technique-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
@@ -70,6 +69,7 @@ DELETE.apiDoc = {
         type: 'integer',
         minimum: 1
       },
+      description: 'An array of method technique IDs',
       required: true
     }
   ],
@@ -110,26 +110,18 @@ DELETE.apiDoc = {
  */
 export function deleteTechnique(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required param `surveyId`');
-    }
-
-    if (!req.params.techniqueId) {
-      throw new HTTP400('Missing required param `techniqueId`');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
-      const techniqueId = Number(req.params.techniqueId);
+      const methodTechniqueId = Number(req.params.techniqueId);
       const surveyId = Number(req.params.surveyId);
 
       const techniqueService = new TechniqueService(connection);
 
       // Delete the technique
-      const method_technique_id = await techniqueService.deleteTechnique(surveyId, techniqueId);
+      const method_technique_id = await techniqueService.deleteTechnique(surveyId, methodTechniqueId);
 
       await connection.commit();
 
@@ -197,6 +189,7 @@ PUT.apiDoc = {
         type: 'integer',
         minimum: 1
       },
+      description: 'An array of method technique IDs',
       required: true
     }
   ],
@@ -238,14 +231,6 @@ PUT.apiDoc = {
 
 export function updateTechnique(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required path param `surveyId`');
-    }
-
-    if (!req.params.techniqueId) {
-      throw new HTTP400('Missing required path param `techniqueId`');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -256,25 +241,25 @@ export function updateTechnique(): RequestHandler {
       const techniqueAttributeService = new TechniqueAttributeService(connection);
 
       const surveyId = Number(req.params.surveyId);
-      const techniqueId = Number(req.params.techniqueId);
+      const methodTechniqueId = Number(req.params.techniqueId);
 
       const technique: ITechniquePostData = req.body.technique;
 
       const { attributes, attractants, ...techniqueRow } = technique;
 
       // Update the technique table
-      await techniqueService.updateTechnique(surveyId, techniqueId, techniqueRow);
+      await techniqueService.updateTechnique(surveyId, methodTechniqueId, techniqueRow);
 
       const promises = [];
 
       // Update attractants
-      promises.push(attractantsService.updateTechniqueAttractants(surveyId, techniqueId, attractants));
+      promises.push(attractantsService.updateTechniqueAttractants(surveyId, methodTechniqueId, attractants));
 
       // Update qualitative attributes. This step deletes attributes and inserts new attributes.
       promises.push(
         techniqueAttributeService.updateDeleteQualitativeAttributesForTechnique(
           surveyId,
-          techniqueId,
+          methodTechniqueId,
           attributes.qualitative_attributes
         )
       );
@@ -283,7 +268,7 @@ export function updateTechnique(): RequestHandler {
       promises.push(
         techniqueAttributeService.updateDeleteQuantitativeAttributesForTechnique(
           surveyId,
-          techniqueId,
+          methodTechniqueId,
           attributes.quantitative_attributes
         )
       );
@@ -360,6 +345,7 @@ GET.apiDoc = {
         type: 'integer',
         minimum: 1
       },
+      description: 'An array of method technique IDs',
       required: true
     }
   ],
@@ -397,23 +383,16 @@ GET.apiDoc = {
  */
 export function getTechniqueById(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required param `surveyId`');
-    }
-    if (!req.params.techniqueId) {
-      throw new HTTP400('Missing required param `techniqueId`');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
       const surveyId = Number(req.params.surveyId);
-      const techniqueId = Number(req.params.techniqueId);
+      const methodTechniqueId = Number(req.params.techniqueId);
 
       const techniqueService = new TechniqueService(connection);
-      const sampleSite = await techniqueService.getTechniqueById(surveyId, techniqueId);
+      const sampleSite = await techniqueService.getTechniqueById(surveyId, methodTechniqueId);
 
       await connection.commit();
 

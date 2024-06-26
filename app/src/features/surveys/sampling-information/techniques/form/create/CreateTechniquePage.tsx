@@ -7,19 +7,27 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { CreateTechniqueI18N } from 'constants/i18n';
 import { FormikProps } from 'formik';
-import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { default as TechniqueForm, TechniqueFormValues } from '../components/TechniqueForm';
+
+const initialTechniqueFormValues: TechniqueFormValues = {
+  name: '',
+  description: '',
+  distance_threshold: null,
+  method_lookup_id: null,
+  attractants: [],
+  attributes: []
+};
 
 /**
  * Renders the body content of the create technique page.
@@ -31,11 +39,11 @@ export const CreateTechniquePage = () => {
   const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
-  const { surveyId, projectId } = surveyContext;
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
 
-  const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const formikRef = useRef<FormikProps<TechniqueFormValues>>(null);
@@ -44,55 +52,9 @@ export const CreateTechniquePage = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  const initialTechniqueValues: TechniqueFormValues = {
-    name: '',
-    description: '',
-    distance_threshold: null,
-    method_lookup_id: null,
-    attractants: [],
-    attributes: []
-  };
-
-  const handleCancel = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
-  };
-
-  const defaultCancelDialogProps = {
-    dialogTitle: CreateTechniqueI18N.cancelTitle,
-    dialogText: CreateTechniqueI18N.cancelText,
-    open: false,
-    onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onYes: () => {
-      dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectId}`);
-    }
-  };
-
-  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
-      dialogTitle: CreateTechniqueI18N.createErrorTitle,
-      dialogText: CreateTechniqueI18N.createErrorText,
-      onClose: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      onOk: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      ...textDialogProps,
-      open: true
-    });
-  };
-
   const handleSubmit = async (values: TechniqueFormValues) => {
     try {
       setIsSubmitting(true);
-      setEnableCancelCheck(false);
 
       // Parse the form data into the request format
       const createTechniqueRequestData: ICreateTechniqueRequest = {
@@ -125,52 +87,26 @@ export const CreateTechniquePage = () => {
       // create complete, navigate back to observations page
       history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
     } catch (error) {
-      showCreateErrorDialog({
+      dialogContext.setErrorDialog({
         dialogTitle: CreateTechniqueI18N.createErrorTitle,
         dialogText: CreateTechniqueI18N.createErrorText,
         dialogError: (error as APIError).message,
-        dialogErrorDetails: (error as APIError)?.errors
+        dialogErrorDetails: (error as APIError)?.errors,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        open: true
       });
       setIsSubmitting(false);
     }
   };
 
-  /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location) => {
-    if (!dialogContext.yesNoDialogProps.open && !isSubmitting) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        open: true,
-        dialogTitle: CreateTechniqueI18N.cancelTitle,
-        dialogText: CreateTechniqueI18N.cancelText,
-        onClose: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onNo: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        }
-      });
-      return false;
-    }
-
-    // If the cancel dialog is already open and another location change action is triggered: allow it
-    return true;
-  };
-
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={true} message={locationChangeInterceptor} />
       <PageHeader
         title="Create New Technique"
         breadCrumbJSX={
@@ -182,25 +118,25 @@ export const CreateTechniquePage = () => {
             }}>
             <Link
               component={RouterLink}
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/details`}
+              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
               underline="none">
               {projectContext.projectDataLoader.data?.projectData.project.project_name}
             </Link>
             <Link
               component={RouterLink}
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/details`}
+              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
               underline="none">
               {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
             </Link>
             <Link
               component={RouterLink}
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/observations`}
+              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`}
               underline="none">
               Observations
             </Link>
             <Link
               component={RouterLink}
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/sampling`}
+              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`}
               underline="none">
               Manage Sampling Information
             </Link>
@@ -218,7 +154,13 @@ export const CreateTechniquePage = () => {
               onClick={() => formikRef.current?.submitForm()}>
               Save and Exit
             </LoadingButton>
-            <Button disabled={isSubmitting} color="primary" variant="outlined" onClick={handleCancel}>
+            <Button
+              disabled={isSubmitting}
+              color="primary"
+              variant="outlined"
+              onClick={() =>
+                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`)
+              }>
               Cancel
             </Button>
           </Stack>
@@ -228,7 +170,7 @@ export const CreateTechniquePage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <TechniqueForm
-            initialData={initialTechniqueValues}
+            initialData={initialTechniqueFormValues}
             handleSubmit={(formikData) => handleSubmit(formikData as TechniqueFormValues)}
             formikRef={formikRef}
           />

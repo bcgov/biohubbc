@@ -11,7 +11,7 @@ export interface SamplingSiteManageHeaderProps {
   survey_name: string;
 }
 
-export const SamplingSiteManageHeader: React.FC<SamplingSiteManageHeaderProps> = (props) => {
+export const SamplingSiteManageHeader = (props: SamplingSiteManageHeaderProps) => {
   const { project_id, project_name, survey_id, survey_name } = props;
   return (
     <PageHeader

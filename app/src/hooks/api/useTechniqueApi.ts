@@ -25,11 +25,15 @@ const useTechniqueApi = (axios: AxiosInstance) => {
    * Get Technique by ID
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {number} techniqueId
+   * @param {number} methodTechniqueId
    * @return {*}  {Promise<void>}
    */
-  const getTechniqueById = async (projectId: number, surveyId: number, techniqueId: number): Promise<IGetTechnique> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/techniques/${techniqueId}`);
+  const getTechniqueById = async (
+    projectId: number,
+    surveyId: number,
+    methodTechniqueId: number
+  ): Promise<IGetTechnique> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/technique/${methodTechniqueId}`);
     return data;
   };
 
@@ -64,10 +68,10 @@ const useTechniqueApi = (axios: AxiosInstance) => {
   const updateTechnique = async (
     projectId: number,
     surveyId: number,
-    techniqueId: number,
+    methodTechniqueId: number,
     technique: ICreateTechniqueRequest
   ): Promise<IGetTechnique> => {
-    const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/techniques/${techniqueId}`, {
+    const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/technique/${methodTechniqueId}`, {
       technique
     });
 
@@ -83,7 +87,7 @@ const useTechniqueApi = (axios: AxiosInstance) => {
    * @return {*}
    */
   const deleteTechnique = async (projectId: number, surveyId: number, methodTechniqueId: number): Promise<void> => {
-    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/techniques/${methodTechniqueId}`);
+    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/technique/${methodTechniqueId}`);
 
     return data;
   };

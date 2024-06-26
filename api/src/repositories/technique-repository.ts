@@ -170,14 +170,17 @@ export class TechniqueRepository extends BaseRepository {
    * Get techniques for a given survey Id
    *
    * @param {number} surveyId
-   * @param {number} techniqueId
+   * @param {number} methodTechniqueId
    * @returns {*} {Promise<{id: number}[]>}
    * @memberof TechniqueRepository
    */
-  async getTechniqueById(surveyId: number, techniqueId: number): Promise<IGetTechnique> {
-    defaultLog.debug({ label: 'getTechniqueById', techniqueId });
+  async getTechniqueById(surveyId: number, methodTechniqueId: number): Promise<IGetTechnique> {
+    defaultLog.debug({ label: 'getTechniqueById', methodTechniqueId });
 
-    const queryBuilder = this._generateGetTechniqueQuery(surveyId).andWhere('mt.method_technique_id', techniqueId);
+    const queryBuilder = this._generateGetTechniqueQuery(surveyId).andWhere(
+      'mt.method_technique_id',
+      methodTechniqueId
+    );
 
     const response = await this.connection.knex(queryBuilder, TechniqueObject);
 
@@ -249,7 +252,7 @@ export class TechniqueRepository extends BaseRepository {
    * Update technique in a survey
    *
    * @param {number} surveyId
-   * @param {number} techniqueId
+   * @param {number} methodTechniqueId
    * @param {number} techniqueObject
    * @returns {*} {Promise<{id: number}[]>}
    * @memberof TechniqueRepository
@@ -257,14 +260,14 @@ export class TechniqueRepository extends BaseRepository {
   async updateTechnique(
     surveyId: number,
     techniqueObject: ITechniqueRowDataForInsert,
-    techniqueId: number
+    methodTechniqueId: number
   ): Promise<void> {
     defaultLog.debug({ label: 'insertTechnique', surveyId });
 
     const queryBuilder = getKnex()
       .table('method_technique')
       .update(techniqueObject)
-      .where('method_technique_id', techniqueId)
+      .where('method_technique_id', methodTechniqueId)
       .andWhere('survey_id', surveyId);
 
     await this.connection.knex(queryBuilder, z.object({ method_technique_id: z.number() }));

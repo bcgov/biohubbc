@@ -15,12 +15,12 @@ export class AttractantService extends DBService {
    * Get all attractants for a technique.
    *
    * @param {number} surveyId
-   * @param {number} techniqueId
+   * @param {number} methodTechniqueId
    * @return {*}  {Promise<AttractantRecord[]>}
    * @memberof AttractantService
    */
-  async getAttractantsByTechniqueId(surveyId: number, techniqueId: number): Promise<AttractantRecord[]> {
-    return this.attractantRepository.getAttractantsByTechniqueId(surveyId, techniqueId);
+  async getAttractantsByTechniqueId(surveyId: number, methodTechniqueId: number): Promise<AttractantRecord[]> {
+    return this.attractantRepository.getAttractantsByTechniqueId(surveyId, methodTechniqueId);
   }
 
   /**
@@ -39,18 +39,21 @@ export class AttractantService extends DBService {
    * Update attractant records for a technique.
    *
    * @param {number} surveyId
-   * @param {number} techniqueId
+   * @param {number} methodTechniqueId
    * @param {IAttractantPostData[]} attractants
    * @return {*}  {Promise<void>}
    * @memberof AttractantService
    */
   async updateTechniqueAttractants(
     surveyId: number,
-    techniqueId: number,
+    methodTechniqueId: number,
     attractants: IAttractantPostData[]
   ): Promise<void> {
     // Get existing attractants associated with the technique
-    const existingAttractants = await this.attractantRepository.getAttractantsByTechniqueId(techniqueId, surveyId);
+    const existingAttractants = await this.attractantRepository.getAttractantsByTechniqueId(
+      methodTechniqueId,
+      surveyId
+    );
 
     // Find existing attractants to delete
     const attractantsToDelete = existingAttractants.filter(
@@ -60,7 +63,7 @@ export class AttractantService extends DBService {
     // Delete existing attractants that are not in the new list
     if (attractantsToDelete.length > 0) {
       const attractantIdsToDelete = attractantsToDelete.map((attractant) => attractant.attractant_lookup_id);
-      await this.attractantRepository.deleteTechniqueAttractants(surveyId, techniqueId, attractantIdsToDelete);
+      await this.attractantRepository.deleteTechniqueAttractants(surveyId, methodTechniqueId, attractantIdsToDelete);
     }
 
     // If the incoming data does not yet exist in the DB, insert the record
@@ -70,7 +73,7 @@ export class AttractantService extends DBService {
     );
 
     if (attractantsForInsert.length > 0) {
-      await this.attractantRepository.insertAttractantsForTechnique(techniqueId, attractantsForInsert);
+      await this.attractantRepository.insertAttractantsForTechnique(methodTechniqueId, attractantsForInsert);
     }
 
     // If the incoming data already exists in the DB, do nothing

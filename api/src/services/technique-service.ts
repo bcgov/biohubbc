@@ -23,12 +23,12 @@ export class TechniqueService extends DBService {
    * Get a technique by id.
    *
    * @param {number} surveyId
-   * @param {number} techniqueId
+   * @param {number} methodTechniqueId
    * @returns {*} {Promise<{id: number}[]>}
    * @memberof TechniqueService
    */
-  async getTechniqueById(surveyId: number, techniqueId: number): Promise<IGetTechnique> {
-    return this.techniqueRepository.getTechniqueById(surveyId, techniqueId);
+  async getTechniqueById(surveyId: number, methodTechniqueId: number): Promise<IGetTechnique> {
+    return this.techniqueRepository.getTechniqueById(surveyId, methodTechniqueId);
   }
 
   /**
@@ -86,13 +86,17 @@ export class TechniqueService extends DBService {
    * Update a technique record.
    *
    * @param {number} surveyId
-   * @param {number} techniqueId
+   * @param {number} methodTechniqueId
    * @param {ITechniqueRowDataForInsert} technique
    * @return {*}  {Promise<void>}
    * @memberof TechniqueService
    */
-  async updateTechnique(surveyId: number, techniqueId: number, technique: ITechniqueRowDataForInsert): Promise<void> {
-    return this.techniqueRepository.updateTechnique(surveyId, technique, techniqueId);
+  async updateTechnique(
+    surveyId: number,
+    methodTechniqueId: number,
+    technique: ITechniqueRowDataForInsert
+  ): Promise<void> {
+    return this.techniqueRepository.updateTechnique(surveyId, technique, methodTechniqueId);
   }
 
   /**

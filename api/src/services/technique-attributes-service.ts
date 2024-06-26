@@ -31,67 +31,67 @@ export class TechniqueAttributeService extends DBService {
   /**
    * Get quantitative and qualitative attributes for a technique id.
    *
-   * @param {number} techniqueId
+   * @param {number} methodTechniqueId
    * @return {*}  {Promise<ITechniqueAttributesObject>}
    * @memberof TechniqueAttributeService
    */
-  async getAttributesByTechniqueId(techniqueId: number): Promise<ITechniqueAttributesObject> {
-    return this.techniqueAttributeRepository.getAttributesByTechniqueId(techniqueId);
+  async getAttributesByTechniqueId(methodTechniqueId: number): Promise<ITechniqueAttributesObject> {
+    return this.techniqueAttributeRepository.getAttributesByTechniqueId(methodTechniqueId);
   }
 
   /**
    * Insert quantitative attributes for a technique.
    *
-   * @param {number} techniqueId
+   * @param {number} methodTechniqueId
    * @param {IQuantitativeAttributePostData[]} attributes
    * @return {*}  {Promise<void>}
    * @memberof TechniqueAttributeService
    */
   async insertQuantitativeAttributesForTechnique(
-    techniqueId: number,
+    methodTechniqueId: number,
     attributes: IQuantitativeAttributePostData[]
   ): Promise<void> {
     // Validate that the method lookup id can have the incoming attributes
-    this._validAttributesForTechnique(techniqueId, attributes);
+    this._validAttributesForTechnique(methodTechniqueId, attributes);
 
-    return this.techniqueAttributeRepository.insertQuantitativeAttributesForTechnique(techniqueId, attributes);
+    return this.techniqueAttributeRepository.insertQuantitativeAttributesForTechnique(methodTechniqueId, attributes);
   }
 
   /**
    * Insert qualitative attributes for a technique.
    *
-   * @param {number} techniqueId
+   * @param {number} methodTechniqueId
    * @param {IQualitativeAttributePostData[]} attributes
    * @return {*}  {Promise<void>}
    * @memberof TechniqueAttributeService
    */
   async insertQualitativeAttributesForTechnique(
-    techniqueId: number,
+    methodTechniqueId: number,
     attributes: IQualitativeAttributePostData[]
   ): Promise<void> {
     // Validate that the method lookup id can have the incoming attributes
-    this._validAttributesForTechnique(techniqueId, attributes);
+    this._validAttributesForTechnique(methodTechniqueId, attributes);
 
-    return this.techniqueAttributeRepository.insertQualitativeAttributesForTechnique(techniqueId, attributes);
+    return this.techniqueAttributeRepository.insertQualitativeAttributesForTechnique(methodTechniqueId, attributes);
   }
 
   /**
    * Delete quantitative attributes for a technique.
    *
    * @param {number} surveyId
-   * @param {number} techniqueId
+   * @param {number} methodTechniqueId
    * @param {number[]} methodLookupAttributeQuantitativeIds
    * @return {*}  {Promise<void>}
    * @memberof TechniqueAttributeService
    */
   async deleteQuantitativeAttributesForTechnique(
     surveyId: number,
-    techniqueId: number,
+    methodTechniqueId: number,
     methodLookupAttributeQuantitativeIds: number[]
   ): Promise<void> {
     return this.techniqueAttributeRepository.deleteQuantitativeAttributesForTechnique(
       surveyId,
-      techniqueId,
+      methodTechniqueId,
       methodLookupAttributeQuantitativeIds
     );
   }
@@ -100,19 +100,19 @@ export class TechniqueAttributeService extends DBService {
    * Delete qualitative attributes for a technique.
    *
    * @param {number} surveyId
-   * @param {number} techniqueId
+   * @param {number} methodTechniqueId
    * @param {number[]} methodLookupAttributeQualitativeIds
    * @return {*}  {Promise<void>}
    * @memberof TechniqueAttributeService
    */
   async deleteQualitativeAttributesForTechnique(
     surveyId: number,
-    techniqueId: number,
+    methodTechniqueId: number,
     methodLookupAttributeQualitativeIds: number[]
   ): Promise<void> {
     return this.techniqueAttributeRepository.deleteQualitativeAttributesForTechnique(
       surveyId,
-      techniqueId,
+      methodTechniqueId,
       methodLookupAttributeQualitativeIds
     );
   }
@@ -121,21 +121,21 @@ export class TechniqueAttributeService extends DBService {
    * Update quantitative attributes for a technique.
    *
    * @param {number} surveyId
-   * @param {number} techniqueId
+   * @param {number} methodTechniqueId
    * @param {IQuantitativeAttributePostData[]} attributes
    * @return {*}  {Promise<void>}
    * @memberof TechniqueAttributeService
    */
   async updateDeleteQuantitativeAttributesForTechnique(
     surveyId: number,
-    techniqueId: number,
+    methodTechniqueId: number,
     attributes: IQuantitativeAttributePostData[]
   ): Promise<void> {
     // Validate that the method lookup id can have the incoming attributes
-    this._validAttributesForTechnique(techniqueId, attributes);
+    this._validAttributesForTechnique(methodTechniqueId, attributes);
 
     // Get existing attributes associated with the technique
-    const techniqueAttributes = await this.techniqueAttributeRepository.getAttributesByTechniqueId(techniqueId);
+    const techniqueAttributes = await this.techniqueAttributeRepository.getAttributesByTechniqueId(methodTechniqueId);
     const existingAttributes = techniqueAttributes.quantitative_attributes;
 
     // Find existing attributes to delete
@@ -155,7 +155,7 @@ export class TechniqueAttributeService extends DBService {
 
       await this.techniqueAttributeRepository.deleteQuantitativeAttributesForTechnique(
         surveyId,
-        techniqueId,
+        methodTechniqueId,
         attributeIdsToDelete
       );
     }
@@ -165,7 +165,7 @@ export class TechniqueAttributeService extends DBService {
 
     if (attributesForInsert.length > 0) {
       await this.techniqueAttributeRepository.insertQuantitativeAttributesForTechnique(
-        techniqueId,
+        methodTechniqueId,
         attributesForInsert
       );
     }
@@ -178,7 +178,7 @@ export class TechniqueAttributeService extends DBService {
     if (attributesForUpdate.length > 0) {
       promises.push(
         attributesForUpdate.map((attribute) =>
-          this.techniqueAttributeRepository.updateQuantitativeAttributeForTechnique(techniqueId, attribute)
+          this.techniqueAttributeRepository.updateQuantitativeAttributeForTechnique(methodTechniqueId, attribute)
         )
       );
     }
@@ -190,21 +190,21 @@ export class TechniqueAttributeService extends DBService {
    * Update qualitative attributes for a technique.
    *
    * @param {number} surveyId
-   * @param {number} techniqueId
+   * @param {number} methodTechniqueId
    * @param {IQualitativeAttributePostData[]} attributes
    * @return {*}  {Promise<void>}
    * @memberof TechniqueAttributeService
    */
   async updateDeleteQualitativeAttributesForTechnique(
     surveyId: number,
-    techniqueId: number,
+    methodTechniqueId: number,
     attributes: IQualitativeAttributePostData[]
   ): Promise<void> {
     // Validate that the method lookup id can have the incoming attributes
-    this._validAttributesForTechnique(techniqueId, attributes);
+    this._validAttributesForTechnique(methodTechniqueId, attributes);
 
     // Get existing attributes associated with the technique
-    const techniqueAttributes = await this.techniqueAttributeRepository.getAttributesByTechniqueId(techniqueId);
+    const techniqueAttributes = await this.techniqueAttributeRepository.getAttributesByTechniqueId(methodTechniqueId);
     const existingAttributes = techniqueAttributes.qualitative_attributes;
 
     // Find existing attributes to delete
@@ -224,7 +224,7 @@ export class TechniqueAttributeService extends DBService {
 
       await this.techniqueAttributeRepository.deleteQualitativeAttributesForTechnique(
         surveyId,
-        techniqueId,
+        methodTechniqueId,
         attributeIdsToDelete
       );
     }
@@ -233,7 +233,10 @@ export class TechniqueAttributeService extends DBService {
     const attributesForInsert = attributes.filter((attribute) => !attribute.method_technique_attribute_qualitative_id);
 
     if (attributesForInsert.length > 0) {
-      await this.techniqueAttributeRepository.insertQualitativeAttributesForTechnique(techniqueId, attributesForInsert);
+      await this.techniqueAttributeRepository.insertQualitativeAttributesForTechnique(
+        methodTechniqueId,
+        attributesForInsert
+      );
     }
 
     // If the incoming data does have method_technique_attractant_id, record is for update
@@ -244,7 +247,7 @@ export class TechniqueAttributeService extends DBService {
     if (attributesForUpdate.length > 0) {
       promises.push(
         attributesForUpdate.map((attribute) =>
-          this.techniqueAttributeRepository.updateQualitativeAttributeForTechnique(techniqueId, attribute)
+          this.techniqueAttributeRepository.updateQualitativeAttributeForTechnique(methodTechniqueId, attribute)
         )
       );
     }
@@ -255,17 +258,19 @@ export class TechniqueAttributeService extends DBService {
   /**
    * Validate that the technique can have all incoming attributes. Throws an error if any attributes are invalid.
    *
-   * @param {number} techniqueId
+   * @param {number} methodTechniqueId
    * @param {((IQualitativeAttributePostData | IQuantitativeAttributePostData)[])} attributes
    * @return {*}  {Promise<void>}
    * @memberof TechniqueAttributeService
    */
   async _validAttributesForTechnique(
-    techniqueId: number,
+    methodTechniqueId: number,
     attributes: (IQualitativeAttributePostData | IQuantitativeAttributePostData)[]
   ): Promise<void> {
     // Validate that the method lookup id can have the incoming attributes
-    const allowedAttributes = await this.techniqueAttributeRepository.getAttributeDefinitionsByTechniqueId(techniqueId);
+    const allowedAttributes = await this.techniqueAttributeRepository.getAttributeDefinitionsByTechniqueId(
+      methodTechniqueId
+    );
 
     const invalidAttributes = attributes.filter(
       (attribute) =>

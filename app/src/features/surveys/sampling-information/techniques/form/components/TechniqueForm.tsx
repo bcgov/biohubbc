@@ -103,35 +103,29 @@ const TechniqueForm = (props: ITechniqueFormProps) => {
       validateOnChange={false}
       onSubmit={handleSubmit}>
       <Stack gap={5}>
-        <HorizontalSplitFormComponent
-          title="General Information"
-          summary="Enter information about the technique"
-          component={
-            <TechniqueGeneralInformationForm attributeTypeDefinitionsDataLoader={attributeTypeDefinitionDataLoader} />
-          }></HorizontalSplitFormComponent>
+        <HorizontalSplitFormComponent title="General Information" summary="Enter information about the technique">
+          <TechniqueGeneralInformationForm attributeTypeDefinitionsDataLoader={attributeTypeDefinitionDataLoader} />
+        </HorizontalSplitFormComponent>
 
         <Divider />
 
-        <HorizontalSplitFormComponent
-          title="Details"
-          summary="Enter additional information about the technique"
-          component={
-            <TechniqueAttributesForm attributeTypeDefinitions={attributeTypeDefinitions} />
-          }></HorizontalSplitFormComponent>
+        <HorizontalSplitFormComponent title="Details" summary="Enter additional information about the technique">
+          <TechniqueAttributesForm attributeTypeDefinitions={attributeTypeDefinitions} />
+        </HorizontalSplitFormComponent>
 
         <Divider />
 
         <HorizontalSplitFormComponent
           title="Attractants"
-          summary="Enter any attractants used to lure species during the technique"
-          component={<TechniqueAttractantsForm />}></HorizontalSplitFormComponent>
+          summary="Enter any attractants used to lure species during the technique">
+          <TechniqueAttractantsForm />
+        </HorizontalSplitFormComponent>
 
         <Divider />
 
-        <HorizontalSplitFormComponent
-          title="Methodology"
-          summary="Enter details about the technique"
-          component={<TechniqueDetailsForm />}></HorizontalSplitFormComponent>
+        <HorizontalSplitFormComponent title="Methodology" summary="Enter details about the technique">
+          <TechniqueDetailsForm />
+        </HorizontalSplitFormComponent>
 
         <Divider />
       </Stack>

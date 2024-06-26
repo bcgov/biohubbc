@@ -7,16 +7,15 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { EditTechniqueI18N } from 'constants/i18n';
 import { FormikProps } from 'formik';
-import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { useRef, useState } from 'react';
+import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { v4 } from 'uuid';
@@ -30,28 +29,31 @@ import TechniqueForm, { TechniqueFormValues } from '../components/TechniqueForm'
 const EditTechniquePage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
+
   const urlParams: Record<string, string | number | undefined> = useParams();
-  const techniqueId = Number(urlParams['method_technique_id']);
+  const methodTechniqueId = Number(urlParams['method_technique_id']);
 
   const surveyContext = useSurveyContext();
-  const { surveyId, projectId } = surveyContext;
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
 
-  const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
-  const formikRef = useRef<FormikProps<TechniqueFormValues>>(null);
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const formikRef = useRef<FormikProps<TechniqueFormValues>>(null);
+
   const techniqueDataLoader = useDataLoader(() =>
-    biohubApi.technique.getTechniqueById(projectId, surveyId, techniqueId)
+    biohubApi.technique.getTechniqueById(surveyContext.projectId, surveyContext.surveyId, methodTechniqueId)
   );
+
+  useEffect(() => {
+    techniqueDataLoader.load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
-  }
-
-  if (!techniqueDataLoader.data) {
-    techniqueDataLoader.load();
   }
 
   const technique = techniqueDataLoader.data;
@@ -84,46 +86,9 @@ const EditTechniquePage = () => {
     ]
   };
 
-  const handleCancel = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`);
-  };
-
-  const defaultCancelDialogProps = {
-    dialogTitle: EditTechniqueI18N.cancelTitle,
-    dialogText: EditTechniqueI18N.cancelText,
-    open: false,
-    onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onYes: () => {
-      dialogContext.setYesNoDialog({ open: false });
-      history.push(`/admin/projects/${projectId}`);
-    }
-  };
-
-  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
-      dialogTitle: EditTechniqueI18N.createErrorTitle,
-      dialogText: EditTechniqueI18N.createErrorText,
-      onClose: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      onOk: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      ...textDialogProps,
-      open: true
-    });
-  };
-
   const handleSubmit = async (values: TechniqueFormValues) => {
     try {
       setIsSubmitting(true);
-      setEnableCancelCheck(false);
 
       const { attributes, ...technique } = values;
 
@@ -150,7 +115,7 @@ const EditTechniquePage = () => {
       await biohubApi.technique.updateTechnique(
         surveyContext.projectId,
         surveyContext.surveyId,
-        techniqueId,
+        methodTechniqueId,
         formattedTechniqueObject
       );
 
@@ -160,52 +125,27 @@ const EditTechniquePage = () => {
       // create complete, navigate back to observations page
       history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
     } catch (error) {
-      showCreateErrorDialog({
+      dialogContext.setErrorDialog({
         dialogTitle: EditTechniqueI18N.createErrorTitle,
         dialogText: EditTechniqueI18N.createErrorText,
         dialogError: (error as APIError).message,
-        dialogErrorDetails: (error as APIError)?.errors
+        dialogErrorDetails: (error as APIError)?.errors,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        open: true
       });
+
       setIsSubmitting(false);
     }
   };
 
-  /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location) => {
-    if (!dialogContext.yesNoDialogProps.open && !isSubmitting) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        open: true,
-        dialogTitle: EditTechniqueI18N.cancelTitle,
-        dialogText: EditTechniqueI18N.cancelText,
-        onClose: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onNo: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        }
-      });
-      return false;
-    }
-
-    // If the cancel dialog is already open and another location change action is triggered: allow it
-    return true;
-  };
-
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={true} message={locationChangeInterceptor} />
       <PageHeader
         title="Edit Technique"
         breadCrumbJSX={
@@ -217,25 +157,25 @@ const EditTechniquePage = () => {
             }}>
             <Link
               component={RouterLink}
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/details`}
+              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
               underline="none">
               {projectContext.projectDataLoader.data?.projectData.project.project_name}
             </Link>
             <Link
               component={RouterLink}
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/details`}
+              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
               underline="none">
               {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
             </Link>
             <Link
               component={RouterLink}
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/observations`}
+              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`}
               underline="none">
               Observations
             </Link>
             <Link
               component={RouterLink}
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/sampling`}
+              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`}
               underline="none">
               Manage Sampling Information
             </Link>
@@ -253,7 +193,13 @@ const EditTechniquePage = () => {
               onClick={() => formikRef.current?.submitForm()}>
               Save and Exit
             </LoadingButton>
-            <Button disabled={isSubmitting} color="primary" variant="outlined" onClick={handleCancel}>
+            <Button
+              disabled={isSubmitting}
+              color="primary"
+              variant="outlined"
+              onClick={() =>
+                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`)
+              }>
               Cancel
             </Button>
           </Stack>
