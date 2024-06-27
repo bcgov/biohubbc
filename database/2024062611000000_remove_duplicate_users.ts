@@ -120,7 +120,7 @@ export async function up(knex: Knex): Promise<void> {
         SELECT system_user_id
         FROM system_user
         WHERE user_identity_source_id = dedup.user_identity_source_id
-        AND LOWER(user_identifier) = LOWER(dedup.user_identifier)
+        AND user_identifier = dedup.user_identifier
     )
     AND pp.system_user_id NOT IN (
         SELECT deduplicated_system_user_id
@@ -142,7 +142,7 @@ export async function up(knex: Knex): Promise<void> {
         SELECT system_user_id
         FROM system_user
         WHERE user_identity_source_id = dedup.user_identity_source_id
-        AND LOWER(user_identifier) = LOWER(dedup.user_identifierLOWER(
+        AND user_identifier = dedup.user_identifier
     )
     AND pp.system_user_id NOT IN (
         SELECT deduplicated_system_user_id
@@ -164,7 +164,7 @@ export async function up(knex: Knex): Promise<void> {
         SELECT system_user_id
         FROM system_user
         WHERE user_identity_source_id = dedup.user_identity_source_id
-        AND LOWER(user_identifier) = LOWER(dedup.user_identifier)
+        AND user_identifier = dedup.user_identifier
     )
     AND pp.system_user_id NOT IN (
         SELECT deduplicated_system_user_id
@@ -186,7 +186,7 @@ export async function up(knex: Knex): Promise<void> {
         SELECT system_user_id
         FROM system_user
         WHERE user_identity_source_id = dedup.user_identity_source_id
-        AND LOWER(user_identifier) = LOWER(dedup.user_identifier)
+        AND user_identifier = dedup.user_identifier
     )
     AND pp.system_user_id NOT IN (
         SELECT deduplicated_system_user_id
@@ -233,7 +233,7 @@ export async function up(knex: Knex): Promise<void> {
     DROP VIEW IF EXISTS biohub_dapi_v1.administrative_activity;
 
     -- Add unique constraint to prevent duplicate users and access requests
-    ALTER TABLE biohub.system_user ADD CONSTRAINT system_user_uk2 UNIQUE (LOWER(user_identifier), user_identity_source_id, record_end_date);
+    ALTER TABLE biohub.system_user ADD CONSTRAINT system_user_uk2 UNIQUE (user_identifier, user_identity_source_id, record_end_date);
     ALTER TABLE biohub.administrative_activity ADD CONSTRAINT administrative_activity_uk1 UNIQUE (reported_system_user_id, administrative_activity_type_id);
 
     -- Recreate the view
