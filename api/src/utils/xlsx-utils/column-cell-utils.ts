@@ -66,7 +66,7 @@ export const critterStandardColumnValidator: IXLSXCSVValidator = {
 };
 
 /**
- * Get column validator specification. Useful for error handling / logging.
+ * Get column validator specification in a user readable format. Useful for error handling / logging.
  *
  * @param {IXLSXCSVValidator} columnValidator - Standard column validator
  * @returns {*}

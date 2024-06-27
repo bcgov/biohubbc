@@ -1,5 +1,6 @@
 import { expect } from 'chai';
-import { generateCellValueGetter } from './column-cell-utils';
+import { generateCellValueGetter, getColumnValidatorSpecification } from './column-cell-utils';
+import { IXLSXCSVValidator } from './worksheet-utils';
 
 describe('column-validators', () => {
   describe('generateCellValueGetter', () => {
@@ -13,6 +14,50 @@ describe('column-validators', () => {
       const getValue = generateCellValueGetter(['test', 'property']);
       const object = { bad: true };
       expect(getValue(object)).to.be.undefined;
+    });
+  });
+
+  describe.only('getColumnValidatorSpecification', () => {
+    it('should return specification format', () => {
+      const columnValidator: IXLSXCSVValidator = {
+        columnNames: ['TEST', 'COLUMN'],
+        columnTypes: ['number', 'string'],
+        columnAliases: {
+          TEST: ['ALSO TEST'],
+          COLUMN: ['ALSO COLUMN']
+        }
+      };
+
+      const spec = getColumnValidatorSpecification(columnValidator);
+
+      expect(spec).to.be.deep.equal([
+        {
+          columnName: 'TEST',
+          columnType: 'number',
+          columnAliases: ['ALSO TEST']
+        },
+        {
+          columnName: 'COLUMN',
+          columnType: 'string',
+          columnAliases: ['ALSO COLUMN']
+        }
+      ]);
+    });
+
+    it('should return specification format without aliases if not defined', () => {
+      const columnValidator: IXLSXCSVValidator = {
+        columnNames: ['TEST'],
+        columnTypes: ['number']
+      };
+
+      const spec = getColumnValidatorSpecification(columnValidator);
+
+      expect(spec).to.be.deep.equal([
+        {
+          columnName: 'TEST',
+          columnType: 'number'
+        }
+      ]);
     });
   });
 });

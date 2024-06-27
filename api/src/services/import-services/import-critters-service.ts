@@ -306,6 +306,7 @@ export class ImportCrittersService extends DBService {
       ]);
     }
 
+    // Validate the CSV rows with reference data
     const validation = await this._validateRows(surveyId, worksheet);
 
     if (!validation.success) {
