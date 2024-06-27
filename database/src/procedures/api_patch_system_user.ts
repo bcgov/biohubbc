@@ -15,7 +15,7 @@ import { Knex } from 'knex';
  * @param {Knex} knex
  * @return {*}  {Promise<void>}
  */
-export async function up(knex: Knex): Promise<void> {
+export async function seed(knex: Knex): Promise<void> {
   await knex.raw(`--sql
     set search_path=biohub;
 
@@ -102,8 +102,4 @@ export async function up(knex: Knex): Promise<void> {
 
     COMMENT ON FUNCTION api_patch_system_user(varchar, varchar, varchar, varchar, varchar, varchar, varchar, varchar) IS 'Updates a system_user record if any of the incoming values are not the same as the existing values.';
   `);
-}
-
-export async function down(knex: Knex): Promise<void> {
-  await knex.raw(``);
 }
