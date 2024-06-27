@@ -17,7 +17,7 @@ describe('column-validators', () => {
     });
   });
 
-  describe.only('getColumnValidatorSpecification', () => {
+  describe('getColumnValidatorSpecification', () => {
     it('should return specification format', () => {
       const columnValidator: IXLSXCSVValidator = {
         columnNames: ['TEST', 'COLUMN'],
@@ -54,6 +54,7 @@ describe('column-validators', () => {
 
       expect(spec).to.be.deep.equal([
         {
+          columnAliases: undefined,
           columnName: 'TEST',
           columnType: 'number'
         }

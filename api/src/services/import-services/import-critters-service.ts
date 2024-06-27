@@ -35,6 +35,8 @@ import { CsvCritter, PartialCsvCritter, Row, Validation, ValidationError } from 
 
 const defaultLog = getLogger('services/import/import-critters-service');
 
+const CSV_CRITTER_SEX_OPTIONS = ['UNKNOWN', 'MALE', 'FEMALE'];
+
 /**
  *
  * @class ImportCrittersService
@@ -221,8 +223,17 @@ export class ImportCrittersService extends DBService {
     return collectionUnitMap;
   }
 
+  /**
+   * Validate CSV worksheet rows against reference data.
+   *
+   * @async
+   * @param {number} surveyId - Survey identifier
+   * @param {WorkSheet} worksheet - Xlsx worksheet
+   * @returns {Promise<Validation>} Conditional validation object
+   */
   async _validateRows(surveyId: number, worksheet: WorkSheet): Promise<Validation> {
     const rows = this._getRows(worksheet);
+
     const nonStandardColumns = this._getNonStandardColumns(worksheet);
 
     // Retrieve the dynamic validation config
@@ -234,14 +245,12 @@ export class ImportCrittersService extends DBService {
 
     // Convert arrays to sets for validation
     const tsnSet = new Set(validRowTsns.map((tsn) => Number(tsn)));
-    const allowedSexSet = new Set(['Unknown', 'Male', 'Female']);
 
     const errors: ValidationError[] = [];
-
     const csvCritters = rows.map((row, index) => {
       // SEX is a required property
-      if (!row.sex || !allowedSexSet.has(row.sex)) {
-        errors.push({ row: index, message: `Invalid SEX. Expecting ${allowedSexSet.values}.` });
+      if (!row.sex || !CSV_CRITTER_SEX_OPTIONS.includes(toUpper(row.sex))) {
+        errors.push({ row: index, message: `Invalid SEX. Expecting: ${CSV_CRITTER_SEX_OPTIONS.join(', ')}.` });
       }
       // WLH_ID must follow regex pattern
       if (row.wlh_id && !row.wlh_id.match(/^\d{2}-.+/)) {
@@ -253,6 +262,7 @@ export class ImportCrittersService extends DBService {
       }
       // ALIAS is required and must not already exist in Survey
       // TODO: Remove dev check once complete (easier testing with same CSV)
+      // TODO: Should also valiate that no duplicates exist in the CSV for ALIAS
       if (process.env.NODE_ENV !== 'development' && (!row.animal_id || surveyCritterAliases.has(row.animal_id))) {
         errors.push({ row: index, message: `Invalid ALIAS.` });
       }
@@ -282,6 +292,7 @@ export class ImportCrittersService extends DBService {
       return row;
     });
 
+    // If validation successful the rows should all be CsvCritters
     if (!errors.length) {
       return { success: true, data: csvCritters as CsvCritter[] };
     }
@@ -317,7 +328,7 @@ export class ImportCrittersService extends DBService {
   }
 
   /**
-   * Insert CSV critter rows into SIMS and Critterbase.
+   * Insert CSV critters into Critterbase and SIMS.
    *
    * @async
    * @param {number} surveyId - Survey identifier
@@ -342,6 +353,8 @@ export class ImportCrittersService extends DBService {
     const bulkResponse = await this.critterbaseService.bulkCreate(critterbasePayload);
 
     // Check critterbase inserted the full list of critters
+    // In reality this error should not be triggered
+    // Mostly a just a sanity safeguard to prevent floating critter ids in SIMS
     if (bulkResponse.created.critters !== simsPayload.length) {
       throw new ApiGeneralError('Unable to fully import critters from CSV', [
         'importCritterService->insertCsvCrittersIntoSimsAndCritterbase',

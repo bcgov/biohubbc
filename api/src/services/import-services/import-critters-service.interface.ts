@@ -16,7 +16,7 @@ export type CsvCritter = {
   wlh_id?: string;
   critter_comment?: string;
 } & {
-  [collectionUnitColumn: string]: string;
+  [collectionUnitColumn: string]: unknown;
 };
 
 /**
