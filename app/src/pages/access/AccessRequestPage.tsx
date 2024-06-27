@@ -146,7 +146,7 @@ export const AccessRequestPage: React.FC = () => {
     default:
       initialValues = IDIRRequestFormInitialValues;
       validationSchema = IDIRRequestFormYupSchema;
-      requestForm = <IDIRRequestForm codes={codesDataLoader.data} />;
+      requestForm = <IDIRRequestForm />;
   }
 
   return (

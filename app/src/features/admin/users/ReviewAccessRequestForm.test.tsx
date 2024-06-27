@@ -27,7 +27,6 @@ describe('ReviewAccessRequestForm', () => {
           email: 'test data email',
           identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
           displayName: 'test user',
-          role: 2,
           reason: 'reason for request'
         }
       };

@@ -8,7 +8,7 @@ import { Knex } from 'knex';
  * @param {Knex} knex
  * @return {*}  {Promise<void>}
  */
-export async function up(knex: Knex): Promise<void> {
+export async function seed(knex: Knex): Promise<void> {
   await knex.raw(`
     SET search_path = 'biohub';
 
@@ -43,8 +43,4 @@ export async function up(knex: Knex): Promise<void> {
       END;
     $$;
   `);
-}
-
-export async function down(knex: Knex): Promise<void> {
-  await knex.raw(``);
 }

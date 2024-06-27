@@ -143,6 +143,14 @@ export function addSystemRoleUser(): RequestHandler {
 
       const userService = new UserService(connection);
 
+      // If user already exists, do nothing and return early
+      const user = await userService.getUserByIdentifier(userIdentifier, identitySource);
+      if (user) {
+        await connection.commit();
+        return res.status(400).send('That user has already been added.');
+      }
+
+      // This function also verifies that the user exists, but we explicitly check above to return a useful error message.
       const userObject = await userService.ensureSystemUser(
         userGuid,
         userIdentifier,

@@ -50,6 +50,8 @@ describe('user', () => {
         agency: null
       };
 
+      const getUserByIdentifierStub = sinon.stub(UserService.prototype, 'getUserByIdentifier').resolves();
+
       const ensureSystemUserStub = sinon.stub(UserService.prototype, 'ensureSystemUser').resolves(mockUserObject);
 
       const adduserSystemRolesStub = sinon.stub(UserService.prototype, 'addUserSystemRoles');
@@ -58,6 +60,7 @@ describe('user', () => {
 
       await requestHandler(mockReq, mockRes, mockNext);
 
+      expect(getUserByIdentifierStub).to.have.been.calledOnce;
       expect(ensureSystemUserStub).to.have.been.calledOnce;
       expect(adduserSystemRolesStub).to.have.been.calledOnce;
     });
@@ -93,6 +96,8 @@ describe('user', () => {
         agency: null
       };
 
+      const getUserByIdentifierStub = sinon.stub(UserService.prototype, 'getUserByIdentifier').resolves();
+
       const ensureSystemUserStub = sinon.stub(UserService.prototype, 'ensureSystemUser').resolves(mockUserObject);
 
       const adduserSystemRolesStub = sinon.stub(UserService.prototype, 'addUserSystemRoles');
@@ -100,6 +105,7 @@ describe('user', () => {
       const requestHandler = user.addSystemRoleUser();
 
       await requestHandler(mockReq, mockRes, mockNext);
+      expect(getUserByIdentifierStub).to.have.been.calledOnce;
       expect(ensureSystemUserStub).to.have.been.calledOnce;
       expect(adduserSystemRolesStub).to.have.been.calledOnce;
     });

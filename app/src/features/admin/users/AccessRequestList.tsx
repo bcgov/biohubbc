@@ -14,11 +14,7 @@ import { AdministrativeActivityStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import {
-  IAccessRequestDataObject,
-  IGetAccessRequestsListResponse,
-  IIDIRAccessRequestDataObject
-} from 'interfaces/useAdminApi.interface';
+import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { useContext, useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
@@ -247,8 +243,7 @@ const AccessRequestList = (props: IAccessRequestListProps) => {
         component={{
           initialValues: {
             ...ReviewAccessRequestFormInitialValues,
-            system_role:
-              (activeReview?.data as (IAccessRequestDataObject & IIDIRAccessRequestDataObject) | undefined)?.role ?? ''
+            system_role: ''
           },
           validationSchema: ReviewAccessRequestFormYupSchema,
           element: activeReview ? (
