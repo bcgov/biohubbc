@@ -40,13 +40,13 @@ const DeviceDetailsForm = (props: IDeviceDetailsFormProps) => {
           <AutocompleteField
             name="device_make"
             id="device_make"
-            label="Device Make"
+            label="Manufacturer"
             options={props.deviceMakes}
             required={true}
           />
         </Grid>
         <Grid item xs={12}>
-          <CustomTextField name="device_model" label="Device Model" maxLength={200} />
+          <CustomTextField name="device_model" label="Model (optional)" maxLength={200} />
         </Grid>
       </Grid>
     </>

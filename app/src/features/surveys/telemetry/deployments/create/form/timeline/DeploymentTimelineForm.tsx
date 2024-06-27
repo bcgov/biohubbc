@@ -49,13 +49,12 @@ const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
             Start of deployment
           </Typography>
           <Typography color="textSecondary" mb={3}>
-            You must add the capture during which the device was deployed before adding the deployment. Add captures
-            after adding the animal.
+            You must add the capture during which the device was deployed before adding the deployment.
           </Typography>
           <AutocompleteField
             name="start_capture_id"
             id="start_capture_id"
-            label={'Deployment capture'}
+            label={'Initial capture event'}
             options={props.captures.map((capture) => ({
               value: capture.capture_id,
               label: capture.capture_date
@@ -69,13 +68,13 @@ const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
             End of deployment (optional)
           </Typography>
           <Typography color="textSecondary" mb={3}>
-            Select the capture when the device was removed, or enter the detachment date if the device fell off.
+            Select the capture when the device was removed, or enter an end date.
           </Typography>
           <Stack direction={{ xs: 'column', md: 'row' }} gap={3} alignItems="center" width="100%">
             <AutocompleteField
               name="end_capture_id"
               id="end_capture_id"
-              label={'Retrieval capture'}
+              label={'End capture event'}
               options={props.captures.map((capture) => ({
                 value: capture.capture_id,
                 label: capture.capture_date
