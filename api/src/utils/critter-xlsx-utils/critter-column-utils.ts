@@ -33,12 +33,18 @@ export type CritterRowValidationConfig = {
    */
   tsns: Set<number>;
   /**
-   * A Map of collection categories with associated collection units (Set)
+   * A Map of collection units with associated tsn
    *
    */
-  collectionUnits: Map<string, ICollectionUnitWithCategory[]>;
+  collectionUnitTsnMap: Map<string, { collectionUnits: ICollectionUnitWithCategory[]; tsn: number }>;
 };
 
+//const critterIdSchema = z.string().uuid();
+//const sexSchema = z.enum(['Male', 'Female', 'Unknown']);
+//const tsnSchema = z.number();
+//const wlhIdSchema = z.string();
+//const critterCommentSchema = z.string();
+//
 /**
  * Get critter row validation schema.
  *
@@ -49,45 +55,91 @@ export type CritterRowValidationConfig = {
  *
  * @returns {z.ZodObject} CsvCritter
  */
-export const getRowValidationSchema = (config: CritterRowValidationConfig) => {
+export const getRowValidationSchema = () => {
   // Standard column validation with injected Sets of allowed values
   const validationSchema = {
     critter_id: z.string().uuid(),
     sex: z.enum(['Unknown', 'Male', 'Female']),
-    itis_tsn: z.number().refine((tsn) => config.tsns.has(tsn), `Invalid 'ITIS_TSN'.`),
+    itis_tsn: z.number(), //.refine((tsn) => config.tsns.has(tsn), `Invalid 'ITIS_TSN'.`),
     wlh_id: z // valid: '10-0009R' invalid: '102-' or '10-' or '1-133K2'
       .string()
       .regex(/^\d{2}-.+/, `Invalid 'WLH_ID'. Example '10-1000R'`)
       .optional(),
-    animal_id: z
-      .string()
-      .refine(
-        (alias) => process.env.NODE_ENV === 'development' || !config.aliases.has(alias),
-        `Invalid 'ALIAS'. Must be unique for survey.`
-      ),
+    animal_id: z.string(),
+    //.refine(
+    //  (alias) => process.env.NODE_ENV === 'development' || !config.aliases.has(alias),
+    //  `Invalid 'ALIAS'. Must be unique for survey.`
+    //),
     critter_comment: z.string().optional()
   };
 
-  // Dynamically adds validation to the collection unit columns
-  config.collectionUnits.forEach((collectionUnits, collectionUnitHeader) => {
-    // Set at top level to prevent having to search / find value multiple times
-    let collectionUnitMatch: ICollectionUnitWithCategory | undefined;
+  //// Dynamically adds validation to the collection unit columns
+  //config.collectionUnitTsnMap.forEach((mapValue, collectionUnitHeader) => {
+  //  // Set at top level to prevent having to search / find value multiple times
+  //  let collectionUnitMatch: ICollectionUnitWithCategory | undefined;
+  //
+  //  // Set the validation property name to be the cell header
+  //  validationSchema[collectionUnitHeader] = z
+  //    .string()
+  //    // Search collection units for a match on the cell value
+  //    .refine((cellValue) => {
+  //      collectionUnitMatch = mapValue.collectionUnits.find((unit) => unit.unit_name === cellValue);
+  //      return Boolean(collectionUnitMatch);
+  //    }, `Invalid value for '${collectionUnitHeader}'.`)
+  //    // Transform the return of the validation to be the id of the collection unit
+  //    .transform(() => collectionUnitMatch?.collection_unit_id)
+  //    .optional();
+  //});
 
-    // Set the validation property name to be the cell header
-    validationSchema[collectionUnitHeader] = z
-      .string()
-      // Search collection units for a match on the cell value
-      .refine((cellValue) => {
-        collectionUnitMatch = collectionUnits.find((unit) => unit.unit_name === cellValue);
-        return Boolean(collectionUnitMatch);
-      }, `Invalid value for '${collectionUnitHeader}'.`)
-      // Transform the return of the validation to be the id of the collection unit
-      .transform(() => collectionUnitMatch?.collection_unit_id)
-      .optional();
-  });
-
-  return z.object(validationSchema);
+  return z.object(validationSchema).passthrough();
 };
+
+//  return z.object(validationSchema);
+//
+//export const validateDynamicColumns = (
+//  rows: CsvCritter[],
+//  config: CritterRowValidationConfig
+//): z.SafeParseReturnType<CsvCritter[], CsvCritter[]> => {
+//  const zodIssues: z.ZodIssue[] = [];
+//
+//  for (let index = 0; index < rows.length; index++) {
+//    const row = rows[index];
+//
+//    config.collectionUnitTsnMap.forEach((mapValue, collectionUnitHeader) => {
+//      const cellValue = row?.[collectionUnitHeader];
+//
+//      if (!cellValue) {
+//        return;
+//      }
+//
+//      const matchedCollectionUnit = mapValue.collectionUnits.find((unit) => unit.unit_name === cellValue);
+//
+//      if (!matchedCollectionUnit) {
+//        zodIssues.push({
+//          code: z.ZodIssueCode.custom,
+//          path: [collectionUnitHeader, index],
+//          message: `Invalid value for '${collectionUnitHeader}'`
+//        });
+//      }
+//      if (matchedCollectionUnit && mapValue.tsn !== row.itis_tsn) {
+//        zodIssues.push({
+//          code: z.ZodIssueCode.custom,
+//          path: [collectionUnitHeader, index],
+//          message: `Invalid '${collectionUnitHeader}' value for TSN ${row.itis_tsn}`
+//        });
+//      }
+//
+//      rows[index][collectionUnitHeader] = matchedCollectionUnit?.collection_unit_id;
+//    });
+//  }
+//  console.log({ rows });
+//
+//  if (!zodIssues.length) {
+//    return { success: true, data: rows };
+//  }
+//
+//  return { success: false, error: new z.ZodError(zodIssues) };
+//};
 
 /**
  * Parse the CSV rows into the Critterbase critter format.
@@ -130,7 +182,13 @@ export const validateCritterRows = (
   rows: Partial<CsvCritter>[],
   config: CritterRowValidationConfig
 ): z.SafeParseReturnType<Partial<CsvCritter>[], CsvCritter[]> => {
-  const critterRowValidationSchema = getRowValidationSchema(config);
+  // Safe parse the standard columns
+  const standardRowsValidation = z.array(getRowsValidationSchema(config)).safeParse(rows);
 
-  return z.array(critterRowValidationSchema).safeParse(rows);
+  //// If successful validate the dynamic columns (collection units)
+  //if (standardRowsValidation.success) {
+  //  return validateDynamicColumns(standardRowsValidation.data, config);
+  //}
+
+  return standardRowsValidation;
 };
