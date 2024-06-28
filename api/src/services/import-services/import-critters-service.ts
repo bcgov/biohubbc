@@ -233,7 +233,6 @@ export class ImportCrittersService extends DBService {
    */
   async _validateRows(surveyId: number, worksheet: WorkSheet): Promise<Validation> {
     const rows = this._getRows(worksheet);
-
     const nonStandardColumns = this._getNonStandardColumns(worksheet);
 
     // Retrieve the dynamic validation config
@@ -243,30 +242,51 @@ export class ImportCrittersService extends DBService {
     ]);
     const collectionUnitMap = await this._getCollectionUnitMap(worksheet, validRowTsns);
 
-    // Convert arrays to sets for validation
+    // Parse reference data for validation
     const tsnSet = new Set(validRowTsns.map((tsn) => Number(tsn)));
+    const csvCritterAliases = rows.map((row) => row.animal_id);
 
+    // Track the row validation errors
     const errors: ValidationError[] = [];
+
     const csvCritters = rows.map((row, index) => {
-      // SEX is a required property
-      if (!row.sex || !CSV_CRITTER_SEX_OPTIONS.includes(toUpper(row.sex))) {
+      /**
+       * --------------------------------------------------------------------
+       *                      STANDARD ROW VALIDATION
+       * --------------------------------------------------------------------
+       */
+
+      // SEX is a required property and must be a correct value
+      const invalidSex = !row.sex || !CSV_CRITTER_SEX_OPTIONS.includes(toUpper(row.sex));
+      // WLH_ID must follow regex pattern
+      const invalidWlhId = row.wlh_id && !row.wlh_id.match(/^\d{2}-.+/);
+      // ITIS_TSN is required and be a valid TSN
+      const invalidTsn = !row.itis_tsn || !tsnSet.has(row.itis_tsn);
+      // ALIAS is required and must not already exist in Survey or CSV
+      const invalidAlias =
+        !row.animal_id ||
+        (surveyCritterAliases.has(row.animal_id) &&
+          csvCritterAliases.filter((value) => value === row.animal_id).length > 1);
+
+      if (invalidSex) {
         errors.push({ row: index, message: `Invalid SEX. Expecting: ${CSV_CRITTER_SEX_OPTIONS.join(', ')}.` });
       }
-      // WLH_ID must follow regex pattern
-      if (row.wlh_id && !row.wlh_id.match(/^\d{2}-.+/)) {
+      if (invalidWlhId) {
         errors.push({ row: index, message: `Invalid WLH_ID. Example format '10-1000R'.` });
       }
-      // ITIS_TSN is required and be a valid TSN
-      if (!row.itis_tsn || !tsnSet.has(row.itis_tsn)) {
+      if (invalidTsn) {
         errors.push({ row: index, message: `Invalid ITIS_TSN.` });
       }
-      // ALIAS is required and must not already exist in Survey
-      // TODO: Remove dev check once complete (easier testing with same CSV)
-      // TODO: Should also valiate that no duplicates exist in the CSV for ALIAS
-      if (process.env.NODE_ENV !== 'development' && (!row.animal_id || surveyCritterAliases.has(row.animal_id))) {
-        errors.push({ row: index, message: `Invalid ALIAS.` });
+      if (invalidAlias) {
+        errors.push({ row: index, message: `Invalid ALIAS. Must be unique in Survey and CSV.` });
       }
-      // Custom validation here
+
+      /**
+       * --------------------------------------------------------------------
+       *                      NON-STANDARD ROW VALIDATION
+       * --------------------------------------------------------------------
+       */
+
       nonStandardColumns.forEach((column) => {
         const collectionUnitColumn = collectionUnitMap.get(column);
         // Remove property if undefined or not a collection unit
@@ -313,15 +333,20 @@ export class ImportCrittersService extends DBService {
     // Validate the standard columns in the CSV file
     if (!validateCsvFile(worksheet, critterStandardColumnValidator)) {
       throw new ApiGeneralError(`Column validator failed. Column headers or cell data types are incorrect.`, [
-        { column_specification: getColumnValidatorSpecification(critterStandardColumnValidator) }
+        { column_specification: getColumnValidatorSpecification(critterStandardColumnValidator) },
+        'importCrittersService -> _validate -> validateCsvFile'
       ]);
     }
 
     // Validate the CSV rows with reference data
     const validation = await this._validateRows(surveyId, worksheet);
 
+    // Throw error is row validation failed and inject validation errors
     if (!validation.success) {
-      throw new ApiGeneralError(`Failed to import Critter CSV. Column data validator failed.`, validation.errors);
+      throw new ApiGeneralError(`Failed to import Critter CSV. Column data validator failed.`, [
+        { column_validation: validation.errors },
+        'importCrittersService -> _validate -> _validateRows'
+      ]);
     }
 
     return validation.data;
@@ -340,24 +365,23 @@ export class ImportCrittersService extends DBService {
     const simsPayload: string[] = [];
     const critterbasePayload: IBulkCreate = { critters: [], collections: [] };
 
+    // Convert rows to Critterbase and SIMS payloads
     for (const row of critterRows) {
       simsPayload.push(row.critter_id);
-
       critterbasePayload.critters?.push(this._getCritterFromRow(row));
       critterbasePayload.collections = critterbasePayload.collections?.concat(this._getCollectionUnitsFromRow(row));
     }
 
-    defaultLog.info({ label: 'critter import payloads', simsPayload, critterbasePayload });
+    defaultLog.debug({ label: 'critter import payloads', simsPayload, critterbasePayload });
 
     // Add critters to Critterbase
     const bulkResponse = await this.critterbaseService.bulkCreate(critterbasePayload);
 
     // Check critterbase inserted the full list of critters
-    // In reality this error should not be triggered
-    // Mostly a just a sanity safeguard to prevent floating critter ids in SIMS
+    // In reality this error should not be triggered, safeguard to prevent floating critter ids in SIMS
     if (bulkResponse.created.critters !== simsPayload.length) {
       throw new ApiGeneralError('Unable to fully import critters from CSV', [
-        'importCritterService->insertCsvCrittersIntoSimsAndCritterbase',
+        'importCrittersService -> insertCsvCrittersIntoSimsAndCritterbase',
         'critterbase bulk create response count !== critterIds.length'
       ]);
     }

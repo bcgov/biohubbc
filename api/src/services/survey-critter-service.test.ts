@@ -39,12 +39,12 @@ describe('SurveyService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyCritterService(dbConnection);
 
-      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'addCrittersToSurvey').resolves();
+      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'addCrittersToSurvey').resolves([1]);
 
       const response = await service.addCritterToSurvey(1, 'critter_id');
 
       expect(repoStub).to.be.calledOnce;
-      expect(response).to.be.undefined;
+      expect(response).to.be.equal(1);
     });
   });
 
