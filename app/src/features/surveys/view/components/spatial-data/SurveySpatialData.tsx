@@ -240,8 +240,13 @@ const SurveySpatialData = () => {
         return [
           {
             layerName: 'Animal Captures',
+            layerColors: {
+              fillColor: SURVEY_MAP_LAYER_COLOURS.MARKED_ANIMAL_COLOUR,
+              color: SURVEY_MAP_LAYER_COLOURS.MARKED_ANIMAL_COLOUR
+            },
             popupRecordTitle: 'Animal Capture',
-            mapPoints: telemetryPoints
+            // TODO: FIX CRITTERBASE ENDPOINT TO INCLUDE CAPTURES FOR ALL SURVEY ANIMALS, THEN INCLUDE AS MAPPOINTS
+            mapPoints: []
           }
         ];
       default:

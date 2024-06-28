@@ -60,8 +60,6 @@ const SurveyAnimalsDataTable = (props: ISurveySpatialTelemetryDataTableProps) =>
 
   const animals = surveyContext.critterDataLoader.data ?? [];
 
-  console.log(animals)
-
   const animalsDataLoader = useDataLoader(() =>
     critterbaseApi.critters.getMultipleCrittersByIds(animals.map((animal) => animal.critter_id))
   );
@@ -70,18 +68,13 @@ const SurveyAnimalsDataTable = (props: ISurveySpatialTelemetryDataTableProps) =>
     animalsDataLoader.load();
   }
 
-  console.log(animalsDataLoader.data);
-
-  if (!animalsDataLoader.data) {
-    return <></>;
-  }
-
-  const tableData: IAnimalData[] = animalsDataLoader.data.map((item) => ({
-    id: item.critter_id,
-    animal_id: item.animal_id ?? '',
-    scientificName: item.itis_scientific_name,
-    status: item.mortality.length ? true : false
-  }));
+  const tableData: IAnimalData[] =
+    animalsDataLoader.data?.map((item) => ({
+      id: item.critter_id,
+      animal_id: item.animal_id ?? '',
+      scientificName: item.itis_scientific_name,
+      status: item.mortality?.length ? true : false
+    })) ?? [];
 
   const columns: GridColDef<IAnimalData>[] = [
     {

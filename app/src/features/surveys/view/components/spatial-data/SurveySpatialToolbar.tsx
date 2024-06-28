@@ -85,19 +85,19 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
         }}>
         <MenuItem component={RouterLink} to="observations">
           <ListItemIcon>
-            <Icon path={mdiEye} size={1} />
+            <Icon path={mdiEye} size={0.8} />
           </ListItemIcon>
           <ListItemText>Observations</ListItemText>
         </MenuItem>
         <MenuItem component={RouterLink} to="animals">
           <ListItemIcon>
-            <Icon path={mdiPaw} size={1} />
+            <Icon path={mdiPaw} size={0.8} />
           </ListItemIcon>
           <ListItemText>Animals</ListItemText>
         </MenuItem>
         <MenuItem component={RouterLink} to="telemetry">
           <ListItemIcon>
-            <Icon path={mdiWifiMarker} size={1} />
+            <Icon path={mdiWifiMarker} size={0.8} />
           </ListItemIcon>
           <ListItemText>Telemetry</ListItemText>
         </MenuItem>
