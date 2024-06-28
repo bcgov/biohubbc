@@ -334,7 +334,7 @@ export class ImportCrittersService extends DBService {
     if (!validateCsvFile(worksheet, critterStandardColumnValidator)) {
       throw new ApiGeneralError(`Column validator failed. Column headers or cell data types are incorrect.`, [
         { column_specification: getColumnValidatorSpecification(critterStandardColumnValidator) },
-        'importCrittersService -> _validate -> validateCsvFile'
+        'importCrittersService->_validate->validateCsvFile'
       ]);
     }
 
@@ -345,7 +345,7 @@ export class ImportCrittersService extends DBService {
     if (!validation.success) {
       throw new ApiGeneralError(`Failed to import Critter CSV. Column data validator failed.`, [
         { column_validation: validation.errors },
-        'importCrittersService -> _validate -> _validateRows'
+        'importCrittersService->_validate->_validateRows'
       ]);
     }
 
