@@ -83,8 +83,10 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
   const coordinates = captureLocationGeoJson && getCoordinatesFromGeoJson(captureLocationGeoJson);
 
   // Initialize state based on formik context for the edit page
-  const [latitudeInput, setLatitudeInput] = useState<string>(coordinates ? String(coordinates.latitude) : '');
-  const [longitudeInput, setLongitudeInput] = useState<string>(coordinates ? String(coordinates.longitude) : '');
+  const [latitudeInput, setLatitudeInput] = useState<string>(coordinates?.latitude ? String(coordinates.latitude) : '');
+  const [longitudeInput, setLongitudeInput] = useState<string>(
+    coordinates?.longitude ? String(coordinates.longitude) : ''
+  );
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 
@@ -120,9 +122,10 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
       return;
     }
 
+    drawControlsRef.current?.clearLayers();
+
     // If coordinates are invalid, reset the map to show nothing
     if (!isValidCoordinates(lat, lon)) {
-      drawControlsRef.current?.clearLayers();
       setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
       return;
     }

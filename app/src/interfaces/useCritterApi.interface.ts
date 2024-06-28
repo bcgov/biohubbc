@@ -155,8 +155,8 @@ export type ICaptureResponse = {
   release_time: string | null;
   capture_comment: string | null;
   release_comment: string | null;
-  capture_location: ILocationResponse;
-  release_location: ILocationResponse | null | undefined;
+  capture_location?: ILocationResponse | null | undefined;
+  release_location?: ILocationResponse | null | undefined;
 };
 
 export type IMarkingResponse = {

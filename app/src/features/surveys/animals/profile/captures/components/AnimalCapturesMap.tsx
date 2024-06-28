@@ -19,16 +19,25 @@ interface IAnimalCapturesMapProps {
 export const AnimalCapturesMap = (props: IAnimalCapturesMapProps) => {
   const { captures, isLoading } = props;
 
-  const captureMapFeatures = captures
-    .filter((capture) => isDefined(capture.capture_location?.latitude) && isDefined(capture.capture_location.longitude))
-    .map((capture) => ({
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [capture.capture_location.longitude, capture.capture_location.latitude]
-      },
-      properties: { captureId: capture.capture_id, date: capture.capture_date }
-    })) as Feature[];
+  // Only include captures with valid locations
+  const captureMapFeatures: Feature[] = captures
+    .filter(
+      (capture) => isDefined(capture.capture_location?.latitude) && isDefined(capture.capture_location?.longitude)
+    )
+    .map(
+      (capture) =>
+        capture?.capture_location
+          ? ({
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [capture.capture_location.longitude, capture.capture_location.latitude]
+              },
+              properties: { captureId: capture.capture_id, date: capture.capture_date }
+            } as Feature)
+          : null // Return null instead of undefined
+    )
+    .filter((feature): feature is Feature => isDefined(feature));
 
   const staticLayers: IStaticLayer[] = captureMapFeatures.map((feature, index) => ({
     layerName: 'Captures',

@@ -1,5 +1,10 @@
+import { mdiAlertRhombusOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
+import { orange } from '@mui/material/colors';
 import Skeleton from '@mui/material/Skeleton';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { AnimalCaptureCardContainer } from 'features/surveys/animals/profile/captures/components/AnimalCaptureCardContainer';
 import { AnimalCapturesToolbar } from 'features/surveys/animals/profile/captures/components/AnimalCapturesToolbar';
@@ -100,6 +105,8 @@ export const AnimalCaptureContainer = () => {
     animalPageContext.critterDataLoader.refresh(critterbase_critter_id);
   };
 
+  const capturesWithLocation = captures.filter((capture) => capture.capture_location);
+
   return (
     <>
       <AnimalCapturesToolbar
@@ -110,7 +117,21 @@ export const AnimalCaptureContainer = () => {
           );
         }}
       />
-      {captures.length > 0 && <AnimalCapturesMap captures={captures} isLoading={false} />}
+      {capturesWithLocation.length < captures.length && (
+        <Stack gap={1} direction="row" px={3} py={2} bgcolor={orange[50]}>
+          <Icon path={mdiAlertRhombusOutline} size={1} color={orange[800]} />
+          <Box>
+            <Typography fontWeight={700} color={orange[900]}>
+              Missing Capture Location
+            </Typography>
+            <Typography color={orange[800]} variant="body2" mt={0.5}>
+              Not all captures are visible on the map due to missing location data. Please update these captures with
+              location information.
+            </Typography>
+          </Box>
+        </Stack>
+      )}
+      {captures.length > 0 && <AnimalCapturesMap captures={capturesWithLocation} isLoading={false} />}
       <AnimalCaptureCardContainer captures={captures} selectedAnimal={selectedAnimal} handleDelete={handleDelete} />
     </>
   );
