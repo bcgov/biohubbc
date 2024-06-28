@@ -1,5 +1,5 @@
 import { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
-import { TechniqueAttributeFormValues } from 'features/surveys/sampling-information/techniques/form/components/TechniqueForm';
+import { TechniqueAttributeFormValues } from 'features/surveys/sampling-information/techniques/form/components/TechniqueFormContainer';
 import { ITechniqueAttributeQualitative, ITechniqueAttributeQuantitative } from 'interfaces/useReferenceApi.interface';
 
 /**

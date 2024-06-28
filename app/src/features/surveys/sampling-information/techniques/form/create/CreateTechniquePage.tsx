@@ -9,18 +9,20 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
 import { CreateTechniqueI18N } from 'constants/i18n';
+import TechniqueFormContainer, {
+  CreateTechniqueFormValues
+} from 'features/surveys/sampling-information/techniques/form/components/TechniqueFormContainer';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
-import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateTechniqueRequest } from 'interfaces/useTechniqueApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { default as TechniqueForm, TechniqueFormValues } from '../components/TechniqueForm';
 
-const initialTechniqueFormValues: TechniqueFormValues = {
+const initialTechniqueFormValues: CreateTechniqueFormValues = {
   name: '',
   description: '',
   distance_threshold: null,
@@ -46,13 +48,13 @@ export const CreateTechniquePage = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const formikRef = useRef<FormikProps<TechniqueFormValues>>(null);
+  const formikRef = useRef<FormikProps<CreateTechniqueFormValues>>(null);
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  const handleSubmit = async (values: TechniqueFormValues) => {
+  const handleSubmit = async (values: CreateTechniqueFormValues) => {
     try {
       setIsSubmitting(true);
 
@@ -77,16 +79,21 @@ export const CreateTechniquePage = () => {
         }
       };
 
+      // Create the technique
       await biohubApi.technique.createTechniques(surveyContext.projectId, surveyContext.surveyId, [
         createTechniqueRequestData
       ]);
 
       // Refresh the context, so the next page loads with the latest data
-      surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
-      // create complete, navigate back to observations page
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+      // Success, navigate back to the manage sampling information page
+      history.push(
+        `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`,
+        SKIP_CONFIRMATION_DIALOG
+      );
     } catch (error) {
+      setIsSubmitting(false);
       dialogContext.setErrorDialog({
         dialogTitle: CreateTechniqueI18N.createErrorTitle,
         dialogText: CreateTechniqueI18N.createErrorText,
@@ -100,7 +107,6 @@ export const CreateTechniquePage = () => {
         },
         open: true
       });
-      setIsSubmitting(false);
     }
   };
 
@@ -127,12 +133,6 @@ export const CreateTechniquePage = () => {
               to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
               underline="none">
               {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
-            </Link>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`}
-              underline="none">
-              Observations
             </Link>
             <Link
               component={RouterLink}
@@ -169,12 +169,12 @@ export const CreateTechniquePage = () => {
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
-          <TechniqueForm
+          <TechniqueFormContainer
             initialData={initialTechniqueFormValues}
-            handleSubmit={(formikData) => handleSubmit(formikData as TechniqueFormValues)}
+            handleSubmit={(formikData) => handleSubmit(formikData)}
             formikRef={formikRef}
           />
-          <Stack flexDirection="row" alignItems="center" justifyContent="flex-end" gap={1}>
+          <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
             <LoadingButton
               type="submit"
               variant="contained"
@@ -189,9 +189,7 @@ export const CreateTechniquePage = () => {
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(
-                  `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`
-                );
+                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
               }}>
               Cancel
             </Button>

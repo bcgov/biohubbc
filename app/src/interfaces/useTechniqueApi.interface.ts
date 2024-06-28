@@ -1,19 +1,19 @@
-import { ITechniqueAttributeQualitative, ITechniqueAttributeQuantitative } from 'interfaces/useReferenceApi.interface';
+import { ApiPaginationResponseParams } from 'types/misc';
 
-export type QualitativeAttribute = {
+export type TechniqueAttractant = {
+  attractant_lookup_id: number;
+};
+
+type TechniqueQualitativeAttribute = {
   method_technique_attribute_qualitative_id: number | null;
   method_lookup_attribute_qualitative_id: string;
   method_lookup_attribute_qualitative_option_id: string;
 };
 
-export type QuantitativeAttribute = {
+type TechniqueQuantitativeAttribute = {
   method_technique_attribute_quantitative_id: number | null;
   method_lookup_attribute_quantitative_id: string;
   value: number;
-};
-
-export type TechniqueAttractant = {
-  attractant_lookup_id: number;
 };
 
 export interface ICreateTechniqueRequest {
@@ -23,36 +23,30 @@ export interface ICreateTechniqueRequest {
   method_lookup_id: number | null;
   attractants: TechniqueAttractant[];
   attributes: {
-    qualitative_attributes: QualitativeAttribute[];
-    quantitative_attributes: QuantitativeAttribute[];
+    qualitative_attributes: TechniqueQualitativeAttribute[];
+    quantitative_attributes: TechniqueQuantitativeAttribute[];
   };
 }
 
-/**
- * Technique attribute type.
- */
-export type TechniqueAttributeType = ITechniqueAttributeQuantitative | ITechniqueAttributeQualitative;
-
-export interface IAttractant {
-  attractant_lookup_id: number;
-  name: string;
-  description: string;
+export interface IUpdateTechniqueRequest extends ICreateTechniqueRequest {
+  method_technique_id: number;
 }
 
-export interface IGetTechnique {
+export interface IGetTechniqueResponse {
   method_technique_id: number;
   name: string;
   description: string | null;
   method_lookup_id: number;
   distance_threshold: number | null;
-  attributes: {
-    quantitative_attributes: QuantitativeAttribute[];
-    qualitative_attributes: QualitativeAttribute[];
-  };
   attractants: TechniqueAttractant[];
+  attributes: {
+    quantitative_attributes: TechniqueQuantitativeAttribute[];
+    qualitative_attributes: TechniqueQualitativeAttribute[];
+  };
 }
 
-export interface ITechniqueResponse {
-  techniques: IGetTechnique[];
+export interface IGetTechniquesResponse {
+  techniques: IGetTechniqueResponse[];
   count: number;
+  pagination: ApiPaginationResponseParams;
 }

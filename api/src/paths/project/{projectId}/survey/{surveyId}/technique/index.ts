@@ -3,13 +3,21 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
-import { paginationRequestQueryParamSchema } from '../../../../../../openapi/schemas/pagination';
-import { techniqueDetailsSchema, techniqueViewSchema } from '../../../../../../openapi/schemas/technique';
+import {
+  paginationRequestQueryParamSchema,
+  paginationResponseSchema
+} from '../../../../../../openapi/schemas/pagination';
+import { techniqueCreateSchema, techniqueViewSchema } from '../../../../../../openapi/schemas/technique';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { AttractantService } from '../../../../../../services/attractants-service';
 import { TechniqueAttributeService } from '../../../../../../services/technique-attributes-service';
 import { TechniqueService } from '../../../../../../services/technique-service';
 import { getLogger } from '../../../../../../utils/logger';
+import {
+  ensureCompletePaginationOptions,
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
+} from '../../../../../../utils/pagination';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/technique/index');
 
@@ -33,7 +41,7 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Insert new survey technique.',
+  description: 'Insert a new technique for a survey.',
   tags: ['technique'],
   security: [
     {
@@ -70,7 +78,7 @@ POST.apiDoc = {
           properties: {
             techniques: {
               type: 'array',
-              items: techniqueDetailsSchema
+              items: techniqueCreateSchema
             }
           }
         }
@@ -100,16 +108,12 @@ POST.apiDoc = {
 };
 
 /**
- * Create one or more Survey techniques
+ * Create new techniques for a survey.
  *
  * @returns
  */
 export function createTechniques(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required path param `surveyId`');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -117,22 +121,22 @@ export function createTechniques(): RequestHandler {
 
       const surveyId = Number(req.params.surveyId);
 
+      // Create the techniques
       const techniqueService = new TechniqueService(connection);
-      const attractantsService = new AttractantService(connection);
-      const techniqueAttributeService = new TechniqueAttributeService(connection);
-
-      const promises = [];
-
-      // Create the technique
       const techniques = await techniqueService.insertTechniquesForSurvey(surveyId, req.body.techniques);
 
       // Insert additional technique information
+      const attractantsService = new AttractantService(connection);
+      const techniqueAttributeService = new TechniqueAttributeService(connection);
+      const promises = [];
       for (const technique of techniques) {
         const { attractants, attributes } = technique;
 
         // Insert attractants
         if (technique.attractants.length) {
-          promises.push(attractantsService.insertTechniqueAttractants(surveyId, attractants));
+          promises.push(
+            attractantsService.insertTechniqueAttractants(surveyId, technique.method_technique_id, attractants)
+          );
         }
 
         // Insert qualitative attributes
@@ -155,6 +159,7 @@ export function createTechniques(): RequestHandler {
           );
         }
       }
+      await Promise.all(promises);
 
       await connection.commit();
 
@@ -193,7 +198,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'Get all survey techniques.',
+  description: 'Get all techniques for a survey.',
   tags: ['technique'],
   security: [
     {
@@ -235,11 +240,11 @@ GET.apiDoc = {
                 type: 'array',
                 items: techniqueViewSchema
               },
-
               count: {
                 type: 'number',
                 description: 'Count of method techniques in the respective survey.'
-              }
+              },
+              pagination: { ...paginationResponseSchema }
             }
           }
         }
@@ -264,7 +269,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get all survey techniques.
+ * Get all techniques for a survey.
  *
  * @returns {RequestHandler}
  */
@@ -280,17 +285,21 @@ export function getTechniques(): RequestHandler {
       await connection.open();
 
       const surveyId = Number(req.params.surveyId);
+      const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const techniqueService = new TechniqueService(connection);
-      const techniques = await techniqueService.getTechniquesForSurveyId(surveyId);
 
-      const sampleSitesTotalCount = await techniqueService.getTechniquesCountForSurveyId(surveyId);
+      const [techniques, techniquesCount] = await Promise.all([
+        techniqueService.getTechniquesForSurveyId(surveyId, ensureCompletePaginationOptions(paginationOptions)),
+        techniqueService.getTechniquesCountForSurveyId(surveyId)
+      ]);
 
       await connection.commit();
 
       return res.status(200).json({
         techniques,
-        count: sampleSitesTotalCount
+        count: techniquesCount,
+        pagination: makePaginationResponse(techniquesCount, paginationOptions)
       });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyTechniques', message: 'error', error });

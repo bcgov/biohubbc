@@ -4,10 +4,10 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { AccordionCard } from 'components/accordion/AccordionCard';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import { IGetTechnique } from 'interfaces/useTechniqueApi.interface';
+import { IGetTechniqueResponse } from 'interfaces/useTechniqueApi.interface';
 
 interface ISamplingTechniqueCardProps {
-  technique: IGetTechnique;
+  technique: IGetTechniqueResponse;
   method_lookup_name: string;
   handleMenuClick?: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }

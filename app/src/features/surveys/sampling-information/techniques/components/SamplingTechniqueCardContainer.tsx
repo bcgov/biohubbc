@@ -14,7 +14,7 @@ import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { IGetTechnique } from 'interfaces/useTechniqueApi.interface';
+import { IGetTechniqueResponse } from 'interfaces/useTechniqueApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getCodesName } from 'utils/Utils';
@@ -27,7 +27,7 @@ interface ITechniqueRowData {
 }
 
 interface ISamplingTechniqueCardContainer {
-  techniques: IGetTechnique[];
+  techniques: IGetTechniqueResponse[];
 }
 
 /**

@@ -13,7 +13,10 @@ import {
   getAttributeType,
   getRemainingAttributes
 } from 'features/surveys/sampling-information/techniques/form/components/attributes/components/utils';
-import { TechniqueFormValues } from 'features/surveys/sampling-information/techniques/form/components/TechniqueForm';
+import {
+  CreateTechniqueFormValues,
+  UpdateTechniqueFormValues
+} from 'features/surveys/sampling-information/techniques/form/components/TechniqueFormContainer';
 import { FieldArrayRenderProps, useFormikContext } from 'formik';
 import { ITechniqueAttributeQualitative, ITechniqueAttributeQuantitative } from 'interfaces/useReferenceApi.interface';
 import { useMemo } from 'react';
@@ -25,15 +28,18 @@ interface ITechniqueAttributeFormProps {
 }
 
 /**
- * Returns a component for selecting ecological (ie. collection) units for a given species.
+ * Technique attribute form.
  *
+ * @template FormValues
  * @param {ITechniqueAttributeFormProps} props
  * @return {*}
  */
-export const TechniqueAttributeForm = (props: ITechniqueAttributeFormProps) => {
+export const TechniqueAttributeForm = <FormValues extends CreateTechniqueFormValues | UpdateTechniqueFormValues>(
+  props: ITechniqueAttributeFormProps
+) => {
   const { arrayHelpers, attributeTypeDefinitions, index } = props;
 
-  const { values, setFieldValue } = useFormikContext<TechniqueFormValues>();
+  const { values, setFieldValue } = useFormikContext<FormValues>();
 
   // The type definition for the currently selected attribute, if one has been selected
   const selectedAttributeTypeDefinition = useMemo(
@@ -50,13 +56,15 @@ export const TechniqueAttributeForm = (props: ITechniqueAttributeFormProps) => {
     [attributeTypeDefinitions, index, values.attributes]
   );
 
+  // The IDs of the attributes that have already been selected, and should not be available for selection again
   const unavailableAttributeIds = useMemo(() => {
     return values.attributes.map((attribute) => attribute.attribute_lookup_id);
   }, [values.attributes]);
 
+  // The ID of the currently selected attribute
   const selectedAttributeId = selectedAttributeTypeDefinition && getAttributeId(selectedAttributeTypeDefinition);
 
-  // The remaining attributes that have not been selected
+  // The remaining attributes that are available for selection
   const remainingAttributeTypeDefinitions = useMemo(() => {
     return getRemainingAttributes(attributeTypeDefinitions, unavailableAttributeIds, selectedAttributeId);
   }, [attributeTypeDefinitions, selectedAttributeId, unavailableAttributeIds]);

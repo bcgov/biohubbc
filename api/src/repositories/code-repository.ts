@@ -421,7 +421,7 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
-   * Fetch method response metrics
+   * Fetch method response metrics codes.
    *
    * @return {*}
    * @memberof CodeRepository
@@ -442,7 +442,7 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
-   * Fetch attractants for techniques
+   * Fetch attractants codes.
    *
    * @return {*}
    * @memberof CodeRepository

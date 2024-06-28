@@ -1,10 +1,12 @@
 import { IDBConnection } from '../database/db';
 import {
-  IGetTechnique,
   ITechniquePostData,
   ITechniqueRowDataForInsert,
+  ITechniqueRowDataForUpdate,
+  TechniqueObject,
   TechniqueRepository
 } from '../repositories/technique-repository';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { AttractantService } from './attractants-service';
 import { DBService } from './db-service';
 
@@ -24,22 +26,23 @@ export class TechniqueService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} methodTechniqueId
-   * @returns {*} {Promise<{id: number}[]>}
+   * @return {*}  {Promise<TechniqueObject>}
    * @memberof TechniqueService
    */
-  async getTechniqueById(surveyId: number, methodTechniqueId: number): Promise<IGetTechnique> {
+  async getTechniqueById(surveyId: number, methodTechniqueId: number): Promise<TechniqueObject> {
     return this.techniqueRepository.getTechniqueById(surveyId, methodTechniqueId);
   }
 
   /**
-   * Get all technique records for a survey.
+   * Get a paginated list of technique records for a survey.
    *
    * @param {number} surveyId
-   * @returns {*} {Promise<{id: number}[]>}
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<TechniqueObject[]>}
    * @memberof TechniqueService
    */
-  async getTechniquesForSurveyId(surveyId: number): Promise<IGetTechnique[]> {
-    return this.techniqueRepository.getTechniquesForSurveyId(surveyId);
+  async getTechniquesForSurveyId(surveyId: number, pagination?: ApiPaginationOptions): Promise<TechniqueObject[]> {
+    return this.techniqueRepository.getTechniquesForSurveyId(surveyId, pagination);
   }
 
   /**
@@ -70,8 +73,7 @@ export class TechniqueService extends DBService {
         name: technique.name,
         description: technique.description,
         method_lookup_id: technique.method_lookup_id,
-        distance_threshold: technique.distance_threshold,
-        survey_id: surveyId
+        distance_threshold: technique.distance_threshold
       };
 
       const { method_technique_id } = await this.techniqueRepository.insertTechnique(surveyId, rowForInsert);
@@ -86,17 +88,12 @@ export class TechniqueService extends DBService {
    * Update a technique record.
    *
    * @param {number} surveyId
-   * @param {number} methodTechniqueId
-   * @param {ITechniqueRowDataForInsert} technique
+   * @param {ITechniqueRowDataForUpdate} technique
    * @return {*}  {Promise<void>}
    * @memberof TechniqueService
    */
-  async updateTechnique(
-    surveyId: number,
-    methodTechniqueId: number,
-    technique: ITechniqueRowDataForInsert
-  ): Promise<void> {
-    return this.techniqueRepository.updateTechnique(surveyId, technique, methodTechniqueId);
+  async updateTechnique(surveyId: number, technique: ITechniqueRowDataForUpdate): Promise<void> {
+    return this.techniqueRepository.updateTechnique(surveyId, technique);
   }
 
   /**

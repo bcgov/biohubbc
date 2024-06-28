@@ -5,7 +5,7 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridOverlay } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { IGetSampleSiteResponse } from 'interfaces/useSamplingSiteApi.interface';
-import { IGetTechnique } from 'interfaces/useTechniqueApi.interface';
+import { IGetTechniqueResponse } from 'interfaces/useTechniqueApi.interface';
 
 export interface ISurveySitesTableProps {
   sites?: IGetSampleSiteResponse;
@@ -21,7 +21,7 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
       description: site.description
     })) || [];
 
-  const columns: GridColDef<IGetTechnique>[] = [
+  const columns: GridColDef<IGetTechniqueResponse>[] = [
     {
       field: 'name',
       headerName: 'Name',

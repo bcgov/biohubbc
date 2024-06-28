@@ -1,5 +1,12 @@
 import { AxiosInstance } from 'axios';
-import { ICreateTechniqueRequest, IGetTechnique, ITechniqueResponse } from 'interfaces/useTechniqueApi.interface';
+import {
+  ICreateTechniqueRequest,
+  IGetTechniqueResponse,
+  IGetTechniquesResponse,
+  IUpdateTechniqueRequest
+} from 'interfaces/useTechniqueApi.interface';
+import qs from 'qs';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with techniques.
@@ -9,20 +16,33 @@ import { ICreateTechniqueRequest, IGetTechnique, ITechniqueResponse } from 'inte
  */
 const useTechniqueApi = (axios: AxiosInstance) => {
   /**
-   * Get techniques.
+   * Get all techniques for a survey.
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @return {*}  {Promise<ICreateTechniqueResponse>}
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @return {*}  {Promise<IGetTechniquesResponse>}
    */
-  const getTechniquesForSurvey = async (projectId: number, surveyId: number): Promise<ITechniqueResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/technique`);
+  const getTechniquesForSurvey = async (
+    projectId: number,
+    surveyId: number,
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<IGetTechniquesResponse> => {
+    const params = {
+      ...pagination
+    };
+
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/technique`, {
+      params,
+      paramsSerializer: (params) => qs.stringify(params)
+    });
 
     return data;
   };
 
   /**
-   * Get Technique by ID
+   * Get a technique.
+   *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} methodTechniqueId
@@ -32,24 +52,25 @@ const useTechniqueApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     methodTechniqueId: number
-  ): Promise<IGetTechnique> => {
+  ): Promise<IGetTechniqueResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/technique/${methodTechniqueId}`);
+
     return data;
   };
 
   /**
-   * Create a new technique
+   * Create a new technique.
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {ICreateTechniqueRequest[]} techniques
-   * @return {*}  {Promise<IGetTechnique[]>}
+   * @return {*}  {Promise<IGetTechniqueResponse[]>}
    */
   const createTechniques = async (
     projectId: number,
     surveyId: number,
     techniques: ICreateTechniqueRequest[]
-  ): Promise<IGetTechnique[]> => {
+  ): Promise<IGetTechniqueResponse[]> => {
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/technique`, {
       techniques
     });
@@ -58,19 +79,19 @@ const useTechniqueApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Update a technique
+   * Update an existing technique.
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {ICreateTechniqueRequest} technique
-   * @return {*}  {Promise<IGetTechnique>}
+   * @param {IUpdateTechniqueRequest} technique
+   * @return {*}  {Promise<IGetTechniqueResponse>}
    */
   const updateTechnique = async (
     projectId: number,
     surveyId: number,
     methodTechniqueId: number,
-    technique: ICreateTechniqueRequest
-  ): Promise<IGetTechnique> => {
+    technique: IUpdateTechniqueRequest
+  ): Promise<IGetTechniqueResponse> => {
     const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/technique/${methodTechniqueId}`, {
       technique
     });
@@ -79,7 +100,7 @@ const useTechniqueApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Delete a techniques
+   * Delete a technique.
    *
    * @param {number} projectId
    * @param {number} surveyId
@@ -92,7 +113,13 @@ const useTechniqueApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  return { createTechniques, updateTechnique, getTechniqueById, getTechniquesForSurvey, deleteTechnique };
+  return {
+    createTechniques,
+    updateTechnique,
+    getTechniqueById,
+    getTechniquesForSurvey,
+    deleteTechnique
+  };
 };
 
 export default useTechniqueApi;

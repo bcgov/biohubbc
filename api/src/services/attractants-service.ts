@@ -2,6 +2,15 @@ import { IDBConnection } from '../database/db';
 import { AttractantRecord, AttractantRepository, IAttractantPostData } from '../repositories/attractants-repository';
 import { DBService } from './db-service';
 
+/**
+ * Attractant service.
+ *
+ * Handles all business logic related to technique attractants.
+ *
+ * @export
+ * @class AttractantService
+ * @extends {DBService}
+ */
 export class AttractantService extends DBService {
   attractantRepository: AttractantRepository;
 
@@ -14,8 +23,8 @@ export class AttractantService extends DBService {
   /**
    * Get all attractants for a technique.
    *
-   * @param {number} surveyId
-   * @param {number} methodTechniqueId
+   * @param {number} surveyId The ID of the survey the technique is associated with
+   * @param {number} methodTechniqueId The ID of the technique to get attractants for
    * @return {*}  {Promise<AttractantRecord[]>}
    * @memberof AttractantService
    */
@@ -26,21 +35,26 @@ export class AttractantService extends DBService {
   /**
    * Insert attractant records for a technique.
    *
-   * @param {number} surveyId
-   * @param {IAttractantPostData[]} attractants
-   * @return {*}  {Promise<void>}
+   * @param {number} surveyId The ID of the survey the technique is associated with
+   * @param {number} methodTechniqueId The ID of the technique to insert attractants for
+   * @param {IAttractantPostData[]} attractants The attractants to insert
+   * @return {*}  {Promise<{ method_technique_attractant_id: number }[]>}
    * @memberof AttractantService
    */
-  async insertTechniqueAttractants(surveyId: number, attractants: IAttractantPostData[]): Promise<void> {
-    return this.attractantRepository.insertAttractantsForTechnique(surveyId, attractants);
+  async insertTechniqueAttractants(
+    surveyId: number,
+    methodTechniqueId: number,
+    attractants: IAttractantPostData[]
+  ): Promise<{ method_technique_attractant_id: number }[]> {
+    return this.attractantRepository.insertAttractantsForTechnique(surveyId, methodTechniqueId, attractants);
   }
 
   /**
    * Update attractant records for a technique.
    *
-   * @param {number} surveyId
-   * @param {number} methodTechniqueId
-   * @param {IAttractantPostData[]} attractants
+   * @param {number} surveyId The ID of the survey the technique is associated with
+   * @param {number} methodTechniqueId The ID of the technique to update attractants for
+   * @param {IAttractantPostData[]} attractants The attractants to update
    * @return {*}  {Promise<void>}
    * @memberof AttractantService
    */
@@ -51,8 +65,8 @@ export class AttractantService extends DBService {
   ): Promise<void> {
     // Get existing attractants associated with the technique
     const existingAttractants = await this.attractantRepository.getAttractantsByTechniqueId(
-      methodTechniqueId,
-      surveyId
+      surveyId,
+      methodTechniqueId
     );
 
     // Find existing attractants to delete
@@ -67,24 +81,22 @@ export class AttractantService extends DBService {
     }
 
     // If the incoming data does not yet exist in the DB, insert the record
-    const attractantsForInsert = attractants.filter(
+    const attractantsToInsert = attractants.filter(
       (incoming) =>
         !existingAttractants.some((existing) => existing.attractant_lookup_id === incoming.attractant_lookup_id)
     );
 
-    if (attractantsForInsert.length > 0) {
-      await this.attractantRepository.insertAttractantsForTechnique(methodTechniqueId, attractantsForInsert);
+    if (attractantsToInsert.length > 0) {
+      await this.attractantRepository.insertAttractantsForTechnique(surveyId, methodTechniqueId, attractantsToInsert);
     }
-
-    // If the incoming data already exists in the DB, do nothing
   }
 
   /**
-   * Delete specific attractants for a technique
+   * Delete some attractants for a technique.
    *
-   * @param {number} surveyId
-   * @param {number} methodTechniqueId
-   * @param {number[]} attractantLookupIds
+   * @param {number} surveyId The ID of the survey the technique is associated with
+   * @param {number} methodTechniqueId The ID of the technique to delete attractants for
+   * @param {number[]} attractantLookupIds The IDs of the attractants to delete
    * @return {*}  {Promise<void>}
    * @memberof AttractantService
    */
@@ -97,10 +109,10 @@ export class AttractantService extends DBService {
   }
 
   /**
-   * Delete all attractants for a technique
+   * Delete all attractants for a technique.
    *
-   * @param {number} surveyId
-   * @param {number} methodTechniqueId
+   * @param {number} surveyId The ID of the survey the technique is associated with
+   * @param {number} methodTechniqueId The ID of the technique to delete attractants for
    * @return {*}  {Promise<void>}
    * @memberof AttractantService
    */

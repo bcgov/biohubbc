@@ -2,8 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { techniqueDetailsSchema, techniqueViewSchema } from '../../../../../../../openapi/schemas/technique';
-import { ITechniquePostData } from '../../../../../../../repositories/technique-repository';
+import { techniqueUpdateSchema, techniqueViewSchema } from '../../../../../../../openapi/schemas/technique';
+import { ITechniquePutData } from '../../../../../../../repositories/technique-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttractantService } from '../../../../../../../services/attractants-service';
 import { TechniqueAttributeService } from '../../../../../../../services/technique-attributes-service';
@@ -17,11 +17,7 @@ export const DELETE: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR,
-            PROJECT_PERMISSION.OBSERVER
-          ],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -69,21 +65,13 @@ DELETE.apiDoc = {
         type: 'integer',
         minimum: 1
       },
-      description: 'An array of method technique IDs',
+      description: 'A method technique ID',
       required: true
     }
   ],
   responses: {
     200: {
-      description: 'Boolean true value representing successful deletion.',
-      content: {
-        'application/json': {
-          schema: {
-            title: 'Technique delete response',
-            type: 'boolean'
-          }
-        }
-      }
+      description: 'Delete technique OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -120,12 +108,11 @@ export function deleteTechnique(): RequestHandler {
 
       const techniqueService = new TechniqueService(connection);
 
-      // Delete the technique
-      const method_technique_id = await techniqueService.deleteTechnique(surveyId, methodTechniqueId);
+      await techniqueService.deleteTechnique(surveyId, methodTechniqueId);
 
       await connection.commit();
 
-      return res.status(200).json(Boolean(method_technique_id));
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'getSurveyTechniques', message: 'error', error });
       await connection.rollback();
@@ -141,7 +128,7 @@ export const PUT: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -157,7 +144,7 @@ export const PUT: Operation = [
 
 PUT.apiDoc = {
   description: 'Update a technique',
-  tags: ['project', 'survey'],
+  tags: ['technique'],
   security: [
     {
       Bearer: []
@@ -198,18 +185,18 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          additionalProperties: false,
           required: ['technique'],
+          additionalProperties: false,
           properties: {
-            technique: techniqueDetailsSchema
+            technique: techniqueUpdateSchema
           }
         }
       }
     }
   },
   responses: {
-    201: {
-      description: 'Sample site added OK.'
+    200: {
+      description: 'Technique updated OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -229,6 +216,12 @@ PUT.apiDoc = {
   }
 };
 
+/**
+ * Update a technique, including its attributes and attractants.
+ *
+ * @export
+ * @return {*}  {RequestHandler}
+ */
 export function updateTechnique(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
@@ -236,44 +229,36 @@ export function updateTechnique(): RequestHandler {
     try {
       await connection.open();
 
-      const techniqueService = new TechniqueService(connection);
-      const attractantsService = new AttractantService(connection);
-      const techniqueAttributeService = new TechniqueAttributeService(connection);
-
       const surveyId = Number(req.params.surveyId);
       const methodTechniqueId = Number(req.params.techniqueId);
 
-      const technique: ITechniquePostData = req.body.technique;
+      const technique: ITechniquePutData = req.body.technique;
 
       const { attributes, attractants, ...techniqueRow } = technique;
 
-      // Update the technique table
-      await techniqueService.updateTechnique(surveyId, methodTechniqueId, techniqueRow);
+      // Update the technique record
+      const techniqueService = new TechniqueService(connection);
+      await techniqueService.updateTechnique(surveyId, techniqueRow);
 
-      const promises = [];
-
-      // Update attractants
-      promises.push(attractantsService.updateTechniqueAttractants(surveyId, methodTechniqueId, attractants));
-
-      // Update qualitative attributes. This step deletes attributes and inserts new attributes.
-      promises.push(
-        techniqueAttributeService.updateDeleteQualitativeAttributesForTechnique(
+      // Update the technique's attributes and attractants
+      const attractantsService = new AttractantService(connection);
+      const techniqueAttributeService = new TechniqueAttributeService(connection);
+      await Promise.all([
+        // Update attractants
+        attractantsService.updateTechniqueAttractants(surveyId, methodTechniqueId, attractants),
+        // Update qualitative attributes
+        techniqueAttributeService.insertUpdateDeleteQualitativeAttributesForTechnique(
           surveyId,
           methodTechniqueId,
           attributes.qualitative_attributes
-        )
-      );
-
-      // Update quantitative attributes. This step deletes attributes and inserts new attributes.
-      promises.push(
-        techniqueAttributeService.updateDeleteQuantitativeAttributesForTechnique(
+        ),
+        // Update quantitative attributes
+        techniqueAttributeService.insertUpdateDeleteQuantitativeAttributesForTechnique(
           surveyId,
           methodTechniqueId,
           attributes.quantitative_attributes
         )
-      );
-
-      await Promise.all(promises);
+      ]);
 
       await connection.commit();
 
@@ -377,7 +362,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get a single technique by Id
+ * Get a single technique by Id.
  *
  * @returns {RequestHandler}
  */

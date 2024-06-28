@@ -36,56 +36,8 @@ GET.apiDoc = {
               type: 'object',
               additionalProperties: false,
               properties: {
-                qualitative_attributes: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    additionalProperties: false,
-                    required: ['method_lookup_attribute_qualitative_id', 'name', 'description', 'options'],
-                    properties: {
-                      method_lookup_attribute_qualitative_id: {
-                        type: 'string',
-                        format: 'uuid'
-                      },
-                      name: {
-                        type: 'string'
-                      },
-                      description: {
-                        type: 'string',
-                        nullable: true
-                      },
-                      options: {
-                        type: 'array',
-                        items: {
-                          type: 'object',
-                          additionalProperties: false,
-                          required: [
-                            'method_lookup_attribute_qualitative_option_id',
-                            'environment_qualitative_id',
-                            'name',
-                            'description'
-                          ],
-                          properties: {
-                            method_lookup_attribute_qualitative_option_id: {
-                              type: 'string',
-                              format: 'uuid'
-                            },
-                            environment_qualitative_id: {
-                              type: 'string',
-                              format: 'uuid'
-                            },
-                            name: {
-                              type: 'string'
-                            },
-                            description: {
-                              type: 'string',
-                              nullable: true
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
+                method_lookup_id: {
+                  type: 'number'
                 },
                 quantitative_attributes: {
                   type: 'array',
@@ -116,6 +68,48 @@ GET.apiDoc = {
                       unit: {
                         type: 'string',
                         nullable: true
+                      }
+                    }
+                  }
+                },
+                qualitative_attributes: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    required: ['method_lookup_attribute_qualitative_id', 'name', 'description', 'options'],
+                    properties: {
+                      method_lookup_attribute_qualitative_id: {
+                        type: 'string',
+                        format: 'uuid'
+                      },
+                      name: {
+                        type: 'string'
+                      },
+                      description: {
+                        type: 'string',
+                        nullable: true
+                      },
+                      options: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          additionalProperties: false,
+                          required: ['method_lookup_attribute_qualitative_option_id', 'name', 'description'],
+                          properties: {
+                            method_lookup_attribute_qualitative_option_id: {
+                              type: 'string',
+                              format: 'uuid'
+                            },
+                            name: {
+                              type: 'string'
+                            },
+                            description: {
+                              type: 'string',
+                              nullable: true
+                            }
+                          }
+                        }
                       }
                     }
                   }
@@ -154,13 +148,16 @@ export function getTechniqueAttributes(): RequestHandler {
     const connection = getAPIUserDBConnection();
 
     try {
-      const methodLookupIds: number[] = (req.query.methodLookupIds as string[]).map(Number);
+      const methodLookupIds: number[] = (req.query.methodLookupId as string[]).map(Number);
 
       await connection.open();
 
       const techniqueAttributeService = new TechniqueAttributeService(connection);
 
-      const response = await techniqueAttributeService.getAttributesForMethodLookupIds(methodLookupIds);
+      const response = await techniqueAttributeService.getAttributeDefinitionsByMethodLookupIds(methodLookupIds);
+
+      // Allow browsers to cache this response for 300 seconds (5 minutes)
+      res.setHeader('Cache-Control', 'private, max-age=300');
 
       await connection.commit();
 

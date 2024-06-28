@@ -8,7 +8,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { SurveySitesTable } from 'features/surveys/view/components/sampling-data/SurveySitesTable';
 import { SurveyTechniquesTable } from 'features/surveys/view/components/sampling-data/SurveyTechniquesTable';
 import { IGetSampleSiteResponse } from 'interfaces/useSamplingSiteApi.interface';
-import { ITechniqueResponse } from 'interfaces/useTechniqueApi.interface';
+import { IGetTechniquesResponse } from 'interfaces/useTechniqueApi.interface';
 import { useState } from 'react';
 
 export enum SurveySamplingView {
@@ -17,7 +17,7 @@ export enum SurveySamplingView {
 }
 
 interface ISurveySamplingTabsProps {
-  techniques?: ITechniqueResponse;
+  techniques?: IGetTechniquesResponse;
   sites?: IGetSampleSiteResponse;
 }
 

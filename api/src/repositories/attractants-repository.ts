@@ -2,10 +2,7 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
-
-const defaultLog = getLogger('repositories/attractants-repository');
 
 export const AttractantRecord = z.object({
   method_technique_attractant_id: z.number(),
@@ -19,6 +16,15 @@ export interface IAttractantPostData {
   attractant_lookup_id: number;
 }
 
+/**
+ * Attractant repository.
+ *
+ * Handles all database operations related to technique attractants.
+ *
+ * @export
+ * @class AttractantRepository
+ * @extends {BaseRepository}
+ */
 export class AttractantRepository extends BaseRepository {
   /**
    * Get attractants for a technique.
@@ -29,8 +35,6 @@ export class AttractantRepository extends BaseRepository {
    * @memberof AttractantRepository
    */
   async getAttractantsByTechniqueId(surveyId: number, methodTechniqueId: number): Promise<AttractantRecord[]> {
-    defaultLog.debug({ label: 'getAttractantsByTechniqueId', methodTechniqueId });
-
     const sqlStatement = SQL`
       SELECT 
         method_technique_attractant.method_technique_attractant_id, 
@@ -38,11 +42,11 @@ export class AttractantRepository extends BaseRepository {
         method_technique_attractant.attractant_lookup_id
       FROM 
         method_technique_attractant 
-      INNER 
-        JOIN method_technique
-          ON method_technique.method_technique_id = method_technique_attractant.method
+      INNER JOIN 
+        method_technique
+          ON method_technique.method_technique_id = method_technique_attractant.method_technique_id
       WHERE 
-        method_technique_attractant.method_technique_id = ${methodTechniqueId};
+        method_technique_attractant.method_technique_id = ${methodTechniqueId}
       AND 
         method_technique.survey_id = ${surveyId};
     `;
@@ -53,29 +57,42 @@ export class AttractantRepository extends BaseRepository {
   }
 
   /**
-   * Insert attractants for a technique.
+   * Create attractant records for a technique.
    *
+   * @param {number} surveyId
    * @param {number} methodTechniqueId
    * @param {IAttractantPostData[]} attractants
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<{ method_technique_attractant_id: number }[]>}
    * @memberof AttractantRepository
    */
-  async insertAttractantsForTechnique(methodTechniqueId: number, attractants: IAttractantPostData[]): Promise<void> {
-    defaultLog.debug({ label: 'insertTechnique', methodTechniqueId });
-
-    if (attractants.length > 0) {
-      const queryBuilder = getKnex()
-        .insert(
-          attractants.map((attractant) => ({
-            attractant_lookup_id: attractant.attractant_lookup_id,
-            method_technique_id: methodTechniqueId
-          }))
-        )
-        .into('method_technique_attractant')
-        .returning('method_technique_attractant_id');
-
-      await this.connection.knex(queryBuilder, z.object({ method_technique_attractant_id: z.number() }));
+  async insertAttractantsForTechnique(
+    surveyId: number,
+    methodTechniqueId: number,
+    attractants: IAttractantPostData[]
+  ): Promise<{ method_technique_attractant_id: number }[]> {
+    if (!attractants.length) {
+      return [];
     }
+
+    const queryBuilder = getKnex()
+      .insert(
+        attractants.map((attractant) => ({
+          attractant_lookup_id: attractant.attractant_lookup_id,
+          method_technique_id: methodTechniqueId
+        }))
+      )
+      .into('method_technique_attractant')
+      .innerJoin(
+        'method_technique',
+        'method_technique.method_technique_id',
+        'method_technique_attractant.method_technique_id'
+      )
+      .where('method_technique.survey_id', surveyId)
+      .returning('method_technique_attractant_id');
+
+    const response = await this.connection.knex(queryBuilder, z.object({ method_technique_attractant_id: z.number() }));
+
+    return response.rows;
   }
 
   /**
@@ -92,8 +109,6 @@ export class AttractantRepository extends BaseRepository {
     methodTechniqueId: number,
     attractantLookupIds: number[]
   ): Promise<void> {
-    defaultLog.debug({ label: 'deleteTechniqueAttractants', methodTechniqueId });
-
     if (attractantLookupIds.length > 0) {
       const queryBuilder = getKnex()
         .delete()
@@ -127,8 +142,6 @@ export class AttractantRepository extends BaseRepository {
    * @memberof AttractantRepository
    */
   async deleteAllTechniqueAttractants(surveyId: number, methodTechniqueId: number): Promise<void> {
-    defaultLog.debug({ label: 'deleteTechnique', methodTechniqueId });
-
     const sqlStatement = SQL`
       DELETE
       FROM method_technique_attractant mta

@@ -18,85 +18,63 @@ export interface IQualitativeAttributePostData {
   method_lookup_attribute_qualitative_id: string;
 }
 
-export interface IQuantitativeAttributeRecord {
-  method_technique_attribute_quantitative_id: number;
-  method_lookup_attribute_quantitative_id: string;
-  value: number;
-}
+// export interface IQuantitativeAttributeRecord {
+//   method_technique_attribute_quantitative_id: number;
+//   method_lookup_attribute_quantitative_id: string;
+//   value: number;
+// }
 
-export interface IQualitativeAttributeRecord {
-  method_technique_attribute_qualitative_id: number;
-  method_lookup_attribute_qualitative_id: string;
-  method_lookup_attribute_qualitative_option_id: string;
-}
+// export interface IQualitativeAttributeRecord {
+//   method_technique_attribute_qualitative_id: number;
+//   method_lookup_attribute_qualitative_id: string;
+//   method_lookup_attribute_qualitative_option_id: string;
+// }
 
-export interface ITechniqueAttributeQuantitative {
-  method_lookup_attribute_quantitative_id: string;
-  name: string;
-  description: string | null;
-  min: number | null;
-  max: number | null;
-  unit: string | null;
-}
+const TechniqueAttributeQuantitative = z.object({
+  method_lookup_attribute_quantitative_id: z.string().uuid(),
+  name: z.string(),
+  description: z.string().nullable(),
+  unit: z.string().nullable(),
+  min: z.number().nullable(),
+  max: z.number().nullable()
+});
 
-export interface ITechniqueAttributesObject {
-  quantitative_attributes: IQuantitativeAttributeRecord[];
-  qualitative_attributes: IQualitativeAttributeRecord[];
-}
+// export interface ITechniqueAttributesObject {
+//   quantitative_attributes: IQuantitativeAttributeRecord[];
+//   qualitative_attributes: IQualitativeAttributeRecord[];
+// }
 
-export interface ITechniqueAttributeQualitativeOption {
-  method_lookup_attribute_qualitative_option_id: string;
-  name: string;
-  description: string | null;
-}
+const TechniqueAttributeQualitativeOption = z.object({
+  method_lookup_attribute_qualitative_option_id: z.string(),
+  name: z.string(),
+  description: z.string().nullable()
+});
 
-export interface ITechniqueAttributeQualitative {
-  method_lookup_attribute_qualitative_id: string;
-  name: string;
-  description: string | null;
-  options: ITechniqueAttributeQualitativeOption[];
-}
+const TechniqueAttributeQualitative = z.object({
+  method_lookup_attribute_qualitative_id: z.string().uuid(),
+  name: z.string(),
+  description: z.string().nullable(),
+  options: z.array(TechniqueAttributeQualitativeOption)
+});
 
-export interface IGetTechniqueAttributes {
-  method_lookup_id: number;
-  quantitative_attributes: ITechniqueAttributeQuantitative[];
-  qualitative_attributes: ITechniqueAttributeQualitative[];
-}
+// export interface IGetTechniqueAttributes {
+//   method_lookup_id: number;
+//   quantitative_attributes: ITechniqueAttributeQuantitative[];
+//   qualitative_attributes: ITechniqueAttributeQualitative[];
+// }
 
 export const TechniqueAttributesLookupObject = z.object({
   method_lookup_id: z.number(),
-  quantitative_attributes: z.array(
-    z.object({
-      method_lookup_attribute_quantitative_id: z.string().uuid(),
-      name: z.string(),
-      description: z.string().nullable(),
-      unit: z.string().nullable(),
-      min: z.number().nullable(),
-      max: z.number().nullable()
-    })
-  ),
-  qualitative_attributes: z.array(
-    z.object({
-      method_lookup_attribute_qualitative_id: z.string().uuid(),
-      name: z.string(),
-      description: z.string().nullable(),
-      options: z.array(
-        z.object({
-          method_lookup_attribute_qualitative_option_id: z.string(),
-          name: z.string(),
-          description: z.string().nullable()
-        })
-      )
-    })
-  )
+  quantitative_attributes: z.array(TechniqueAttributeQuantitative),
+  qualitative_attributes: z.array(TechniqueAttributeQualitative)
 });
-
 export type TechniqueAttributesLookupObject = z.infer<typeof TechniqueAttributesLookupObject>;
 
 export const TechniqueAttributesObject = z.object({
   quantitative_attributes: z.array(
     z.object({
       method_technique_attribute_quantitative_id: z.number(),
+      method_technique_id: z.number(),
       method_lookup_attribute_quantitative_id: z.string().uuid(),
       value: z.number()
     })
@@ -104,25 +82,25 @@ export const TechniqueAttributesObject = z.object({
   qualitative_attributes: z.array(
     z.object({
       method_technique_attribute_qualitative_id: z.number(),
+      method_technique_id: z.number(),
       method_lookup_attribute_qualitative_id: z.string().uuid(),
       method_lookup_attribute_qualitative_option_id: z.string()
     })
   )
 });
-
 export type TechniqueAttributesObject = z.infer<typeof TechniqueAttributesObject>;
 
 export class TechniqueAttributeRepository extends BaseRepository {
   /**
-   * Get quantitative and qualitative attributes for a method lookup Id
+   * Get quantitative and qualitative attribute definition records for method lookup Ids.
    *
    * @param {number[]} methodLookupIds
-   * @return {*}  {Promise<IGetTechniqueAttributes[]>}
+   * @return {*}  {Promise<TechniqueAttributesLookupObject[]>}
    * @memberof TechniqueAttributeRepository
    */
-  async getAttributesForMethodLookupIds(methodLookupIds: number[]): Promise<IGetTechniqueAttributes[]> {
-    defaultLog.debug({ label: 'getAttributesForMethodLookupId', methodLookupIds });
-
+  async getAttributeDefinitionsByMethodLookupIds(
+    methodLookupIds: number[]
+  ): Promise<TechniqueAttributesLookupObject[]> {
     const knex = getKnex();
 
     const queryBuilder = knex
@@ -132,15 +110,15 @@ export class TechniqueAttributeRepository extends BaseRepository {
           .select(
             'mlaq.method_lookup_id',
             knex.raw(`
-        json_agg(json_build_object(
-          'method_lookup_attribute_quantitative_id', mlaq.method_lookup_attribute_quantitative_id,
-          'name', taq.name,
-          'description', taq.description,
-          'min', mlaq.min,
-          'max', mlaq.max,
-          'unit', mlaq.unit
-        )) as quantitative_attributes
-      `)
+              json_agg(json_build_object(
+                'method_lookup_attribute_quantitative_id', mlaq.method_lookup_attribute_quantitative_id,
+                'name', taq.name,
+                'description', taq.description,
+                'min', mlaq.min,
+                'max', mlaq.max,
+                'unit', mlaq.unit
+              )) as quantitative_attributes
+            `)
           )
           .from('method_lookup_attribute_quantitative as mlaq')
           .leftJoin(
@@ -157,11 +135,12 @@ export class TechniqueAttributeRepository extends BaseRepository {
           .select(
             'method_lookup_attribute_qualitative_id',
             knex.raw(`
-          json_agg(json_build_object(
-            'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id,
-            'name', name,
-            'description', description
-          )) as options`)
+              json_agg(json_build_object(
+                'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id,
+                'name', name,
+                'description', description
+              )) as options
+            `)
           )
           .from('method_lookup_attribute_qualitative_option')
           .where('record_end_date', null)
@@ -173,13 +152,13 @@ export class TechniqueAttributeRepository extends BaseRepository {
           .select(
             'mlaq.method_lookup_id',
             knex.raw(`
-            json_agg(json_build_object(
-              'method_lookup_attribute_qualitative_id', mlaq.method_lookup_attribute_qualitative_id,
-              'name', taq.name,
-              'description', taq.description,
-              'options', COALESCE(wqao.options, '[]'::json)
-            )) as qualitative_attributes
-          `)
+              json_agg(json_build_object(
+                'method_lookup_attribute_qualitative_id', mlaq.method_lookup_attribute_qualitative_id,
+                'name', taq.name,
+                'description', taq.description,
+                'options', COALESCE(wqao.options, '[]'::json)
+              )) as qualitative_attributes
+            `)
           )
           .from('method_lookup_attribute_qualitative as mlaq')
           .leftJoin(
@@ -211,13 +190,13 @@ export class TechniqueAttributeRepository extends BaseRepository {
   }
 
   /**
-   * Get quantitative and qualitative attributes for a method lookup Id
+   * Get quantitative and qualitative attribute definition records for a technique Id.
    *
    * @param {number} methodTechniqueId
-   * @returns {*} {Promise<{id: number}[]>}
+   * @return {*}  {Promise<TechniqueAttributesLookupObject>}
    * @memberof TechniqueAttributeRepository
    */
-  async getAttributeDefinitionsByTechniqueId(methodTechniqueId: number): Promise<IGetTechniqueAttributes> {
+  async getAttributeDefinitionsByTechniqueId(methodTechniqueId: number): Promise<TechniqueAttributesLookupObject> {
     defaultLog.debug({ label: 'getAttributesForMethodLookupId', methodTechniqueId });
 
     const knex = getKnex();
@@ -229,15 +208,15 @@ export class TechniqueAttributeRepository extends BaseRepository {
           .select(
             'mlaq.method_lookup_id',
             knex.raw(`
-        json_agg(json_build_object(
-          'method_lookup_attribute_quantitative_id', mlaq.method_lookup_attribute_quantitative_id,
-          'name', taq.name,
-          'description', taq.description,
-          'min', mlaq.min,
-          'max', mlaq.max,
-          'unit', mlaq.unit
-        )) as quantitative_attributes
-      `)
+              json_agg(json_build_object(
+                'method_lookup_attribute_quantitative_id', mlaq.method_lookup_attribute_quantitative_id,
+                'name', taq.name,
+                'description', taq.description,
+                'min', mlaq.min,
+                'max', mlaq.max,
+                'unit', mlaq.unit
+              )) as quantitative_attributes
+            `)
           )
           .from('method_lookup_attribute_quantitative as mlaq')
           .leftJoin(
@@ -254,11 +233,12 @@ export class TechniqueAttributeRepository extends BaseRepository {
           .select(
             'method_lookup_attribute_qualitative_id',
             knex.raw(`
-          json_agg(json_build_object(
-            'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id,
-            'name', name,
-            'description', description
-          )) as options`)
+              json_agg(json_build_object(
+                'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id,
+                'name', name,
+                'description', description
+              )) as options
+            `)
           )
           .from('method_lookup_attribute_qualitative_option')
           .where('record_end_date', null)
@@ -270,13 +250,13 @@ export class TechniqueAttributeRepository extends BaseRepository {
           .select(
             'mlaq.method_lookup_id',
             knex.raw(`
-            json_agg(json_build_object(
-              'method_lookup_attribute_qualitative_id', mlaq.method_lookup_attribute_qualitative_id,
-              'name', taq.name,
-              'description', taq.description,
-              'options', COALESCE(wqao.options, '[]'::json)
-            )) as qualitative_attributes
-          `)
+              json_agg(json_build_object(
+                'method_lookup_attribute_qualitative_id', mlaq.method_lookup_attribute_qualitative_id,
+                'name', taq.name,
+                'description', taq.description,
+                'options', COALESCE(wqao.options, '[]'::json)
+              )) as qualitative_attributes
+            `)
           )
           .from('method_lookup_attribute_qualitative as mlaq')
           .leftJoin(
@@ -294,12 +274,11 @@ export class TechniqueAttributeRepository extends BaseRepository {
       )
       .select(
         'ml.method_lookup_id',
-        'mt.method_technique_id',
         knex.raw(`COALESCE(qual.qualitative_attributes, '[]'::json) as qualitative_attributes`),
         knex.raw(`COALESCE(quant.quantitative_attributes, '[]'::json) as quantitative_attributes`)
       )
       .from('method_technique as mt')
-      .leftJoin('method_lookup as ml', 'ml.method_lookup_id', 'mt_method_lookup_id')
+      .leftJoin('method_lookup as ml', 'ml.method_lookup_id', 'mt.method_lookup_id')
       .leftJoin('w_qualitative_attributes as qual', 'ml.method_lookup_id', 'qual.method_lookup_id')
       .leftJoin('w_quantitative_attributes as quant', 'ml.method_lookup_id', 'quant.method_lookup_id')
       .where('mt.method_technique_id', methodTechniqueId);
@@ -310,13 +289,13 @@ export class TechniqueAttributeRepository extends BaseRepository {
   }
 
   /**
-   * Get quantitative and qualitative attributes for a technique Id
+   * Get quantitative and qualitative attribute records for a technique Id.
    *
    * @param {number} methodTechniqueId
-   * @returns {*} {Promise<{id: number}[]>}
+   * @return {*}  {Promise<TechniqueAttributesObject>}
    * @memberof TechniqueAttributeRepository
    */
-  async getAttributesByTechniqueId(methodTechniqueId: number): Promise<ITechniqueAttributesObject> {
+  async getAttributesByTechniqueId(methodTechniqueId: number): Promise<TechniqueAttributesObject> {
     defaultLog.debug({ label: 'getAttributesByTechniqueId', methodTechniqueId });
 
     const knex = getKnex();
@@ -329,6 +308,7 @@ export class TechniqueAttributeRepository extends BaseRepository {
             'method_technique_id',
             knex.raw(`json_agg(json_build_object(
           'method_technique_attribute_quantitative_id', method_technique_attribute_quantitative_id,
+          'method_technique_id', method_technique_id,
           'method_lookup_attribute_quantitative_id', method_lookup_attribute_quantitative_id,
           'value', value
         )) as quantitative_attributes`)
@@ -343,6 +323,7 @@ export class TechniqueAttributeRepository extends BaseRepository {
             'method_technique_id',
             knex.raw(`json_agg(json_build_object(
           'method_technique_attribute_qualitative_id', method_technique_attribute_qualitative_id,
+          'method_technique_id', method_technique_id,
           'method_lookup_attribute_qualitative_id', method_lookup_attribute_qualitative_id,
           'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id
         )) as qualitative_attributes`)
@@ -365,7 +346,7 @@ export class TechniqueAttributeRepository extends BaseRepository {
   }
 
   /**
-   * Insert qualitative attributes for a technique
+   * Insert qualitative attribute records for a technique.
    *
    * @param {number} methodTechniqueId
    * @param {IQualitativeAttributePostData[]} attributes
@@ -378,24 +359,26 @@ export class TechniqueAttributeRepository extends BaseRepository {
   ): Promise<void> {
     defaultLog.debug({ label: 'insertQualitativeAttributesForTechnique', methodTechniqueId });
 
-    if (attributes.length > 0) {
-      const queryBuilder = getKnex()
-        .insert(
-          attributes.map((attribute) => ({
-            method_lookup_attribute_qualitative_id: attribute.method_lookup_attribute_qualitative_id,
-            method_lookup_attribute_qualitative_option_id: attribute.method_lookup_attribute_qualitative_option_id,
-            method_technique_id: methodTechniqueId
-          }))
-        )
-        .into('method_technique_attribute_qualitative')
-        .returning('method_technique_attribute_qualitative_id');
-
-      await this.connection.knex(queryBuilder, z.object({ method_technique_attribute_qualitative_id: z.number() }));
+    if (!attributes.length) {
+      return;
     }
+
+    const queryBuilder = getKnex()
+      .insert(
+        attributes.map((attribute) => ({
+          method_lookup_attribute_qualitative_id: attribute.method_lookup_attribute_qualitative_id,
+          method_lookup_attribute_qualitative_option_id: attribute.method_lookup_attribute_qualitative_option_id,
+          method_technique_id: methodTechniqueId
+        }))
+      )
+      .into('method_technique_attribute_qualitative')
+      .returning('method_technique_attribute_qualitative_id');
+
+    await this.connection.knex(queryBuilder, z.object({ method_technique_attribute_qualitative_id: z.number() }));
   }
 
   /**
-   * Insert quantitative attributes for a technique
+   * Insert quantitative attribute records for a technique.
    *
    * @param {number} methodTechniqueId
    * @param {IQuantitativeAttributePostData[]} attributes
@@ -408,24 +391,26 @@ export class TechniqueAttributeRepository extends BaseRepository {
   ): Promise<void> {
     defaultLog.debug({ label: 'insertQuantitativeAttributesForTechnique', methodTechniqueId });
 
-    if (attributes.length > 0) {
-      const queryBuilder = getKnex()
-        .insert(
-          attributes.map((attribute) => ({
-            method_lookup_attribute_quantitative_id: attribute.method_lookup_attribute_quantitative_id,
-            value: attribute.value,
-            method_technique_id: methodTechniqueId
-          }))
-        )
-        .into('method_technique_attribute_quantitative')
-        .returning('method_technique_attribute_quantitative_id');
-
-      await this.connection.knex(queryBuilder, z.object({ method_technique_attribute_quantitative_id: z.number() }));
+    if (!attributes.length) {
+      return;
     }
+
+    const queryBuilder = getKnex()
+      .insert(
+        attributes.map((attribute) => ({
+          method_lookup_attribute_quantitative_id: attribute.method_lookup_attribute_quantitative_id,
+          value: attribute.value,
+          method_technique_id: methodTechniqueId
+        }))
+      )
+      .into('method_technique_attribute_quantitative')
+      .returning('method_technique_attribute_quantitative_id');
+
+    await this.connection.knex(queryBuilder, z.object({ method_technique_attribute_quantitative_id: z.number() }));
   }
 
   /**
-   * Update quantitative attributes for a technique
+   * Update quantitative attribute records for a technique.
    *
    * @param {number} methodTechniqueId
    * @param {IQuantitativeAttributePostData} attribute
@@ -450,7 +435,7 @@ export class TechniqueAttributeRepository extends BaseRepository {
   }
 
   /**
-   * Update qualitative attributes for a technique
+   * Update qualitative attribute records for a technique.
    *
    * @param {number} methodTechniqueId
    * @param {IQualitativeAttributePostData} attribute
@@ -475,7 +460,7 @@ export class TechniqueAttributeRepository extends BaseRepository {
   }
 
   /**
-   * Delete qualitative attributes for a technique
+   * Delete qualitative attribute records for a technique.
    *
    * @param {number} methodTechniqueId
    * @param {number[]}  methodTechniqueAttributeQualitativeIds
@@ -509,7 +494,7 @@ export class TechniqueAttributeRepository extends BaseRepository {
   }
 
   /**
-   * Delete quantitative attributes for a technique
+   * Delete quantitative attribute records for a technique.
    *
    * @param {number} methodTechniqueId
    * @param {number[]} methodTechniqueAttributeQuantitativeIds

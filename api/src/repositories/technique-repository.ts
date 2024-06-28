@@ -2,30 +2,10 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { getLogger } from '../utils/logger';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { IAttractantPostData } from './attractants-repository';
 import { BaseRepository } from './base-repository';
-import {
-  IQualitativeAttributePostData,
-  IQualitativeAttributeRecord,
-  IQuantitativeAttributePostData,
-  IQuantitativeAttributeRecord
-} from './technique-attribute-repository';
-
-const defaultLog = getLogger('repositories/survey-repository');
-
-export interface IGetTechnique {
-  method_technique_id: number;
-  name: string;
-  description: string | null;
-  distance_threshold: number | null;
-  method_lookup_id: number;
-  attributes: {
-    quantitative_attributes: IQuantitativeAttributeRecord[];
-    qualitative_attributes: IQualitativeAttributeRecord[];
-  };
-  attractants: { attractant_lookup_id: number }[];
-}
+import { IQualitativeAttributePostData, IQuantitativeAttributePostData } from './technique-attribute-repository';
 
 export interface ITechniquePostData {
   survey_id: number;
@@ -40,12 +20,15 @@ export interface ITechniquePostData {
   attractants: IAttractantPostData[];
 }
 
+export interface ITechniquePutData extends ITechniquePostData {
+  method_technique_id: number;
+}
+
 export interface ITechniqueRowDataForInsert {
   name: string;
   description: string | null;
   distance_threshold: number | null;
   method_lookup_id: number;
-  survey_id: number;
 }
 
 export interface ITechniqueRowDataForUpdate extends ITechniqueRowDataForInsert {
@@ -76,12 +59,12 @@ export const TechniqueObject = z.object({
     )
   })
 });
-
 export type TechniqueObject = z.infer<typeof TechniqueObject>;
 
 export class TechniqueRepository extends BaseRepository {
   /**
-   * Private utility function to generate the common SQL query for fetching techniques
+   * Private utility function to generate the common SQL query for fetching method technique records, including
+   * associated attractants and attributes.
    *
    * @param {number} surveyId The survey ID
    * @returns {*}
@@ -95,9 +78,11 @@ export class TechniqueRepository extends BaseRepository {
         knex
           .select(
             'method_technique_id',
-            knex.raw(`json_agg(json_build_object(
-          'attractant_lookup_id', attractant_lookup_id
-        )) as attractants`)
+            knex.raw(`
+              json_agg(json_build_object(
+                'attractant_lookup_id', attractant_lookup_id
+              )) AS attractants
+            `)
           )
           .from('method_technique_attractant')
           .groupBy('method_technique_id')
@@ -107,11 +92,13 @@ export class TechniqueRepository extends BaseRepository {
         knex
           .select(
             'method_technique_id',
-            knex.raw(`json_agg(json_build_object(
-          'method_technique_attribute_quantitative_id', method_technique_attribute_quantitative_id,
-          'method_lookup_attribute_quantitative_id', method_lookup_attribute_quantitative_id,
-          'value', value
-        )) as quantitative_attributes`)
+            knex.raw(`
+              json_agg(json_build_object(
+                'method_technique_attribute_quantitative_id', method_technique_attribute_quantitative_id,
+                'method_lookup_attribute_quantitative_id', method_lookup_attribute_quantitative_id,
+                'value', value
+              )) as quantitative_attributes
+            `)
           )
           .from('method_technique_attribute_quantitative')
           .groupBy('method_technique_id')
@@ -121,31 +108,16 @@ export class TechniqueRepository extends BaseRepository {
         knex
           .select(
             'method_technique_id',
-            knex.raw(`json_agg(json_build_object(
-          'method_technique_attribute_qualitative_id', method_technique_attribute_qualitative_id,
-          'method_lookup_attribute_qualitative_id', method_lookup_attribute_qualitative_id,
-          'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id
-        )) as qualitative_attributes`)
+            knex.raw(`
+              json_agg(json_build_object(
+                'method_technique_attribute_qualitative_id', method_technique_attribute_qualitative_id,
+                'method_lookup_attribute_qualitative_id', method_lookup_attribute_qualitative_id,
+                'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id
+              )) as qualitative_attributes
+            `)
           )
           .from('method_technique_attribute_qualitative')
           .groupBy('method_technique_id')
-      )
-      .with(
-        'w_attributes',
-        knex
-          .select(
-            'w_quantitative_attributes.method_technique_id',
-            knex.raw(`json_build_object(
-          'quantitative_attributes', COALESCE(w_quantitative_attributes.quantitative_attributes, '[]'::json),
-          'qualitative_attributes', COALESCE(w_qualitative_attributes.qualitative_attributes, '[]'::json)
-        ) as attributes`)
-          )
-          .from('w_quantitative_attributes')
-          .leftJoin(
-            'w_qualitative_attributes',
-            'w_qualitative_attributes.method_technique_id',
-            'w_quantitative_attributes.method_technique_id'
-          )
       )
       .select(
         'mt.method_technique_id',
@@ -153,30 +125,34 @@ export class TechniqueRepository extends BaseRepository {
         'mt.description',
         'mt.distance_threshold',
         'mt.method_lookup_id',
-        knex.raw(`COALESCE(w_attractants.attractants, '[]'::json) as attractants`),
-        knex.raw(
-          `COALESCE(w_attributes.attributes, '{"quantitative_attributes": [], "qualitative_attributes": []}'::json) as attributes`
-        )
+        knex.raw(`
+          COALESCE(w_attractants.attractants, '[]'::json) AS attractants
+        `),
+        knex.raw(`
+          json_build_object(
+            'quantitative_attributes', COALESCE(w_quantitative_attributes.quantitative_attributes, '[]'::json),
+            'qualitative_attributes', COALESCE(w_qualitative_attributes.qualitative_attributes, '[]'::json
+          )) AS attributes
+        `)
       )
       .from('method_technique as mt')
       .leftJoin('w_attractants', 'w_attractants.method_technique_id', 'mt.method_technique_id')
-      .leftJoin('w_attributes', 'w_attributes.method_technique_id', 'mt.method_technique_id')
+      .leftJoin('w_quantitative_attributes', 'w_quantitative_attributes.method_technique_id', 'mt.method_technique_id')
+      .leftJoin('w_qualitative_attributes', 'w_qualitative_attributes.method_technique_id', 'mt.method_technique_id')
       .where('mt.survey_id', surveyId);
 
     return queryBuilder;
   }
 
   /**
-   * Get techniques for a given survey Id
+   * Get a technique.
    *
    * @param {number} surveyId
    * @param {number} methodTechniqueId
-   * @returns {*} {Promise<{id: number}[]>}
+   * @return {*}  {Promise<TechniqueObject>}
    * @memberof TechniqueRepository
    */
-  async getTechniqueById(surveyId: number, methodTechniqueId: number): Promise<IGetTechnique> {
-    defaultLog.debug({ label: 'getTechniqueById', methodTechniqueId });
-
+  async getTechniqueById(surveyId: number, methodTechniqueId: number): Promise<TechniqueObject> {
     const queryBuilder = this._generateGetTechniqueQuery(surveyId).andWhere(
       'mt.method_technique_id',
       methodTechniqueId
@@ -188,16 +164,23 @@ export class TechniqueRepository extends BaseRepository {
   }
 
   /**
-   * Get techniques for a given survey Id
+   * Get a paginated list of techniques for a survey.
    *
    * @param {number} surveyId
-   * @returns {*}
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<TechniqueObject[]>}
    * @memberof TechniqueRepository
    */
-  async getTechniquesForSurveyId(surveyId: number): Promise<IGetTechnique[]> {
-    defaultLog.debug({ label: 'getTechniquesForSurveyId', surveyId });
-
+  async getTechniquesForSurveyId(surveyId: number, pagination?: ApiPaginationOptions): Promise<TechniqueObject[]> {
     const queryBuilder = this._generateGetTechniqueQuery(surveyId);
+
+    if (pagination) {
+      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        queryBuilder.orderBy(pagination.sort, pagination.order);
+      }
+    }
 
     const response = await this.connection.knex(queryBuilder, TechniqueObject);
 
@@ -205,14 +188,13 @@ export class TechniqueRepository extends BaseRepository {
   }
 
   /**
-   * Get techniques count for a given survey Id
+   * Get total count of all techniques for a survey.
    *
    * @param {number} surveyId
    * @returns {*} {Promise<{id: number}[]>}
    * @memberof TechniqueRepository
    */
   async getTechniquesCountForSurveyId(surveyId: number): Promise<number> {
-    defaultLog.debug({ label: 'getTechniquesForSurveyId', surveyId });
     const knex = getKnex();
 
     const queryBuilder = knex
@@ -226,7 +208,7 @@ export class TechniqueRepository extends BaseRepository {
   }
 
   /**
-   * Insert a new technique
+   * Create a new technique.
    *
    * @param {number} surveyId
    * @param {number} techniqueObject
@@ -237,9 +219,16 @@ export class TechniqueRepository extends BaseRepository {
     surveyId: number,
     techniqueObject: ITechniqueRowDataForInsert
   ): Promise<{ method_technique_id: number }> {
-    defaultLog.debug({ label: 'insertTechnique', surveyId });
-
-    const queryBuilder = getKnex().insert(techniqueObject).into('method_technique').returning('method_technique_id');
+    const queryBuilder = getKnex()
+      .insert({
+        name: techniqueObject.name,
+        description: techniqueObject.description,
+        distance_threshold: techniqueObject.distance_threshold,
+        method_lookup_id: techniqueObject.method_lookup_id,
+        survey_id: surveyId
+      })
+      .into('method_technique')
+      .returning('method_technique_id');
 
     const response = await this.connection.knex(queryBuilder, z.object({ method_technique_id: z.number() }));
 
@@ -247,32 +236,30 @@ export class TechniqueRepository extends BaseRepository {
   }
 
   /**
-   * Update technique in a survey
+   * Update an existing technique.
    *
    * @param {number} surveyId
-   * @param {number} methodTechniqueId
-   * @param {number} techniqueObject
-   * @returns {*} {Promise<{id: number}[]>}
+   * @param {ITechniqueRowDataForUpdate} techniqueObject
+   * @return {*}  {Promise<void>}
    * @memberof TechniqueRepository
    */
-  async updateTechnique(
-    surveyId: number,
-    techniqueObject: ITechniqueRowDataForInsert,
-    methodTechniqueId: number
-  ): Promise<void> {
-    defaultLog.debug({ label: 'insertTechnique', surveyId });
-
+  async updateTechnique(surveyId: number, techniqueObject: ITechniqueRowDataForUpdate): Promise<void> {
     const queryBuilder = getKnex()
       .table('method_technique')
-      .update(techniqueObject)
-      .where('method_technique_id', methodTechniqueId)
+      .update({
+        name: techniqueObject.name,
+        description: techniqueObject.description,
+        method_lookup_id: techniqueObject.method_lookup_id,
+        distance_threshold: techniqueObject.distance_threshold
+      })
+      .where('method_technique_id', techniqueObject.method_technique_id)
       .andWhere('survey_id', surveyId);
 
     await this.connection.knex(queryBuilder, z.object({ method_technique_id: z.number() }));
   }
 
   /**
-   * Delete a technique
+   * Delete a technique.
    *
    * @param {number} surveyId
    * @param {number} methodTechniqueId
@@ -280,8 +267,6 @@ export class TechniqueRepository extends BaseRepository {
    * @memberof TechniqueRepository
    */
   async deleteTechnique(surveyId: number, methodTechniqueId: number): Promise<number> {
-    defaultLog.debug({ label: 'deleteTechnique', methodTechniqueId });
-
     const sqlStatement = SQL`
       DELETE
       FROM method_technique mt

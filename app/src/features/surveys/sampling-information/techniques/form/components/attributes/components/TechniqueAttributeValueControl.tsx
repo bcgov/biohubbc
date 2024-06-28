@@ -1,6 +1,9 @@
 import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
-import { TechniqueFormValues } from 'features/surveys/sampling-information/techniques/form/components/TechniqueForm';
+import {
+  CreateTechniqueFormValues,
+  UpdateTechniqueFormValues
+} from 'features/surveys/sampling-information/techniques/form/components/TechniqueFormContainer';
 import { FieldArrayRenderProps, useFormikContext } from 'formik';
 import { ITechniqueAttributeQualitative, ITechniqueAttributeQuantitative } from 'interfaces/useReferenceApi.interface';
 
@@ -16,13 +19,18 @@ interface ITechniqueAttributeValueControlProps {
  *
  * Returns null if the selected attribute type definition is not provided.
  *
+ * @template FormValues
  * @param {ITechniqueAttributeValueControlProps} props
  * @return {*}
  */
-export const TechniqueAttributeValueControl = (props: ITechniqueAttributeValueControlProps) => {
+export const TechniqueAttributeValueControl = <
+  FormValues extends CreateTechniqueFormValues | UpdateTechniqueFormValues
+>(
+  props: ITechniqueAttributeValueControlProps
+) => {
   const { selectedAttributeTypeDefinition, index } = props;
 
-  const { setFieldValue } = useFormikContext<TechniqueFormValues>();
+  const { setFieldValue } = useFormikContext<FormValues>();
 
   if (!selectedAttributeTypeDefinition) {
     return (

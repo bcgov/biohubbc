@@ -7,11 +7,11 @@ import { GridColDef, GridOverlay } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { useCodesContext } from 'hooks/useContext';
-import { IGetTechnique, ITechniqueResponse } from 'interfaces/useTechniqueApi.interface';
+import { IGetTechniqueResponse, IGetTechniquesResponse } from 'interfaces/useTechniqueApi.interface';
 import { getCodesName } from 'utils/Utils';
 
 export interface ISurveyTechniquesTableProps {
-  techniques?: ITechniqueResponse;
+  techniques?: IGetTechniquesResponse;
 }
 
 export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
@@ -27,7 +27,7 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
       description: technique.description
     })) || [];
 
-  const columns: GridColDef<IGetTechnique>[] = [
+  const columns: GridColDef<IGetTechniqueResponse>[] = [
     {
       field: 'name',
       headerName: 'Name',

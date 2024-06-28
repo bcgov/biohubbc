@@ -8,27 +8,34 @@ import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import AutocompleteField from 'components/fields/AutocompleteField';
-import { TechniqueFormValues } from 'features/surveys/sampling-information/techniques/form/components/TechniqueForm';
+import {
+  CreateTechniqueFormValues,
+  UpdateTechniqueFormValues
+} from 'features/surveys/sampling-information/techniques/form/components/TechniqueFormContainer';
+
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
-
+import { useEffect } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
 /**
  * Technique attractants form.
  *
+ * @template FormValues
  * @return {*}
  */
-export const TechniqueAttractantsForm = () => {
+export const TechniqueAttractantsForm = <
+  FormValues extends CreateTechniqueFormValues | UpdateTechniqueFormValues
+>() => {
   const codesContext = useCodesContext();
 
-  const { values, setFieldValue } = useFormikContext<TechniqueFormValues>();
+  const { values, setFieldValue } = useFormikContext<FormValues>();
 
-  if (!codesContext.codesDataLoader.data) {
-    return <></>;
-  }
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
-  const attractants = codesContext.codesDataLoader.data.attractants;
+  const attractants = codesContext.codesDataLoader.data?.attractants ?? [];
 
   return (
     <>

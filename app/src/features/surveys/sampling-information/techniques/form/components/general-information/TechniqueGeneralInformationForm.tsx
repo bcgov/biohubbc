@@ -3,29 +3,31 @@ import Grid from '@mui/material/Grid';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
-import { TechniqueFormValues } from 'features/surveys/sampling-information/techniques/form/components/TechniqueForm';
+import {
+  CreateTechniqueFormValues,
+  UpdateTechniqueFormValues
+} from 'features/surveys/sampling-information/techniques/form/components/TechniqueFormContainer';
+
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
-import { DataLoader } from 'hooks/useDataLoader';
-import { IGetTechniqueAttributes } from 'interfaces/useReferenceApi.interface';
-
 import { useEffect } from 'react';
-
-interface ITechniqueGeneralInformationFormProps {
-  attributeTypeDefinitionsDataLoader: DataLoader<[method_lookup_id: number], IGetTechniqueAttributes[], undefined>;
-}
 
 /**
  * Technique general information form.
  *
+ * @template FormValues
  * @return {*}
  */
-export const TechniqueGeneralInformationForm = (props: ITechniqueGeneralInformationFormProps) => {
-  const attributeTypeDefinitionDataLoader = props.attributeTypeDefinitionsDataLoader;
+export const TechniqueGeneralInformationForm = <
+  FormValues extends CreateTechniqueFormValues | UpdateTechniqueFormValues
+>() => {
+  const { setFieldValue } = useFormikContext<FormValues>();
 
   const codesContext = useCodesContext();
 
-  const { setFieldValue, values } = useFormikContext<TechniqueFormValues>();
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   const methodOptions: ISelectWithSubtextFieldOption[] =
     codesContext.codesDataLoader.data?.sample_methods.map((option) => ({
@@ -33,18 +35,6 @@ export const TechniqueGeneralInformationForm = (props: ITechniqueGeneralInformat
       label: option.name,
       subText: option.description
     })) ?? [];
-
-  useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
-
-  useEffect(() => {
-    if (values.method_lookup_id) {
-      attributeTypeDefinitionDataLoader.load(values.method_lookup_id);
-    }
-    // Should not re-run this effect on `attributeTypeDefinitionDataLoader` changes
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.method_lookup_id]);
 
   if (!codesContext.codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -79,12 +69,6 @@ export const TechniqueGeneralInformationForm = (props: ITechniqueGeneralInformat
             onChange={(_, value) => {
               if (value?.value) {
                 setFieldValue('method_lookup_id', value.value);
-
-                // Fetch type definitions for the newly selected method_lookup_id
-                attributeTypeDefinitionDataLoader.refresh(value.value);
-
-                // Reset attributes when the method_lookup_id changes
-                setFieldValue('attributes', []);
               }
             }}
           />

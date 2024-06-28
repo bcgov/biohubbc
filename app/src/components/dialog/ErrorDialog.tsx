@@ -1,3 +1,5 @@
+import { ListItem } from '@mui/material';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import Dialog from '@mui/material/Dialog';
@@ -5,6 +7,9 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Link from '@mui/material/Link';
+import List from '@mui/material/List';
+import Stack from '@mui/material/Stack';
 import React from 'react';
 
 export interface IErrorDialogProps {
@@ -68,15 +73,13 @@ export const ErrorDialog = (props: IErrorDialogProps) => {
   const [isExpanded, setIsExpanded] = React.useState(false);
 
   const ErrorDetailsList = (errorProps: { errors: (string | object)[] }) => {
-    const items = errorProps.errors.map((error, index) => {
-      if (typeof error === 'string') {
-        return <li key={index}>{error}</li>;
-      }
+    const items = errorProps.errors.map((error, index) => (
+      <ListItem key={index} sx={{ p: 0 }}>
+        {JSON.stringify(error, null, 2)}
+      </ListItem>
+    ));
 
-      return <li key={index}>{JSON.stringify(error)}</li>;
-    });
-
-    return <ul>{items}</ul>;
+    return <List sx={{ p: 0 }}>{items}</List>;
   };
 
   if (!props.open) {
@@ -93,21 +96,25 @@ export const ErrorDialog = (props: IErrorDialogProps) => {
       <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
 
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
-        {props.dialogError && <DialogContentText id="alert-dialog-description">{props.dialogError}</DialogContentText>}
+        <Stack gap={2}>
+          <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
+          {props.dialogError && (
+            <DialogContentText id="alert-dialog-description">{props.dialogError}</DialogContentText>
+          )}
 
-        {props?.dialogErrorDetails?.length ? (
-          <>
-            <Button color="primary" onClick={() => setIsExpanded(!isExpanded)}>
-              {isExpanded ? 'Hide detailed error message' : 'Show detailed error message'}
-            </Button>
-            <Collapse in={isExpanded}>
-              <ErrorDetailsList errors={props.dialogErrorDetails} />
-            </Collapse>
-          </>
-        ) : (
-          <></>
-        )}
+          {props?.dialogErrorDetails?.length ? (
+            <Box>
+              <Link color="primary" onClick={() => setIsExpanded(!isExpanded)}>
+                {isExpanded ? 'Hide detailed error message' : 'Show detailed error message'}
+              </Link>
+              <Collapse in={isExpanded}>
+                <ErrorDetailsList errors={props.dialogErrorDetails} />
+              </Collapse>
+            </Box>
+          ) : (
+            <></>
+          )}
+        </Stack>
       </DialogContent>
 
       <DialogActions>

@@ -8,7 +8,7 @@ import {
   IGetSurveyForViewResponse,
   ISimpleCritterWithInternalId
 } from 'interfaces/useSurveyApi.interface';
-import { ITechniqueResponse } from 'interfaces/useTechniqueApi.interface';
+import { IGetTechniquesResponse } from 'interfaces/useTechniqueApi.interface';
 import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
 
@@ -57,7 +57,7 @@ export interface ISurveyContext {
    * @type {DataLoader<[project_id: number, survey_id: number], IGetSampleSiteResponse, unknown>}
    * @memberof ISurveyContext
    */
-  techniqueDataLoader: DataLoader<[project_id: number, survey_id: number], ITechniqueResponse, unknown>;
+  techniqueDataLoader: DataLoader<[project_id: number, survey_id: number], IGetTechniquesResponse, unknown>;
 
   /**
    * The Data Loader used to load critters for a given survey
@@ -96,7 +96,7 @@ export const SurveyContext = createContext<ISurveyContext>({
   surveyDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>,
   artifactDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>,
   sampleSiteDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSampleSiteResponse, unknown>,
-  techniqueDataLoader: {} as DataLoader<[project_id: number, survey_id: number], ITechniqueResponse, unknown>,
+  techniqueDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetTechniquesResponse, unknown>,
   deploymentDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IAnimalDeployment[], unknown>,
   critterDataLoader: {} as DataLoader<[project_id: number, survey_id: number], ISimpleCritterWithInternalId[], unknown>,
   critterDeployments: [],

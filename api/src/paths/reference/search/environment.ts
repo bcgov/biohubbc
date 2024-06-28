@@ -152,6 +152,9 @@ export function findSubcountEnvironments(): RequestHandler {
 
       await connection.commit();
 
+      // Allow browsers to cache this response for 300 seconds (5 minutes)
+      res.setHeader('Cache-Control', 'private, max-age=300');
+
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'findSubcountEnvironments', message: 'error', error });
