@@ -1,7 +1,5 @@
 import AttachmentsList from 'components/attachments/list/AttachmentsList';
 import SurveyReportAttachmentDialog from 'components/dialog/attachments/survey/SurveyReportAttachmentDialog';
-import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubmitDialog';
-import { PublishStatus } from 'constants/attachments';
 import { AttachmentsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -17,7 +15,6 @@ const SurveyAttachmentsList: React.FC = () => {
   const dialogContext = useContext(DialogContext);
 
   const [currentAttachment, setCurrentAttachment] = useState<null | IGetSurveyAttachment>(null);
-  const [removeOrResubmitDialogOpen, setRemoveOrResubmitDialogOpen] = useState<boolean>(false);
   const [viewReportDetailsDialogOpen, setViewReportDetailsDialogOpen] = useState<boolean>(false);
 
   // Load survey attachments
@@ -56,11 +53,6 @@ const SurveyAttachmentsList: React.FC = () => {
   const handleViewDetails = (attachment: IGetSurveyAttachment) => {
     setCurrentAttachment(attachment);
     setViewReportDetailsDialogOpen(true);
-  };
-
-  const handleRemoveOrResubmit = (attachment: IGetSurveyAttachment) => {
-    setCurrentAttachment(attachment);
-    setRemoveOrResubmitDialogOpen(true);
   };
 
   const handleDelete = (attachment: IGetSurveyAttachment) => {
@@ -106,19 +98,6 @@ const SurveyAttachmentsList: React.FC = () => {
 
   return (
     <>
-      <RemoveOrResubmitDialog
-        projectId={surveyContext.projectId}
-        fileName={currentAttachment?.fileName ?? ''}
-        parentName={surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name ?? ''}
-        status={
-          currentAttachment?.supplementaryAttachmentData?.event_timestamp
-            ? PublishStatus.SUBMITTED
-            : PublishStatus.UNSUBMITTED
-        }
-        submittedDate={currentAttachment?.supplementaryAttachmentData?.event_timestamp ?? ''}
-        open={removeOrResubmitDialogOpen}
-        onClose={() => setRemoveOrResubmitDialogOpen(false)}
-      />
       <SurveyReportAttachmentDialog
         projectId={surveyContext.projectId}
         surveyId={surveyContext.surveyId}
@@ -134,7 +113,6 @@ const SurveyAttachmentsList: React.FC = () => {
         handleDownload={handleDownload}
         handleDelete={handleDelete}
         handleViewDetails={handleViewDetails}
-        handleRemoveOrResubmit={handleRemoveOrResubmit}
         emptyStateText="No documents found"
       />
     </>

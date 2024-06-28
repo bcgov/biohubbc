@@ -79,7 +79,7 @@ export class TelemetryService extends DBService {
     const s3Object = await getFileFromS3(submission.key);
 
     // step 3 parse the file
-    const mediaFile = parseS3File(s3Object);
+    const mediaFile = await parseS3File(s3Object);
 
     // step 4 validate csv
     if (mediaFile.mimetype !== 'text/csv') {

@@ -472,7 +472,7 @@ export class ObservationService extends DBService {
     const s3Object = await getFileFromS3(observationSubmissionRecord.key);
 
     // Get the csv file from the S3 object
-    const mediaFile = parseS3File(s3Object);
+    const mediaFile = await parseS3File(s3Object);
 
     // Validate the CSV file mime type
     if (mediaFile.mimetype !== 'text/csv') {
