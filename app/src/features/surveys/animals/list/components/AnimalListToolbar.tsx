@@ -36,9 +36,7 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
 
   const handleImportAnimals = async (file: File) => {
     try {
-      const uploadResponse = await biohubApi.survey.importCrittersFromCsv(file);
-
-      console.log(uploadResponse);
+      await biohubApi.survey.importCrittersFromCsv(file);
     } catch (err: any) {
       dialogContext.setErrorDialog({
         dialogTitle: SurveyAnimalsI18N.importRecordsErrorDialogTitle,
@@ -52,6 +50,8 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
           dialogContext.setErrorDialog({ open: false });
         }
       });
+    } finally {
+      setOpenImportDialog(false);
     }
   };
 
