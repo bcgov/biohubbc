@@ -1,7 +1,5 @@
 import {
   mdiAccountMultipleOutline,
-  mdiCalendarRange,
-  mdiCalendarTodayOutline,
   mdiChevronDown,
   mdiCogOutline,
   mdiPencilOutline,
@@ -9,17 +7,14 @@ import {
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
-import grey from '@mui/material/colors/grey';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import assert from 'assert';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { ProjectRoleGuard } from 'components/security/Guards';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteProjectI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
@@ -28,7 +23,6 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
-import { getFormattedDateRangeString } from 'utils/Utils';
 
 /**
  * Project header for a single-project view.
@@ -104,30 +98,6 @@ const ProjectHeader = () => {
     <>
       <PageHeader
         title={projectData?.projectData.project.project_name}
-        subTitleJSX={
-          <>
-            {projectData.projectData.project.end_date ? (
-              <Stack flexDirection="row" alignItems="center" gap={0.75} color="text.secondary">
-                <Icon path={mdiCalendarRange} size={0.8} color={grey[600]} style={{ marginTop: 1.5 }} />
-
-                {getFormattedDateRangeString(
-                  DATE_FORMAT.MediumDateFormat,
-                  projectData.projectData.project.start_date,
-                  projectData.projectData.project.end_date
-                )}
-              </Stack>
-            ) : (
-              <Stack flexDirection="row" alignItems="center" gap={1}>
-                <Icon path={mdiCalendarTodayOutline} size={0.75} />
-                <Typography component="span">Start Date:</Typography>
-                {getFormattedDateRangeString(
-                  DATE_FORMAT.ShortMediumDateFormat,
-                  projectData.projectData.project.start_date
-                )}
-              </Stack>
-            )}
-          </>
-        }
         buttonJSX={
           <ProjectRoleGuard
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}

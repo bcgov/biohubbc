@@ -70,7 +70,7 @@ GET.apiDoc = {
                     description: 'Basic project metadata',
                     type: 'object',
                     additionalProperties: false,
-                    required: ['project_id', 'uuid', 'project_name', 'project_programs', 'start_date', 'comments'],
+                    required: ['project_id', 'uuid', 'project_name', 'comments'],
                     properties: {
                       project_id: {
                         type: 'integer',
@@ -82,23 +82,6 @@ GET.apiDoc = {
                       },
                       project_name: {
                         type: 'string'
-                      },
-                      project_programs: {
-                        type: 'array',
-                        items: {
-                          type: 'number'
-                        }
-                      },
-                      start_date: {
-                        type: 'string',
-                        format: 'date',
-                        description: 'ISO 8601 date string for the project start date'
-                      },
-                      end_date: {
-                        type: 'string',
-                        format: 'date',
-                        description: 'ISO 8601 date string for the project end date',
-                        nullable: true
                       },
                       comments: {
                         type: 'string',

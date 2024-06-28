@@ -16,7 +16,6 @@ const CONFIG = {
   last_name: "Aubertin-Young",
   email: "Macgregor.Aubertin-Young@gov.bc.ca",
   project_role: "Coordinator",
-  project_program: "Wildlife",
   survey_status: "Completed",
   survey_type: "Monitoring",
   survey_intended_outcome_1: "Mortality",
@@ -87,7 +86,7 @@ const jqPreParseInputFile = async (fileName) => {
               })
           })
       }' < ${fileName}
-    `,
+    `
   );
 
   return JSON.parse(data);
@@ -161,9 +160,9 @@ async function main() {
     for (let pIndex = 0; pIndex < data.length; pIndex++) {
       const project = data[pIndex];
 
-      sql += `WITH p AS (INSERT INTO project (name, objectives, coordinator_first_name, coordinator_last_name, coordinator_email_address, start_date, end_date) VALUES ($$Caribou - ${project.herd} - BCTW Telemetry$$, $$BCTW telemetry deployments for ${project.herd} Caribou$$, $$${CONFIG.first_name}$$, $$${CONFIG.last_name}$$, $$${CONFIG.email}$$, $$${project.start_date}$$, $$${project.end_date}$$) RETURNING project_id
+      sql += `WITH p AS (INSERT INTO project (name, objectives, coordinator_first_name, coordinator_last_name, coordinator_email_address) VALUES ($$Caribou - ${project.herd} - BCTW Telemetry$$, $$BCTW telemetry deployments for ${project.herd} Caribou$$, $$${CONFIG.first_name}$$, $$${CONFIG.last_name}$$, $$${CONFIG.email}$$) RETURNING project_id
       ), ppp AS (INSERT INTO project_participation (project_id, system_user_id, project_role_id) SELECT project_id, (select system_user_id from system_user where user_identifier = $$mauberti$$), (select project_role_id from project_role where name = $$${CONFIG.project_role}$$) FROM p
-      ), pp AS (INSERT INTO project_program (project_id, program_id) SELECT project_id, (select program_id from program where name = $$${CONFIG.project_program}$$) FROM p
+      )
     `;
       for (let sIndex = 0; sIndex < project.surveys.length; sIndex++) {
         const survey = project.surveys[sIndex];
@@ -206,7 +205,7 @@ async function main() {
     }
 
     process.stdout.write(
-      `SET search_path=public,biohub; BEGIN; ${sql} COMMIT;`,
+      `SET search_path=public,biohub; BEGIN; ${sql} COMMIT;`
     );
   } catch (err) {
     process.stderr.write(`main.js -> ${err}`);

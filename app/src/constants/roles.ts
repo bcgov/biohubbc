@@ -1,3 +1,5 @@
+import { mdiAccountEdit, mdiCrown } from '@mdi/js';
+
 /**
  * System level roles.
  *
@@ -33,3 +35,14 @@ export enum PROJECT_PERMISSION {
   COLLABORATOR = 'Collaborator',
   OBSERVER = 'Observer'
 }
+
+/**
+ * Project role icons
+ *
+ * @export
+ */
+export const PROJECT_ROLE_ICONS: Record<string, string | undefined> = {
+  Coordinator: mdiCrown,
+  Collaborator: mdiAccountEdit,
+  Observer: undefined
+};
