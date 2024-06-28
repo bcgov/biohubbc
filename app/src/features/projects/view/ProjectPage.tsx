@@ -11,8 +11,6 @@ import { useContext, useEffect } from 'react';
 import ProjectDetails from './ProjectDetails';
 import ProjectHeader from './ProjectHeader';
 
-//TODO: PRODUCTION_BANDAGE: Remove <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN]}>
-
 /**
  * Page to display a single Project.
  *
