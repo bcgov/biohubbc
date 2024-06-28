@@ -318,6 +318,8 @@ export const CreateSamplingSiteI18N = {
     'An error has occurred while attempting to create your sampling site(s). Please try again. If the error persists, please contact your system administrator.'
 };
 
+
+
 export const ObservationsTableI18N = {
   removeAllDialogTitle: 'Discard changes?',
   removeAllDialogText: 'Are you sure you want to discard all your changes? This action cannot be undone.',
@@ -414,4 +416,20 @@ export const TelemetryTableI18N = {
   deleteSingleRecordSuccessSnackbarMessage: 'Deleted telemetry record successfully.',
   deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
     `Deleted ${count} telemetry ${p(count, 'record')} successfully.`
+};
+
+export const CreateAnimalDeploymentI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Deployment',
+  createErrorText:
+    'An error has occurred while attempting to create your deployment. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditAnimalDeploymentI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Deployment',
+  createErrorText:
+    'An error has occurred while attempting to create your deployment. Please try again. If the error persists, please contact your system administrator.'
 };

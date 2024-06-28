@@ -103,8 +103,10 @@ describe('useSurveyApi', () => {
         device_model: 'E',
         frequency: 1,
         frequency_unit: 'Hz',
-        attachment_start: '2023-01-01',
-        attachment_end: undefined,
+        attachment_start_capture_id: '1',
+        attachment_end_capture_id: '2',
+        attachment_end_date: '2020-01-01',
+        attachment_end_time: '10:10',
         critter_id: v4()
       });
 

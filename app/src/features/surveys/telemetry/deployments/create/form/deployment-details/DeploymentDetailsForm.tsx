@@ -48,15 +48,14 @@ interface IDeploymentDetailsFormProps {
  */
 const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
   const surveyContext = useSurveyContext();
-  const { setFieldValue, values } = useFormikContext<ICreateAnimalDeployment>();
+  const { setFieldValue, values, errors } = useFormikContext<ICreateAnimalDeployment>();
+
+  console.log(errors);
 
   return (
     <>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography component="legend" variant="h5">
-            Enter deployment information
-          </Typography>
           <Typography color="textSecondary" mb={3}>
             You must&nbsp;
             <Typography
@@ -75,7 +74,8 @@ const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
               component={RouterLink}
               to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals`}>
               Manage Animals
-            </Typography>&nbsp;page.
+            </Typography>
+            &nbsp;page.
           </Typography>
           <CustomTextField
             name="device_id"
@@ -89,11 +89,15 @@ const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
         <Grid item xs={12}>
           <AnimalAutocompleteField
             label="Animal"
+            name="critter_id"
             required
             clearOnSelect
-            formikFieldName="animal_id"
             handleAnimal={(animal: ISimpleCritterWithInternalId) => {
-              setFieldValue('animal_id', animal.critter_id);
+              setFieldValue('critter_id', animal.critter_id);
+              props.setSelectedAnimal({
+                survey_critter_id: animal.survey_critter_id,
+                critterbase_critter_id: animal.critter_id
+              });
             }}
           />
         </Grid>

@@ -50,16 +50,17 @@ export const AnimalDeploymentSchema = yup.object({}).shape({
 });
 
 export const CreateAnimalDeployment = yup.object({
-  critter_id: yup.string().uuid().required('You must select the animal that the device is associated to.'), // Critterbase critter_id
-  device_id: yup.string().required('You must enter device ID that identifies the device.'),
-  device_make: yup.string().required('You must enter the make of the device.'),
+  critter_id: yup.string().uuid().required('You must select the animal that the device is associated to.'),
+  device_id: yup.string().required('You must enter the device ID. This is typically the serial number.'),
+  device_make: yup.string().required('You must enter the device manufacturer.'),
   frequency: numSchema,
   frequency_unit: yup.string(),
   device_model: yup.string(),
-  attachment_start: yup.string().isValidDateString().required('You must select a start date for the deployment.'),
-  attachment_end: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('attachment_start')
+  attachment_start_capture_id: yup.string().required('You must select an initial capture for when the deployment started.'),
+  attachment_end_date: yup.string().isValidDateString(),
+  attachment_end_capture_id: yup.string(),
+  attachment_end_time: yup.string()
 });
-
 export interface ICreateAnimalDeploymentPostData extends Omit<ICreateAnimalDeployment, 'device_id'> {
   device_id: number;
 }

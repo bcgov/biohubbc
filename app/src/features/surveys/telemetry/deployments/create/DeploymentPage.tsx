@@ -24,8 +24,10 @@ const initialDeploymentValues = {
   frequency_unit: '',
   device_model: '',
   device_make: '',
-  attachment_start: '',
-  attachment_end: ''
+  attachment_start_capture_id: '',
+  attachment_end_capture_id: '',
+  attachment_end_date: '',
+  attachment_end_time: ''
 };
 
 /**
@@ -90,8 +92,10 @@ const DeploymentPage = () => {
           frequency: values.frequency,
           frequency_unit: values.frequency_unit,
           device_model: values.device_model,
-          attachment_start: values.attachment_start,
-          attachment_end: values.attachment_end
+          attachment_start_capture_id: values.attachment_start_capture_id,
+          attachment_end_capture_id: values.attachment_end_capture_id,
+          attachment_end_date: values.attachment_end_date,
+          attachment_end_time: values.attachment_end_time
         }
       );
       surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);

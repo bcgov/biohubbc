@@ -6,12 +6,12 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ISurveyCritter } from 'contexts/animalPageContext';
+import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import DeploymentDetailsForm from './deployment-details/DeploymentDetailsForm';
@@ -25,8 +25,11 @@ interface IDeploymentCreateFormProps {
 const DeploymentCreateForm = (props: IDeploymentCreateFormProps) => {
   const { isSubmitting } = props;
 
+  const surveyContext = useSurveyContext();
+
   const history = useHistory();
-  const { submitForm } = useFormikContext<ICreateSamplingSiteRequest>();
+
+  const { submitForm, setFieldValue } = useFormikContext<ICreateAnimalDeployment>();
   const [selectedAnimal, setSelectedAnimal] = useState<ISurveyCritter | undefined>();
 
   const critterbaseApi = useCritterbaseApi();
@@ -38,18 +41,21 @@ const DeploymentCreateForm = (props: IDeploymentCreateFormProps) => {
 
   const frequencyUnitDataLoader = useDataLoader(() => telemetryApi.devices.getCodeValues('frequency_unit'));
 
+  const deviceMakesDataLoader = useDataLoader(() => telemetryApi.devices.getCodeValues('device_make'));
+
   useEffect(() => {
     frequencyUnitDataLoader.load();
+    deviceMakesDataLoader.load();
   }, []);
 
   // Get captures for selected animal
   useEffect(() => {
     if (selectedAnimal) {
       critterDataLoader.load(selectedAnimal.critterbase_critter_id);
+      setFieldValue('attachment_start_capture_id', '');
+      setFieldValue('attachment_end_capture_id', '');
     }
   }, [selectedAnimal]);
-
-  const surveyContext = useSurveyContext();
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
@@ -64,23 +70,30 @@ const DeploymentCreateForm = (props: IDeploymentCreateFormProps) => {
                 setSelectedAnimal={setSelectedAnimal}
                 frequencyUnits={frequencyUnitDataLoader.data ?? []}
               />
-            }></HorizontalSplitFormComponent>
+            }
+          />
 
           <Divider />
 
           <HorizontalSplitFormComponent
             title="Timeline"
-            summary="Enter information about start and end dates"
-            component={
-              <DeploymentTimelineForm captures={critterDataLoader.data?.captures ?? []} />
-            }></HorizontalSplitFormComponent>
+            summary="Enter deployment dates. The end date can be used to remove telemetry locations generated after 
+            the animal died or the device became stationary."
+            component={<DeploymentTimelineForm captures={critterDataLoader.data?.captures ?? []} />}
+          />
 
           <Divider />
 
           <HorizontalSplitFormComponent
             title="Device Metadata"
-            summary="Enter additional information about the device"
-            component={<DeviceDetailsForm deviceMakes={[]} />}></HorizontalSplitFormComponent>
+            summary="Enter additional information about the device and optionally enable automatic data 
+            retrievals for compatible device manufacturers."
+            component={
+              <DeviceDetailsForm
+                deviceMakes={deviceMakesDataLoader.data?.map((data) => ({ label: data.code, value: data.code })) ?? []}
+              />
+            }
+          />
 
           <Divider />
 

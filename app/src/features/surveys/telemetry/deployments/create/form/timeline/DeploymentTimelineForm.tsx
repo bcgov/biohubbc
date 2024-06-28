@@ -5,6 +5,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import dayjs from 'dayjs';
 import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useFormikContext } from 'formik';
 import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
@@ -52,12 +54,12 @@ const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
             You must add the capture during which the device was deployed before adding the deployment.
           </Typography>
           <AutocompleteField
-            name="start_capture_id"
-            id="start_capture_id"
+            name="attachment_start_capture_id"
+            id="attachment_start_capture_id"
             label={'Initial capture event'}
             options={props.captures.map((capture) => ({
               value: capture.capture_id,
-              label: capture.capture_date
+              label: dayjs(capture.capture_date).format(DATE_FORMAT.LongDateTimeFormat)
             }))}
             required
           />
@@ -68,16 +70,16 @@ const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
             End of deployment (optional)
           </Typography>
           <Typography color="textSecondary" mb={3}>
-            Select the capture when the device was removed, or enter an end date.
+            If the deployment has ended, select the capture when the device was removed or enter an end date.
           </Typography>
           <Stack direction={{ xs: 'column', md: 'row' }} gap={3} alignItems="center" width="100%">
             <AutocompleteField
-              name="end_capture_id"
-              id="end_capture_id"
+              name="attachment_end_capture_id"
+              id="attachment_end_capture_id"
               label={'End capture event'}
               options={props.captures.map((capture) => ({
                 value: capture.capture_id,
-                label: capture.capture_date
+                label: dayjs(capture.capture_date).format(DATE_FORMAT.LongDateTimeFormat)
               }))}
               sx={{ width: '100%' }}
             />
@@ -89,15 +91,15 @@ const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
                 formikProps={formikProps}
                 date={{
                   dateLabel: 'Date',
-                  dateName: 'attachment_end',
-                  dateId: 'attachment_end',
+                  dateName: 'attachment_end_date',
+                  dateId: 'attachment_end_date',
                   dateRequired: false,
                   dateIcon: mdiCalendar
                 }}
                 time={{
                   timeLabel: 'Time',
-                  timeName: 'attachment_end',
-                  timeId: 'attachment_end',
+                  timeName: 'attachment_end_time',
+                  timeId: 'attachment_end_time',
                   timeRequired: false,
                   timeIcon: mdiCalendar
                 }}

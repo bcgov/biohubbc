@@ -4,75 +4,30 @@ import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
+import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { get } from 'lodash-es';
 import { useState } from 'react';
 
-export interface IAnimalAutocompleteFieldProps {
-  /**
-   * Formik field name.
-   *
-   * @type {string}
-   * @memberof IAnimalAutocompleteFieldProps
-   */
-  formikFieldName: string;
-  /**
-   * The field label.
-   *
-   * @type {string}
-   * @memberof IAnimalAutocompleteFieldProps
-   */
+export interface IAutocompleteField<T extends string | number> {
+  name: string;
   label: string;
-  /**
-   * Callback to fire on animal option selection.
-   *
-   * @type {(animal: ISimpleCritterWithInternalId) => void}
-   * @memberof IAnimalAutocompleteFieldProps
-   */
   handleAnimal: (animal: ISimpleCritterWithInternalId) => void;
-  /**
-   * Default animal to render for input and options.
-   *
-   * @type {ISimpleCritterWithInternalId}
-   * @memberof IAnimalAutocompleteFieldProps
-   */
+  getOptionDisabled?: (option: IAutocompleteFieldOption<T>) => boolean;
   defaultAnimal?: ISimpleCritterWithInternalId;
-  /**
-   * The error message to display.
-   *
-   * Note: the calling component is responsible for checking `touched`, if needed.
-   *
-   * @type {string}
-   * @memberof IAnimalAutocompleteFieldProps
-   */
   error?: string;
-  /**
-   * If field is required.
-   *
-   * @type {boolean}
-   * @memberof IAnimalAutocompleteFieldProps
-   */
   required?: boolean;
-  /**
-   * If field is disabled.
-   *
-   * @type {boolean}
-   * @memberof IAnimalAutocompleteFieldProps
-   */
   disabled?: boolean;
-  /**
-   * Clear the input value after a selection is made
-   * Defaults to false
-   *
-   * @type {boolean}
-   * @memberof IAnimalAutocompleteFieldProps
-   */
   clearOnSelect?: boolean;
 }
 
-const AnimalAutocompleteField = (props: IAnimalAutocompleteFieldProps) => {
-  const { formikFieldName, label, required, error, handleAnimal, defaultAnimal } = props;
+const AnimalAutocompleteField = <T extends string | number>(props: IAutocompleteField<T>) => {
+  const { name, label, required, handleAnimal, defaultAnimal } = props;
+
+  const { touched, errors } = useFormikContext<IAutocompleteFieldOption<T>>();
 
   const surveyContext = useSurveyContext();
 
@@ -82,31 +37,11 @@ const AnimalAutocompleteField = (props: IAnimalAutocompleteFieldProps) => {
   // Survey animals to choose from
   const options = surveyContext.critterDataLoader.data;
 
-  // const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-  //   const input = event.target.value;
-  //   setInputValue(input);
-
-  //   if (!input) {
-  //     setOptions([]);
-  //     search.cancel();
-  //     handleAnimal();
-  //     return;
-  //   }
-  //   setIsLoading(true);
-  //   search(input, (animalOptions) => {
-  //     if (!isMounted()) {
-  //       return;
-  //     }
-  //     setOptions(animalOptions);
-  //     setIsLoading(false);
-  //   });
-  // };
-
   return (
     <Autocomplete
-      id={props.formikFieldName}
+      id={props.name}
       disabled={props.disabled}
-      data-testid={props.formikFieldName}
+      data-testid={props.name}
       filterSelectedOptions
       noOptionsText="No matching options"
       options={options ?? []}
@@ -142,7 +77,7 @@ const AnimalAutocompleteField = (props: IAnimalAutocompleteFieldProps) => {
               <Box justifyContent="space-between" display="flex">
                 <Typography fontWeight={700}>
                   {renderOption.animal_id}&nbsp;
-                  <Typography component="span" color="textSecondary" variant='body2'>
+                  <Typography component="span" color="textSecondary" variant="body2">
                     {renderOption.wlh_id}
                   </Typography>
                 </Typography>
@@ -156,11 +91,14 @@ const AnimalAutocompleteField = (props: IAnimalAutocompleteFieldProps) => {
       renderInput={(params) => (
         <TextField
           {...params}
-          name={formikFieldName}
+          name={name}
           onChange={(event) => setInputValue(event.currentTarget.value)}
           required={required}
           label={label}
           variant="outlined"
+          sx={{ opacity: props?.disabled ? 0.25 : 1 }}
+          error={get(touched, props.name) && Boolean(get(errors, props.name))}
+          helperText={get(touched, props.name) && get(errors, props.name)}
           fullWidth
           placeholder="Search for an animal in the Survey"
           InputProps={{
@@ -172,8 +110,6 @@ const AnimalAutocompleteField = (props: IAnimalAutocompleteFieldProps) => {
               </>
             )
           }}
-          error={Boolean(error)}
-          helperText={error}
         />
       )}
     />
