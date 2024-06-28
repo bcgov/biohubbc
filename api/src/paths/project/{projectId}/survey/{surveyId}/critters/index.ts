@@ -211,10 +211,12 @@ export function getCrittersFromSurvey(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
 
-    const surveyService = new SurveyCritterService(connection);
-    const critterbaseService = new CritterbaseService(user);
     try {
       await connection.open();
+
+      const surveyService = new SurveyCritterService(connection);
+      const critterbaseService = new CritterbaseService(user);
+
       const surveyCritters = await surveyService.getCrittersInSurvey(surveyId);
 
       // Exit early if surveyCritters list is empty

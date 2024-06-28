@@ -527,7 +527,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
 
     formData.append('media', file);
 
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/upload`, formData);
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/import`, formData);
 
     return data;
   };
