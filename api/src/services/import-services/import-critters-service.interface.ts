@@ -10,7 +10,7 @@ export type Row = Record<string, any>;
  */
 export type CsvCritter = {
   critter_id: string;
-  sex: 'Male' | 'Female' | 'Unknown';
+  sex: string;
   itis_tsn: number;
   animal_id: string;
   wlh_id?: string;

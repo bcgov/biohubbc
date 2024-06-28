@@ -520,9 +520,9 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @async
    * @param {File} file - Critters CSV.
-   * @returns {Promise<>}
+   * @returns {Promise<number[]>}
    */
-  const importCrittersFromCsv = async (file: File) => {
+  const importCrittersFromCsv = async (file: File): Promise<number[]> => {
     const formData = new FormData();
 
     formData.append('media', file);

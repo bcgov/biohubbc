@@ -122,4 +122,4 @@ export const getAliasFromRow = generateCellValueGetter<string>([ALIAS, NICKNAME]
 
 export const getWlhIdFromRow = generateCellValueGetter<string>([WLH_ID]);
 
-export const getSexFromRow = generateCellValueGetter<'Male' | 'Female' | 'Unknown'>([SEX]);
+export const getSexFromRow = generateCellValueGetter<string>([SEX]);
