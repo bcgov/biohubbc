@@ -14,7 +14,7 @@ chai.use(sinonChai);
 
 const mockConnection = getMockDBConnection();
 
-describe.only('ImportCrittersService', () => {
+describe('ImportCrittersService', () => {
   describe('_getCritterRowsToValidate', () => {
     it('it should correctly format rows', () => {
       const rows = [
