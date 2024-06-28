@@ -82,12 +82,12 @@ export const getColumnValidatorSpecification = (columnValidator: IXLSXCSVValidat
 /**
  * Generate a row value getter function from array of allowed column values.
  *
- * @example const getTsnFromRow = generateCellValueGetter([ITIS_TSN, TSN, TAXON, SPECIES]);
+ * @example const getTsnFromRow = generateCellValueGetter(ITIS_TSN, TSN, TAXON, SPECIES);
  *
- * @param {string[]} headers - Column headers
+ * @param {...string[]} headers - Column headers
  * @returns {(row: Row) => any} Row value getter function
  */
-export const generateCellValueGetter = <T = any /* Temp default*/>(headers: string[]) => {
+export const generateCellValueGetter = <T = any /* Temp default*/>(...headers: string[]) => {
   return (row: Row) => {
     for (const header of headers) {
       if (row[header]) {
@@ -104,22 +104,22 @@ export const generateCellValueGetter = <T = any /* Temp default*/>(headers: stri
  *
  * TODO: update generic types for getters (existing validators would need updating)
  */
-export const getTsnFromRow = generateCellValueGetter([ITIS_TSN, TSN, TAXON, SPECIES]);
+export const getTsnFromRow = generateCellValueGetter(ITIS_TSN, TSN, TAXON, SPECIES);
 
-export const getCountFromRow = generateCellValueGetter([COUNT]);
+export const getCountFromRow = generateCellValueGetter(COUNT);
 
-export const getDateFromRow = generateCellValueGetter([DATE]);
+export const getDateFromRow = generateCellValueGetter(DATE);
 
-export const getTimeFromRow = generateCellValueGetter([TIME]);
+export const getTimeFromRow = generateCellValueGetter(TIME);
 
-export const getLatitudeFromRow = generateCellValueGetter([LATITUDE, LAT]);
+export const getLatitudeFromRow = generateCellValueGetter(LATITUDE, LAT);
 
-export const getLongitudeFromRow = generateCellValueGetter([LONGITUDE, LONG, LON, LNG]);
+export const getLongitudeFromRow = generateCellValueGetter(LONGITUDE, LONG, LON, LNG);
 
-export const getDescriptionFromRow = generateCellValueGetter<string>([DESCRIPTION, COMMENT]);
+export const getDescriptionFromRow = generateCellValueGetter<string>(DESCRIPTION, COMMENT);
 
-export const getAliasFromRow = generateCellValueGetter<string>([ALIAS, NICKNAME]);
+export const getAliasFromRow = generateCellValueGetter<string>(ALIAS, NICKNAME);
 
-export const getWlhIdFromRow = generateCellValueGetter<string>([WLH_ID]);
+export const getWlhIdFromRow = generateCellValueGetter<string>(WLH_ID);
 
-export const getSexFromRow = generateCellValueGetter<string>([SEX]);
+export const getSexFromRow = generateCellValueGetter<string>(SEX);
