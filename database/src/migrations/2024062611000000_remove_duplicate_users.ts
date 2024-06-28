@@ -58,6 +58,34 @@ export async function up(knex: Knex): Promise<void> {
     );
 
     ----------------------------------------------------------------------------------------
+    -- Update system_user to include guid
+    ----------------------------------------------------------------------------------------
+
+    -- Update references to duplicated user IDs
+    WITH DeduplicatedUsers AS (
+    SELECT 
+        MIN(su.system_user_id) AS deduplicated_system_user_id,
+        MAX(su.user_guid) as user_guid,
+        su.user_identity_source_id,
+        su.user_identifier,
+        su.record_end_date
+    FROM 
+        system_user su
+    GROUP BY 
+        su.user_identity_source_id, su.user_identifier, su.record_end_date
+    )
+    UPDATE 
+        system_user as su
+    SET 
+        user_guid = du.user_guid,
+        record_end_date = NULL
+    FROM 
+        DeduplicatedUsers du
+    WHERE 
+        su.system_user_id = du.deduplicated_system_user_id
+    AND su.user_guid IS NULL;
+
+    ----------------------------------------------------------------------------------------
     -- Update references to duplicate user IDs in all tables with a system_user_id column
     ----------------------------------------------------------------------------------------
 
