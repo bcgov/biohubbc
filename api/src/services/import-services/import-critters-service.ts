@@ -265,8 +265,8 @@ export class ImportCrittersService extends DBService {
       // ALIAS is required and must not already exist in Survey or CSV
       const invalidAlias =
         !row.animal_id ||
-        (surveyCritterAliases.has(row.animal_id) &&
-          csvCritterAliases.filter((value) => value === row.animal_id).length > 1);
+        surveyCritterAliases.has(row.animal_id) ||
+        csvCritterAliases.filter((value) => value === row.animal_id).length > 1;
 
       if (invalidSex) {
         errors.push({ row: index, message: `Invalid SEX. Expecting: ${CSV_CRITTER_SEX_OPTIONS.join(', ')}.` });
