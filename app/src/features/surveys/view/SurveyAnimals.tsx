@@ -20,7 +20,7 @@ import { SurveyAnimalsTable } from './survey-animals/SurveyAnimalsTable';
 import TelemetryMap from './survey-animals/telemetry-device/TelemetryMap';
 
 const SurveyAnimals: React.FC = () => {
-  const bhApi = useBiohubApi();
+  const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
   const surveyContext = useContext(SurveyContext);
   const history = useHistory();
@@ -34,10 +34,10 @@ const SurveyAnimals: React.FC = () => {
     refresh: refreshCritters,
     load: loadCritters,
     data: critterData
-  } = useDataLoader(() => bhApi.survey.getSurveyCritters(projectId, surveyId));
+  } = useDataLoader(() => biohubApi.survey.getSurveyCritters(projectId, surveyId));
 
   const { load: loadDeployments, data: deploymentData } = useDataLoader(() =>
-    bhApi.survey.getDeploymentsInSurvey(projectId, surveyId)
+    biohubApi.survey.getDeploymentsInSurvey(projectId, surveyId)
   );
 
   if (!critterData) {
@@ -58,7 +58,7 @@ const SurveyAnimals: React.FC = () => {
     data: telemetryData,
     isLoading: telemetryLoading
   } = useDataLoader(() =>
-    bhApi.survey.getCritterTelemetry(
+    biohubApi.survey.getCritterTelemetry(
       projectId,
       surveyId,
       selectedCritterId ?? 0,
@@ -91,7 +91,7 @@ const SurveyAnimals: React.FC = () => {
         setPopup('Failed to remove critter from survey.');
         return;
       }
-      await bhApi.survey.removeCritterFromSurvey(projectId, surveyId, selectedCritterId);
+      await biohubApi.survey.removeCrittersFromSurvey(projectId, surveyId, [selectedCritterId]);
     } catch (e) {
       setPopup('Failed to remove critter from survey.');
     }
@@ -120,7 +120,7 @@ const SurveyAnimals: React.FC = () => {
           sx={{
             flex: '1 1 auto'
           }}>
-          Marked and Known Animals
+          Animals
         </Typography>
         <ProjectRoleGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
@@ -128,7 +128,7 @@ const SurveyAnimals: React.FC = () => {
           <Button
             component={RouterLink}
             to={`animals/`}
-            title="Manage Marked and Known Animals"
+            title="Manage Animals"
             color="primary"
             variant="contained"
             startIcon={<Icon path={mdiCog} size={0.75} />}
@@ -150,14 +150,14 @@ const SurveyAnimals: React.FC = () => {
               setOpenRemoveCritterDialog(true);
             }}
             onEditCritter={() => {
-              history.push(`animals/?cid=${selectedCritterId}`);
+              history.push(`animals/${selectedCritterId}/edit`);
             }}
             onMapOpen={() => {
               setOpenViewTelemetryDialog(true);
             }}
           />
         ) : (
-          <NoSurveySectionData text={'No Marked or Known Animals'} />
+          <NoSurveySectionData text={'No Animals'} />
         )}
       </Box>
       <ComponentDialog

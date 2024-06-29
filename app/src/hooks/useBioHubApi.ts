@@ -1,4 +1,5 @@
 import axios from 'axios';
+import useReferenceApi from 'hooks/api/useReferenceApi';
 import { useConfigContext } from 'hooks/useContext';
 import { useMemo } from 'react';
 import useAdminApi from './api/useAdminApi';
@@ -60,6 +61,8 @@ export const useBiohubApi = () => {
 
   const standards = useStandardsApi(apiAxios);
 
+  const reference = useReferenceApi(apiAxios);
+
   return useMemo(
     () => ({
       analytics,
@@ -77,7 +80,8 @@ export const useBiohubApi = () => {
       spatial,
       funding,
       samplingSite,
-      standards
+      standards,
+      reference
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

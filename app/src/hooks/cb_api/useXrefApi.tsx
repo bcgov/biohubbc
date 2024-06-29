@@ -2,8 +2,8 @@ import { AxiosInstance } from 'axios';
 import {
   CBMeasurementSearchByTermResponse,
   CBMeasurementSearchByTsnResponse,
-  CBQualitativeMeasurementTypeDefinition,
-  CBQuantitativeMeasurementTypeDefinition
+  ICollectionCategory,
+  ICollectionUnit
 } from 'interfaces/useCritterApi.interface';
 
 export const useXrefApi = (axios: AxiosInstance) => {
@@ -32,41 +32,31 @@ export const useXrefApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Gets quantitative measurement definitions by taxon_measurement_id
+   * Get collection (ie. ecological) units that are available for a given taxon (by itis tsn).
    *
-   * @async
-   * @param {CreateQualitativeMeasurement} taxon_measurement_id - Get measurement by taxon_measurement_id.
-   * @returns {Promise<IQualitativeMeasurementResponse>} The created qualitative measurement.
+   * @param {number} tsn
+   * @return {*}  {Promise<ICollectionCategory[]>}
    */
-  const getQuantitativeMeasurementsById = async (
-    taxon_measurement_ids: string[]
-  ): Promise<CBQuantitativeMeasurementTypeDefinition[]> => {
-    const { data } = await axios.post(`/api/critterbase/xref/taxon-quantitative-measurements `, {
-      taxon_measurement_ids
-    });
+  const getTsnCollectionCategories = async (tsn: number): Promise<ICollectionCategory[]> => {
+    const { data } = await axios.get(`/api/critterbase/xref/taxon-collection-categories?tsn=${tsn}`);
     return data;
   };
 
   /**
-   * Gets qualitative measurement definitions by taxon_measurement_id
+   * Get collection (ie. ecological) units that are available for a given taxon
    *
-   * @async
-   * @param {CreateQualitativeMeasurement} taxon_measurement_id - Get measurement by taxon_measurement_id.
-   * @returns {Promise<IQualitativeMeasurementResponse>} The created qualitative measurement.
+   * @param {string} unit_id
+   * @return {*}  {Promise<ICollectionUnit[]>}
    */
-  const getQualitativeMeasurementsById = async (
-    taxon_measurement_ids: string[]
-  ): Promise<CBQualitativeMeasurementTypeDefinition[]> => {
-    const { data } = await axios.post(`/api/critterbase/xref/taxon-qualitative-measurements `, {
-      taxon_measurement_ids
-    });
+  const getCollectionUnits = async (unit_id: string): Promise<ICollectionUnit[]> => {
+    const { data } = await axios.get(`/api/critterbase/xref/collection-units/${unit_id}`);
     return data;
   };
 
   return {
     getTaxonMeasurements,
     getMeasurementTypeDefinitionsBySearchTerm,
-    getQualitativeMeasurementsById,
-    getQuantitativeMeasurementsById
+    getTsnCollectionCategories,
+    getCollectionUnits
   };
 };

@@ -88,8 +88,9 @@ export class AnalyticsRepository extends BaseRepository {
           .whereIn('so.survey_id', surveyIds)
           .groupBy('os.subcount', 'os.observation_subcount_id', 'so.survey_id', ...groupByColumns);
       })
-      .select(knex.raw('SUM(subcount)::NUMERIC as count'))
-      .select(knex.raw(`ROUND(SUM(os.subcount)::NUMERIC / (${totalCountSubquery}) * 100, 2) as percentage`))
+      .select(knex.raw('COUNT(subcount)::NUMERIC as row_count'))
+      .select(knex.raw('SUM(subcount)::NUMERIC as individual_count'))
+      .select(knex.raw(`ROUND(SUM(os.subcount)::NUMERIC / (${totalCountSubquery}) * 100, 2) as percentage_of_individuals`))
       .select(groupByColumns.map((column) => knex.raw(`?? as ??`, [column, column])))
       .select(
         knex.raw(
@@ -107,11 +108,9 @@ export class AnalyticsRepository extends BaseRepository {
       )
       .from('temp_observations as os')
       .groupBy(combinedColumns)
-      .orderBy('count', 'desc');
+      .orderBy('individual_count', 'desc');
 
     const response = await this.connection.knex(sqlStatement);
-
-    console.log(response)
 
     if (!response.rows) {
       throw new ApiExecuteSQLError('Failed to get observation count by group', [

@@ -1,5 +1,3 @@
-import { default as dayjs } from 'dayjs';
-import { Feature } from 'geojson';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
 import { IPostIUCN, PostProjectObject } from '../models/project-create';
@@ -25,19 +23,7 @@ import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
-import { RegionService } from './region-service';
 import { SurveyService } from './survey-service';
-
-/**
- * Project Completion Status
- *
- * @export
- * @enum {string}
- */
-export enum COMPLETION_STATUS {
-  COMPLETED = 'Completed',
-  ACTIVE = 'Active'
-}
 
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
@@ -64,7 +50,7 @@ export class ProjectService extends DBService {
    * @param {(number | null)} systemUserId
    * @param {IProjectAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {(Promise<(ProjectListData & { completion_status: COMPLETION_STATUS })[]>)}
+   * @return {*}  {(Promise<(ProjectListData)[]>)}
    * @memberof ProjectService
    */
   async getProjectList(
@@ -72,15 +58,10 @@ export class ProjectService extends DBService {
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<(ProjectListData & { completion_status: COMPLETION_STATUS })[]> {
+  ): Promise<ProjectListData[]> {
     const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields, pagination);
 
-    return response.map((row) => ({
-      ...row,
-      completion_status:
-        (row.end_date && dayjs(row.end_date).endOf('day').isBefore(dayjs()) && COMPLETION_STATUS.COMPLETED) ||
-        COMPLETION_STATUS.ACTIVE
-    }));
+    return response;
   }
 
   /**
@@ -214,9 +195,6 @@ export class ProjectService extends DBService {
       )
     );
 
-    // Handle project programs
-    promises.push(this.insertPrograms(projectId, postProjectData.project.project_programs));
-
     //Handle project participants
     promises.push(this.projectParticipationService.postProjectParticipants(projectId, postProjectData.participants));
 
@@ -262,32 +240,6 @@ export class ProjectService extends DBService {
   }
 
   /**
-   * Insert region data.
-   *
-   * @param {number} projectId
-   * @param {Feature[]} features
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectService
-   */
-  async insertRegion(projectId: number, features: Feature[]): Promise<void> {
-    const regionService = new RegionService(this.connection);
-    return regionService.addRegionsToProjectFromFeatures(projectId, features);
-  }
-
-  /**
-   * Insert programs data.
-   *
-   * @param {number} projectId
-   * @param {number[]} projectPrograms
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectService
-   */
-  async insertPrograms(projectId: number, projectPrograms: number[]): Promise<void> {
-    await this.projectRepository.deletePrograms(projectId);
-    await this.projectRepository.insertProgram(projectId, projectPrograms);
-  }
-
-  /**
    * Updates the project
    *
    * @param {number} projectId
@@ -304,10 +256,6 @@ export class ProjectService extends DBService {
 
     if (entities?.iucn) {
       promises.push(this.updateIUCNData(projectId, entities));
-    }
-
-    if (entities?.project?.project_programs) {
-      promises.push(this.insertPrograms(projectId, entities?.project?.project_programs));
     }
 
     if (entities?.participants) {

@@ -45,13 +45,16 @@ POST.apiDoc = {
               type: 'string'
             },
             device_model: {
-              type: 'string'
+              type: 'string',
+              nullable: true
             },
             frequency: {
-              type: 'number'
+              type: 'number',
+              nullable: true
             },
             frequency_unit: {
-              type: 'string'
+              type: 'string',
+              nullable: true
             }
           }
         }

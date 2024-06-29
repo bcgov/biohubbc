@@ -98,9 +98,9 @@ GET.apiDoc = {
             type: 'array',
             items: {
               type: 'object',
-              required: ['count'],
+              required: ['individual_count'],
               properties: {
-                count: {
+                individual_count: {
                   type: 'number'
                 }
               }

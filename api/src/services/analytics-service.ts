@@ -19,7 +19,8 @@ interface IQuantitativeMeasurementGroup {
 }
 
 export interface IObservationCountByGroup {
-  count: number;
+  row_count: number;
+  individual_count: number;
   percentage: number;
   qualitative_measurement: IQualitativeMeasurementGroup[];
   quantitative_measurement: IQuantitativeMeasurementGroup[];

@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { ObservationSubCountEnvironmentRepository } from '../repositories/observation-subcount-environment-repository';
 import { ObservationSubCountMeasurementRepository } from '../repositories/observation-subcount-measurement-repository';
 import {
   InsertObservationSubCount,
@@ -70,6 +71,10 @@ describe('SubCountService', () => {
         .stub(ObservationSubCountMeasurementRepository.prototype, 'deleteObservationMeasurements')
         .resolves();
 
+      const deleteObservationEnvironmentsStub = sinon
+        .stub(ObservationSubCountEnvironmentRepository.prototype, 'deleteObservationEnvironments')
+        .resolves();
+
       const deleteObservationSubCountRecordsStub = sinon
         .stub(SubCountRepository.prototype, 'deleteObservationSubCountRecords')
         .resolves();
@@ -81,6 +86,7 @@ describe('SubCountService', () => {
         mockSurveyObservationIds
       );
       expect(deleteObservationMeasurementsStub).to.be.calledOnceWith(mockSurveyId, mockSurveyObservationIds);
+      expect(deleteObservationEnvironmentsStub).to.be.calledOnceWith(mockSurveyId, mockSurveyObservationIds);
       expect(deleteObservationSubCountRecordsStub).to.be.calledOnceWith(mockSurveyId, mockSurveyObservationIds);
     });
   });

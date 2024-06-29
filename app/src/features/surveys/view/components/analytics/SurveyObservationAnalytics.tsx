@@ -44,8 +44,6 @@ const SurveyObservationAnalytics = () => {
   );
   measurementDefinitionsDataLoader.load();
 
-  console.log(measurementDefinitionsDataLoader.data)
-
   const groupByOptions: IGroupByOption[] = [
     ...groupByColumnOptions,
     ...(measurementDefinitionsDataLoader.data?.qualitative_measurements.map(
@@ -121,10 +119,7 @@ const SurveyObservationAnalytics = () => {
                   fontSize: '0.875rem',
                   fontWeight: 700,
                   letterSpacing: '0.02rem',
-                  textTransform: 'lowercase',
-                  '& .Mui-focused': {
-                    border: 'none !important'
-                  }
+                  textTransform: 'lowercase'
                 }
               }}>
               <Typography
@@ -145,9 +140,11 @@ const SurveyObservationAnalytics = () => {
                   sx={{
                     textAlign: 'left',
                     display: 'block',
-                    fontSize: '0.85rem',
-                    '& .Mui-focused': {
-                      border: 'none !important'
+                    border: 'none',
+                    outline: 'none',
+                    ':focus': {
+                      outline: 'none',
+                      border: 'none'
                     },
                     '&::first-letter': {
                       textTransform: 'capitalize'

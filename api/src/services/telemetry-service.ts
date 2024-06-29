@@ -4,10 +4,9 @@ import { ApiGeneralError } from '../errors/api-error';
 import { TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { parseS3File } from '../utils/media/media-utils';
-import { DEFAULT_XLSX_SHEET_NAME } from '../utils/media/xlsx/xlsx-file';
 import {
-  constructWorksheets,
   constructXLSXWorkbook,
+  getDefaultWorksheet,
   getWorksheetRowObjects,
   IXLSXCSVValidator,
   validateCsvFile
@@ -67,7 +66,7 @@ export class TelemetryService extends DBService {
     const s3Object = await getFileFromS3(submission.key);
 
     // step 3 parse the file
-    const mediaFile = parseS3File(s3Object);
+    const mediaFile = await parseS3File(s3Object);
 
     // step 4 validate csv
     if (mediaFile.mimetype !== 'text/csv') {
@@ -78,14 +77,15 @@ export class TelemetryService extends DBService {
 
     // step 5 construct workbook/ setup
     const xlsxWorkBook = constructXLSXWorkbook(mediaFile);
-    const xlsxWorksheets = constructWorksheets(xlsxWorkBook);
+    // Get the default XLSX worksheet
+    const xlsxWorksheet = getDefaultWorksheet(xlsxWorkBook);
 
     // step 6 validate columns
-    if (!validateCsvFile(xlsxWorksheets, telemetryCSVColumnValidator)) {
+    if (!validateCsvFile(xlsxWorksheet, telemetryCSVColumnValidator)) {
       throw new ApiGeneralError('Failed to process file for importing telemetry. Invalid CSV file.');
     }
 
-    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheets[DEFAULT_XLSX_SHEET_NAME]);
+    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheet);
 
     // step 7 fetch survey deployments
     const bctwService = new BctwService(user);

@@ -40,7 +40,6 @@ describe('ObservationService', () => {
         {
           survey_observation_id: 11,
           survey_id: 1,
-          wldtaxonomic_units_id: 2,
           latitude: 3,
           longitude: 4,
           count: 5,
@@ -60,7 +59,6 @@ describe('ObservationService', () => {
         {
           survey_observation_id: 6,
           survey_id: 1,
-          wldtaxonomic_units_id: 2,
           latitude: 8,
           longitude: 9,
           count: 10,
@@ -162,7 +160,9 @@ describe('ObservationService', () => {
       const mockSupplementaryData = {
         observationCount: 2,
         qualitative_measurements: [],
-        quantitative_measurements: []
+        quantitative_measurements: [],
+        qualitative_environments: [],
+        quantitative_environments: []
       };
 
       const getSurveyObservationsStub = sinon
@@ -177,6 +177,10 @@ describe('ObservationService', () => {
         .stub(SubCountService.prototype, 'getMeasurementTypeDefinitionsForSurvey')
         .resolves({ qualitative_measurements: [], quantitative_measurements: [] });
 
+      const getEnvironmentTypeDefinitionsForSurveyStub = sinon
+        .stub(SubCountService.prototype, 'getEnvironmentTypeDefinitionsForSurvey')
+        .resolves({ qualitative_environments: [], quantitative_environments: [] });
+
       const surveyId = 1;
 
       const observationService = new ObservationService(mockDBConnection);
@@ -188,6 +192,7 @@ describe('ObservationService', () => {
       expect(getSurveyObservationsStub).to.be.calledOnceWith(surveyId);
       expect(getSurveyObservationCountStub).to.be.calledOnceWith(surveyId);
       expect(getMeasurementTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
+      expect(getEnvironmentTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
       expect(response).to.eql({
         surveyObservations: [
           {

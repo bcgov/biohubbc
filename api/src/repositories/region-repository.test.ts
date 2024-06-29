@@ -5,46 +5,13 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { getMockDBConnection } from '../__mocks__/db';
-import { RegionRepository } from './region-repository';
+import { RegionRepository, REGION_FEATURE_CODE } from './region-repository';
 
 chai.use(sinonChai);
 
 describe('RegionRepository', () => {
   afterEach(() => {
     sinon.restore();
-  });
-
-  describe('addRegionsToAProject', () => {
-    it('should return early when no regions passed in', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const repo = new RegionRepository(mockDBConnection);
-      const insertSQL = sinon.stub(mockDBConnection, 'sql').returns({} as unknown as any);
-
-      await repo.addRegionsToProject(1, []);
-      expect(insertSQL).to.not.be.called;
-    });
-
-    it('should throw issue when SQL fails', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const repo = new RegionRepository(mockDBConnection);
-      sinon.stub(mockDBConnection, 'sql').throws('SQL FAILED');
-
-      try {
-        await repo.addRegionsToProject(1, [1]);
-        expect.fail();
-      } catch (error) {
-        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to execute insert SQL for project_region');
-      }
-    });
-
-    it('should run without issue', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const repo = new RegionRepository(mockDBConnection);
-      const insertSQL = sinon.stub(mockDBConnection, 'sql').returns({} as unknown as any);
-
-      await repo.addRegionsToProject(1, [1]);
-      expect(insertSQL).to.be.called;
-    });
   });
 
   describe('addRegionsToASurvey', () => {
@@ -77,30 +44,6 @@ describe('RegionRepository', () => {
 
       await repo.addRegionsToSurvey(1, [1]);
       expect(insertSQL).to.be.called;
-    });
-  });
-
-  describe('deleteRegionsForProject', () => {
-    it('should run without issue', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const repo = new RegionRepository(mockDBConnection);
-      const sqlStub = sinon.stub(mockDBConnection, 'sql').returns({} as unknown as any);
-
-      await repo.deleteRegionsForProject(1);
-      expect(sqlStub).to.be.called;
-    });
-
-    it('should throw an error when SQL fails', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const repo = new RegionRepository(mockDBConnection);
-      sinon.stub(mockDBConnection, 'sql').throws();
-
-      try {
-        await repo.deleteRegionsForProject(1);
-        expect.fail();
-      } catch (error) {
-        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to execute delete SQL for project_regions');
-      }
     });
   });
 
@@ -176,6 +119,31 @@ describe('RegionRepository', () => {
         expect.fail();
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to execute search region SQL');
+      }
+    });
+  });
+
+  describe('getIntersectingRegionsFromFeatures', () => {
+    it('should run without issue', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const repo = new RegionRepository(mockDBConnection);
+      const knexStub = sinon.stub(mockDBConnection, 'knex').returns({ rows: [true] } as any);
+
+      const response = await repo.getIntersectingRegionsFromFeatures([], REGION_FEATURE_CODE.WHSE_ADMIN_BOUNDARY);
+      expect(knexStub).to.be.called;
+      expect(response).to.eql([true]);
+    });
+
+    it('should throw an error when SQL fails', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const repo = new RegionRepository(mockDBConnection);
+      sinon.stub(mockDBConnection, 'knex').throws();
+
+      try {
+        await repo.getIntersectingRegionsFromFeatures([], REGION_FEATURE_CODE.WHSE_ADMIN_BOUNDARY);
+        expect.fail();
+      } catch (error) {
+        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to execute get intersecting regions SQL');
       }
     });
   });

@@ -244,7 +244,12 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
               {values.participants.map((user: ISystemUser | IGetProjectParticipant, index: number) => {
                 const error = rowItemError(index);
                 return (
-                  <Collapse key={user.system_user_id}>
+                  <Collapse
+                    key={
+                      'project_participation_id' in user
+                        ? `${user.project_participation_id}-${user.system_user_id}`
+                        : user.system_user_id
+                    }>
                     <UserRoleSelector
                       index={index}
                       user={user}

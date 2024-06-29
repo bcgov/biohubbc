@@ -87,7 +87,7 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
       field,
       headerName: field,
       flex: 1,
-      minWidth: 200
+      minWidth: 80
     }));
 
   const rowHeight = 50;
@@ -95,7 +95,6 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
   return (
     <Box height="100%" overflow="auto" flex="1 1 auto">
       <StyledDataGrid
-        sx={{ height: '100%' }}
         noRowsMessage="No observation records found"
         columnHeaderHeight={rowHeight}
         rowHeight={rowHeight}
@@ -104,8 +103,9 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
         sortingMode="server"
         loading={analyticsDataLoader.isLoading}
         columns={columns}
-        rowSelection={false}
-        checkboxSelection={false}
+        rowSelection
+        disableRowSelectionOnClick
+        checkboxSelection
         disableColumnSelector
         disableColumnFilter
         disableColumnMenu

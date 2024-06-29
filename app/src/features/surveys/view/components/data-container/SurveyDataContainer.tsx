@@ -9,7 +9,7 @@ import SurveySpatialObservationDataTable from '../spatial-data/SurveySpatialObse
 
 export enum SurveyDataContainerViewEnum {
   RAW = 'RAW',
-  GROUP_BY = 'GROUP_BY'
+  ANALYTICS = 'ANALYTICS'
 }
 
 interface ISurveyDataContainerProps {
@@ -23,7 +23,7 @@ const SurveyDataContainer = (props: ISurveyDataContainerProps) => {
 
   const views = [
     { label: 'Raw', value: 'RAW' },
-    { label: 'Group By', value: 'GROUP_BY' }
+    { label: 'Analytics', value: 'ANALYTICS' }
   ];
 
   return (
@@ -47,7 +47,11 @@ const SurveyDataContainer = (props: ISurveyDataContainerProps) => {
             }
           }}>
           {views.map((view) => (
-            <ToggleButton key={view.value} component={Button} color="primary" value={view.value}>
+            <ToggleButton
+              key={view.value}
+              component={Button}
+              color="primary"
+              value={view.value}>
               {view.label}
             </ToggleButton>
           ))}
@@ -58,7 +62,7 @@ const SurveyDataContainer = (props: ISurveyDataContainerProps) => {
         {activeDataView === SurveyDataContainerViewEnum.RAW && (
           <SurveySpatialObservationDataTable isLoading={isLoading} />
         )}
-        {activeDataView === SurveyDataContainerViewEnum.GROUP_BY && <SurveyObservationAnalytics />}
+        {activeDataView === SurveyDataContainerViewEnum.ANALYTICS && <SurveyObservationAnalytics />}
       </Box>
     </>
   );

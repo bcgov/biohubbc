@@ -120,7 +120,7 @@ const SurveySpatialData = () => {
                 coordinates: [telemetry.longitude, telemetry.latitude] as Position
               }
             },
-            key: `telemetry-${telemetry.telemetry_manual_id}`,
+            key: `telemetry-${telemetry.id}`,
             onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
               return Promise.resolve([
                 { label: 'Device ID', value: String(deployment.device_id) },
@@ -224,7 +224,8 @@ const SurveySpatialData = () => {
             layerName: 'Telemetry',
             layerColors: {
               fillColor: SURVEY_MAP_LAYER_COLOURS.TELEMETRY_COLOUR,
-              color: SURVEY_MAP_LAYER_COLOURS.TELEMETRY_COLOUR
+              color: SURVEY_MAP_LAYER_COLOURS.TELEMETRY_COLOUR,
+              opacity: 0.5
             },
             popupRecordTitle: 'Telemetry Record',
             mapPoints: telemetryPoints
@@ -297,7 +298,8 @@ const SurveySpatialData = () => {
         layerName: supplementaryLayer.layerName,
         layerColors: {
           fillColor: supplementaryLayer.layerColors?.fillColor ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
-          color: supplementaryLayer.layerColors?.color ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
+          color: supplementaryLayer.layerColors?.color ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
+          fillOpacity: supplementaryLayer.layerColors?.opacity ?? 1
         },
         features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint): IStaticLayerFeature => {
           const isLoading = !mapPointMetadata[mapPoint.key];

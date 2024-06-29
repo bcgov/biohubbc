@@ -28,10 +28,13 @@ export interface ICritter {
 export interface ICapture {
   capture_id?: string;
   critter_id: string;
+  capture_method_id?: string | null;
   capture_location_id: string;
   release_location_id: string;
-  capture_timestamp: string;
-  release_timestamp: string;
+  capture_date: string;
+  capture_time?: string | null;
+  release_date?: string | null;
+  release_time?: string | null;
   capture_comment: string;
   release_comment: string;
 }
@@ -182,7 +185,6 @@ export type CBQuantitativeMeasurementTypeDefinition = z.infer<typeof CBQuantitat
  * A Critterbase qualitative measurement option definition (ie. drop-down option).
  */
 const CBQualitativeOption = z.object({
-  taxon_measurement_id: z.string(),
   qualitative_option_id: z.string(),
   option_label: z.string(),
   option_value: z.number(),

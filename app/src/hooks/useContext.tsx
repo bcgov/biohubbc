@@ -1,3 +1,4 @@
+import { AnimalPageContext, IAnimalPageContext } from 'contexts/animalPageContext';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { DialogContext, IDialogContext } from 'contexts/dialogContext';
@@ -174,6 +175,23 @@ export const useTaxonomyContext = (): ITaxonomyContext => {
   if (!context) {
     throw Error(
       'TaxonomyContext is undefined, please verify you are calling useTaxonomyContext() as child of an <TaxonomyContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
+ * Returns an instance of `IAnimalPageContext` from `AnimalPageContext`.
+ *
+ * @return {*}  {ISurveyContext}
+ */
+export const useAnimalPageContext = (): IAnimalPageContext => {
+  const context = useContext(AnimalPageContext);
+
+  if (!context) {
+    throw Error(
+      'AnimalPageContext is undefined, please verify you are calling useAnimalPageContext() as child of an <AnimalPageContextProvider> component.'
     );
   }
 

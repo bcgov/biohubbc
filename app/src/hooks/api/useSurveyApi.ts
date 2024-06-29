@@ -1,14 +1,14 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import { ISurveyCritter } from 'contexts/animalPageContext';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import {
   IAnimalDeployment,
-  IAnimalTelemetryDevice,
+  ICreateAnimalDeployment,
   IDeploymentTimespan,
   ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
-import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
   ICreateSurveyRequest,
@@ -389,21 +389,27 @@ const useSurveyApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     critter: ICreateCritter
-  ): Promise<ICritterSimpleResponse> => {
+  ): Promise<ISurveyCritter> => {
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters`, critter);
     return data;
   };
 
   /**
-   * Remove a critter from the survey. Will not delete critter in critterbase.
+   * Remove critters from the survey. Will not delete critters in critterbase.
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} critterId
    * @returns {*}
    */
-  const removeCritterFromSurvey = async (projectId: number, surveyId: number, critterId: number): Promise<number> => {
-    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`);
+  const removeCrittersFromSurvey = async (
+    projectId: number,
+    surveyId: number,
+    critterIds: number[]
+  ): Promise<number> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/delete`, {
+      critterIds: critterIds
+    });
     return data;
   };
 
@@ -419,26 +425,12 @@ const useSurveyApi = (axios: AxiosInstance) => {
   const addDeployment = async (
     projectId: number,
     surveyId: number,
-    critterId: number,
-    body: IAnimalTelemetryDevice & { critter_id: string }
+    critterId: number, // Survey critter_id
+    body: ICreateAnimalDeployment // Critterbase critter_id
   ): Promise<number> => {
-    body.device_id = Number(body.device_id); //Turn this into validation class soon
-    body.frequency = body.frequency != null ? Number(body.frequency) : undefined;
-    body.frequency_unit = body.frequency_unit?.length ? body.frequency_unit : undefined;
-    if (!body.deployments || body.deployments.length !== 1) {
-      throw Error('Calling this with any amount other than 1 deployments currently unsupported.');
-    }
-    const flattened = { ...body, ...body.deployments[0] };
-
-    delete flattened.deployment_id;
-    delete flattened.deployments;
-    if (!flattened.device_model) {
-      delete flattened.device_model;
-    }
-
     const { data } = await axios.post(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
-      flattened
+      body
     );
     return data;
   };
@@ -537,7 +529,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurvey,
     getSurveyCritters,
     createCritterAndAddToSurvey,
-    removeCritterFromSurvey,
+    removeCrittersFromSurvey,
     addDeployment,
     getDeploymentsInSurvey,
     updateDeployment,

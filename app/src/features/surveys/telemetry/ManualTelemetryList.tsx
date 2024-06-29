@@ -22,6 +22,7 @@ import useTheme from '@mui/material/styles/useTheme';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { useOnMount } from '@mui/x-data-grid/internals';
 import { SkeletonListStack } from 'components/loading/SkeletonLoaders';
 import { AttachmentType } from 'constants/attachments';
 import { DialogContext } from 'contexts/dialogContext';
@@ -34,7 +35,7 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { isEqual as _deepEquals } from 'lodash';
 import { get } from 'lodash-es';
-import { useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { datesSameNullable } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { InferType } from 'yup';
@@ -93,13 +94,10 @@ const ManualTelemetryList = () => {
   const [deviceId, setDeviceId] = useState<number>(0);
   const [formData, setFormData] = useState<AnimalDeployment>(defaultFormValues);
 
-  useEffect(() => {
+  useOnMount(() => {
     surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-
-    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  });
 
   const deployments = surveyContext.deploymentDataLoader.data;
   const critters = surveyContext.critterDataLoader.data;
@@ -253,12 +251,13 @@ const ManualTelemetryList = () => {
         //Being explicit here for simplicity.
         {
           critter_id: critter.critter_id,
-          device_id: data.device_id,
+          device_id: Number(data.device_id),
           device_make: data.device_make ?? undefined,
-          frequency: data.frequency,
-          frequency_unit: data.frequency_unit,
-          device_model: data.device_model,
-          deployments: data.deployments
+          frequency: data.frequency ?? undefined,
+          frequency_unit: data.frequency_unit ?? undefined,
+          device_model: data.device_model ?? undefined,
+          attachment_start: data.deployments?.[0].attachment_start,
+          attachment_end: data.deployments?.[0].attachment_end ?? undefined
         }
       );
       surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
@@ -541,7 +540,7 @@ const ManualTelemetryList = () => {
                   </Button>
                 </Toolbar>
                 <Divider flexItem></Divider>
-                <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
+                <Box position="relative" display="flex" flex="1 1 auto" overflow="auto">
                   <Box
                     position="absolute"
                     top="0"

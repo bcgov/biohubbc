@@ -148,7 +148,7 @@ const SampleMethodEditForm = (props: SampleMethodEditFormProps) => {
           {errors.sample_methods && !Array.isArray(errors.sample_methods) && (
             <Alert
               sx={{
-                my: 1
+                mb: 2
               }}
               severity="error">
               <AlertTitle>Missing sampling method</AlertTitle>
