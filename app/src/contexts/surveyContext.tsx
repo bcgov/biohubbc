@@ -173,7 +173,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
         surveyId !== surveyDataLoader.data?.surveyData.survey_details.id)
     ) {
       surveyDataLoader.refresh(projectId, surveyId);
-      techniqueDataLoader.refresh(projectId, surveyId);
+      //   techniqueDataLoader.refresh(projectId, surveyId);
       artifactDataLoader.refresh(projectId, surveyId);
       sampleSiteDataLoader.refresh(projectId, surveyId);
       deploymentDataLoader.refresh(projectId, surveyId);

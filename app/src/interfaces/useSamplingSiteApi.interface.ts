@@ -1,5 +1,5 @@
-import { ISurveySampleMethodData } from 'features/surveys/sampling-information/sites/create/form/MethodForm';
-import { ISurveySampleSite } from 'features/surveys/sampling-information/sites/create/SamplingSitePage';
+import { ISurveySampleMethodData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
+import { ISurveySampleSite } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
 import { Feature } from 'geojson';
 import { IGetSurveyBlock, IGetSurveyStratum } from './useSurveyApi.interface';
 

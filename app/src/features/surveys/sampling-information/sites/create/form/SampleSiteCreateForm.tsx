@@ -6,12 +6,12 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import SurveySamplingSiteImportForm from 'features/surveys/components/locations/SurveySamplingSiteImportForm';
-import SamplingMethodForm from 'features/surveys/sampling-information/sites/create/form/SamplingMethodForm';
+import { SamplingMethodFormContainer } from 'features/surveys/sampling-information/methods/SamplingMethodFormContainer';
+import { SamplingSiteGroupingsForm } from 'features/surveys/sampling-information/sites/components/site-groupings/SamplingSiteGroupingsForm';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useHistory } from 'react-router';
-import SamplingSiteGroupingsForm from '../../components/SamplingSiteGroupingsForm';
 
 interface ISampleSiteCreateFormProps {
   isSubmitting: boolean;
@@ -39,7 +39,7 @@ const SampleSiteCreateForm = (props: ISampleSiteCreateFormProps) => {
           <HorizontalSplitFormComponent
             title="Sampling Methods"
             summary="Specify sampling methods that were used to collect data."
-            component={<SamplingMethodForm />}></HorizontalSplitFormComponent>
+            component={<SamplingMethodFormContainer />}></HorizontalSplitFormComponent>
 
           <Divider />
 

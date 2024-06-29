@@ -6,9 +6,9 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
-import { SkeletonList } from 'components/loading/SkeletonLoaders';
-import { NoTechniquesOverlay } from 'features/surveys/sampling-information/techniques/components/NoTechniquesOverlay';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { useSurveyContext } from 'hooks/useContext';
+import { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { SamplingTechniqueCardContainer } from './components/SamplingTechniqueCardContainer';
 
@@ -17,8 +17,14 @@ import { SamplingTechniqueCardContainer } from './components/SamplingTechniqueCa
  *
  * @return {*}
  */
-export const SamplingSiteTechniqueContainer = () => {
+export const SamplingTechniqueContainer = () => {
   const surveyContext = useSurveyContext();
+
+  useEffect(() => {
+    console.log('refreshing techniques');
+    surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surveyContext.projectId, surveyContext.surveyId]);
 
   const techniqueCount = surveyContext.techniqueDataLoader.data?.count ?? 0;
   const techniques = surveyContext.techniqueDataLoader.data?.techniques ?? [];
@@ -55,8 +61,11 @@ export const SamplingSiteTechniqueContainer = () => {
 
       <Divider flexItem></Divider>
 
-      <LoadingGuard isLoading={surveyContext.techniqueDataLoader.isLoading} fallback={<SkeletonList />}>
-        {(!techniqueCount && <NoTechniquesOverlay />) || <SamplingTechniqueCardContainer techniques={techniques} />}
+      <LoadingGuard
+        isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
+        fallback={<SkeletonTable />}
+        delay={200}>
+        <SamplingTechniqueCardContainer techniques={techniques} />
       </LoadingGuard>
     </Stack>
   );

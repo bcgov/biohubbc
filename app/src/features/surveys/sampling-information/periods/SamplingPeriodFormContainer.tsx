@@ -16,9 +16,9 @@ import Stack from '@mui/material/Stack';
 import { GridMoreVertIcon } from '@mui/x-data-grid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
-import { CreateSamplingPeriod } from 'features/surveys/sampling-information/periods/create/CreateSamplingPeriod';
-import { EditSamplingPeriod } from 'features/surveys/sampling-information/periods/edit/EditSamplingPeriod';
-import { ISurveySampleMethodData } from 'features/surveys/sampling-information/sites/create/form/MethodForm';
+import { ISurveySampleMethodData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
+import { CreateSamplingPeriodFormDialog } from 'features/surveys/sampling-information/periods/create/CreateSamplingPeriodFormDialog';
+import { EditSamplingPeriodFormDialog } from 'features/surveys/sampling-information/periods/edit/EditSamplingPeriodFormDialog';
 import { getIn, useFormikContext } from 'formik';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useState } from 'react';
@@ -78,7 +78,7 @@ export const SamplingSiteMethodPeriodYupSchema = yup
     return true;
   });
 
-interface IMethodPeriodFormProps {
+interface ISamplingPeriodFormContainerProps {
   survey_sample_method: ISurveySampleMethodData;
   index: number;
 }
@@ -88,7 +88,7 @@ interface IMethodPeriodFormProps {
  *
  * @returns
  */
-export const MethodPeriodForm = (props: IMethodPeriodFormProps) => {
+export const SamplingPeriodFormContainer = (props: ISamplingPeriodFormContainerProps) => {
   const formikProps = useFormikContext<ICreateSamplingSiteRequest>();
   const { errors, setFieldValue, setErrors } = formikProps;
 
@@ -128,7 +128,7 @@ export const MethodPeriodForm = (props: IMethodPeriodFormProps) => {
   return (
     <>
       {/* CREATE SAMPLE METHOD DIALOG */}
-      <CreateSamplingPeriod
+      <CreateSamplingPeriodFormDialog
         open={isCreateModalOpen}
         onSubmit={(data) => {
           setFieldValue(`sample_methods[${props.index}].sample_periods[${sample_periods.length}]`, data);
@@ -144,7 +144,7 @@ export const MethodPeriodForm = (props: IMethodPeriodFormProps) => {
 
       {/* EDIT SAMPLE METHOD DIALOG */}
       {editData?.data && (
-        <EditSamplingPeriod
+        <EditSamplingPeriodFormDialog
           initialData={editData?.data}
           open={isEditModalOpen}
           onSubmit={(data) => {
@@ -228,7 +228,7 @@ export const MethodPeriodForm = (props: IMethodPeriodFormProps) => {
                   pt: 0,
                   pb: '6px !important'
                 }}>
-                {/* <Stack gap={2}><MethodPeriodForm /></Stack> */}
+                {/* <Stack gap={2}><SamplingPeriodFormContainer /></Stack> */}
               </CardContent>
             </Card>
           </Collapse>

@@ -16,9 +16,10 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonMap, SkeletonTable } from 'components/loading/SkeletonLoaders';
-import { SamplingSiteCard } from 'features/surveys/sampling-information/sites/SamplingSiteCard';
-import { SamplingSiteMapContainer } from 'features/surveys/sampling-information/sites/SamplingSiteMapContainer';
+import { SamplingSiteCard } from 'features/surveys/sampling-information/sites/manage/SamplingSiteCard';
+import { SamplingSiteMapContainer } from 'features/surveys/sampling-information/sites/manage/SamplingSiteMapContainer';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
@@ -288,76 +289,77 @@ export const SamplingSiteManageSiteList = () => {
         </Toolbar>
         <Divider flexItem />
         <Box>
-          {surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
-            <>
-              <SkeletonMap />
-              <SkeletonTable numberOfLines={5} />
-            </>
-          ) : (
-            <>
-              <SamplingSiteMapContainer samplingSites={surveyContext.sampleSiteDataLoader.data?.sampleSites ?? []} />
-              <Stack height="100%" sx={{ overflowY: 'auto' }}>
-                <Box flex="0 0 auto" display="flex" alignItems="center" px={2} ml={1} height={55}>
-                  <FormGroup>
-                    <FormControlLabel
-                      label={
-                        <Typography
-                          ml={-0.5}
-                          variant="body2"
-                          component="span"
-                          color="textSecondary"
-                          fontWeight={700}
-                          sx={{ textTransform: 'uppercase' }}>
-                          Select All
-                        </Typography>
-                      }
-                      control={
-                        <Checkbox
-                          sx={{
-                            mr: 0.75
-                          }}
-                          checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === samplingSiteCount}
-                          indeterminate={
-                            checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount
-                          }
-                          onClick={() => {
-                            if (checkboxSelectedIds.length === samplingSiteCount) {
-                              setCheckboxSelectedIds([]);
-                              return;
-                            }
-
-                            const sampleSiteIds = sampleSites.map((sampleSite) => sampleSite.survey_sample_site_id);
-                            setCheckboxSelectedIds(sampleSiteIds);
-                          }}
-                          inputProps={{ 'aria-label': 'controlled' }}
-                        />
-                      }
-                    />
-                  </FormGroup>
-                </Box>
-                <Divider flexItem></Divider>
-                <Stack
-                  flex="1 1 auto"
-                  sx={{
-                    background: grey[100]
-                  }}>
-                  {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
-                    return (
-                      <SamplingSiteCard
-                        sampleSite={sampleSite}
-                        handleCheckboxChange={handleCheckboxChange}
-                        handleMenuClick={(event) => {
-                          setSampleSiteAnchorEl(event.currentTarget);
-                          setSelectedSampleSiteId(sampleSite.survey_sample_site_id);
+          <LoadingGuard
+            isLoading={surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}
+            fallback={
+              <>
+                <SkeletonMap />
+                <SkeletonTable numberOfLines={5} />
+              </>
+            }
+            delay={200}>
+            <SamplingSiteMapContainer samplingSites={surveyContext.sampleSiteDataLoader.data?.sampleSites ?? []} />
+            <Stack height="100%" sx={{ overflowY: 'auto' }}>
+              <Box flex="0 0 auto" display="flex" alignItems="center" px={2} ml={1} height={55}>
+                <FormGroup>
+                  <FormControlLabel
+                    label={
+                      <Typography
+                        ml={-0.5}
+                        variant="body2"
+                        component="span"
+                        color="textSecondary"
+                        fontWeight={700}
+                        sx={{ textTransform: 'uppercase' }}>
+                        Select All
+                      </Typography>
+                    }
+                    control={
+                      <Checkbox
+                        sx={{
+                          mr: 0.75
                         }}
-                        key={sampleSite.survey_sample_site_id}
+                        checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === samplingSiteCount}
+                        indeterminate={
+                          checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount
+                        }
+                        onClick={() => {
+                          if (checkboxSelectedIds.length === samplingSiteCount) {
+                            setCheckboxSelectedIds([]);
+                            return;
+                          }
+
+                          const sampleSiteIds = sampleSites.map((sampleSite) => sampleSite.survey_sample_site_id);
+                          setCheckboxSelectedIds(sampleSiteIds);
+                        }}
+                        inputProps={{ 'aria-label': 'controlled' }}
                       />
-                    );
-                  })}
-                </Stack>
+                    }
+                  />
+                </FormGroup>
+              </Box>
+              <Divider flexItem></Divider>
+              <Stack
+                flex="1 1 auto"
+                sx={{
+                  background: grey[100]
+                }}>
+                {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
+                  return (
+                    <SamplingSiteCard
+                      sampleSite={sampleSite}
+                      handleCheckboxChange={handleCheckboxChange}
+                      handleMenuClick={(event) => {
+                        setSampleSiteAnchorEl(event.currentTarget);
+                        setSelectedSampleSiteId(sampleSite.survey_sample_site_id);
+                      }}
+                      key={sampleSite.survey_sample_site_id}
+                    />
+                  );
+                })}
               </Stack>
-            </>
-          )}
+            </Stack>
+          </LoadingGuard>
         </Box>
       </Paper>
     </>

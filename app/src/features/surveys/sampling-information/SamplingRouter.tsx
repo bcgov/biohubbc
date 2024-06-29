@@ -2,10 +2,10 @@ import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { SamplingSiteManagePage } from 'features/surveys/sampling-information/manage/SamplingSiteManagePage';
-import SamplingSitePage from 'features/surveys/sampling-information/sites/create/SamplingSitePage';
-import SamplingSiteEditPage from 'features/surveys/sampling-information/sites/edit/SamplingSiteEditPage';
+import { CreateSamplingSitePage } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
+import { EditSamplingSitePage } from 'features/surveys/sampling-information/sites/edit/EditSamplingSitePage';
 import { CreateTechniquePage } from 'features/surveys/sampling-information/techniques/form/create/CreateTechniquePage';
-import EditTechniquePage from 'features/surveys/sampling-information/techniques/form/edit/EditTechniquePage';
+import { EditTechniquePage } from 'features/surveys/sampling-information/techniques/form/edit/EditTechniquePage';
 import { Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
@@ -32,7 +32,7 @@ export const SamplingRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/sampling/create"
         title={getTitle('Create Sampling Sites')}>
         <DialogContextProvider>
-          <SamplingSitePage />
+          <CreateSamplingSitePage />
         </DialogContextProvider>
       </RouteWithTitle>
 
@@ -44,7 +44,7 @@ export const SamplingRouter = () => {
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
-            <SamplingSiteEditPage />
+            <EditSamplingSitePage />
           </DialogContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>

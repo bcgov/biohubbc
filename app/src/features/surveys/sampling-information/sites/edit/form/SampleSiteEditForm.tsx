@@ -6,15 +6,15 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { SurveyContext } from 'contexts/surveyContext';
-import { SamplingSiteMethodYupSchema } from 'features/surveys/sampling-information/sites/create/form/MethodForm';
+import { SamplingSiteMethodYupSchema } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
+import { SamplingMethodFormContainer } from 'features/surveys/sampling-information/methods/SamplingMethodFormContainer';
+import { SamplingSiteGroupingsForm } from 'features/surveys/sampling-information/sites/components/site-groupings/SamplingSiteGroupingsForm';
 import { useFormikContext } from 'formik';
 import { IGetSampleLocationDetailsForUpdate } from 'interfaces/useSamplingSiteApi.interface';
 import { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import yup from 'utils/YupSchema';
 import SurveySamplingSiteEditForm from '../../components/map/SurveySampleSiteEditForm';
-import SamplingSiteGroupingsForm from '../../components/SamplingSiteGroupingsForm';
-import SampleMethodEditForm from './SampleMethodEditForm';
 import SampleSiteGeneralInformationForm from './SampleSiteGeneralInformationForm';
 
 export interface ISampleSiteEditFormProps {
@@ -64,7 +64,7 @@ const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
           <HorizontalSplitFormComponent
             title="Sampling Methods"
             summary="Specify sampling methods that were used to collect data."
-            component={<SampleMethodEditForm name={'sample_methods'} />}></HorizontalSplitFormComponent>
+            component={<SamplingMethodFormContainer />}></HorizontalSplitFormComponent>
 
           <Divider />
 

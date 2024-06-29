@@ -1,8 +1,12 @@
 import EditDialog from 'components/dialog/EditDialog';
 import { IGetSampleMethodRecord } from 'interfaces/useSamplingSiteApi.interface';
-import MethodForm, { ISurveySampleMethodData, SamplingSiteMethodYupSchema } from '../../create/form/MethodForm';
+import {
+  ISurveySampleMethodData,
+  SamplingMethodForm,
+  SamplingSiteMethodYupSchema
+} from '../components/SamplingMethodForm';
 
-interface IEditSamplingMethodProps {
+interface IEditSamplingMethodFormDialogProps {
   open: boolean;
   initialData: IGetSampleMethodRecord | ISurveySampleMethodData;
   onSubmit: (data: IGetSampleMethodRecord | ISurveySampleMethodData, index?: number) => void;
@@ -15,7 +19,7 @@ interface IEditSamplingMethodProps {
  * @param props
  * @returns
  */
-const EditSamplingMethod = (props: IEditSamplingMethodProps) => {
+export const EditSamplingMethodFormDialog = (props: IEditSamplingMethodFormDialogProps) => {
   const { open, initialData, onSubmit, onClose } = props;
 
   return (
@@ -24,7 +28,7 @@ const EditSamplingMethod = (props: IEditSamplingMethodProps) => {
       open={open}
       dialogLoading={false}
       component={{
-        element: <MethodForm />,
+        element: <SamplingMethodForm />,
         initialValues: initialData,
         validationSchema: SamplingSiteMethodYupSchema
       }}
@@ -36,5 +40,3 @@ const EditSamplingMethod = (props: IEditSamplingMethodProps) => {
     />
   );
 };
-
-export default EditSamplingMethod;

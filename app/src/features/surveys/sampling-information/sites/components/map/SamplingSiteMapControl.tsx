@@ -32,7 +32,7 @@ import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize, shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
-import { ISurveySampleSite } from '../../create/SamplingSitePage';
+import { ISurveySampleSite } from '../../create/CreateSamplingSitePage';
 
 const useStyles = () => {
   return {

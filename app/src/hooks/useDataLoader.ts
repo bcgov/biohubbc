@@ -135,12 +135,10 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
 
   const refresh = useCallback(
     async (...args: AFArgs) => {
-      // Clear previous data and state
-      setData(undefined);
+      // Clear previous error/loading state
       setError(undefined);
       setIsLoading(false);
       setIsReady(false);
-
       // Call loadData to fetch new data
       return loadData(...args);
     },

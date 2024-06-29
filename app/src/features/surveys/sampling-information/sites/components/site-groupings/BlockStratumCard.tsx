@@ -6,7 +6,7 @@ interface IBlockStratumCard {
   description: string;
 }
 
-const BlockStratumCard: React.FC<IBlockStratumCard> = (props) => {
+export const BlockStratumCard: React.FC<IBlockStratumCard> = (props) => {
   return (
     <Box>
       <Box>
@@ -22,5 +22,3 @@ const BlockStratumCard: React.FC<IBlockStratumCard> = (props) => {
     </Box>
   );
 };
-
-export default BlockStratumCard;

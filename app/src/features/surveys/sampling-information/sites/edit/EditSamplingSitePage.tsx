@@ -21,7 +21,7 @@ import SampleSiteEditForm, { samplingSiteYupSchema } from './form/SampleSiteEdit
  *
  * @return {*}
  */
-const SamplingSiteEditPage = () => {
+export const EditSamplingSitePage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
   const urlParams: Record<string, string | number | undefined> = useParams();
@@ -180,5 +180,3 @@ const SamplingSiteEditPage = () => {
     </>
   );
 };
-
-export default SamplingSiteEditPage;

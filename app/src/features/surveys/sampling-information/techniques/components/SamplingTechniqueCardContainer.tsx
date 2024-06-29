@@ -36,6 +36,8 @@ interface ISamplingTechniqueCardContainer {
  * @returns
  */
 export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(props: ISamplingTechniqueCardContainer) => {
+  const { techniques } = props;
+
   const [selectedTechnique, setSelectedTechnique] = useState<number | null>(null);
   const [techniqueAnchorEl, setTechniqueAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
@@ -104,7 +106,7 @@ export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(prop
   };
 
   const rows: ITechniqueRowData[] =
-    props.techniques.map((technique) => ({
+    techniques.map((technique) => ({
       id: technique.method_technique_id,
       method_lookup:
         getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id) ?? '',

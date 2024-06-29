@@ -4,10 +4,10 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
-import { ISurveySampleMethodPeriodData } from 'features/surveys/sampling-information/periods/create/SamplingPeriodForm';
+import { ISurveySampleMethodPeriodData } from 'features/surveys/sampling-information/periods/SamplingPeriodFormContainer';
 import { useFormikContext } from 'formik';
 
-export const PeriodForm = () => {
+export const SamplingPeriodForm = () => {
   const formikProps = useFormikContext<ISurveySampleMethodPeriodData>();
 
   const { errors } = formikProps;

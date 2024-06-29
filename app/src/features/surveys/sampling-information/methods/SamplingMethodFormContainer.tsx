@@ -20,10 +20,10 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { CodesContext } from 'contexts/codesContext';
-import { MethodPeriodForm } from 'features/surveys/sampling-information/periods/create/SamplingPeriodForm';
-import CreateSamplingMethod from 'features/surveys/sampling-information/sites/create/form/CreateSamplingMethod';
-import { ISurveySampleMethodData } from 'features/surveys/sampling-information/sites/create/form/MethodForm';
-import EditSamplingMethod from 'features/surveys/sampling-information/sites/edit/form/EditSamplingMethod';
+import { ISurveySampleMethodData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
+import { CreateSamplingMethodFormDialog } from 'features/surveys/sampling-information/methods/create/CreateSamplingMethodFormDialog';
+import { EditSamplingMethodFormDialog } from 'features/surveys/sampling-information/methods/edit/EditSamplingMethodFormDialog';
+import { SamplingPeriodFormContainer } from 'features/surveys/sampling-information/periods/SamplingPeriodFormContainer';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
@@ -36,7 +36,7 @@ import { getCodesName } from 'utils/Utils';
  *
  * @returns
  */
-const SamplingMethodForm = () => {
+export const SamplingMethodFormContainer = () => {
   const { values, errors, setFieldValue, setFieldTouched } = useFormikContext<ICreateSamplingSiteRequest>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -67,7 +67,7 @@ const SamplingMethodForm = () => {
   return (
     <>
       {/* CREATE SAMPLE METHOD DIALOG */}
-      <CreateSamplingMethod
+      <CreateSamplingMethodFormDialog
         open={isCreateModalOpen}
         onSubmit={(data) => {
           setFieldValue(`sample_methods[${values.sample_methods.length}]`, data);
@@ -83,7 +83,7 @@ const SamplingMethodForm = () => {
 
       {/* EDIT SAMPLE METHOD DIALOG */}
       {editData?.data && (
-        <EditSamplingMethod
+        <EditSamplingMethodFormDialog
           initialData={editData?.data}
           open={isEditModalOpen}
           onSubmit={(data) => {
@@ -216,7 +216,9 @@ const SamplingMethodForm = () => {
                       )}
                       <Divider sx={{ mt: 0.5 }} />
                       <Box py={1}>
-                        {item.method_technique_id && <MethodPeriodForm index={index} survey_sample_method={item} />}
+                        {item.method_technique_id && (
+                          <SamplingPeriodFormContainer index={index} survey_sample_method={item} />
+                        )}
                       </Box>
                     </Stack>
                   </CardContent>
@@ -246,5 +248,3 @@ const SamplingMethodForm = () => {
     </>
   );
 };
-
-export default SamplingMethodForm;

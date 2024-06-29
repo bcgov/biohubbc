@@ -10,7 +10,7 @@ import { useSurveyContext } from 'hooks/useContext';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
-import { ISurveySampleMethodPeriodData } from '../../../periods/create/SamplingPeriodForm';
+import { ISurveySampleMethodPeriodData } from '../../periods/SamplingPeriodFormContainer';
 
 export interface ISurveySampleMethodData {
   _id?: string; // Internal ID used only for a unique key prop. Should not be sent to the API.
@@ -46,7 +46,7 @@ export const SamplingSiteMethodYupSchema = yup.object({
  *
  * @returns
  */
-const MethodForm = () => {
+export const SamplingMethodForm = () => {
   const codesContext = useContext(CodesContext);
   const surveyContext = useSurveyContext();
 
@@ -128,5 +128,3 @@ const MethodForm = () => {
     </form>
   );
 };
-
-export default MethodForm;

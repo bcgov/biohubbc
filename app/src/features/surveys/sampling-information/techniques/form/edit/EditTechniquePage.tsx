@@ -29,7 +29,7 @@ import { v4 } from 'uuid';
  *
  * @return {*}
  */
-const EditTechniquePage = () => {
+export const EditTechniquePage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
@@ -237,5 +237,3 @@ const EditTechniquePage = () => {
     </>
   );
 };
-
-export default EditTechniquePage;

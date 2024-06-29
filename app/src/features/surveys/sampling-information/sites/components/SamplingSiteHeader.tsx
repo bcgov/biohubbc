@@ -8,7 +8,6 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useFormikContext } from 'formik';
-import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -25,12 +24,12 @@ export interface ISamplingSiteHeaderProps {
 /**
  * Renders the header of the Sampling Site page.
  *
- * @param {*} props
+ * @param {ISamplingSiteHeaderProps} props
  * @return {*}
  */
-export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) => {
+export const SamplingSiteHeader = (props: ISamplingSiteHeaderProps) => {
   const history = useHistory();
-  const formikProps = useFormikContext<ICreateSamplingSiteRequest>();
+  const formikProps = useFormikContext();
 
   const { project_id, survey_id, survey_name, project_name, is_submitting, title, breadcrumb } = props;
 
@@ -63,9 +62,9 @@ export const SamplingSiteHeader: React.FC<ISamplingSiteHeaderProps> = (props) =>
             </Link>
             <Link
               component={RouterLink}
-              to={`/admin/projects/${project_id}/surveys/${survey_id}/observations`}
+              to={`/admin/projects/${project_id}/surveys/${survey_id}/sampling`}
               underline="none">
-              Manage Survey Observations
+              Manage Sampling Information
             </Link>
             <Typography component="span" variant="body2" color="textSecondary">
               {breadcrumb}

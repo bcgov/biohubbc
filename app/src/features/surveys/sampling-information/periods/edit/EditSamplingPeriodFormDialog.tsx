@@ -1,12 +1,12 @@
 import { EditDialog } from 'components/dialog/EditDialog';
-import { PeriodForm } from 'features/surveys/sampling-information/periods/create/PeriodForm';
+import { SamplingPeriodForm } from 'features/surveys/sampling-information/periods/components/SamplingPeriodForm';
 import {
   ISurveySampleMethodPeriodData,
   SamplingSiteMethodPeriodYupSchema
-} from 'features/surveys/sampling-information/periods/create/SamplingPeriodForm';
+} from 'features/surveys/sampling-information/periods/SamplingPeriodFormContainer';
 import { IGetSamplePeriodRecord } from 'interfaces/useSamplingSiteApi.interface';
 
-interface IEditSamplingMethodPeriodProps {
+interface IEditSamplingPeriodFormDialogProps {
   open: boolean;
   initialData: IGetSamplePeriodRecord | ISurveySampleMethodPeriodData;
   onSubmit: (data: IGetSamplePeriodRecord | ISurveySampleMethodPeriodData, index?: number) => void;
@@ -19,7 +19,7 @@ interface IEditSamplingMethodPeriodProps {
  * @param props
  * @returns
  */
-export const EditSamplingPeriod = (props: IEditSamplingMethodPeriodProps) => {
+export const EditSamplingPeriodFormDialog = (props: IEditSamplingPeriodFormDialogProps) => {
   const { open, initialData, onSubmit, onClose } = props;
 
   return (
@@ -28,7 +28,7 @@ export const EditSamplingPeriod = (props: IEditSamplingMethodPeriodProps) => {
       open={open}
       dialogLoading={false}
       component={{
-        element: <PeriodForm />,
+        element: <SamplingPeriodForm />,
         initialValues: initialData,
         validationSchema: SamplingSiteMethodPeriodYupSchema
       }}

@@ -56,7 +56,7 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
 
   return (
     <StyledDataGrid
-      noRowsMessage={'No Techniques'}
+      noRowsMessage={'No Sites'}
       rowSelection={false}
       autoHeight
       getRowHeight={() => 'auto'}

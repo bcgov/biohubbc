@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
-import { SamplingSiteMethodYupSchema } from 'features/surveys/sampling-information/sites/create/form/MethodForm';
+import { SamplingSiteMethodYupSchema } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
@@ -13,7 +13,7 @@ import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interf
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import yup from 'utils/YupSchema';
-import { SamplingSiteMethodPeriodYupSchema } from '../../periods/create/SamplingPeriodForm';
+import { SamplingSiteMethodPeriodYupSchema } from '../../periods/SamplingPeriodFormContainer';
 import SamplingSiteHeader from '../components/SamplingSiteHeader';
 import SampleSiteCreateForm from './form/SampleSiteCreateForm';
 
@@ -28,7 +28,7 @@ export interface ISurveySampleSite {
  *
  * @return {*}
  */
-const SamplingSitePage = () => {
+export const CreateSamplingSitePage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
@@ -168,5 +168,3 @@ const SamplingSitePage = () => {
     </>
   );
 };
-
-export default SamplingSitePage;
