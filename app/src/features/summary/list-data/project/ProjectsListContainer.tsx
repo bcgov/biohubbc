@@ -9,7 +9,8 @@ import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } fro
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SystemRoleGuard } from 'components/security/Guards';
-import { getNrmRegionColour, NRM_REGION_APPENDED_TEXT } from 'constants/regions';
+import { getNrmRegionColour } from 'constants/colours';
+import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';

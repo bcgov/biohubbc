@@ -1,9 +1,8 @@
 import Box from '@mui/material/Box';
-import { blueGrey } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import { TaxonRankColours } from 'constants/taxon';
+import { getTaxonRankColour } from 'constants/colours';
 import { IPartialTaxonomy, ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 
 interface ISpeciesCardProps {
@@ -38,11 +37,7 @@ const SpeciesCard = (props: ISpeciesCardProps) => {
             )}
           </Typography>
           {taxon?.rank && (
-            <ColouredRectangleChip
-              sx={{ mx: 1 }}
-              label={taxon.rank}
-              colour={TaxonRankColours[taxon.rank].colour ?? blueGrey}
-            />
+            <ColouredRectangleChip sx={{ mx: 1 }} label={taxon.rank} colour={getTaxonRankColour(taxon.rank)} />
           )}
         </Stack>
         <Typography variant="subtitle2" color="textSecondary">
