@@ -4,18 +4,12 @@ const defaultLog = getLogger('models/project-update');
 
 export class PutProjectData {
   name: string;
-  project_programs: number[];
-  start_date: string;
-  end_date: string;
   revision_count: number;
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PutProjectData', message: 'params', obj });
 
     this.name = obj?.project_name || null;
-    this.project_programs = obj?.project_programs || [];
-    this.start_date = obj?.start_date || null;
-    this.end_date = obj?.end_date || null;
     this.revision_count = obj?.revision_count ?? null;
   }
 }

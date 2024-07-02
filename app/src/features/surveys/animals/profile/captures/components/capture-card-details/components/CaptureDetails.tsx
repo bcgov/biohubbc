@@ -3,6 +3,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ICaptureWithSupplementaryData } from 'features/surveys/animals/profile/captures/AnimalCaptureContainer';
+import { combineDateTime } from 'utils/datetime';
 import { getFormattedDate } from 'utils/Utils';
 
 interface ICaptureDetailsProps {
@@ -18,11 +19,12 @@ interface ICaptureDetailsProps {
 export const CaptureDetails = (props: ICaptureDetailsProps) => {
   const { capture } = props;
 
-  const captureTimestamp = capture.capture_timestamp;
+  const captureDate = capture.capture_date;
+  const captureTime = capture.capture_time;
   const captureLocation = capture.capture_location;
   const captureComment = capture.capture_comment;
 
-  if (!captureTimestamp && (!captureLocation.latitude || !captureLocation.longitude) && !captureComment) {
+  if (!captureDate && (!captureLocation.latitude || !captureLocation.longitude) && !captureComment) {
     return null;
   }
 
@@ -35,10 +37,10 @@ export const CaptureDetails = (props: ICaptureDetailsProps) => {
             fontWeight={700}
             fontSize="0.75rem"
             sx={{ textTransform: 'uppercase', mb: 0.5 }}>
-            Capture time
+            Capture date
           </Typography>
           <Typography color="textSecondary" variant="body2">
-            {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, captureTimestamp)}
+            {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, combineDateTime(captureDate, captureTime))}
           </Typography>
         </Box>
 
@@ -51,7 +53,7 @@ export const CaptureDetails = (props: ICaptureDetailsProps) => {
             Capture location
           </Typography>
           <Typography color="textSecondary" variant="body2">
-            {captureLocation.longitude},&nbsp;{captureLocation.latitude}
+            {captureLocation.latitude},&nbsp;{captureLocation.longitude}
           </Typography>
         </Box>
       </Stack>

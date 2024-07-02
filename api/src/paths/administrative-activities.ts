@@ -106,8 +106,8 @@ GET.apiDoc = {
                   nullable: true
                 },
                 create_date: {
-                  oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                  description: 'ISO 8601 date string for the project start date'
+                  type: 'string',
+                  description: 'ISO 8601 date string'
                 }
               }
             }

@@ -14,18 +14,6 @@ describe('PutProjectData', () => {
       expect(data.name).to.equal(null);
     });
 
-    it('sets type', () => {
-      expect(data.project_programs).to.eql([]);
-    });
-
-    it('sets start_date', () => {
-      expect(data.start_date).to.equal(null);
-    });
-
-    it('sets end_date', () => {
-      expect(data.end_date).to.equal(null);
-    });
-
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(null);
     });
@@ -34,9 +22,6 @@ describe('PutProjectData', () => {
   describe('all values provided', () => {
     const obj = {
       project_name: 'project name',
-      project_programs: [1],
-      start_date: '2020-04-20T07:00:00.000Z',
-      end_date: '2020-05-20T07:00:00.000Z',
       revision_count: 1
     };
 
@@ -48,18 +33,6 @@ describe('PutProjectData', () => {
 
     it('sets name', () => {
       expect(data.name).to.equal('project name');
-    });
-
-    it('sets programs', () => {
-      expect(data.project_programs).to.eql([1]);
-    });
-
-    it('sets start_date', () => {
-      expect(data.start_date).to.eql('2020-04-20T07:00:00.000Z');
-    });
-
-    it('sets end_date', () => {
-      expect(data.end_date).to.equal('2020-05-20T07:00:00.000Z');
     });
 
     it('sets revision_count', () => {

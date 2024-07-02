@@ -60,11 +60,10 @@ export async function seed(knex: Knex): Promise<void> {
       const createProjectResponse = await knex.raw(insertProjectData(`Seed Project ${i + 1}`));
       const projectId = createProjectResponse.rows[0].project_id;
 
-      // Insert project IUCN, participant and program data
+      // Insert project IUCN and participants
       await knex.raw(`
         ${insertProjectIUCNData(projectId)}
         ${insertProjectParticipationData(projectId)}
-        ${insertProjectProgramData(projectId)}
       `);
 
       // Insert survey data
@@ -155,22 +154,6 @@ const insertSurveySiteStrategy = (surveyId: number) => `
   VALUES (
     ${surveyId},
     (select site_strategy_id  from site_strategy ss order by random() limit 1)
-  );
-`;
-
-/**
- * SQL to insert Project Program data
- *
- */
-const insertProjectProgramData = (projectId: number) => `
-  INSERT into project_program
-    (
-      project_id,
-      program_id
-    )
-  VALUES (
-    ${projectId},
-    (select program_id from program order by random() limit 1)
   );
 `;
 
@@ -271,21 +254,16 @@ const insertSurveyFundingData = (surveyId: number) => `
  */
 const insertSurveyFocalSpeciesData = (surveyId: number) => {
   const focalSpecies = focalTaxonIdOptions[Math.floor(Math.random() * focalTaxonIdOptions.length)];
-  const testValue = [
-    2012, 2013, 828, 2019, 1594, 1718, 2037, 2062, 2068, 2065, 2070, 2069, 23918, 23922, 23920, 35369, 35370, 28516
-  ][Math.floor(Math.random() * 18)];
 
   return `
     INSERT into study_species
       (
         survey_id,
-        wldtaxonomic_units_id,
         itis_tsn,
         is_focal
       )
     VALUES (
       ${surveyId},
-      ${testValue},
       ${focalSpecies.itis_tsn},
       'Y'
     );
@@ -649,15 +627,10 @@ const insertObservationSubCount = (surveyObservationId: number) => `
  *
  */
 const insertSurveyObservationData = (surveyId: number, count: number) => {
-  const testValue = [
-    2012, 2013, 828, 2019, 1594, 1718, 2037, 2062, 2068, 2065, 2070, 2069, 23918, 23922, 23920, 35369, 35370, 28516
-  ][Math.floor(Math.random() * 18)];
-
   return `
   INSERT INTO survey_observation
   (
     survey_id,
-    wldtaxonomic_units_id,
     itis_tsn,
     itis_scientific_name,
     latitude,
@@ -672,7 +645,6 @@ const insertSurveyObservationData = (surveyId: number, count: number) => {
   VALUES
   (
     ${surveyId},
-    ${testValue},
     $$${focalTaxonIdOptions[0].itis_tsn}$$,
     $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
     $$${faker.number.int({ min: 48, max: 60 })}$$,
@@ -711,8 +683,6 @@ const insertProjectData = (projectName?: string) => `
       name,
       objectives,
       location_description,
-      start_date,
-      end_date,
       geography,
       geojson
     )
@@ -720,8 +690,6 @@ const insertProjectData = (projectName?: string) => `
     '${projectName ?? 'Seed Project'}',
     $$${faker.lorem.sentences(2)}$$,
     $$${faker.lorem.sentences(2)}$$,
-    $$${faker.date.between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' }).toISOString()}$$,
-    $$${faker.date.between({ from: '2025-01-01T00:00:00-08:00', to: '2030-01-01T00:00:00-08:00' }).toISOString()}$$,
     'POLYGON ((-121.904297 50.930738, -121.904297 51.971346, -120.19043 51.971346, -120.19043 50.930738, -121.904297 50.930738))',
     '[
       {

@@ -540,7 +540,7 @@ const ManualTelemetryList = () => {
                   </Button>
                 </Toolbar>
                 <Divider flexItem></Divider>
-                <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
+                <Box position="relative" display="flex" flex="1 1 auto" overflow="auto">
                   <Box
                     position="absolute"
                     top="0"

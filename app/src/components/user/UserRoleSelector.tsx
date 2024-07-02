@@ -1,11 +1,13 @@
 import { mdiClose } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import { grey } from '@mui/material/colors';
+import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Select from '@mui/material/Select';
+import Typography from '@mui/material/Typography';
+import { PROJECT_ROLE_ICONS } from 'constants/roles';
 import { ICode } from 'interfaces/useCodesApi.interface';
 import { IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyParticipant } from 'interfaces/useSurveyApi.interface';
@@ -64,11 +66,27 @@ const UserRoleSelector: React.FC<IUserRoleSelectorProps> = (props) => {
                 if (!selected) {
                   return props.label;
                 }
-                return selected;
+                return (
+                  <Typography alignItems="center" display="flex">
+                    {selected}
+                    {PROJECT_ROLE_ICONS[selected] && (
+                      <>
+                        &nbsp;
+                        <Icon path={PROJECT_ROLE_ICONS[selected] ?? ''} size={0.75} color={grey[600]} />
+                      </>
+                    )}
+                  </Typography>
+                );
               }}>
               {roles.map((item) => (
                 <MenuItem key={item.id} value={item.name}>
                   {item.name}
+                  {PROJECT_ROLE_ICONS[item.name] && (
+                    <>
+                      &nbsp;
+                      <Icon path={PROJECT_ROLE_ICONS[item.name] ?? ''} size={0.75} color={grey[600]} />
+                    </>
+                  )}
                 </MenuItem>
               ))}
             </Select>

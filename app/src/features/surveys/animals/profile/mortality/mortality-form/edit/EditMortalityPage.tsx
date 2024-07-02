@@ -135,19 +135,21 @@ export const EditMortalityPage = () => {
 
       // Update existing critter information
       const response = await critterbaseApi.critters.bulkUpdate({
-        mortality: {
-          critter_id: critterbaseCritterId,
-          mortality_id: values.mortality.mortality_id,
-          location: mortalityLocation,
-          mortality_timestamp: mortalityTimestamp,
-          mortality_comment: values.mortality.mortality_comment,
-          proximate_cause_of_death_id: values.mortality.proximate_cause_of_death_id,
-          proximate_cause_of_death_confidence: values.mortality.proximate_cause_of_death_confidence,
-          proximate_predated_by_itis_tsn: values.mortality.proximate_predated_by_itis_tsn,
-          ultimate_cause_of_death_id: values.mortality.ultimate_cause_of_death_id,
-          ultimate_cause_of_death_confidence: values.mortality.ultimate_cause_of_death_confidence,
-          ultimate_predated_by_itis_tsn: values.mortality.ultimate_predated_by_itis_tsn
-        },
+        mortalities: [
+          {
+            critter_id: critterbaseCritterId,
+            mortality_id: values.mortality.mortality_id,
+            location: mortalityLocation,
+            mortality_timestamp: mortalityTimestamp,
+            mortality_comment: values.mortality.mortality_comment,
+            proximate_cause_of_death_id: values.mortality.proximate_cause_of_death_id,
+            proximate_cause_of_death_confidence: values.mortality.proximate_cause_of_death_confidence,
+            proximate_predated_by_itis_tsn: values.mortality.proximate_predated_by_itis_tsn,
+            ultimate_cause_of_death_id: values.mortality.ultimate_cause_of_death_id,
+            ultimate_cause_of_death_confidence: values.mortality.ultimate_cause_of_death_confidence,
+            ultimate_predated_by_itis_tsn: values.mortality.ultimate_predated_by_itis_tsn
+          }
+        ],
         markings: [...markingsForUpdate, ...markingsForDelete],
         qualitative_measurements: [...qualitativeMeasurementsForUpdate, ...qualitativeMeasurementsForDelete],
         quantitative_measurements: [...quantitativeMeasurementsForUpdate, ...quantitativeMeasurementsForDelete]
