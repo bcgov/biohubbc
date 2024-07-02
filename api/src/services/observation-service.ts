@@ -40,7 +40,6 @@ import {
   TsnMeasurementTypeDefinitionMap,
   validateMeasurements
 } from '../utils/observation-xlsx-utils/measurement-column-utils';
-import { getNonStandardColumnNamesFromWorksheet } from '../utils/observation-xlsx-utils/standard-column-utils';
 import {
   getCountFromRow,
   getDateFromRow,
@@ -53,6 +52,7 @@ import {
 import {
   constructXLSXWorkbook,
   getDefaultWorksheet,
+  getNonStandardColumnNamesFromWorksheet,
   getWorksheetRowObjects,
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
@@ -453,7 +453,10 @@ export class ObservationService extends DBService {
     }
 
     // Filter out the standard columns from the worksheet
-    const nonStandardColumnNames = getNonStandardColumnNamesFromWorksheet(xlsxWorksheet);
+    const nonStandardColumnNames = getNonStandardColumnNamesFromWorksheet(
+      xlsxWorksheet,
+      observationStandardColumnValidator
+    );
 
     // Get the worksheet row objects
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheet);

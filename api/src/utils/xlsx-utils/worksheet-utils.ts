@@ -327,7 +327,6 @@ export function validateCsvFile(xlsxWorksheet: xlsx.WorkSheet, columnValidator: 
  *
  * @param {xlsx.WorkSheet} xlsxWorksheet The worksheet to pull the columns from
  * @returns {*} string[] The list of non-standard columns found in the CSV
- * //TODO: Remove old reference to this file standard-column-utils
  */
 export function getNonStandardColumnNamesFromWorksheet(
   xlsxWorksheet: xlsx.WorkSheet,
