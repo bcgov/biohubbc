@@ -40,7 +40,6 @@ describe('ObservationService', () => {
         {
           survey_observation_id: 11,
           survey_id: 1,
-          wldtaxonomic_units_id: 2,
           latitude: 3,
           longitude: 4,
           count: 5,
@@ -60,7 +59,6 @@ describe('ObservationService', () => {
         {
           survey_observation_id: 6,
           survey_id: 1,
-          wldtaxonomic_units_id: 2,
           latitude: 8,
           longitude: 9,
           count: 10,

@@ -31,7 +31,6 @@ describe('CodeService', () => {
         'agency',
         'investment_action_category',
         'type',
-        'program',
         'proprietor_type',
         'iucn_conservation_action_level_1_classification',
         'iucn_conservation_action_level_2_subclassification',

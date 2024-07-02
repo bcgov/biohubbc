@@ -103,8 +103,10 @@ export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
                 coordinate_uncertainty_unit: props?.formObject?.release_location?.coordinate_uncertainty_unit ?? 'm'
               }
             : undefined,
-          capture_timestamp: props?.formObject?.capture_timestamp as unknown as Date,
-          release_timestamp: (props?.formObject?.release_timestamp as unknown as Date) ?? undefined,
+          capture_date: props?.formObject?.capture_date ?? '',
+          capture_time: props?.formObject?.capture_date ?? '',
+          release_date: props?.formObject?.release_date ?? '',
+          release_time: props?.formObject?.release_time ?? '',
           capture_comment: props?.formObject?.capture_comment ?? undefined,
           release_comment: props?.formObject?.release_comment ?? undefined
         },

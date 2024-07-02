@@ -270,7 +270,10 @@ export class PlatformService extends DBService {
         const artifact = {
           submission_uuid: submissionUUID,
           artifact_upload_key: artifactUploadKey,
-          data: s3File.Body as Buffer,
+          // TODO: Cast to unknown required due to issue in aws-sdk v3 typings
+          // See https://stackoverflow.com/questions/76142043/getting-a-readable-from-getobject-in-aws-s3-sdk-v3
+          // See https://github.com/aws/aws-sdk-js-v3/issues/4720
+          data: s3File.Body as unknown as Buffer,
           fileName: attachment.file_name,
           mimeType: s3File.ContentType || mime.getType(attachment.file_name) || 'application/octet-stream'
         };
@@ -321,7 +324,10 @@ export class PlatformService extends DBService {
         const artifact = {
           submission_uuid: submissionUUID,
           artifact_upload_key: artifactUploadKey,
-          data: s3File.Body as Buffer,
+          // TODO: Cast to unknown required due to issue in aws-sdk v3 typings
+          // See https://stackoverflow.com/questions/76142043/getting-a-readable-from-getobject-in-aws-s3-sdk-v3
+          // See https://github.com/aws/aws-sdk-js-v3/issues/4720
+          data: s3File.Body as unknown as Buffer,
           fileName: attachment.file_name,
           mimeType: s3File.ContentType || mime.getType(attachment.file_name) || 'application/octet-stream'
         };

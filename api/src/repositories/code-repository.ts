@@ -27,7 +27,6 @@ export const IAllCodeSets = z.object({
   agency: CodeSet(),
   investment_action_category: CodeSet(InvestmentActionCategoryCode.shape),
   type: CodeSet(),
-  program: CodeSet(),
   proprietor_type: CodeSet(ProprietorTypeCode.shape),
   iucn_conservation_action_level_1_classification: CodeSet(),
   iucn_conservation_action_level_2_subclassification: CodeSet(IucnConservationActionLevel2SubclassificationCode.shape),
@@ -213,26 +212,6 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
-   * Fetch project type codes.
-   *
-   * @return {*}
-   * @memberof CodeRepository
-   */
-  async getProgram() {
-    const sqlStatement = SQL`
-      SELECT
-        program_id as id,
-        name
-      FROM program
-      WHERE record_end_date is null;
-    `;
-
-    const response = await this.connection.sql(sqlStatement, ICode);
-
-    return response.rows;
-  }
-
-  /**
    * Fetch investment action category codes.
    *
    * @return {*}
@@ -348,7 +327,9 @@ export class CodeRepository extends BaseRepository {
         project_role_id as id,
         name
       FROM project_role
-      WHERE record_end_date is null;
+      WHERE record_end_date is null
+      ORDER BY 
+        CASE WHEN name = 'Coordinator' THEN 0 ELSE 1 END;
     `;
 
     const response = await this.connection.sql(sqlStatement, ICode);

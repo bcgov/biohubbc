@@ -16,17 +16,19 @@ import ImportBoundaryDialog from 'components/map/components/ImportBoundaryDialog
 import StaticLayers from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
+import LatitudeLongitudeTextFields from 'features/surveys/animals/profile/components/LatitudeLongitudeTextFields';
 import { useFormikContext } from 'formik';
-import { Feature } from 'geojson';
+import { Feature, Point } from 'geojson';
 import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import 'leaflet/dist/leaflet.css';
-import { get } from 'lodash-es';
+import { debounce, get } from 'lodash-es';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { getCoordinatesFromGeoJson, isGeoJsonPointFeature, isValidCoordinates } from 'utils/spatial-utils';
 
 export interface ICaptureLocationMapControlProps {
   name: string;
@@ -35,7 +37,7 @@ export interface ICaptureLocationMapControlProps {
 }
 
 /**
- * Capture location map control
+ * Capture location map control component.
  *
  * @param {ICaptureLocationMapControlProps} props
  * @return {*}
@@ -47,23 +49,25 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [lastDrawn, setLastDrawn] = useState<null | number>(null);
 
+  const { values, setFieldValue, setFieldError, errors } = useFormikContext<FormikValuesType>();
+
   const drawControlsRef = useRef<IDrawControlsRef>();
 
   const { mapId } = props;
 
-  const { values, setFieldValue, setFieldError, errors } = useFormikContext<FormikValuesType>();
-
-  const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
-
-  //   Array of capture location features
-  const captureLocationGeoJson: Feature | undefined = useMemo(() => {
-    const location: { latitude: number; longitude: number } | Feature = get(values, name);
+  // Define location as a GeoJson object using useMemo to memoize the value
+  const captureLocationGeoJson: Feature<Point> | undefined = useMemo(() => {
+    const location: { latitude: number; longitude: number } | Feature | undefined | null = get(values, name);
 
     if (!location) {
       return;
     }
 
-    if ('latitude' in location && location.latitude !== 0 && location.longitude !== 0) {
+    if (
+      'latitude' in location &&
+      'longitude' in location &&
+      isValidCoordinates(location.latitude, location.longitude)
+    ) {
       return {
         type: 'Feature',
         geometry: { type: 'Point', coordinates: [location.longitude, location.latitude] },
@@ -71,36 +75,85 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
       };
     }
 
-    if ('type' in location) {
+    if (isGeoJsonPointFeature(location)) {
       return location;
     }
   }, [name, values]);
 
-  useEffect(() => {
-    setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
+  const coordinates = captureLocationGeoJson && getCoordinatesFromGeoJson(captureLocationGeoJson);
 
+  // Initialize state based on formik context for the edit page
+  const [latitudeInput, setLatitudeInput] = useState<string>(coordinates ? String(coordinates.latitude) : '');
+  const [longitudeInput, setLongitudeInput] = useState<string>(coordinates ? String(coordinates.longitude) : '');
+
+  const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
+
+  // Update map bounds when the data changes
+  useEffect(() => {
     if (captureLocationGeoJson) {
-      if ('type' in captureLocationGeoJson) {
-        if (captureLocationGeoJson.geometry.type === 'Point')
-          if (captureLocationGeoJson?.geometry.coordinates[0] !== 0) {
-            setUpdatedBounds(calculateUpdatedMapBounds([captureLocationGeoJson]));
-          }
+      const { latitude, longitude } = getCoordinatesFromGeoJson(captureLocationGeoJson);
+
+      if (isValidCoordinates(latitude, longitude)) {
+        setUpdatedBounds(calculateUpdatedMapBounds([captureLocationGeoJson]));
       }
+    } else {
+      // If the capture location is not a valid point, set the bounds to the entire province
+      setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
     }
   }, [captureLocationGeoJson]);
 
+  const updateFormikLocationFromLatLon = useMemo(
+    () =>
+      debounce((name, feature) => {
+        setFieldValue(name, feature);
+      }, 500),
+    [setFieldValue]
+  );
+
+  // Update formik and map when latitude/longitude text inputs change
+  useEffect(() => {
+    const lat = latitudeInput && parseFloat(latitudeInput);
+    const lon = longitudeInput && parseFloat(longitudeInput);
+
+    if (!(lat && lon)) {
+      setFieldValue(name, undefined);
+      return;
+    }
+
+    // If coordinates are invalid, reset the map to show nothing
+    if (!isValidCoordinates(lat, lon)) {
+      drawControlsRef.current?.clearLayers();
+      setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
+      return;
+    }
+
+    const feature: Feature<Point> = {
+      id: 1,
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [lon, lat]
+      },
+      properties: {}
+    };
+
+    // Update formik through debounce function
+    updateFormikLocationFromLatLon(name, feature);
+  }, [latitudeInput, longitudeInput, name, setFieldValue, updateFormikLocationFromLatLon]);
+
   return (
     <Grid item xs={12}>
-      {get(errors, name) && !Array.isArray(get(errors, name)) && (
+      {typeof get(errors, name) === 'string' && !Array.isArray(get(errors, name)) && (
         <Alert severity="error" variant="outlined" sx={{ mb: 2 }}>
           <AlertTitle>Missing capture location</AlertTitle>
-          {get(errors, name) as string}
+          {get(errors, name)}
         </Alert>
       )}
 
       <Box component="fieldset">
         <Paper variant="outlined">
           <ImportBoundaryDialog
+            dialogTitle={`Import ${title}`}
             isOpen={isOpen}
             onClose={() => setIsOpen(false)}
             onSuccess={(features) => {
@@ -108,15 +161,16 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
               setFieldValue(name, features[0]);
               setFieldError(name, undefined);
               // Unset last drawn to show staticlayers, where the file geometry is loaded to
-              lastDrawn && drawControlsRef?.current?.deleteLayer(lastDrawn);
               drawControlsRef?.current?.addLayer(features[0], () => 1);
-              setLastDrawn(1);
+              if ('coordinates' in features[0].geometry) {
+                setLatitudeInput(String(features[0].geometry.coordinates[1]));
+                setLongitudeInput(String(features[0].geometry.coordinates[0]));
+              }
             }}
             onFailure={(message) => {
               setFieldError(name, message);
             }}
           />
-
           <Toolbar
             disableGutters
             sx={{
@@ -131,6 +185,17 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
               }}>
               {title}
             </Typography>
+            <LatitudeLongitudeTextFields
+              sx={{ mx: 1 }}
+              latitudeValue={latitudeInput}
+              longitudeValue={longitudeInput}
+              onLatitudeChange={(event) => {
+                setLatitudeInput(event.currentTarget.value ?? '');
+              }}
+              onLongitudeChange={(event) => {
+                setLongitudeInput(event.currentTarget.value ?? '');
+              }}
+            />
             <Box display="flex">
               <Button
                 color="primary"
@@ -172,17 +237,28 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
                     if (lastDrawn) {
                       drawControlsRef?.current?.deleteLayer(lastDrawn);
                     }
-                    setFieldError(name, undefined);
 
-                    const feature = event.layer.toGeoJSON();
+                    const feature: Feature = event.layer.toGeoJSON();
+
+                    setFieldError(name, undefined);
                     setFieldValue(name, feature);
-                    // Set last drawn to remove it if a subsequent shape is added. There can only be one shape.
+
+                    if ('coordinates' in feature.geometry) {
+                      setLatitudeInput(String(feature.geometry.coordinates[1]));
+                      setLongitudeInput(String(feature.geometry.coordinates[0]));
+                    }
+
                     setLastDrawn(id);
                   }}
                   onLayerEdit={(event: DrawEvents.Edited) => {
                     event.layers.getLayers().forEach((layer: any) => {
-                      const feature = layer.toGeoJSON() as Feature;
+                      const feature: Feature = layer.toGeoJSON() as Feature;
                       setFieldValue(name, feature);
+                      // Update the text box lat/lon inputs
+                      if ('coordinates' in feature.geometry) {
+                        setLatitudeInput(String(feature.geometry.coordinates[1]));
+                        setLongitudeInput(String(feature.geometry.coordinates[0]));
+                      }
                     });
                   }}
                   onLayerDelete={() => {
@@ -192,16 +268,14 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
               </FeatureGroup>
 
               <LayersControl position="bottomright">
-                {!lastDrawn && (
-                  <StaticLayers
-                    layers={[
-                      {
-                        layerName: 'Capture Location',
-                        features: get(values, name) ? [{ geoJSON: get(values, name), key: Math.random() }] : []
-                      }
-                    ]}
-                  />
-                )}
+                <StaticLayers
+                  layers={[
+                    {
+                      layerName: `${title}`,
+                      features: get(values, name) ? [{ geoJSON: get(values, name), key: Math.random() }] : []
+                    }
+                  ]}
+                />
                 <BaseLayerControls />
               </LayersControl>
             </LeafletMapContainer>

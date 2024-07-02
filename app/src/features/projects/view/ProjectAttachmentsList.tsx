@@ -1,8 +1,7 @@
 import Typography from '@mui/material/Typography';
 import AttachmentsList from 'components/attachments/list/AttachmentsList';
 import ProjectReportAttachmentDialog from 'components/dialog/attachments/project/ProjectReportAttachmentDialog';
-import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubmitDialog';
-import { AttachmentType, PublishStatus } from 'constants/attachments';
+import { AttachmentType } from 'constants/attachments';
 import { AttachmentsI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
@@ -19,7 +18,6 @@ const ProjectAttachmentsList = () => {
   const dialogContext = useContext(DialogContext);
 
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | null>(null);
-  const [removeOrResubmitDialogOpen, setRemoveOrResubmitDialogOpen] = useState<boolean>(false);
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
@@ -58,11 +56,6 @@ const ProjectAttachmentsList = () => {
 
   const handleViewDetailsClose = () => {
     setCurrentAttachment(null);
-  };
-
-  const handleRemoveOrResubmit = (attachment: IGetProjectAttachment) => {
-    setCurrentAttachment(attachment);
-    setRemoveOrResubmitDialogOpen(true);
   };
 
   const handleDelete = (attachment: IGetProjectAttachment) => {
@@ -121,19 +114,6 @@ const ProjectAttachmentsList = () => {
 
   return (
     <>
-      <RemoveOrResubmitDialog
-        projectId={projectContext.projectId}
-        fileName={currentAttachment?.fileName ?? ''}
-        parentName={projectContext.projectDataLoader.data?.projectData.project.project_name ?? ''}
-        status={
-          currentAttachment?.supplementaryAttachmentData?.event_timestamp
-            ? PublishStatus.SUBMITTED
-            : PublishStatus.UNSUBMITTED
-        }
-        submittedDate={currentAttachment?.supplementaryAttachmentData?.event_timestamp ?? ''}
-        open={removeOrResubmitDialogOpen}
-        onClose={() => setRemoveOrResubmitDialogOpen(false)}
-      />
       <ProjectReportAttachmentDialog
         projectId={projectContext.projectId}
         attachment={currentAttachment}
@@ -145,7 +125,6 @@ const ProjectAttachmentsList = () => {
         handleDownload={handleDownload}
         handleDelete={handleDelete}
         handleViewDetails={handleViewDetailsOpen}
-        handleRemoveOrResubmit={handleRemoveOrResubmit}
         emptyStateText="No shared files found"
       />
     </>
