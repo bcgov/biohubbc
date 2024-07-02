@@ -9,7 +9,7 @@ import { importCsv } from './import';
 
 import * as fileUtils from '../../../../../../utils/file-utils';
 
-describe.only('importCsv', () => {
+describe('importCsv', () => {
   afterEach(() => {
     sinon.restore();
   });
