@@ -33,8 +33,9 @@ const NICKNAME = 'NICKNAME';
 // Critter sex
 const SEX = 'SEX';
 
-// Critter Wildlife Health ID
+// Critter Wildlife Health ID and aliases
 const WLH_ID = 'WLH_ID';
+const WILDLIFE_HEALTH_ID = 'WILDLIFE_HEALTH_ID';
 
 // Observation sub-count
 const COUNT = 'COUNT';
@@ -66,7 +67,7 @@ export const critterStandardColumnValidator: IXLSXCSVValidator = {
 };
 
 /**
- * Get column validator specification in a user readable format. Useful for error handling / logging.
+ * Get column validator specification as a readable format. Useful for error handling and logging.
  *
  * @param {IXLSXCSVValidator} columnValidator - Standard column validator
  * @returns {*}
@@ -85,7 +86,7 @@ export const getColumnValidatorSpecification = (columnValidator: IXLSXCSVValidat
  * @example const getTsnFromRow = generateCellValueGetter(ITIS_TSN, TSN, TAXON, SPECIES);
  *
  * @param {...string[]} headers - Column headers
- * @returns {(row: Row) => any} Row value getter function
+ * @returns {(row: Row) => T | undefined} Row value getter function
  */
 export const generateCellValueGetter = <T = any /* Temp default*/>(...headers: string[]) => {
   return (row: Row) => {
@@ -98,11 +99,8 @@ export const generateCellValueGetter = <T = any /* Temp default*/>(...headers: s
 };
 
 /**
- * Row cell value getters.
+ * Row cell value getters. Attempt to retrive a cell value from a list of known column headers.
  *
- * Retrieve a specific row cell value from a list of provided headers.
- *
- * TODO: update generic types for getters (existing validators would need updating)
  */
 export const getTsnFromRow = generateCellValueGetter(ITIS_TSN, TSN, TAXON, SPECIES);
 
@@ -120,6 +118,6 @@ export const getDescriptionFromRow = generateCellValueGetter<string>(DESCRIPTION
 
 export const getAliasFromRow = generateCellValueGetter<string>(ALIAS, NICKNAME);
 
-export const getWlhIdFromRow = generateCellValueGetter<string>(WLH_ID);
+export const getWlhIdFromRow = generateCellValueGetter<string>(WLH_ID, WILDLIFE_HEALTH_ID);
 
 export const getSexFromRow = generateCellValueGetter<string>(SEX);
