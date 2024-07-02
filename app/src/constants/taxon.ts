@@ -1,12 +1,14 @@
-import { blue, deepOrange, grey, indigo, pink, purple, teal } from '@mui/material/colors';
+import { Color } from '@mui/material';
+import { blue, deepOrange, grey, indigo, pink, purple, red, teal } from '@mui/material/colors';
 
-export const taxonRankColours = [
-  { color: blue, ranks: ['Subspecies', 'Variety'] },
-  { color: purple, ranks: ['Species'] },
-  { color: teal, ranks: ['Genus'] },
-  { color: blue, ranks: ['Family'] },
-  { color: indigo, ranks: ['Order'] },
-  { color: deepOrange, ranks: ['Class'] },
-  { color: pink, ranks: ['Phylum'] },
-  { color: grey, ranks: ['Kingdom'] }
-];
+export const TaxonRankColours: Record<string, { colour: Color }> = {
+  Subspecies: { colour: blue },
+  Variety: { colour: blue },
+  Species: { colour: purple },
+  Genus: { colour: teal },
+  Family: { colour: red },
+  Order: { colour: indigo },
+  Class: { colour: deepOrange },
+  Phylum: { colour: pink },
+  Kingdom: { colour: grey }
+};

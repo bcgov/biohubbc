@@ -15,13 +15,11 @@ interface ISurveyProgressChipProps extends ChipProps {
  * @param props
  * @returns
  */
-const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
+export const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
   const codesContext = useCodesContext();
 
   const codeName = getCodesName(codesContext.codesDataLoader.data, 'survey_progress', props.progress_id) ?? '';
-  const codeColour = SurveyProgressChipColours.find((option) => option.label === codeName)?.colour ?? grey;
+  const codeColour = SurveyProgressChipColours[codeName].colour ?? grey;
 
   return <ColouredRectangleChip colour={codeColour} label={codeName} title="Survey progress" />;
 };
-
-export default SurveyProgressChip;

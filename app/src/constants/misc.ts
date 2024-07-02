@@ -1,3 +1,4 @@
+import { Color } from '@mui/material';
 import blueGrey from '@mui/material/colors/blueGrey';
 import deepPurple from '@mui/material/colors/deepPurple';
 import green from '@mui/material/colors/green';
@@ -12,8 +13,8 @@ export enum AdministrativeActivityStatusType {
   REJECTED = 'Rejected'
 }
 
-export const SurveyProgressChipColours = [
-  { label: 'Planning', colour: blueGrey },
-  { label: 'In progress', colour: deepPurple },
-  { label: 'Completed', colour: green }
-];
+export const SurveyProgressChipColours: Record<string, { colour: Color }> = {
+  Planning: { colour: blueGrey },
+  'In progress': { colour: deepPurple },
+  Completed: { colour: green }
+};
