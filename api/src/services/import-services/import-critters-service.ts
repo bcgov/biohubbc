@@ -259,7 +259,7 @@ export class ImportCrittersService extends DBService {
       // SEX is a required property and must be a correct value
       const invalidSex = !row.sex || !CSV_CRITTER_SEX_OPTIONS.includes(toUpper(row.sex));
       // WLH_ID must follow regex pattern
-      const invalidWlhId = row.wlh_id && !row.wlh_id.match(/^\d{2}-.+/);
+      const invalidWlhId = row.wlh_id && !/^\d{2}-.+/.exec(row.wlh_id);
       // ITIS_TSN is required and be a valid TSN
       const invalidTsn = !row.itis_tsn || !tsnSet.has(row.itis_tsn);
       // ALIAS is required and must not already exist in Survey or CSV

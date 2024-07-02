@@ -272,7 +272,7 @@ describe('ImportCrittersService', () => {
         await service._insertCsvCrittersIntoSimsAndCritterbase(1, critters);
         expect.fail();
       } catch (err: any) {
-        expect(err.message).to.be.string;
+        expect(err.message).to.be.equal('Unable to fully import critters from CSV');
       }
 
       expect(simsAddSurveyCrittersStub).to.not.have.been.called;
