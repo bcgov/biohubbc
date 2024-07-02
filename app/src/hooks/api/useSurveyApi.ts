@@ -9,7 +9,6 @@ import {
   IDeploymentTimespan,
   ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
-import { useSurveyContext } from 'hooks/useContext';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
   ICreateSurveyRequest,
@@ -31,8 +30,6 @@ import { ApiPaginationRequestOptions } from 'types/misc';
  * @return {*} object whose properties are supported api methods.
  */
 const useSurveyApi = (axios: AxiosInstance) => {
-  const { surveyId, projectId } = useSurveyContext();
-
   /**
    * Create a new project survey
    *
@@ -520,9 +517,11 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @async
    * @param {File} file - Critters CSV.
+   * @param {number} projectId
+   * @param {number} surveyId
    * @returns {Promise<number[]>}
    */
-  const importCrittersFromCsv = async (file: File): Promise<number[]> => {
+  const importCrittersFromCsv = async (file: File, projectId: number, surveyId: number): Promise<number[]> => {
     const formData = new FormData();
 
     formData.append('media', file);

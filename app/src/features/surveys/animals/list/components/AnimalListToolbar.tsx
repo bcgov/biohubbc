@@ -26,7 +26,7 @@ interface IAnimaListToolbarProps {
  * @return {*}
  */
 export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
-  const { surveyId, projectId } = useSurveyContext();
+  const surveyContext = useSurveyContext();
 
   const biohubApi = useBiohubApi();
 
@@ -36,7 +36,8 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
 
   const handleImportAnimals = async (file: File) => {
     try {
-      await biohubApi.survey.importCrittersFromCsv(file);
+      await biohubApi.survey.importCrittersFromCsv(file, surveyContext.projectId, surveyContext.projectId);
+      surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     } catch (err: any) {
       dialogContext.setErrorDialog({
         dialogTitle: SurveyAnimalsI18N.importRecordsErrorDialogTitle,
@@ -85,7 +86,7 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
           variant="contained"
           color="primary"
           component={RouterLink}
-          to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/create`}
+          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`}
           startIcon={<Icon path={mdiPlus} size={1} />}
           sx={{ mr: 0.2, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}>
           Add
