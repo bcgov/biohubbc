@@ -1,5 +1,6 @@
 import { IDBConnection } from '../database/db';
 import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
+import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
 
 /**
@@ -11,12 +12,18 @@ import { DBService } from './db-service';
  */
 export class SurveyCritterService extends DBService {
   critterRepository: SurveyCritterRepository;
+  critterbaseService: CritterbaseService;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
     this.critterRepository = new SurveyCritterRepository(connection);
+    this.critterbaseService = new CritterbaseService({
+      keycloak_guid: connection.systemUserGUID(),
+      username: connection.systemUserIdentifier()
+    });
   }
+
   /**
    * Get all critter associations for the given survey. This only gets you critter ids, which can be used to fetch details from the external system.
    *
@@ -29,7 +36,7 @@ export class SurveyCritterService extends DBService {
   }
 
   /**
-   * Add a critter as part of this survey. Does not create anything in the external system.
+   * Add a critter to a survey. Does not create anything in the external system.
    *
    * @param {number} surveyId
    * @param {string} critterBaseCritterId
@@ -37,7 +44,21 @@ export class SurveyCritterService extends DBService {
    * @memberof SurveyCritterService
    */
   async addCritterToSurvey(surveyId: number, critterBaseCritterId: string): Promise<number> {
-    return this.critterRepository.addCritterToSurvey(surveyId, critterBaseCritterId);
+    const response = await this.critterRepository.addCrittersToSurvey(surveyId, [critterBaseCritterId]);
+
+    return response[0];
+  }
+
+  /**
+   * Add multiple critters to a survey. Does not create anything in the external system.
+   *
+   * @param {number} surveyId
+   * @param {string} critterBaseCritterIds
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyCritterService
+   */
+  async addCrittersToSurvey(surveyId: number, critterBaseCritterIds: string[]): Promise<number[]> {
+    return this.critterRepository.addCrittersToSurvey(surveyId, critterBaseCritterIds);
   }
 
   /**
@@ -86,5 +107,24 @@ export class SurveyCritterService extends DBService {
    */
   async removeDeployment(critterId: number, deploymentId: string): Promise<void> {
     return this.critterRepository.removeDeployment(critterId, deploymentId);
+  }
+
+  /**
+   * Get unique Set of critter aliases (animal id / nickname) of a survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ICritter[]>}
+   * @memberof SurveyCritterService
+   */
+  async getUniqueSurveyCritterAliases(surveyId: number): Promise<Set<string>> {
+    const surveyCritters = await this.getCrittersInSurvey(surveyId);
+
+    const critterbaseCritterIds = surveyCritters.map((critter) => critter.critterbase_critter_id);
+
+    const critters = await this.critterbaseService.getMultipleCrittersByIds(critterbaseCritterIds);
+
+    // Return a unique Set of non-null critterbase aliases of a Survey
+    // Note: The type from filtered critters should be Set<string> not Set<string | null>
+    return new Set(critters.filter(Boolean).map((critter) => critter.animal_id)) as Set<string>;
   }
 }

@@ -321,3 +321,27 @@ export function validateCsvFile(xlsxWorksheet: xlsx.WorkSheet, columnValidator: 
 
   return true;
 }
+
+/**
+ * This function pulls out any non-standard columns from a CSV so they can be processed separately.
+ *
+ * @param {xlsx.WorkSheet} xlsxWorksheet The worksheet to pull the columns from
+ * @returns {*} string[] The list of non-standard columns found in the CSV
+ */
+export function getNonStandardColumnNamesFromWorksheet(
+  xlsxWorksheet: xlsx.WorkSheet,
+  columnValidator: IXLSXCSVValidator
+): string[] {
+  const columns = getHeadersUpperCase(xlsxWorksheet);
+
+  let aliasColumns: string[] = [];
+  // Create a list of all column names and aliases
+  if (columnValidator.columnAliases) {
+    aliasColumns = Object.values(columnValidator.columnAliases).flat();
+  }
+
+  const standardColumNames = [...columnValidator.columnNames, ...aliasColumns];
+
+  // Only return column names not in the validation CSV Column validator (ie: only return the non-standard columns)
+  return columns.filter((column) => !standardColumNames.includes(column));
+}

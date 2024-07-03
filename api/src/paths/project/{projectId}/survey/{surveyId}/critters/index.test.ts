@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { addCritterToSurvey, getCrittersFromSurvey } from '.';
 import * as db from '../../../../../../database/db';
-import { CritterbaseService } from '../../../../../../services/critterbase-service';
+import { CritterbaseService, ICritter } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 
@@ -23,7 +23,7 @@ describe('getCrittersFromSurvey', () => {
       .resolves([mockSurveyCritter]);
     const mockGetMultipleCrittersByIds = sinon
       .stub(CritterbaseService.prototype, 'getMultipleCrittersByIds')
-      .resolves([mockCBCritter]);
+      .resolves([mockCBCritter] as unknown as ICritter[]);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
