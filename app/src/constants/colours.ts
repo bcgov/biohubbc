@@ -66,14 +66,23 @@ const NRM_REGION_COLOUR_MAP = {
 };
 
 /**
+ * ColourMap key types
+ *
+ */
+export type SurveyProgressKeys = keyof typeof SURVEY_PROGRESS_COLOUR_MAP;
+export type TaxonRankKeys = keyof typeof TAXON_RANK_COLOUR_MAP;
+export type NrmRegionKeys = keyof typeof NRM_REGION_COLOUR_MAP;
+
+/**
  * Generate colour getter from ColourMap.
  *
- * @param {ColourMap} colourMap
- * @param {Color} [fallbackColour]
- * @returns {(lookup: string) => Color} Colour getter
+ * @template T - Extends ColourMap
+ * @param {T} colourMap - Coulour mapping
+ * @param {ColourMap} [fallbackColour] - Default colour
+ * @returns {(lookup: string) => Colour}
  */
 const generateColourMapGetter = <T extends ColourMap>(colourMap: T, fallbackColour = DEFAULT_COLOUR) => {
-  return (lookup: string) => colourMap[lookup]?.colour ?? fallbackColour;
+  return (lookup: keyof T) => colourMap[lookup]?.colour ?? fallbackColour;
 };
 
 /**

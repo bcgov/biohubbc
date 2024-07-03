@@ -9,7 +9,7 @@ import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } fro
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SystemRoleGuard } from 'components/security/Guards';
-import { getNrmRegionColour } from 'constants/colours';
+import { getNrmRegionColour, NrmRegionKeys } from 'constants/colours';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import { SYSTEM_ROLE } from 'constants/roles';
@@ -214,7 +214,9 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
         <Stack direction="row" gap={1} flexWrap="wrap">
           {params.row.regions.map((region) => {
             const label = region.replace(NRM_REGION_APPENDED_TEXT, '');
-            return <ColouredRectangleChip key={region} colour={getNrmRegionColour(region)} label={label} />;
+            return (
+              <ColouredRectangleChip key={region} colour={getNrmRegionColour(region as NrmRegionKeys)} label={label} />
+            );
           })}
         </Stack>
       )
