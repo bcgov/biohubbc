@@ -1,52 +1,15 @@
 import { AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { ConfigContext } from 'contexts/configContext';
+import {
+  ICreateManualTelemetry,
+  IManualTelemetry,
+  ITelemetry,
+  IUpdateManualTelemetry,
+  IVendorTelemetry
+} from 'interfaces/useTelemetryApi.interface';
 import { useContext } from 'react';
 import useAxios from './api/useAxios';
 import { useDeviceApi } from './telemetry/useDeviceApi';
-
-export interface ICritterDeploymentResponse {
-  critter_id: string;
-  device_id: number;
-  deployment_id: string;
-  survey_critter_id: string;
-  alias: string;
-  attachment_start: string;
-  attachment_end?: string;
-  taxon: string;
-}
-
-export interface IUpdateManualTelemetry {
-  telemetry_manual_id: string;
-  latitude: number;
-  longitude: number;
-  acquisition_date: string;
-}
-export interface ICreateManualTelemetry {
-  deployment_id: string;
-  latitude: number;
-  longitude: number;
-  acquisition_date: string;
-}
-
-export interface IManualTelemetry extends ICreateManualTelemetry {
-  telemetry_manual_id: string;
-}
-
-export interface IVendorTelemetry extends ICreateManualTelemetry {
-  telemetry_id: string;
-}
-
-export interface ITelemetry {
-  id: string;
-  deployment_id: string;
-  device_id: string;
-  telemetry_manual_id: string;
-  telemetry_id: number | null;
-  latitude: number;
-  longitude: number;
-  acquisition_date: string;
-  telemetry_type: string;
-}
 
 export const useTelemetryApi = () => {
   const config = useContext(ConfigContext);
@@ -60,7 +23,7 @@ export const useTelemetryApi = () => {
    * @return {*}  {Promise<ITelemetry[]>}
    */
   const getAllTelemetryByDeploymentIds = async (deploymentIds: string[]): Promise<ITelemetry[]> => {
-    const { data } = await axios.post<ITelemetry[]>('/api/telemetry/deployments', deploymentIds);
+    const { data } = await axios.get<ITelemetry[]>(`/api/telemetry/deployments?deploymentIds=${deploymentIds.join(',')}`);
     return data;
   };
 

@@ -97,44 +97,4 @@ export class SurveyCritterRepository extends BaseRepository {
 
     await this.connection.knex(queryBuilder);
   }
-
-  /**
-   * Will insert a new critter - deployment uuid association, or update if it already exists.
-   * This update operation intentionally changes nothing. Only really being done to trigger update audit columns.
-   *
-   * @param {number} critterId
-   * @param {string} deplyomentId
-   * @return {*}  {Promise<void>}
-   * @memberof SurveyCritterRepository
-   */
-  async upsertDeployment(critterId: number, deplyomentId: string): Promise<void> {
-    defaultLog.debug({ label: 'addDeployment', deplyomentId });
-
-    const queryBuilder = getKnex()
-      .table('deployment')
-      .insert({ critter_id: critterId, bctw_deployment_id: deplyomentId })
-      .onConflict(['critter_id', 'bctw_deployment_id'])
-      .merge(['critter_id', 'bctw_deployment_id']);
-
-    await this.connection.knex(queryBuilder);
-  }
-
-  /**
-   * Deletes a deployment row.
-   *
-   * @param {number} critterId
-   * @param {string} deploymentId
-   * @return {*}  {Promise<void>}
-   * @memberof SurveyCritterRepository
-   */
-  async removeDeployment(critterId: number, deploymentId: string): Promise<void> {
-    defaultLog.debug({ label: 'removeDeployment', deploymentId });
-
-    const queryBuilder = getKnex()
-      .table('deployment')
-      .where({ critter_id: critterId, bctw_deployment_id: deploymentId })
-      .delete();
-
-    await this.connection.knex(queryBuilder);
-  }
 }

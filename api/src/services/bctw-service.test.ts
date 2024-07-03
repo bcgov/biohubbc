@@ -204,11 +204,11 @@ describe('BctwService', () => {
       });
     });
 
-    describe('getDeviceDeployments', () => {
+    describe('getDeploymentsByDeviceId', () => {
       it('should send a get request', async () => {
         const mockGetRequest = sinon.stub(bctwService, '_makeGetRequest');
 
-        await bctwService.getDeviceDeployments(123, 'Lotek');
+        await bctwService.getDeploymentsByDeviceId(123, 'Lotek');
 
         expect(mockGetRequest).to.have.been.calledOnceWith(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, {
           device_id: '123',

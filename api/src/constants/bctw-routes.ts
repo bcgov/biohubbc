@@ -1,0 +1,21 @@
+
+export const BCTW_API_HOST = process.env.BCTW_API_HOST || '';
+export const DEPLOY_DEVICE_ENDPOINT = '/deploy-device';
+export const UPSERT_DEVICE_ENDPOINT = '/upsert-collar';
+export const GET_DEPLOYMENTS_ENDPOINT = '/get-deployments';
+export const GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT = '/get-deployments-by-critter-id';
+export const GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT = '/get-deployments-by-device-id';
+export const UPDATE_DEPLOYMENT_ENDPOINT = '/update-deployment';
+export const DELETE_DEPLOYMENT_ENDPOINT = '/delete-deployment';
+export const GET_COLLAR_VENDORS_ENDPOINT = '/get-collar-vendors';
+export const HEALTH_ENDPOINT = '/health';
+export const GET_CODE_ENDPOINT = '/get-code';
+export const GET_DEVICE_DETAILS = '/get-collar-history-by-device/';
+export const UPLOAD_KEYX_ENDPOINT = '/import-xml';
+export const GET_KEYX_STATUS_ENDPOINT = '/get-collars-keyx';
+export const GET_TELEMETRY_POINTS_ENDPOINT = '/get-critters';
+export const GET_TELEMETRY_TRACKS_ENDPOINT = '/get-critter-tracks';
+export const MANUAL_TELEMETRY = '/manual-telemetry';
+export const VENDOR_TELEMETRY = '/vendor-telemetry';
+export const DELETE_MANUAL_TELEMETRY = '/manual-telemetry/delete';
+export const MANUAL_AND_VENDOR_TELEMETRY = '/all-telemetry';

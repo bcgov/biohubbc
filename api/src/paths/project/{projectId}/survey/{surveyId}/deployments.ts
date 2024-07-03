@@ -3,12 +3,13 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
-import { BctwService } from '../../../../../services/bctw-service';
+import { BctwDeploymentService } from '../../../../../services/bctw-service/bctw-deployment-service';
 import { ICritterbaseUser } from '../../../../../services/critterbase-service';
-import { SurveyCritterService } from '../../../../../services/survey-critter-service';
+import { DeploymentService } from '../../../../../services/deployment-service';
 import { getLogger } from '../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments');
+
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
     return {
@@ -53,14 +54,52 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Responds with all deployments under this survey, determined by critters under the survey.',
+      description: 'Responds with all deployments under this survey.',
       content: {
         'application/json': {
           schema: {
             title: 'Deployments',
             type: 'array',
             items: {
-              type: 'object'
+              type: 'object',
+              additionalProperties: false,
+              properties: {
+                deployment_id: {
+                  type: 'integer',
+                  description: 'Id of the deployment in the Survey'
+                },
+                bctw_deployment_id: {
+                  type: 'string',
+                  format: 'uuid',
+                  description: 'Id of the deployment in BCTW. May match multiple records in BCTW'
+                },
+                assignment_id: {
+                  type: 'string',
+                  format: 'uuid'
+                },
+                collar_id: { type: 'string' },
+                critter_id: { type: 'integer', minimum: 1, description: 'Id of the critter in the Survey' },
+                device_id: { type: 'integer', description: 'Id of the device, as reported by users. Not unique.' },
+                critterbase_start_capture_id: {
+                  type: 'string'
+                },
+                critterbase_end_capture_id: {
+                  type: 'string',
+                  nullable: true
+                },
+                critterbase_end_mortality_id: {
+                  type: 'string',
+                  nullable: true
+                },
+                critterbase_end_date: {
+                  type: 'string',
+                  nullable: true
+                },
+                critterbase_end_time: {
+                  type: 'string',
+                  nullable: true
+                }
+              }
             }
           }
         }
@@ -94,17 +133,43 @@ export function getDeploymentsInSurvey(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
 
-    const surveyCritterService = new SurveyCritterService(connection);
-    const bctwService = new BctwService(user);
+    const deploymentService = new DeploymentService(connection);
+    const bctwDeploymentService = new BctwDeploymentService(user);
 
     try {
       await connection.open();
 
-      const critter_ids = (await surveyCritterService.getCrittersInSurvey(surveyId)).map(
-        (critter) => critter.critterbase_critter_id
-      );
+      // Fetch deployments from the deployment service for the given surveyId
+      const surveyDeployments = await deploymentService.getDeploymentsForSurveyId(surveyId);
 
-      const results = critter_ids.length ? await bctwService.getDeploymentsByCritterId(critter_ids) : [];
+      // Extract deployment IDs from survey deployments
+      const deploymentIds = surveyDeployments.map((deployment) => deployment.bctw_deployment_id);
+
+      // Return early if there are no deployments
+      if (!deploymentIds.length) {
+        return res.status(200).json([]);
+      }
+
+      // Fetch additional deployment details from BCTW service
+      const bctwDeployments = await bctwDeploymentService.getDeploymentsByIds(deploymentIds);
+
+      // Merge survey and BCTW deployment information
+      const results = bctwDeployments.map((bctwDeployment) => {
+        const surveyDeployment = surveyDeployments.find(
+          (deployment) => deployment.bctw_deployment_id === bctwDeployment.deployment_id
+        );
+        return {
+          ...bctwDeployment,
+          deployment_id: surveyDeployment?.deployment_id,
+          bctw_deployment_id: surveyDeployment?.bctw_deployment_id,
+          critterbase_start_capture_id: surveyDeployment?.critterbase_start_capture_id,
+          critterbase_end_capture_id: surveyDeployment?.critterbase_end_capture_id,
+          critterbase_end_mortality_id: surveyDeployment?.critterbase_end_mortality_id,
+          // Do not trust the Critter Id stored by BCTW. Instead, use the SIMS integer survey critter ID
+          critter_id: surveyDeployment?.critter_id
+        };
+      });
+
       return res.status(200).json(results);
     } catch (error) {
       defaultLog.error({ label: 'getDeploymentsInSurvey', message: 'error', error });

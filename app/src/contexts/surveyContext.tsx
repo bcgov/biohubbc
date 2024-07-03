@@ -1,14 +1,14 @@
-import { ICritterDeployment } from 'features/surveys/telemetry/list/TelemetryList';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetSampleSiteResponse } from 'interfaces/useSamplingSiteApi.interface';
 import {
+  IAnimalDeploymentWithCritter,
   IGetSurveyAttachmentsResponse,
   IGetSurveyForViewResponse,
   ISimpleCritterWithInternalId
 } from 'interfaces/useSurveyApi.interface';
-import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
+import { PropsWithChildren, createContext, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
 
 /**
@@ -53,12 +53,12 @@ export interface ISurveyContext {
   critterDataLoader: DataLoader<[project_id: number, survey_id: number], ISimpleCritterWithInternalId[], unknown>;
 
   /**
-   * Critters and deployments combined
+   * Deployments in the survey
    *
-   * @type {ICritterDeployment[]}
+   * @type {IAnimalDeploymentWithCritter[]}
    * @memberof ISurveyContext
    */
-  critterDeployments: ICritterDeployment[];
+  critterDeployments: IAnimalDeploymentWithCritter[];
 
   /**
    * The project ID belonging to the current project
@@ -124,8 +124,8 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
    *
    * @returns {ICritterDeployment[]} Critter deployments
    */
-  const critterDeployments = useMemo(() => {
-    const critterDeployments: ICritterDeployment[] = [];
+  const critterDeployments: IAnimalDeploymentWithCritter[] = useMemo(() => {
+    const critterDeployments: IAnimalDeploymentWithCritter[] = [];
     const critters = critterDataLoader.data ?? [];
     const deployments = deploymentDataLoader.data ?? [];
 
@@ -136,7 +136,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     const critterMap = new Map(critters.map((critter) => [critter.critter_id, critter]));
 
     deployments.forEach((deployment) => {
-      const critter = critterMap.get(deployment.critter_id);
+      const critter = critterMap.get(String(deployment.critter_id));
       if (critter) {
         critterDeployments.push({ critter, deployment });
       }

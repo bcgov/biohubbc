@@ -4,7 +4,6 @@ import Stack from '@mui/material/Stack';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SurveyContext } from 'contexts/surveyContext';
-import dayjs from 'dayjs';
 import { useContext, useMemo } from 'react';
 
 // Set height so we the skeleton loader will match table rows
@@ -61,11 +60,11 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
   const tableRows = useMemo(() => {
     return surveyContext.critterDeployments.map((item) => ({
       // critters in this table may use multiple devices accross multiple timespans
-      id: `${item.critter.survey_critter_id}-${item.deployment.device_id}-${item.deployment.attachment_start}`,
+      id: `${item.critter.survey_critter_id}-${item.deployment.device_id}-${item.deployment.critterbase_start_capture_id}`,
       alias: item.critter.animal_id,
-      device_id: item.deployment.device_id,
-      start: dayjs(item.deployment.attachment_start).format('YYYY-MM-DD'),
-      end: item.deployment.attachment_end ? dayjs(item.deployment.attachment_end).format('YYYY-MM-DD') : 'Still Active'
+      device_id: item.deployment.device_id
+      // start: dayjs(item.deployment.attachment_start).format('YYYY-MM-DD'),
+      // end: item.deployment.attachment_end ? dayjs(item.deployment.attachment_end).format('YYYY-MM-DD') : 'Still Active'
     }));
   }, [surveyContext.critterDeployments]);
 

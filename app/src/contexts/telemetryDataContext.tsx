@@ -1,5 +1,6 @@
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
-import { ITelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
+import { useTelemetryApi } from 'hooks/useTelemetryApi';
+import { ITelemetry } from 'interfaces/useTelemetryApi.interface';
 import { createContext, PropsWithChildren } from 'react';
 
 export type ITelemetryDataContext = {

@@ -1,6 +1,7 @@
 import { default as dayjs } from 'dayjs';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
+import { ICreateManualTelemetry } from '../models/bctw';
 import { TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { parseS3File } from '../utils/media/media-utils';
@@ -11,10 +12,11 @@ import {
   IXLSXCSVValidator,
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
-import { BctwService, ICreateManualTelemetry } from './bctw-service';
+import { BctwDeploymentService } from './bctw-service/bctw-deployment-service';
+import { BctwTelemetryService } from './bctw-service/bctw-telemetry-service';
 import { ICritterbaseUser } from './critterbase-service';
 import { DBService } from './db-service';
-import { SurveyCritterService } from './survey-critter-service';
+import { DeploymentService } from './deployment-service';
 
 const telemetryCSVColumnValidator: IXLSXCSVValidator = {
   columnNames: ['DEVICE_ID', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
@@ -88,13 +90,13 @@ export class TelemetryService extends DBService {
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheet);
 
     // step 7 fetch survey deployments
-    const bctwService = new BctwService(user);
-    const critterService = new SurveyCritterService(this.connection);
+    const deploymentService = new DeploymentService(this.connection);
+    const bctwDeploymentService = new BctwDeploymentService(user);
 
-    const critters = await critterService.getCrittersInSurvey(submission.survey_id);
-    const critterIds = critters.map((item) => item.critterbase_critter_id);
-
-    const deployments = await bctwService.getDeploymentsByCritterId(critterIds);
+    const surveyDeployments = await deploymentService.getDeploymentsForSurveyId(submission.survey_id);
+    const deployments = await bctwDeploymentService.getDeploymentsByIds(
+      surveyDeployments.map((deployment) => deployment.bctw_deployment_id)
+    );
 
     // step 8 parse file data and find deployment ids based on device id and attachment dates
     const itemsToAdd: ICreateManualTelemetry[] = [];
@@ -140,9 +142,12 @@ export class TelemetryService extends DBService {
     });
 
     // step 9 create telemetries
+
+    const bctwTelemetryService = new BctwTelemetryService(user);
+
     if (itemsToAdd.length > 0) {
       try {
-        return bctwService.createManualTelemetry(itemsToAdd);
+        return bctwTelemetryService.createManualTelemetry(itemsToAdd);
       } catch (error) {
         throw new ApiGeneralError('Error adding Manual Telemetry');
       }

@@ -110,7 +110,7 @@ const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
               id="frequency_unit"
               label={'Unit'}
               options={props.frequencyUnits.map((unit) => ({
-                value: unit.id,
+                value: unit.code,
                 label: unit.code
               }))}
               required={values.frequency ? true : false}

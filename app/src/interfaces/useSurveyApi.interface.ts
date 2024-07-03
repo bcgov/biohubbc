@@ -9,6 +9,7 @@ import { IGeneralInformationForm } from 'features/surveys/components/general-inf
 import { ISurveyLocationForm } from 'features/surveys/components/locations/StudyAreaForm';
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/methodology/PurposeAndMethodologyForm';
 import { IBlockData } from 'features/surveys/components/sampling-strategy/blocks/BlockForm';
+import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { Feature } from 'geojson';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { ApiPaginationResponseParams, StringBoolean } from 'types/misc';
@@ -350,6 +351,11 @@ export interface ISimpleCritterWithInternalId extends ICritterSimpleResponse {
 
 export interface IDetailedCritterWithInternalId extends ICritterDetailedResponse {
   survey_critter_id: number; //The internal critter_id in the SIMS DB. Called this to distinguish against the critterbase UUID of the same name.
+}
+
+export interface IAnimalDeploymentWithCritter {
+  deployment: IAnimalDeployment;
+  critter: ISimpleCritterWithInternalId;
 }
 
 export type IEditSurveyRequest = IGeneralInformationForm &

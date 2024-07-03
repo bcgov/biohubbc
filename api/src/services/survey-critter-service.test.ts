@@ -62,7 +62,7 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('addDeployment', () => {
+  describe('createDeployment', () => {
     it('returns the first row on success', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyCritterService(dbConnection);

@@ -22,8 +22,13 @@ const intSchema = numSchema.max(maxInt, `Must be less than ${maxInt}`).integer(m
 
 export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
   deployment_id: yup.string(),
-  attachment_start: yup.string().isValidDateString().required().typeError('Type error'),
-  attachment_end: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('attachment_start').nullable()
+  critterbase_start_capture_id: yup
+    .string()
+    .required('You must select an initial capture for when the deployment started.'),
+  critterbase_end_capture_id: yup.string().nullable(),
+  critterbase_end_mortality_id: yup.string().nullable(),
+  attachment_end_date: yup.string().isValidDateString().nullable(),
+  attachment_end_time: yup.string().nullable()
 });
 
 export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
@@ -39,14 +44,21 @@ export const AnimalDeploymentSchema = yup.object({}).shape({
   assignment_id: yup.string().required(),
   collar_id: yup.string().required(),
   critter_id: yup.string().required(),
-  attachment_start: yup.string().isValidDateString().required(),
-  attachment_end: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('attachment_start'),
+  attachment_end_date: yup.string().isValidDateString().nullable(),
+  attachment_end_time: yup.string(),
+  critterbase_start_capture_id: yup
+    .string()
+    .required('You must select an initial capture for when the deployment started.'),
+  critterbase_end_capture_id: yup.string().nullable(),
+  critterbase_end_mortality_id: yup.string().nullable(),
   deployment_id: yup.string().required(),
   device_id: yup.number().required(),
   device_make: yup.string().required(),
   device_model: yup.string(),
   frequency: numSchema,
-  frequency_unit: yup.string()
+  frequency_unit: yup.string(),
+  attachment_file: yup.mixed(),
+  attachment_type: yup.mixed<AttachmentType>().oneOf(Object.values(AttachmentType))
 });
 
 export const CreateAnimalDeployment = yup.object({
@@ -56,10 +68,13 @@ export const CreateAnimalDeployment = yup.object({
   frequency: numSchema,
   frequency_unit: yup.string(),
   device_model: yup.string(),
-  attachment_start_capture_id: yup.string().required('You must select an initial capture for when the deployment started.'),
-  attachment_end_date: yup.string().isValidDateString(),
-  attachment_end_capture_id: yup.string(),
-  attachment_end_time: yup.string()
+  critterbase_start_capture_id: yup
+    .string()
+    .required('You must select an initial capture for when the deployment started.'),
+  critterbase_end_mortality_id: yup.string().nullable(),
+  critterbase_end_capture_id: yup.string().nullable(),
+  attachment_end_date: yup.string().nullable(),
+  attachment_end_time: yup.string().nullable()
 });
 export interface ICreateAnimalDeploymentPostData extends Omit<ICreateAnimalDeployment, 'device_id'> {
   device_id: number;

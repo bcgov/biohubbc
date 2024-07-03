@@ -260,6 +260,7 @@ const CRITTER_ENDPOINT = '/critters';
 const BULK_ENDPOINT = '/bulk';
 const SIGNUP_ENDPOINT = '/signup';
 const FAMILY_ENDPOINT = '/family';
+const CAPTURE_ENDPOINT = '/captures';
 
 const defaultLog = getLogger('CritterbaseServiceLogger');
 
@@ -367,6 +368,10 @@ export class CritterbaseService {
 
   async getCritter(critter_id: string) {
     return this._makeGetRequest(`${CRITTER_ENDPOINT}/${critter_id}`, [{ key: 'format', value: 'detail' }]);
+  }
+
+  async getCaptureById(capture_id: string): Promise<ICapture> {
+    return this._makeGetRequest(`${CAPTURE_ENDPOINT}/${capture_id}`, [{ key: 'format', value: 'detail' }]);
   }
 
   async createCritter(data: ICritter) {

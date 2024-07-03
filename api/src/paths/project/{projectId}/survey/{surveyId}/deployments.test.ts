@@ -1,7 +1,8 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import * as db from '../../../../../database/db';
-import { BctwService, IDeploymentRecord } from '../../../../../services/bctw-service';
+import { IBctwDeploymentRecord } from '../../../../../models/bctw';
+import { BctwDeploymentService } from '../../../../../services/bctw-service/bctw-deployment-service';
 import { SurveyCritterService } from '../../../../../services/survey-critter-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../__mocks__/db';
 import { getDeploymentsInSurvey } from './deployments';
@@ -12,7 +13,7 @@ describe('getDeploymentsInSurvey', () => {
   });
 
   const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
-  const mockDeployments: IDeploymentRecord[] = [
+  const mockDeployments: IBctwDeploymentRecord[] = [
     {
       critter_id: 'critterbase1',
       assignment_id: 'assignment1',
@@ -37,7 +38,7 @@ describe('getDeploymentsInSurvey', () => {
       .stub(SurveyCritterService.prototype, 'getCrittersInSurvey')
       .resolves(mockCritters);
     const getDeploymentsByCritterId = sinon
-      .stub(BctwService.prototype, 'getDeploymentsByCritterId')
+      .stub(BctwDeploymentService.prototype, 'getDeploymentsByCritterId')
       .resolves(mockDeployments);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();

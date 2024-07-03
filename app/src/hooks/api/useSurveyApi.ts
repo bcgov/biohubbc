@@ -414,7 +414,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Add a new deployment with associated device hardware metadata. Must include critterbase critter id.
+   * Create a new deployment with associated device hardware metadata. Must include critterbase critter id.
    *
    * @param {number} projectId
    * @param {number} surveyId
@@ -422,12 +422,12 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {IAnimalTelemetryDevice & {critter_id: string}} body
    * @returns {*}
    */
-  const addDeployment = async (
+  const createDeployment = async (
     projectId: number,
     surveyId: number,
     critterId: number, // Survey critter_id
     body: ICreateAnimalDeploymentPostData // Critterbase critter_id
-  ): Promise<number> => {
+  ): Promise<{deploymentId: number}> => {
     const { data } = await axios.post(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
       body
@@ -530,7 +530,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyCritters,
     createCritterAndAddToSurvey,
     removeCrittersFromSurvey,
-    addDeployment,
+    createDeployment,
     getDeploymentsInSurvey,
     updateDeployment,
     getCritterTelemetry,

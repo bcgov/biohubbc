@@ -4,9 +4,10 @@ import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
+import { IBctwUser } from '../../../../../../../models/bctw';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
-import { BctwService, IBctwUser } from '../../../../../../../services/bctw-service';
+import { BctwKeyxService } from '../../../../../../../services/bctw-service/bctw-keyx-service';
 import { scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { checkFileForKeyx } from '../../../../../../../utils/media/media-utils';
@@ -167,8 +168,8 @@ export function uploadKeyxMedia(): RequestHandler {
         keycloak_guid: req['system_user']?.user_guid,
         username: req['system_user']?.user_identifier
       };
-      const bctwService = new BctwService(user);
-      const bctwUploadResult = await bctwService.uploadKeyX(rawMediaFile);
+      const bctwKeyxService = new BctwKeyxService(user);
+      const bctwUploadResult = await bctwKeyxService.uploadKeyX(rawMediaFile);
 
       // Upsert attachment
       const attachmentService = new AttachmentService(connection);

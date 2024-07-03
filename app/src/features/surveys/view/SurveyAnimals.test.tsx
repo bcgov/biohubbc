@@ -6,7 +6,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { BrowserRouter } from 'react-router-dom';
-import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
+import { SystemAdminAuthState, getMockAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import SurveyAnimals from './SurveyAnimals';
 
@@ -20,7 +20,7 @@ const mockUseBiohub = {
     getSurveyCritters: jest.fn(),
     getDeploymentsInSurvey: jest.fn(),
     createCritterAndAddToSurvey: jest.fn(),
-    addDeployment: jest.fn()
+    createDeployment: jest.fn()
   }
 };
 
@@ -72,7 +72,7 @@ describe('SurveyAnimals', () => {
     mockUseBiohub.survey.getDeploymentsInSurvey.mockClear();
     mockUseBiohub.survey.getSurveyCritters.mockClear();
     mockUseBiohub.survey.createCritterAndAddToSurvey.mockClear();
-    mockUseBiohub.survey.addDeployment.mockClear();
+    mockUseBiohub.survey.createDeployment.mockClear();
 
     mockTelemetryApi.mockImplementation(() => mockUseTelemetry);
     mockUseTelemetry.devices.getDeviceDetails.mockClear();

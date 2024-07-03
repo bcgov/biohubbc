@@ -54,8 +54,8 @@ const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
             You must add the capture during which the device was deployed before adding the deployment.
           </Typography>
           <AutocompleteField
-            name="attachment_start_capture_id"
-            id="attachment_start_capture_id"
+            name="critterbase_start_capture_id"
+            id="critterbase_start_capture_id"
             label={'Initial capture event'}
             options={props.captures.map((capture) => ({
               value: capture.capture_id,
@@ -74,8 +74,8 @@ const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
           </Typography>
           <Stack direction={{ xs: 'column', md: 'row' }} gap={3} alignItems="center" width="100%">
             <AutocompleteField
-              name="attachment_end_capture_id"
-              id="attachment_end_capture_id"
+              name="critterbase_end_capture_id"
+              id="critterbase_end_capture_id"
               label={'End capture event'}
               options={props.captures.map((capture) => ({
                 value: capture.capture_id,

@@ -5,11 +5,11 @@ import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
-import { BctwService } from '../../../../../../../services/bctw-service';
 import * as file_utils from '../../../../../../../utils/file-utils';
 import * as media_utils from '../../../../../../../utils/media/media-utils';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
 import * as upload from './upload';
+import { BctwKeyxService } from '../../../../../../../services/bctw-service/bctw-keyx-service';
 
 chai.use(sinonChai);
 
@@ -111,7 +111,7 @@ describe('uploadMedia', () => {
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
 
     const expectedError = new Error('A test error');
-    sinon.stub(BctwService.prototype, 'uploadKeyX').rejects(expectedError);
+    sinon.stub(BctwKeyxService.prototype, 'uploadKeyX').rejects(expectedError);
 
     try {
       const result = upload.uploadKeyxMedia();
@@ -132,7 +132,7 @@ describe('uploadMedia', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    const uploadKeyXStub = sinon.stub(BctwService.prototype, 'uploadKeyX').resolves(mockBctwResponse);
+    const uploadKeyXStub = sinon.stub(BctwKeyxService.prototype, 'uploadKeyX').resolves(mockBctwResponse);
     sinon.stub(file_utils, 'uploadFileToS3').resolves();
 
     const expectedResponse = { attachmentId: 1, revision_count: 1, keyxResults: mockBctwResponse };

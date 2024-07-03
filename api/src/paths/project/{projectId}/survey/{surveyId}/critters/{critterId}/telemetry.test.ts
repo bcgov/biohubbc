@@ -2,10 +2,10 @@ import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import * as db from '../../../../../../../database/db';
-import { BctwService } from '../../../../../../../services/bctw-service';
 import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import { GET, getCritterTelemetry } from './telemetry';
+import { BctwTelemetryService } from '../../../../../../../services/bctw-service/bctw-telemetry-service';
 
 describe('critter telemetry', () => {
   afterEach(() => {
@@ -28,8 +28,8 @@ describe('critter telemetry', () => {
       const mockGetCrittersInSurvey = sinon
         .stub(SurveyCritterService.prototype, 'getCrittersInSurvey')
         .resolves([{ critter_id: 1, survey_id: 1, critterbase_critter_id: 'asdf' }]);
-      const mockGetCritterPoints = sinon.stub(BctwService.prototype, 'getCritterTelemetryPoints').resolves();
-      const mockGetCritterTracks = sinon.stub(BctwService.prototype, 'getCritterTelemetryTracks').resolves();
+      const mockGetCritterPoints = sinon.stub(BctwTelemetryService.prototype, 'getCritterTelemetryPoints').resolves();
+      const mockGetCritterTracks = sinon.stub(BctwTelemetryService.prototype, 'getCritterTelemetryTracks').resolves();
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
       const requestHandler = getCritterTelemetry();

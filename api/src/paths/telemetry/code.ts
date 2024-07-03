@@ -1,7 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { IBctwUser } from '../../models/bctw';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
-import { BctwService, IBctwUser } from '../../services/bctw-service';
+import { BctwService } from '../../services/bctw-service/bctw-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/telemetry/code');
@@ -74,10 +75,14 @@ export function getCodeValues(): RequestHandler {
       keycloak_guid: req['system_user']?.user_guid,
       username: req['system_user']?.user_identifier
     };
+
     const bctwService = new BctwService(user);
+
     const codeHeader = String(req.query.codeHeader);
+
     try {
       const result = await bctwService.getCode(codeHeader);
+
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'getCodeValues', message: 'error', error });

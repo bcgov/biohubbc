@@ -1,7 +1,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { IBctwUser } from '../../../models/bctw';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { BctwService, getBctwUser } from '../../../services/bctw-service';
+import { getBctwUser } from '../../../services/bctw-service/bctw-service';
+import { BctwTelemetryService } from '../../../services/bctw-service/bctw-telemetry-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/telemetry/manual');
@@ -71,8 +73,12 @@ GET.apiDoc = {
 
 export function getManualTelemetry(): RequestHandler {
   return async (req, res) => {
-    const user = getBctwUser(req);
-    const bctwService = new BctwService(user);
+    const user: IBctwUser = {
+      keycloak_guid: req['system_user']?.user_guid,
+      username: req['system_user']?.user_identifier
+    };
+
+    const bctwService = new BctwTelemetryService(user);
     try {
       const result = await bctwService.getManualTelemetry();
       return res.status(200).json(result);
@@ -144,7 +150,7 @@ POST.apiDoc = {
 export function createManualTelemetry(): RequestHandler {
   return async (req, res) => {
     const user = getBctwUser(req);
-    const bctwService = new BctwService(user);
+    const bctwService = new BctwTelemetryService(user);
     try {
       const result = await bctwService.createManualTelemetry(req.body);
       return res.status(201).json(result);
@@ -221,7 +227,7 @@ PATCH.apiDoc = {
 export function updateManualTelemetry(): RequestHandler {
   return async (req, res) => {
     const user = getBctwUser(req);
-    const bctwService = new BctwService(user);
+    const bctwService = new BctwTelemetryService(user);
     try {
       const result = await bctwService.updateManualTelemetry(req.body);
       return res.status(201).json(result);

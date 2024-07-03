@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { HTTPError } from '../../../errors/http-error';
-import { BctwService } from '../../../services/bctw-service';
+import { BctwDeviceService } from '../../../services/bctw-service/bctw-device-service';
 import { getRequestHandlerMocks } from '../../../__mocks__/db';
 import { POST, upsertDevice } from './index';
 
@@ -20,7 +20,7 @@ describe('upsertDevice', () => {
   });
 
   it('upsert device details', async () => {
-    const mockUpsertDevice = sinon.stub(BctwService.prototype, 'updateDevice');
+    const mockUpsertDevice = sinon.stub(BctwDeviceService.prototype, 'updateDevice');
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     const requestHandler = upsertDevice();
@@ -33,7 +33,7 @@ describe('upsertDevice', () => {
 
   it('catches and re-throws errors', async () => {
     const mockError = new Error('a test error');
-    const mockBctwService = sinon.stub(BctwService.prototype, 'updateDevice').rejects(mockError);
+    const mockBctwService = sinon.stub(BctwDeviceService.prototype, 'updateDevice').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

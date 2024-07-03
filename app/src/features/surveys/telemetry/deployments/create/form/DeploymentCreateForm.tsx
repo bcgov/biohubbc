@@ -29,7 +29,7 @@ const DeploymentCreateForm = (props: IDeploymentCreateFormProps) => {
 
   const history = useHistory();
 
-  const { submitForm, setFieldValue } = useFormikContext<ICreateAnimalDeployment>();
+  const { submitForm, setFieldValue, errors } = useFormikContext<ICreateAnimalDeployment>();
   const [selectedAnimal, setSelectedAnimal] = useState<ISurveyCritter | undefined>();
 
   const critterbaseApi = useCritterbaseApi();
@@ -52,10 +52,12 @@ const DeploymentCreateForm = (props: IDeploymentCreateFormProps) => {
   useEffect(() => {
     if (selectedAnimal) {
       critterDataLoader.load(selectedAnimal.critterbase_critter_id);
-      setFieldValue('attachment_start_capture_id', '');
-      setFieldValue('attachment_end_capture_id', '');
+      setFieldValue('critterbase_start_capture_id', '');
+      setFieldValue('critterbase_end_capture_id', '');
     }
   }, [selectedAnimal]);
+
+  console.log(errors);
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
@@ -112,9 +114,7 @@ const DeploymentCreateForm = (props: IDeploymentCreateFormProps) => {
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(
-                  `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`
-                );
+                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry`);
               }}>
               Cancel
             </Button>

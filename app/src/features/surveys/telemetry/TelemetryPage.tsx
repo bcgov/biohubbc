@@ -5,18 +5,14 @@ import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import { TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
-import { useContext, useMemo } from 'react';
+import { useContext } from 'react';
 import ManualTelemetryHeader from './TelemetryHeader';
-import ManualTelemetryList from './list/TelemetryList';
+import SurveyDeploymentsList from './list/SurveyDeploymentList';
 import ManualTelemetryTableContainer from './table/TelemetryTableContainer';
 
 const TelemetryPage = () => {
   const surveyContext = useContext(SurveyContext);
   const projectContext = useContext(ProjectContext);
-
-  const deploymentIds = useMemo(() => {
-    return surveyContext.deploymentDataLoader.data?.map((item) => item.deployment_id);
-  }, [surveyContext.deploymentDataLoader.data]);
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -42,11 +38,14 @@ const TelemetryPage = () => {
         <Stack flex="1 1 auto" direction="row" gap={1} p={1}>
           {/* Telematry List */}
           <Box flex="0 0 auto" position="relative" width="400px">
-            <ManualTelemetryList />
+            <SurveyDeploymentsList />
           </Box>
           {/* Telemetry Component */}
           <Box flex="1 1 auto" position="relative">
-            <TelemetryTableContextProvider deployment_ids={deploymentIds ?? []}>
+            <TelemetryTableContextProvider
+              deployment_ids={
+                surveyContext.deploymentDataLoader.data?.map((deployment) => deployment.deployment_id) ?? []
+              }>
               <ManualTelemetryTableContainer />
             </TelemetryTableContextProvider>
           </Box>

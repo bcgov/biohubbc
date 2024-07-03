@@ -12,6 +12,7 @@ import {
 import { ApiPaginationResponseParams } from 'types/misc';
 import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
+import { AttachmentType } from 'constants/attachments';
 
 describe('useSurveyApi', () => {
   let mock: any;
@@ -93,20 +94,21 @@ describe('useSurveyApi', () => {
     });
   });
 
-  describe('addDeployment', () => {
+  describe('createDeployment', () => {
     it('should add deployment to survey critter', async () => {
       mock.onPost(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`).reply(201, 1);
 
-      const result = await useSurveyApi(axios).addDeployment(projectId, surveyId, critterId, {
+      const result = await useSurveyApi(axios).createDeployment(projectId, surveyId, critterId, {
         device_id: 1,
         device_make: 'ATS',
         device_model: 'E',
         frequency: 1,
         frequency_unit: 'Hz',
-        attachment_start_capture_id: '1',
-        attachment_end_capture_id: '2',
-        attachment_end_date: '2020-01-01',
-        attachment_end_time: '10:10',
+        critterbase_start_capture_id: '',
+        critterbase_end_capture_id: '',
+        critterbase_end_mortality_id: '',
+        attachment_end_date: '',
+        attachment_end_time: '',
         critter_id: v4()
       });
 
@@ -120,14 +122,19 @@ describe('useSurveyApi', () => {
         assignment_id: v4(),
         collar_id: v4(),
         critter_id: v4(),
-        attachment_start: '2023-01-01',
-        attachment_end: '2023-01-01',
+        critterbase_start_capture_id: '',
+        critterbase_end_capture_id: '',
+        critterbase_end_mortality_id: '',
+        attachment_end_date: '',
+        attachment_end_time: '',
         deployment_id: v4(),
         device_id: 123,
         device_make: '',
         device_model: 'a',
         frequency: 1,
-        frequency_unit: 'Hz'
+        frequency_unit: 'Hz',
+        attachment_file: '',
+        attachment_type: 'Other' as AttachmentType
       };
 
       mock.onGet(`/api/project/${projectId}/survey/${surveyId}/deployments`).reply(200, [response]);
@@ -144,9 +151,12 @@ describe('useSurveyApi', () => {
     it('should update a deployment', async () => {
       mock.onPatch(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`).reply(200, 1);
       const result = await useSurveyApi(axios).updateDeployment(projectId, surveyId, critterId, {
-        attachment_end: undefined,
         deployment_id: 'a',
-        attachment_start: 'a'
+        critterbase_start_capture_id: '',
+        critterbase_end_capture_id: '',
+        critterbase_end_mortality_id: '',
+        attachment_end_date: '',
+        attachment_end_time: ''
       });
 
       expect(result).toBe(1);

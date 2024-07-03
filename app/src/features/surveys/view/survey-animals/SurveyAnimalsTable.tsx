@@ -2,7 +2,6 @@ import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
-import { default as dayjs } from 'dayjs';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 import { IAnimalDeployment } from './telemetry-device/device';
@@ -63,28 +62,28 @@ export const SurveyAnimalsTable = ({
     {
       field: 'current_devices',
       headerName: 'Current Devices',
-      flex: 1,
-      valueGetter: (params) => {
-        const currentDeploys = params.row.deployments?.filter(
-          (device: IAnimalDeployment) => !device.attachment_end || dayjs(device.attachment_end).isAfter(dayjs())
-        );
-        return currentDeploys?.length
-          ? currentDeploys.map((device: IAnimalDeployment) => device.device_id).join(', ')
-          : 'No Devices';
-      }
+      flex: 1
+      // valueGetter: (params) => {
+      //   const currentDeploys = params.row.deployments?.filter(
+      //     (device: IAnimalDeployment) => !device.attachment_end || dayjs(device.attachment_end).isAfter(dayjs())
+      //   );
+      //   return currentDeploys?.length
+      //     ? currentDeploys.map((device: IAnimalDeployment) => device.device_id).join(', ')
+      //     : 'No Devices';
+      // }
     },
     {
       field: 'previous_devices',
       headerName: 'Previous Devices',
-      flex: 1,
-      valueGetter: (params) => {
-        const previousDeploys = params.row.deployments?.filter(
-          (device: IAnimalDeployment) => device.attachment_end && dayjs(device.attachment_end).isBefore(dayjs())
-        );
-        return previousDeploys?.length
-          ? previousDeploys.map((device: IAnimalDeployment) => device.device_id).join(', ')
-          : 'No Devices';
-      }
+      flex: 1
+      // valueGetter: (params) => {
+      //   const previousDeploys = params.row.deployments?.filter(
+      //     (device: IAnimalDeployment) => device.attachment_end && dayjs(device.attachment_end).isBefore(dayjs())
+      //   );
+      //   return previousDeploys?.length
+      //     ? previousDeploys.map((device: IAnimalDeployment) => device.device_id).join(', ')
+      //     : 'No Devices';
+      // }
     },
     {
       field: 'actions',

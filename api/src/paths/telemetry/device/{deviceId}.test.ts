@@ -1,7 +1,9 @@
 import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { BctwService } from '../../../services/bctw-service';
+import { BctwDeploymentService } from '../../../services/bctw-service/bctw-deployment-service';
+import { BctwDeviceService } from '../../../services/bctw-service/bctw-device-service';
+import { BctwKeyxService } from '../../../services/bctw-service/bctw-keyx-service';
 import { getRequestHandlerMocks } from '../../../__mocks__/db';
 import { GET, getDeviceDetails } from './{deviceId}';
 
@@ -19,9 +21,9 @@ describe('getDeviceDetails', () => {
   });
 
   it('gets device details', async () => {
-    const mockGetDeviceDetails = sinon.stub(BctwService.prototype, 'getDeviceDetails').resolves([]);
-    const mockGetDeployments = sinon.stub(BctwService.prototype, 'getDeviceDeployments').resolves([]);
-    const mockGetKeyXDetails = sinon.stub(BctwService.prototype, 'getKeyXDetails').resolves([]);
+    const mockGetDeviceDetails = sinon.stub(BctwDeviceService.prototype, 'getDeviceDetails').resolves([]);
+    const mockGetDeployments = sinon.stub(BctwDeploymentService.prototype, 'getDeploymentsByDeviceId').resolves([]);
+    const mockGetKeyXDetails = sinon.stub(BctwKeyxService.prototype, 'getKeyXDetails').resolves([]);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     const requestHandler = getDeviceDetails();
@@ -36,7 +38,7 @@ describe('getDeviceDetails', () => {
 
   it('catches and re-throws errors', async () => {
     const mockError = new Error('test error');
-    const mockGetDeviceDetails = sinon.stub(BctwService.prototype, 'getDeviceDetails').rejects(mockError);
+    const mockGetDeviceDetails = sinon.stub(BctwDeviceService.prototype, 'getDeviceDetails').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     const requestHandler = getDeviceDetails();

@@ -6,7 +6,7 @@ import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
 import { GeoJSONFeatureCollection } from '../../../../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { BctwService } from '../../../../../../../services/bctw-service';
+import { BctwTelemetryService } from '../../../../../../../services/bctw-service/bctw-telemetry-service';
 import { ICritterbaseUser } from '../../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../../utils/logger';
@@ -267,7 +267,7 @@ export function getCritterTelemetry(): RequestHandler {
 
     const connection = getDBConnection(req['keycloak_token']);
     const surveyCritterService = new SurveyCritterService(connection);
-    const bctwService = new BctwService(user);
+    const bctwTelemetryService = new BctwTelemetryService(user);
 
     try {
       await connection.open();
@@ -281,9 +281,17 @@ export function getCritterTelemetry(): RequestHandler {
       const startDate = new Date(String(req.query.startDate));
       const endDate = new Date(String(req.query.endDate));
 
-      const points = await bctwService.getCritterTelemetryPoints(critter.critterbase_critter_id, startDate, endDate);
+      const points = await bctwTelemetryService.getCritterTelemetryPoints(
+        critter.critterbase_critter_id,
+        startDate,
+        endDate
+      );
 
-      const tracks = await bctwService.getCritterTelemetryTracks(critter.critterbase_critter_id, startDate, endDate);
+      const tracks = await bctwTelemetryService.getCritterTelemetryTracks(
+        critter.critterbase_critter_id,
+        startDate,
+        endDate
+      );
 
       await connection.commit();
 

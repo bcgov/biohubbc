@@ -1,11 +1,12 @@
 import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { createDeployment, POST } from '.';
 import * as db from '../../../../../../../../database/db';
-import { BctwService } from '../../../../../../../../services/bctw-service';
-import { SurveyCritterService } from '../../../../../../../../services/survey-critter-service';
+import { BctwDeploymentService } from '../../../../../../../../services/bctw-service/bctw-deployment-service';
+import { DeploymentService } from '../../../../../../../../services/deployment-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../__mocks__/db';
-import { deployDevice, PATCH, POST, updateDeployment } from './index';
+import { PATCH, updateDeployment } from './{deploymentId}';
 
 describe('critter deployments', () => {
   afterEach(() => {
@@ -23,11 +24,11 @@ describe('critter deployments', () => {
     });
   });
 
-  describe('upsertDeployment', () => {
+  describe('updateDeployment', () => {
     it('updates an existing deployment', async () => {
       const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-      const mockAddDeployment = sinon.stub(SurveyCritterService.prototype, 'upsertDeployment').resolves();
-      const mockBctwService = sinon.stub(BctwService.prototype, 'updateDeployment');
+      const mockcreateDeployment = sinon.stub(DeploymentService.prototype, 'updateDeployment').resolves();
+      const mockBctwDeploymentService = sinon.stub(BctwDeploymentService.prototype, 'updateDeployment');
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -35,16 +36,18 @@ describe('critter deployments', () => {
       await requestHandler(mockReq, mockRes, mockNext);
 
       expect(mockGetDBConnection.calledOnce).to.be.true;
-      expect(mockAddDeployment.calledOnce).to.be.true;
-      expect(mockBctwService.calledOnce).to.be.true;
+      expect(mockcreateDeployment.calledOnce).to.be.true;
+      expect(mockBctwDeploymentService.calledOnce).to.be.true;
       expect(mockRes.status).to.have.been.calledWith(200);
     });
 
     it('catches and re-throws errors', async () => {
       const mockError = new Error('a test error');
       const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-      const mockAddDeployment = sinon.stub(SurveyCritterService.prototype, 'upsertDeployment').rejects(mockError);
-      const mockBctwService = sinon.stub(BctwService.prototype, 'updateDeployment').rejects(mockError);
+      const mockcreateDeployment = sinon.stub(DeploymentService.prototype, 'updateDeployment').rejects(mockError);
+      const mockBctwDeploymentService = sinon
+        .stub(BctwDeploymentService.prototype, 'updateDeployment')
+        .rejects(mockError);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -55,44 +58,47 @@ describe('critter deployments', () => {
       } catch (actualError) {
         expect(actualError).to.equal(mockError);
         expect(mockGetDBConnection.calledOnce).to.be.true;
-        expect(mockAddDeployment.calledOnce).to.be.true;
-        expect(mockBctwService.notCalled).to.be.true;
+        expect(mockcreateDeployment.calledOnce).to.be.true;
+        expect(mockBctwDeploymentService.notCalled).to.be.true;
       }
     });
-    describe('deployDevice', () => {
+    describe('createDeployment', () => {
       it('deploys a new telemetry device', async () => {
         const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-        const mockAddDeployment = sinon.stub(SurveyCritterService.prototype, 'upsertDeployment').resolves();
-        const mockBctwService = sinon.stub(BctwService.prototype, 'deployDevice');
+        const mockcreateDeployment = sinon.stub(DeploymentService.prototype, 'updateDeployment').resolves();
+        const mockBctwDeploymentService = sinon.stub(BctwDeploymentService.prototype, 'createDeployment');
 
         const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-        const requestHandler = deployDevice();
+        const requestHandler = createDeployment();
+
         await requestHandler(mockReq, mockRes, mockNext);
 
         expect(mockGetDBConnection.calledOnce).to.be.true;
-        expect(mockAddDeployment.calledOnce).to.be.true;
-        expect(mockBctwService.calledOnce).to.be.true;
+        expect(mockcreateDeployment.calledOnce).to.be.true;
+        expect(mockBctwDeploymentService.calledOnce).to.be.true;
         expect(mockRes.status).to.have.been.calledWith(201);
       });
 
       it('catches and re-throws errors', async () => {
         const mockError = new Error('a test error');
         const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-        const mockAddDeployment = sinon.stub(SurveyCritterService.prototype, 'upsertDeployment').rejects(mockError);
-        const mockBctwService = sinon.stub(BctwService.prototype, 'deployDevice').rejects(mockError);
+        const mockcreateDeployment = sinon.stub(DeploymentService.prototype, 'updateDeployment').rejects(mockError);
+        const mockBctwDeploymentService = sinon
+          .stub(BctwDeploymentService.prototype, 'createDeployment')
+          .rejects(mockError);
 
         const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-        const requestHandler = deployDevice();
+        const requestHandler = createDeployment();
         try {
           await requestHandler(mockReq, mockRes, mockNext);
           expect.fail();
         } catch (actualError) {
           expect(actualError).to.equal(mockError);
           expect(mockGetDBConnection.calledOnce).to.be.true;
-          expect(mockAddDeployment.calledOnce).to.be.true;
-          expect(mockBctwService.notCalled).to.be.true;
+          expect(mockcreateDeployment.calledOnce).to.be.true;
+          expect(mockBctwDeploymentService.notCalled).to.be.true;
         }
       });
     });

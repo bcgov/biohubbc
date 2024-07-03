@@ -11,8 +11,10 @@ import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
+import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 
-export interface ISamplingSiteListSiteProps {
+export interface ISurveyDeploymentListItemProps {
+  animal: ISimpleCritterWithInternalId;
   deployment: IAnimalDeployment;
   isChecked: boolean;
   handleDeploymentMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, deploymentId: string) => void;
@@ -22,11 +24,11 @@ export interface ISamplingSiteListSiteProps {
 /**
  * Renders a list item for a single sampling site.
  *
- * @param {ISamplingSiteListSiteProps} props
+ * @param {ISurveyDeploymentListItemProps} props
  * @return {*}
  */
-export const TelemetryListItem = (props: ISamplingSiteListSiteProps) => {
-  const { deployment, isChecked, handleDeploymentMenuClick, handleCheckboxChange } = props;
+export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) => {
+  const { animal, deployment, isChecked, handleDeploymentMenuClick, handleCheckboxChange } = props;
 
   return (
     <Accordion
@@ -48,7 +50,7 @@ export const TelemetryListItem = (props: ISamplingSiteListSiteProps) => {
             py: 0,
             pr: 8.5,
             pl: 0,
-            height: 55,
+            height: 75,
             overflow: 'hidden',
             '& .MuiAccordionSummary-content': {
               flex: '1 1 auto',
@@ -60,7 +62,7 @@ export const TelemetryListItem = (props: ISamplingSiteListSiteProps) => {
           }}>
           <Stack
             flexDirection="row"
-            alignItems="center"
+            alignItems="flex-start"
             sx={{
               gap: 0.75,
               pl: 2,
@@ -76,21 +78,24 @@ export const TelemetryListItem = (props: ISamplingSiteListSiteProps) => {
               }}
               inputProps={{ 'aria-label': 'controlled' }}
             />
-
-            <Typography
-              variant="body2"
-              component="div"
-              sx={{
-                flex: '1 1 auto',
-                fontWeight: 700,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}>
-              {deployment.device_id}
-              <Typography component="span">
-                {deployment.frequency}&nbsp;{deployment.frequency_unit}
+            <Box>
+              <Typography
+                component="div"
+                sx={{
+                  flex: '1 1 auto',
+                  fontWeight: 700,
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                {deployment.device_id}
+                <Typography component="span" variant="body2">
+                  {deployment.frequency}&nbsp;{deployment.frequency_unit}
+                </Typography>
               </Typography>
-            </Typography>
+              <Typography variant="body2" color="textSecondary">
+                {animal.animal_id}
+              </Typography>
+            </Box>
           </Stack>
         </AccordionSummary>
         <IconButton

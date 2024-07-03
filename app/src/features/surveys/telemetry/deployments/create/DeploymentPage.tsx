@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
 import {
@@ -11,9 +10,9 @@ import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
-import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useRef, useState } from 'react';
-import { Prompt } from 'react-router';
+import { Prompt, useHistory } from 'react-router';
 import DeploymentHeader from '../components/DeploymentHeader';
 import DeploymentCreateForm from './form/DeploymentCreateForm';
 
@@ -24,10 +23,11 @@ const initialDeploymentValues = {
   frequency_unit: '',
   device_model: '',
   device_make: '',
-  attachment_start_capture_id: '',
-  attachment_end_capture_id: '',
-  attachment_end_date: '',
-  attachment_end_time: ''
+  critterbase_start_capture_id: '',
+  critterbase_end_capture_id: null,
+  critterbase_end_mortality_id: null,
+  attachment_end_date: null,
+  attachment_end_time: null
 };
 
 /**
@@ -41,6 +41,8 @@ const DeploymentPage = () => {
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
+
+  const history = useHistory();
 
   const critters = surveyContext.critterDataLoader.data ?? [];
 
@@ -81,7 +83,7 @@ const DeploymentPage = () => {
         throw new Error('Invalid critter data');
       }
 
-      await biohubApi.survey.addDeployment(
+      await biohubApi.survey.createDeployment(
         surveyContext.projectId,
         surveyContext.surveyId,
         Number(critter.survey_critter_id),
@@ -92,22 +94,21 @@ const DeploymentPage = () => {
           frequency: values.frequency,
           frequency_unit: values.frequency_unit,
           device_model: values.device_model,
-          attachment_start_capture_id: values.attachment_start_capture_id,
-          attachment_end_capture_id: values.attachment_end_capture_id,
+          critterbase_start_capture_id: values.critterbase_start_capture_id,
+          critterbase_end_capture_id: values.critterbase_end_capture_id,
+          critterbase_end_mortality_id: values.critterbase_end_mortality_id,
           attachment_end_date: values.attachment_end_date,
           attachment_end_time: values.attachment_end_time
         }
       );
       surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-      // success snack bar
-      dialogContext.setSnackbar({
-        snackbarMessage: (
-          <Typography variant="body2" component="div">
-            Deployment Added
-          </Typography>
-        ),
-        open: true
-      });
+
+      // create complete, navigate back to observations page
+      history.push(
+        `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry`,
+        SKIP_CONFIRMATION_DIALOG
+      );
+
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: CreateSamplingSiteI18N.createErrorTitle,

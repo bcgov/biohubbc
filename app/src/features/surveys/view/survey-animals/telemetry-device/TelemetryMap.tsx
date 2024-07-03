@@ -6,7 +6,6 @@ import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
-import { default as dayjs } from 'dayjs';
 import { Feature } from 'geojson';
 import L, { LatLng } from 'leaflet';
 import { useMemo, useState } from 'react';
@@ -46,13 +45,13 @@ const Legend = ({ hasData, colourMap }: ILegend) => {
                     width: '16px'
                   }}
                 />
-                <Typography>{`Device ID: ${deploymentAndColour.device_id}, deployed from ${dayjs(
+                {/* <Typography>{`Device ID: ${deploymentAndColour.device_id}, deployed from ${dayjs(
                   deploymentAndColour.attachment_start
                 ).format('DD-MM-YYYY')} to ${
                   deploymentAndColour.attachment_end
                     ? dayjs(deploymentAndColour.attachment_end).format('DD-MM-YYYY')
                     : 'indefinite'
-                }`}</Typography>
+                }`}</Typography> */}
               </Box>
             ))
           ) : (

@@ -1,7 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { IBctwUser } from '../../../models/bctw';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { BctwService, IBctwUser } from '../../../services/bctw-service';
+import { BctwDeviceService } from '../../../services/bctw-service/bctw-device-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/telemetry/device/{deviceId}');
@@ -96,7 +97,9 @@ export function upsertDevice(): RequestHandler {
       keycloak_guid: req['system_user']?.user_guid,
       username: req['system_user']?.user_identifier
     };
-    const bctwService = new BctwService(user);
+
+    const bctwService = new BctwDeviceService(user);
+
     try {
       const results = await bctwService.updateDevice(req.body);
       return res.status(200).json(results);

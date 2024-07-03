@@ -11,9 +11,9 @@ import { IGetDeviceDetailsResponse } from 'hooks/telemetry/useDeviceApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useQuery } from 'hooks/useQuery';
 import { Fragment, useContext, useState } from 'react';
-import { dateRangesOverlap, setMessageSnackbar } from 'utils/Utils';
+import { setMessageSnackbar } from 'utils/Utils';
 import { ANIMAL_FORM_MODE } from '../animal';
-import { IAnimalTelemetryDevice, IDeploymentTimespan } from './device';
+import { IAnimalTelemetryDevice } from './device';
 
 interface DeploymentFormSectionProps {
   mode: ANIMAL_FORM_MODE;
@@ -21,7 +21,7 @@ interface DeploymentFormSectionProps {
 }
 
 export const DeploymentForm = (props: DeploymentFormSectionProps): JSX.Element => {
-  const { mode, deviceDetails } = props;
+  const { mode } = props;
 
   const biohubApi = useBiohubApi();
   const { critter_id: survey_critter_id } = useQuery();
@@ -50,32 +50,6 @@ export const DeploymentForm = (props: DeploymentFormSectionProps): JSX.Element =
     }
   };
 
-  const deploymentOverlapTest = (deployment: IDeploymentTimespan) => {
-    if (!deviceDetails) {
-      return;
-    }
-
-    if (!deployment.attachment_start) {
-      return;
-    }
-    const existingDeployment = deviceDetails.deployments.find(
-      (existingDeployment) =>
-        deployment.deployment_id !== existingDeployment.deployment_id &&
-        dateRangesOverlap(
-          deployment.attachment_start,
-          deployment.attachment_end,
-          existingDeployment.attachment_start,
-          existingDeployment.attachment_end
-        )
-    );
-    if (!existingDeployment) {
-      return;
-    }
-    return `This will conflict with an existing deployment for the device running from ${
-      existingDeployment.attachment_start
-    } until ${existingDeployment.attachment_end ?? 'indefinite.'}`;
-  };
-
   return (
     <>
       <Grid container spacing={3}>
@@ -89,7 +63,6 @@ export const DeploymentForm = (props: DeploymentFormSectionProps): JSX.Element =
                   required={true}
                   label={'Start Date'}
                   other={{ onChange: () => validateField(`deployments.${i}.attachment_start`) }}
-                  validate={() => deploymentOverlapTest(deploy)}
                 />
               </Grid>
               <Grid item xs={mode === ANIMAL_FORM_MODE.ADD ? 6 : 5.5}>
@@ -98,7 +71,6 @@ export const DeploymentForm = (props: DeploymentFormSectionProps): JSX.Element =
                   name={`deployments.${i}.attachment_end`}
                   label={'End Date'}
                   other={{ onChange: () => validateField(`deployments.${i}.attachment_end`) }}
-                  validate={() => deploymentOverlapTest(deploy)}
                 />
               </Grid>
               {mode === ANIMAL_FORM_MODE.EDIT && (
