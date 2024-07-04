@@ -1,86 +1,61 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: clamav-build
+  name: clamav
 parameters:
   - name: NAME
     displayName: Name
     description: The name assigned to all of the objects defined in this template.
-    value: clamav
     required: true
+    value: clamav
   - name: GIT_SOURCE_URL
     displayName: GIT Source Repo URL
     description: A GIT URL to your source code.
-    value: "https://github.com/bcgov/biohubbc.git"
     required: true
+    value: https://github.com/bcgov/clamav.git
   - name: GIT_REF
     displayName: Git Reference
     description: The git reference or branch.
-    value: dev
     required: true
-  - name: SOURCE_CONTEXT_DIR
-    displayName: Source Context Directory
-    description: The source context directory.
-    value: containers/clamav
-  - name: NAME_SPACE
-    displayName: Namespace for source image
-    value: af2668-tools
-    required: true
-  - name: CPU_REQUEST
-    value: "100m"
-  - name: CPU_LIMIT
-    value: "1000m"
-  - name: MEMORY_REQUEST
-    value: "2G"
-  - name: MEMORY_LIMIT
-    value: "4G"
+    value: master
 objects:
   - kind: ImageStream
-    apiVersion: image.openshift.io/v1
+    apiVersion: v1
     metadata:
       name: "${NAME}"
-
   - kind: BuildConfig
-    apiVersion: build.openshift.io/v1
+    apiVersion: v1
     metadata:
       name: "${NAME}-build"
+      creationTimestamp:
       labels:
         app: "${NAME}"
     spec:
       runPolicy: Serial
       completionDeadlineSeconds: 1800
+      triggers:
+        - type: ConfigChange
       source:
         type: Git
         git:
-          ref: "${GIT_REF}"
           uri: "${GIT_SOURCE_URL}"
-        contextDir: "${SOURCE_CONTEXT_DIR}"
-        secrets:
-          - secret:
-              name: platform-services-controlled-etc-pki-entitlement
-            destinationDir: etc-pki-entitlement
-        configMaps:
-          - configMap:
-              name: platform-services-controlled-rhsm-conf
-            destinationDir: rhsm-conf
-          - configMap:
-              name: platform-services-controlled-rhsm-ca
-            destinationDir: rhsm-ca
+          ref: "${GIT_REF}"
       strategy:
         type: Docker
         dockerStrategy:
-          from:
-            kind: ImageStreamTag
-            name: "ubi:latest"
-            namespace: "${NAME_SPACE}"
+          env:
+            - name: CLAMAV_NO_MILTERD
+              value: "true"
       output:
         to:
           kind: ImageStreamTag
           name: "${NAME}:latest"
       resources:
         requests:
-          cpu: ${CPU_REQUEST}
-          memory: ${MEMORY_REQUEST}
+          cpu: 100m
+          memory: 2Gi
         limits:
-          cpu: ${CPU_LIMIT}
-          memory: ${MEMORY_LIMIT}
+          cpu: "1"
+          memory: 4Gi
+    status:
+      lastVersion: 0
