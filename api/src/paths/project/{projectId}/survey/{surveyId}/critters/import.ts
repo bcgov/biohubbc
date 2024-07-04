@@ -139,10 +139,13 @@ export function importCsv(): RequestHandler {
         throw new HTTP400('Malicious content detected, import cancelled.');
       }
 
+      // Critter CSV import service - child of CSVImportStrategy
       const importCsvCritters = new ImportCrittersService(connection, surveyId);
 
+      // CSV import strategy with injected import service - parent
       const csvImportStrategry = new CSVImportStrategy(importCsvCritters);
 
+      // Import CSV data with strategy class
       const surveyCritterIds = await csvImportStrategry.import(parseMulterFile(rawFile));
 
       defaultLog.info({ label: 'importCritterCsv', message: 'result', survey_critter_ids: surveyCritterIds });
@@ -151,7 +154,7 @@ export function importCsv(): RequestHandler {
 
       return res.status(200).json({ survey_critter_ids: surveyCritterIds });
     } catch (error) {
-      defaultLog.error({ label: 'uploadMedia', message: 'error', error });
+      defaultLog.error({ label: 'importCritterCsv', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

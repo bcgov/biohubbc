@@ -101,7 +101,7 @@ export class ImportCapturesService extends DBService implements CSVImportService
    * @param {PartialCsvCapture[]} rows - CSV rows
    * @returns {*}
    */
-  validateRows(rows: PartialCsvCapture[]) {
+  async validateRows(rows: PartialCsvCapture[]) {
     return z.array(CsvCaptureSchema).safeParse(rows);
   }
 

@@ -10,10 +10,26 @@ import {
 } from '../../utils/xlsx-utils/worksheet-utils';
 import { CSVImportService } from './import-types';
 
+/**
+ * CSV Import Strategy - Used with `CSVImportService` classes.
+ *
+ * Why does this exist? The import CSV classes (ie: ImportCrittersService) all follow a similar pattern.
+ * This class reduces the need to duplicate code for all CSV import classes.
+ *
+ * Flow:
+ *  1. Get the worksheet from the CSV MediaFile - _getWorksheet
+ *  2. Validate the standard columns with the `importCsvService` column validator - _validate -> validateCsvFile
+ *  3. Get the rows to validate and format to a useable format - _validate -> importCsvService.getRowsToValidate
+ *  4. Retrieve reference data and validate the row data - _validate -> importCsvService.validateRows
+ *  5. Insert the data into database or send to external system - import -> importCsvService.insert
+ *
+ *
+ * @class CSVImportStrategy
+ * @template ValidatedRow - Validated row object
+ * @template PartialRow - Invalidated row object - ie: partial (undefined properties) row object
+ */
 export class CSVImportStrategy<ValidatedRow, PartialRow = Partial<ValidatedRow>> {
   importCsvService: CSVImportService<ValidatedRow, PartialRow>;
-
-  _rows?: PartialRow[];
 
   constructor(importCsvService: CSVImportService<ValidatedRow, PartialRow>) {
     this.importCsvService = importCsvService;
@@ -27,26 +43,6 @@ export class CSVImportStrategy<ValidatedRow, PartialRow = Partial<ValidatedRow>>
    */
   _getWorksheet(markingCsv: MediaFile): WorkSheet {
     return getDefaultWorksheet(constructXLSXWorkbook(markingCsv));
-  }
-
-  /**
-   * Get the marking rows from the xlsx worksheet.
-   *
-   * @param {WorkSheet} worksheet
-   */
-  _getRows(worksheet: WorkSheet) {
-    // Attempt to retrieve from rows property to prevent unnecessary parsing
-    if (this._rows) {
-      return this._rows;
-    }
-
-    // Convert the worksheet into an array of records
-    const worksheetRows = getWorksheetRowObjects(worksheet);
-
-    // Pre parse the records into partial marking rows
-    this._rows = this.importCsvService.getRowsToValidate(worksheetRows, worksheet);
-
-    return this._rows;
   }
 
   /**
@@ -65,7 +61,11 @@ export class CSVImportStrategy<ValidatedRow, PartialRow = Partial<ValidatedRow>>
       ]);
     }
 
-    const rowsToValidate = this._getRows(worksheet);
+    // Convert the worksheet into an array of records
+    const worksheetRows = getWorksheetRowObjects(worksheet);
+
+    // Pre parse the records into partial marking rows
+    const rowsToValidate = this.importCsvService.getRowsToValidate(worksheetRows, worksheet);
 
     // Validate the CSV rows with reference data
     const validation = await this.importCsvService.validateRows(rowsToValidate, worksheet);
@@ -82,7 +82,7 @@ export class CSVImportStrategy<ValidatedRow, PartialRow = Partial<ValidatedRow>>
   }
 
   /**
-   * Import the CSV file
+   * Import the CSV file with `importCsvService` child dependency
    *
    * @async
    * @template T - Return type of insert method
@@ -96,6 +96,7 @@ export class CSVImportStrategy<ValidatedRow, PartialRow = Partial<ValidatedRow>>
     // Validate the standard columns and the data of the CSV
     const parsedData = await this._validate(worksheet);
 
-    return this.importCsvService.insert<T>(parsedData);
+    // Insert the data into database or send to external systems
+    return this.importCsvService.insert(parsedData) as Promise<T>;
   }
 }

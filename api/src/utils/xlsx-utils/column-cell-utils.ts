@@ -204,13 +204,13 @@ export const getCaptureLatitudeFromRow = generateCellValueGetter<number>(CAPTURE
 
 export const getCaptureLongitudeFromRow = generateCellValueGetter<number>(CAPTURE_LONGITUDE);
 
-export const getReleaseDateFromRow = generateCellValueGetter<string>(CAPTURE_DATE);
+export const getReleaseDateFromRow = generateCellValueGetter<string>(RELEASE_DATE);
 
-export const getReleaseTimeFromRow = generateCellValueGetter<string>(CAPTURE_TIME);
+export const getReleaseTimeFromRow = generateCellValueGetter<string>(RELEASE_TIME);
 
-export const getReleaseLatitudeFromRow = generateCellValueGetter<number>(CAPTURE_LATITUDE);
+export const getReleaseLatitudeFromRow = generateCellValueGetter<number>(RELEASE_LATITUDE);
 
-export const getReleaseLongitudeFromRow = generateCellValueGetter<number>(CAPTURE_LONGITUDE);
+export const getReleaseLongitudeFromRow = generateCellValueGetter<number>(RELEASE_LONGITUDE);
 
 /**
  * Marking getters
