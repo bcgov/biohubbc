@@ -6,11 +6,11 @@ import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import {
   DatabaseUserInformation,
-  KeycloakUserInformation,
-  ServiceClientUserInformation,
   getUserGuid,
   getUserIdentifier,
-  getUserIdentitySource
+  getUserIdentitySource,
+  KeycloakUserInformation,
+  ServiceClientUserInformation
 } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 import { asyncErrorWrapper, getGenericizedKeycloakUserInformation, syncErrorWrapper } from './db-utils';
