@@ -87,9 +87,9 @@ export class ImportMarkingService extends DBService implements CSVImportService<
    * Validate the CSV rows with zod schema.
    *
    * @param {PartialCsvMarking} rows - CSV rows to validate
-   * @returns {z.SafeParseReturnType<CsvMarking[], PartialCsvMarking[]>} Zod safe parse validation
+   * @returns {*} Zod safe parse validation
    */
-  validateRows(rows: PartialCsvMarking[]): z.SafeParseReturnType<PartialCsvMarking[], CsvMarking[]> {
+  async validateRows(rows: PartialCsvMarking[]) {
     return z.array(CsvMarkingSchema).safeParse(rows);
   }
 
@@ -101,22 +101,6 @@ export class ImportMarkingService extends DBService implements CSVImportService<
    * @returns {Promise<ICapture[]>} List of created captures
    */
   async insert(markings: CsvMarking[]) {
-    //const createCapturePromises = captures.map((marking) => {
-    //  const { capture_longitude, capture_latitude, release_latitude, release_longitude, ...payload } = marking;
-    //
-    //  return this.critterbaseService.createCapture({
-    //    ...payload,
-    //    capture_location: {
-    //      latitude: capture_latitude,
-    //      longitude: capture_longitude
-    //    },
-    //    release_location: {
-    //      latitude: release_latitude ?? capture_latitude,
-    //      longitude: release_longitude ?? capture_longitude
-    //    }
-    //  });
-    //});
-    //
-    //return Promise.all(createCapturePromises);
+    //do nothing
   }
 }

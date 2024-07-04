@@ -39,13 +39,13 @@ export interface ICapture {
   critter_id: string;
   capture_method_id?: string | null;
   capture_location_id: string;
-  release_location_id: string;
+  release_location_id?: string | null;
   capture_date: string;
   capture_time?: string | null;
   release_date?: string | null;
   release_time?: string | null;
-  capture_comment: string;
-  release_comment: string;
+  capture_comment?: string | null;
+  release_comment?: string | null;
 }
 
 export interface ICreateCapture {
