@@ -46,6 +46,7 @@
     "@turf/center-of-mass": "^6.5.0",
     "@turf/centroid": "^6.5.0",
     "@turf/truncate": "^6.5.0",
+    "ajv": "^8.16.0",
     "axios": "^1.6.8",
     "dayjs": "^1.11.10",
     "express": "^4.19.2",

@@ -209,8 +209,8 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
                 borderTop: '1px solid' + grey[300]
               }
             }}
-            key={`${renderOption.tsn}-${renderOption.label}`}
-            {...renderProps}>
+            {...renderProps}
+            key={`${renderOption.tsn}-${renderOption.label}`}>
             <Box py={1} width="100%">
               <SpeciesCard
                 commonNames={renderOption.commonNames}

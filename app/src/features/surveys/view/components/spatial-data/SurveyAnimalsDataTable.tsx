@@ -78,6 +78,11 @@ const SurveyAnimalsDataTable = (props: ISurveySpatialTelemetryDataTableProps) =>
 
   const columns: GridColDef<IAnimalData>[] = [
     {
+      field: 'animal_id',
+      headerName: 'Nickname',
+      flex: 1
+    },
+    {
       field: 'scientificName',
       headerName: 'Species',
       flex: 1,
@@ -87,11 +92,6 @@ const SurveyAnimalsDataTable = (props: ISurveySpatialTelemetryDataTableProps) =>
         ) : (
           <span>{params.value}</span>
         )
-    },
-    {
-      field: 'animal_id',
-      headerName: 'Alias',
-      flex: 1
     }
   ];
 
