@@ -1,4 +1,4 @@
-import { S3 } from 'aws-sdk';
+import { DeleteObjectCommandOutput } from '@aws-sdk/client-s3';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
@@ -66,7 +66,7 @@ describe('deleteSurvey', () => {
 
     const fileUtilsStub = sinon
       .stub(file_utils, 'deleteFileFromS3')
-      .resolves(false as unknown as S3.DeleteObjectOutput);
+      .resolves(false as unknown as DeleteObjectCommandOutput);
 
     let actualResult: any = null;
     const sampleRes = {
@@ -107,7 +107,9 @@ describe('deleteSurvey', () => {
 
     const deleteSurveyStub = sinon.stub(SurveyService.prototype, 'deleteSurvey').resolves();
 
-    const fileUtilsStub = sinon.stub(file_utils, 'deleteFileFromS3').resolves(true as unknown as S3.DeleteObjectOutput);
+    const fileUtilsStub = sinon
+      .stub(file_utils, 'deleteFileFromS3')
+      .resolves(true as unknown as DeleteObjectCommandOutput);
 
     let actualResult: any = null;
     const sampleRes = {
