@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import * as db from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
-import { ImportCrittersService } from '../../../../../../services/import-services/import-critters-service';
+import { ImportCrittersService } from '../../../../../../services/import-services/critter/import-critters-service';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import { importCsv } from './import';

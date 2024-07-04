@@ -2,13 +2,13 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { WorkSheet } from 'xlsx';
-import { MediaFile } from '../../utils/media/media-file';
-import { critterStandardColumnValidator } from '../../utils/xlsx-utils/column-cell-utils';
-import * as xlsxUtils from '../../utils/xlsx-utils/worksheet-utils';
-import { getMockDBConnection } from '../../__mocks__/db';
-import { IBulkCreateResponse } from '../critterbase-service';
-import { ImportCrittersService } from './import-critters-service';
-import { CsvCritter, PartialCsvCritter } from './import-critters-service.interface';
+import { MediaFile } from '../../../utils/media/media-file';
+import { critterStandardColumnValidator } from '../../../utils/xlsx-utils/column-cell-utils';
+import * as xlsxUtils from '../../../utils/xlsx-utils/worksheet-utils';
+import { getMockDBConnection } from '../../../__mocks__/db';
+import { IBulkCreateResponse } from '../../critterbase-service';
+import { CsvCritter, PartialCsvCritter } from './critter/import-critters-service.interfacee';
+import { ImportCrittersService } from './critter/import-critters-servicee';
 
 chai.use(sinonChai);
 

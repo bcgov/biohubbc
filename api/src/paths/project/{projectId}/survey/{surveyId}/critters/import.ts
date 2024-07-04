@@ -4,7 +4,8 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ImportCrittersService } from '../../../../../../services/import-services/import-critters-service';
+import { ImportCrittersService } from '../../../../../../services/import-services/critter/import-critters-service';
+import { CSVImportStrategy } from '../../../../../../services/import-services/csv-import-strategy';
 import { scanFileForVirus } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
@@ -138,10 +139,11 @@ export function importCsv(): RequestHandler {
         throw new HTTP400('Malicious content detected, import cancelled.');
       }
 
-      const csvImporter = new ImportCrittersService(connection);
+      const importCsvCritters = new ImportCrittersService(connection, surveyId);
 
-      // Pass the survey id and the csv (MediaFile) to the importer
-      const surveyCritterIds = await csvImporter.import(surveyId, parseMulterFile(rawFile));
+      const csvImportStrategry = new CSVImportStrategy(importCsvCritters);
+
+      const surveyCritterIds = await csvImportStrategry.import(parseMulterFile(rawFile));
 
       defaultLog.info({ label: 'importCritterCsv', message: 'result', survey_critter_ids: surveyCritterIds });
 

@@ -40,6 +40,23 @@ const WILDLIFE_HEALTH_ID = 'WILDLIFE_HEALTH_ID';
 // Observation sub-count
 const COUNT = 'COUNT';
 
+// Capture headers
+const CAPTURE_DATE = 'CAPTURE_DATE';
+const CAPTURE_TIME = 'CAPTURE_TIME';
+const CAPTURE_LATITUDE = 'CAPTURE_LATITUDE';
+const CAPTURE_LONGITUDE = 'CAPTURE_LONGITUDE';
+const RELEASE_DATE = 'CAPTURE_DATE';
+const RELEASE_TIME = 'CAPTURE_TIME';
+const RELEASE_LATITUDE = 'CAPTURE_LATITUDE';
+const RELEASE_LONGITUDE = 'CAPTURE_LONGITUDE';
+
+// Marking headers
+const BODY_POSITION = 'BODY_POSITION';
+const MARKING_TYPE = 'MARKING_TYPE';
+const IDENTIFIER = 'IDENTIFIER';
+const PRIMARY_COLOUR = 'PRIMARY_COLOUR';
+const SECONDARY_COLOUR = 'SECONDARY_COLOUR';
+
 /**
  * An XLSX validation config for the standard columns of an observation CSV.
  */
@@ -61,6 +78,29 @@ export const critterStandardColumnValidator: IXLSXCSVValidator = {
   columnTypes: ['number', 'string', 'string', 'string', 'string'],
   columnAliases: {
     ITIS_TSN: [TAXON, SPECIES, TSN],
+    DESCRIPTION: [COMMENT],
+    ALIAS: [NICKNAME]
+  }
+};
+
+/**
+ * An XLSX validation config for the standard columns of a capture CSV.
+ */
+export const captureStandardColumnValidator: IXLSXCSVValidator = {
+  columnNames: [
+    ALIAS,
+    CAPTURE_DATE,
+    CAPTURE_TIME,
+    CAPTURE_LATITUDE,
+    CAPTURE_LONGITUDE,
+    RELEASE_DATE,
+    RELEASE_TIME,
+    RELEASE_LATITUDE,
+    RELEASE_LONGITUDE,
+    DESCRIPTION
+  ],
+  columnTypes: ['string', 'date', 'string', 'number', 'number', 'date', 'string', 'number', 'number', 'string'],
+  columnAliases: {
     DESCRIPTION: [COMMENT],
     ALIAS: [NICKNAME]
   }
@@ -98,8 +138,10 @@ export const generateCellValueGetter = <T = any /* Temp default*/>(...headers: s
   };
 };
 
+// Row cell value getters. Attempt to retrive a cell value from a list of known column headers.
+
 /**
- * Row cell value getters. Attempt to retrive a cell value from a list of known column headers.
+ * Generic getters
  *
  */
 export const getTsnFromRow = generateCellValueGetter(ITIS_TSN, TSN, TAXON, SPECIES);
@@ -116,8 +158,46 @@ export const getLongitudeFromRow = generateCellValueGetter(LONGITUDE, LONG, LON,
 
 export const getDescriptionFromRow = generateCellValueGetter<string>(DESCRIPTION, COMMENT);
 
+/**
+ * Critter getters
+ *
+ */
 export const getAliasFromRow = generateCellValueGetter<string>(ALIAS, NICKNAME);
 
 export const getWlhIdFromRow = generateCellValueGetter<string>(WLH_ID, WILDLIFE_HEALTH_ID);
 
 export const getSexFromRow = generateCellValueGetter<string>(SEX);
+
+/**
+ * Capture getters
+ *
+ */
+export const getCaptureDateFromRow = generateCellValueGetter<string>(CAPTURE_DATE);
+
+export const getCaptureTimeFromRow = generateCellValueGetter<string>(CAPTURE_TIME);
+
+export const getCaptureLatitudeFromRow = generateCellValueGetter<number>(CAPTURE_LATITUDE);
+
+export const getCaptureLongitudeFromRow = generateCellValueGetter<number>(CAPTURE_LONGITUDE);
+
+export const getReleaseDateFromRow = generateCellValueGetter<string>(CAPTURE_DATE);
+
+export const getReleaseTimeFromRow = generateCellValueGetter<string>(CAPTURE_TIME);
+
+export const getReleaseLatitudeFromRow = generateCellValueGetter<number>(CAPTURE_LATITUDE);
+
+export const getReleaseLongitudeFromRow = generateCellValueGetter<number>(CAPTURE_LONGITUDE);
+
+/**
+ * Marking getters
+ *
+ */
+export const getMarkingBodyPositionFromRow = generateCellValueGetter<string>(BODY_POSITION);
+
+export const getMarkingTypeFromRow = generateCellValueGetter<string>(MARKING_TYPE);
+
+export const getMarkingIdentifierFromRow = generateCellValueGetter<string>(IDENTIFIER);
+
+export const getMarkingPrimaryColourFromRow = generateCellValueGetter<string>(PRIMARY_COLOUR);
+
+export const getMarkingSecondaryColourFromRow = generateCellValueGetter<string>(SECONDARY_COLOUR);

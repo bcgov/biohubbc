@@ -48,6 +48,19 @@ export interface ICapture {
   release_comment: string;
 }
 
+export interface ICreateCapture {
+  critter_id: string;
+  capture_method_id?: string;
+  capture_location: ILocation;
+  release_location?: ILocation;
+  capture_date: string;
+  capture_time?: string | null;
+  release_date?: string | null;
+  release_time?: string | null;
+  capture_comment?: string | null;
+  release_comment?: string | null;
+}
+
 export interface IMortality {
   mortality_id?: string;
   critter_id: string;
@@ -485,6 +498,18 @@ export class CritterbaseService {
    */
   async findTaxonCollectionUnits(tsn: string): Promise<ICollectionUnitWithCategory[]> {
     const response = await this.axiosInstance.get(`/xref/taxon-collection-units?tsn=${tsn}`);
+
+    return response.data;
+  }
+
+  /**
+   * Find collection units by tsn. Includes hierarchies.
+   *
+   * @async
+   * @returns {Promise<ICapture>} Capture
+   */
+  async createCapture(capture: ICreateCapture): Promise<ICapture> {
+    const response = await this.axiosInstance.post(`/captures/create`, { capture });
 
     return response.data;
   }
