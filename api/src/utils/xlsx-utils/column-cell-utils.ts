@@ -53,6 +53,7 @@ const RELEASE_LONGITUDE = 'CAPTURE_LONGITUDE';
 // Marking headers
 const BODY_POSITION = 'BODY_POSITION';
 const MARKING_TYPE = 'MARKING_TYPE';
+const TYPE = 'TYPE';
 const IDENTIFIER = 'IDENTIFIER';
 const PRIMARY_COLOUR = 'PRIMARY_COLOUR';
 const SECONDARY_COLOUR = 'SECONDARY_COLOUR';
@@ -101,8 +102,31 @@ export const captureStandardColumnValidator: IXLSXCSVValidator = {
   ],
   columnTypes: ['string', 'date', 'string', 'number', 'number', 'date', 'string', 'number', 'number', 'string'],
   columnAliases: {
-    DESCRIPTION: [COMMENT],
-    ALIAS: [NICKNAME]
+    ALIAS: [NICKNAME],
+    DESCRIPTION: [COMMENT]
+  }
+};
+
+/**
+ * An XLSX validation config for the standard columns of a marking CSV.
+ */
+export const markingStandardColumnValidator: IXLSXCSVValidator = {
+  columnNames: [
+    ALIAS,
+    CAPTURE_DATE,
+    CAPTURE_TIME,
+    BODY_POSITION,
+    MARKING_TYPE,
+    IDENTIFIER,
+    PRIMARY_COLOUR,
+    SECONDARY_COLOUR,
+    DESCRIPTION
+  ],
+  columnTypes: ['date', 'string', 'string', 'string', 'string', 'string', 'string', 'string'],
+  columnAliases: {
+    ALIAS: [NICKNAME],
+    MARKING_TYPE: [TYPE],
+    DESCRIPTION: [COMMENT]
   }
 };
 

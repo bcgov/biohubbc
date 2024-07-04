@@ -85,16 +85,17 @@ export class CSVImportStrategy<ValidatedRow, PartialRow = Partial<ValidatedRow>>
    * Import the CSV file
    *
    * @async
-   * @param {MediaFile} csvFile - CSV MediaFile
-   * @returns {Promise<unknown>} [TODO:description]
+   * @template T - Return type of insert method
+   * @param {MediaFile} csvFile - File to import
+   * @returns {Promise<T>} Insert return type
    */
-  async import(csvFile: MediaFile) {
+  async import<T>(csvFile: MediaFile): Promise<T> {
     // Get the worksheet from the CSV
     const worksheet = this._getWorksheet(csvFile);
 
     // Validate the standard columns and the data of the CSV
     const parsedData = await this._validate(worksheet);
 
-    return this.importCsvService.insert(parsedData);
+    return this.importCsvService.insert<T>(parsedData);
   }
 }

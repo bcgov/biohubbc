@@ -38,7 +38,7 @@ export interface CSVImportService<ValidatedRow, PartialRow> {
    * @param {ValidatedRows[]} rows - Validated CSV rows
    * @returns {Promise<unknown>}
    */
-  insert(rows: ValidatedRow[]): Promise<unknown>;
+  insert<T>(rows: ValidatedRow[]): Promise<T>;
 }
 
 /**
