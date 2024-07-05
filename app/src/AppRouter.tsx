@@ -7,6 +7,7 @@ import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter'
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
 import SpeciesStandardsPage from 'features/standards/SpeciesStandardsPage';
+import SummaryRouter from 'features/summary/SummaryRouter';
 import BaseLayout from 'layouts/BaseLayout';
 import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
@@ -55,7 +56,17 @@ const AppRouter: React.FC = () => {
         </BaseLayout>
       </RouteWithTitle>
 
-      <Redirect exact from="/admin" to="/admin/projects" />
+      <Redirect exact from="/admin" to="/admin/summary" />
+
+      <RouteWithTitle path="/admin/summary" title={getTitle('Summary')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <CodesContextProvider>
+              <SummaryRouter />
+            </CodesContextProvider>
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
 
       <RouteWithTitle path="/admin/projects" title={getTitle('Projects')}>
         <BaseLayout>

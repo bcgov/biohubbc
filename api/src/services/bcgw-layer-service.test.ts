@@ -11,7 +11,7 @@ import {
   BcgwWildlifeManagementUnitsLayer,
   RegionDetails
 } from './bcgw-layer-service';
-import { WebFeatureService } from './geo-service';
+import { Srid3005, WebFeatureService } from './geo-service';
 import { PostgisService } from './postgis-service';
 
 chai.use(sinonChai);
@@ -641,6 +641,57 @@ describe('BcgwLayerService', () => {
         { regionName: 'Region 1', sourceLayer: BcgwWildlifeManagementUnitsLayer },
         { regionName: 'Region 2', sourceLayer: BcgwWildlifeManagementUnitsLayer }
       ]);
+    });
+  });
+
+  describe('getIntersectingNrmRegionsFromFeatures', () => {
+    it('should return unique list of NRM region names', async () => {
+      const mockDbConnection = getMockDBConnection();
+      const service = new BcgwLayerService();
+
+      const featureA: Feature = {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
+            [
+              [0, 0],
+              [1, 0],
+              [1, 1],
+              [0, 1],
+              [0, 0]
+            ]
+          ]
+        },
+        properties: {}
+      };
+
+      const featureB: Feature = {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[[0, 0]]]
+        },
+        properties: {}
+      };
+
+      const mockGetGeoJsonString = sinon.stub(PostgisService.prototype, 'getGeoJsonGeometryAsWkt');
+      const mockGetNrmRegionNames = sinon.stub(service, 'getNrmRegionNames');
+
+      mockGetGeoJsonString.onFirstCall().resolves('A');
+      mockGetGeoJsonString.onSecondCall().resolves('B');
+      mockGetNrmRegionNames.onFirstCall().resolves(['Cariboo']);
+      mockGetNrmRegionNames.onSecondCall().resolves(['South', 'Cariboo']);
+
+      const regions = await service.getIntersectingNrmRegionNamesFromFeatures([featureA, featureB], mockDbConnection);
+
+      expect(mockGetGeoJsonString.firstCall.calledWithExactly(featureA.geometry, Srid3005)).to.be.true;
+      expect(mockGetGeoJsonString.secondCall.calledWithExactly(featureB.geometry, Srid3005)).to.be.true;
+
+      expect(mockGetNrmRegionNames.firstCall.calledWithExactly('A')).to.be.true;
+      expect(mockGetNrmRegionNames.secondCall.calledWithExactly('B')).to.be.true;
+
+      expect(regions).to.eqls(['Cariboo', 'South']);
     });
   });
 });

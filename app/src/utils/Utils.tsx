@@ -1,6 +1,6 @@
 import Typography from '@mui/material/Typography';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
 import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -110,6 +110,24 @@ export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string 
   }
 
   return dateJs.format(dateFormat);
+};
+
+/**
+ * Get a formatted time string.
+ *
+ * @param {DATE_FORMAT} timeFormat
+ * @param {string} timestamp ISO 8601 date string
+ * @return {string} formatted date string, or an empty string if unable to parse the timestamp
+ */
+export const getFormattedTime = (timeFormat: TIME_FORMAT, timestamp: string): string => {
+  const dateJs = dayjs(timestamp);
+
+  if (!dateJs.isValid()) {
+    //date was invalid
+    return '';
+  }
+
+  return dateJs.format(timeFormat);
 };
 
 /**
