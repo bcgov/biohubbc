@@ -3,14 +3,14 @@ import { HTTP400 } from '../errors/http-error';
 import { IPostIUCN, PostProjectObject } from '../models/project-create';
 import { IPutIUCN, PutIUCNData, PutObjectivesData, PutProjectData } from '../models/project-update';
 import {
+  FindProjectsResponse,
   GetAttachmentsData,
   GetIUCNClassificationData,
   GetObjectivesData,
   GetReportAttachmentsData,
   IGetProject,
   IProjectAdvancedFilters,
-  ProjectData,
-  ProjectListData
+  ProjectData
 } from '../models/project-view';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { ProjectUser } from '../repositories/project-participation-repository';
@@ -44,41 +44,43 @@ export class ProjectService extends DBService {
   }
 
   /**
-   * Retrieves the paginated list of all projects that are available to the user.
+   * Retrieves the paginated list of all projects that are available to the user, based on their permissions and
+   * provided filter criteria.
    *
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId
+   * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {IProjectAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {(Promise<(ProjectListData)[]>)}
+   * @return {*}  {(Promise<(FindProjectsResponse)[]>)}
    * @memberof ProjectService
    */
-  async getProjectList(
+  async findProjects(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<ProjectListData[]> {
-    const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields, pagination);
+  ): Promise<FindProjectsResponse[]> {
+    const response = await this.projectRepository.findProjects(isUserAdmin, systemUserId, filterFields, pagination);
 
     return response;
   }
 
   /**
-   * Returns the total count of projects that are visible to the given user.
+   * Retrieves the count of all projects that are available to the user, based on their permissions and provided
+   * filter criteria.
    *
-   * @param {IProjectAdvancedFilters} filterFields
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IProjectAdvancedFilters} filterFields
    * @return {*}  {Promise<number>}
    * @memberof ProjectService
    */
-  async getProjectCount(
-    filterFields: IProjectAdvancedFilters,
+  async findProjectsCount(
     isUserAdmin: boolean,
-    systemUserId: number | null
+    systemUserId: number | null,
+    filterFields: IProjectAdvancedFilters
   ): Promise<number> {
-    return this.projectRepository.getProjectCount(filterFields, isUserAdmin, systemUserId);
+    return this.projectRepository.findProjectsCount(isUserAdmin, systemUserId, filterFields);
   }
 
   /**

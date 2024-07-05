@@ -48,7 +48,7 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
         {critter.animal_id}
       </Typography>
       <Box display="flex" justifyContent="space-between">
-        <Stack direction="row" spacing={2}>
+        <Stack direction="row" spacing={2} sx={{ mr: 2, alignItems: 'center' }}>
           <AnimalAttributeItem
             text={
               <ScientificNameTypography

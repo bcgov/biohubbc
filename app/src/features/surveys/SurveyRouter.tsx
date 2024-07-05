@@ -29,7 +29,7 @@ const SurveyRouter: React.FC = () => {
       />
 
       {/* Survey Page Routes */}
-      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/details" title={getTitle('Surveys')}>
+      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/details" title={getTitle('Survey')}>
         <ProjectRoleRouteGuard
           validProjectPermissions={[
             PROJECT_PERMISSION.COORDINATOR,

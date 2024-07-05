@@ -17,7 +17,7 @@ import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull, getFormattedDate } from 'utils/Utils';
-import SurveyProgressChip from '../components/SurveyProgressChip';
+import { SurveyProgressChip } from '../components/SurveyProgressChip';
 
 const pageSizeOptions = [10, 25, 50];
 

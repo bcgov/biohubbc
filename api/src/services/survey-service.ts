@@ -3,6 +3,7 @@ import { IDBConnection } from '../database/db';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PostSurveyLocationData, PutPartnershipsData, PutSurveyObject } from '../models/survey-update';
 import {
+  FindSurveysResponse,
   GetAncillarySpeciesData,
   GetAttachmentsData,
   GetFocalSpeciesData,
@@ -12,6 +13,7 @@ import {
   GetSurveyFundingSourceData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
+  ISurveyAdvancedFilters,
   ISurveyPartnerships,
   SurveyObject,
   SurveySupplementaryData
@@ -326,6 +328,44 @@ export class SurveyService extends DBService {
    */
   async getSurveyCountByProjectId(projectId: number): Promise<number> {
     return this.surveyRepository.getSurveyCountByProjectId(projectId);
+  }
+
+  /**
+   * Retrieves the paginated list of all surveys that are available to the user, based on their permissions and provided
+   * filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @returns {*} {Promise<{id: number}[]>}
+   * @memberof SurveyRepository
+   */
+  async findSurveys(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<FindSurveysResponse[]> {
+    return this.surveyRepository.findSurveys(isUserAdmin, systemUserId, filterFields, pagination);
+  }
+
+  /**
+   * Retrieves the count of all surveys that are available to the user, based on their permissions and provided filter
+   * criteria.
+   *
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyService
+   */
+  async findSurveysCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters
+  ): Promise<number> {
+    return this.surveyRepository.findSurveysCount(isUserAdmin, systemUserId, filterFields);
   }
 
   /**
