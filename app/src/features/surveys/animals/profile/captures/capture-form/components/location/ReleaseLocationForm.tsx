@@ -15,7 +15,7 @@ import { CaptureLocationMapControl } from './CaptureLocationMapControl';
  * @return {*}
  */
 export const ReleaseLocationForm = <FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest>() => {
-  const { values } = useFormikContext<FormikValuesType>();
+  const { values, setFieldValue } = useFormikContext<FormikValuesType>();
 
   const [isReleaseSameAsCapture, setIsReleaseSameAsCapture] = useState<boolean>(
     !(values.capture.release_location && values.capture.capture_location) ||
@@ -30,7 +30,12 @@ export const ReleaseLocationForm = <FormikValuesType extends ICreateCaptureReque
       <RadioGroup
         aria-label="release-location"
         value={isReleaseSameAsCapture}
-        onChange={(event) => setIsReleaseSameAsCapture(event.target.value === 'true')}>
+        onChange={(event) => {
+          if (event.target.value) {
+            setFieldValue('capture.release_location', values.capture.capture_location);
+          }
+          setIsReleaseSameAsCapture(event.target.value === 'true');
+        }}>
         <FormControlLabel value="true" control={<Radio color="primary" />} label="Yes" />
         <FormControlLabel value="false" control={<Radio color="primary" />} label="No" />
       </RadioGroup>

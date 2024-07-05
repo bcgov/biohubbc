@@ -118,17 +118,12 @@ export const AnimalCaptureContainer = () => {
         }}
       />
       {capturesWithLocation.length < captures.length && (
-        <Stack gap={1} direction="row" px={3} py={2} bgcolor={orange[50]}>
+        <Stack gap={1} direction="row" alignItems="center" display="flex" px={3} py={2} bgcolor={orange[50]}>
           <Icon path={mdiAlertRhombusOutline} size={1} color={orange[800]} />
-          <Box>
-            <Typography fontWeight={700} color={orange[900]}>
-              Missing Capture Location
-            </Typography>
-            <Typography color={orange[800]} variant="body2" mt={0.5}>
-              Not all captures are visible on the map due to missing location data. Please update these captures with
-              location information.
-            </Typography>
-          </Box>
+          <Typography color={orange[800]} variant="body2">
+            Not all captures are visible on the map due to missing location data. Please update these captures with
+            location information.
+          </Typography>
         </Stack>
       )}
       {captures.length > 0 && <AnimalCapturesMap captures={capturesWithLocation} isLoading={false} />}
