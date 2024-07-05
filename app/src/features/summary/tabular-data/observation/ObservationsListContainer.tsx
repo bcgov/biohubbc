@@ -24,6 +24,7 @@ import {
 } from './ObservationsListFilterForm';
 
 // Supported URL parameters
+// Note: Prefix 'o_' is used to avoid conflicts with similar query params from other components
 type ObservationDataTableURLParams = {
   // filter
   o_keyword?: string;

@@ -21,6 +21,7 @@ import TelemetryListFilterForm, {
 } from './TelemetryListFilterForm';
 
 // Supported URL parameters
+// Note: Prefix 't_' is used to avoid conflicts with similar query params from other components
 type TelemetryDataTableURLParams = {
   // filter
   t_itis_tsn?: string;

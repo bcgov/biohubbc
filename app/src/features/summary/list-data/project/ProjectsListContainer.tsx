@@ -28,6 +28,7 @@ import ProjectsListFilterForm, {
 } from './ProjectsListFilterForm';
 
 // Supported URL parameters
+// Note: Prefix 'p_' is used to avoid conflicts with similar query params from other components
 type ProjectDataTableURLParams = {
   // filter
   p_keyword?: string;

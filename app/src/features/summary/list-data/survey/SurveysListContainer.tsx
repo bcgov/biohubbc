@@ -31,6 +31,7 @@ import SurveysListFilterForm, {
 } from './SurveysListFilterForm';
 
 // Supported URL parameters
+// Note: Prefix 's_' is used to avoid conflicts with similar query params from other components
 type SurveyDataTableURLParams = {
   // filter
   s_keyword?: string;

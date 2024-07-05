@@ -19,6 +19,7 @@ import AnimalsListFilterForm, {
 } from './AnimalsListFilterForm';
 
 // Supported URL parameters
+// Note: Prefix 'a_' is used to avoid conflicts with similar query params from other components
 type AnimalDataTableURLParams = {
   // filter
   a_itis_tsn?: string;
