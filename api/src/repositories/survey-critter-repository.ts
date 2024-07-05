@@ -39,6 +39,27 @@ export class SurveyCritterRepository extends BaseRepository {
   }
 
   /**
+   * Get critter in survey
+   *
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @return {*}  {Promise<SurveyCritterRecord>}
+   * @memberof SurveyCritterRepository
+   */
+  async getCritterInSurvey(surveyId: number, critterId: number): Promise<SurveyCritterRecord | undefined> {
+    defaultLog.debug({ label: 'getCritter', critterId });
+
+    const queryBuilder = getKnex().table('critter').select().where({
+      survey_id: surveyId,
+      critter_id: critterId
+    });
+
+    const response = await this.connection.knex(queryBuilder);
+
+    return response.rows[0];
+  }
+
+  /**
    * Add critters to survey.
    *
    * @param {number} surveyId

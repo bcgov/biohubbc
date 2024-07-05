@@ -1,16 +1,18 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/http-error';
-import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ImportCrittersService } from '../../../../../../services/import-services/critter/import-critters-service';
-import { CSVImportStrategy } from '../../../../../../services/import-services/csv-import-strategy';
-import { scanFileForVirus } from '../../../../../../utils/file-utils';
-import { getLogger } from '../../../../../../utils/logger';
-import { parseMulterFile } from '../../../../../../utils/media/media-utils';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../../database/db';
+import { ApiGeneralError } from '../../../../../../../../errors/api-error';
+import { HTTP400 } from '../../../../../../../../errors/http-error';
+import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { ImportCapturesService } from '../../../../../../../../services/import-services/capture/import-captures-service';
+import { CSVImportStrategy } from '../../../../../../../../services/import-services/csv-import-strategy';
+import { SurveyCritterService } from '../../../../../../../../services/survey-critter-service';
+import { scanFileForVirus } from '../../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../../utils/logger';
+import { parseMulterFile } from '../../../../../../../../utils/media/media-utils';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/critters/import');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/{critterId}/captures/import');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -32,7 +34,7 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Upload survey critters csv file',
+  description: 'Upload Critterbase CSV captures file',
   tags: ['observations'],
   security: [
     {
@@ -49,10 +51,15 @@ POST.apiDoc = {
       in: 'path',
       name: 'surveyId',
       required: true
+    },
+    {
+      in: 'path',
+      name: 'critterId',
+      required: true
     }
   ],
   requestBody: {
-    description: 'Survey critters csv file to import',
+    description: 'Critterbase CSV capture file to import',
     content: {
       'multipart/form-data': {
         schema: {
@@ -61,7 +68,7 @@ POST.apiDoc = {
           required: ['media'],
           properties: {
             media: {
-              description: 'Survey critters csv import file.',
+              description: 'Critterbase CSV Capture import file.',
               type: 'string',
               format: 'binary'
             }
@@ -72,23 +79,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Import OK',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              survey_critter_ids: {
-                type: 'array',
-                items: {
-                  type: 'number'
-                }
-              }
-            }
-          }
-        }
-      }
+      description: 'Import OK'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -109,13 +100,15 @@ POST.apiDoc = {
 };
 
 /**
- * Imports a `Critter CSV` which adds critters to `survey_critter` table and creates critters in Critterbase.
+ * Imports a `Critterbase Capture CSV` which bulk adds captures to Critterbase.
  *
- * @return {*}  {RequestHandler}
+ * @return {*} {RequestHandler}
  */
 export function importCsv(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
+    const critterId = Number(req.params.critterId);
+
     const rawFiles = req.files as Express.Multer.File[];
     const rawFile = rawFiles[0];
 
@@ -139,20 +132,27 @@ export function importCsv(): RequestHandler {
         throw new HTTP400('Malicious content detected, import cancelled.');
       }
 
+      const surveyCritterService = new SurveyCritterService(connection);
+
+      // Fetch the survey critter
+      const surveyCritter = await surveyCritterService.getCritterInSurvey(surveyId, critterId);
+
+      if (!surveyCritter) {
+        throw new ApiGeneralError(`Unable to find critter in survey.`, [{ surveyId, critterId }]);
+      }
+
       // Critter CSV import service - child of CSVImportStrategy
-      const importCsvCritters = new ImportCrittersService(connection, surveyId);
+      const importCsvCritters = new ImportCapturesService(connection, surveyCritter.critterbase_critter_id);
 
       // CSV import strategy with injected import service - parent
       const csvImportStrategry = new CSVImportStrategy(importCsvCritters);
 
       // Import CSV data with strategy class
-      const surveyCritterIds = await csvImportStrategry.import(parseMulterFile(rawFile));
-
-      defaultLog.info({ label: 'importCritterCsv', message: 'result', survey_critter_ids: surveyCritterIds });
+      await csvImportStrategry.import(parseMulterFile(rawFile));
 
       await connection.commit();
 
-      return res.status(200).json({ survey_critter_ids: surveyCritterIds });
+      return res.status(200);
     } catch (error) {
       defaultLog.error({ label: 'importCritterCsv', message: 'error', error });
       await connection.rollback();

@@ -67,7 +67,7 @@ export class ImportMarkingService extends DBService implements CSVImportService<
    * Parse the CSV rows into the Critterbase marking format for validation.
    *
    * @param {Row[]} rows - CSV rows
-   * @returns {PartialCsvMarking[]} CSV captures before validation
+   * @returns {PartialCsvMarking[]} CSV markings before validation
    */
   getRowsToValidate(rows: Row[]): PartialCsvMarking[] {
     return rows.map((row) => ({
@@ -94,13 +94,11 @@ export class ImportMarkingService extends DBService implements CSVImportService<
   }
 
   /**
-   * Insert captures into Critterbase.
+   * Insert markings into Critterbase.
    *
    * @async
    * @param {CsvMarking[]} markings - List of CSV markings to create
-   * @returns {Promise<ICapture[]>} List of created captures
+   * @returns {Promise<ICapture[]>} List of created markings
    */
-  async insert(markings: CsvMarking[]) {
-    //do nothing
-  }
+  async insert(markings: CsvMarking[]) {}
 }

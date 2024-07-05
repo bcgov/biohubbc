@@ -6,12 +6,12 @@ import { z } from 'zod';
  */
 export const CsvCaptureSchema = z.object({
   critter_id: z.string().uuid(),
-  capture_date: z.string(),
-  capture_time: z.string().optional(),
+  capture_date: z.string().date(),
+  capture_time: z.string().time().optional(),
   capture_latitude: z.number(),
   capture_longitude: z.number(),
-  release_date: z.string().optional(),
-  release_time: z.string().optional(),
+  release_date: z.string().date().optional(),
+  release_time: z.string().time().optional(),
   release_latitude: z.number().optional(),
   release_longitude: z.number().optional(),
   capture_comment: z.string().optional()

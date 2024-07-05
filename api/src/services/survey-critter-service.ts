@@ -36,6 +36,18 @@ export class SurveyCritterService extends DBService {
   }
 
   /**
+   * Get critter from a specific survey
+   *
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @return {*}  {Promise<SurveyCritterRecord | undefined>}
+   * @memberof SurveyCritterService
+   */
+  async getCritterInSurvey(surveyId: number, critterId: number): Promise<SurveyCritterRecord | undefined> {
+    return this.critterRepository.getCritterInSurvey(surveyId, critterId);
+  }
+
+  /**
    * Add a critter to a survey. Does not create anything in the external system.
    *
    * @param {number} surveyId

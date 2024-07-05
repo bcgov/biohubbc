@@ -35,8 +35,9 @@ export class ImportCapturesService extends DBService implements CSVImportService
    */
   critterbaseService: CritterbaseService;
   /**
-   * Critter ID is provided if attempting to bulk import Captures for a known Critter.
-   * One (critter) -> Many (captures)
+   * Critterbase critter id (uuid)
+   *
+   * Provided if attempting to bulk import Captures for a known Critter.
    */
   critterbaseCritterId?: string;
 
@@ -60,14 +61,13 @@ export class ImportCapturesService extends DBService implements CSVImportService
   }
 
   /**
-   * Get the critter ID from row or class state.
+   * Get the critter ID from row or dependency.
    *
    * @param {Row} row - CSV row
    * @returns {string} Critterbase critter Identifier
    */
   getCritterIdFromRow(row: Row): string {
     if (this.critterbaseCritterId) {
-      // Bulk importing captures for a known critter
       return this.critterbaseCritterId;
     }
     // Attempt to retrieve the critter id with the alias and survey ID
