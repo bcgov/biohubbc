@@ -17,6 +17,8 @@ import { CaptureLocationMapControl } from './CaptureLocationMapControl';
 export const ReleaseLocationForm = <FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest>() => {
   const { values, setFieldValue } = useFormikContext<FormikValuesType>();
 
+  // Determine if the release location is the same as the capture location
+  // If the release location is the same as the capture location, we don't need to show the release location map control
   const [isReleaseSameAsCapture, setIsReleaseSameAsCapture] = useState<boolean>(
     !(values.capture.release_location && values.capture.capture_location) ||
       booleanEqual(values.capture.release_location, values.capture.capture_location)
@@ -32,7 +34,8 @@ export const ReleaseLocationForm = <FormikValuesType extends ICreateCaptureReque
         value={isReleaseSameAsCapture}
         onChange={(event) => {
           if (event.target.value) {
-            setFieldValue('capture.release_location', values.capture.capture_location);
+            // Clear the release location if it is the same as the capture location
+            setFieldValue('capture.release_location', null);
           }
           setIsReleaseSameAsCapture(event.target.value === 'true');
         }}>

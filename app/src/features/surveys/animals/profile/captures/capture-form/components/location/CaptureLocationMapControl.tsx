@@ -39,6 +39,8 @@ export interface ICaptureLocationMapControlProps {
 /**
  * Capture location map control component.
  *
+ * This component can be used to record a Point location on a map, for either a capture or release location.
+ *
  * @param {ICaptureLocationMapControlProps} props
  * @return {*}
  */
