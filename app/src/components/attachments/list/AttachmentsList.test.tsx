@@ -77,7 +77,6 @@ describe('AttachmentsList', () => {
                 handleDownload={jest.fn()}
                 handleDelete={jest.fn()}
                 handleViewDetails={jest.fn()}
-                handleRemoveOrResubmit={jest.fn()}
               />
             </SurveyContext.Provider>
           </ProjectContext.Provider>
@@ -117,7 +116,6 @@ describe('AttachmentsList', () => {
                 handleDownload={jest.fn()}
                 handleDelete={jest.fn()}
                 handleViewDetails={jest.fn()}
-                handleRemoveOrResubmit={jest.fn()}
                 emptyStateText="No shared files found"
               />
             </SurveyContext.Provider>
@@ -158,7 +156,6 @@ describe('AttachmentsList', () => {
                 handleDownload={jest.fn()}
                 handleDelete={jest.fn()}
                 handleViewDetails={jest.fn()}
-                handleRemoveOrResubmit={jest.fn()}
               />
             </SurveyContext.Provider>
           </ProjectContext.Provider>
@@ -204,7 +201,6 @@ describe('AttachmentsList', () => {
                 handleDownload={handleDownload}
                 handleDelete={jest.fn()}
                 handleViewDetails={jest.fn()}
-                handleRemoveOrResubmit={jest.fn()}
               />
             </SurveyContext.Provider>
           </ProjectContext.Provider>
@@ -254,7 +250,6 @@ describe('AttachmentsList', () => {
                 handleDownload={handleDownload}
                 handleDelete={jest.fn()}
                 handleViewDetails={jest.fn()}
-                handleRemoveOrResubmit={jest.fn()}
               />
             </SurveyContext.Provider>
           </ProjectContext.Provider>
