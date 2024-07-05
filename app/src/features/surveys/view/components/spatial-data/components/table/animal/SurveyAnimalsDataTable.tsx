@@ -3,10 +3,10 @@ import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { SurveyContext } from 'contexts/surveyContext';
+import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
+import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useContext } from 'react';
 
 // Set height so we the skeleton loader will match table rows
 const rowHeight = 52;
@@ -55,7 +55,8 @@ const SkeletonRow = () => (
 );
 
 const SurveyAnimalsDataTable = (props: ISurveySpatialTelemetryDataTableProps) => {
-  const surveyContext = useContext(SurveyContext);
+  const surveyContext = useSurveyContext();
+
   const critterbaseApi = useCritterbaseApi();
 
   const animals = surveyContext.critterDataLoader.data ?? [];
@@ -86,12 +87,7 @@ const SurveyAnimalsDataTable = (props: ISurveySpatialTelemetryDataTableProps) =>
       field: 'scientificName',
       headerName: 'Species',
       flex: 1,
-      renderCell: (params) =>
-        params.value.split(' ').length > 1 ? (
-          <span style={{ fontStyle: 'italic' }}>{params.value}</span>
-        ) : (
-          <span>{params.value}</span>
-        )
+      renderCell: (params) => <ScientificNameTypography name={params.value} />
     }
   ];
 

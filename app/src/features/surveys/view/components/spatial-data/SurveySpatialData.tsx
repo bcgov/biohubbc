@@ -4,35 +4,45 @@ import Paper from '@mui/material/Paper';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/spatial';
-import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { TelemetryDataContext } from 'contexts/telemetryDataContext';
 import dayjs from 'dayjs';
 import { Position } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
+import {
+  useCodesContext,
+  useObservationsContext,
+  useSurveyContext,
+  useTaxonomyContext,
+  useTelemetryDataContext
+} from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { ITelemetry } from 'hooks/useTelemetryApi';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { getCodesName, getFormattedDate } from 'utils/Utils';
-import { IAnimalDeployment } from '../../survey-animals/telemetry-device/device';
 import SurveyMap, { ISurveyMapPoint, ISurveyMapPointMetadata, ISurveyMapSupplementaryLayer } from '../../SurveyMap';
 import SurveyMapPopup from '../../SurveyMapPopup';
 import SurveyMapTooltip from '../../SurveyMapTooltip';
-import SurveyAnimalsDataTable from './SurveyAnimalsDataTable';
-import SurveySpatialObservationDataTable from './SurveySpatialObservationDataTable';
-import SurveySpatialTelemetryDataTable from './SurveySpatialTelemetryDataTable';
-import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './SurveySpatialToolbar';
+import { IAnimalDeployment } from '../../survey-animals/telemetry-device/device';
+import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './components/SurveySpatialToolbar';
+import SurveyAnimalsDataTable from './components/table/animal/SurveyAnimalsDataTable';
+import SurveySpatialObservationDataTable from './components/table/observation/SurveySpatialObservationDataTable';
+import SurveySpatialTelemetryDataTable from './components/table/telemetry/SurveySpatialTelemetryDataTable';
 
+/**
+ * Returns a map and data table with toggle buttons for selecting which data to show
+ *
+ * @returns
+ */
 const SurveySpatialData = () => {
   const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
 
   const observationsContext = useObservationsContext();
-  const telemetryContext = useContext(TelemetryDataContext);
+  const telemetryContext = useTelemetryDataContext();
   const taxonomyContext = useTaxonomyContext();
-  const surveyContext = useContext(SurveyContext);
-  const codesContext = useContext(CodesContext);
+  const surveyContext = useSurveyContext();
+  const codesContext = useCodesContext();
+
   const { projectId, surveyId } = useContext(SurveyContext);
 
   const biohubApi = useBiohubApi();
@@ -206,7 +216,7 @@ const SurveySpatialData = () => {
       surveyContext.critterDataLoader.isLoading;
   }
 
-  if (activeView === SurveySpatialDatasetViewEnum.MARKED_ANIMALS) {
+  if (activeView === SurveySpatialDatasetViewEnum.ANIMALS) {
     isLoading = codesContext.codesDataLoader.isLoading || surveyContext.critterDataLoader.isLoading;
   }
 
@@ -236,13 +246,13 @@ const SurveySpatialData = () => {
             mapPoints: telemetryPoints
           }
         ];
-      case SurveySpatialDatasetViewEnum.MARKED_ANIMALS:
+      case SurveySpatialDatasetViewEnum.ANIMALS:
         return [
           {
             layerName: 'Animal Captures',
             layerColors: {
-              fillColor: SURVEY_MAP_LAYER_COLOURS.MARKED_ANIMAL_COLOUR,
-              color: SURVEY_MAP_LAYER_COLOURS.MARKED_ANIMAL_COLOUR
+              fillColor: SURVEY_MAP_LAYER_COLOURS.ANIMAL_COLOUR,
+              color: SURVEY_MAP_LAYER_COLOURS.ANIMAL_COLOUR
             },
             popupRecordTitle: 'Animal Capture',
             // TODO: FIX CRITTERBASE ENDPOINT TO INCLUDE CAPTURES FOR ALL SURVEY ANIMALS, THEN INCLUDE AS MAPPOINTS
@@ -351,6 +361,7 @@ const SurveySpatialData = () => {
     };
   });
 
+  // Only show sample sites when viewing observations
   const staticLayers =
     activeView === 'OBSERVATIONS'
       ? [sampleSitesLayer, studyAreaLayer, ...supplementaryLayer]
@@ -371,7 +382,7 @@ const SurveySpatialData = () => {
           },
           {
             label: `Animals (${surveyContext.critterDataLoader.data?.length ?? 0})`,
-            value: SurveySpatialDatasetViewEnum.MARKED_ANIMALS,
+            value: SurveySpatialDatasetViewEnum.ANIMALS,
             icon: mdiPaw,
             isLoading: false
           },
@@ -398,7 +409,7 @@ const SurveySpatialData = () => {
           <SurveySpatialTelemetryDataTable isLoading={isLoading} />
         )}
 
-        {activeView === SurveySpatialDatasetViewEnum.MARKED_ANIMALS && <SurveyAnimalsDataTable isLoading={isLoading} />}
+        {activeView === SurveySpatialDatasetViewEnum.ANIMALS && <SurveyAnimalsDataTable isLoading={isLoading} />}
       </Box>
     </Paper>
   );

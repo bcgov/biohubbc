@@ -19,7 +19,7 @@ import { Link as RouterLink } from 'react-router-dom';
 export enum SurveySpatialDatasetViewEnum {
   OBSERVATIONS = 'OBSERVATIONS',
   TELEMETRY = 'TELEMETRY',
-  MARKED_ANIMALS = 'MARKED_ANIMALS'
+  ANIMALS = 'ANIMALS'
 }
 
 interface ISurveySpatialDatasetView {

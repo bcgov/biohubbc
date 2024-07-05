@@ -1,8 +1,7 @@
-import grey from '@mui/material/colors/grey';
-import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import { GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { SkeletonRow } from 'components/loading/SkeletonLoaders';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -30,40 +29,6 @@ interface IObservationTableRow {
 interface ISurveySpatialObservationDataTableProps {
   isLoading: boolean;
 }
-
-// Skeleton Loader template
-const SkeletonRow = () => (
-  <Stack
-    flexDirection="row"
-    alignItems="center"
-    gap={2}
-    py={2}
-    px={1}
-    height={rowHeight}
-    overflow="hidden"
-    sx={{
-      borderBottom: '1px solid ' + grey[300],
-      '&:last-of-type': {
-        borderBottom: 'none'
-      },
-      '& .MuiSkeleton-root': {
-        flex: '1 1 auto'
-      },
-      '& *': {
-        fontSize: '0.875rem'
-      }
-    }}>
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-  </Stack>
-);
 
 const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataTableProps) => {
   const biohubApi = useBiohubApi();

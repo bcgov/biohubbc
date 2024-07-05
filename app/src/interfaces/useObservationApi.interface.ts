@@ -13,11 +13,13 @@ export interface IGetSurveyObservationsResponse {
   pagination: ApiPaginationResponseParams;
 }
 
+export interface IGetSurveyObservationsGeometryObject {
+  survey_observation_id: number;
+  geometry: GeoJSON.Point;
+}
+
 export interface IGetSurveyObservationsGeometryResponse {
-  surveyObservationsGeometry: {
-    survey_observation_id: number;
-    geometry: GeoJSON.Point;
-  }[];
+  surveyObservationsGeometry: IGetSurveyObservationsGeometryObject[];
   supplementaryObservationData: SupplementaryObservationData;
 }
 

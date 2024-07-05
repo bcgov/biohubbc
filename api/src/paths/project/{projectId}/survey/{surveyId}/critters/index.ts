@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { critterSchema } from '../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
@@ -81,12 +82,9 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            title: 'Bulk creation response object',
+            title: 'Array of critters in survey',
             type: 'array',
-            items: {
-              title: 'Default critter response',
-              type: 'object'
-            }
+            items: critterSchema
           }
         }
       }
