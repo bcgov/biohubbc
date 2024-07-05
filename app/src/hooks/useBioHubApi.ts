@@ -18,8 +18,8 @@ import useSpatialApi from './api/useSpatialApi';
 import useStandardsApi from './api/useStandardsApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
-import useTelemetryApi from './api/useTelemetryApi';
 import useTechniqueApi from './api/useTechniqueApi';
+import useTelemetryApi from './api/useTelemetryApi';
 import useUserApi from './api/useUserApi';
 
 /**
