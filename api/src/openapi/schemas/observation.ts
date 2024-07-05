@@ -1,8 +1,7 @@
 import { OpenAPIV3 } from 'openapi-types';
 import { paginationResponseSchema } from './pagination';
 
-export const surveyObservationSchema: OpenAPIV3.SchemaObject = {
-  description: 'Survey get response object, for view purposes',
+export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
   required: ['surveyObservations', 'supplementaryObservationData', 'pagination'],
@@ -202,7 +201,7 @@ export const surveyObservationSchema: OpenAPIV3.SchemaObject = {
           minimum: 0
         },
         qualitative_measurements: {
-          description: 'All qualitative measurement type definitions for the survey.',
+          description: 'All qualitative measurement type definitions for the observations.',
           type: 'array',
           items: {
             description: 'A qualitative measurement type definition, with array of valid/accepted options',
@@ -253,7 +252,7 @@ export const surveyObservationSchema: OpenAPIV3.SchemaObject = {
           }
         },
         quantitative_measurements: {
-          description: 'All quantitative measurement type definitions for the survey.',
+          description: 'All quantitative measurement type definitions for the observations.',
           type: 'array',
           items: {
             description: 'A quantitative measurement type definition, with possible min/max constraint.',
@@ -299,7 +298,7 @@ export const surveyObservationSchema: OpenAPIV3.SchemaObject = {
           }
         },
         qualitative_environments: {
-          description: 'All qualitative environment type definitions for the survey.',
+          description: 'All qualitative environment type definitions for the observations.',
           type: 'array',
           items: {
             description: 'A qualitative environment type definition, with array of valid/accepted options',
@@ -348,7 +347,7 @@ export const surveyObservationSchema: OpenAPIV3.SchemaObject = {
           }
         },
         quantitative_environments: {
-          description: 'All quantitative environment type definitions for the survey.',
+          description: 'All quantitative environment type definitions for the observations.',
           type: 'array',
           items: {
             description: 'A quantitative environment type definition, with possible min/max constraint.',

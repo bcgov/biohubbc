@@ -4,7 +4,7 @@ import { IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.inter
 import useFundingSourceApi from './useFundingSourceApi';
 
 describe('useFundingSourceApi', () => {
-  let mock: any;
+  let mock: MockAdapter;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);

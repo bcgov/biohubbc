@@ -2,9 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { surveyObservationSchema } from '../../../../../../openapi/schemas/observation';
+import { observervationsWithSubcountDataSchema } from '../../../../../../openapi/schemas/observation';
 import { paginationRequestQueryParamSchema } from '../../../../../../openapi/schemas/pagination';
-import { surveyTelemetrySchema } from '../../../../../../openapi/schemas/telemetry';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { CritterbaseService } from '../../../../../../services/critterbase-service';
 import { InsertUpdateObservations, ObservationService } from '../../../../../../services/observation-service';
@@ -90,14 +89,7 @@ GET.apiDoc = {
       description: 'Survey data get response.',
       content: {
         'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              observations: { type: 'array', items: surveyObservationSchema },
-              telemetry: { type: 'array', items: surveyTelemetrySchema },
-              animals: { type: 'array', items: surveyTelemetrySchema }
-            }
-          }
+          schema: observervationsWithSubcountDataSchema
         }
       }
     },

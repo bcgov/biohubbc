@@ -28,7 +28,7 @@ import React, { useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import SurveyProgressChip from '../components/SurveyProgressChip';
+import { SurveyProgressChip } from '../components/SurveyProgressChip';
 
 /**
  * Survey header for a single-survey view.

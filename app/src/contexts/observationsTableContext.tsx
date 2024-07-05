@@ -906,7 +906,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       survey_sample_method_id: null as unknown as number,
       survey_sample_period_id: null,
       count: null as unknown as number,
-      observation_date: null as unknown as Date,
+      observation_date: '',
       observation_time: '',
       latitude: null as unknown as number,
       longitude: null as unknown as number,

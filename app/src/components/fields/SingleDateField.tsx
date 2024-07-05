@@ -80,14 +80,16 @@ const SingleDateField: React.FC<IDateProps> = (props) => {
         value={formattedDateValue}
         onChange={(value) => {
           other?.onChange?.(value);
-          if (!value || value === 'Invalid Date') {
-            // The creation input value will be 'Invalid Date' when the date field is cleared (empty), and will
-            // contain an actual date string value if the field is not empty but is invalid.
-            setFieldValue(name, null);
-            return;
-          }
 
-          setFieldValue(name, dayjs(value).format(DATE_FORMAT.ShortDateFormat));
+          const date = dayjs(value);
+
+          if (date.isValid()) {
+            // If value is null or valid, set the field value accordingly
+            setFieldValue(name, date.format(DATE_FORMAT.ShortDateFormat));
+          } else {
+            // If value is invalid, set the field value to null
+            setFieldValue(name, '');
+          }
         }}
       />
     </LocalizationProvider>

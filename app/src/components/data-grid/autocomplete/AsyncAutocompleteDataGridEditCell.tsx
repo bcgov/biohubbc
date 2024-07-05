@@ -212,13 +212,7 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
             {...renderProps}
             key={`${renderOption.tsn}-${renderOption.label}`}>
             <Box py={1} width="100%">
-              <SpeciesCard
-                commonNames={renderOption.commonNames}
-                scientificName={renderOption.label}
-                tsn={renderOption.tsn}
-                rank={renderOption.rank}
-                kingdom={renderOption.kingdom}
-              />
+              <SpeciesCard taxon={renderOption} />
             </Box>
           </Box>
         );
