@@ -5,20 +5,24 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
-import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import green from '@mui/material/colors/green';
+import grey from '@mui/material/colors/grey';
+import dayjs from 'dayjs';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { SurveyDeploymentListItemDetails } from './SurveyDeploymentListItemDetails';
+import { PulsatingDot } from './components/PulsatingDot';
 
 export interface ISurveyDeploymentListItemProps {
   animal: ISimpleCritterWithInternalId;
   deployment: IAnimalDeployment;
   isChecked: boolean;
-  handleDeploymentMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, deploymentId: string) => void;
-  handleCheckboxChange: (deploymentId: string) => void;
+  handleDeploymentMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, deploymentId: number) => void;
+  handleCheckboxChange: (deploymentId: number) => void;
 }
 
 /**
@@ -29,6 +33,11 @@ export interface ISurveyDeploymentListItemProps {
  */
 export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) => {
   const { animal, deployment, isChecked, handleDeploymentMenuClick, handleCheckboxChange } = props;
+
+  const isDeploymentOver =
+    deployment.critterbase_end_mortality_id ||
+    deployment.critterbase_end_capture_id ||
+    dayjs(`${deployment.attachment_end_date} ${deployment.attachment_end_time}`).isBefore(dayjs());
 
   return (
     <Accordion
@@ -72,6 +81,7 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
             <Checkbox
               edge="start"
               checked={isChecked}
+              sx={{ py: 0 }}
               onClick={(event) => {
                 event.stopPropagation();
                 handleCheckboxChange(deployment.deployment_id);
@@ -81,6 +91,8 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
             <Box>
               <Typography
                 component="div"
+                title="Device ID"
+                variant="body2"
                 sx={{
                   flex: '1 1 auto',
                   fontWeight: 700,
@@ -88,16 +100,24 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
                   textOverflow: 'ellipsis'
                 }}>
                 {deployment.device_id}
-                <Typography component="span" variant="body2">
+                <Typography component="span" variant="body2" title="Device frequency">
                   {deployment.frequency}&nbsp;{deployment.frequency_unit}
                 </Typography>
               </Typography>
-              <Typography variant="body2" color="textSecondary">
+              <Typography variant="body2" color="textSecondary" title="Animal">
                 {animal.animal_id}
               </Typography>
             </Box>
           </Stack>
         </AccordionSummary>
+
+        <Box position="absolute" right="33%" alignItems="center" justifyContent="center" display="flex">
+          {!isDeploymentOver && (
+            // Turn pulsating off after a certain amount of time
+            <PulsatingDot color={green} size="10px" time={8000} />
+          )}
+        </Box>
+
         <IconButton
           sx={{ position: 'absolute', right: '24px' }}
           edge="end"
@@ -108,35 +128,17 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
           <Icon path={mdiDotsVertical} size={1}></Icon>
         </IconButton>
       </Box>
-      <AccordionDetails
-        sx={{
-          pt: 0,
-          pb: 1,
-          pl: 1,
-          pr: 0
-        }}>
-        {/* {deployment.stratums && deployment.stratums.length > 0 && (
-          <Box display="flex" alignItems="center" color="textSecondary" py={1} px={1}>
-            <SamplingStratumChips deployment={deployment} />
-          </Box>
-        )} */}
+      <AccordionDetails sx={{ mt: 0, pt: 0 }}>
         <List
           disablePadding
           sx={{
-            mx: 1.5,
+            mx: 4.5,
             '& .MuiListItemText-primary': {
               typography: 'body2',
               pt: 1
             }
           }}>
-          {/* {deployment.sample_methods?.map((sampleMethod, index) => {
-            return (
-              <SamplingSiteListMethod
-                sampleMethod={sampleMethod}
-                key={`${sampleMethod.survey_sample_site_id}-${sampleMethod.survey_sample_method_id}-${index}`}
-              />
-            );
-          })} */}
+          <SurveyDeploymentListItemDetails deployment={deployment} />
         </List>
       </AccordionDetails>
     </Accordion>

@@ -31,6 +31,17 @@ export class DeploymentService extends DBService {
   }
 
   /**
+   * Get a specific deployment by its integer ID
+   *
+   * @param {number} deploymentId
+   * @return {*}  {Promise<void>}
+   * @memberof DeploymentService
+   */
+  async getDeploymentById(deploymentId: number): Promise<SurveyDeployment> {
+    return this.deploymentRepository.getDeploymentById(deploymentId);
+  }
+
+  /**
    * Create a new deployment
    *
    * @param {IPostSurveyDeployment} deployment
@@ -44,12 +55,13 @@ export class DeploymentService extends DBService {
   /**
    * Update a deployment in SIMS
    *
+   * @param {IPostSurveyDeployment} deploymentId
    * @param {IPostSurveyDeployment} deployment
    * @return {*}  {Promise<void>}
    * @memberof DeploymentService
    */
-  async updateDeployment(deployment: IPostSurveyDeployment): Promise<void> {
-    return this.deploymentRepository.updateDeployment(deployment);
+  async updateDeployment(deploymentId: number, deployment: IPostSurveyDeployment): Promise<void> {
+    return this.deploymentRepository.updateDeployment(deploymentId, deployment);
   }
 
   /**

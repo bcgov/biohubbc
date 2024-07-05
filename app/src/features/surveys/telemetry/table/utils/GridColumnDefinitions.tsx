@@ -43,7 +43,7 @@ export const DeploymentColDef = (props: {
           options={props.critterDeployments.map((item) => {
             return {
               label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
-              value: item.deployment.deployment_id
+              value: item.deployment.bctw_deployment_id
             };
           })}
           error={error}
@@ -58,7 +58,7 @@ export const DeploymentColDef = (props: {
           dataGridProps={params}
           options={props.critterDeployments.map((item) => ({
             label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
-            value: item.deployment.deployment_id
+            value: item.deployment.bctw_deployment_id
           }))}
           error={error}
         />
@@ -82,7 +82,7 @@ export const DeviceColDef = (props: {
       <Typography>
         {
           props.critterDeployments.find(
-            (deployment) => deployment.deployment.deployment_id === params.row.deployment_id
+            (deployment) => deployment.deployment.bctw_deployment_id === params.row.deployment_id
           )?.deployment.device_id
         }
       </Typography>

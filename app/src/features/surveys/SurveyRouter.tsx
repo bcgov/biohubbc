@@ -9,11 +9,10 @@ import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 import { AnimalRouter } from './animals/AnimalRouter';
 import EditSurveyPage from './edit/EditSurveyPage';
+import { SurveyObservationPage } from './observations/SurveyObservationPage';
 import SamplingSitePage from './observations/sampling-sites/create/SamplingSitePage';
 import SamplingSiteEditPage from './observations/sampling-sites/edit/SamplingSiteEditPage';
-import { SurveyObservationPage } from './observations/SurveyObservationPage';
-import DeploymentPage from './telemetry/deployments/create/DeploymentPage';
-import TelemetryPage from './telemetry/TelemetryPage';
+import { TelemetryRouter } from './telemetry/TelemetryRouter';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/*` pages.
@@ -55,6 +54,17 @@ const SurveyRouter: React.FC = () => {
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
+      {/* Telemetry Routes */}
+      <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id/telemetry" title={getTitle('Manage Telemetry')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <AnimalPageContextProvider>
+            <TelemetryRouter />
+          </AnimalPageContextProvider>
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
       {/* Observations Routes */}
       <RouteWithTitle
         exact
@@ -64,30 +74,6 @@ const SurveyRouter: React.FC = () => {
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <SurveyObservationPage />
-        </ProjectRoleRouteGuard>
-      </RouteWithTitle>
-
-      {/* Telemetry Routes */}
-      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/telemetry" title={getTitle('Telemetry')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <TelemetryPage />
-          </DialogContextProvider>
-        </ProjectRoleRouteGuard>
-      </RouteWithTitle>
-
-      <RouteWithTitle
-        exact
-        path="/admin/projects/:id/surveys/:survey_id/deployment/create"
-        title={getTitle('Add Deployment')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <DeploymentPage />
-          </DialogContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 

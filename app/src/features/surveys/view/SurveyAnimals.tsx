@@ -168,7 +168,7 @@ const SurveyAnimals: React.FC = () => {
         {telemetryData?.points.features.length ? (
           <TelemetryMap
             telemetryData={telemetryData}
-            deploymentData={deploymentData?.filter((a) => a.critter_id === currentCritterbaseCritterId)}
+            deploymentData={deploymentData?.filter((a) => a.critterbase_critter_id === currentCritterbaseCritterId)}
           />
         ) : (
           <Typography>

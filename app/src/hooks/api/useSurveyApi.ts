@@ -425,9 +425,9 @@ const useSurveyApi = (axios: AxiosInstance) => {
   const createDeployment = async (
     projectId: number,
     surveyId: number,
-    critterId: number, // Survey critter_id
-    body: ICreateAnimalDeploymentPostData // Critterbase critter_id
-  ): Promise<{deploymentId: number}> => {
+    critterId: number,
+    body: Omit<ICreateAnimalDeploymentPostData, 'critter_id'>
+  ): Promise<{ deploymentId: number }> => {
     const { data } = await axios.post(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
       body
@@ -450,7 +450,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     critterId: number,
     body: IDeploymentTimespan
   ): Promise<number> => {
-    const { data } = await axios.patch(
+    const { data } = await axios.put(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
       body
     );
@@ -466,6 +466,23 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const getDeploymentsInSurvey = async (projectId: number, surveyId: number): Promise<IAnimalDeployment[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments`);
+    return data;
+  };
+
+  /**
+   * Get deployment by Id, using the integer Id from SIMS instead of the BCTW GUID
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} deploymentId
+   * @returns {*}
+   */
+  const getDeploymentById = async (
+    projectId: number,
+    surveyId: number,
+    deploymentId: number
+  ): Promise<IAnimalDeployment> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
     return data;
   };
 
@@ -491,20 +508,21 @@ const useSurveyApi = (axios: AxiosInstance) => {
     );
     return data;
   };
+
   /**
    * Removes a deployment. Will trigger removal in both SIMS and BCTW.
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} critterId
-   * @param {string} deploymentId
+   * @param {number} deploymentId
    * @returns {*}
    */
   const removeDeployment = async (
     projectId: number,
     surveyId: number,
     critterId: number,
-    deploymentId: string
+    deploymentId: number
   ): Promise<string> => {
     const { data } = await axios.delete(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments/${deploymentId}`
@@ -517,6 +535,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForView,
     getSurveysBasicFieldsByProjectId,
     getSurveyForUpdate,
+    getDeploymentById,
     updateSurvey,
     uploadSurveyAttachments,
     uploadSurveyKeyx,

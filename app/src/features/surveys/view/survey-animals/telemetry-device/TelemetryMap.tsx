@@ -76,7 +76,7 @@ const TelemetryMap = ({ deploymentData, telemetryData }: ITelemetryMapProps): JS
     const fillColourMap: Record<string, string> = {};
     const legendColours: ColourDeployment[] = [];
     deploymentData.forEach((deployment) => {
-      const { fillColor, outlineColor } = uuidToColor(deployment.deployment_id);
+      const { fillColor, outlineColor } = uuidToColor(deployment.bctw_deployment_id);
       fillColourMap[deployment.deployment_id] = fillColor;
       colourMap[deployment.deployment_id] = outlineColor;
       legendColours.push({ ...deployment, colour: fillColor, fillColour: outlineColor });

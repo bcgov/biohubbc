@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { CreateSamplingSiteI18N } from 'constants/i18n';
+import { CreateAnimalDeploymentI18N } from 'constants/i18n';
 import {
   CreateAnimalDeployment,
   ICreateAnimalDeployment
@@ -14,10 +14,10 @@ import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsa
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import DeploymentHeader from '../components/DeploymentHeader';
-import DeploymentCreateForm from './form/DeploymentCreateForm';
+import DeploymentCreateForm from '../components/form/DeploymentForm';
 
 const initialDeploymentValues = {
-  critter_id: '',
+  critter_id: '' as unknown as number,
   device_id: '',
   frequency: undefined,
   frequency_unit: '',
@@ -35,7 +35,7 @@ const initialDeploymentValues = {
  *
  * @return {*}
  */
-const DeploymentPage = () => {
+const CreateDeploymentPage = () => {
   const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
@@ -59,8 +59,8 @@ const DeploymentPage = () => {
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
-      dialogTitle: CreateSamplingSiteI18N.createErrorTitle,
-      dialogText: CreateSamplingSiteI18N.createErrorText,
+      dialogTitle: CreateAnimalDeploymentI18N.createErrorTitle,
+      dialogText: CreateAnimalDeploymentI18N.createErrorText,
       onClose: () => {
         dialogContext.setErrorDialog({ open: false });
       },
@@ -77,18 +77,18 @@ const DeploymentPage = () => {
     // Disable cancel prompt so we can navigate away from the page after saving
     setEnableCancelCheck(false);
     try {
-      const critter = critters?.find((a) => a.critter_id === values.critter_id);
 
-      if (!critter) {
+      const survey_critter_id = Number(critters?.find((a) => a.survey_critter_id === values.critter_id)?.survey_critter_id);
+
+      if (!survey_critter_id) {
         throw new Error('Invalid critter data');
       }
 
       await biohubApi.survey.createDeployment(
         surveyContext.projectId,
         surveyContext.surveyId,
-        Number(critter.survey_critter_id),
+        survey_critter_id,
         {
-          critter_id: critter.critter_id,
           device_id: Number(values.device_id),
           device_make: values.device_make,
           frequency: values.frequency,
@@ -108,11 +108,10 @@ const DeploymentPage = () => {
         `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry`,
         SKIP_CONFIRMATION_DIALOG
       );
-
     } catch (error) {
       showCreateErrorDialog({
-        dialogTitle: CreateSamplingSiteI18N.createErrorTitle,
-        dialogText: CreateSamplingSiteI18N.createErrorText,
+        dialogTitle: CreateAnimalDeploymentI18N.createErrorTitle,
+        dialogText: CreateAnimalDeploymentI18N.createErrorText,
         dialogError: (error as APIError).message,
         dialogErrorDetails: (error as APIError)?.errors
       });
@@ -149,4 +148,4 @@ const DeploymentPage = () => {
   );
 };
 
-export default DeploymentPage;
+export default CreateDeploymentPage;

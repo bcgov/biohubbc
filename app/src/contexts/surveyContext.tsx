@@ -136,7 +136,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     const critterMap = new Map(critters.map((critter) => [critter.critter_id, critter]));
 
     deployments.forEach((deployment) => {
-      const critter = critterMap.get(String(deployment.critter_id));
+      const critter = critterMap.get(String(deployment.critterbase_critter_id));
       if (critter) {
         critterDeployments.push({ critter, deployment });
       }

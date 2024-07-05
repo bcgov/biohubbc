@@ -29,8 +29,10 @@ const DeploymentCreateForm = (props: IDeploymentCreateFormProps) => {
 
   const history = useHistory();
 
-  const { submitForm, setFieldValue, errors } = useFormikContext<ICreateAnimalDeployment>();
+  const { submitForm, setFieldValue, values } = useFormikContext<ICreateAnimalDeployment>();
   const [selectedAnimal, setSelectedAnimal] = useState<ISurveyCritter | undefined>();
+
+  console.log(values)
 
   const critterbaseApi = useCritterbaseApi();
   const telemetryApi = useTelemetryApi();
@@ -53,11 +55,9 @@ const DeploymentCreateForm = (props: IDeploymentCreateFormProps) => {
     if (selectedAnimal) {
       critterDataLoader.load(selectedAnimal.critterbase_critter_id);
       setFieldValue('critterbase_start_capture_id', '');
-      setFieldValue('critterbase_end_capture_id', '');
+      setFieldValue('critterbase_end_capture_id', null);
     }
   }, [selectedAnimal]);
-
-  console.log(errors);
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
@@ -79,9 +79,9 @@ const DeploymentCreateForm = (props: IDeploymentCreateFormProps) => {
 
           <HorizontalSplitFormComponent
             title="Timeline"
-            summary="Enter deployment dates. The end date can be used to remove telemetry locations generated after 
-            the animal died or the device became stationary."
-            component={<DeploymentTimelineForm captures={critterDataLoader.data?.captures ?? []} />}
+            summary="Enter information about when the device was deployed"
+            component={<DeploymentTimelineForm captures={critterDataLoader.data?.captures ?? []} 
+            mortality={critterDataLoader.data?.mortality[0]}/>}
           />
 
           <Divider />

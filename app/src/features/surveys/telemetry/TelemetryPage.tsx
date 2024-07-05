@@ -44,7 +44,7 @@ const TelemetryPage = () => {
           <Box flex="1 1 auto" position="relative">
             <TelemetryTableContextProvider
               deployment_ids={
-                surveyContext.deploymentDataLoader.data?.map((deployment) => deployment.deployment_id) ?? []
+                surveyContext.deploymentDataLoader.data?.map((deployment) => deployment.bctw_deployment_id) ?? []
               }>
               <ManualTelemetryTableContainer />
             </TelemetryTableContextProvider>

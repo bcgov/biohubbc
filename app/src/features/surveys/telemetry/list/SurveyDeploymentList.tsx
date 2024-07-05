@@ -26,17 +26,20 @@ import { SurveyDeploymentListItem } from './SurveyDeploymentListItem';
 
 const SurveyDeploymentList = () => {
   const { projectId, surveyId } = useContext(SurveyContext);
+
   const biohubApi = useBiohubApi();
+  // const critterbaseApi = useCritterbaseApi();
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
-  const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<string[]>([]);
-  const [selectedDeploymentId, setSelectedDeploymentId] = useState<string | undefined>();
+  const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
+  const [selectedDeploymentId, setSelectedDeploymentId] = useState<number | null>();
   const surveyContext = useSurveyContext();
 
-  console.log(selectedDeploymentId);
-
   const deploymentsDataLoader = useDataLoader(() => biohubApi.survey.getDeploymentsInSurvey(projectId, surveyId));
+
+  // Fetch captures associated with the deployments
+  // const capturesDataLoader = useDataLoader((captureIds: string[]) => critterbaseApi.capture.getCaptures(captureIds))
 
   useEffect(() => {
     deploymentsDataLoader.load();
@@ -44,12 +47,17 @@ const SurveyDeploymentList = () => {
 
   const deployments = deploymentsDataLoader.data ?? [];
 
-  const handledDeploymentMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, deploymentId: string) => {
+  // useEffect(() => {
+  //   if (deploymentsDataLoader.data){
+  //   capturesDataLoader.load()};
+  // }, [deploymentsDataLoader.data]);
+
+  const handledDeploymentMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, deploymentId: number) => {
     setAnchorEl(event.currentTarget);
     setSelectedDeploymentId(deploymentId);
   };
 
-  const handleCheckboxChange = (deploymentId: string) => {
+  const handleCheckboxChange = (deploymentId: number) => {
     setCheckboxSelectedIds((prev) => {
       if (prev.includes(deploymentId)) {
         return prev.filter((item) => item !== deploymentId);
@@ -82,18 +90,15 @@ const SurveyDeploymentList = () => {
           horizontal: 'right'
         }}>
         <MenuItem
-          onClick={() => {
-            setAnchorEl(null);
-          }}>
+          component={RouterLink}
+          to={`/admin/projects/${projectId}/surveys/${surveyId}/telemetry/deployment/${selectedDeploymentId}/edit`}
+          onClick={() => setAnchorEl(null)}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
           Edit Details
         </MenuItem>
-        <MenuItem
-          onClick={() => {
-            setAnchorEl(null);
-          }}>
+        <MenuItem onClick={() => setAnchorEl(null)}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
@@ -211,12 +216,9 @@ const SurveyDeploymentList = () => {
                   )}
 
                   {deployments.map((deployment) => {
-                    console.log(surveyContext.critterDataLoader.data)
                     const animal = surveyContext.critterDataLoader.data?.find(
-                      (animal) => animal.critter_id === deployment.critter_id
+                      (animal) => animal.critter_id === deployment.critterbase_critter_id
                     );
-                    // MAKE CRITTER ID A NUMBER
-                    console.log(animal)
                     if (animal) {
                       return (
                         <SurveyDeploymentListItem

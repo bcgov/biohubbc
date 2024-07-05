@@ -48,9 +48,7 @@ interface IDeploymentDetailsFormProps {
  */
 const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
   const surveyContext = useSurveyContext();
-  const { setFieldValue, values, errors } = useFormikContext<ICreateAnimalDeployment>();
-
-  console.log(errors);
+  const { setFieldValue, values } = useFormikContext<ICreateAnimalDeployment>();
 
   return (
     <>
@@ -93,11 +91,13 @@ const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
             required
             clearOnSelect
             handleAnimal={(animal: ISimpleCritterWithInternalId) => {
-              setFieldValue('critter_id', animal.critter_id);
-              props.setSelectedAnimal({
-                survey_critter_id: animal.survey_critter_id,
-                critterbase_critter_id: animal.critter_id
-              });
+              if (animal) {
+                setFieldValue('critter_id', animal.survey_critter_id);
+                props.setSelectedAnimal({
+                  survey_critter_id: animal.survey_critter_id,
+                  critterbase_critter_id: animal.critter_id
+                });
+              }
             }}
           />
         </Grid>

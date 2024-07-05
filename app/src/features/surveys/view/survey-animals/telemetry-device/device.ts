@@ -21,7 +21,7 @@ const numSchema = yup.number().typeError(mustBeNum).min(0, mustBePos);
 const intSchema = numSchema.max(maxInt, `Must be less than ${maxInt}`).integer(mustBeInt).required();
 
 export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
-  deployment_id: yup.string(),
+  deployment_id: yup.number().min(1),
   critterbase_start_capture_id: yup
     .string()
     .required('You must select an initial capture for when the deployment started.'),
@@ -43,15 +43,19 @@ export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
 export const AnimalDeploymentSchema = yup.object({}).shape({
   assignment_id: yup.string().required(),
   collar_id: yup.string().required(),
-  critter_id: yup.string().required(),
+  // Integer Id of the animal in the Survey'
+  critter_id: yup.number().required(),
+  critterbase_critter_id: yup.string().required(),
   attachment_end_date: yup.string().isValidDateString().nullable(),
-  attachment_end_time: yup.string(),
+  attachment_end_time: yup.string().nullable(),
   critterbase_start_capture_id: yup
     .string()
     .required('You must select an initial capture for when the deployment started.'),
   critterbase_end_capture_id: yup.string().nullable(),
   critterbase_end_mortality_id: yup.string().nullable(),
-  deployment_id: yup.string().required(),
+  // Integer Id of the deployment in the Survey'
+  deployment_id: yup.number().required(),
+  bctw_deployment_id: yup.string().required(),
   device_id: yup.number().required(),
   device_make: yup.string().required(),
   device_model: yup.string(),
@@ -62,7 +66,7 @@ export const AnimalDeploymentSchema = yup.object({}).shape({
 });
 
 export const CreateAnimalDeployment = yup.object({
-  critter_id: yup.string().uuid().required('You must select the animal that the device is associated to.'),
+  critter_id: yup.number().min(1).required('You must select the animal that the device is associated to.'),
   device_id: yup.string().required('You must enter the device ID. This is typically the serial number.'),
   device_make: yup.string().required('You must enter the device manufacturer.'),
   frequency: numSchema,
@@ -76,6 +80,7 @@ export const CreateAnimalDeployment = yup.object({
   attachment_end_date: yup.string().nullable(),
   attachment_end_time: yup.string().nullable()
 });
+
 export interface ICreateAnimalDeploymentPostData extends Omit<ICreateAnimalDeployment, 'device_id'> {
   device_id: number;
 }

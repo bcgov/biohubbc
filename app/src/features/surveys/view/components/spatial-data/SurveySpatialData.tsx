@@ -56,7 +56,7 @@ const SurveySpatialData = () => {
 
   useEffect(() => {
     if (surveyContext.deploymentDataLoader.data) {
-      const deploymentIds = surveyContext.deploymentDataLoader.data.map((item) => item.deployment_id);
+      const deploymentIds = surveyContext.deploymentDataLoader.data.map((item) => item.bctw_deployment_id);
       if (deploymentIds.length) {
         telemetryContext.telemetryDataLoader.refresh(deploymentIds);
       }
@@ -102,9 +102,11 @@ const SurveySpatialData = () => {
             telemetry: ITelemetry
           ) => {
             const deployment = deployments.find(
-              (animalDeployment) => animalDeployment.deployment_id === telemetry.deployment_id
+              (animalDeployment) => animalDeployment.bctw_deployment_id === telemetry.deployment_id
             );
-            const critter = critters.find((detailedCritter) => detailedCritter.critter_id === deployment?.critter_id);
+            const critter = critters.find(
+              (detailedCritter) => detailedCritter.critter_id === deployment?.critterbase_critter_id
+            );
             if (critter && deployment) {
               acc.push({ deployment, critter, telemetry });
             }

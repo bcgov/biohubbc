@@ -34,7 +34,7 @@ export const SurveyAnimalsTable = ({
   const animalDeviceData: ISurveyAnimalsTableEntry[] = deviceData
     ? [...animalData] // spreading this prevents this error "TypeError: Cannot assign to read only property '0' of object '[object Array]' in typescript"
         .map((animal) => {
-          const deployments = deviceData.filter((device) => device.critter_id === animal.critter_id);
+          const deployments = deviceData.filter((device) => device.critterbase_critter_id === animal.critter_id);
           return {
             ...animal,
             deployments: deployments

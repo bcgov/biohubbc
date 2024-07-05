@@ -1,24 +1,26 @@
-import { AxiosError } from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../../../../database/db';
-import { authorizeRequestHandler } from '../../../../../../../../../request-handlers/security/authorization';
-import { BctwDeploymentService } from '../../../../../../../../../services/bctw-service/bctw-deployment-service';
-import { CritterbaseService, ICritterbaseUser } from '../../../../../../../../../services/critterbase-service';
-import { DeploymentService } from '../../../../../../../../../services/deployment-service';
-import { getLogger } from '../../../../../../../../../utils/logger';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../database/db';
+import { deploymentSchema } from '../../../../../../../openapi/schemas/deployment';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { BctwDeploymentService } from '../../../../../../../services/bctw-service/bctw-deployment-service';
+import { CritterbaseService, ICritterbaseUser } from '../../../../../../../services/critterbase-service';
+import { DeploymentService } from '../../../../../../../services/deployment-service';
+import { getLogger } from '../../../../../../../utils/logger';
 
-const defaultLog = getLogger(
-  'paths/project/{projectId}/survey/{surveyId}/critters/{critterId}/deployments/{bctwDeploymentId}'
-);
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments/{deploymentId}');
 
-export const DELETE: Operation = [
+export const GET: Operation = [
   authorizeRequestHandler((req) => {
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
+          validProjectPermissions: [
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR,
+            PROJECT_PERMISSION.OBSERVER
+          ],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -29,11 +31,11 @@ export const DELETE: Operation = [
       ]
     };
   }),
-  deleteDeployment()
+  getDeploymentsInSurvey()
 ];
 
-DELETE.apiDoc = {
-  description: 'Deletes the deployment record in SIMS, and soft deletes the record in BCTW.',
+GET.apiDoc = {
+  description: 'Returns information about a specific deployment',
   tags: ['bctw'],
   security: [
     {
@@ -45,15 +47,7 @@ DELETE.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
-      },
-      required: true
-    },
-    {
-      in: 'path',
-      name: 'critterId',
-      schema: {
-        type: 'number'
+        type: 'integer'
       },
       required: true
     },
@@ -61,27 +55,17 @@ DELETE.apiDoc = {
       in: 'path',
       name: 'deploymentId',
       schema: {
-        type: 'integer',
-        minimum: 1
+        type: 'integer'
       },
       required: true
     }
   ],
   responses: {
     200: {
-      description: 'Removed deployment successfully.',
+      description: 'Responds with information about a deployment',
       content: {
         'application/json': {
-          schema: {
-            title: 'Deployment response object',
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              message: {
-                type: 'string'
-              }
-            }
-          }
+          schema: deploymentSchema
         }
       }
     },
@@ -103,42 +87,68 @@ DELETE.apiDoc = {
   }
 };
 
-export function deleteDeployment(): RequestHandler {
+export function getDeploymentsInSurvey(): RequestHandler {
   return async (req, res) => {
     const user: ICritterbaseUser = {
       keycloak_guid: req['system_user']?.user_guid,
       username: req['system_user']?.user_identifier
     };
 
-    const deploymentId = String(req.params.bctwDeploymentId);
-    const critterId = Number(req.params.critterId);
+    const deploymentId = Number(req.params.deploymentId);
 
     const connection = getDBConnection(req['keycloak_token']);
 
-    const bctwDeploymentService = new BctwDeploymentService(user);
     const deploymentService = new DeploymentService(connection);
+    const bctwDeploymentService = new BctwDeploymentService(user);
 
     try {
       await connection.open();
 
-      await deploymentService.removeDeployment(critterId, deploymentId);
+      // Fetch deployments from the deployment service for the given surveyId
+      const surveyDeployment = await deploymentService.getDeploymentById(deploymentId);
 
-      await bctwDeploymentService.deleteDeployment(deploymentId);
+      // Return early if there are no deployments
+      if (!surveyDeployment) {
+        // TODO: 400 error instead?
+        return res.status(200).json({});
+      }
 
-      await connection.commit();
-      return res.status(200).json({ message: 'Deployment deleted.' });
+      // Fetch additional deployment details from BCTW service
+      const bctwDeployments = await bctwDeploymentService.getDeploymentsByIds([surveyDeployment.bctw_deployment_id]);
+
+      // Merge survey and BCTW deployment information
+      // Bctw might return multiple records for a deployment Id, so use reduce
+      const result = bctwDeployments.reduce((acc, bctwDeployment) => {
+        return {
+          ...acc,
+          assignment_id: bctwDeployment.assignment_id,
+          collar_id: bctwDeployment.collar_id,
+          critter_id: surveyDeployment.survey_critter_id,
+          critterbase_critter_id: surveyDeployment?.critterbase_critter_id,
+          attachment_start: bctwDeployment.attachment_start,
+          attachment_end: bctwDeployment.attachment_end,
+          deployment_id: surveyDeployment?.deployment_id,
+          device_id: bctwDeployment.device_id,
+          bctw_deployment_id: surveyDeployment?.bctw_deployment_id,
+          critterbase_start_capture_id: surveyDeployment?.critterbase_start_capture_id,
+          critterbase_end_capture_id: surveyDeployment?.critterbase_end_capture_id,
+          critterbase_end_mortality_id: surveyDeployment?.critterbase_end_mortality_id,
+        };
+      }, {});
+
+      return res.status(200).json(result);
     } catch (error) {
-      defaultLog.error({ label: 'deleteDeployment', message: 'error', error });
+      defaultLog.error({ label: 'getDeploymentsInSurvey', message: 'error', error });
       await connection.rollback();
 
-      return res.status(500).json((error as AxiosError).response);
+      throw error;
     } finally {
       connection.release();
     }
   };
 }
 
-export const PATCH: Operation = [
+export const PUT: Operation = [
   authorizeRequestHandler((req) => {
     return {
       or: [
@@ -157,7 +167,7 @@ export const PATCH: Operation = [
   updateDeployment()
 ];
 
-PATCH.apiDoc = {
+PUT.apiDoc = {
   description: 'Updates information about the start and end of a deployment.',
   tags: ['critterbase'],
   security: [
@@ -171,20 +181,12 @@ PATCH.apiDoc = {
       name: 'surveyId',
       schema: {
         type: 'integer'
-      },
-      required: true
-    },
-    {
-      in: 'path',
-      name: 'critterId',
-      schema: {
-        type: 'integer'
       }
     },
     {
       in: 'path',
-      name: 'bctwDeploymentId',
-      description: 'BCTW deployment Id, not the primary key of the deployment table.',
+      name: 'deploymentId',
+      description: 'Integer deployment Id in SIMS',
       schema: {
         type: 'integer'
       }
@@ -199,6 +201,11 @@ PATCH.apiDoc = {
           type: 'object',
           additionalProperties: false,
           properties: {
+            critter_id: {
+              type: 'integer',
+              description: 'Id of the critter in SIMS',
+              minimum: 1
+            },
             deployment_id: {
               type: 'integer',
               description: 'Id of the deployment in SIMS',
@@ -285,7 +292,6 @@ export function updateDeployment(): RequestHandler {
       username: req['system_user']?.user_identifier
     };
 
-    const critterId = Number(req.params.critterId);
     const deploymentId = Number(req.params.deploymentId);
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -295,6 +301,8 @@ export function updateDeployment(): RequestHandler {
     const critterbaseService = new CritterbaseService(user);
 
     const {
+      deployment_id,
+      critter_id,
       critterbase_start_capture_id,
       critterbase_end_capture_id,
       critterbase_end_mortality_id,
@@ -308,7 +316,7 @@ export function updateDeployment(): RequestHandler {
 
       // Update the deployment in SIMS
       await deploymentService.updateDeployment(deploymentId, {
-        survey_critter_id: critterId,
+        survey_critter_id: critter_id,
         bctw_deployment_id: bctwRequestObject.bctw_deployment_id,
         critterbase_start_capture_id,
         critterbase_end_capture_id,

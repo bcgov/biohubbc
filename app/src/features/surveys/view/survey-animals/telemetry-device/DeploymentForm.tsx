@@ -29,12 +29,12 @@ export const DeploymentForm = (props: DeploymentFormSectionProps): JSX.Element =
   const { surveyId, projectId } = useContext(SurveyContext);
   const dialogContext = useContext(DialogContext);
 
-  const [deploymentIDToDelete, setDeploymentIDToDelete] = useState<null | string>(null);
+  const [deploymentIDToDelete, setDeploymentIDToDelete] = useState<null | number>(null);
 
   const device = values;
   const deployments = device.deployments;
 
-  const handleRemoveDeployment = async (deployment_id: string) => {
+  const handleRemoveDeployment = async (deployment_id: number) => {
     try {
       if (survey_critter_id === undefined) {
         setMessageSnackbar('No critter set!', dialogContext);
@@ -80,7 +80,7 @@ export const DeploymentForm = (props: DeploymentFormSectionProps): JSX.Element =
                     title="Remove Deployment"
                     aria-label="remove-deployment"
                     onClick={() => {
-                      setDeploymentIDToDelete(String(deploy.deployment_id));
+                      setDeploymentIDToDelete(deploy.deployment_id ?? null);
                     }}>
                     <Icon path={mdiTrashCanOutline} size={1} />
                   </IconButton>

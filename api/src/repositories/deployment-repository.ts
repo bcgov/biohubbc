@@ -26,7 +26,8 @@ export class DeploymentRepository extends BaseRepository {
     const queryBuilder = getKnex()
       .select(
         'deployment_id',
-        'd.critter_id',
+        'd.critter_id as survey_critter_id',
+        'c.critterbase_critter_id',
         'bctw_deployment_id',
         'critterbase_start_capture_id',
         'critterbase_end_capture_id',
@@ -42,6 +43,36 @@ export class DeploymentRepository extends BaseRepository {
   }
 
   /**
+   * Returns a specific deployment
+   *
+   * @param {number} deploymentId
+   * @return {*}  {Promise<void>}
+   * @memberof DeploymentRepository
+   */
+  async getDeploymentById(deploymentId: number): Promise<SurveyDeployment> {
+    defaultLog.debug({ label: 'getDeploymentById', deploymentId });
+
+    const queryBuilder = getKnex()
+      .select(
+        'deployment_id',
+        'd.critter_id as survey_critter_id',
+        'c.critterbase_critter_id',
+        'bctw_deployment_id',
+        'critterbase_start_capture_id',
+        'critterbase_end_capture_id',
+        'critterbase_end_mortality_id'
+      )
+      .from('deployment as d')
+      .leftJoin('critter as c', 'c.critter_id', 'd.critter_id')
+      .where('d.deployment_id', deploymentId);
+
+    const response = await this.connection.knex(queryBuilder, SurveyDeployment);
+
+    return response.rows[0];
+  }
+
+
+  /**
    * Insert a new deployment record.
    *
    * @param {IPostSurveyDeployment} deployment
@@ -51,7 +82,11 @@ export class DeploymentRepository extends BaseRepository {
   async insertDeployment(deployment: IPostSurveyDeployment): Promise<void> {
     defaultLog.debug({ label: 'insertDeployment', deploymentId: deployment.bctw_deployment_id });
 
-    const queryBuilder = getKnex().table('deployment').insert(deployment);
+    const { survey_critter_id, ...deploymentData } = deployment;
+
+    const queryBuilder = getKnex()
+      .table('deployment')
+      .insert({ ...deploymentData, critter_id: survey_critter_id });
 
     await this.connection.knex(queryBuilder);
   }
@@ -59,19 +94,20 @@ export class DeploymentRepository extends BaseRepository {
   /**
    * Update an existing deployment record.
    *
+   * @param {number} deploymentId
    * @param {IPostSurveyDeployment} deployment
    * @return {*}  {Promise<void>}
    * @memberof DeploymentRepository
    */
-  async updateDeployment(deployment: IPostSurveyDeployment): Promise<void> {
+  async updateDeployment(deploymentId: number, deployment: IPostSurveyDeployment): Promise<void> {
     defaultLog.debug({ label: 'updateDeployment', deploymentId: deployment.bctw_deployment_id });
+
+    const { survey_critter_id, ...deploymentData } = deployment;
 
     const queryBuilder = getKnex()
       .table('deployment')
-      .where({
-        bctw_deployment_id: deployment.bctw_deployment_id
-      })
-      .update(deployment);
+      .where('deployment_id', deploymentId)
+      .update({ ...deploymentData, critter_id: survey_critter_id });
 
     await this.connection.knex(queryBuilder);
   }

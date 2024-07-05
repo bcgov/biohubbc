@@ -31,10 +31,10 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'query',
-      name: 'deploymentIds',
+      name: 'bctwDeploymentIds',
       schema: {
         type: 'array',
-        items: { type: 'integer', minimum: 1 }
+        items: { type: 'string', format: 'uuid', minimum: 1 }
       },
       explode: false,
       style: 'form',
@@ -91,9 +91,9 @@ export function getAllTelemetryByDeploymentIds(): RequestHandler {
     const bctwTelemetryService = new BctwTelemetryService(user);
 
     try {
-      const deploymentIds = req.query.deploymentIds as string[];
+      const bctwDeploymentIds = req.query.bctwDeploymentIds as string[];
 
-      const result = await bctwTelemetryService.getAllTelemetryByDeploymentIds(deploymentIds);
+      const result = await bctwTelemetryService.getAllTelemetryByDeploymentIds(bctwDeploymentIds);
 
       return res.status(200).json(result);
     } catch (error) {

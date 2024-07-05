@@ -27,7 +27,7 @@ export interface IAutocompleteField<T extends string | number> {
 const AnimalAutocompleteField = <T extends string | number>(props: IAutocompleteField<T>) => {
   const { name, label, required, handleAnimal, defaultAnimal } = props;
 
-  const { touched, errors } = useFormikContext<IAutocompleteFieldOption<T>>();
+  const { touched, errors, setFieldValue } = useFormikContext<IAutocompleteFieldOption<T>>();
 
   const surveyContext = useSurveyContext();
 
@@ -52,7 +52,8 @@ const AnimalAutocompleteField = <T extends string | number>(props: IAutocomplete
       filterOptions={(item) => item}
       inputValue={inputValue}
       onInputChange={(_, _value, reason) => {
-        if (props.clearOnSelect && reason === 'reset') {
+        if (props.clearOnSelect && reason === 'clear') {
+          setFieldValue(name, '');
           setInputValue('');
         }
       }}

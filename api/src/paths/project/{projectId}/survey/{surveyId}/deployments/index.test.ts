@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import * as db from '../../../../../database/db';
-import { IBctwDeploymentRecord } from '../../../../../models/bctw';
-import { BctwDeploymentService } from '../../../../../services/bctw-service/bctw-deployment-service';
-import { SurveyCritterService } from '../../../../../services/survey-critter-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../__mocks__/db';
-import { getDeploymentsInSurvey } from './deployments';
+import * as db from '../../../../../../database/db';
+import { IBctwDeploymentRecord } from '../../../../../../models/bctw';
+import { BctwDeploymentService } from '../../../../../../services/bctw-service/bctw-deployment-service';
+import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
+import { getDeploymentsInSurvey } from '.';
 
 describe('getDeploymentsInSurvey', () => {
   afterEach(() => {

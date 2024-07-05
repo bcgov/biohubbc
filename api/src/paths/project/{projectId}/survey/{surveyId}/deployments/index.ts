@@ -1,12 +1,13 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
-import { getDBConnection } from '../../../../../database/db';
-import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
-import { BctwDeploymentService } from '../../../../../services/bctw-service/bctw-deployment-service';
-import { ICritterbaseUser } from '../../../../../services/critterbase-service';
-import { DeploymentService } from '../../../../../services/deployment-service';
-import { getLogger } from '../../../../../utils/logger';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../database/db';
+import { deploymentSchema } from '../../../../../../openapi/schemas/deployment';
+import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+import { BctwDeploymentService } from '../../../../../../services/bctw-service/bctw-deployment-service';
+import { ICritterbaseUser } from '../../../../../../services/critterbase-service';
+import { DeploymentService } from '../../../../../../services/deployment-service';
+import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments');
 
@@ -60,47 +61,7 @@ GET.apiDoc = {
           schema: {
             title: 'Deployments',
             type: 'array',
-            items: {
-              type: 'object',
-              additionalProperties: false,
-              properties: {
-                deployment_id: {
-                  type: 'integer',
-                  description: 'Id of the deployment in the Survey'
-                },
-                bctw_deployment_id: {
-                  type: 'string',
-                  format: 'uuid',
-                  description: 'Id of the deployment in BCTW. May match multiple records in BCTW'
-                },
-                assignment_id: {
-                  type: 'string',
-                  format: 'uuid'
-                },
-                collar_id: { type: 'string' },
-                critter_id: { type: 'integer', minimum: 1, description: 'Id of the critter in the Survey' },
-                device_id: { type: 'integer', description: 'Id of the device, as reported by users. Not unique.' },
-                critterbase_start_capture_id: {
-                  type: 'string'
-                },
-                critterbase_end_capture_id: {
-                  type: 'string',
-                  nullable: true
-                },
-                critterbase_end_mortality_id: {
-                  type: 'string',
-                  nullable: true
-                },
-                critterbase_end_date: {
-                  type: 'string',
-                  nullable: true
-                },
-                critterbase_end_time: {
-                  type: 'string',
-                  nullable: true
-                }
-              }
-            }
+            items: deploymentSchema
           }
         }
       }
@@ -166,7 +127,8 @@ export function getDeploymentsInSurvey(): RequestHandler {
           critterbase_end_capture_id: surveyDeployment?.critterbase_end_capture_id,
           critterbase_end_mortality_id: surveyDeployment?.critterbase_end_mortality_id,
           // Do not trust the Critter Id stored by BCTW. Instead, use the SIMS integer survey critter ID
-          critter_id: surveyDeployment?.critter_id
+          survey_critter_id: surveyDeployment?.survey_critter_id,
+          critterbase_critter_id: surveyDeployment?.critterbase_critter_id
         };
       });
 

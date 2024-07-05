@@ -1,5 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { AttachmentType } from 'constants/attachments';
 import { AnimalSex, ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import {
@@ -12,7 +13,6 @@ import {
 import { ApiPaginationResponseParams } from 'types/misc';
 import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
-import { AttachmentType } from 'constants/attachments';
 
 describe('useSurveyApi', () => {
   let mock: any;
@@ -108,8 +108,7 @@ describe('useSurveyApi', () => {
         critterbase_end_capture_id: '',
         critterbase_end_mortality_id: '',
         attachment_end_date: '',
-        attachment_end_time: '',
-        critter_id: v4()
+        attachment_end_time: ''
       });
 
       expect(result).toBe(1);
@@ -121,13 +120,15 @@ describe('useSurveyApi', () => {
       const response: IAnimalDeployment = {
         assignment_id: v4(),
         collar_id: v4(),
-        critter_id: v4(),
+        critterbase_critter_id: v4(),
+        critter_id: 123,
         critterbase_start_capture_id: '',
         critterbase_end_capture_id: '',
         critterbase_end_mortality_id: '',
         attachment_end_date: '',
         attachment_end_time: '',
-        deployment_id: v4(),
+        deployment_id: 123,
+        bctw_deployment_id: v4(),
         device_id: 123,
         device_make: '',
         device_model: 'a',
@@ -151,7 +152,7 @@ describe('useSurveyApi', () => {
     it('should update a deployment', async () => {
       mock.onPatch(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`).reply(200, 1);
       const result = await useSurveyApi(axios).updateDeployment(projectId, surveyId, critterId, {
-        deployment_id: 'a',
+        deployment_id: 1,
         critterbase_start_capture_id: '',
         critterbase_end_capture_id: '',
         critterbase_end_mortality_id: '',

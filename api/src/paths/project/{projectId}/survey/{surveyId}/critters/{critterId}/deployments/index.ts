@@ -45,14 +45,16 @@ POST.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       }
     },
     {
       in: 'path',
-      name: 'surveyCritterId',
+      name: 'critterId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       }
     }
   ],
@@ -65,14 +67,6 @@ POST.apiDoc = {
           type: 'object',
           additionalProperties: false,
           properties: {
-            survey_critter_id: {
-              type: 'integer',
-              minimum: 1
-            },
-            critterbase_critter_id: {
-              type: 'string',
-              format: 'uuid'
-            },
             device_id: {
               type: 'integer'
             },
@@ -90,7 +84,7 @@ POST.apiDoc = {
             },
             critterbase_start_capture_id: {
               type: 'string',
-              description: 'Critterbase capture record for when the deployment start',
+              description: 'Critterbase capture record for when the deployment started',
               format: 'uuid',
               nullable: true
             },
@@ -128,15 +122,15 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             title: 'Deployment response object',
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              deploymentId: {
-                type: 'string',
-                format: 'uuid',
-                description: 'The generated deployment Id, indicating that the deployment was succesfully created.'
-              }
-            }
+            type: 'object'
+            // additionalProperties: false,
+            // properties: {
+            //   deploymentId: {
+            //     type: 'string',
+            //     format: 'uuid',
+            //     description: 'The generated deployment Id, indicating that the deployment was succesfully created.'
+            //   }
+            // }
           }
         }
       }
@@ -163,7 +157,7 @@ export function createDeployment(): RequestHandler {
   return async (req, res) => {
     const user = getBctwUser(req);
 
-    const surveyCritterId = Number(req.params.surveyCritterId);
+    const surveyCritterId = Number(req.params.critterId);
 
     // Create deployment Id for joining SIMS and BCTW deployment information
     const newDeploymentId = v4();
@@ -187,7 +181,7 @@ export function createDeployment(): RequestHandler {
 
       // Inset new deployment into SIMS
       await deploymentService.insertDeployment({
-        critter_id: surveyCritterId,
+        survey_critter_id: surveyCritterId,
         bctw_deployment_id: newDeploymentId,
         critterbase_start_capture_id,
         critterbase_end_capture_id,
@@ -198,18 +192,18 @@ export function createDeployment(): RequestHandler {
       const capture = await critterbaseService.getCaptureById(critterbase_start_capture_id);
 
       // Update the deployment in BCTW, which works by soft deleting and inserting a new deployment record (hence createDeployment)
-      const bctwDeployment = await bctwService.createDeployment({
+      const deployment = await bctwService.createDeployment({
         ...bctwRequestObject,
         attachment_start: capture.capture_date,
         attachment_end: attachment_end_date, // TODO: ADD SEPARATE DATE AND TIME TO BCTW
-        deployment_id: newDeploymentId
+        deployment_id: newDeploymentId,
+        // Include the critter guid, taken from the capture for convenience
+        critter_id: capture.critter_id
       });
 
-      console.log(bctwDeployment);
-
       await connection.commit();
-
-      return res.status(201).json({ deploymentId: newDeploymentId });
+      
+      return res.status(201).json({ deploymentId: deployment.deployment_id });
     } catch (error) {
       defaultLog.error({ label: 'createDeployment', message: 'error', error });
       await connection.rollback();

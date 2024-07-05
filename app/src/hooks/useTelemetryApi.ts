@@ -23,7 +23,9 @@ export const useTelemetryApi = () => {
    * @return {*}  {Promise<ITelemetry[]>}
    */
   const getAllTelemetryByDeploymentIds = async (deploymentIds: string[]): Promise<ITelemetry[]> => {
-    const { data } = await axios.get<ITelemetry[]>(`/api/telemetry/deployments?deploymentIds=${deploymentIds.join(',')}`);
+    const { data } = await axios.get<ITelemetry[]>(
+      `/api/telemetry/deployments?bctwDeploymentIds=${deploymentIds.join(',')}`
+    );
     return data;
   };
 
