@@ -13,6 +13,7 @@ export interface SamplingSiteManageHeaderProps {
 
 export const SamplingSiteManageHeader = (props: SamplingSiteManageHeaderProps) => {
   const { project_id, project_name, survey_id, survey_name } = props;
+
   return (
     <PageHeader
       title="Manage Sampling Information"

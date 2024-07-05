@@ -138,9 +138,9 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
       setIsReady(false);
 
       // Call loadData to fetch new data
-      return load(...args);
+      return loadData(...args);
     },
-    [load]
+    [loadData]
   );
 
   const clearError = useCallback(() => {

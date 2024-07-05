@@ -8,6 +8,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
+import { GridRowSelectionModel } from '@mui/x-data-grid';
 import { GridOverlay } from '@mui/x-data-grid/components/containers/GridOverlay';
 import { GridColDef } from '@mui/x-data-grid/models/colDef/gridColDef';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
@@ -28,6 +29,8 @@ interface ITechniqueRowData {
 
 interface ISamplingTechniqueCardContainer {
   techniques: IGetTechniqueResponse[];
+  bulkActionTechniques: GridRowSelectionModel;
+  setBulkActionTechniques: (selection: GridRowSelectionModel) => void;
 }
 
 /**
@@ -36,10 +39,11 @@ interface ISamplingTechniqueCardContainer {
  * @returns
  */
 export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(props: ISamplingTechniqueCardContainer) => {
-  const { techniques } = props;
+  const { techniques, bulkActionTechniques, setBulkActionTechniques } = props;
 
-  const [selectedTechnique, setSelectedTechnique] = useState<number | null>(null);
-  const [techniqueAnchorEl, setTechniqueAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  // Individual row action menu
+  const [actionMenuTechnique, setActionMenuTechnique] = useState<number | null>(null);
+  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   const surveyContext = useSurveyContext();
   const dialogContext = useDialogContext();
@@ -52,15 +56,15 @@ export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(prop
    */
   const handleDeleteTechnique = async () => {
     await biohubApi.technique
-      .deleteTechnique(surveyContext.projectId, surveyContext.surveyId, Number(selectedTechnique))
+      .deleteTechnique(surveyContext.projectId, surveyContext.surveyId, Number(actionMenuTechnique))
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
-        setTechniqueAnchorEl(null);
+        setActionMenuAnchorEl(null);
         surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
-        setTechniqueAnchorEl(null);
+        setActionMenuAnchorEl(null);
         dialogContext.setSnackbar({
           snackbarMessage: (
             <>
@@ -162,8 +166,8 @@ export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(prop
           <Box display="flex" position="fixed">
             <IconButton
               onClick={(event) => {
-                setSelectedTechnique(params.row.id);
-                setTechniqueAnchorEl(event.currentTarget);
+                setActionMenuTechnique(params.row.id);
+                setActionMenuAnchorEl(event.currentTarget);
               }}>
               <Icon path={mdiDotsVertical} size={1} />
             </IconButton>
@@ -175,74 +179,56 @@ export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(prop
 
   return (
     <>
-      {selectedTechnique && (
-        <Menu
-          sx={{ pb: 2 }}
-          open={Boolean(techniqueAnchorEl)}
-          onClose={() => setTechniqueAnchorEl(null)}
-          anchorEl={techniqueAnchorEl}
-          anchorOrigin={{
-            vertical: 'top',
-            horizontal: 'right'
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right'
-          }}>
-          <MenuItem
-            sx={{
-              p: 0,
-              '& a': {
-                display: 'flex',
-                px: 2,
-                py: '6px',
-                textDecoration: 'none',
-                color: 'text.primary',
-                borderRadius: 0,
-                '&:focus': {
-                  outline: 'none'
-                }
+      <Menu
+        sx={{ pb: 2 }}
+        open={Boolean(actionMenuAnchorEl)}
+        onClose={() => setActionMenuAnchorEl(null)}
+        anchorEl={actionMenuAnchorEl}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}>
+        <MenuItem
+          sx={{
+            p: 0,
+            '& a': {
+              display: 'flex',
+              px: 2,
+              py: '6px',
+              textDecoration: 'none',
+              color: 'text.primary',
+              borderRadius: 0,
+              '&:focus': {
+                outline: 'none'
               }
-            }}>
-            <RouterLink
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/techniques/${selectedTechnique}/edit`}>
-              <ListItemIcon>
-                <Icon path={mdiPencilOutline} size={1} />
-              </ListItemIcon>
-              <ListItemText>Edit Details</ListItemText>
-            </RouterLink>
-          </MenuItem>
-          <MenuItem
-            onClick={() => {
-              setTechniqueAnchorEl(null);
-              deleteTechniqueDialog();
-            }}>
-            <ListItemIcon>
-              <Icon path={mdiTrashCanOutline} size={1} />
-            </ListItemIcon>
-            <ListItemText>Delete</ListItemText>
-          </MenuItem>
-        </Menu>
-      )}
-
-      {/* {techniques.map((technique) => (
-        <Box m={2} key={technique.method_technique_id}>
-          <SamplingTechniqueCard
-            technique={technique}
-            method_lookup_name={
-              getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id) ?? ''
             }
-            handleMenuClick={(event) => {
-              setTechniqueAnchorEl(event.currentTarget);
-              setSelectedTechnique(technique.method_technique_id);
-            }}
-          />
-        </Box>
-      ))} */}
+          }}>
+          <RouterLink
+            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/techniques/${actionMenuTechnique}/edit`}>
+            <ListItemIcon>
+              <Icon path={mdiPencilOutline} size={1} />
+            </ListItemIcon>
+            <ListItemText>Edit Details</ListItemText>
+          </RouterLink>
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            setActionMenuAnchorEl(null);
+            deleteTechniqueDialog();
+          }}>
+          <ListItemIcon>
+            <Icon path={mdiTrashCanOutline} size={1} />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
 
       <Box position="relative">
         <StyledDataGrid
-          rowSelection={false}
           autoHeight
           getRowHeight={() => 'auto'}
           rows={rows}
@@ -250,6 +236,8 @@ export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(prop
           disableRowSelectionOnClick
           disableColumnMenu
           checkboxSelection
+          rowSelectionModel={bulkActionTechniques}
+          onRowSelectionModelChange={setBulkActionTechniques}
           noRowsOverlay={
             <GridOverlay>
               <Box justifyContent="center" display="flex" flexDirection="column">
