@@ -80,7 +80,7 @@ export const SurveyDataMapTelemetry = (props: ISurveyDataMapTelemetryProps) => {
           };
         })
     );
-  }, [surveyContext.critterDataLoader.data, surveyContext.deploymentDataLoader.data, telemetryDataLoader.data]);
+  }, [surveyContext.critterDataLoader.data, telemetry, surveyContext.deploymentDataLoader.data, telemetryDataLoader.data]);
 
   const mapLayer: ISurveyMapSupplementaryLayer = {
     layerName: 'Telemetry Location',

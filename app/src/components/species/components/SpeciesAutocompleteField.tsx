@@ -255,8 +255,8 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
                 borderTop: '1px solid' + grey[300]
               }
             }}
-            key={`${renderOption.tsn}-${renderOption.scientificName}`}
-            {...renderProps}>
+            {...renderProps}
+            key={`${renderOption.tsn}-${renderOption.scientificName}`}>
             <Box py={1} width={'100%'}>
               <SpeciesCard taxon={renderOption} />
             </Box>
