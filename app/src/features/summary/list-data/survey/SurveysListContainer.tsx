@@ -1,15 +1,15 @@
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
-import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import grey from '@mui/material/colors/grey';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SystemRoleGuard } from 'components/security/Guards';
-import { getNrmRegionColour, NrmRegionKeys } from 'constants/colours';
+import { NrmRegionKeys, getNrmRegionColour } from 'constants/colours';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import { SYSTEM_ROLE } from 'constants/roles';
@@ -243,7 +243,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="500px">
+      <Box height="70vh">
         <StyledDataGrid
           noRowsMessage="No surveys found"
           loading={!surveysDataLoader.isReady && !surveysDataLoader.data}

@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
-import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
+import grey from '@mui/material/colors/grey';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -247,7 +247,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="500px">
+      <Box height="70vh">
         <StyledDataGrid
           noRowsMessage="No observations found"
           loading={!observationsDataLoader.isReady && !observationsDataLoader.data}
