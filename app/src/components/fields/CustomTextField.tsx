@@ -31,7 +31,7 @@ export interface ICustomTextField {
   other?: any;
 }
 
-const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (props) => {
+const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
   const { touched, errors, values, handleChange, handleBlur } = useFormikContext<any>();
 
   const { name, label, other } = props;

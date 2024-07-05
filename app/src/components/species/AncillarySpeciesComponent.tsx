@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import AlertBar from 'components/alert/AlertBar';
 import { useFormikContext } from 'formik';
-import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { IPartialTaxonomy, ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import get from 'lodash-es/get';
 import SelectedSpecies from './components/SelectedSpecies';
 import SpeciesAutocompleteField from './components/SpeciesAutocompleteField';
@@ -11,7 +11,7 @@ const AncillarySpeciesComponent = () => {
 
   const selectedSpecies: ITaxonomy[] = get(values, 'species.ancillary_species') || [];
 
-  const handleAddSpecies = (species?: ITaxonomy) => {
+  const handleAddSpecies = (species?: IPartialTaxonomy) => {
     setFieldValue(`species.ancillary_species[${selectedSpecies.length}]`, species);
     setFieldError(`species.ancillary_species`, undefined);
   };

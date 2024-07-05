@@ -17,7 +17,7 @@ export interface QueryParam {
 
 export interface ICritter {
   critter_id?: string;
-  wlh_id: string;
+  wlh_id: string | null;
   animal_id: string;
   sex: string;
   itis_tsn: number;
@@ -379,7 +379,7 @@ export class CritterbaseService {
     return response.data;
   }
 
-  async getMultipleCrittersByIds(critter_ids: string[]) {
+  async getMultipleCrittersByIds(critter_ids: string[]): Promise<ICritter[]> {
     const response = await this.axiosInstance.post(CRITTER_ENDPOINT, { critter_ids });
     return response.data;
   }

@@ -178,7 +178,3 @@ export const useTelemetryApi = () => {
     processTelemetryCsvSubmission
   };
 };
-
-type TelemetryApiReturnType = ReturnType<typeof useTelemetryApi>;
-
-export type TelemetryApiLookupFunctions = keyof TelemetryApiReturnType['devices']; // Add more options as needed.

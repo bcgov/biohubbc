@@ -85,41 +85,35 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
 
   const getData = useAsync(fetchData);
 
-  const loadData = useCallback(
-    async (...args: AFArgs): Promise<AFResponse | undefined> => {
-      try {
-        setIsLoading(true);
-        setError(undefined);
-        setIsReady(false);
+  const loadData = async (...args: AFArgs): Promise<AFResponse | undefined> => {
+    try {
+      setIsLoading(true);
 
-        const response = await getData(...args);
+      const response = await getData(...args);
 
-        if (!isMounted()) {
-          return;
-        }
-
-        setData(response);
-
-        return response;
-      } catch (error) {
-        if (!isMounted()) {
-          return;
-        }
-
-        setError(error);
-        setIsLoading(false);
-
-        onError?.(error);
-      } finally {
-        if (isMounted()) {
-          setIsLoading(false);
-          setIsReady(true);
-          setHasLoaded(true);
-        }
+      if (!isMounted()) {
+        return;
       }
-    },
-    [getData, isMounted, onError]
-  );
+
+      setData(response);
+
+      return response;
+    } catch (error) {
+      if (!isMounted()) {
+        return;
+      }
+
+      setError(error);
+
+      onError?.(error);
+    } finally {
+      if (isMounted()) {
+        setIsLoading(false);
+        setIsReady(true);
+        setHasLoaded(true);
+      }
+    }
+  };
 
   const load = useCallback(
     async (...args: AFArgs) => {
@@ -139,12 +133,6 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
       setError(undefined);
       setIsLoading(false);
       setIsReady(false);
-      // Call loadData to fetch new data
-      return loadData(...args);
-    },
-    [loadData]
-  );
-
   const clearError = useCallback(() => {
     setError(undefined);
   }, []);

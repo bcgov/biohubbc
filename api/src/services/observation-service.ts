@@ -1,5 +1,6 @@
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
+import { IObservationAdvancedFilters } from '../models/observation-view';
 import {
   InsertObservation,
   ObservationGeometryRecord,
@@ -8,7 +9,7 @@ import {
   ObservationRepository,
   ObservationSubmissionRecord,
   UpdateObservation
-} from '../repositories/observation-repository';
+} from '../repositories/observation-repository/observation-repository';
 import {
   InsertObservationSubCountQualitativeEnvironmentRecord,
   InsertObservationSubCountQuantitativeEnvironmentRecord,
@@ -117,6 +118,26 @@ export class ObservationService extends DBService {
   constructor(connection: IDBConnection) {
     super(connection);
     this.observationRepository = new ObservationRepository(connection);
+  }
+
+  /**
+   * Retrieves the paginated list of all observations that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IObservationAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<ObservationRecordWithSamplingAndSubcountData[]>}
+   * @memberof ObservationService
+   */
+  async findObservations(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IObservationAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<ObservationRecordWithSamplingAndSubcountData[]> {
+    return this.observationRepository.findObservations(isUserAdmin, systemUserId, filterFields, pagination);
   }
 
   /**
@@ -327,6 +348,23 @@ export class ObservationService extends DBService {
   }
 
   /**
+   * Retrieves the count of survey observations for the given survey
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IObservationAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
+   */
+  async findObservationsCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IObservationAdvancedFilters
+  ): Promise<number> {
+    return this.observationRepository.findObservationsCount(isUserAdmin, systemUserId, filterFields);
+  }
+
+  /**
    * Inserts a survey observation submission record into the database and returns the key
    *
    * @param {Express.Multer.File} file
@@ -434,7 +472,7 @@ export class ObservationService extends DBService {
     const s3Object = await getFileFromS3(observationSubmissionRecord.key);
 
     // Get the csv file from the S3 object
-    const mediaFile = parseS3File(s3Object);
+    const mediaFile = await parseS3File(s3Object);
 
     // Validate the CSV file mime type
     if (mediaFile.mimetype !== 'text/csv') {
@@ -500,7 +538,7 @@ export class ObservationService extends DBService {
 
     const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
 
-    // Fetch all measurement type definitions from Critterbase for all unique environment column names in the CSV file
+    // Fetch all environment type definitions from SIMS for all unique environment column names in the CSV file
     const environmentTypeDefinitions = await getEnvironmentTypeDefinitionsFromColumnNames(
       environmentColumnNames,
       observationSubCountEnvironmentService
