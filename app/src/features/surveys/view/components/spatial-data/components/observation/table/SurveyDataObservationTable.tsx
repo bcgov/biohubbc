@@ -9,7 +9,7 @@ import { useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useState } from 'react';
 
-// Set height so we the skeleton loader will match table rows
+// Set height so the skeleton loader will match table rows
 const rowHeight = 52;
 
 interface IObservationTableRow {
@@ -30,6 +30,12 @@ interface ISurveyDataObservationTableProps {
   isLoading: boolean;
 }
 
+/**
+ * Component to display observation data in a table with server-side pagination and sorting.
+ *
+ * @param {ISurveyDataObservationTableProps} props - Component properties.
+ * @returns {JSX.Element} The rendered component.
+ */
 const SurveyDataObservationTable = (props: ISurveyDataObservationTableProps) => {
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
@@ -44,14 +50,14 @@ const SurveyDataObservationTable = (props: ISurveyDataObservationTableProps) => 
 
   const paginatedDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
     biohubApi.observation.getObservationRecords(surveyContext.projectId, surveyContext.surveyId, {
-      page: page + 1, // this fixes an off by one error between the front end and the back end
+      page: page + 1, // This fixes an off-by-one error between the front end and the back end
       limit,
       sort,
       order
     })
   );
 
-  // page information has changed, fetch more data
+  // Page information has changed, fetch more data
   useEffect(() => {
     if (sortModel.length > 0) {
       if (sortModel[0].sort) {
@@ -60,10 +66,10 @@ const SurveyDataObservationTable = (props: ISurveyDataObservationTableProps) => 
     } else {
       paginatedDataLoader.refresh(page, pageSize);
     }
-    // Should not re-run this effect on `paginatedDataLoader.refresh` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, sortModel]);
 
+  // Update table data and columns when new data is loaded
   useEffect(() => {
     if (paginatedDataLoader.data) {
       setTotalRows(paginatedDataLoader.data.pagination.total);
@@ -93,9 +99,7 @@ const SurveyDataObservationTable = (props: ISurveyDataObservationTableProps) => 
           headerName: 'Species',
           flex: 1,
           minWidth: 200,
-          renderCell: (params) => {
-            return <em>{params.row.itis_scientific_name}</em>;
-          }
+          renderCell: (params) => <em>{params.row.itis_scientific_name}</em>
         },
         {
           field: 'survey_sample_site_name',

@@ -1,18 +1,35 @@
+import Box from '@mui/material/Box';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/spatial';
 import dayjs from 'dayjs';
-import { ISurveyMapPoint, ISurveyMapPointMetadata } from 'features/surveys/view/SurveyMap';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
+import { ISurveyMapPoint, ISurveyMapPointMetadata } from 'features/surveys/view/SurveyMap';
 import { Position } from 'geojson';
 import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
 import { ITelemetry } from 'hooks/useTelemetryApi';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import { useMemo } from 'react';
-import SurveyDataLayer from '../components/SurveyDataLayer';
+import { useEffect, useMemo } from 'react';
+import SurveyDataLayer from '../map/SurveyDataMapContainer';
 import SurveyDataTelemetryTable from './table/SurveyDataTelemetryTable';
 
+/**
+ * Component to display telemetry data on a map and in a table.
+ *
+ * @returns {JSX.Element} The rendered component.
+ */
 export const SurveyDataTelemetry = () => {
   const surveyContext = useSurveyContext();
   const { telemetryDataLoader } = useTelemetryDataContext();
+
+  useEffect(() => {
+    telemetryDataLoader.refresh(
+      surveyContext.deploymentDataLoader.data?.map((deployment) => deployment.deployment_id) ?? []
+    );
+  }, []);
+
+  /**
+   * Memoized calculation of telemetry points to display on the map.
+   * Combines telemetry data with critter and deployment data.
+   */
   const telemetryPoints: ISurveyMapPoint[] = useMemo(() => {
     const deployments: IAnimalDeployment[] = surveyContext.deploymentDataLoader.data ?? [];
     const critters: ISimpleCritterWithInternalId[] = surveyContext.critterDataLoader.data ?? [];
@@ -20,7 +37,6 @@ export const SurveyDataTelemetry = () => {
     return (
       telemetryDataLoader.data
         ?.filter((telemetry) => telemetry.latitude !== undefined && telemetry.longitude !== undefined)
-
         // Combine all critter and deployments data into a flat list
         .reduce(
           (
@@ -86,13 +102,20 @@ export const SurveyDataTelemetry = () => {
   };
 
   return (
-    <SurveyDataLayer
-      layerName={supplementaryLayer.layerName}
-      layerColors={supplementaryLayer.layerColors}
-      popupRecordTitle={supplementaryLayer.popupRecordTitle}
-      mapPoints={supplementaryLayer.mapPoints}
-      DataGrid={<SurveyDataTelemetryTable isLoading={telemetryDataLoader.isLoading} />}
-      isLoading={telemetryDataLoader.isLoading}
-    />
+    <>
+      {/* MAP */}
+      <SurveyDataLayer
+        layerName={supplementaryLayer.layerName}
+        layerColors={supplementaryLayer.layerColors}
+        popupRecordTitle={supplementaryLayer.popupRecordTitle}
+        mapPoints={supplementaryLayer.mapPoints}
+        isLoading={telemetryDataLoader.isLoading}
+      />
+
+      {/* DATA TABLE */}
+      <Box p={2} position="relative">
+        <SurveyDataTelemetryTable isLoading={telemetryDataLoader.isLoading} />
+      </Box>
+    </>
   );
 };

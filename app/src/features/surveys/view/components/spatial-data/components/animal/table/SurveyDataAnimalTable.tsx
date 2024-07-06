@@ -7,34 +7,47 @@ import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 
-// Set height so we the skeleton loader will match table rows
+// Set height so the skeleton loader matches table rows
 const rowHeight = 52;
 
+/**
+ * Interface defining the structure of animal data used in the table.
+ */
 interface IAnimalData {
   id: string;
   animal_id: string;
   scientificName: string;
 }
 
+/**
+ * Props interface for SurveyDataAnimalTable component.
+ */
 interface ISurveyDataAnimalTableProps {
   isLoading: boolean;
 }
 
+/**
+ * Component for displaying animal data in a table, fetching data via context and API hooks.
+ * Renders a table with animal nicknames and scientific names, with loading skeleton when data is loading.
+ */
 const SurveyDataAnimalTable = (props: ISurveyDataAnimalTableProps) => {
   const surveyContext = useSurveyContext();
-
   const critterbaseApi = useCritterbaseApi();
 
+  // Fetch critter data loader from survey context
   const animals = surveyContext.critterDataLoader.data ?? [];
 
+  // DataLoader to fetch detailed critter data based on IDs from context
   const animalsDataLoader = useDataLoader(() =>
     critterbaseApi.critters.getMultipleCrittersByIds(animals.map((animal) => animal.critter_id))
   );
 
+  // Load data if animals data is available
   if (animals.length) {
     animalsDataLoader.load();
   }
 
+  // Map fetched data to table data structure
   const tableData: IAnimalData[] =
     animalsDataLoader.data?.map((item) => ({
       id: item.critter_id,
@@ -43,6 +56,7 @@ const SurveyDataAnimalTable = (props: ISurveyDataAnimalTableProps) => {
       status: item.mortality?.length ? true : false
     })) ?? [];
 
+  // Define columns for the data grid
   const columns: GridColDef<IAnimalData>[] = [
     {
       field: 'animal_id',
@@ -53,7 +67,7 @@ const SurveyDataAnimalTable = (props: ISurveyDataAnimalTableProps) => {
       field: 'scientificName',
       headerName: 'Species',
       flex: 1,
-      renderCell: (params) => <ScientificNameTypography name={params.value} />
+      renderCell: (params) => <ScientificNameTypography name={params.value} /> // Render scientific name with custom typography component
     }
   ];
 
@@ -61,12 +75,14 @@ const SurveyDataAnimalTable = (props: ISurveyDataAnimalTableProps) => {
     <>
       {props.isLoading ? (
         <Stack>
+          {/* Skeleton rows for loading state */}
           <SkeletonRow />
           <SkeletonRow />
           <SkeletonRow />
         </Stack>
       ) : (
         <StyledDataGrid
+          // Data grid component for displaying animal data
           noRowsMessage={'No animals found'}
           columnHeaderHeight={rowHeight}
           rowHeight={rowHeight}

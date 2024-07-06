@@ -9,25 +9,27 @@ import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './components
 import { SurveyDataTelemetry } from './components/telemetry/SurveyDataTelemetry';
 
 /**
- * Returns the container of survey spatial data
+ * Container component for displaying survey spatial data.
+ * It includes a toolbar to switch between different dataset views
+ * (observations, animals, telemetry) and fetches and catches necessary taxonomic data.
  *
- * @returns
- *
+ * @returns {JSX.Element} The rendered component.
  */
-export const SurveyDataContainer = () => {
+export const SurveyDataContainer = (): JSX.Element => {
   const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
 
   const observationsContext = useObservationsContext();
   const taxonomyContext = useTaxonomyContext();
 
-  // Fetch/cache all taxonomic data for the observations
+  // Fetch and cache all taxonomic data required for the observations.
   useEffect(() => {
     const cacheTaxonomicData = async () => {
       if (observationsContext.observationsDataLoader.data) {
-        // fetch all unique itis_tsn's from observations to find taxonomic names
+        // Fetch all unique ITIS TSNs from observations to retrieve taxonomic names
         const taxonomicIds = [
           ...new Set(observationsContext.observationsDataLoader.data.surveyObservations.map((item) => item.itis_tsn))
         ].filter((tsn): tsn is number => tsn !== null);
+
         await taxonomyContext.cacheSpeciesTaxonomyByIds(taxonomicIds);
       }
     };
@@ -39,24 +41,24 @@ export const SurveyDataContainer = () => {
 
   return (
     <Paper>
-      {/* Toolbar for changing which data is displayed */}
+      {/* Toolbar for switching between different dataset views */}
       <SurveySpatialToolbar
         activeView={activeView}
         views={[
           {
-            label: `Observations`,
+            label: 'Observations',
             value: SurveySpatialDatasetViewEnum.OBSERVATIONS,
             icon: mdiEye,
             isLoading: false
           },
           {
-            label: `Animals`,
+            label: 'Animals',
             value: SurveySpatialDatasetViewEnum.ANIMALS,
             icon: mdiPaw,
             isLoading: false
           },
           {
-            label: `Telemetry`,
+            label: 'Telemetry',
             value: SurveySpatialDatasetViewEnum.TELEMETRY,
             icon: mdiWifiMarker,
             isLoading: false
@@ -65,7 +67,7 @@ export const SurveyDataContainer = () => {
         updateDatasetView={setActiveView}
       />
 
-      {/* Map and data table */}
+      {/* Display the corresponding dataset view based on the selected active view */}
       {isEqual(SurveySpatialDatasetViewEnum.OBSERVATIONS, activeView) && <SurveyDataObservation />}
       {isEqual(SurveySpatialDatasetViewEnum.TELEMETRY, activeView) && <SurveyDataTelemetry />}
       {isEqual(SurveySpatialDatasetViewEnum.ANIMALS, activeView) && <SurveyDataAnimal />}

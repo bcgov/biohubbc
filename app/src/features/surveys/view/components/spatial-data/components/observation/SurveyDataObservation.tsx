@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/spatial';
 import {
@@ -11,26 +12,33 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IGetSurveyObservationsGeometryResponse } from 'interfaces/useObservationApi.interface';
 import { useEffect, useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';
-import SurveyDataLayer from '../components/SurveyDataLayer';
+import SurveyDataLayer from '../map/SurveyDataMapContainer';
 import SurveyDataObservationTable from './table/SurveyDataObservationTable';
 
+/**
+ * Component to display survey observation data on a map and in a table.
+ *
+ * @returns {JSX.Element} The rendered component.
+ */
 export const SurveyDataObservation = () => {
   const surveyContext = useSurveyContext();
-
   const { surveyId, projectId } = surveyContext;
-
   const biohubApi = useBiohubApi();
 
+  // Data loader to fetch observation geometry data for the survey
   const observationsGeometryDataLoader = useDataLoader(() =>
     biohubApi.observation.getObservationsGeometry(projectId, surveyId)
   );
 
+  // Load observation geometry data on component mount
   useEffect(() => {
     observationsGeometryDataLoader.load();
   }, []);
 
+  // Observation geometry data from the data loader
   const observations: IGetSurveyObservationsGeometryResponse | undefined = observationsGeometryDataLoader.data;
 
+  // Memoized calculation of observation points for the map
   const observationPoints: ISurveyMapPoint[] = useMemo(() => {
     return (
       observations?.surveyObservationsGeometry.map((observation) => {
@@ -40,7 +48,6 @@ export const SurveyDataObservation = () => {
             properties: {},
             geometry: observation.geometry
           },
-
           key: `observation-${observation.survey_observation_id}`,
           onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
             const response = await biohubApi.observation.getObservationRecord(
@@ -75,6 +82,7 @@ export const SurveyDataObservation = () => {
     );
   }, [biohubApi.observation, observations, projectId, surveyId]);
 
+  // Configuration for the supplementary layer for species observations
   const supplementaryLayer: ISurveyMapSupplementaryLayer = {
     layerName: 'Species Observations',
     layerColors: {
@@ -86,13 +94,20 @@ export const SurveyDataObservation = () => {
   };
 
   return (
-    <SurveyDataLayer
-      layerName={supplementaryLayer.layerName}
-      layerColors={supplementaryLayer.layerColors}
-      popupRecordTitle={supplementaryLayer.popupRecordTitle}
-      mapPoints={supplementaryLayer.mapPoints}
-      DataGrid={<SurveyDataObservationTable isLoading={observationsGeometryDataLoader.isLoading} />}
-      isLoading={observationsGeometryDataLoader.isLoading}
-    />
+    <>
+      {/* Map display of species observations */}
+      <SurveyDataLayer
+        layerName={supplementaryLayer.layerName}
+        layerColors={supplementaryLayer.layerColors}
+        popupRecordTitle={supplementaryLayer.popupRecordTitle}
+        mapPoints={supplementaryLayer.mapPoints}
+        isLoading={observationsGeometryDataLoader.isLoading}
+      />
+
+      {/* Data table of species observations */}
+      <Box p={2} position="relative">
+        <SurveyDataObservationTable isLoading={observationsGeometryDataLoader.isLoading} />
+      </Box>
+    </>
   );
 };

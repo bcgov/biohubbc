@@ -49,6 +49,9 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
         '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },
         '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': { py: '15px' },
         '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': { py: '22px' },
+        '& .MuiTypography-root, .MuiDataGrid-cellContent': {
+          fontSize: '0.9rem'
+        },
         ...props.sx
       }}
     />

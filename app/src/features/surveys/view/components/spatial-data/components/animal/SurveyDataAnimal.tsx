@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/spatial';
 import {
   ISurveyMapPoint,
@@ -10,30 +11,34 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo } from 'react';
 import { createGeoJSONPoint } from 'utils/Utils';
-import SurveyDataLayer from '../components/SurveyDataLayer';
+import SurveyDataLayer from '../map/SurveyDataMapContainer';
 import SurveyDataAnimalTable from './table/SurveyDataAnimalTable';
 
+/**
+ * Component for displaying animal capture points on a map and in a table.
+ * Retrieves and displays data related to animal captures for a specific survey.
+ */
 export const SurveyDataAnimal = () => {
   const surveyContext = useSurveyContext();
-
   const { surveyId, projectId } = surveyContext;
 
   const biohubApi = useBiohubApi();
   const critterbaseApi = useCritterbaseApi();
 
-  // TODO: Fix critterbase endpoint. Currently returns an empty array when format = detailed.
+  // Data loader for fetching animal capture data
   const animalDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCrittersDetailed(projectId, surveyId));
 
   useEffect(() => {
-    animalDataLoader.load();
+    animalDataLoader.load(); // Trigger data loading on component mount
   }, []);
 
   const animals = animalDataLoader.data;
 
+  // Memoized computation of capture points for map display
   const capturePoints: ISurveyMapPoint[] = useMemo(() => {
     const points: ISurveyMapPoint[] = [];
 
-    // Iterate over animals array
+    // Iterate over animals array to extract capture points
     for (const animal of animals ?? []) {
       // Iterate over captures array within each animal
       for (const capture of animal.captures ?? []) {
@@ -74,6 +79,7 @@ export const SurveyDataAnimal = () => {
     return points;
   }, [biohubApi.observation, animals, projectId, surveyId]);
 
+  // Define supplementary layer for map display
   const supplementaryLayer: ISurveyMapSupplementaryLayer = {
     layerName: 'Animal Captures',
     layerColors: {
@@ -85,13 +91,20 @@ export const SurveyDataAnimal = () => {
   };
 
   return (
-    <SurveyDataLayer
-      layerName={supplementaryLayer.layerName}
-      layerColors={supplementaryLayer.layerColors}
-      popupRecordTitle={supplementaryLayer.popupRecordTitle}
-      mapPoints={supplementaryLayer.mapPoints}
-      DataGrid={<SurveyDataAnimalTable isLoading={animalDataLoader.isLoading} />}
-      isLoading={animalDataLoader.isLoading}
-    />
+    <>
+      {/* Display map with animal capture points */}
+      <SurveyDataLayer
+        layerName={supplementaryLayer.layerName}
+        layerColors={supplementaryLayer.layerColors}
+        popupRecordTitle={supplementaryLayer.popupRecordTitle}
+        mapPoints={supplementaryLayer.mapPoints}
+        isLoading={animalDataLoader.isLoading}
+      />
+
+      {/* Display data table with animal capture details */}
+      <Box p={2} position="relative">
+        <SurveyDataAnimalTable isLoading={animalDataLoader.isLoading} />
+      </Box>
+    </>
   );
 };
