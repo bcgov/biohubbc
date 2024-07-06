@@ -15,7 +15,6 @@ import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 import CreateProjectPage from './create/CreateProjectPage';
 import EditProjectPage from './edit/EditProjectPage';
-import ProjectsListPage from './list/ProjectsListPage';
 import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
 
 /**
@@ -26,11 +25,9 @@ import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
 const ProjectsRouter: React.FC = () => {
   return (
     <Switch>
-      {/* Project List Routes */}
+      {/* Summary Page Redirect */}
       <RouteWithTitle exact path="/admin/projects" title={getTitle('Projects')}>
-        <DialogContextProvider>
-          <ProjectsListPage />
-        </DialogContextProvider>
+        <Redirect to="/admin/summary" />
       </RouteWithTitle>
 
       {/* Create Project Route */}
@@ -46,7 +43,7 @@ const ProjectsRouter: React.FC = () => {
       <Redirect exact from="/admin/projects/:id" to="/admin/projects/:id/details" />
 
       {/* Project Routes */}
-      <RouteWithTitle path="/admin/projects/:id" title={getTitle('Project Details')}>
+      <RouteWithTitle path="/admin/projects/:id" title={getTitle('Project')}>
         <ProjectAuthStateContextProvider>
           <DialogContextProvider>
             <ProjectContextProvider>
@@ -88,7 +85,7 @@ const ProjectsRouter: React.FC = () => {
               </RouteWithTitle>
 
               {/* Survey Routes */}
-              <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')}>
+              <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Survey')}>
                 <ProjectRoleRouteGuard
                   validProjectPermissions={[
                     PROJECT_PERMISSION.COORDINATOR,

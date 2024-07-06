@@ -18,7 +18,7 @@ export const AnimalAttributeItem = (props: IAnimalAttributeItemProps) => {
   return (
     <Box display="flex" alignItems="center">
       {props.startIcon && <Icon path={props.startIcon} size={0.8} color={grey[500]} />}
-      <Typography variant="body1" color="textSecondary" sx={{ ml: 0.5 }}>
+      <Typography variant="body2" color="textSecondary" sx={{ ml: 0.5 }}>
         {props.text}
       </Typography>
     </Box>

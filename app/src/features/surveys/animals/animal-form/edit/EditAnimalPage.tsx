@@ -215,20 +215,24 @@ export const EditAnimalPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <AnimalFormContainer
-            initialAnimalData={
-              {
-                critter_id: critter.critterbase_critter_id,
-                nickname: critter.animal_id,
-                species: {
-                  ...taxonomyContext.getCachedSpeciesTaxonomyById(critter.itis_tsn),
-                  tsn: critter.itis_tsn,
-                  scientificName: critter.itis_scientific_name
-                },
-                ecological_units: critter.collection_units.map((unit) => ({ ...unit, critter_id: critter.critterbase_critter_id })),
-                wildlife_health_id: critter.wlh_id,
-                critter_comment: critter.critter_comment
-              } as ICreateEditAnimalRequest
-            }
+            initialAnimalData={{
+              critter_id: critter.critterbase_critter_id,
+              nickname: critter.animal_id || '',
+              species: {
+                commonNames: [],
+                rank: undefined,
+                kingdom: undefined,
+                ...taxonomyContext.getCachedSpeciesTaxonomyById(critter.itis_tsn),
+                tsn: critter.itis_tsn,
+                scientificName: critter.itis_scientific_name
+              },
+              ecological_units: critter.collection_units.map((unit) => ({
+                ...unit,
+                critter_id: critter.critterbase_critter_id
+              })),
+              wildlife_health_id: critter.wlh_id,
+              critter_comment: critter.critter_comment
+            }}
             handleSubmit={handleSubmit}
             formikRef={formikRef}
             isEdit={true}

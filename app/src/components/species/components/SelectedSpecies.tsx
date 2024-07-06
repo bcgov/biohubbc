@@ -1,17 +1,17 @@
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCard';
-import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 
 export interface ISelectedSpeciesProps {
   /**
    * List of selected species to display.
    *
-   * @type {ITaxonomy[]}
+   * @type {IPartialTaxonomy[]}
    * @memberof ISelectedSpeciesProps
    */
-  selectedSpecies: ITaxonomy[];
+  selectedSpecies: IPartialTaxonomy[];
   /**
    * Callback to remove a species from the selected species list.
    * If not provided, the remove button will not be displayed.
@@ -28,7 +28,7 @@ const SelectedSpecies = (props: ISelectedSpeciesProps) => {
     <Box>
       <TransitionGroup>
         {selectedSpecies &&
-          selectedSpecies.map((species: ITaxonomy, index: number) => {
+          selectedSpecies.map((species: IPartialTaxonomy, index: number) => {
             return (
               <Collapse key={species.tsn}>
                 <SpeciesSelectedCard index={index} species={species} handleRemove={handleRemoveSpecies} />

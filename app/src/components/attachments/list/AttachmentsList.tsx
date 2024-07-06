@@ -17,7 +17,6 @@ export interface IAttachmentsListProps<T extends IGetProjectAttachment | IGetSur
   handleDownload: (attachment: T) => void;
   handleDelete: (attachment: T) => void;
   handleViewDetails: (attachment: T) => void;
-  handleRemoveOrResubmit: (attachment: T) => void;
   emptyStateText?: string;
 }
 
@@ -28,7 +27,7 @@ const validSystemRoles: SYSTEM_ROLE[] = [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.D
 const pageSizeOptions = [5, 10, 25];
 
 const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>(props: IAttachmentsListProps<T>) => {
-  const { attachments, handleDownload, handleDelete, handleViewDetails, handleRemoveOrResubmit } = props;
+  const { attachments, handleDownload, handleDelete, handleViewDetails } = props;
 
   const projectAuthStateContext = useContext(ProjectAuthStateContext);
 
@@ -96,7 +95,6 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
             onDownloadFile={() => handleDownload(params.row)}
             onDeleteFile={() => handleDelete(params.row)}
             onViewDetails={() => handleViewDetails(params.row)}
-            onRemoveOrResubmit={() => handleRemoveOrResubmit(params.row)}
           />
         );
       }

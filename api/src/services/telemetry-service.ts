@@ -1,22 +1,35 @@
 import { default as dayjs } from 'dayjs';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
-import { ICreateManualTelemetry } from '../models/bctw';
-import { TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
+import { ITelemetryAdvancedFilters } from '../models/telemetry-view';
+import { SurveyCritterRecord } from '../repositories/survey-critter-repository';
+import { Deployment, TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { parseS3File } from '../utils/media/media-utils';
 import {
+  IXLSXCSVValidator,
   constructXLSXWorkbook,
   getDefaultWorksheet,
   getWorksheetRowObjects,
-  IXLSXCSVValidator,
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
+import { ApiPaginationOptions } from '../zod-schema/pagination';
+import { BctwService, IAllTelemetry, ICreateManualTelemetry, IDeploymentRecord } from './bctw-service';
 import { BctwDeploymentService } from './bctw-service/bctw-deployment-service';
 import { BctwTelemetryService } from './bctw-service/bctw-telemetry-service';
-import { ICritterbaseUser } from './critterbase-service';
+import { ICritter, ICritterbaseUser } from './critterbase-service';
 import { DBService } from './db-service';
 import { DeploymentService } from './deployment-service';
+import { SurveyCritterService } from './survey-critter-service';
+
+export type FindTelemetryResponse = { telemetry_id: string } & Pick<
+  IAllTelemetry,
+  'acquisition_date' | 'latitude' | 'longitude' | 'telemetry_type'
+> &
+  Pick<IDeploymentRecord, 'device_id'> &
+  Pick<Deployment, 'bctw_deployment_id' | 'critter_id' | 'deployment_id'> &
+  Pick<SurveyCritterRecord, 'critterbase_critter_id'> &
+  Pick<ICritter, 'animal_id'>;
 
 const telemetryCSVColumnValidator: IXLSXCSVValidator = {
   columnNames: ['DEVICE_ID', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
@@ -28,10 +41,11 @@ const telemetryCSVColumnValidator: IXLSXCSVValidator = {
 };
 
 export class TelemetryService extends DBService {
-  repository: TelemetryRepository;
+  telemetryRepository: TelemetryRepository;
+
   constructor(connection: IDBConnection) {
     super(connection);
-    this.repository = new TelemetryRepository(connection);
+    this.telemetryRepository = new TelemetryRepository(connection);
   }
 
   /**
@@ -49,9 +63,9 @@ export class TelemetryService extends DBService {
     projectId: number,
     surveyId: number
   ): Promise<{ submission_id: number; key: string }> {
-    const submissionId = await this.repository.getNextSubmissionId();
+    const submissionId = await this.telemetryRepository.getNextSubmissionId();
     const key = generateS3FileKey({ projectId, surveyId, submissionId, fileName: file.originalname });
-    const result = await this.repository.insertSurveyTelemetrySubmission(
+    const result = await this.telemetryRepository.insertSurveyTelemetrySubmission(
       submissionId,
       key,
       surveyId,
@@ -68,7 +82,7 @@ export class TelemetryService extends DBService {
     const s3Object = await getFileFromS3(submission.key);
 
     // step 3 parse the file
-    const mediaFile = parseS3File(s3Object);
+    const mediaFile = await parseS3File(s3Object);
 
     // step 4 validate csv
     if (mediaFile.mimetype !== 'text/csv') {
@@ -157,6 +171,163 @@ export class TelemetryService extends DBService {
   }
 
   async getTelemetrySubmissionById(submissionId: number): Promise<TelemetrySubmissionRecord> {
-    return this.repository.getTelemetrySubmissionById(submissionId);
+    return this.telemetryRepository.getTelemetrySubmissionById(submissionId);
+  }
+
+  /**
+   * Get deployments for the given critter ids.
+   *
+   * Note: SIMS does not store deployment information, beyond an ID. Deployment details must be fetched from the
+   * external BCTW API.
+   *
+   * @param {number[]} critterIds
+   * @return {*}  {Promise<Deployment[]>}
+   * @memberof TelemetryService
+   */
+  async getDeploymentsByCritterIds(critterIds: number[]): Promise<Deployment[]> {
+    return this.telemetryRepository.getDeploymentsByCritterIds(critterIds);
+  }
+
+  /**
+   * Retrieves the paginated list of all telemetry records that are available to the user, based on their permissions
+   * and provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ITelemetryAdvancedFilters} [filterFields]
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<FindTelemetryResponse[]>}
+   * @memberof TelemetryService
+   */
+  async findTelemetry(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields?: ITelemetryAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<FindTelemetryResponse[]> {
+    // --- Step 1 -----------------------------
+
+    const surveyCritterService = new SurveyCritterService(this.connection);
+    // The SIMS critter records the user has access to
+    const simsCritters = await surveyCritterService.findCritters(
+      isUserAdmin,
+      systemUserId,
+      filterFields,
+      // Remove the sort and order from the pagination object as these are based on the telemetry sort columns and
+      // may not be valid for the critter columns
+      // TODO: Is there a better way to achieve this pagination safety?
+      pagination
+        ? {
+            ...pagination,
+            sort: undefined,
+            order: undefined
+          }
+        : undefined
+    );
+
+    if (!simsCritters.length) {
+      // Exit early if there are no SIMS critters, and therefore no telemetry
+      return [];
+    }
+
+    // --- Step 2 ------------------------------
+
+    const simsCritterIds = simsCritters.map((critter) => critter.critter_id);
+    // The sims deployment records the user has access to
+    const simsDeployments = await this.telemetryRepository.getDeploymentsByCritterIds(simsCritterIds);
+
+    if (!simsDeployments.length) {
+      // Exit early if there are no SIMS deployments, and therefore no telemetry
+      return [];
+    }
+
+    // --- Step 3 ------------------------------
+
+    const critterbaseCritterIds = simsCritters
+      .filter((simsCritter) =>
+        simsDeployments.some((surveyDeployment) => surveyDeployment.critter_id === simsCritter.critter_id)
+      )
+      .map((critter) => critter.critterbase_critter_id);
+
+    if (!critterbaseCritterIds.length) {
+      // Exit early if there are no critterbase critters, and therefore no telemetry
+      return [];
+    }
+
+    const bctwService = new BctwService({
+      keycloak_guid: this.connection.systemUserGUID(),
+      username: this.connection.systemUserIdentifier()
+    });
+    // The detailed deployment records from BCTW
+    // Note: This may include records the user does not have acces to (A critter may have multiple deployments over its
+    // lifespan, but the user may only have access to a subset of them).
+    const allBctwDeploymentsForCritters = await bctwService.getDeploymentsByCritterId(critterbaseCritterIds);
+
+    // Remove records the user does not have access to
+    const usersBctwDeployments = allBctwDeploymentsForCritters.filter((deployment) =>
+      simsDeployments.some((item) => item.bctw_deployment_id === deployment.deployment_id)
+    );
+    const usersBctwDeploymentIds = usersBctwDeployments.map((deployment) => deployment.deployment_id);
+
+    if (!usersBctwDeploymentIds.length) {
+      // Exit early if there are no BCTW deployments the user has access to, and therefore no telemetry
+      return [];
+    }
+
+    // --- Step 4 ------------------------------
+
+    // The telemetry records for the deployments the user has access to
+    const allTelemetryRecords = await bctwService.getAllTelemetryByDeploymentIds(usersBctwDeploymentIds);
+
+    // --- Step 5 ------------------------------
+
+    // Parse/combine the telemetry, deployment, and critter records into the final response
+    const response: FindTelemetryResponse[] = [];
+    for (const telemetryRecord of allTelemetryRecords) {
+      const usersBctwDeployment = usersBctwDeployments.find(
+        (usersBctwDeployment) => usersBctwDeployment.deployment_id === telemetryRecord.deployment_id
+      );
+
+      if (!usersBctwDeployment) {
+        continue;
+      }
+
+      const simsDeployment = simsDeployments.find(
+        (simsDeployment) => simsDeployment.bctw_deployment_id === telemetryRecord.deployment_id
+      );
+
+      if (!simsDeployment) {
+        continue;
+      }
+
+      const simsCritter = simsCritters.find(
+        (simsCritter) => simsCritter.critterbase_critter_id === usersBctwDeployment?.critter_id
+      );
+
+      if (!simsCritter) {
+        continue;
+      }
+
+      response.push({
+        // IAllTelemetry
+        telemetry_id: telemetryRecord.telemetry_id ?? telemetryRecord.telemetry_manual_id,
+        acquisition_date: telemetryRecord.acquisition_date,
+        latitude: telemetryRecord.latitude,
+        longitude: telemetryRecord.longitude,
+        telemetry_type: telemetryRecord.telemetry_type,
+        // IDeploymentRecord
+        device_id: usersBctwDeployment.device_id,
+        // Deployment
+        bctw_deployment_id: telemetryRecord.deployment_id,
+        critter_id: simsDeployment.critter_id,
+        deployment_id: simsDeployment.deployment_id,
+        // SurveyCritterRecord
+        critterbase_critter_id: usersBctwDeployment.critter_id,
+        // ICritter
+        animal_id: simsCritter.animal_id
+      });
+    }
+
+    return response;
   }
 }

@@ -199,7 +199,7 @@ export const EditCapturePage = () => {
         type: 'Feature',
         geometry: {
           type: 'Point',
-          coordinates: [capture.capture_location.longitude ?? 0, capture.capture_location.latitude ?? 0]
+          coordinates: [capture?.capture_location?.longitude ?? 0, capture?.capture_location?.latitude ?? 0]
         },
         properties: {}
       },

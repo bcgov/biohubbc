@@ -166,11 +166,11 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
                       )}
                       &nbsp;
                     </Typography>
-                    {capture.capture_location.latitude && capture.capture_location.longitude && (
+                    {capture.capture_location?.latitude && capture.capture_location?.longitude && (
                       <Box>
                         <Typography color="textSecondary" variant="body2">
-                          {capture.capture_location.latitude},&nbsp;
-                          {capture.capture_location.longitude}
+                          {capture.capture_location?.latitude},&nbsp;
+                          {capture.capture_location?.longitude}
                         </Typography>
                       </Box>
                     )}

@@ -1,6 +1,6 @@
 import {
+  IFindSurveysResponse,
   IGetSurveyForViewResponse,
-  IGetSurveyListResponse,
   SurveySupplementaryData,
   SurveyViewObject
 } from 'interfaces/useSurveyApi.interface';
@@ -123,7 +123,7 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
   surveySupplementaryData: surveySupplementaryData
 };
 
-export const getSurveyForListResponse: IGetSurveyListResponse = {
+export const getSurveyForListResponse: IFindSurveysResponse = {
   surveys: [
     {
       survey_id: 1,
@@ -132,7 +132,10 @@ export const getSurveyForListResponse: IGetSurveyListResponse = {
       end_date: '2021-05-09 11:53:53',
       progress_id: 1,
       focal_species: [1],
-      focal_species_names: ['species 1']
+      focal_species_names: ['species 1'],
+      project_id: 1,
+      regions: ['Skeena'],
+      types: [1]
     },
     {
       survey_id: 2,
@@ -141,7 +144,10 @@ export const getSurveyForListResponse: IGetSurveyListResponse = {
       end_date: '2021-06-10 11:53:53',
       progress_id: 1,
       focal_species: [3],
-      focal_species_names: ['species 3']
+      focal_species_names: ['species 3'],
+      project_id: 1,
+      regions: ['Skeena'],
+      types: [1]
     }
   ],
   pagination: {

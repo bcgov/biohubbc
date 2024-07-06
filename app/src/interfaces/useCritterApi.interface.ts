@@ -1,6 +1,6 @@
 import { ICreateCritterCollectionUnit } from 'features/surveys/view/survey-animals/animal';
 import { Feature } from 'geojson';
-import { ITaxonomy } from './useTaxonomyApi.interface';
+import { IPartialTaxonomy } from './useTaxonomyApi.interface';
 
 export interface ICritterCreate {
   critter_id?: string;
@@ -15,9 +15,9 @@ export interface ICritterCreate {
 export interface ICreateEditAnimalRequest {
   critter_id?: string;
   nickname: string;
-  species: ITaxonomy | null;
+  species: IPartialTaxonomy | null;
   ecological_units: ICreateCritterCollectionUnit[];
-  wildlife_health_id: string;
+  wildlife_health_id: string | null;
   critter_comment: string | null;
 }
 
@@ -155,8 +155,8 @@ export type ICaptureResponse = {
   release_time: string | null;
   capture_comment: string | null;
   release_comment: string | null;
-  capture_location: ILocationResponse;
-  release_location: ILocationResponse | null | undefined;
+  capture_location?: ILocationResponse | null;
+  release_location?: ILocationResponse | null;
 };
 
 export type IMarkingResponse = {

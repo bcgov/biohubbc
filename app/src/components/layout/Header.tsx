@@ -259,7 +259,7 @@ const Header: React.FC = () => {
                   <MenuItem
                     tabIndex={1}
                     component={RouterLink}
-                    to="/admin/projects"
+                    to="/admin/summary"
                     id="menu_projects_sm"
                     onClick={hideMobileMenu}>
                     Projects
@@ -340,7 +340,7 @@ const Header: React.FC = () => {
                   </RouterLink>
                 </UnAuthGuard>
                 <AuthGuard>
-                  <RouterLink to="/admin/projects" id="menu_projects">
+                  <RouterLink to="/admin/summary" id="menu_projects">
                     Projects
                   </RouterLink>
                 </AuthGuard>

@@ -1,4 +1,4 @@
-import { mdiCheckboxMultipleBlankOutline, mdiInformationOutline, mdiPlusBoxOutline } from '@mdi/js';
+import { mdiCheckboxMultipleBlankOutline, mdiInformationOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -9,7 +9,6 @@ import green from '@mui/material/colors/green';
 import grey from '@mui/material/colors/grey';
 import red from '@mui/material/colors/red';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import VerticalKeyValuePair from 'components/display/VerticalKeyValuePair';
 import { useDialogContext } from 'hooks/useContext';
 import { useCopyToClipboard } from 'hooks/useCopyToClipboard';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
@@ -49,7 +48,7 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
         {critter.animal_id}
       </Typography>
       <Box display="flex" justifyContent="space-between">
-        <Stack direction="row" spacing={2}>
+        <Stack direction="row" spacing={2} sx={{ mr: 2, alignItems: 'center' }}>
           <AnimalAttributeItem
             text={
               <ScientificNameTypography
@@ -61,7 +60,6 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
             }
             startIcon={mdiInformationOutline}
           />
-          {critter.wlh_id && <AnimalAttributeItem text={critter.wlh_id} startIcon={mdiPlusBoxOutline} />}
           <Box mt={1}>
             <ColouredRectangleChip
               label={critter.mortality.length ? 'Deceased' : 'Alive'}
@@ -93,9 +91,25 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
       </Box>
       <Divider sx={{ my: 2 }} />
       <Stack direction="row" gap={3} flex="1 1 auto">
-        <VerticalKeyValuePair label="sex" value={critter.sex} />
-        {critter.collection_units.map((unit) => (
-          <VerticalKeyValuePair label={unit.category_name} value={unit.unit_name} key={unit.collection_category_id} />
+        {critter.wlh_id && (
+          <Box>
+            <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
+              Wildlife Health ID
+            </Typography>
+            <Typography component="dd" variant="body2">
+              {critter.wlh_id}
+            </Typography>
+          </Box>
+        )}
+        {critter.collection_units.map((unit, index) => (
+          <Box key={`${unit.collection_category_id}-${index}`}>
+            <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
+              {unit.category_name}
+            </Typography>
+            <Typography component="dd" variant="body2">
+              {unit.unit_name}
+            </Typography>
+          </Box>
         ))}
       </Stack>
     </>
