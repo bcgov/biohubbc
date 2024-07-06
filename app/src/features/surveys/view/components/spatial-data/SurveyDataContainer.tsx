@@ -1,9 +1,12 @@
 import { mdiEye, mdiPaw, mdiWifiMarker } from '@mdi/js';
 import Paper from '@mui/material/Paper';
-import { useObservationsContext, useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
+import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
+import { isEqual } from 'lodash-es';
 import { useEffect, useState } from 'react';
-import { SurveyDataMapTableContainer } from './components/SurveyDataMapTableContainer';
 import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './components/SurveySpatialToolbar';
+import { SurveyDataAnimal } from './components/animal/SurveyDataAnimal';
+import { SurveyDataObservation } from './components/observation/SurveyDataObservation';
+import { SurveyDataTelemetry } from './components/telemetry/SurveyDataTelemetry';
 
 /**
  * Returns the container of survey spatial data
@@ -14,7 +17,6 @@ import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './components
 export const SurveyDataContainer = () => {
   const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
 
-  const surveyContext = useSurveyContext();
   const observationsContext = useObservationsContext();
   const taxonomyContext = useTaxonomyContext();
 
@@ -48,7 +50,7 @@ export const SurveyDataContainer = () => {
             isLoading: false
           },
           {
-            label: `Animals (${surveyContext.critterDataLoader.data?.length ?? 0})`,
+            label: `Animals`,
             value: SurveySpatialDatasetViewEnum.ANIMALS,
             icon: mdiPaw,
             isLoading: false
@@ -64,7 +66,9 @@ export const SurveyDataContainer = () => {
       />
 
       {/* Map and data table */}
-      <SurveyDataMapTableContainer activeView={activeView} />
+      {isEqual(SurveySpatialDatasetViewEnum.OBSERVATIONS, activeView) && <SurveyDataObservation />}
+      {isEqual(SurveySpatialDatasetViewEnum.TELEMETRY, activeView) && <SurveyDataTelemetry />}
+      {isEqual(SurveySpatialDatasetViewEnum.ANIMALS, activeView) && <SurveyDataAnimal />}
     </Paper>
   );
 };

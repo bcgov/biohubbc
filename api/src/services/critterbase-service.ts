@@ -25,6 +25,11 @@ export interface ICritter {
   critter_comment: string;
 }
 
+export interface ICritterDetailed extends ICritter {
+  captures: ICapture[];
+  mortality: IMortality;
+}
+
 export interface ICapture {
   capture_id?: string;
   critter_id: string;
@@ -381,6 +386,11 @@ export class CritterbaseService {
 
   async getMultipleCrittersByIds(critter_ids: string[]): Promise<ICritter[]> {
     const response = await this.axiosInstance.post(CRITTER_ENDPOINT, { critter_ids });
+    return response.data;
+  }
+
+  async getMultipleCrittersByIdsDetailed(critter_ids: string[]): Promise<ICritter[]> {
+    const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}?format=detailed`, { critter_ids });
     return response.data;
   }
 

@@ -1,25 +1,17 @@
 import { IStaticLayer } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/spatial';
+import SurveyMap from 'features/surveys/view/SurveyMap';
 import SurveyMapPopup from 'features/surveys/view/SurveyMapPopup';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useSurveyContext } from 'hooks/useContext';
-import { ITelemetry } from 'hooks/useTelemetryApi';
-import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
-import { IGetSurveyObservationsGeometryObject } from 'interfaces/useObservationApi.interface';
-import { SurveySpatialDatasetViewEnum } from '../SurveySpatialToolbar';
-import { SurveyDataMapAnimals } from './animal/SurveyDataMapAnimals';
-import SurveyDataMapObservations from './observation/SurveyDataMapObservations';
-import { SurveyDataMapTelemetry } from './telemetry/SurveyDataMapTelemetry';
 
 interface ISurveyDataMapProps {
-  activeView: SurveySpatialDatasetViewEnum;
-  captures: ICaptureResponse[];
-  observations: IGetSurveyObservationsGeometryObject[];
-  telemetry: ITelemetry[];
+  supplementaryLayers: IStaticLayer[];
+  isLoading: boolean;
 }
 
 const SurveyDataMap = (props: ISurveyDataMapProps) => {
-  const { activeView, captures, observations, telemetry } = props;
+  const { supplementaryLayers } = props;
 
   const surveyContext = useSurveyContext();
 
@@ -51,7 +43,7 @@ const SurveyDataMap = (props: ISurveyDataMapProps) => {
 
   // SAMPLING SITES
   const samplingSiteMapLayer: IStaticLayer = {
-    layerName: 'Sampling Site',
+    layerName: 'Sampling Sites',
     layerColors: {
       color: SURVEY_MAP_LAYER_COLOURS.SAMPLING_SITE_COLOUR,
       fillColor: SURVEY_MAP_LAYER_COLOURS.SAMPLING_SITE_COLOUR
@@ -68,23 +60,14 @@ const SurveyDataMap = (props: ISurveyDataMapProps) => {
               isLoading={false}
             />
           ),
-          tooltip: <SurveyMapTooltip label="Sampling Sites" />
+          tooltip: <SurveyMapTooltip label="Sampling Site" />
         };
       }) ?? []
   };
 
-  const mapLayers = [samplingSiteMapLayer, studyAreaMapLayer];
+  const mapLayers = [samplingSiteMapLayer, studyAreaMapLayer, ...supplementaryLayers];
 
-  switch (activeView) {
-    case SurveySpatialDatasetViewEnum.OBSERVATIONS:
-      return <SurveyDataMapObservations observations={observations} mapLayers={mapLayers} />;
-    case SurveySpatialDatasetViewEnum.ANIMALS:
-      return <SurveyDataMapAnimals captures={captures} mapLayers={mapLayers} />;
-    case SurveySpatialDatasetViewEnum.TELEMETRY:
-      return <SurveyDataMapTelemetry telemetry={telemetry} mapLayers={mapLayers} />;
-    default:
-      return null;
-  }
+  return <SurveyMap staticLayers={mapLayers} supplementaryLayers={[]} isLoading={props.isLoading} />;
 };
 
 export default SurveyDataMap;

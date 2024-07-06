@@ -25,9 +25,9 @@ import SurveyMapPopup from '../../SurveyMapPopup';
 import SurveyMapTooltip from '../../SurveyMapTooltip';
 import { IAnimalDeployment } from '../../survey-animals/telemetry-device/device';
 import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './components/SurveySpatialToolbar';
-import SurveyAnimalsDataTable from './components/table/animal/SurveyAnimalsDataTable';
-import SurveySpatialObservationDataTable from './components/table/observation/SurveySpatialObservationDataTable';
-import SurveySpatialTelemetryDataTable from './components/table/telemetry/SurveySpatialTelemetryDataTable';
+import SurveyAnimalsDataTable from './components/animal/table/SurveyAnimalsDataTable';
+import SurveySpatialObservationDataTable from './components/observation/table/SurveySpatialObservationDataTable';
+import SurveySpatialTelemetryDataTable from './components/telemetry/table/SurveySpatialTelemetryDataTable';
 
 /**
  * Returns a map and data table with toggle buttons for selecting which data to show
@@ -346,7 +346,7 @@ const SurveySpatialData = () => {
                   });
                 }
               });
-            }
+            },
           },
           popup: (
             <SurveyMapPopup

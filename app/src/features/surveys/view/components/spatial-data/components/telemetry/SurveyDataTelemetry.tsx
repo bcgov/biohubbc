@@ -1,4 +1,5 @@
-import { IStaticLayer } from 'components/map/components/StaticLayers';
+import Box from '@mui/material/Box';
+import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/spatial';
 import dayjs from 'dayjs';
 import {
@@ -6,23 +7,19 @@ import {
   ISurveyMapPointMetadata,
   ISurveyMapSupplementaryLayer
 } from 'features/surveys/view/SurveyMap';
+import SurveyMapPopup from 'features/surveys/view/SurveyMapPopup';
+import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { Position } from 'geojson';
 import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
 import { ITelemetry } from 'hooks/useTelemetryApi';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import { useMemo } from 'react';
-import SurveyDataMapData from '../components/SurveyDataMapData';
+import { useMemo, useState } from 'react';
+import { coloredCustomPointMarker } from 'utils/mapUtils';
+import SurveyDataMap from '../map/SurveyDataMap';
+import SurveySpatialObservationDataTable from '../observation/table/SurveySpatialObservationDataTable';
 
-interface ISurveyDataMapTelemetryProps {
-  telemetry: ITelemetry[];
-  mapLayers: IStaticLayer[];
-  isLoading?: boolean;
-}
-
-export const SurveyDataMapTelemetry = (props: ISurveyDataMapTelemetryProps) => {
-  const { telemetry, mapLayers, isLoading } = props;
-
+export const SurveyDataTelemetry = () => {
   const surveyContext = useSurveyContext();
   const { telemetryDataLoader } = useTelemetryDataContext();
 
@@ -31,8 +28,8 @@ export const SurveyDataMapTelemetry = (props: ISurveyDataMapTelemetryProps) => {
     const critters: ISimpleCritterWithInternalId[] = surveyContext.critterDataLoader.data ?? [];
 
     return (
-      telemetry
-        .filter((telemetry) => telemetry.latitude !== undefined && telemetry.longitude !== undefined)
+      telemetryDataLoader.data
+        ?.filter((telemetry) => telemetry.latitude !== undefined && telemetry.longitude !== undefined)
 
         // Combine all critter and deployments data into a flat list
         .reduce(
@@ -78,19 +75,78 @@ export const SurveyDataMapTelemetry = (props: ISurveyDataMapTelemetryProps) => {
               ]);
             }
           };
-        })
+        }) ?? []
     );
-  }, [surveyContext.critterDataLoader.data, telemetry, surveyContext.deploymentDataLoader.data, telemetryDataLoader.data]);
+  }, [
+    surveyContext.critterDataLoader.data,
+    telemetryDataLoader.data,
+    surveyContext.deploymentDataLoader.data,
+    telemetryDataLoader.data
+  ]);
 
-  const mapLayer: ISurveyMapSupplementaryLayer = {
-    layerName: 'Telemetry Location',
+  const supplementaryLayer: ISurveyMapSupplementaryLayer = {
+    layerName: 'Telemetry',
     layerColors: {
       fillColor: SURVEY_MAP_LAYER_COLOURS.TELEMETRY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
       color: SURVEY_MAP_LAYER_COLOURS.TELEMETRY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
     },
-    popupRecordTitle: 'Telemetry Location',
+    popupRecordTitle: 'Telemetry',
     mapPoints: telemetryPoints
   };
 
-  return <SurveyDataMapData mapLayer={mapLayer} additionalLayers={mapLayers} isLoading={isLoading} />;
+  const [mapPointMetadata, setMapPointMetadata] = useState<Record<string, ISurveyMapPointMetadata[]>>({});
+
+  const layer: IStaticLayer = {
+    layerName: supplementaryLayer.layerName,
+    layerColors: {
+      fillColor: supplementaryLayer.layerColors?.fillColor ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
+      color: supplementaryLayer.layerColors?.color ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
+    },
+    features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint): IStaticLayerFeature => {
+      const isLoading = !mapPointMetadata[mapPoint.key];
+
+      return {
+        key: mapPoint.key,
+        geoJSON: mapPoint.feature,
+        GeoJSONProps: {
+          onEachFeature: (_, layer) => {
+            layer.on({
+              popupopen: () => {
+                if (mapPointMetadata[mapPoint.key]) {
+                  return;
+                }
+                mapPoint.onLoadMetadata().then((metadata) => {
+                  setMapPointMetadata((prev) => ({ ...prev, [mapPoint.key]: metadata }));
+                });
+              }
+            });
+          },
+          pointToLayer: (_, latlng) =>
+            coloredCustomPointMarker({ latlng, fillColor: supplementaryLayer.layerColors?.fillColor })
+        },
+        popup: (
+          <SurveyMapPopup
+            isLoading={isLoading}
+            title={supplementaryLayer.popupRecordTitle}
+            metadata={mapPointMetadata[mapPoint.key]}
+          />
+        ),
+        tooltip: <SurveyMapTooltip label={supplementaryLayer.popupRecordTitle} />
+      };
+    })
+  };
+
+  return (
+    <>
+      {/* MAP */}
+      <Box height={{ sm: 300, md: 500 }} position="relative">
+        <SurveyDataMap supplementaryLayers={[layer]} isLoading={telemetryDataLoader.isLoading} />
+      </Box>
+
+      {/* DATA TABLE */}
+      <Box p={2} position="relative">
+        <SurveySpatialObservationDataTable isLoading={telemetryDataLoader.isLoading} />
+      </Box>
+    </>
+  );
 };

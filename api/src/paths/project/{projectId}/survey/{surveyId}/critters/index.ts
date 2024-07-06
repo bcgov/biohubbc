@@ -221,21 +221,32 @@ export function getCrittersFromSurvey(): RequestHandler {
       }
 
       const critterIds = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
-      const result = await critterbaseService.getMultipleCrittersByIds(critterIds);
 
+      // Fetch critters from the service based on critterIds
+      const result =
+        req.query.format === 'detailed'
+          ? await critterbaseService.getMultipleCrittersByIdsDetailed(critterIds)
+          : await critterbaseService.getMultipleCrittersByIds(critterIds);
+
+      // Create a map to associate critter_id with critter object
       const critterMap = new Map();
-      for (const item of result) {
-        critterMap.set(item.critter_id, item);
+      for (const critter of result) {
+        critterMap.set(critter.critter_id, critter);
       }
 
+      // Update critter objects with survey_critter_id from surveyCritters
       for (const surveyCritter of surveyCritters) {
-        if (critterMap.has(surveyCritter.critterbase_critter_id)) {
-          critterMap.get(surveyCritter.critterbase_critter_id).survey_critter_id = surveyCritter.critter_id;
+        const critterId = surveyCritter.critterbase_critter_id;
+        if (critterMap.has(critterId)) {
+          critterMap.get(critterId).survey_critter_id = surveyCritter.critter_id;
         }
       }
-      return res.status(200).json([...critterMap.values()]);
+
+      // Convert map values back to an array and send as JSON response
+      const updatedCritters = [...critterMap.values()];
+      return res.status(200).json(updatedCritters);
     } catch (error) {
-      defaultLog.error({ label: 'createCritter', message: 'error', error });
+      defaultLog.error({ label: 'getCrittersFromSurvey', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

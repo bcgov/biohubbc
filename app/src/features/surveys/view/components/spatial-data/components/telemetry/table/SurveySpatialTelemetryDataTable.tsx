@@ -28,7 +28,7 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
     return surveyContext.critterDeployments.map((item) => ({
       // critters in this table may use multiple devices accross multiple timespans
       id: `${item.critter.survey_critter_id}-${item.deployment.device_id}-${item.deployment.attachment_start}`,
-      alias: item.critter.animal_id,
+      animal_id: item.critter.animal_id,
       device_id: item.deployment.device_id,
       start: dayjs(item.deployment.attachment_start).format('YYYY-MM-DD'),
       end: item.deployment.attachment_end ? dayjs(item.deployment.attachment_end).format('YYYY-MM-DD') : 'Still Active'
