@@ -17,7 +17,7 @@ import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface'
 import { useMemo, useState } from 'react';
 import { coloredCustomPointMarker } from 'utils/mapUtils';
 import SurveyDataMap from '../map/SurveyDataMap';
-import SurveySpatialObservationDataTable from '../observation/table/SurveySpatialObservationDataTable';
+import SurveyDataTelemetryTable from './table/SurveyDataTelemetryTable';
 
 export const SurveyDataTelemetry = () => {
   const surveyContext = useSurveyContext();
@@ -145,7 +145,7 @@ export const SurveyDataTelemetry = () => {
 
       {/* DATA TABLE */}
       <Box p={2} position="relative">
-        <SurveySpatialObservationDataTable isLoading={telemetryDataLoader.isLoading} />
+        <SurveyDataTelemetryTable isLoading={telemetryDataLoader.isLoading} />
       </Box>
     </>
   );

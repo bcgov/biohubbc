@@ -26,11 +26,11 @@ interface IObservationTableRow {
   longitude: number | null;
 }
 
-interface ISurveySpatialObservationDataTableProps {
+interface ISurveyDataObservationTableProps {
   isLoading: boolean;
 }
 
-const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataTableProps) => {
+const SurveyDataObservationTable = (props: ISurveyDataObservationTableProps) => {
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
   const taxonomyContext = useTaxonomyContext();
@@ -193,4 +193,4 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
   );
 };
 
-export default SurveySpatialObservationDataTable;
+export default SurveyDataObservationTable;

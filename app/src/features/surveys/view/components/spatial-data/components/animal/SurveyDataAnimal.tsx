@@ -16,7 +16,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { createGeoJSONPoint } from 'utils/Utils';
 import { coloredCustomPointMarker } from 'utils/mapUtils';
 import SurveyDataMap from '../map/SurveyDataMap';
-import SurveySpatialObservationDataTable from '../observation/table/SurveySpatialObservationDataTable';
+import SurveyDataAnimalTable from './table/SurveyDataAnimalTable';
 
 export const SurveyDataAnimal = () => {
   const surveyContext = useSurveyContext();
@@ -28,6 +28,7 @@ export const SurveyDataAnimal = () => {
   const biohubApi = useBiohubApi();
   const critterbaseApi = useCritterbaseApi();
 
+  // TODO: Fix critterbase endpoint. Currently returns an empty array when format = detailed.
   const animalDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCrittersDetailed(projectId, surveyId));
 
   useEffect(() => {
@@ -81,12 +82,12 @@ export const SurveyDataAnimal = () => {
   }, [biohubApi.observation, animals, projectId, surveyId]);
 
   const supplementaryLayer: ISurveyMapSupplementaryLayer = {
-    layerName: 'Species Observations',
+    layerName: 'Animal Captures',
     layerColors: {
       fillColor: SURVEY_MAP_LAYER_COLOURS.OBSERVATIONS_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
       color: SURVEY_MAP_LAYER_COLOURS.OBSERVATIONS_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
     },
-    popupRecordTitle: 'Species Observations',
+    popupRecordTitle: 'Animal Captures',
     mapPoints: capturePoints
   };
 
@@ -139,7 +140,7 @@ export const SurveyDataAnimal = () => {
 
       {/* DATA TABLE */}
       <Box p={2} position="relative">
-        <SurveySpatialObservationDataTable isLoading={animalDataLoader.isLoading} />
+        <SurveyDataAnimalTable isLoading={animalDataLoader.isLoading} />
       </Box>
     </>
   );

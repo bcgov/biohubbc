@@ -17,7 +17,7 @@ interface IAnimalData {
   scientificName: string;
 }
 
-interface ISurveySpatialTelemetryDataTableProps {
+interface ISurveyDataAnimalTableProps {
   isLoading: boolean;
 }
 
@@ -54,7 +54,7 @@ const SkeletonRow = () => (
   </Stack>
 );
 
-const SurveyAnimalsDataTable = (props: ISurveySpatialTelemetryDataTableProps) => {
+const SurveyDataAnimalTable = (props: ISurveyDataAnimalTableProps) => {
   const surveyContext = useSurveyContext();
 
   const critterbaseApi = useCritterbaseApi();
@@ -128,4 +128,4 @@ const SurveyAnimalsDataTable = (props: ISurveySpatialTelemetryDataTableProps) =>
   );
 };
 
-export default SurveyAnimalsDataTable;
+export default SurveyDataAnimalTable;

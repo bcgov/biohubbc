@@ -17,11 +17,11 @@ interface ITelemetryData {
   end: string;
 }
 
-interface ISurveySpatialTelemetryDataTableProps {
+interface ISurveyDataTelemetryTableProps {
   isLoading: boolean;
 }
 
-const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTableProps) => {
+const SurveyDataTelemetryTable = (props: ISurveyDataTelemetryTableProps) => {
   const surveyContext = useContext(SurveyContext);
 
   const tableRows = useMemo(() => {
@@ -95,4 +95,4 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
   );
 };
 
-export default SurveySpatialTelemetryDataTable;
+export default SurveyDataTelemetryTable;

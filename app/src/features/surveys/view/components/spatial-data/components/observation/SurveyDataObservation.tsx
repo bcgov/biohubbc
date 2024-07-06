@@ -17,7 +17,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import { coloredCustomPointMarker } from 'utils/mapUtils';
 import SurveyDataMap from '../map/SurveyDataMap';
-import SurveySpatialObservationDataTable from './table/SurveySpatialObservationDataTable';
+import SurveyDataObservationTable from './table/SurveyDataObservationTable';
 
 export const SurveyDataObservation = () => {
   const surveyContext = useSurveyContext();
@@ -141,7 +141,7 @@ export const SurveyDataObservation = () => {
 
       {/* DATA TABLE */}
       <Box p={2} position="relative">
-        <SurveySpatialObservationDataTable isLoading={observationsGeometryDataLoader.isLoading} />
+        <SurveyDataObservationTable isLoading={observationsGeometryDataLoader.isLoading} />
       </Box>
     </>
   );
