@@ -3,9 +3,9 @@ import Paper from '@mui/material/Paper';
 import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
 import { isEqual } from 'lodash-es';
 import { useEffect, useState } from 'react';
-import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './components/SurveySpatialToolbar';
 import { SurveyDataAnimal } from './components/animal/SurveyDataAnimal';
 import { SurveyDataObservation } from './components/observation/SurveyDataObservation';
+import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './components/SurveySpatialToolbar';
 import { SurveyDataTelemetry } from './components/telemetry/SurveyDataTelemetry';
 
 /**

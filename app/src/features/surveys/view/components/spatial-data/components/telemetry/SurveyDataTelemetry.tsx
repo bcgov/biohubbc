@@ -1,28 +1,18 @@
-import Box from '@mui/material/Box';
-import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/spatial';
 import dayjs from 'dayjs';
-import {
-  ISurveyMapPoint,
-  ISurveyMapPointMetadata,
-  ISurveyMapSupplementaryLayer
-} from 'features/surveys/view/SurveyMap';
-import SurveyMapPopup from 'features/surveys/view/SurveyMapPopup';
-import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
+import { ISurveyMapPoint, ISurveyMapPointMetadata } from 'features/surveys/view/SurveyMap';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { Position } from 'geojson';
 import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
 import { ITelemetry } from 'hooks/useTelemetryApi';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import { useMemo, useState } from 'react';
-import { coloredCustomPointMarker } from 'utils/mapUtils';
-import SurveyDataMap from '../map/SurveyDataMap';
+import { useMemo } from 'react';
+import SurveyDataLayer from '../components/SurveyDataLayer';
 import SurveyDataTelemetryTable from './table/SurveyDataTelemetryTable';
 
 export const SurveyDataTelemetry = () => {
   const surveyContext = useSurveyContext();
   const { telemetryDataLoader } = useTelemetryDataContext();
-
   const telemetryPoints: ISurveyMapPoint[] = useMemo(() => {
     const deployments: IAnimalDeployment[] = surveyContext.deploymentDataLoader.data ?? [];
     const critters: ISimpleCritterWithInternalId[] = surveyContext.critterDataLoader.data ?? [];
@@ -84,69 +74,25 @@ export const SurveyDataTelemetry = () => {
     telemetryDataLoader.data
   ]);
 
-  const supplementaryLayer: ISurveyMapSupplementaryLayer = {
+  const supplementaryLayer = {
     layerName: 'Telemetry',
     layerColors: {
       fillColor: SURVEY_MAP_LAYER_COLOURS.TELEMETRY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
-      color: SURVEY_MAP_LAYER_COLOURS.TELEMETRY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
+      color: SURVEY_MAP_LAYER_COLOURS.TELEMETRY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
+      opacity: 0.75
     },
     popupRecordTitle: 'Telemetry',
     mapPoints: telemetryPoints
   };
 
-  const [mapPointMetadata, setMapPointMetadata] = useState<Record<string, ISurveyMapPointMetadata[]>>({});
-
-  const layer: IStaticLayer = {
-    layerName: supplementaryLayer.layerName,
-    layerColors: {
-      fillColor: supplementaryLayer.layerColors?.fillColor ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
-      color: supplementaryLayer.layerColors?.color ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
-    },
-    features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint): IStaticLayerFeature => {
-      const isLoading = !mapPointMetadata[mapPoint.key];
-
-      return {
-        key: mapPoint.key,
-        geoJSON: mapPoint.feature,
-        GeoJSONProps: {
-          onEachFeature: (_, layer) => {
-            layer.on({
-              popupopen: () => {
-                if (mapPointMetadata[mapPoint.key]) {
-                  return;
-                }
-                mapPoint.onLoadMetadata().then((metadata) => {
-                  setMapPointMetadata((prev) => ({ ...prev, [mapPoint.key]: metadata }));
-                });
-              }
-            });
-          },
-          pointToLayer: (_, latlng) =>
-            coloredCustomPointMarker({ latlng, fillColor: supplementaryLayer.layerColors?.fillColor })
-        },
-        popup: (
-          <SurveyMapPopup
-            isLoading={isLoading}
-            title={supplementaryLayer.popupRecordTitle}
-            metadata={mapPointMetadata[mapPoint.key]}
-          />
-        ),
-        tooltip: <SurveyMapTooltip label={supplementaryLayer.popupRecordTitle} />
-      };
-    })
-  };
-
   return (
-    <>
-      {/* MAP */}
-      <Box height={{ sm: 300, md: 500 }} position="relative">
-        <SurveyDataMap supplementaryLayers={[layer]} isLoading={telemetryDataLoader.isLoading} />
-      </Box>
-
-      {/* DATA TABLE */}
-      <Box p={2} position="relative">
-        <SurveyDataTelemetryTable isLoading={telemetryDataLoader.isLoading} />
-      </Box>
-    </>
+    <SurveyDataLayer
+      layerName={supplementaryLayer.layerName}
+      layerColors={supplementaryLayer.layerColors}
+      popupRecordTitle={supplementaryLayer.popupRecordTitle}
+      mapPoints={supplementaryLayer.mapPoints}
+      DataGrid={<SurveyDataTelemetryTable isLoading={telemetryDataLoader.isLoading} />}
+      isLoading={telemetryDataLoader.isLoading}
+    />
   );
 };

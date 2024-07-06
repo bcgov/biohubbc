@@ -1,8 +1,7 @@
-import grey from '@mui/material/colors/grey';
-import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { SkeletonRow } from 'components/loading/SkeletonLoaders';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
@@ -20,39 +19,6 @@ interface IAnimalData {
 interface ISurveyDataAnimalTableProps {
   isLoading: boolean;
 }
-
-// Skeleton Loader template
-const SkeletonRow = () => (
-  <Stack
-    flexDirection="row"
-    alignItems="center"
-    gap={2}
-    p={2}
-    height={rowHeight}
-    overflow="hidden"
-    sx={{
-      borderBottom: '1px solid ' + grey[300],
-      '&:last-of-type': {
-        borderBottom: 'none'
-      },
-      '& .MuiSkeleton-root': {
-        flex: '1 1 auto'
-      },
-      '& *': {
-        fontSize: '0.875rem'
-      }
-    }}>
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-  </Stack>
-);
 
 const SurveyDataAnimalTable = (props: ISurveyDataAnimalTableProps) => {
   const surveyContext = useSurveyContext();

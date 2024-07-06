@@ -1,29 +1,22 @@
-import Box from '@mui/material/Box';
-import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/spatial';
 import {
   ISurveyMapPoint,
   ISurveyMapPointMetadata,
   ISurveyMapSupplementaryLayer
 } from 'features/surveys/view/SurveyMap';
-import SurveyMapPopup from 'features/surveys/view/SurveyMapPopup';
-import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { createGeoJSONPoint } from 'utils/Utils';
-import { coloredCustomPointMarker } from 'utils/mapUtils';
-import SurveyDataMap from '../map/SurveyDataMap';
+import SurveyDataLayer from '../components/SurveyDataLayer';
 import SurveyDataAnimalTable from './table/SurveyDataAnimalTable';
 
 export const SurveyDataAnimal = () => {
   const surveyContext = useSurveyContext();
 
   const { surveyId, projectId } = surveyContext;
-
-  const [mapPointMetadata, setMapPointMetadata] = useState<Record<string, ISurveyMapPointMetadata[]>>({});
 
   const biohubApi = useBiohubApi();
   const critterbaseApi = useCritterbaseApi();
@@ -91,57 +84,14 @@ export const SurveyDataAnimal = () => {
     mapPoints: capturePoints
   };
 
-  const layer: IStaticLayer = {
-    layerName: supplementaryLayer.layerName,
-    layerColors: {
-      fillColor: supplementaryLayer.layerColors?.fillColor ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
-      color: supplementaryLayer.layerColors?.color ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
-    },
-    features: supplementaryLayer.mapPoints.map((mapPoint: ISurveyMapPoint): IStaticLayerFeature => {
-      const isLoading = !mapPointMetadata[mapPoint.key];
-
-      return {
-        key: mapPoint.key,
-        geoJSON: mapPoint.feature,
-        GeoJSONProps: {
-          onEachFeature: (_, layer) => {
-            layer.on({
-              popupopen: () => {
-                if (mapPointMetadata[mapPoint.key]) {
-                  return;
-                }
-                mapPoint.onLoadMetadata().then((metadata) => {
-                  setMapPointMetadata((prev) => ({ ...prev, [mapPoint.key]: metadata }));
-                });
-              }
-            });
-          },
-          pointToLayer: (_, latlng) =>
-            coloredCustomPointMarker({ latlng, fillColor: supplementaryLayer.layerColors?.fillColor })
-        },
-        popup: (
-          <SurveyMapPopup
-            isLoading={isLoading}
-            title={supplementaryLayer.popupRecordTitle}
-            metadata={mapPointMetadata[mapPoint.key]}
-          />
-        ),
-        tooltip: <SurveyMapTooltip label={supplementaryLayer.popupRecordTitle} />
-      };
-    })
-  };
-
   return (
-    <>
-      {/* MAP */}
-      <Box height={{ sm: 300, md: 500 }} position="relative">
-        <SurveyDataMap supplementaryLayers={[layer]} isLoading={animalDataLoader.isLoading} />
-      </Box>
-
-      {/* DATA TABLE */}
-      <Box p={2} position="relative">
-        <SurveyDataAnimalTable isLoading={animalDataLoader.isLoading} />
-      </Box>
-    </>
+    <SurveyDataLayer
+      layerName={supplementaryLayer.layerName}
+      layerColors={supplementaryLayer.layerColors}
+      popupRecordTitle={supplementaryLayer.popupRecordTitle}
+      mapPoints={supplementaryLayer.mapPoints}
+      DataGrid={<SurveyDataAnimalTable isLoading={animalDataLoader.isLoading} />}
+      isLoading={animalDataLoader.isLoading}
+    />
   );
 };

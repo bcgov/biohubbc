@@ -389,7 +389,7 @@ export class CritterbaseService {
     return response.data;
   }
 
-  async getMultipleCrittersByIdsDetailed(critter_ids: string[]): Promise<ICritter[]> {
+  async getMultipleCrittersByIdsDetailed(critter_ids: string[]): Promise<ICritterDetailed[]> {
     const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}?format=detailed`, { critter_ids });
     return response.data;
   }
