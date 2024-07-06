@@ -9,7 +9,10 @@ import {
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { IGetSurveyObservationsGeometryResponse } from 'interfaces/useObservationApi.interface';
+import {
+  IGetSurveyObservationsGeometryObject,
+  IGetSurveyObservationsGeometryResponse
+} from 'interfaces/useObservationApi.interface';
 import { useEffect, useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import SurveyDataLayer from '../map/SurveyDataMapContainer';
@@ -18,71 +21,63 @@ import SurveyDataObservationTable from './table/SurveyDataObservationTable';
 /**
  * Component to display survey observation data on a map and in a table.
  *
- * @returns {JSX.Element} The rendered component.
  */
 export const SurveyDataObservation = () => {
   const surveyContext = useSurveyContext();
   const { surveyId, projectId } = surveyContext;
   const biohubApi = useBiohubApi();
 
-  // Data loader to fetch observation geometry data for the survey
   const observationsGeometryDataLoader = useDataLoader(() =>
     biohubApi.observation.getObservationsGeometry(projectId, surveyId)
   );
 
-  // Load observation geometry data on component mount
   useEffect(() => {
     observationsGeometryDataLoader.load();
   }, []);
 
-  // Observation geometry data from the data loader
   const observations: IGetSurveyObservationsGeometryResponse | undefined = observationsGeometryDataLoader.data;
 
-  // Memoized calculation of observation points for the map
-  const observationPoints: ISurveyMapPoint[] = useMemo(() => {
-    return (
-      observations?.surveyObservationsGeometry.map((observation) => {
-        const point: ISurveyMapPoint = {
-          feature: {
-            type: 'Feature',
-            properties: {},
-            geometry: observation.geometry
-          },
-          key: `observation-${observation.survey_observation_id}`,
-          onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
-            const response = await biohubApi.observation.getObservationRecord(
-              projectId,
-              surveyId,
-              observation.survey_observation_id
-            );
-
-            return [
-              { label: 'Taxon ID', value: String(response.itis_tsn) },
-              { label: 'Count', value: String(response.count) },
-              {
-                label: 'Coords',
-                value: [response.latitude, response.longitude]
-                  .filter((coord): coord is number => coord !== null)
-                  .map((coord) => coord.toFixed(6))
-                  .join(', ')
-              },
-              {
-                label: 'Date',
-                value: getFormattedDate(
-                  response.observation_time ? DATE_FORMAT.ShortMediumDateTimeFormat : DATE_FORMAT.ShortMediumDateFormat,
-                  `${response.observation_date} ${response.observation_time}`
-                )
-              }
-            ];
-          }
-        };
-
-        return point;
-      }) ?? []
+  const formatObservationMetadata = async (observation: any): Promise<ISurveyMapPointMetadata[]> => {
+    const response = await biohubApi.observation.getObservationRecord(
+      projectId,
+      surveyId,
+      observation.survey_observation_id
     );
-  }, [biohubApi.observation, observations, projectId, surveyId]);
 
-  // Configuration for the supplementary layer for species observations
+    return [
+      { label: 'Taxon ID', value: String(response.itis_tsn) },
+      { label: 'Count', value: String(response.count) },
+      {
+        label: 'Coords',
+        value: [response.latitude, response.longitude]
+          .filter((coord): coord is number => coord !== null)
+          .map((coord) => coord.toFixed(6))
+          .join(', ')
+      },
+      {
+        label: 'Date',
+        value: getFormattedDate(
+          response.observation_time ? DATE_FORMAT.ShortMediumDateTimeFormat : DATE_FORMAT.ShortMediumDateFormat,
+          `${response.observation_date} ${response.observation_time}`
+        )
+      }
+    ];
+  };
+
+  const createObservationPoint = (observation: IGetSurveyObservationsGeometryObject): ISurveyMapPoint => ({
+    feature: {
+      type: 'Feature',
+      properties: {},
+      geometry: observation.geometry
+    },
+    key: `observation-${observation.survey_observation_id}`,
+    onLoadMetadata: () => formatObservationMetadata(observation)
+  });
+
+  const observationPoints: ISurveyMapPoint[] = useMemo(() => {
+    return observations?.surveyObservationsGeometry.map(createObservationPoint) ?? [];
+  }, [observations]);
+
   const supplementaryLayer: ISurveyMapSupplementaryLayer = {
     layerName: 'Species Observations',
     layerColors: {
@@ -95,7 +90,6 @@ export const SurveyDataObservation = () => {
 
   return (
     <>
-      {/* Map display of species observations */}
       <SurveyDataLayer
         layerName={supplementaryLayer.layerName}
         layerColors={supplementaryLayer.layerColors}
@@ -103,11 +97,11 @@ export const SurveyDataObservation = () => {
         mapPoints={supplementaryLayer.mapPoints}
         isLoading={observationsGeometryDataLoader.isLoading}
       />
-
-      {/* Data table of species observations */}
       <Box p={2} position="relative">
         <SurveyDataObservationTable isLoading={observationsGeometryDataLoader.isLoading} />
       </Box>
     </>
   );
 };
+
+export default SurveyDataObservation;

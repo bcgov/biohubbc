@@ -71,9 +71,9 @@ const useCritterApi = (axios: AxiosInstance) => {
    * @param {string[]} critter_ids - Critter identifiers.
    * @returns {Promise<ICritterDetailedResponse>}
    */
-  // TODO: FIX DETAILED RESPONSE. DOES NOT RETURN ANYTHING
+  // TODO: Fix critterbase bug. This endpoint returns an empty array when ?format=detailed.
   const getMultipleCrittersByIds = async (critter_ids: string[]): Promise<ICritterDetailedResponse[]> => {
-    const { data } = await axios.post(`/api/critterbase/critters`, { critter_ids }); //?format=detailedd
+    const { data } = await axios.post(`/api/critterbase/critters?format=detailed`, { critter_ids });
     return data;
   };
 

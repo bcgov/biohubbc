@@ -53,7 +53,7 @@ const SurveyDataAnimalTable = (props: ISurveyDataAnimalTableProps) => {
       id: item.critter_id,
       animal_id: item.animal_id ?? '',
       scientificName: item.itis_scientific_name,
-      status: item.mortality?.length ? true : false
+      status: !!item.mortality?.length
     })) ?? [];
 
   // Define columns for the data grid

@@ -27,17 +27,48 @@ export const SurveyDataTelemetry = () => {
   }, []);
 
   /**
-   * Memoized calculation of telemetry points to display on the map.
-   * Combines telemetry data with critter and deployment data.
+   * Formats the metadata for a telemetry point.
+   *
+   * @param {ITelemetry} telemetry The telemetry data.
+   * @param {IAnimalDeployment} deployment The deployment data.
+   * @param {ISimpleCritterWithInternalId} critter The critter data.
+   * @returns {Promise<ISurveyMapPointMetadata[]>} The formatted metadata.
    */
-  const telemetryPoints: ISurveyMapPoint[] = useMemo(() => {
-    const deployments: IAnimalDeployment[] = surveyContext.deploymentDataLoader.data ?? [];
-    const critters: ISimpleCritterWithInternalId[] = surveyContext.critterDataLoader.data ?? [];
+  const formatTelemetryMetadata = async (
+    telemetry: ITelemetry,
+    deployment: IAnimalDeployment,
+    critter: ISimpleCritterWithInternalId
+  ): Promise<ISurveyMapPointMetadata[]> => {
+    return [
+      { label: 'Device ID', value: String(deployment.device_id) },
+      { label: 'Nickname', value: critter.animal_id ?? '' },
+      {
+        label: 'Location',
+        value: [telemetry.latitude, telemetry.longitude]
+          .filter((coord): coord is number => coord !== null)
+          .map((coord) => coord.toFixed(6))
+          .join(', ')
+      },
+      { label: 'Date', value: dayjs(telemetry.acquisition_date).toISOString() }
+    ];
+  };
 
+  /**
+   * Combines telemetry, deployment, and critter data into a single list of telemetry points.
+   *
+   * @param {ITelemetry[]} telemetryData The telemetry data.
+   * @param {IAnimalDeployment[]} deployments The deployment data.
+   * @param {ISimpleCritterWithInternalId[]} critters The critter data.
+   * @returns {ISurveyMapPoint[]} The combined list of telemetry points.
+   */
+  const combineTelemetryData = (
+    telemetryData: ITelemetry[],
+    deployments: IAnimalDeployment[],
+    critters: ISimpleCritterWithInternalId[]
+  ): ISurveyMapPoint[] => {
     return (
-      telemetryDataLoader.data
+      telemetryData
         ?.filter((telemetry) => telemetry.latitude !== undefined && telemetry.longitude !== undefined)
-        // Combine all critter and deployments data into a flat list
         .reduce(
           (
             acc: { deployment: IAnimalDeployment; critter: ISimpleCritterWithInternalId; telemetry: ITelemetry }[],
@@ -66,23 +97,17 @@ export const SurveyDataTelemetry = () => {
               }
             },
             key: `telemetry-${telemetry.telemetry_manual_id}`,
-            onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
-              return Promise.resolve([
-                { label: 'Device ID', value: String(deployment.device_id) },
-                { label: 'Nickname', value: critter.animal_id ?? '' },
-                {
-                  label: 'Location',
-                  value: [telemetry.latitude, telemetry.longitude]
-                    .filter((coord): coord is number => coord !== null)
-                    .map((coord) => coord.toFixed(6))
-                    .join(', ')
-                },
-                { label: 'Date', value: dayjs(telemetry.acquisition_date).toISOString() }
-              ]);
-            }
+            onLoadMetadata: () => formatTelemetryMetadata(telemetry, deployment, critter)
           };
         }) ?? []
     );
+  };
+
+  const telemetryPoints: ISurveyMapPoint[] = useMemo(() => {
+    const deployments: IAnimalDeployment[] = surveyContext.deploymentDataLoader.data ?? [];
+    const critters: ISimpleCritterWithInternalId[] = surveyContext.critterDataLoader.data ?? [];
+
+    return combineTelemetryData(telemetryDataLoader.data ?? [], deployments, critters);
   }, [
     surveyContext.critterDataLoader.data,
     telemetryDataLoader.data,
@@ -103,7 +128,6 @@ export const SurveyDataTelemetry = () => {
 
   return (
     <>
-      {/* MAP */}
       <SurveyDataLayer
         layerName={supplementaryLayer.layerName}
         layerColors={supplementaryLayer.layerColors}
@@ -112,10 +136,11 @@ export const SurveyDataTelemetry = () => {
         isLoading={telemetryDataLoader.isLoading}
       />
 
-      {/* DATA TABLE */}
       <Box p={2} position="relative">
         <SurveyDataTelemetryTable isLoading={telemetryDataLoader.isLoading} />
       </Box>
     </>
   );
 };
+
+export default SurveyDataTelemetry;

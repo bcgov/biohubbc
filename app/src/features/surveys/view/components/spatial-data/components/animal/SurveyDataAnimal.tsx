@@ -42,7 +42,7 @@ export const SurveyDataAnimal = () => {
     for (const animal of animals ?? []) {
       // Iterate over captures array within each animal
       for (const capture of animal.captures ?? []) {
-        if (capture.capture_location && capture.capture_location.latitude && capture.capture_location.longitude) {
+        if (capture.capture_location?.latitude && capture.capture_location?.longitude) {
           const point: ISurveyMapPoint = {
             feature: {
               type: 'Feature',
