@@ -1,8 +1,10 @@
+import dayjs from 'dayjs';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { isNull } from 'lodash';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { deploymentSchema } from '../../../../../../openapi/schemas/deployment';
+import { getDeploymentSchema } from '../../../../../../openapi/schemas/deployment';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { BctwDeploymentService } from '../../../../../../services/bctw-service/bctw-deployment-service';
 import { ICritterbaseUser } from '../../../../../../services/critterbase-service';
@@ -61,7 +63,7 @@ GET.apiDoc = {
           schema: {
             title: 'Deployments',
             type: 'array',
-            items: deploymentSchema
+            items: getDeploymentSchema
           }
         }
       }
@@ -113,9 +115,15 @@ export function getDeploymentsInSurvey(): RequestHandler {
 
       // Fetch additional deployment details from BCTW service
       const bctwDeployments = await bctwDeploymentService.getDeploymentsByIds(deploymentIds);
+      const now = dayjs();
+
+      // TODO: Move this logic into bctw - bctw should only return valid deployment records, not soft deleted ones
+      const validDeployments = bctwDeployments.filter(
+        (deployment) => isNull(deployment.valid_to) || dayjs(deployment.valid_to) > now
+      );
 
       // Merge survey and BCTW deployment information
-      const results = bctwDeployments.map((bctwDeployment) => {
+      const results = validDeployments.map((bctwDeployment) => {
         const surveyDeployment = surveyDeployments.find(
           (deployment) => deployment.bctw_deployment_id === bctwDeployment.deployment_id
         );

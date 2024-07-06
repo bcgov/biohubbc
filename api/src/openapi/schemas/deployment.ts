@@ -1,6 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-export const deploymentSchema: OpenAPIV3.SchemaObject = {
+export const getDeploymentSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   // TODO: REMOVE unnecessary columns from BCTW response
   // additionalProperties: false,
@@ -43,6 +43,60 @@ export const deploymentSchema: OpenAPIV3.SchemaObject = {
     },
     critterbase_end_time: {
       type: 'string',
+      nullable: true
+    }
+  }
+};
+
+export const postDeploymentSchema: OpenAPIV3.SchemaObject = {
+  title: 'Deploy device request object',
+  type: 'object',
+  additionalProperties: false,
+  properties: {
+    critter_id: {
+      type: 'integer'
+    },
+    device_id: {
+      type: 'integer'
+    },
+    frequency: {
+      type: 'number'
+    },
+    frequency_unit: {
+      type: 'string'
+    },
+    device_make: {
+      type: 'string'
+    },
+    device_model: {
+      type: 'string'
+    },
+    critterbase_start_capture_id: {
+      type: 'string',
+      description: 'Critterbase capture record when the deployment started',
+      format: 'uuid',
+      nullable: true
+    },
+    critterbase_end_capture_id: {
+      type: 'string',
+      description: 'Critterbase capture record when the deployment ended',
+      format: 'uuid',
+      nullable: true
+    },
+    critterbase_end_mortality_id: {
+      type: 'string',
+      description: 'Critterbase mortality record when the deployment ended',
+      format: 'uuid',
+      nullable: true
+    },
+    attachment_end_date: {
+      type: 'string',
+      description: 'End date of the deployment, without time.',
+      nullable: true
+    },
+    attachment_end_time: {
+      type: 'string',
+      description: 'End time of the deployment.',
       nullable: true
     }
   }

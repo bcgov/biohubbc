@@ -17,7 +17,7 @@ import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { usePersistentState } from 'hooks/usePersistentState';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { PropsWithChildren, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 import { TelemetryDataContext } from './telemetryDataContext';
@@ -39,7 +39,7 @@ export interface IManualTelemetryTableRow extends Partial<IManualTelemetryRecord
 export type TelemetryTableValidationModel = TableValidationModel<IManualTelemetryTableRow>;
 export type TelemetryRowValidationError = RowValidationError<IManualTelemetryTableRow>;
 
-export type ITelemetryTableContext = {
+export type IAllTelemetryTableContext = {
   /**
    * API ref used to interface with an MUI DataGrid representing the telemetry records
    */
@@ -144,13 +144,13 @@ export type ITelemetryTableContext = {
   onRowEditStart: (id: GridRowId) => void;
 };
 
-export const TelemetryTableContext = createContext<ITelemetryTableContext | undefined>(undefined);
+export const TelemetryTableContext = createContext<IAllTelemetryTableContext | undefined>(undefined);
 
-type ITelemetryTableContextProviderProps = PropsWithChildren<{
+type IAllTelemetryTableContextProviderProps = PropsWithChildren<{
   deployment_ids: string[];
 }>;
 
-export const TelemetryTableContextProvider = (props: ITelemetryTableContextProviderProps) => {
+export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextProviderProps) => {
   const { children, deployment_ids } = props;
 
   const _muiDataGridApiRef = useGridApiRef();
@@ -357,8 +357,6 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     const telemetry =
       (deployment_ids.length && (await telemetryDataContext.telemetryDataLoader.refresh(deployment_ids))) || [];
 
-      console.log(telemetry)
-
     // Format the rows to use date and time
     const rows: IManualTelemetryTableRow[] = telemetry.map((item) => {
       return {
@@ -372,8 +370,6 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
         telemetry_type: item.telemetry_type
       };
     });
-
-    console.log(rows)
 
     // Set initial rows for the table context
     setRows(rows);
@@ -716,7 +712,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     }
   }, [deployment_ids, refreshRecords]);
 
-  const telemetryTableContext: ITelemetryTableContext = useMemo(
+  const telemetryTableContext: IAllTelemetryTableContext = useMemo(
     () => ({
       _muiDataGridApiRef,
       rows,

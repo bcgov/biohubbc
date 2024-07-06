@@ -5,10 +5,9 @@ import { ISurveyCritter } from 'contexts/animalPageContext';
 import { ISurveyAdvancedFilters } from 'features/summary/list-data/survey/SurveysListFilterForm';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import {
+  IAllTelemetryPointCollection,
   IAnimalDeployment,
-  ICreateAnimalDeploymentPostData,
-  IDeploymentTimespan,
-  ITelemetryPointCollection
+  ICreateAnimalDeploymentPostData
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
@@ -481,20 +480,17 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {number} critterId
+   * @param {number} deploymentId
    * @param {IDeploymentTimespan} body
    * @returns {*}
    */
   const updateDeployment = async (
     projectId: number,
     surveyId: number,
-    critterId: number,
-    body: IDeploymentTimespan
+    deploymentId: number,
+    body: ICreateAnimalDeploymentPostData
   ): Promise<number> => {
-    const { data } = await axios.put(
-      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
-      body
-    );
+    const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`, body);
     return data;
   };
 
@@ -535,7 +531,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} critterId
    * @param {string} startDate
    * @param {string} endDate
-   * @return {*}  {Promise<ITelemetryPointCollection>}
+   * @return {*}  {Promise<IAllTelemetryPointCollection>}
    */
   const getCritterTelemetry = async (
     projectId: number,
@@ -543,7 +539,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     critterId: number,
     startDate: string,
     endDate: string
-  ): Promise<ITelemetryPointCollection> => {
+  ): Promise<IAllTelemetryPointCollection> => {
     const { data } = await axios.get(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/telemetry?startDate=${startDate}&endDate=${endDate}`
     );

@@ -1,14 +1,14 @@
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { ITelemetry } from 'interfaces/useTelemetryApi.interface';
+import { IAllTelemetry } from 'interfaces/useTelemetryApi.interface';
 import { createContext, PropsWithChildren } from 'react';
 
-export type ITelemetryDataContext = {
-  telemetryDataLoader: DataLoader<[ids: string[]], ITelemetry[], unknown>;
+export type IAllTelemetryDataContext = {
+  telemetryDataLoader: DataLoader<[ids: string[]], IAllTelemetry[], unknown>;
 };
 
-export const TelemetryDataContext = createContext<ITelemetryDataContext>({
-  telemetryDataLoader: {} as DataLoader<[ids: string[]], ITelemetry[], unknown>
+export const TelemetryDataContext = createContext<IAllTelemetryDataContext>({
+  telemetryDataLoader: {} as DataLoader<[ids: string[]], IAllTelemetry[], unknown>
 });
 
 export const TelemetryDataContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
@@ -16,7 +16,7 @@ export const TelemetryDataContextProvider = (props: PropsWithChildren<Record<nev
 
   const telemetryDataLoader = useDataLoader(telemetryApi.getAllTelemetryByDeploymentIds);
 
-  const telemetryDataContext: ITelemetryDataContext = {
+  const telemetryDataContext: IAllTelemetryDataContext = {
     telemetryDataLoader
   };
 

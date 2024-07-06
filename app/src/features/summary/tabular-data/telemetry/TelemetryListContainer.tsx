@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
-import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
+import grey from '@mui/material/colors/grey';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import TelemetryListFilterForm, {
-  ITelemetryAdvancedFilters,
+  IAllTelemetryAdvancedFilters,
   TelemetryAdvancedFiltersInitialValues
 } from './TelemetryListFilterForm';
 
@@ -34,7 +34,7 @@ type TelemetryDataTableURLParams = {
 
 const pageSizeOptions = [10, 25, 50];
 
-interface ITelemetryListContainerProps {
+interface IAllTelemetryListContainerProps {
   showSearch: boolean;
 }
 
@@ -51,7 +51,7 @@ const initialPaginationParams: ApiPaginationRequestOptions = {
  *
  * @return {*}
  */
-const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
+const TelemetryListContainer = (props: IAllTelemetryListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
@@ -70,7 +70,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
     }
   ]);
 
-  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ITelemetryAdvancedFilters>({
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IAllTelemetryAdvancedFilters>({
     itis_tsn: searchParams.get('t_itis_tsn')
       ? Number(searchParams.get('t_itis_tsn'))
       : TelemetryAdvancedFiltersInitialValues.itis_tsn
@@ -85,7 +85,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
   };
 
   const telemetryDataLoader = useDataLoader(
-    (pagination?: ApiPaginationRequestOptions, filter?: ITelemetryAdvancedFilters) =>
+    (pagination?: ApiPaginationRequestOptions, filter?: IAllTelemetryAdvancedFilters) =>
       biohubApi.telemetry.findTelemetry(pagination, filter)
   );
 

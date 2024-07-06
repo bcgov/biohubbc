@@ -57,10 +57,10 @@ export class DeploymentService extends DBService {
    *
    * @param {IPostSurveyDeployment} deploymentId
    * @param {IPostSurveyDeployment} deployment
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<string>}
    * @memberof DeploymentService
    */
-  async updateDeployment(deploymentId: number, deployment: IPostSurveyDeployment): Promise<void> {
+  async updateDeployment(deploymentId: number, deployment: IPostSurveyDeployment): Promise<string> {
     return this.deploymentRepository.updateDeployment(deploymentId, deployment);
   }
 

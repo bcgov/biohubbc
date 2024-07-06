@@ -1,6 +1,6 @@
 import { IDBConnection } from '../database/db';
 import { IAnimalAdvancedFilters } from '../models/animal-view';
-import { ITelemetryAdvancedFilters } from '../models/telemetry-view';
+import { IAllTelemetryAdvancedFilters } from '../models/telemetry-view';
 import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { CritterbaseService, ICritter } from './critterbase-service';
@@ -37,6 +37,19 @@ export class SurveyCritterService extends DBService {
    */
   async getCrittersInSurvey(surveyId: number): Promise<SurveyCritterRecord[]> {
     return this.critterRepository.getCrittersInSurvey(surveyId);
+  }
+
+  /**
+   * Get all critter associations for the given survey. This only gets you critter ids, which can be used to fetch
+   * details from the external system.
+   *
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @return {*}  {Promise<SurveyCritterRecord[]>}
+   * @memberof SurveyCritterService
+   */
+  async getCritterById(surveyId: number, critterId: number): Promise<SurveyCritterRecord> {
+    return this.critterRepository.getCritterById(surveyId, critterId);
   }
 
   /**
@@ -109,14 +122,14 @@ export class SurveyCritterService extends DBService {
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
-   * @param {ITelemetryAdvancedFilters} [filterFields]
+   * @param {IAllTelemetryAdvancedFilters} [filterFields]
    * @return {*}  {Promise<number>}
    * @memberof SurveyCritterService
    */
   async findCrittersCount(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields?: ITelemetryAdvancedFilters
+    filterFields?: IAllTelemetryAdvancedFilters
   ): Promise<number> {
     return this.critterRepository.findCrittersCount(isUserAdmin, systemUserId, filterFields);
   }

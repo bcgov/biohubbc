@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { IAnimalAdvancedFilters } from '../models/animal-view';
-import { ITelemetryAdvancedFilters } from '../models/telemetry-view';
+import { IAllTelemetryAdvancedFilters } from '../models/telemetry-view';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
@@ -101,7 +101,7 @@ export class SurveyCritterRepository extends BaseRepository {
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
-   * @param {ITelemetryAdvancedFilters} [filterFields]
+   * @param {IAllTelemetryAdvancedFilters} [filterFields]
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SurveyCritterRecord[]>}
    * @memberof SurveyCritterRepository
@@ -109,7 +109,7 @@ export class SurveyCritterRepository extends BaseRepository {
   async findCritters(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields?: ITelemetryAdvancedFilters,
+    filterFields?: IAllTelemetryAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<SurveyCritterRecord[]> {
     const query = this._makeFindCrittersQuery(isUserAdmin, systemUserId, filterFields);
@@ -133,14 +133,14 @@ export class SurveyCritterRepository extends BaseRepository {
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
-   * @param {ITelemetryAdvancedFilters} [filterFields]
+   * @param {IAllTelemetryAdvancedFilters} [filterFields]
    * @return {*}  {Promise<number>}
    * @memberof SurveyCritterRepository
    */
   async findCrittersCount(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields?: ITelemetryAdvancedFilters
+    filterFields?: IAllTelemetryAdvancedFilters
   ): Promise<number> {
     const findCrittersQuery = this._makeFindCrittersQuery(isUserAdmin, systemUserId, filterFields);
 

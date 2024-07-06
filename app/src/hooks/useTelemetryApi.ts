@@ -1,9 +1,9 @@
 import { AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { ConfigContext } from 'contexts/configContext';
 import {
+  IAllTelemetry,
   ICreateManualTelemetry,
   IManualTelemetry,
-  ITelemetry,
   IUpdateManualTelemetry,
   IVendorTelemetry
 } from 'interfaces/useTelemetryApi.interface';
@@ -20,10 +20,10 @@ export const useTelemetryApi = () => {
    * Get list of manual and vendor telemetry by deployment ids
    *
    * @param {string[]} deploymentIds BCTW deployment ids
-   * @return {*}  {Promise<ITelemetry[]>}
+   * @return {*}  {Promise<IAllTelemetry[]>}
    */
-  const getAllTelemetryByDeploymentIds = async (deploymentIds: string[]): Promise<ITelemetry[]> => {
-    const { data } = await axios.get<ITelemetry[]>(
+  const getAllTelemetryByDeploymentIds = async (deploymentIds: string[]): Promise<IAllTelemetry[]> => {
+    const { data } = await axios.get<IAllTelemetry[]>(
       `/api/telemetry/deployments?bctwDeploymentIds=${deploymentIds.join(',')}`
     );
     return data;

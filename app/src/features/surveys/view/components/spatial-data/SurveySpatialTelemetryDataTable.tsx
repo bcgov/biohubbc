@@ -9,7 +9,7 @@ import { useContext, useMemo } from 'react';
 // Set height so we the skeleton loader will match table rows
 const rowHeight = 52;
 
-interface ITelemetryData {
+interface IAllTelemetryData {
   id: number;
   critter_id: string | null;
   device_id: number;
@@ -68,7 +68,7 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
     }));
   }, [surveyContext.critterDeployments]);
 
-  const columns: GridColDef<ITelemetryData>[] = [
+  const columns: GridColDef<IAllTelemetryData>[] = [
     {
       field: 'alias',
       headerName: 'Alias',

@@ -11,7 +11,7 @@ export type IAnimalTelemetryDevice = InferType<typeof AnimalTelemetryDeviceSchem
 
 export type ICreateAnimalDeployment = InferType<typeof CreateAnimalDeployment>;
 
-export type ITelemetryPointCollection = { points: FeatureCollection; tracks: FeatureCollection };
+export type IAllTelemetryPointCollection = { points: FeatureCollection; tracks: FeatureCollection };
 
 const mustBeNum = 'Must be a number';
 const mustBePos = 'Must be positive';

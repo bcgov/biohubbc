@@ -1,7 +1,7 @@
 import { default as dayjs } from 'dayjs';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
-import { ITelemetryAdvancedFilters } from '../models/telemetry-view';
+import { IAllTelemetryAdvancedFilters } from '../models/telemetry-view';
 import { SurveyCritterRecord } from '../repositories/survey-critter-repository';
 import { Deployment, TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
@@ -14,9 +14,13 @@ import {
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
-import { BctwService, IAllTelemetry, ICreateManualTelemetry, IDeploymentRecord } from './bctw-service';
 import { BctwDeploymentService } from './bctw-service/bctw-deployment-service';
-import { BctwTelemetryService } from './bctw-service/bctw-telemetry-service';
+import {
+  BctwTelemetryService,
+  IAllTelemetry,
+  ICreateManualTelemetry,
+  IDeploymentRecord
+} from './bctw-service/bctw-telemetry-service';
 import { ICritter, ICritterbaseUser } from './critterbase-service';
 import { DBService } from './db-service';
 import { DeploymentService } from './deployment-service';
@@ -194,7 +198,7 @@ export class TelemetryService extends DBService {
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
-   * @param {ITelemetryAdvancedFilters} [filterFields]
+   * @param {IAllTelemetryAdvancedFilters} [filterFields]
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<FindTelemetryResponse[]>}
    * @memberof TelemetryService
@@ -202,7 +206,7 @@ export class TelemetryService extends DBService {
   async findTelemetry(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields?: ITelemetryAdvancedFilters,
+    filterFields?: IAllTelemetryAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<FindTelemetryResponse[]> {
     // --- Step 1 -----------------------------
@@ -254,14 +258,18 @@ export class TelemetryService extends DBService {
       return [];
     }
 
-    const bctwService = new BctwService({
+    const user = {
       keycloak_guid: this.connection.systemUserGUID(),
       username: this.connection.systemUserIdentifier()
-    });
+    };
+
+    const bctwDeploymentService = new BctwDeploymentService(user);
+    const bctwTelemetryService = new BctwTelemetryService(user);
+
     // The detailed deployment records from BCTW
     // Note: This may include records the user does not have acces to (A critter may have multiple deployments over its
     // lifespan, but the user may only have access to a subset of them).
-    const allBctwDeploymentsForCritters = await bctwService.getDeploymentsByCritterId(critterbaseCritterIds);
+    const allBctwDeploymentsForCritters = await bctwDeploymentService.getDeploymentsByCritterId(critterbaseCritterIds);
 
     // Remove records the user does not have access to
     const usersBctwDeployments = allBctwDeploymentsForCritters.filter((deployment) =>
@@ -277,7 +285,7 @@ export class TelemetryService extends DBService {
     // --- Step 4 ------------------------------
 
     // The telemetry records for the deployments the user has access to
-    const allTelemetryRecords = await bctwService.getAllTelemetryByDeploymentIds(usersBctwDeploymentIds);
+    const allTelemetryRecords = await bctwTelemetryService.getAllTelemetryByDeploymentIds(usersBctwDeploymentIds);
 
     // --- Step 5 ------------------------------
 

@@ -1,10 +1,10 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { Request } from 'express';
+import { BCTW_API_HOST, GET_CODE_ENDPOINT, HEALTH_ENDPOINT } from '../../constants/bctw-routes';
 import { ApiError, ApiErrorType } from '../../errors/api-error';
 import { HTTP500 } from '../../errors/http-error';
 import { IBctwUser, ICodeResponse } from '../../models/bctw';
 import { KeycloakService } from '../keycloak-service';
-import { BCTW_API_HOST, HEALTH_ENDPOINT, GET_CODE_ENDPOINT } from '../../constants/bctw-routes';
 
 export const getBctwUser = (req: Request): IBctwUser => ({
   keycloak_guid: req['system_user']?.user_guid,

@@ -3,7 +3,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { deploymentSchema } from '../../../../../../../openapi/schemas/deployment';
+import { getDeploymentSchema, postDeploymentSchema } from '../../../../../../../openapi/schemas/deployment';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { BctwDeploymentService } from '../../../../../../../services/bctw-service/bctw-deployment-service';
 import { CritterbaseService, ICritterbaseUser } from '../../../../../../../services/critterbase-service';
@@ -32,7 +32,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getDeploymentsInSurvey()
+  getDeploymentById()
 ];
 
 GET.apiDoc = {
@@ -66,7 +66,7 @@ GET.apiDoc = {
       description: 'Responds with information about a deployment',
       content: {
         'application/json': {
-          schema: deploymentSchema
+          schema: getDeploymentSchema
         }
       }
     },
@@ -88,7 +88,7 @@ GET.apiDoc = {
   }
 };
 
-export function getDeploymentsInSurvey(): RequestHandler {
+export function getDeploymentById(): RequestHandler {
   return async (req, res) => {
     const user: ICritterbaseUser = {
       keycloak_guid: req['system_user']?.user_guid,
@@ -139,7 +139,7 @@ export function getDeploymentsInSurvey(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.error({ label: 'getDeploymentsInSurvey', message: 'error', error });
+      defaultLog.error({ label: 'getDeploymentById', message: 'error', error });
       await connection.rollback();
 
       throw error;
@@ -197,56 +197,7 @@ PUT.apiDoc = {
     description: 'Specifies a deployment id and the new timerange to update it with.',
     content: {
       'application/json': {
-        schema: {
-          title: 'Deploy device request object',
-          type: 'object',
-          additionalProperties: false,
-          properties: {
-            critter_id: {
-              type: 'integer',
-              description: 'Id of the critter in SIMS',
-              minimum: 1
-            },
-            deployment_id: {
-              type: 'integer',
-              description: 'Id of the deployment in SIMS',
-              minimum: 1
-            },
-            bctw_deployment_id: {
-              type: 'string',
-              description: 'Id of the deployment in BCTW',
-              format: 'uuid'
-            },
-            critterbase_start_capture_id: {
-              type: 'string',
-              description: 'Critterbase capture record for when the deployment start',
-              format: 'uuid',
-              nullable: true
-            },
-            critterbase_end_capture_id: {
-              type: 'string',
-              description: 'Critterbase capture record for when the deployment ended',
-              format: 'uuid',
-              nullable: true
-            },
-            critterbase_end_mortality_id: {
-              type: 'string',
-              description: 'Critterbase mortality record for when the deployment ended',
-              format: 'uuid',
-              nullable: true
-            },
-            attachment_end_date: {
-              type: 'string',
-              description: 'End date of the deployment, without time.',
-              nullable: true
-            },
-            attachment_end_time: {
-              type: 'string',
-              description: 'End time of the deployment.',
-              nullable: true
-            }
-          }
-        }
+        schema: postDeploymentSchema
       }
     }
   },
@@ -316,13 +267,15 @@ export function updateDeployment(): RequestHandler {
       await connection.open();
 
       // Update the deployment in SIMS
-      await deploymentService.updateDeployment(deploymentId, {
+      const bctw_deployment_id = await deploymentService.updateDeployment(deploymentId, {
         critter_id: critter_id,
         bctw_deployment_id: bctwRequestObject.bctw_deployment_id,
         critterbase_start_capture_id,
         critterbase_end_capture_id,
         critterbase_end_mortality_id
       });
+
+      console.log(bctw_deployment_id);
 
       // TODO: Decide whether to explicitly record attachment start date, or just reference the capture. Might remove this line.
       const capture = await critterbaseService.getCaptureById(critterbase_start_capture_id);
@@ -333,7 +286,8 @@ export function updateDeployment(): RequestHandler {
         attachment_start: capture.capture_date,
         attachment_end: attachment_end_date, // TODO: ADD SEPARATE DATE AND TIME TO BCTW
         // Include the critter guid, taken from the capture for convenience
-        critter_id: capture.critter_id
+        critter_id: capture.critter_id,
+        deployment_id: bctw_deployment_id
       });
 
       await connection.commit();
@@ -439,7 +393,7 @@ export function deleteDeployment(): RequestHandler {
     };
 
     const deploymentId = Number(req.params.deploymentId);
-    const surveyId = Number(req.params.surveyId)
+    const surveyId = Number(req.params.surveyId);
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -449,11 +403,7 @@ export function deleteDeployment(): RequestHandler {
     try {
       await connection.open();
 
-      console.log(deploymentId)
-
       const { bctw_deployment_id } = await deploymentService.endDeployment(surveyId, deploymentId);
-
-      console.log(bctw_deployment_id)
 
       await bctwDeploymentService.deleteDeployment(bctw_deployment_id);
 

@@ -12,10 +12,10 @@ import { useMemo, useState } from 'react';
 import { GeoJSON, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { uuidToColor } from 'utils/Utils';
 import { v4 } from 'uuid';
-import { IAnimalDeployment, ITelemetryPointCollection } from './device';
+import { IAllTelemetryPointCollection, IAnimalDeployment } from './device';
 
-interface ITelemetryMapProps {
-  telemetryData?: ITelemetryPointCollection;
+interface IAllTelemetryMapProps {
+  telemetryData?: IAllTelemetryPointCollection;
   deploymentData?: IAnimalDeployment[];
 }
 
@@ -63,7 +63,7 @@ const Legend = ({ hasData, colourMap }: ILegend) => {
   );
 };
 
-const TelemetryMap = ({ deploymentData, telemetryData }: ITelemetryMapProps): JSX.Element => {
+const TelemetryMap = ({ deploymentData, telemetryData }: IAllTelemetryMapProps): JSX.Element => {
   const [legendColours, setLegendColours] = useState<ColourDeployment[]>([]);
 
   const features = useMemo(() => {

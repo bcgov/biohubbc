@@ -11,14 +11,14 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useEffect } from 'react';
 import { ANIMAL_FORM_MODE } from '../animal';
 import { DeploymentForm } from './DeploymentForm';
-import { IAnimalTelemetryDevice } from './device';
 import TelemetryFileUpload from './TelemetryFileUpload';
+import { IAnimalTelemetryDevice } from './device';
 
-export interface ITelemetryDeviceFormProps {
+export interface IAllTelemetryDeviceFormProps {
   mode: ANIMAL_FORM_MODE;
 }
 
-const TelemetryDeviceForm = (props: ITelemetryDeviceFormProps) => {
+const TelemetryDeviceForm = (props: IAllTelemetryDeviceFormProps) => {
   const { mode } = props;
 
   const telemetryApi = useTelemetryApi();

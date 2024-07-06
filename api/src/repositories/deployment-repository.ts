@@ -95,10 +95,10 @@ export class DeploymentRepository extends BaseRepository {
    *
    * @param {number} deploymentId
    * @param {IPostSurveyDeployment} deployment
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<string>}
    * @memberof DeploymentRepository
    */
-  async updateDeployment(deploymentId: number, deployment: IPostSurveyDeployment): Promise<void> {
+  async updateDeployment(deploymentId: number, deployment: IPostSurveyDeployment): Promise<string> {
     defaultLog.debug({ label: 'updateDeployment', deploymentId: deployment.bctw_deployment_id });
 
     const { critter_id, ...deploymentData } = deployment;
@@ -106,9 +106,12 @@ export class DeploymentRepository extends BaseRepository {
     const queryBuilder = getKnex()
       .table('deployment')
       .where('deployment_id', deploymentId)
-      .update({ ...deploymentData, critter_id: critter_id });
+      .update({ ...deploymentData, critter_id: critter_id })
+      .returning('bctw_deployment_id');
 
-    await this.connection.knex(queryBuilder);
+    const response = await this.connection.knex(queryBuilder);
+
+    return response.rows[0].bctw_deployment_id;
   }
 
   /**

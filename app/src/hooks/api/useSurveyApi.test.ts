@@ -28,6 +28,7 @@ describe('useSurveyApi', () => {
   const projectId = 1;
   const surveyId = 1;
   const critterId = 1;
+  const deploymentId = 1;
 
   describe('createSurvey', () => {
     it('creates a survey', async () => {
@@ -151,13 +152,18 @@ describe('useSurveyApi', () => {
   describe('updateDeployment', () => {
     it('should update a deployment', async () => {
       mock.onPatch(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`).reply(200, 1);
-      const result = await useSurveyApi(axios).updateDeployment(projectId, surveyId, critterId, {
-        deployment_id: 1,
+      const result = await useSurveyApi(axios).updateDeployment(projectId, surveyId, deploymentId, {
+        critter_id: 1,
         critterbase_start_capture_id: '',
         critterbase_end_capture_id: '',
         critterbase_end_mortality_id: '',
         attachment_end_date: '',
-        attachment_end_time: ''
+        attachment_end_time: '',
+        frequency: 10.5,
+        frequency_unit: '',
+        device_id: 1,
+        device_make: '',
+        device_model: ''
       });
 
       expect(result).toBe(1);

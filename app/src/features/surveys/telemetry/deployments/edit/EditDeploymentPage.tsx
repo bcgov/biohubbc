@@ -115,7 +115,8 @@ const EditDeploymentPage = () => {
         throw new Error('Invalid critter data');
       }
 
-      await biohubApi.survey.createDeployment(surveyContext.projectId, surveyContext.surveyId, critter_id, {
+      await biohubApi.survey.updateDeployment(surveyContext.projectId, surveyContext.surveyId, deploymentId, {
+        critter_id: values.critter_id,
         device_id: Number(values.device_id),
         device_make: values.device_make,
         frequency: values.frequency,

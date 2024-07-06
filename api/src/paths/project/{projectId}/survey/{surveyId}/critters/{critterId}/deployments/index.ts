@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { v4 } from 'uuid';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
+import { postDeploymentSchema } from '../../../../../../../../openapi/schemas/deployment';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { BctwDeploymentService } from '../../../../../../../../services/bctw-service/bctw-deployment-service';
 import { getBctwUser } from '../../../../../../../../services/bctw-service/bctw-service';
@@ -62,56 +63,7 @@ POST.apiDoc = {
     description: 'Object with a critter, device information, and associated captures to create a deployment',
     content: {
       'application/json': {
-        schema: {
-          title: 'Deploy device request object',
-          type: 'object',
-          additionalProperties: false,
-          properties: {
-            device_id: {
-              type: 'integer'
-            },
-            frequency: {
-              type: 'number'
-            },
-            frequency_unit: {
-              type: 'string'
-            },
-            device_make: {
-              type: 'string'
-            },
-            device_model: {
-              type: 'string'
-            },
-            critterbase_start_capture_id: {
-              type: 'string',
-              description: 'Critterbase capture record for when the deployment started',
-              format: 'uuid',
-              nullable: true
-            },
-            critterbase_end_capture_id: {
-              type: 'string',
-              description: 'Critterbase capture record for when the deployment ended',
-              format: 'uuid',
-              nullable: true
-            },
-            critterbase_end_mortality_id: {
-              type: 'string',
-              description: 'Critterbase mortality record for when the deployment ended',
-              format: 'uuid',
-              nullable: true
-            },
-            attachment_end_date: {
-              type: 'string',
-              description: 'End date of the deployment, without time.',
-              nullable: true
-            },
-            attachment_end_time: {
-              type: 'string',
-              description: 'End time of the deployment.',
-              nullable: true
-            }
-          }
-        }
+        schema: postDeploymentSchema
       }
     }
   },
@@ -163,6 +115,7 @@ export function createDeployment(): RequestHandler {
     const newDeploymentId = v4();
 
     const {
+      critter_id,
       critterbase_start_capture_id,
       critterbase_end_capture_id,
       critterbase_end_mortality_id,

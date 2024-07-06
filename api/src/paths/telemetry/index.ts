@@ -2,7 +2,7 @@ import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { ITelemetryAdvancedFilters } from '../../models/telemetry-view';
+import { IAllTelemetryAdvancedFilters } from '../../models/telemetry-view';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { TelemetryService } from '../../services/telemetry-service';
@@ -231,12 +231,12 @@ export function findTelemetry(): RequestHandler {
 /**
  * Parse the query parameters from the request into the expected format.
  *
- * @param {Request<unknown, unknown, unknown, ITelemetryAdvancedFilters>} req
- * @return {*}  {ITelemetryAdvancedFilters}
+ * @param {Request<unknown, unknown, unknown, IAllTelemetryAdvancedFilters>} req
+ * @return {*}  {IAllTelemetryAdvancedFilters}
  */
 function parseQueryParams(
-  req: Request<unknown, unknown, unknown, ITelemetryAdvancedFilters>
-): ITelemetryAdvancedFilters {
+  req: Request<unknown, unknown, unknown, IAllTelemetryAdvancedFilters>
+): IAllTelemetryAdvancedFilters {
   return {
     keyword: req.query.keyword ?? undefined,
     itis_tsns: req.query.itis_tsns ?? undefined,

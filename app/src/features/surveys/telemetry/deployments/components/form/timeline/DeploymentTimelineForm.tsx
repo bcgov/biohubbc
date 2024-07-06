@@ -6,7 +6,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import AutocompleteField from 'components/fields/AutocompleteField';
+import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import { DateField } from 'components/fields/DateField';
 import { TimeField } from 'components/fields/TimeField';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -15,7 +15,7 @@ import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/te
 import { Field, useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { ICaptureResponse, IMortalityResponse } from 'interfaces/useCritterApi.interface';
-import { useMemo, useState } from 'react';
+import { SyntheticEvent, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { TransitionGroup } from 'react-transition-group';
 
@@ -69,8 +69,6 @@ const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
   const [deploymentEndType, setDeploymentEndType] = useState<DeploymentEndType | null>(initialDeploymentEndType);
 
   const surveyContext = useSurveyContext();
-
-  console.log(captures);
 
   // Using onChange in the RadioGroup does not allow the value to be unset
   // As a workaround, set the value through onClick events within each RadioButton separately
@@ -191,6 +189,11 @@ const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
                       name="critterbase_end_capture_id"
                       id="critterbase_end_capture_id"
                       label={'End capture event'}
+                      onChange={(_: SyntheticEvent<Element, Event>, option: IAutocompleteFieldOption<string>) => {
+                        if (option.value) {
+                          setFieldValue('critterbase_end_capture_id', option.value);
+                        }
+                      }}
                       options={captures.map((capture) => ({
                         value: capture.capture_id,
                         label: dayjs(capture.capture_date).format(DATE_FORMAT.LongDateTimeFormat)

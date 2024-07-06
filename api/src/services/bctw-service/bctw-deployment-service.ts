@@ -1,5 +1,3 @@
-import { IBctwDeploymentRecord, IDeployDevice, IDeploymentUpdate } from '../../models/bctw';
-import { BctwService } from './bctw-service';
 import {
   DELETE_DEPLOYMENT_ENDPOINT,
   DEPLOY_DEVICE_ENDPOINT,
@@ -8,6 +6,8 @@ import {
   GET_DEPLOYMENTS_ENDPOINT,
   UPDATE_DEPLOYMENT_ENDPOINT
 } from '../../constants/bctw-routes';
+import { IBctwDeploymentRecord, IDeployDevice, IDeploymentUpdate } from '../../models/bctw';
+import { BctwService } from './bctw-service';
 
 export class BctwDeploymentService extends BctwService {
   /**
