@@ -171,11 +171,11 @@ POST.apiDoc = {
             title: 'Response object for adding critter to survey',
             type: 'object',
             properties: {
-              survey_critter_id: {
+              critter_id: {
                 type: 'number',
                 description: 'SIMS internal ID of the critter within the survey'
               },
-              critter_id: {
+              critterbase_crittter_id: {
                 type: 'string',
                 description: 'Critterbase ID of the critter'
               }
@@ -236,7 +236,7 @@ export function getCrittersFromSurvey(): RequestHandler {
         });
       }
 
-      // Update the critterMap with survey_critter_id
+      // Update the critterMap with critter_id
       for (const surveyCritter of surveyCritters) {
         const key = String(surveyCritter.critterbase_critter_id);
         if (critterMap.has(key)) {
@@ -282,7 +282,7 @@ export function addCritterToSurvey(): RequestHandler {
       const response = await surveyService.addCritterToSurvey(surveyId, critterId);
 
       await connection.commit();
-      return res.status(201).json({ critterbase_critter_id: critterId, survey_critter_id: response });
+      return res.status(201).json({ critterbase_critter_id: critterId, critter_id: response });
     } catch (error) {
       defaultLog.error({ label: 'addCritterToSurvey', message: 'error', error });
       await connection.rollback();

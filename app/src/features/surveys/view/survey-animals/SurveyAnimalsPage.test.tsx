@@ -7,7 +7,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { BrowserRouter } from 'react-router-dom';
-import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
+import { SystemAdminAuthState, getMockAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { SurveyAnimalsPage } from './SurveyAnimalsPage';
 
@@ -136,10 +136,10 @@ describe('SurveyAnimalsPage', () => {
   it('should be able to select critter from navbar', async () => {
     mockUseBiohub.survey.getSurveyCritters.mockResolvedValueOnce([
       {
-        critter_id: 'critter_uuid',
         animal_id: 'test-critter-alias',
         wlh_id: '123-45',
-        survey_critter_id: 1,
+        critter_id: 1,
+        critterbase_critter_id: 'blah',
         taxon: 'a',
         created_at: 'a'
       }

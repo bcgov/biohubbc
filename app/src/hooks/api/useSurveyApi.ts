@@ -390,7 +390,9 @@ const useSurveyApi = (axios: AxiosInstance) => {
     surveyId: number,
     critterId: number
   ): Promise<ICritterDetailedResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`);
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}?format=detailed`
+    );
     return data;
   };
 

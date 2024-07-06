@@ -24,7 +24,7 @@ export const DeploymentForm = (props: DeploymentFormSectionProps): JSX.Element =
   const { mode } = props;
 
   const biohubApi = useBiohubApi();
-  const { critter_id: survey_critter_id } = useQuery();
+  const { critter_id: critter_id } = useQuery();
   const { values, validateField } = useFormikContext<IAnimalTelemetryDevice>();
   const { surveyId, projectId } = useContext(SurveyContext);
   const dialogContext = useContext(DialogContext);
@@ -36,10 +36,10 @@ export const DeploymentForm = (props: DeploymentFormSectionProps): JSX.Element =
 
   const handleRemoveDeployment = async (deployment_id: number) => {
     try {
-      if (survey_critter_id === undefined) {
+      if (critter_id === undefined) {
         setMessageSnackbar('No critter set!', dialogContext);
       }
-      await biohubApi.survey.endDeployment(projectId, surveyId, Number(survey_critter_id), deployment_id);
+      await biohubApi.survey.endDeployment(projectId, surveyId, Number(critter_id), deployment_id);
       const indexOfDeployment = deployments?.findIndex((deployment) => deployment.deployment_id === deployment_id);
       if (indexOfDeployment !== undefined) {
         deployments?.splice(indexOfDeployment);

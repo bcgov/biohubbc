@@ -109,13 +109,13 @@ const EditDeploymentPage = () => {
     // Disable cancel prompt so we can navigate away from the page after saving
     setEnableCancelCheck(false);
     try {
-      const survey_critter_id = Number(critters?.find((animal) => animal.critter_id === values.critter_id)?.critter_id);
+      const critter_id = Number(critters?.find((animal) => animal.critter_id === values.critter_id)?.critter_id);
 
-      if (!survey_critter_id) {
+      if (!critter_id) {
         throw new Error('Invalid critter data');
       }
 
-      await biohubApi.survey.createDeployment(surveyContext.projectId, surveyContext.surveyId, survey_critter_id, {
+      await biohubApi.survey.createDeployment(surveyContext.projectId, surveyContext.surveyId, critter_id, {
         device_id: Number(values.device_id),
         device_make: values.device_make,
         frequency: values.frequency,

@@ -40,7 +40,7 @@ export const EditCapturePage = () => {
 
   const urlParams: Record<string, string | number | undefined> = useParams();
 
-  const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
+  const surveyCritterId: number | undefined = Number(urlParams['critter_id']);
   const captureId: string | undefined = String(urlParams['capture_id']);
 
   const { locationChangeInterceptor } = useUnsavedChangesDialog();

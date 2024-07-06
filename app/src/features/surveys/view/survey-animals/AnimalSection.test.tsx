@@ -63,8 +63,8 @@ describe('AnimalSection', () => {
   it('should render the collection units section', async () => {
     const screen = render(
       animalSection(ANIMAL_SECTION.COLLECTION_UNITS, {
-        critter_id: 'blah',
-        survey_critter_id: 1,
+        critterbase_critter_id: 'blah',
+        critter_id: 1,
         collection_units: []
       } as unknown as IDetailedCritterWithInternalId)
     );
@@ -77,8 +77,8 @@ describe('AnimalSection', () => {
   it('should render the markings section', async () => {
     const screen = render(
       animalSection(ANIMAL_SECTION.MARKINGS, {
-        critter_id: 'blah',
-        survey_critter_id: 1,
+        critter_id: 1,
+        critterbase_critter_id: 'blah',
         markings: []
       } as unknown as IDetailedCritterWithInternalId)
     );
@@ -91,8 +91,8 @@ describe('AnimalSection', () => {
   it('should render the measurements section', async () => {
     const screen = render(
       animalSection(ANIMAL_SECTION.MEASUREMENTS, {
-        critter_id: 'blah',
-        survey_critter_id: 1,
+        critter_id: 1,
+        critterbase_critter_id: 'blah',
         measurements: { qualitative: [], quantitative: [] }
       } as unknown as IDetailedCritterWithInternalId)
     );
@@ -105,8 +105,8 @@ describe('AnimalSection', () => {
   it('should render the captures section', async () => {
     const screen = render(
       animalSection(ANIMAL_SECTION.CAPTURES, {
-        critter_id: 'blah',
-        survey_critter_id: 1,
+        critter_id: 1,
+        critterbase_critter_id: 'blah',
         captures: []
       } as unknown as IDetailedCritterWithInternalId)
     );
@@ -119,8 +119,8 @@ describe('AnimalSection', () => {
   it('should render the mortality section', async () => {
     const screen = render(
       animalSection(ANIMAL_SECTION.MORTALITY, {
-        critter_id: 'blah',
-        survey_critter_id: 1,
+        critter_id: 1,
+        critterbase_critter_id: 'blah',
         mortality: []
       } as unknown as IDetailedCritterWithInternalId)
     );
@@ -133,8 +133,8 @@ describe('AnimalSection', () => {
   it('should render the family section', async () => {
     const screen = render(
       animalSection(ANIMAL_SECTION.FAMILY, {
-        critter_id: 'blah',
-        survey_critter_id: 1,
+        critter_id: 1,
+        critterbase_critter_id: 'blah',
         family_parent: [],
         family_child: []
       } as unknown as IDetailedCritterWithInternalId)

@@ -16,9 +16,9 @@ export const SurveyAnimalsPage = () => {
 
   const { surveyId, projectId } = useContext(SurveyContext);
 
-  const { critter_id } = useQuery();
+  const query = useQuery();
 
-  const survey_critter_id = Number(critter_id);
+  const critter_id = Number(query.critter_id);
 
   const [selectedSection, setSelectedSection] = useState<ANIMAL_SECTION>(ANIMAL_SECTION.GENERAL);
   const [openAddCritter, setOpenAddCritter] = useState(false);
@@ -39,14 +39,14 @@ export const SurveyAnimalsPage = () => {
       if (detailedCritter) {
         return;
       }
-      const focusCritter = surveyCritters?.find((critter) => critter.critter_id === Number(survey_critter_id));
+      const focusCritter = surveyCritters?.find((critter) => critter.critter_id === Number(critter_id));
       if (!focusCritter) {
         return;
       }
       await refreshCritter(focusCritter.critterbase_critter_id);
     };
     getDetailedCritterOnMount();
-  }, [surveyCritters, survey_critter_id, critterbaseApi.critters, detailedCritter, refreshCritter]);
+  }, [surveyCritters, critter_id, critterbaseApi.critters, detailedCritter, refreshCritter]);
 
   return (
     <>

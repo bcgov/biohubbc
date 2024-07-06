@@ -45,9 +45,9 @@ export const CritterListItem = (props: ICritterListItemProps) => {
       }}>
       <IconButton
         onClick={() => {
-          if (critter.critter_id !== selectedAnimal?.survey_critter_id)
+          if (critter.critter_id !== selectedAnimal?.critter_id)
             setSelectedAnimal({
-              survey_critter_id: critter.critter_id,
+              critter_id: critter.critter_id,
               critterbase_critter_id: critter.critterbase_critter_id
             });
         }}
@@ -63,7 +63,7 @@ export const CritterListItem = (props: ICritterListItemProps) => {
           '& .MuiTypography-root': {
             color: 'text.primary'
           },
-          bgcolor: selectedAnimal?.survey_critter_id === critter.critter_id ? grey[100] : undefined
+          bgcolor: selectedAnimal?.critter_id === critter.critter_id ? grey[100] : undefined
         }}>
         <Stack
           flexDirection="row"

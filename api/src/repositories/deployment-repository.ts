@@ -26,7 +26,7 @@ export class DeploymentRepository extends BaseRepository {
     const queryBuilder = getKnex()
       .select(
         'deployment_id',
-        'd.critter_id as survey_critter_id',
+        'd.critter_id as critter_id',
         'c.critterbase_critter_id',
         'bctw_deployment_id',
         'critterbase_start_capture_id',
@@ -55,7 +55,7 @@ export class DeploymentRepository extends BaseRepository {
     const queryBuilder = getKnex()
       .select(
         'deployment_id',
-        'd.critter_id as survey_critter_id',
+        'd.critter_id as critter_id',
         'c.critterbase_critter_id',
         'bctw_deployment_id',
         'critterbase_start_capture_id',
@@ -81,11 +81,11 @@ export class DeploymentRepository extends BaseRepository {
   async insertDeployment(deployment: IPostSurveyDeployment): Promise<void> {
     defaultLog.debug({ label: 'insertDeployment', deploymentId: deployment.bctw_deployment_id });
 
-    const { survey_critter_id, ...deploymentData } = deployment;
+    const { critter_id, ...deploymentData } = deployment;
 
     const queryBuilder = getKnex()
       .table('deployment')
-      .insert({ ...deploymentData, critter_id: survey_critter_id });
+      .insert({ ...deploymentData, critter_id: critter_id });
 
     await this.connection.knex(queryBuilder);
   }
@@ -101,12 +101,12 @@ export class DeploymentRepository extends BaseRepository {
   async updateDeployment(deploymentId: number, deployment: IPostSurveyDeployment): Promise<void> {
     defaultLog.debug({ label: 'updateDeployment', deploymentId: deployment.bctw_deployment_id });
 
-    const { survey_critter_id, ...deploymentData } = deployment;
+    const { critter_id, ...deploymentData } = deployment;
 
     const queryBuilder = getKnex()
       .table('deployment')
       .where('deployment_id', deploymentId)
-      .update({ ...deploymentData, critter_id: survey_critter_id });
+      .update({ ...deploymentData, critter_id: critter_id });
 
     await this.connection.knex(queryBuilder);
   }

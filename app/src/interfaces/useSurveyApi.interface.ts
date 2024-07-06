@@ -346,11 +346,11 @@ export interface IGetSurveyForUpdateResponse {
 }
 
 // export interface ICritterSimpleResponse extends ICritterSimpleResponse {
-//   survey_critter_id: number;
+//   critter_id: number;
 // }
 
 export interface IDetailedCritterWithInternalId extends ICritterDetailedResponse {
-  survey_critter_id: number; //The internal critter_id in the SIMS DB. Called this to distinguish against the critterbase UUID of the same name.
+  critter_id: number; //The internal critter_id in the SIMS DB. Called this to distinguish against the critterbase UUID of the same name.
 }
 
 export interface IAnimalDeploymentWithCritter {

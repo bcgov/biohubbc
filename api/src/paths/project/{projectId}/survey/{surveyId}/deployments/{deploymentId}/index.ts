@@ -124,7 +124,7 @@ export function getDeploymentsInSurvey(): RequestHandler {
           ...acc,
           assignment_id: bctwDeployment.assignment_id,
           collar_id: bctwDeployment.collar_id,
-          critter_id: surveyDeployment.survey_critter_id,
+          critter_id: surveyDeployment.critter_id,
           critterbase_critter_id: surveyDeployment?.critterbase_critter_id,
           attachment_start: bctwDeployment.attachment_start,
           attachment_end: bctwDeployment.attachment_end,
@@ -317,7 +317,7 @@ export function updateDeployment(): RequestHandler {
 
       // Update the deployment in SIMS
       await deploymentService.updateDeployment(deploymentId, {
-        survey_critter_id: critter_id,
+        critter_id: critter_id,
         bctw_deployment_id: bctwRequestObject.bctw_deployment_id,
         critterbase_start_capture_id,
         critterbase_end_capture_id,

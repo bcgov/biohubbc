@@ -19,7 +19,7 @@ export const deploymentSchema: OpenAPIV3.SchemaObject = {
       format: 'uuid'
     },
     collar_id: { type: 'string', description: 'Id of the collar in BCTW' },
-    survey_critter_id: { type: 'integer', minimum: 1, description: 'Id of the critter in the Survey' },
+    critter_id: { type: 'integer', minimum: 1, description: 'Id of the critter in the Survey' },
     critterbase_critter_id: {
       type: 'string',
       format: 'uuid',

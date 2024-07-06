@@ -181,7 +181,7 @@ export function createDeployment(): RequestHandler {
 
       // Inset new deployment into SIMS
       await deploymentService.insertDeployment({
-        survey_critter_id: surveyCritterId,
+        critter_id: surveyCritterId,
         bctw_deployment_id: newDeploymentId,
         critterbase_start_capture_id,
         critterbase_end_capture_id,

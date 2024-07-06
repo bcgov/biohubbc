@@ -127,7 +127,7 @@ export function getDeploymentsInSurvey(): RequestHandler {
           critterbase_end_capture_id: surveyDeployment?.critterbase_end_capture_id,
           critterbase_end_mortality_id: surveyDeployment?.critterbase_end_mortality_id,
           // Do not trust the Critter Id stored by BCTW. Instead, use the SIMS integer survey critter ID
-          survey_critter_id: surveyDeployment?.survey_critter_id,
+          critter_id: surveyDeployment?.critter_id,
           critterbase_critter_id: surveyDeployment?.critterbase_critter_id
         };
       });

@@ -81,9 +81,9 @@ const AnimalList = (props: IAnimalListProps) => {
   const { isLoading, selectedSection, onSelectSection, refreshCritter, surveyCritters, onAddButton } = props;
 
   const history = useHistory();
-  const { critter_id } = useQuery();
+  const query = useQuery();
 
-  const survey_critter_id = Number(critter_id);
+  const critter_id = Number(query.critter_id);
 
   const getSectionIcon = (section: ANIMAL_SECTION) => {
     switch (section) {
@@ -107,7 +107,7 @@ const AnimalList = (props: IAnimalListProps) => {
   };
 
   const handleCritterSelect = async (critter: ICritterSimpleResponse) => {
-    if (critter.critter_id === Number(survey_critter_id)) {
+    if (critter.critter_id === Number(critter_id)) {
       history.replace(history.location.pathname);
     } else {
       refreshCritter(critter.critterbase_critter_id);
@@ -165,7 +165,7 @@ const AnimalList = (props: IAnimalListProps) => {
                   }
                 }}
                 key={critter.critterbase_critter_id}
-                expanded={critter.critter_id === survey_critter_id}>
+                expanded={critter.critter_id === critter_id}>
                 <Box display="flex" overflow="hidden" alignItems="center" className="sampleSiteHeader">
                   <AccordionSummary
                     expandIcon={<Icon path={mdiChevronDown} size={1} />}

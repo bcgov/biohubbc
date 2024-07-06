@@ -105,8 +105,8 @@ describe('SurveyAnimals', () => {
   it('renders correctly with animals', async () => {
     mockUseBiohub.survey.getSurveyCritters.mockResolvedValueOnce([
       {
-        critter_id: 'critter_uuid',
-        survey_critter_id: 1,
+        critter_id: 1,
+        critterbase_critter_id: 'blah',
         animal_id: 'animal_alias',
         taxon: 'a',
         created_at: 'a',

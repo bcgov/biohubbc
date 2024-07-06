@@ -367,11 +367,11 @@ export class CritterbaseService {
   }
 
   async getCritter(critter_id: string) {
-    return this._makeGetRequest(`${CRITTER_ENDPOINT}/${critter_id}`, [{ key: 'format', value: 'detail' }]);
+    return this._makeGetRequest(`${CRITTER_ENDPOINT}/${critter_id}`, [{ key: 'format', value: 'detailed' }]);
   }
 
   async getCaptureById(capture_id: string): Promise<ICapture> {
-    return this._makeGetRequest(`${CAPTURE_ENDPOINT}/${capture_id}`, [{ key: 'format', value: 'detail' }]);
+    return this._makeGetRequest(`${CAPTURE_ENDPOINT}/${capture_id}`, [{ key: 'format', value: 'detailed' }]);
   }
 
   async createCritter(data: ICritter) {

@@ -41,7 +41,7 @@ export const EditMortalityPage = () => {
 
   const urlParams: Record<string, string | number | undefined> = useParams();
 
-  const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
+  const surveyCritterId: number | undefined = Number(urlParams['critter_id']);
   const mortalityId: string | undefined = String(urlParams['mortality_id']);
 
   const { locationChangeInterceptor } = useUnsavedChangesDialog();

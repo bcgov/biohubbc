@@ -182,7 +182,7 @@ export function updateDeployment(): RequestHandler {
 
       // Update the deployment in SIMS
       await deploymentService.updateDeployment(deploymentId, {
-        survey_critter_id: critterId,
+        critter_id: critterId,
         bctw_deployment_id: bctwRequestObject.bctw_deployment_id,
         critterbase_start_capture_id,
         critterbase_end_capture_id,

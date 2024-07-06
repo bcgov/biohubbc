@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const SurveyDeployment = z.object({
   deployment_id: z.number().int(),
-  survey_critter_id: z.number(),
+  critter_id: z.number(),
   critterbase_critter_id: z.string().optional(),
   bctw_deployment_id: z.string().uuid(),
   critterbase_start_capture_id: z.string().uuid().nullable(),
