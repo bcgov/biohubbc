@@ -60,7 +60,7 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
   const tableRows = useMemo(() => {
     return surveyContext.critterDeployments.map((item) => ({
       // critters in this table may use multiple devices accross multiple timespans
-      id: `${item.critter.survey_critter_id}-${item.deployment.device_id}-${item.deployment.critterbase_start_capture_id}`,
+      id: `${item.critter.critter_id}-${item.deployment.device_id}-${item.deployment.critterbase_start_capture_id}`,
       alias: item.critter.animal_id,
       device_id: item.deployment.device_id
       // start: dayjs(item.deployment.attachment_start).format('YYYY-MM-DD'),

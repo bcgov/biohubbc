@@ -82,7 +82,7 @@ describe('SurveyRepository', () => {
 
       const repository = new SurveyCritterRepository(dbConnection);
 
-      const response = await repository.removeDeployment(1, 'deployment_id');
+      const response = await repository.endDeployment(1, 'deployment_id');
 
       expect(response).to.be.undefined;
     });

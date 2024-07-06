@@ -345,9 +345,9 @@ export interface IGetSurveyForUpdateResponse {
   surveyData: SurveyUpdateObject;
 }
 
-export interface ISimpleCritterWithInternalId extends ICritterSimpleResponse {
-  survey_critter_id: number;
-}
+// export interface ICritterSimpleResponse extends ICritterSimpleResponse {
+//   survey_critter_id: number;
+// }
 
 export interface IDetailedCritterWithInternalId extends ICritterDetailedResponse {
   survey_critter_id: number; //The internal critter_id in the SIMS DB. Called this to distinguish against the critterbase UUID of the same name.
@@ -355,7 +355,7 @@ export interface IDetailedCritterWithInternalId extends ICritterDetailedResponse
 
 export interface IAnimalDeploymentWithCritter {
   deployment: IAnimalDeployment;
-  critter: ISimpleCritterWithInternalId;
+  critter: ICritterSimpleResponse;
 }
 
 export type IEditSurveyRequest = IGeneralInformationForm &

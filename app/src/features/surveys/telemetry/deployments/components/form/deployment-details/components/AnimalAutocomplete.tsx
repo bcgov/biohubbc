@@ -8,16 +8,16 @@ import { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
-import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { get } from 'lodash-es';
 import { useState } from 'react';
 
 export interface IAutocompleteField<T extends string | number> {
   name: string;
   label: string;
-  handleAnimal: (animal: ISimpleCritterWithInternalId) => void;
+  handleAnimal: (animal: ICritterSimpleResponse) => void;
   getOptionDisabled?: (option: IAutocompleteFieldOption<T>) => boolean;
-  defaultAnimal?: ISimpleCritterWithInternalId;
+  defaultAnimal?: ICritterSimpleResponse;
   error?: string;
   required?: boolean;
   disabled?: boolean;
@@ -45,7 +45,7 @@ const AnimalAutocompleteField = <T extends string | number>(props: IAutocomplete
       filterSelectedOptions
       noOptionsText="No matching options"
       options={options ?? []}
-      getOptionLabel={(option) => option.animal_id ?? option.critter_id}
+      getOptionLabel={(option) => option.animal_id ?? String(option.critter_id)}
       isOptionEqualToValue={(option, value) => {
         return option.critter_id === value.critter_id;
       }}
@@ -60,7 +60,7 @@ const AnimalAutocompleteField = <T extends string | number>(props: IAutocomplete
       onChange={(_, option) => {
         if (option) {
           handleAnimal(option);
-          setInputValue(option.animal_id ?? option.critter_id); //startCase(option?.commonNames?.length ? option.commonNames[0] : option.scientificName));
+          setInputValue(option.animal_id ?? String(option.critter_id)); //startCase(option?.commonNames?.length ? option.commonNames[0] : option.scientificName));
         }
       }}
       renderOption={(renderProps, renderOption) => {
@@ -72,8 +72,8 @@ const AnimalAutocompleteField = <T extends string | number>(props: IAutocomplete
                 borderTop: '1px solid' + grey[300]
               }
             }}
-            key={renderOption.critter_id}
-            {...renderProps}>
+            {...renderProps}
+            key={renderOption.critter_id}>
             <Box py={1} width="100%">
               <Box justifyContent="space-between" display="flex">
                 <Typography fontWeight={700}>
@@ -82,7 +82,7 @@ const AnimalAutocompleteField = <T extends string | number>(props: IAutocomplete
                     {renderOption.wlh_id}
                   </Typography>
                 </Typography>
-                <Typography color="textSecondary">{renderOption.survey_critter_id}</Typography>
+                <Typography color="textSecondary">{renderOption.critter_id}</Typography>
               </Box>
               <ScientificNameTypography name={renderOption.itis_scientific_name} color="textSecondary" />
             </Box>

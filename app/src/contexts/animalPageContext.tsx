@@ -7,7 +7,7 @@ import isEqual from 'lodash-es/isEqual';
 import { createContext, PropsWithChildren, useCallback, useMemo, useState } from 'react';
 
 export interface ISurveyCritter {
-  survey_critter_id: number;
+  critter_id: number;
   critterbase_critter_id: string;
 }
 
@@ -76,21 +76,21 @@ export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never,
 
   const setSelectedAnimalFromSurveyCritterId = useCallback(
     (surveyCritterId: number) => {
-      if (selectedAnimal?.survey_critter_id === surveyCritterId) {
+      if (selectedAnimal?.critter_id === surveyCritterId) {
         // No change
         return;
       }
 
-      const critter = surveyCrittersDataLoader.data?.find((critter) => critter.survey_critter_id === surveyCritterId);
+      const critter = surveyCrittersDataLoader.data?.find((critter) => critter.critter_id === surveyCritterId);
 
       if (critter) {
         _setSelectedAnimal({
-          survey_critter_id: critter.survey_critter_id,
-          critterbase_critter_id: critter.critter_id
+          critter_id: critter.critter_id,
+          critterbase_critter_id: critter.critterbase_critter_id
         });
       }
     },
-    [selectedAnimal?.survey_critter_id, surveyCrittersDataLoader.data, _setSelectedAnimal]
+    [selectedAnimal?.critter_id, surveyCrittersDataLoader.data, _setSelectedAnimal]
   );
 
   const animalPageContext: IAnimalPageContext = useMemo(

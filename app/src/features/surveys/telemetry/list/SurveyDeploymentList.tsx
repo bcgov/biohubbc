@@ -18,8 +18,7 @@ import grey from '@mui/material/colors/grey';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useSurveyContext } from 'hooks/useContext';
-import useDataLoader from 'hooks/useDataLoader';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { SurveyDeploymentListItem } from './SurveyDeploymentListItem';
@@ -28,29 +27,22 @@ const SurveyDeploymentList = () => {
   const { projectId, surveyId } = useContext(SurveyContext);
 
   const biohubApi = useBiohubApi();
-  // const critterbaseApi = useCritterbaseApi();
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
   const [selectedDeploymentId, setSelectedDeploymentId] = useState<number | null>();
+
   const surveyContext = useSurveyContext();
+  const dialogContext = useDialogContext();
 
-  const deploymentsDataLoader = useDataLoader(() => biohubApi.survey.getDeploymentsInSurvey(projectId, surveyId));
-
-  // Fetch captures associated with the deployments
-  // const capturesDataLoader = useDataLoader((captureIds: string[]) => critterbaseApi.capture.getCaptures(captureIds))
+  const deploymentsDataLoader = surveyContext.deploymentDataLoader;
 
   useEffect(() => {
-    deploymentsDataLoader.load();
+    deploymentsDataLoader.load(projectId, surveyId);
   }, []);
 
   const deployments = deploymentsDataLoader.data ?? [];
-
-  // useEffect(() => {
-  //   if (deploymentsDataLoader.data){
-  //   capturesDataLoader.load()};
-  // }, [deploymentsDataLoader.data]);
 
   const handledDeploymentMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, deploymentId: number) => {
     setAnchorEl(event.currentTarget);
@@ -67,9 +59,65 @@ const SurveyDeploymentList = () => {
     });
   };
 
-  // const handleDelete = () => {}
+  /**
+   * Handle the delete Deployment API call.
+   *
+   */
+  const handleDeleteDeployment = async () => {
+    await biohubApi.survey
+      .deleteDeployment(surveyContext.projectId, surveyContext.surveyId, Number(selectedDeploymentId))
+      .then(() => {
+        dialogContext.setYesNoDialog({ open: false });
+        setAnchorEl(null);
+        surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      })
+      .catch((error: any) => {
+        dialogContext.setYesNoDialog({ open: false });
+        setAnchorEl(null);
+        dialogContext.setSnackbar({
+          snackbarMessage: (
+            <>
+              <Typography variant="body2" component="div">
+                <strong>Error Deleting Deployment</strong>
+              </Typography>
+              <Typography variant="body2" component="div">
+                {String(error)}
+              </Typography>
+            </>
+          ),
+          open: true
+        });
+      });
+  };
 
-  // const handleEdit = () => {redirect based on selectedDeployment}
+  /**
+   * Display the delete deployment dialog.
+   *
+   */
+  const deleteDeploymentDialog = () => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Delete Deployment?',
+      dialogContent: (
+        <Typography variant="body1" component="div" color="textSecondary">
+          Are you sure you want to delete this deployment? All telemetry data from the deployment will also be
+          permanently deleted.
+        </Typography>
+      ),
+      yesButtonLabel: 'Delete Deployment',
+      noButtonLabel: 'Cancel',
+      yesButtonProps: { color: 'error' },
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      open: true,
+      onYes: () => {
+        handleDeleteDeployment();
+      }
+    });
+  };
 
   const deploymentCount = deployments?.length ?? 0;
 
@@ -98,7 +146,11 @@ const SurveyDeploymentList = () => {
           </ListItemIcon>
           Edit Details
         </MenuItem>
-        <MenuItem onClick={() => setAnchorEl(null)}>
+        <MenuItem
+          onClick={() => {
+            deleteDeploymentDialog();
+            setAnchorEl(null);
+          }}>
           <ListItemIcon>
             <Icon path={mdiTrashCanOutline} size={1} />
           </ListItemIcon>
@@ -190,8 +242,8 @@ const SurveyDeploymentList = () => {
                     />
                   </FormGroup>
                 </Box>
-                <Divider flexItem></Divider>
-                <Box
+                <Divider flexItem />
+                <Stack
                   flex="1 1 auto"
                   sx={{
                     background: grey[100]
@@ -217,7 +269,7 @@ const SurveyDeploymentList = () => {
 
                   {deployments.map((deployment) => {
                     const animal = surveyContext.critterDataLoader.data?.find(
-                      (animal) => animal.critter_id === deployment.critterbase_critter_id
+                      (animal) => animal.critterbase_critter_id === deployment.critterbase_critter_id
                     );
                     if (animal) {
                       return (
@@ -232,7 +284,7 @@ const SurveyDeploymentList = () => {
                       );
                     }
                   })}
-                </Box>
+                </Stack>
               </Stack>
             )}
           </Box>

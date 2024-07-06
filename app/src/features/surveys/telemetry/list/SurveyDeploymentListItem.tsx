@@ -13,12 +13,12 @@ import green from '@mui/material/colors/green';
 import grey from '@mui/material/colors/grey';
 import dayjs from 'dayjs';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
-import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { SurveyDeploymentListItemDetails } from './SurveyDeploymentListItemDetails';
 import { PulsatingDot } from './components/PulsatingDot';
 
 export interface ISurveyDeploymentListItemProps {
-  animal: ISimpleCritterWithInternalId;
+  animal: ICritterSimpleResponse;
   deployment: IAnimalDeployment;
   isChecked: boolean;
   handleDeploymentMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, deploymentId: number) => void;
@@ -44,6 +44,7 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
       disableGutters
       square
       sx={{
+        borderRadius: '4px',
         boxShadow: 'none',
         borderBottom: '1px solid' + grey[300],
         '&:before': {
@@ -57,7 +58,7 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
           sx={{
             flex: '1 1 auto',
             py: 0,
-            pr: 8.5,
+            pr: 7,
             pl: 0,
             height: 75,
             overflow: 'hidden',
@@ -111,12 +112,17 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
           </Stack>
         </AccordionSummary>
 
-        <Box position="absolute" right="33%" alignItems="center" justifyContent="center" display="flex">
-          {!isDeploymentOver && (
-            // Turn pulsating off after a certain amount of time
+        {!isDeploymentOver && (
+          <Box
+            position="absolute"
+            right={'26%'}
+            alignItems="center"
+            justifyContent="center"
+            display="flex"
+            title="Device is active">
             <PulsatingDot color={green} size="10px" time={8000} />
-          )}
-        </Box>
+          </Box>
+        )}
 
         <IconButton
           sx={{ position: 'absolute', right: '24px' }}

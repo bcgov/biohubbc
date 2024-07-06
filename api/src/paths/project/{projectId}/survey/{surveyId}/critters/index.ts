@@ -8,6 +8,7 @@ import { SurveyCritterService } from '../../../../../../services/survey-critter-
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters');
+
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
@@ -227,14 +228,22 @@ export function getCrittersFromSurvey(): RequestHandler {
 
       const critterMap = new Map();
       for (const item of result) {
-        critterMap.set(item.critter_id, item);
+        critterMap.set(item.critter_id, {
+          ...item,
+          // Rename `critter_id` from Critterbase to critterbase_critter_id to distinguish it from
+          // the integer `critter_id` in SIMS
+          critterbase_critter_id: item.critter_id
+        });
       }
 
+      // Update the critterMap with survey_critter_id
       for (const surveyCritter of surveyCritters) {
-        if (critterMap.has(surveyCritter.critterbase_critter_id)) {
-          critterMap.get(surveyCritter.critterbase_critter_id).survey_critter_id = surveyCritter.critter_id;
+        const key = String(surveyCritter.critterbase_critter_id);
+        if (critterMap.has(key)) {
+          critterMap.get(key).critter_id = surveyCritter.critter_id;
         }
       }
+
       return res.status(200).json([...critterMap.values()]);
     } catch (error) {
       defaultLog.error({ label: 'createCritter', message: 'error', error });

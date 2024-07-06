@@ -1,16 +1,16 @@
 import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
-import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import grey from '@mui/material/colors/grey';
 import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
-import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { useEffect } from 'react';
 import { ScientificNameTypography } from '../../components/ScientificNameTypography';
 
 interface ICritterListItemProps {
-  critter: ISimpleCritterWithInternalId;
+  critter: ICritterSimpleResponse;
   isChecked: boolean;
   handleCheckboxChange: (surveyCritterId: number) => void;
 }
@@ -45,10 +45,10 @@ export const CritterListItem = (props: ICritterListItemProps) => {
       }}>
       <IconButton
         onClick={() => {
-          if (critter.survey_critter_id !== selectedAnimal?.survey_critter_id)
+          if (critter.critter_id !== selectedAnimal?.survey_critter_id)
             setSelectedAnimal({
-              survey_critter_id: critter.survey_critter_id,
-              critterbase_critter_id: critter.critter_id
+              survey_critter_id: critter.critter_id,
+              critterbase_critter_id: critter.critterbase_critter_id
             });
         }}
         sx={{
@@ -63,7 +63,7 @@ export const CritterListItem = (props: ICritterListItemProps) => {
           '& .MuiTypography-root': {
             color: 'text.primary'
           },
-          bgcolor: selectedAnimal?.survey_critter_id === critter.survey_critter_id ? grey[100] : undefined
+          bgcolor: selectedAnimal?.survey_critter_id === critter.critter_id ? grey[100] : undefined
         }}>
         <Stack
           flexDirection="row"
@@ -79,7 +79,7 @@ export const CritterListItem = (props: ICritterListItemProps) => {
             checked={isChecked}
             onClick={(event) => {
               event.stopPropagation();
-              handleCheckboxChange(critter.survey_critter_id);
+              handleCheckboxChange(critter.critter_id);
             }}
             inputProps={{ 'aria-label': 'controlled' }}
           />

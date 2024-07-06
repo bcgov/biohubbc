@@ -14,10 +14,10 @@ import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
-import { getLatLngAsUtm, getUtmAsLatLng, PROJECTION_MODE } from 'utils/mapProjectionHelpers';
+import { PROJECTION_MODE, getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
 import {
-  AnimalFormProps,
   ANIMAL_FORM_MODE,
+  AnimalFormProps,
   CreateCritterCaptureSchema,
   ICreateCritterCapture,
   isRequiredInSchema
@@ -85,7 +85,7 @@ export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
       component={{
         initialValues: {
           capture_id: props?.formObject?.capture_id,
-          critter_id: props.critter.critter_id,
+          critter_id: props.critter.critterbase_critter_id,
           capture_location: {
             location_id: props?.formObject?.capture_location.location_id,
             latitude: props?.formObject?.capture_location?.latitude ?? ('' as unknown as number),

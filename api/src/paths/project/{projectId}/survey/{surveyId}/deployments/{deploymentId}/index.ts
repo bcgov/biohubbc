@@ -1,3 +1,4 @@
+import { AxiosError } from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
@@ -132,7 +133,7 @@ export function getDeploymentsInSurvey(): RequestHandler {
           bctw_deployment_id: surveyDeployment?.bctw_deployment_id,
           critterbase_start_capture_id: surveyDeployment?.critterbase_start_capture_id,
           critterbase_end_capture_id: surveyDeployment?.critterbase_end_capture_id,
-          critterbase_end_mortality_id: surveyDeployment?.critterbase_end_mortality_id,
+          critterbase_end_mortality_id: surveyDeployment?.critterbase_end_mortality_id
         };
       }, {});
 
@@ -342,6 +343,127 @@ export function updateDeployment(): RequestHandler {
       defaultLog.error({ label: 'updateDeployment', message: 'error', error });
       await connection.rollback();
       throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
+export const DELETE: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      or: [
+        {
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
+          surveyId: Number(req.params.surveyId),
+          discriminator: 'ProjectPermission'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  deleteDeployment()
+];
+
+DELETE.apiDoc = {
+  description: 'Deletes the deployment record in SIMS, and soft deletes the record in BCTW.',
+  tags: ['bctw'],
+  security: [
+    {
+      Bearer: []
+    }
+  ],
+  parameters: [
+    {
+      in: 'path',
+      name: 'surveyId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'deploymentId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    }
+  ],
+  responses: {
+    200: {
+      description: 'Removed deployment successfully.',
+      content: {
+        'application/json': {
+          schema: {
+            title: 'Deployment response object',
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              message: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      }
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/403'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
+
+export function deleteDeployment(): RequestHandler {
+  return async (req, res) => {
+    const user: ICritterbaseUser = {
+      keycloak_guid: req['system_user']?.user_guid,
+      username: req['system_user']?.user_identifier
+    };
+
+    const deploymentId = Number(req.params.deploymentId);
+    const surveyId = Number(req.params.surveyId)
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    const bctwDeploymentService = new BctwDeploymentService(user);
+    const deploymentService = new DeploymentService(connection);
+
+    try {
+      await connection.open();
+
+      console.log(deploymentId)
+
+      const { bctw_deployment_id } = await deploymentService.endDeployment(surveyId, deploymentId);
+
+      console.log(bctw_deployment_id)
+
+      await bctwDeploymentService.deleteDeployment(bctw_deployment_id);
+
+      await connection.commit();
+      return res.status(200).json({ message: 'Succesfully deleted deployment.' });
+    } catch (error) {
+      defaultLog.error({ label: 'deleteDeployment', message: 'error', error });
+      await connection.rollback();
+
+      return res.status(500).json((error as AxiosError).response);
     } finally {
       connection.release();
     }

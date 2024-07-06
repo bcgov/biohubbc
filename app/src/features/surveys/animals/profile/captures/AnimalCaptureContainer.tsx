@@ -106,7 +106,7 @@ export const AnimalCaptureContainer = () => {
         capturesCount={captures.length}
         onAddAnimalCapture={() => {
           history.push(
-            `/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/capture/create`
+            `/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.critterbase_critter_id}/capture/create`
           );
         }}
       />

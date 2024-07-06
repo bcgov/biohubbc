@@ -216,7 +216,7 @@ export const CreateCritterMortalitySchema = yup.object({
 });
 
 export const CreateCritterFamilySchema = yup.object({
-  critter_id: yup.string().uuid().required(),
+  critterbase_critter_id: yup.string().uuid().required(),
   family_id: yup.string().optional(),
   family_label: yup.string().optional(),
   relationship: yup.mixed().oneOf(Object.values(AnimalRelationship)).required(req)

@@ -15,7 +15,6 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import List from '@mui/material/List';
 import ListItemButton from '@mui/material/ListItemButton';
@@ -26,15 +25,15 @@ import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import grey from '@mui/material/colors/grey';
 import { useQuery } from 'hooks/useQuery';
-import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
-import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { useHistory } from 'react-router-dom';
 import { ANIMAL_SECTION } from './animal';
 
 interface IAnimalListProps {
   isLoading?: boolean;
-  surveyCritters?: ISimpleCritterWithInternalId[];
+  surveyCritters?: ICritterSimpleResponse[];
   selectedSection: ANIMAL_SECTION;
   onSelectSection: (section: ANIMAL_SECTION) => void;
   refreshCritter: (critter_id: string) => Promise<ICritterDetailedResponse | undefined>;
@@ -107,12 +106,12 @@ const AnimalList = (props: IAnimalListProps) => {
     }
   };
 
-  const handleCritterSelect = async (critter: ISimpleCritterWithInternalId) => {
-    if (critter.survey_critter_id === Number(survey_critter_id)) {
+  const handleCritterSelect = async (critter: ICritterSimpleResponse) => {
+    if (critter.critter_id === Number(survey_critter_id)) {
       history.replace(history.location.pathname);
     } else {
-      refreshCritter(critter.critter_id);
-      history.push(`?critter_id=${critter.survey_critter_id}`);
+      refreshCritter(critter.critterbase_critter_id);
+      history.push(`?critter_id=${critter.critter_id}`);
     }
     onSelectSection(ANIMAL_SECTION.GENERAL);
   };
@@ -165,8 +164,8 @@ const AnimalList = (props: IAnimalListProps) => {
                     display: 'none'
                   }
                 }}
-                key={critter.critter_id}
-                expanded={critter.survey_critter_id === survey_critter_id}>
+                key={critter.critterbase_critter_id}
+                expanded={critter.critter_id === survey_critter_id}>
                 <Box display="flex" overflow="hidden" alignItems="center" className="sampleSiteHeader">
                   <AccordionSummary
                     expandIcon={<Icon path={mdiChevronDown} size={1} />}

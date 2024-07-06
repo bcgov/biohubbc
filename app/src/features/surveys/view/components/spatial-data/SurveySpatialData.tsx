@@ -12,7 +12,7 @@ import { Position } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { ITelemetry } from 'interfaces/useTelemetryApi.interface';
 import { useContext, useEffect, useMemo, useState } from 'react';
 import { getCodesName, getFormattedDate } from 'utils/Utils';
@@ -88,7 +88,7 @@ const SurveySpatialData = () => {
    */
   const telemetryPoints: ISurveyMapPoint[] = useMemo(() => {
     const deployments: IAnimalDeployment[] = surveyContext.deploymentDataLoader.data ?? [];
-    const critters: ISimpleCritterWithInternalId[] = surveyContext.critterDataLoader.data ?? [];
+    const critters: ICritterSimpleResponse[] = surveyContext.critterDataLoader.data ?? [];
     const telemetry: ITelemetry[] = telemetryContext.telemetryDataLoader.data ?? [];
 
     return (
@@ -98,14 +98,14 @@ const SurveySpatialData = () => {
         // Combine all critter and deployments data into a flat list
         .reduce(
           (
-            acc: { deployment: IAnimalDeployment; critter: ISimpleCritterWithInternalId; telemetry: ITelemetry }[],
+            acc: { deployment: IAnimalDeployment; critter: ICritterSimpleResponse; telemetry: ITelemetry }[],
             telemetry: ITelemetry
           ) => {
             const deployment = deployments.find(
               (animalDeployment) => animalDeployment.bctw_deployment_id === telemetry.deployment_id
             );
             const critter = critters.find(
-              (detailedCritter) => detailedCritter.critter_id === deployment?.critterbase_critter_id
+              (detailedCritter) => detailedCritter.critterbase_critter_id === deployment?.critterbase_critter_id
             );
             if (critter && deployment) {
               acc.push({ deployment, critter, telemetry });

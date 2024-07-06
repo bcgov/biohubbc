@@ -24,7 +24,7 @@ export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
   deployment_id: yup.number().min(1),
   critterbase_start_capture_id: yup
     .string()
-    .required('You must select an initial capture for when the deployment started.'),
+    .required('You must select an initial capture for when the deployment started'),
   critterbase_end_capture_id: yup.string().nullable(),
   critterbase_end_mortality_id: yup.string().nullable(),
   attachment_end_date: yup.string().isValidDateString().nullable(),
@@ -33,7 +33,7 @@ export const AnimalDeploymentTimespanSchema = yup.object({}).shape({
 
 export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
   device_id: intSchema,
-  device_make: yup.string().required('Device make is required.'),
+  device_make: yup.string().required('Device make is required'),
   frequency: numSchema.nullable(),
   frequency_unit: yup.string().nullable(),
   device_model: yup.string().nullable(),
@@ -50,7 +50,7 @@ export const AnimalDeploymentSchema = yup.object({}).shape({
   attachment_end_time: yup.string().nullable(),
   critterbase_start_capture_id: yup
     .string()
-    .required('You must select an initial capture for when the deployment started.'),
+    .required('You must select an initial capture for when the deployment started'),
   critterbase_end_capture_id: yup.string().nullable(),
   critterbase_end_mortality_id: yup.string().nullable(),
   // Integer Id of the deployment in the Survey'
@@ -66,17 +66,20 @@ export const AnimalDeploymentSchema = yup.object({}).shape({
 });
 
 export const CreateAnimalDeployment = yup.object({
-  critter_id: yup.number().min(1).required('You must select the animal that the device is associated to.'),
-  device_id: yup.string().required('You must enter the device ID. This is typically the serial number.'),
-  device_make: yup.string().required('You must enter the device manufacturer.'),
+  critter_id: yup.number().min(1).required('You must select the animal that the device is associated to'),
+  device_id: yup.string().required('You must enter the device ID. This is typically the serial number'),
+  device_make: yup.string().required('You must enter the device make'),
   frequency: numSchema,
-  frequency_unit: yup.string(),
+  frequency_unit: yup.string().when('frequency', {
+    is: (frequency: number | undefined | string) =>
+      !(frequency === null || frequency === undefined || frequency === ''),
+    then: yup.string().oneOf(['MHZ', 'KHZ', 'HZ']).required('Frequency unit is required when frequency is specified'),
+    otherwise: yup.string().nullable()
+  }),
   device_model: yup.string(),
-  critterbase_start_capture_id: yup
-    .string()
-    .required('You must select an initial capture for when the deployment started.'),
-  critterbase_end_mortality_id: yup.string().nullable(),
-  critterbase_end_capture_id: yup.string().nullable(),
+  critterbase_start_capture_id: yup.string().uuid().nullable(),
+  critterbase_end_mortality_id: yup.string().uuid().nullable(),
+  critterbase_end_capture_id: yup.string().uuid().nullable(),
   attachment_end_date: yup.string().nullable(),
   attachment_end_time: yup.string().nullable()
 });

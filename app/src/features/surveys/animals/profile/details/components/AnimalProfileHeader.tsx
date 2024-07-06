@@ -73,15 +73,15 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
           <Typography sx={{ fontSize: '0.8rem', fontWeight: 700 }} component="span">
             Unique ID:&nbsp;
           </Typography>
-          {critter.critter_id}
+          {critter.critterbase_critter_id}
           <IconButton
             sx={{ borderRadius: '5px', p: 0.5, ml: 0.5 }}
             onClick={() => {
-              if (!critter.critter_id) {
+              if (!critter.critterbase_critter_id) {
                 return;
               }
 
-              copyToClipboard(critter.critter_id, () =>
+              copyToClipboard(critter.critterbase_critter_id, () =>
                 setMessageSnackbar('Unique ID copied to clipboard', dialogContext)
               ).catch((error) => {
                 console.error('Could not copy text: ', error);

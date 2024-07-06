@@ -168,7 +168,7 @@ describe('useSurveyApi', () => {
     it('should get critters', async () => {
       const response = [
         {
-          critter_id: 'critter'
+          critterbase_critter_id: 'critter'
         } as IDetailedCritterWithInternalId
       ];
 

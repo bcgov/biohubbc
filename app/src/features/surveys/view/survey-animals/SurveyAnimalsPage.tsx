@@ -5,9 +5,9 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
 import { useContext, useEffect, useState } from 'react';
-import { ANIMAL_FORM_MODE, ANIMAL_SECTION } from './animal';
 import AnimalList from './AnimalList';
 import { AnimalSection } from './AnimalSection';
+import { ANIMAL_FORM_MODE, ANIMAL_SECTION } from './animal';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 
 export const SurveyAnimalsPage = () => {
@@ -39,11 +39,11 @@ export const SurveyAnimalsPage = () => {
       if (detailedCritter) {
         return;
       }
-      const focusCritter = surveyCritters?.find((critter) => critter.survey_critter_id === Number(survey_critter_id));
+      const focusCritter = surveyCritters?.find((critter) => critter.critter_id === Number(survey_critter_id));
       if (!focusCritter) {
         return;
       }
-      await refreshCritter(focusCritter.critter_id);
+      await refreshCritter(focusCritter.critterbase_critter_id);
     };
     getDetailedCritterOnMount();
   }, [surveyCritters, survey_critter_id, critterbaseApi.critters, detailedCritter, refreshCritter]);

@@ -44,8 +44,8 @@ const SurveyAnimals: React.FC = () => {
     loadCritters();
   }
 
-  const currentCritterbaseCritterId = useMemo(
-    () => critterData?.find((a) => a.survey_critter_id === selectedCritterId)?.critter_id,
+  const currentCritterId = useMemo(
+    () => critterData?.find((animal) => animal.critter_id === selectedCritterId)?.critter_id,
     [critterData, selectedCritterId]
   );
 
@@ -68,11 +68,11 @@ const SurveyAnimals: React.FC = () => {
   );
 
   useEffect(() => {
-    if (currentCritterbaseCritterId) {
+    if (currentCritterId) {
       refreshTelemetry();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentCritterbaseCritterId]);
+  }, [currentCritterId]);
 
   const setPopup = (message: string) => {
     dialogContext.setSnackbar({
@@ -168,7 +168,7 @@ const SurveyAnimals: React.FC = () => {
         {telemetryData?.points.features.length ? (
           <TelemetryMap
             telemetryData={telemetryData}
-            deploymentData={deploymentData?.filter((a) => a.critterbase_critter_id === currentCritterbaseCritterId)}
+            deploymentData={deploymentData?.filter((a) => a.critter_id === currentCritterId)}
           />
         ) : (
           <Typography>

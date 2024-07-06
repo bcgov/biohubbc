@@ -11,7 +11,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import { v4 } from 'uuid';
-import { AnimalSex, ANIMAL_FORM_MODE, CreateCritterSchema, ICreateCritter, isRequiredInSchema } from '../animal';
+import { ANIMAL_FORM_MODE, AnimalSex, CreateCritterSchema, ICreateCritter, isRequiredInSchema } from '../animal';
 
 export type GeneralAnimalFormProps<T> =
   | {
@@ -81,7 +81,7 @@ const GeneralAnimalForm = (props: GeneralAnimalFormProps<ICreateCritter>) => {
            * Omitting itis_scientific_name.
            * Critterbase queries scientific name regardless if included.
            */
-          critter_id: props.critter?.critter_id ?? v4(),
+          critter_id: props.critter?.critterbase_critter_id ?? v4(),
           sex: props.critter?.sex as AnimalSex,
           itis_tsn: (props.critter?.itis_tsn ?? '') as unknown as number,
           animal_id: props.critter?.animal_id ?? '',

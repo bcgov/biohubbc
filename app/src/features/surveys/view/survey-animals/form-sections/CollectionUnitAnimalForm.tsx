@@ -8,8 +8,8 @@ import { ICritterCollectionUnitResponse } from 'interfaces/useCritterApi.interfa
 import { get } from 'lodash-es';
 import { useState } from 'react';
 import {
-  AnimalFormProps,
   ANIMAL_FORM_MODE,
+  AnimalFormProps,
   CreateCritterCollectionUnitSchema,
   ICreateCritterCollectionUnit,
   isRequiredInSchema
@@ -64,7 +64,7 @@ export const CollectionUnitAnimalForm = (props: AnimalFormProps<ICritterCollecti
       component={{
         initialValues: {
           critter_collection_unit_id: props.formObject?.critter_collection_unit_id,
-          critter_id: props.critter.critter_id,
+          critter_id: props.critter.critterbase_critter_id,
           collection_unit_id: props.formObject?.collection_unit_id ?? '',
           collection_category_id: props.formObject?.collection_category_id ?? ''
         },

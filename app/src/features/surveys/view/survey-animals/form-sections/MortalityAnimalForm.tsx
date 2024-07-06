@@ -14,8 +14,8 @@ import { IMortalityResponse } from 'interfaces/useCritterApi.interface';
 import { mapValues } from 'lodash-es';
 import { useState } from 'react';
 import {
-  AnimalFormProps,
   ANIMAL_FORM_MODE,
+  AnimalFormProps,
   CreateCritterMortalitySchema,
   ICreateCritterMortality,
   isRequiredInSchema
@@ -66,7 +66,7 @@ const MortalityAnimalForm = (props: AnimalFormProps<IMortalityResponse>) => {
       debug
       component={{
         initialValues: {
-          critter_id: props.critter.critter_id,
+          critter_id: props.critter.critterbase_critter_id,
           mortality_id: props.formObject?.mortality_id,
           location:
             (props.formObject && {

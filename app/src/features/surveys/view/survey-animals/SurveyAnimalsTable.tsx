@@ -2,20 +2,20 @@ import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
-import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 import { IAnimalDeployment } from './telemetry-device/device';
 
 interface ISurveyAnimalsTableEntry {
-  survey_critter_id: number;
-  critter_id: string;
+  critter_id: number;
+  critterbase_critter_id: string;
   animal_id: string | null;
   itis_scientific_name: string;
   deployments?: IAnimalDeployment[];
 }
 
 interface ISurveyAnimalsTableProps {
-  animalData: ISimpleCritterWithInternalId[];
+  animalData: ICritterSimpleResponse[];
   deviceData?: IAnimalDeployment[];
   onMenuOpen: (critter_id: number) => void;
   onRemoveCritter: (critter_id: number) => void;
@@ -34,7 +34,7 @@ export const SurveyAnimalsTable = ({
   const animalDeviceData: ISurveyAnimalsTableEntry[] = deviceData
     ? [...animalData] // spreading this prevents this error "TypeError: Cannot assign to read only property '0' of object '[object Array]' in typescript"
         .map((animal) => {
-          const deployments = deviceData.filter((device) => device.critterbase_critter_id === animal.critter_id);
+          const deployments = deviceData.filter((device) => device.critterbase_critter_id === animal.critterbase_critter_id);
           return {
             ...animal,
             deployments: deployments
@@ -97,7 +97,7 @@ export const SurveyAnimalsTable = ({
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <SurveyAnimalsTableActions
-            critter_id={params.row.survey_critter_id}
+            critter_id={params.row.critter_id}
             devices={params.row?.deployments}
             onMenuOpen={onMenuOpen}
             onEditCritter={onEditCritter}

@@ -71,7 +71,6 @@ export class DeploymentRepository extends BaseRepository {
     return response.rows[0];
   }
 
-
   /**
    * Insert a new deployment record.
    *
@@ -115,19 +114,26 @@ export class DeploymentRepository extends BaseRepository {
   /**
    * Deletes a deployment row.
    *
-   * @param {number} critterId
-   * @param {string} deploymentId
-   * @return {*}  {Promise<void>}
+   * @param {number} surveyId
+   * @param {number} deploymentId
+   * @return {*}
    * @memberof DeploymentRepository
    */
-  async removeDeployment(critterId: number, deploymentId: string): Promise<void> {
-    defaultLog.debug({ label: 'removeDeployment', deploymentId });
+  async endDeployment(surveyId: number, deploymentId: number): Promise<{ bctw_deployment_id: string }> {
+    defaultLog.debug({ label: 'endDeployment', deploymentId });
 
     const queryBuilder = getKnex()
       .table('deployment')
-      .where({ critter_id: critterId, bctw_deployment_id: deploymentId })
-      .delete();
+      .join('critter', 'deployment.critter_id', 'critter.critter_id')
+      .where({
+        'deployment.deployment_id': deploymentId,
+        'critter.survey_id': surveyId
+      })
+      .delete()
+      .returning('bctw_deployment_id');
 
-    await this.connection.knex(queryBuilder);
+    const response = await this.connection.knex(queryBuilder);
+
+    return response.rows[0];
   }
 }

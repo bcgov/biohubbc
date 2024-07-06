@@ -1,12 +1,12 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
-import { grey } from '@mui/material/colors';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
+import { grey } from '@mui/material/colors';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import EditDialog from 'components/dialog/EditDialog';
 import { CbSelectWrapper } from 'components/fields/CbSelectFieldWrapper';
@@ -17,9 +17,9 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IFamilyChildResponse, IFamilyParentResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import {
+  ANIMAL_FORM_MODE,
   AnimalFormProps,
   AnimalRelationship,
-  ANIMAL_FORM_MODE,
   CreateCritterFamilySchema,
   ICreateCritterFamily,
   isRequiredInSchema
@@ -49,7 +49,7 @@ export const FamilyAnimalForm = (props: AnimalFormProps<IFamilyParentResponse | 
   loadFamilies();
 
   const initialValues = {
-    critter_id: props.critter.critter_id,
+    critterbase_critter_id: props.critter.critterbase_critter_id,
     family_id: props?.formObject?.family_id,
     family_label: props?.formObject?.family_label ?? '',
     relationship: (props?.formObject as IFamilyParentResponse)?.parent_critter_id
@@ -80,13 +80,13 @@ export const FamilyAnimalForm = (props: AnimalFormProps<IFamilyParentResponse | 
 
         await critterbaseApi.family.deleteRelationship({
           family_id: initialValues.family_id,
-          critter_id: initialValues.critter_id,
+          critterbase_critter_id: initialValues.critterbase_critter_id,
           relationship: initialValues.relationship
         });
 
         await critterbaseApi.family.createFamilyRelationship({
           family_id: values.family_id,
-          critter_id: values.critter_id,
+          critterbase_critter_id: values.critterbase_critter_id,
           relationship: values.relationship
         });
 

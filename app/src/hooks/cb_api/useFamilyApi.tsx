@@ -23,7 +23,7 @@ type CreateFamilyRelationshipPayload = {
   relationship: AnimalRelationship;
   family_label?: string;
   family_id?: string;
-  critter_id: string;
+  critterbase_critter_id: string;
 };
 
 export const useFamilyApi = (axios: AxiosInstance) => {
@@ -93,7 +93,7 @@ export const useFamilyApi = (axios: AxiosInstance) => {
     if (payload.relationship === AnimalRelationship.CHILD) {
       const { data } = await axios.post(`/api/critterbase/family/children`, {
         family_id: payload.family_id,
-        child_critter_id: payload.critter_id
+        child_critter_id: payload.critterbase_critter_id
       });
 
       return data;
@@ -101,7 +101,7 @@ export const useFamilyApi = (axios: AxiosInstance) => {
 
     const { data } = await axios.post(`/api/critterbase/family/parents`, {
       family_id: payload.family_id,
-      parent_critter_id: payload.critter_id
+      parent_critter_id: payload.critterbase_critter_id
     });
 
     return data;
@@ -117,12 +117,12 @@ export const useFamilyApi = (axios: AxiosInstance) => {
   const deleteRelationship = async (params: {
     relationship: AnimalRelationship;
     family_id: string;
-    critter_id: string;
+    critterbase_critter_id: string;
   }): Promise<IFamilyParentResponse | IFamilyChildResponse> => {
     const payload =
       params.relationship === AnimalRelationship.CHILD
-        ? { family_id: params.family_id, child_critter_id: params.critter_id }
-        : { family_id: params.family_id, parent_critter_id: params.critter_id };
+        ? { family_id: params.family_id, child_critter_id: params.critterbase_critter_id }
+        : { family_id: params.family_id, parent_critter_id: params.critterbase_critter_id };
 
     const { data } = await axios.delete(`/api/critterbase/family/${params.relationship}`, { data: payload });
 

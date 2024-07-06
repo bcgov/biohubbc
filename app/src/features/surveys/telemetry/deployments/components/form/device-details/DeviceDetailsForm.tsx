@@ -48,7 +48,7 @@ const DeviceDetailsForm = (props: IDeviceDetailsFormProps) => {
           <AutocompleteField
             name="device_make"
             id="device_make"
-            label="Manufacturer"
+            label="Make"
             options={props.deviceMakes}
             required={true}
           />

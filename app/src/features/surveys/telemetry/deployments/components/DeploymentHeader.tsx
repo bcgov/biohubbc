@@ -17,6 +17,7 @@ export interface IDeploymentHeaderProps {
   project_name: string;
   survey_id: number;
   survey_name: string;
+  deployment_label?: string;
   is_submitting: boolean;
   title: string;
   breadcrumb: string;
@@ -32,7 +33,7 @@ export const DeploymentHeader: React.FC<IDeploymentHeaderProps> = (props) => {
   const history = useHistory();
   const formikProps = useFormikContext<ICreateAnimalDeployment>();
 
-  const { project_id, survey_id, survey_name, project_name, is_submitting, title, breadcrumb } = props;
+  const { project_id, survey_id, survey_name, project_name, deployment_label, is_submitting, title, breadcrumb } = props;
 
   return (
     <>
@@ -66,6 +67,14 @@ export const DeploymentHeader: React.FC<IDeploymentHeaderProps> = (props) => {
               underline="none">
               Manage Telemetry
             </Link>
+            {deployment_label && (
+              <Link
+                component={RouterLink}
+                to={`/admin/projects/${project_id}/surveys/${survey_id}/telemetry`}
+                underline="none">
+                {deployment_label}
+              </Link>
+            )}
             <Typography component="span" variant="body2" color="textSecondary">
               {breadcrumb}
             </Typography>

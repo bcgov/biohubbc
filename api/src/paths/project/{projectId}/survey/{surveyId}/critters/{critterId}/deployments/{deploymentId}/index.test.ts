@@ -2,10 +2,10 @@ import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { DELETE, deleteDeployment } from '.';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../../__mocks__/db';
 import * as db from '../../../../../../../../../database/db';
 import { BctwDeploymentService } from '../../../../../../../../../services/bctw-service/bctw-deployment-service';
 import { DeploymentService } from '../../../../../../../../../services/deployment-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../../__mocks__/db';
 
 describe('critter deployments', () => {
   afterEach(() => {
@@ -25,7 +25,7 @@ describe('critter deployments', () => {
   describe('deleteDeployment', () => {
     it('deletes an existing deployment', async () => {
       const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-      const mockRemoveDeployment = sinon.stub(DeploymentService.prototype, 'removeDeployment').resolves();
+      const mockRemoveDeployment = sinon.stub(DeploymentService.prototype, 'endDeployment').resolves();
       const mockBctwService = sinon.stub(BctwDeploymentService.prototype, 'deleteDeployment');
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();

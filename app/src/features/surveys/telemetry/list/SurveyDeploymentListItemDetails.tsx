@@ -1,4 +1,4 @@
-import { mdiArrowRightThin, mdiCalendarRange } from '@mdi/js';
+import { mdiArrowRightThin } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
@@ -46,31 +46,26 @@ export const SurveyDeploymentListItemDetails = (props: ISurveyDeploymentListItem
   const end_time = captureDataLoader.data.capture_time;
 
   return (
-    <>
-      <Box width="100%" display="flex" justifyContent="space-between" alignItems="center" p={0}>
-        <Box mt={1} mr={1}>
-          <Icon path={mdiCalendarRange} size={0.75} color={grey[500]} />
-        </Box>
-        <Box>
-          <Typography component="dt" variant="subtitle2" sx={dateSx}>
-            {start_date}
-          </Typography>
-          <Typography component="dt" variant="subtitle2" sx={timeSx}>
-            {start_time}
-          </Typography>
-        </Box>
-        <Box sx={{ display: 'flex', justifyContent: 'center', mx: 1, mt: -0.25 }}>
-          <Icon path={mdiArrowRightThin} size={1} color={grey[500]} />
-        </Box>
-        <Box flex="1 1 auto">
-          <Typography component="dt" variant="subtitle2" sx={dateSx}>
-            {end_date}
-          </Typography>
-          <Typography component="dt" variant="subtitle2" sx={timeSx}>
-            {end_time}
-          </Typography>
-        </Box>
+    <Box width="100%" display="flex" justifyContent="space-between" p={0}>
+      <Box>
+        <Typography component="dt" variant="subtitle2" sx={dateSx}>
+          {start_date}
+        </Typography>
+        <Typography component="dt" variant="subtitle2" sx={timeSx}>
+          {start_time}
+        </Typography>
       </Box>
-    </>
+      <Box sx={{ display: 'flex', justifyContent: 'center', mx: 1, mt: -0.25 }}>
+        <Icon path={mdiArrowRightThin} size={1} color={grey[500]} />
+      </Box>
+      <Box flex="1 1 auto">
+        <Typography component="dt" variant="subtitle2" sx={dateSx}>
+          {end_date}
+        </Typography>
+        <Typography component="dt" variant="subtitle2" sx={timeSx}>
+          {end_time}
+        </Typography>
+      </Box>
+    </Box>
   );
 };

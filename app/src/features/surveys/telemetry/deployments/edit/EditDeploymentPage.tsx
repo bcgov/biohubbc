@@ -3,9 +3,9 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditAnimalDeploymentI18N } from 'constants/i18n';
 import {
-    CreateAnimalDeployment,
-    IAnimalDeployment,
-    ICreateAnimalDeployment
+  CreateAnimalDeployment,
+  IAnimalDeployment,
+  ICreateAnimalDeployment
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
@@ -16,7 +16,7 @@ import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsa
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import DeploymentHeader from '../components/DeploymentHeader';
-import DeploymentCreateForm from '../components/form/DeploymentForm';
+import DeploymentForm from '../components/form/DeploymentForm';
 
 /**
  * Renders the body content of the Deployment page.
@@ -109,9 +109,7 @@ const EditDeploymentPage = () => {
     // Disable cancel prompt so we can navigate away from the page after saving
     setEnableCancelCheck(false);
     try {
-      const survey_critter_id = Number(
-        critters?.find((a) => a.survey_critter_id === values.critter_id)?.survey_critter_id
-      );
+      const survey_critter_id = Number(critters?.find((animal) => animal.critter_id === values.critter_id)?.critter_id);
 
       if (!survey_critter_id) {
         throw new Error('Invalid critter data');
@@ -163,12 +161,15 @@ const EditDeploymentPage = () => {
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
             project_name={projectContext.projectDataLoader.data?.projectData.project.project_name}
+            deployment_label={`${
+              critters.find((critter) => critter.critter_id === critter_id)?.animal_id
+            } - Device ${device_id}`}
             is_submitting={isSubmitting}
-            title="Add Deployment"
-            breadcrumb="Add Deployments"
+            title="Edit Deployment"
+            breadcrumb="Edit Deployment"
           />
           <Box display="flex" flex="1 1 auto">
-            <DeploymentCreateForm isSubmitting={isSubmitting} />
+            <DeploymentForm isSubmitting={isSubmitting} />
           </Box>
         </Box>
       </Formik>

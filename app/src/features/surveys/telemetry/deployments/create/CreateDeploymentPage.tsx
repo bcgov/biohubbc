@@ -14,13 +14,13 @@ import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsa
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import DeploymentHeader from '../components/DeploymentHeader';
-import DeploymentCreateForm from '../components/form/DeploymentForm';
+import DeploymentForm from '../components/form/DeploymentForm';
 
 const initialDeploymentValues = {
   critter_id: '' as unknown as number,
   device_id: '',
   frequency: undefined,
-  frequency_unit: '',
+  frequency_unit: undefined,
   device_model: '',
   device_make: '',
   critterbase_start_capture_id: '',
@@ -77,30 +77,24 @@ const CreateDeploymentPage = () => {
     // Disable cancel prompt so we can navigate away from the page after saving
     setEnableCancelCheck(false);
     try {
-
-      const survey_critter_id = Number(critters?.find((a) => a.survey_critter_id === values.critter_id)?.survey_critter_id);
+      const survey_critter_id = Number(critters?.find((animal) => animal.critter_id === values.critter_id)?.critter_id);
 
       if (!survey_critter_id) {
         throw new Error('Invalid critter data');
       }
 
-      await biohubApi.survey.createDeployment(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        survey_critter_id,
-        {
-          device_id: Number(values.device_id),
-          device_make: values.device_make,
-          frequency: values.frequency,
-          frequency_unit: values.frequency_unit,
-          device_model: values.device_model,
-          critterbase_start_capture_id: values.critterbase_start_capture_id,
-          critterbase_end_capture_id: values.critterbase_end_capture_id,
-          critterbase_end_mortality_id: values.critterbase_end_mortality_id,
-          attachment_end_date: values.attachment_end_date,
-          attachment_end_time: values.attachment_end_time
-        }
-      );
+      await biohubApi.survey.createDeployment(surveyContext.projectId, surveyContext.surveyId, survey_critter_id, {
+        device_id: Number(values.device_id),
+        device_make: values.device_make,
+        frequency: values.frequency,
+        frequency_unit: values.frequency_unit,
+        device_model: values.device_model,
+        critterbase_start_capture_id: values.critterbase_start_capture_id,
+        critterbase_end_capture_id: values.critterbase_end_capture_id,
+        critterbase_end_mortality_id: values.critterbase_end_mortality_id,
+        attachment_end_date: values.attachment_end_date,
+        attachment_end_time: values.attachment_end_time
+      });
       surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
       // create complete, navigate back to observations page
@@ -140,7 +134,7 @@ const CreateDeploymentPage = () => {
             breadcrumb="Add Deployments"
           />
           <Box display="flex" flex="1 1 auto">
-            <DeploymentCreateForm isSubmitting={isSubmitting} />
+            <DeploymentForm isSubmitting={isSubmitting} />
           </Box>
         </Box>
       </Formik>

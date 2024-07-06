@@ -1,15 +1,13 @@
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
-import { ISurveyCritter } from 'contexts/animalPageContext';
 import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useFormikContext } from 'formik';
 import { ICodeResponse } from 'hooks/telemetry/useDeviceApi';
 import { useSurveyContext } from 'hooks/useContext';
-import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import React, { SetStateAction } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import yup from 'utils/YupSchema';
@@ -36,8 +34,8 @@ export const DeviceDetailsInitialValues = {
 export const DeviceDetailsYupSchema = () => yup.object();
 
 interface IDeploymentDetailsFormProps {
-  animals: ISimpleCritterWithInternalId[];
-  setSelectedAnimal: React.Dispatch<SetStateAction<ISurveyCritter | undefined>>;
+  animals: ICritterSimpleResponse[];
+  setSelectedAnimal: React.Dispatch<SetStateAction<number | null>>;
   frequencyUnits: ICodeResponse[];
 }
 
@@ -88,22 +86,22 @@ const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
           <AnimalAutocompleteField
             label="Animal"
             name="critter_id"
+            defaultAnimal={surveyContext.critterDataLoader.data?.find(
+              (animal) => animal.critter_id === values.critter_id
+            )}
             required
             clearOnSelect
-            handleAnimal={(animal: ISimpleCritterWithInternalId) => {
+            handleAnimal={(animal: ICritterSimpleResponse) => {
               if (animal) {
-                setFieldValue('critter_id', animal.survey_critter_id);
-                props.setSelectedAnimal({
-                  survey_critter_id: animal.survey_critter_id,
-                  critterbase_critter_id: animal.critter_id
-                });
+                setFieldValue('critter_id', animal.critter_id);
+                props.setSelectedAnimal(animal.critter_id);
               }
             }}
           />
         </Grid>
         <Grid item xs={12}>
           <Stack direction="row" flex="1 1 auto">
-            <TextField name="frequency" label="Device frequency" type="number" sx={{ flex: '1 1 auto' }} />
+            <CustomTextField name="frequency" label="Device frequency" other={{ type: 'number', sx: { flex: 1 } }} />
             <AutocompleteField
               sx={{ flex: 0.4 }}
               name="frequency_unit"

@@ -3,10 +3,10 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { AuthProvider, AuthProviderProps } from 'react-oidc-context';
-import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
+import { SystemAdminAuthState, getMockAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, waitFor } from 'test-helpers/test-utils';
-import { ANIMAL_SECTION } from './animal';
 import { AnimalSection } from './AnimalSection';
+import { ANIMAL_SECTION } from './animal';
 jest.mock('../../../../hooks/useCritterbaseApi');
 const mockCritterbaseApi = useCritterbaseApi as jest.Mock;
 
@@ -50,8 +50,8 @@ describe('AnimalSection', () => {
   it('should render the general section', async () => {
     const screen = render(
       animalSection(ANIMAL_SECTION.GENERAL, {
-        critter_id: 'blah',
-        survey_critter_id: 1
+        critterbase_critter_id: 'blah',
+        critter_id: 1
       } as IDetailedCritterWithInternalId)
     );
     await waitFor(() => {

@@ -2,7 +2,6 @@ import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
-import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
@@ -14,6 +13,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import grey from '@mui/material/colors/grey';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { ISurveyCritter } from 'contexts/animalPageContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -323,7 +323,7 @@ export const AnimalListContainer = () => {
                               return;
                             }
 
-                            const critterIds = critters.map((critter) => critter.survey_critter_id);
+                            const critterIds = critters.map((critter) => critter.critter_id);
                             setCheckboxSelectedIds(critterIds);
                           }}
                           inputProps={{ 'aria-label': 'controlled' }}
@@ -355,7 +355,7 @@ export const AnimalListContainer = () => {
                   )}
                   {critters.map((critter) => (
                     <Stack
-                      key={critter.critter_id}
+                      key={critter.critterbase_critter_id}
                       direction="row"
                       display="flex"
                       alignItems="center"
@@ -367,7 +367,7 @@ export const AnimalListContainer = () => {
                       }}>
                       <CritterListItem
                         critter={critter}
-                        isChecked={checkboxSelectedIds.includes(critter.survey_critter_id)}
+                        isChecked={checkboxSelectedIds.includes(critter.critter_id)}
                         handleCheckboxChange={handleCheckboxChange}
                       />
                       <IconButton
@@ -375,8 +375,8 @@ export const AnimalListContainer = () => {
                         edge="end"
                         onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
                           handleCritterMenuClick(event, {
-                            critterbase_critter_id: critter.critter_id,
-                            survey_critter_id: critter.survey_critter_id
+                            critterbase_critter_id: critter.critterbase_critter_id,
+                            survey_critter_id: critter.critter_id
                           })
                         }
                         aria-label="animal-settings">

@@ -1,8 +1,8 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { SurveyCritterRepository } from '../repositories/survey-critter-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { SurveyCritterRepository } from '../repositories/survey-critter-repository';
 import { SurveyCritterService } from './survey-critter-service';
 
 chai.use(sinonChai);
@@ -90,12 +90,12 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('removeDeployment', () => {
+  describe('endDeployment', () => {
     it('removes deployment and returns void', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyCritterService(dbConnection);
-      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'removeDeployment').resolves();
-      const response = await service.removeDeployment(1, 'deployment_id');
+      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'endDeployment').resolves();
+      const response = await service.endDeployment(1, 'deployment_id');
       expect(repoStub).to.be.calledOnce;
       expect(response).to.be.undefined;
     });

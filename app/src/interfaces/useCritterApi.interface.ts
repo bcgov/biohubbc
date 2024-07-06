@@ -269,7 +269,8 @@ export type IFamilyChildResponse = {
 };
 
 export type ICritterDetailedResponse = {
-  critter_id: string;
+  critter_id: number;
+  critterbase_critter_id: string;
   itis_tsn: number;
   itis_scientific_name: string;
   wlh_id: string | null;
@@ -290,7 +291,8 @@ export type ICritterDetailedResponse = {
 };
 
 export interface ICritterSimpleResponse {
-  critter_id: string;
+  critter_id: number;
+  critterbase_critter_id: string;
   wlh_id: string | null;
   animal_id: string | null;
   sex: string;

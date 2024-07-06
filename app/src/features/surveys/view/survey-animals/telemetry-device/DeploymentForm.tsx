@@ -39,7 +39,7 @@ export const DeploymentForm = (props: DeploymentFormSectionProps): JSX.Element =
       if (survey_critter_id === undefined) {
         setMessageSnackbar('No critter set!', dialogContext);
       }
-      await biohubApi.survey.removeDeployment(projectId, surveyId, Number(survey_critter_id), deployment_id);
+      await biohubApi.survey.endDeployment(projectId, surveyId, Number(survey_critter_id), deployment_id);
       const indexOfDeployment = deployments?.findIndex((deployment) => deployment.deployment_id === deployment_id);
       if (indexOfDeployment !== undefined) {
         deployments?.splice(indexOfDeployment);

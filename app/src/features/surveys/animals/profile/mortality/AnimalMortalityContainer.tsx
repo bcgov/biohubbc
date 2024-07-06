@@ -105,7 +105,7 @@ const AnimalMortalityContainer = () => {
         mortalityCount={mortality.length}
         onAddAnimalMortality={() => {
           history.push(
-            `/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/mortality/create`
+            `/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.critterbase_critter_id}/mortality/create`
           );
         }}
       />

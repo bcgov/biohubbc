@@ -9,6 +9,7 @@ import {
   IDeploymentTimespan,
   ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
+import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
   ICreateSurveyRequest,
@@ -17,7 +18,6 @@ import {
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
   IGetSurveyListResponse,
-  ISimpleCritterWithInternalId,
   SurveyUpdateObject
 } from 'interfaces/useSurveyApi.interface';
 import qs from 'qs';
@@ -370,10 +370,27 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @returns {ISimpleCritterWithInternalId[]}
+   * @returns {ICritterSimpleResponse[]}
    */
-  const getSurveyCritters = async (projectId: number, surveyId: number): Promise<ISimpleCritterWithInternalId[]> => {
+  const getSurveyCritters = async (projectId: number, surveyId: number): Promise<ICritterSimpleResponse[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/critters`);
+    return data;
+  };
+
+  /**
+   * Retrieve a list of critters associated with the given survey with details taken from critterbase.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @returns {ICritterDetailedResponse}
+   */
+  const getCritterById = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number
+  ): Promise<ICritterDetailedResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`);
     return data;
   };
 
@@ -510,7 +527,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Removes a deployment. Will trigger removal in both SIMS and BCTW.
+   * Ends a deployment. Will trigger removal in both SIMS and BCTW.
    *
    * @param {number} projectId
    * @param {number} surveyId
@@ -518,7 +535,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} deploymentId
    * @returns {*}
    */
-  const removeDeployment = async (
+  const endDeployment = async (
     projectId: number,
     surveyId: number,
     critterId: number,
@@ -527,6 +544,19 @@ const useSurveyApi = (axios: AxiosInstance) => {
     const { data } = await axios.delete(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments/${deploymentId}`
     );
+    return data;
+  };
+
+  /**
+   * Deletes a deployment. Will trigger deletion in SIMS and invalidates the deployment in BCTW.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} deploymentId
+   * @returns {*}
+   */
+  const deleteDeployment = async (projectId: number, surveyId: number, deploymentId: number): Promise<string> => {
+    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
     return data;
   };
 
@@ -551,9 +581,11 @@ const useSurveyApi = (axios: AxiosInstance) => {
     removeCrittersFromSurvey,
     createDeployment,
     getDeploymentsInSurvey,
+    getCritterById,
     updateDeployment,
     getCritterTelemetry,
-    removeDeployment
+    endDeployment,
+    deleteDeployment
   };
 };
 

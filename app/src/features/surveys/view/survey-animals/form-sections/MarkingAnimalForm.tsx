@@ -8,8 +8,8 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { IMarkingResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import {
-  AnimalFormProps,
   ANIMAL_FORM_MODE,
+  AnimalFormProps,
   CreateCritterMarkingSchema,
   ICreateCritterMarking,
   isRequiredInSchema
@@ -57,7 +57,7 @@ export const MarkingAnimalForm = (props: AnimalFormProps<IMarkingResponse>) => {
       component={{
         initialValues: {
           marking_id: props?.formObject?.marking_id,
-          critter_id: props?.critter.critter_id,
+          critter_id: props?.critter.critterbase_critter_id,
           marking_type_id: props?.formObject?.marking_type_id ?? '',
           taxon_marking_body_location_id: props?.formObject?.taxon_marking_body_location_id ?? '',
           primary_colour_id: props?.formObject?.primary_colour_id,

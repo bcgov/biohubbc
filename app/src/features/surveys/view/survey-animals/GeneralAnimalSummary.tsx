@@ -36,13 +36,13 @@ const GeneralAnimalSummary = (props: GeneralAnimalSummaryProps) => {
     { title: 'Wildlife Health ID', value: props.critter?.wlh_id },
     {
       title: 'Critterbase ID',
-      value: props?.critter?.critter_id,
+      value: props?.critter?.critterbase_critter_id,
       valueEndIcon: (
         <IconButton
           sx={{ ml: 0.5 }}
           aria-label={`Copy Critter ID`}
           onClick={() => {
-            navigator.clipboard.writeText(props?.critter?.critter_id ?? '');
+            navigator.clipboard.writeText(props?.critter?.critterbase_critter_id ?? '');
             setMessageSnackbar('Copied Critter ID', dialogContext);
           }}>
           <Icon path={mdiContentCopy} size={0.8} />

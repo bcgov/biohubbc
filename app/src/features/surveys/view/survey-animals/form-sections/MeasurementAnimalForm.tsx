@@ -18,8 +18,8 @@ import {
 import { has, startCase } from 'lodash-es';
 import { useEffect, useMemo, useState } from 'react';
 import {
-  AnimalFormProps,
   ANIMAL_FORM_MODE,
+  AnimalFormProps,
   CreateCritterMeasurementSchema,
   ICreateCritterMeasurement,
   isRequiredInSchema
@@ -98,10 +98,10 @@ export const MeasurementAnimalForm = (
       return `Must be a number`;
     }
     if (val < min) {
-      return `Measurement must be greater than ${min}${unit}`;
+      return `Measurement must be greater than ${min} ${unit}`;
     }
     if (max && val > max) {
-      return `Measurement must be less than ${max}${unit}`;
+      return `Measurement must be less than ${max} ${unit}`;
     }
   };
 
@@ -118,7 +118,7 @@ export const MeasurementAnimalForm = (
         initialValues: {
           measurement_qualitative_id: props.formObject?.measurement_qualitative_id,
           measurement_quantitative_id: props.formObject?.measurement_quantitative_id,
-          critter_id: props.critter.critter_id,
+          critter_id: props.critter.critterbase_critter_id,
           taxon_measurement_id: props.formObject?.taxon_measurement_id ?? '',
           qualitative_option_id: props?.formObject?.qualitative_option_id,
           value: props?.formObject?.measurement_quantitative_id ? props.formObject?.value : ('' as unknown as number),
