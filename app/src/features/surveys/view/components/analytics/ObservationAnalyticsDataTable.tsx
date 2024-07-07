@@ -3,13 +3,24 @@ import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useSurveyContext } from 'hooks/useContext';
+import { useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition
 } from 'interfaces/useCritterApi.interface';
 import { useEffect } from 'react';
+import {
+  getDateColDef,
+  getDynamicColumns,
+  getIndividualCountColDef,
+  getIndividualPercentageColDef,
+  getRowCountColDef,
+  getSamplingMethodColDef,
+  getSamplingPeriodColDef,
+  getSamplingSiteColDef,
+  getSpeciesColDef
+} from './utils/AnalyticsGridColumnDefinitions';
 
 interface IObservationAnalyticsDataTableProps {
   groupByColumns: string[];
@@ -19,9 +30,17 @@ interface IObservationAnalyticsDataTableProps {
   quantitativeMeasurementDefinitions: CBQuantitativeMeasurementTypeDefinition[];
 }
 
-interface IObservationAnalyticsRow {
+export interface IObservationAnalyticsRow {
   id: number;
-  [key: string]: any;
+  row_count: number;
+  individual_count: number;
+  individual_percentage: number;
+  [key: string]: string | number | undefined;
+  itis_tsn?: number;
+  observation_date?: string;
+  survey_sample_site_id?: number;
+  survey_sample_method_id?: number;
+  survey_sample_period_id?: number;
 }
 
 const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProps) => {
@@ -29,6 +48,7 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
   const biohubApi = useBiohubApi();
 
   const { surveyId } = useSurveyContext();
+  const taxonomyContext = useTaxonomyContext();
 
   const analyticsDataLoader = useDataLoader(
     (
@@ -81,14 +101,41 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
     return newRow;
   });
 
-  const columns: GridColDef<IObservationAnalyticsRow>[] = Object.keys(rows[0])
-    .filter((field) => field !== 'id')
-    .map((field) => ({
-      field,
-      headerName: field,
-      flex: 1,
-      minWidth: 80
-    }));
+  let columns: GridColDef<IObservationAnalyticsRow>[] = [
+    getRowCountColDef(),
+    getIndividualCountColDef(),
+    getIndividualPercentageColDef(),
+    ...getDynamicColumns(rows, [
+      ...groupByColumns,
+      ...groupByQuantitativeMeasurements,
+      ...groupByQualitativeMeasurements,
+      'row_count',
+      'individual_count',
+      'individual_percentage'
+    ])
+  ];
+
+  const keys = Object.keys(rows[0]);
+
+  if (keys.includes('itis_tsn')) {
+    columns = [...columns, getSpeciesColDef(taxonomyContext)];
+  }
+
+  if (keys.includes('observation_date')) {
+    columns = [...columns, getDateColDef()];
+  }
+
+  if (keys.includes('survey_sample_site_id')) {
+    columns = [...columns, getSamplingSiteColDef()];
+  }
+
+  if (keys.includes('survey_sample_method_id')) {
+    columns = [...columns, getSamplingMethodColDef()];
+  }
+
+  if (keys.includes('survey_sample_period_id')) {
+    columns = [...columns, getSamplingPeriodColDef()];
+  }
 
   const rowHeight = 50;
 
@@ -111,6 +158,13 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
         disableColumnMenu
         disableVirtualization
         data-testid="survey-spatial-observation-data-table"
+        sx={{
+          '& .MuiDataGrid-columnHeaderDraggableContainer': { minWidth: '50px' },
+          '& .MuiDataGrid-cellContent, .MuiTypography-root': {
+            textTransform: 'capitalize !important',
+            fontSize: '0.9rem'
+          }
+        }}
       />
     </Box>
   );

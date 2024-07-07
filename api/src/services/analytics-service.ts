@@ -1,33 +1,15 @@
 import { IDBConnection } from '../database/db';
+import {
+  ObservationCountByGroupWithNamedMeasurements,
+  QualitativeMeasurementAnalytics,
+  QuantitativeMeasurementAnalytics
+} from '../models/observation-analytics';
 import { AnalyticsRepository } from '../repositories/analytics-repository';
 import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
 
-interface IQualitativeMeasurementGroup {
-  option: {
-    option_id: string;
-    option_label: string;
-  };
-  taxon_measurement_id: string;
-  measurement_name: string;
-}
-
-interface IQuantitativeMeasurementGroup {
-  value: number;
-  taxon_measurement_id: string;
-  measurement_name: string;
-}
-
-export interface IObservationCountByGroup {
-  row_count: number;
-  individual_count: number;
-  percentage: number;
-  qualitative_measurement: IQualitativeMeasurementGroup[];
-  quantitative_measurement: IQuantitativeMeasurementGroup[];
-}
-
 export class AnalyticsService extends DBService {
-  analyticsRepository: AnalyticsRepository;
+  private analyticsRepository: AnalyticsRepository;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -35,93 +17,100 @@ export class AnalyticsService extends DBService {
   }
 
   /**
-   * Get Survey IDs for a project ID
+   * Gets observation counts by group for given survey IDs and groupings.
    *
-   * @param {number[]} surveyIds
-   * @param {string[]} groupByColumns
-   * @param {string[]} groupByQuantitativeMeasurements
-   * @param {string[]} groupByQualitativeMeasurements
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof AnalyticsService
+   * @param surveyIds Array of survey IDs
+   * @param groupByColumns Columns to group by
+   * @param groupByQuantitativeMeasurements Quantitative measurements to group by
+   * @param groupByQualitativeMeasurements Qualitative measurements to group by
+   * @returns Array of ObservationCountByGroupWithNamedMeasurements
    */
   async getObservationCountByGroup(
     surveyIds: number[],
     groupByColumns: string[],
     groupByQuantitativeMeasurements: string[],
     groupByQualitativeMeasurements: string[]
-  ): Promise<IObservationCountByGroup[]> {
+  ): Promise<ObservationCountByGroupWithNamedMeasurements[]> {
     const critterbaseService = new CritterbaseService({
       keycloak_guid: this.connection.systemUserGUID(),
       username: this.connection.systemUserIdentifier()
     });
 
-    const counts = await this.analyticsRepository.getObservationCountByGroup(
-      surveyIds,
-      groupByColumns,
-      groupByQuantitativeMeasurements,
-      groupByQualitativeMeasurements
-    );
+    try {
+      // Fetch observation counts from repository
+      const counts = await this.analyticsRepository.getObservationCountByGroup(
+        surveyIds,
+        groupByColumns.filter((column) => column.trim() !== ""),
+        groupByQuantitativeMeasurements.filter((column) => column.trim() !== ""),
+        groupByQualitativeMeasurements.filter((column) => column.trim() !== "")
+      );
 
-    // all objects are identical so get keys using the first object of the arrya
-    const quant_taxon_measurement_ids = Object.keys(counts[0].qual_measurements);
-    const qual_taxon_measurement_ids = Object.keys(counts[0].quant_measurements);
+      // Extract unique measurement IDs
+      const quant_taxon_measurement_ids = Object.keys(counts[0]?.quant_measurements ?? {});
+      const qual_taxon_measurement_ids = Object.keys(counts[0]?.qual_measurements ?? {});
 
-    const qualitativeMeasurementPromise =
-      critterbaseService.getQualitativeMeasurementTypeDefinition(quant_taxon_measurement_ids);
-    const quantitativeMeasurementsPromise =
-      critterbaseService.getQuantitativeMeasurementTypeDefinition(qual_taxon_measurement_ids);
+      // Fetch measurement definitions in parallel
+      const [qualitativeMeasurementDefinitions, quantitativeMeasurementDefinitions] = await Promise.all([
+        critterbaseService.getQualitativeMeasurementTypeDefinition(qual_taxon_measurement_ids),
+        critterbaseService.getQuantitativeMeasurementTypeDefinition(quant_taxon_measurement_ids)
+      ]);
 
-    const [qualitativeMeasurementDefinitions, quantitativeMeasurementDefinitions] = await Promise.all([
-      qualitativeMeasurementPromise,
-      quantitativeMeasurementsPromise
-    ]);
+      // Process each count row to map measurement IDs to names and labels
+      const results: ObservationCountByGroupWithNamedMeasurements[] = [];
 
-    // Update qualitative measurements for each row
-    const newCounts = counts.map((row) => {
-      row['qualitative_measurements'] = []; // Initialize the 'qualitative' array
-      Object.keys(row.qual_measurements).map((measurementId) => {
-        const option_id = row.qual_measurements[measurementId];
+      for (const row of counts) {
+        const { quant_measurements, qual_measurements, ...newRow } = row;
 
-        const qualitativeMeasurement = qualitativeMeasurementDefinitions.find(
-          (def) => def.taxon_measurement_id === measurementId
-        );
-        if (qualitativeMeasurement) {
-          row['qualitative_measurements'].push({
-            // Push the new item to the 'qualitative' array
-            option: {
-              option_id: option_id,
-              option_label:
-                qualitativeMeasurement?.options.find((option) => option.qualitative_option_id === option_id)
-                  ?.option_label ?? ''
-            },
-            taxon_measurement_id: measurementId,
-            measurement_name: qualitativeMeasurement?.measurement_name
-          });
+        const namedQualitativeMeasurements: QualitativeMeasurementAnalytics[] = [];
+        for (const measurementId of Object.keys(qual_measurements)) {
+          const option_id = qual_measurements[measurementId];
+
+          const qualitativeMeasurement = qualitativeMeasurementDefinitions.find(
+            (def) => def.taxon_measurement_id === measurementId
+          );
+
+          if (qualitativeMeasurement) {
+            namedQualitativeMeasurements.push({
+              option: {
+                option_id: option_id,
+                option_label:
+                  qualitativeMeasurement?.options.find((option) => option.qualitative_option_id === option_id)
+                    ?.option_label ?? ''
+              },
+              taxon_measurement_id: measurementId,
+              measurement_name: qualitativeMeasurement?.measurement_name ?? ''
+            });
+          }
         }
-      });
 
-      row['quantitative_measurements'] = []; // Initialize the 'quantitative' array
-      Object.keys(row.quant_measurements).map((measurementId) => {
-        const value = row.quant_measurements[measurementId];
+        const namedQuantitativeMeasurements: QuantitativeMeasurementAnalytics[] = [];
+        for (const measurementId of Object.keys(quant_measurements)) {
+          const value = quant_measurements[measurementId];
 
-        const quantitativeMeasurement = quantitativeMeasurementDefinitions.find(
-          (def) => def.taxon_measurement_id === measurementId
-        );
-        if (quantitativeMeasurement) {
-          row['quantitative_measurements'].push({
-            // Push the new item to the 'quantitative' array
-            value: value,
-            taxon_measurement_id: measurementId,
-            measurement_name: quantitativeMeasurement?.measurement_name
-          });
+          const quantitativeMeasurement = quantitativeMeasurementDefinitions.find(
+            (def) => def.taxon_measurement_id === measurementId
+          );
+
+          if (quantitativeMeasurement) {
+            namedQuantitativeMeasurements.push({
+              value: value,
+              taxon_measurement_id: measurementId,
+              measurement_name: quantitativeMeasurement?.measurement_name ?? ''
+            });
+          }
         }
-      });
 
-      const { quant_measurements, qual_measurements, ...newRow } = row;
+        results.push({
+          ...newRow,
+          qualitative_measurements: namedQualitativeMeasurements,
+          quantitative_measurements: namedQuantitativeMeasurements
+        });
+      }
 
-      return newRow;
-    });
-
-    return newCounts;
+      return results;
+    } catch (error) {
+      console.error('Error fetching observation counts:', error);
+      throw error;
+    }
   }
 }

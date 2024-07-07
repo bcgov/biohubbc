@@ -1,8 +1,9 @@
 import { Operation } from 'express-openapi';
 import { RequestHandler } from 'http-proxy-middleware';
-import { SYSTEM_ROLE } from '../../constants/roles';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
+import { getObservationAnalyticsSchema } from '../../openapi/schemas/analytics';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { AnalyticsService } from '../../services/analytics-service';
 import { getLogger } from '../../utils/logger';
@@ -13,6 +14,15 @@ export const GET: Operation = [
   authorizeRequestHandler((req) => {
     return {
       or: [
+        {
+          validProjectPermissions: [
+            PROJECT_PERMISSION.COORDINATOR,
+            PROJECT_PERMISSION.COLLABORATOR,
+            PROJECT_PERMISSION.OBSERVER
+          ],
+          surveyId: Number(req.params.surveyId),
+          discriminator: 'ProjectPermission'
+        },
         {
           validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
           discriminator: 'SystemRole'
@@ -47,7 +57,7 @@ GET.apiDoc = {
         }
       },
       required: true,
-      style: 'simple', // Indicates comma separated values
+      style: 'simple',
       explode: false
     },
     {
@@ -60,7 +70,7 @@ GET.apiDoc = {
         }
       },
       required: true,
-      style: 'simple', // Indicates comma separated values
+      style: 'simple',
       explode: false
     },
     {
@@ -72,7 +82,7 @@ GET.apiDoc = {
           type: 'string'
         }
       },
-      style: 'simple', // Indicates comma separated values
+      style: 'simple',
       explode: false
     },
     {
@@ -84,7 +94,7 @@ GET.apiDoc = {
           type: 'string'
         }
       },
-      style: 'simple', // Indicates comma separated values
+      style: 'simple',
       explode: false
     }
   ],
@@ -93,19 +103,7 @@ GET.apiDoc = {
       description: 'Analytics calculated OK.',
       content: {
         'application/json': {
-          schema: {
-            title: 'Observation analytics response object',
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['individual_count'],
-              properties: {
-                individual_count: {
-                  type: 'number'
-                }
-              }
-            }
-          }
+          schema: getObservationAnalyticsSchema
         }
       }
     },
@@ -131,57 +129,28 @@ export function getObservationCountByGroup(): RequestHandler {
   defaultLog.debug({ label: 'getObservationCountByGroup' });
 
   return async (req, res) => {
-    if (!req.query.surveyIds) {
-      throw new HTTP400('Missing required param `surveyIds`');
+    const { surveyIds, groupByColumns, groupByQuantitativeMeasurements, groupByQualitativeMeasurements } = req.query;
+
+    if (!surveyIds || !Array.isArray(surveyIds) || surveyIds?.length === 0) {
+      throw new HTTP400('Invalid or missing surveyIds');
     }
 
-    if (!Array.isArray(req.query.surveyIds)) {
-      throw new HTTP400('Param `surveyIds` is not an array, as required');
-    }
-
-    if (!req.query.groupByColumns) {
-      throw new HTTP400('Missing required param `groupByColumns`');
-    }
-
-    if (!Array.isArray(req.query.groupByColumns)) {
-      throw new HTTP400('Param `groupByColumns` is not an array, as required');
-    }
-
-    if (req.query.groupByQualitativeMeasurements) {
-      if (!Array.isArray(req.query.groupByQualitativeMeasurements)) {
-        throw new HTTP400('Param `groupByQualitativeMeasurements` is not an array, as required');
-      }
-    }
-
-    if (req.query.groupByQuantitativeMeasurements) {
-      if (!Array.isArray(req.query.groupByQuantitativeMeasurements)) {
-        throw new HTTP400('Param `groupByQuantitativeMeasurements` is not an array, as required');
-      }
+    if (!groupByColumns || !Array.isArray(groupByColumns) || groupByColumns?.length === 0) {
+      throw new HTTP400('Invalid or missing groupByColumns');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const surveyIds = req.query.surveyIds.map((id) => Number(id));
-      const groupByColumns = Array.isArray(req.query.groupByColumns)
-        ? req.query.groupByColumns.map((id) => String(id)).filter((id) => id && id.trim() !== '')
-        : [];
-      const groupByQualitativeMeasurements = Array.isArray(req.query.groupByQualitativeMeasurements)
-        ? req.query.groupByQualitativeMeasurements.map((id) => String(id)).filter((id) => id && id.trim() !== '')
-        : [];
-      const groupByQuantitativeMeasurements = Array.isArray(req.query.groupByQuantitativeMeasurements)
-        ? req.query.groupByQuantitativeMeasurements.map((id) => String(id)).filter((id) => id && id.trim() !== '')
-        : [];
-
       await connection.open();
 
       const analyticsService = new AnalyticsService(connection);
 
       const count = await analyticsService.getObservationCountByGroup(
-        surveyIds,
-        groupByColumns,
-        groupByQuantitativeMeasurements,
-        groupByQualitativeMeasurements
+        surveyIds.map(Number),
+        groupByColumns as string[],
+        (groupByQuantitativeMeasurements as string[]) || [],
+        (groupByQualitativeMeasurements as string[]) || []
       );
 
       await connection.commit();

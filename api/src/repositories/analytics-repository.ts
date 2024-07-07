@@ -1,48 +1,30 @@
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { IObservationCountByGroup } from '../services/analytics-service';
+import { ObservationCountByGroupWithMeasurements } from '../models/observation-analytics';
 import { BaseRepository } from './base-repository';
-
-// const observationCountByGroupSchema = z.object({
-//   count: z.number(),
-//   percentage: z.number(),
-//   survey_sample_site_id: z.number().optional(),
-//   survey_sample_method_id: z.number().optional(),
-//   survey_sample_period_id: z.number().optional(),
-//   observation_date: z.string().optional(),
-//   critterbase_taxon_measurement_id: z.string().optional().nullable(),
-//   critterbase_measurement_qualitative_option_id: z.string().optional().nullable(),
-//   value: z.number().optional().nullable(),
-//   itis_tsn: z.number().optional()
-// });
-
-export interface IObservationCountByGroupWithMeasurements extends IObservationCountByGroup {
-  quant_measurements: { value: number; critterbase_taxon_measurement_id: string }[];
-  qual_measurements: { option_id: string; critterbase_taxon_measurement_id: string }[];
-}
 
 export class AnalyticsRepository extends BaseRepository {
   /**
-   * Gets a survey record for a given survey ID
+   * Gets the observation count by group for given survey IDs
    *
-   * @param {number[]} surveyIds
-   * @param {string[]} groupByColumns
-   * @param {string[]} groupByQuantitativeMeasurements
-   * @param {string[]} groupByQualitativeMeasurements
-   * @return {*}  {Promise<SurveyRecord>}
-   * @memberof SurveyRepository
+   * @param {number[]} surveyIds - Array of survey IDs
+   * @param {string[]} groupByColumns - Columns to group by
+   * @param {string[]} groupByQuantitativeMeasurements - Quantitative measurements to group by
+   * @param {string[]} groupByQualitativeMeasurements - Qualitative measurements to group by
+   * @returns {Promise<IObservationCountByGroupWithMeasurements[]>} - Observation count by group
+   * @memberof AnalyticsRepository
    */
   async getObservationCountByGroup(
     surveyIds: number[],
     groupByColumns: string[],
     groupByQuantitativeMeasurements: string[],
     groupByQualitativeMeasurements: string[]
-  ): Promise<IObservationCountByGroupWithMeasurements[]> {
+  ): Promise<ObservationCountByGroupWithMeasurements[]> {
     const knex = getKnex();
 
     const combinedColumns = [...groupByColumns, ...groupByQuantitativeMeasurements, ...groupByQualitativeMeasurements];
 
-    // subquery to get total count, used for calculating ratios
+    // Subquery to get the total count, used for calculating ratios
     const totalCountSubquery = knex('observation_subcount as os')
       .sum('os.subcount as total')
       .leftJoin('survey_observation as so', 'so.survey_observation_id', 'os.survey_observation_id')
@@ -50,16 +32,16 @@ export class AnalyticsRepository extends BaseRepository {
       .first()
       .toString();
 
-    // Turns subcount quantitative measurements into columns that are included in the group by clause
+    // Create columns for quantitative measurements
     const quantColumns = groupByQuantitativeMeasurements.map((id) =>
-      knex.raw(`MAX(CASE WHEN quant.critterbase_taxon_measurement_id = ? THEN quant.value END) as "${id}"`, [id])
+      knex.raw(`MAX(CASE WHEN quant.critterbase_taxon_measurement_id = ? THEN quant.value END) as ??`, [id, id])
     );
 
-    // Turns subcount qualitative measurements into columns that are included in the group by clause
+    // Create columns for qualitative measurements
     const qualColumns = groupByQualitativeMeasurements.map((id) =>
       knex.raw(
-        `STRING_AGG(DISTINCT CASE WHEN qual.critterbase_taxon_measurement_id = ? THEN qual.critterbase_measurement_qualitative_option_id::text END, ',') as "${id}"`,
-        [id]
+        `STRING_AGG(DISTINCT CASE WHEN qual.critterbase_taxon_measurement_id = ? THEN qual.critterbase_measurement_qualitative_option_id::text END, ',') as ??`,
+        [id, id]
       )
     );
 
@@ -69,7 +51,7 @@ export class AnalyticsRepository extends BaseRepository {
           'os.subcount',
           'os.observation_subcount_id',
           'so.survey_id',
-          ...groupByColumns.map((column) => knex.raw(`?? as ??`, [column, column])),
+          ...groupByColumns.map((column) => knex.raw('??', [column])),
           ...quantColumns,
           ...qualColumns
         )
@@ -90,20 +72,25 @@ export class AnalyticsRepository extends BaseRepository {
       })
       .select(knex.raw('COUNT(subcount)::NUMERIC as row_count'))
       .select(knex.raw('SUM(subcount)::NUMERIC as individual_count'))
-      .select(knex.raw(`ROUND(SUM(os.subcount)::NUMERIC / (${totalCountSubquery}) * 100, 2) as percentage_of_individuals`))
-      .select(groupByColumns.map((column) => knex.raw(`?? as ??`, [column, column])))
+      .select(
+        knex.raw(`ROUND(SUM(os.subcount)::NUMERIC / (${totalCountSubquery}) * 100, 2) as individual_percentage`)
+      )
+      .select(groupByColumns.map((column) => knex.raw('??', [column])))
+      // Measurement properties are objects of {'<critterbase_taxon_measurement_id>' : '<value>', '<critterbase_taxon_measurement_id>' : '<value>'}
       .select(
         knex.raw(
-          `jsonb_build_object(
-        ${groupByQuantitativeMeasurements.map((column) => `'${column}', "${column}"`).join(', ')}
-      ) as quant_measurements`
+          `jsonb_build_object(${groupByQuantitativeMeasurements
+            .map((column) => `'${column}', ??`)
+            .join(', ')}) as quant_measurements`,
+          groupByQuantitativeMeasurements
         )
       )
       .select(
         knex.raw(
-          `jsonb_build_object(
-        ${groupByQualitativeMeasurements.map((column) => `'${column}', "${column}"`).join(', ')}
-      ) as qual_measurements`
+          `jsonb_build_object(${groupByQualitativeMeasurements
+            .map((column) => `'${column}', ??`)
+            .join(', ')}) as qual_measurements`,
+          groupByQualitativeMeasurements
         )
       )
       .from('temp_observations as os')
