@@ -304,7 +304,9 @@ export class ObservationRepository extends BaseRepository {
       observations
         .map((observation) => {
           return `(${[
-            'survey_observation_id' in observation ? observation.survey_observation_id : 'DEFAULT',
+            'survey_observation_id' in observation && observation.survey_observation_id
+              ? observation.survey_observation_id
+              : 'DEFAULT',
             surveyId,
             observation.survey_sample_site_id ?? 'NULL',
             observation.survey_sample_method_id ?? 'NULL',
