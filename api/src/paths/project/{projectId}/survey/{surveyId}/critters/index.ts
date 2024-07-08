@@ -72,7 +72,8 @@ GET.apiDoc = {
       in: 'query',
       name: 'format',
       schema: {
-        type: 'string'
+        type: 'string',
+        enum: ['detailed']
       }
     }
   ],

@@ -86,7 +86,7 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Survey data get response.',
+      description: 'Survey Observations get response.',
       content: {
         'application/json': {
           schema: observervationsWithSubcountDataSchema

@@ -30,7 +30,7 @@ export const SurveyDataAnimal = () => {
 
   useEffect(() => {
     animalDataLoader.load(); // Trigger data loading on component mount
-  }, []);
+  }, [animalDataLoader]);
 
   const animals = animalDataLoader.data;
 
@@ -77,7 +77,7 @@ export const SurveyDataAnimal = () => {
     }
 
     return points;
-  }, [biohubApi.observation, animals, projectId, surveyId]);
+  }, [animals, critterbaseApi.capture]);
 
   // Define supplementary layer for map display
   const supplementaryLayer: ISurveyMapSupplementaryLayer = {

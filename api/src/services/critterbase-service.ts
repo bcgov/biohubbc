@@ -391,6 +391,11 @@ export class CritterbaseService {
 
   async getMultipleCrittersByIdsDetailed(critter_ids: string[]): Promise<ICritterDetailed[]> {
     const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}?format=detailed`, { critter_ids });
+    console.log('-----------------------------------------------------');
+    console.log('-----------------------------------------------------');
+    console.log(response);
+    console.log('-----------------------------------------------------');
+    console.log('-----------------------------------------------------');
     return response.data;
   }
 

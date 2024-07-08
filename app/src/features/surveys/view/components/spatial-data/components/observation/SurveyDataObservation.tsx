@@ -13,7 +13,7 @@ import {
   IGetSurveyObservationsGeometryObject,
   IGetSurveyObservationsGeometryResponse
 } from 'interfaces/useObservationApi.interface';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import SurveyDataLayer from '../map/SurveyDataMapContainer';
 import SurveyDataObservationTable from './table/SurveyDataObservationTable';
@@ -33,50 +33,56 @@ export const SurveyDataObservation = () => {
 
   useEffect(() => {
     observationsGeometryDataLoader.load();
-  }, []);
+  }, [observationsGeometryDataLoader]);
 
   const observations: IGetSurveyObservationsGeometryResponse | undefined = observationsGeometryDataLoader.data;
 
-  const formatObservationMetadata = async (observation: any): Promise<ISurveyMapPointMetadata[]> => {
-    const response = await biohubApi.observation.getObservationRecord(
-      projectId,
-      surveyId,
-      observation.survey_observation_id
-    );
+  const formatObservationMetadata = useCallback(
+    async (observation: any): Promise<ISurveyMapPointMetadata[]> => {
+      const response = await biohubApi.observation.getObservationRecord(
+        projectId,
+        surveyId,
+        observation.survey_observation_id
+      );
 
-    return [
-      { label: 'Taxon ID', value: String(response.itis_tsn) },
-      { label: 'Count', value: String(response.count) },
-      {
-        label: 'Coords',
-        value: [response.latitude, response.longitude]
-          .filter((coord): coord is number => coord !== null)
-          .map((coord) => coord.toFixed(6))
-          .join(', ')
-      },
-      {
-        label: 'Date',
-        value: getFormattedDate(
-          response.observation_time ? DATE_FORMAT.ShortMediumDateTimeFormat : DATE_FORMAT.ShortMediumDateFormat,
-          `${response.observation_date} ${response.observation_time}`
-        )
-      }
-    ];
-  };
-
-  const createObservationPoint = (observation: IGetSurveyObservationsGeometryObject): ISurveyMapPoint => ({
-    feature: {
-      type: 'Feature',
-      properties: {},
-      geometry: observation.geometry
+      return [
+        { label: 'Taxon ID', value: String(response.itis_tsn) },
+        { label: 'Count', value: String(response.count) },
+        {
+          label: 'Coords',
+          value: [response.latitude, response.longitude]
+            .filter((coord): coord is number => coord !== null)
+            .map((coord) => coord.toFixed(6))
+            .join(', ')
+        },
+        {
+          label: 'Date',
+          value: getFormattedDate(
+            response.observation_time ? DATE_FORMAT.ShortMediumDateTimeFormat : DATE_FORMAT.ShortMediumDateFormat,
+            `${response.observation_date} ${response.observation_time}`
+          )
+        }
+      ];
     },
-    key: `observation-${observation.survey_observation_id}`,
-    onLoadMetadata: () => formatObservationMetadata(observation)
-  });
+    [biohubApi.observation, projectId, surveyId]
+  );
+
+  const createObservationPoint = useCallback(
+    (observation: IGetSurveyObservationsGeometryObject): ISurveyMapPoint => ({
+      feature: {
+        type: 'Feature',
+        properties: {},
+        geometry: observation.geometry
+      },
+      key: `observation-${observation.survey_observation_id}`,
+      onLoadMetadata: () => formatObservationMetadata(observation)
+    }),
+    [formatObservationMetadata]
+  );
 
   const observationPoints: ISurveyMapPoint[] = useMemo(() => {
     return observations?.surveyObservationsGeometry.map(createObservationPoint) ?? [];
-  }, [observations]);
+  }, [createObservationPoint, observations?.surveyObservationsGeometry]);
 
   const supplementaryLayer: ISurveyMapSupplementaryLayer = {
     layerName: 'Species Observations',

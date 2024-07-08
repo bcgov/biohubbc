@@ -2,11 +2,15 @@ import { OpenAPIV3 } from 'openapi-types';
 
 export const critterSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
-  // additionalProperties: false,
+  additionalProperties: false,
   properties: {
     critter_id: {
       type: 'string',
       format: 'uuid'
+    },
+    survey_critter_id: {
+      type: 'integer',
+      minimum: 1
     },
     animal_id: {
       type: 'string',

@@ -7,7 +7,7 @@ import { Position } from 'geojson';
 import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
 import { ITelemetry } from 'hooks/useTelemetryApi';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo } from 'react';
 import SurveyDataLayer from '../map/SurveyDataMapContainer';
 import SurveyDataTelemetryTable from './table/SurveyDataTelemetryTable';
 
@@ -24,7 +24,7 @@ export const SurveyDataTelemetry = () => {
     telemetryDataLoader.refresh(
       surveyContext.deploymentDataLoader.data?.map((deployment) => deployment.deployment_id) ?? []
     );
-  }, []);
+  }, [surveyContext.deploymentDataLoader.data, telemetryDataLoader]);
 
   /**
    * Formats the metadata for a telemetry point.
@@ -61,47 +61,50 @@ export const SurveyDataTelemetry = () => {
    * @param {ISimpleCritterWithInternalId[]} critters The critter data.
    * @returns {ISurveyMapPoint[]} The combined list of telemetry points.
    */
-  const combineTelemetryData = (
-    telemetryData: ITelemetry[],
-    deployments: IAnimalDeployment[],
-    critters: ISimpleCritterWithInternalId[]
-  ): ISurveyMapPoint[] => {
-    return (
-      telemetryData
-        ?.filter((telemetry) => telemetry.latitude !== undefined && telemetry.longitude !== undefined)
-        .reduce(
-          (
-            acc: { deployment: IAnimalDeployment; critter: ISimpleCritterWithInternalId; telemetry: ITelemetry }[],
-            telemetry: ITelemetry
-          ) => {
-            const deployment = deployments.find(
-              (animalDeployment) => animalDeployment.deployment_id === telemetry.deployment_id
-            );
-            const critter = critters.find((detailedCritter) => detailedCritter.critter_id === deployment?.critter_id);
-            if (critter && deployment) {
-              acc.push({ deployment, critter, telemetry });
-            }
-
-            return acc;
-          },
-          []
-        )
-        .map(({ telemetry, deployment, critter }) => {
-          return {
-            feature: {
-              type: 'Feature',
-              properties: {},
-              geometry: {
-                type: 'Point',
-                coordinates: [telemetry.longitude, telemetry.latitude] as Position
+  const combineTelemetryData = useCallback(
+    (
+      telemetryData: ITelemetry[],
+      deployments: IAnimalDeployment[],
+      critters: ISimpleCritterWithInternalId[]
+    ): ISurveyMapPoint[] => {
+      return (
+        telemetryData
+          ?.filter((telemetry) => telemetry.latitude !== undefined && telemetry.longitude !== undefined)
+          .reduce(
+            (
+              acc: { deployment: IAnimalDeployment; critter: ISimpleCritterWithInternalId; telemetry: ITelemetry }[],
+              telemetry: ITelemetry
+            ) => {
+              const deployment = deployments.find(
+                (animalDeployment) => animalDeployment.deployment_id === telemetry.deployment_id
+              );
+              const critter = critters.find((detailedCritter) => detailedCritter.critter_id === deployment?.critter_id);
+              if (critter && deployment) {
+                acc.push({ deployment, critter, telemetry });
               }
+
+              return acc;
             },
-            key: `telemetry-${telemetry.telemetry_manual_id}`,
-            onLoadMetadata: () => formatTelemetryMetadata(telemetry, deployment, critter)
-          };
-        }) ?? []
-    );
-  };
+            []
+          )
+          .map(({ telemetry, deployment, critter }) => {
+            return {
+              feature: {
+                type: 'Feature',
+                properties: {},
+                geometry: {
+                  type: 'Point',
+                  coordinates: [telemetry.longitude, telemetry.latitude] as Position
+                }
+              },
+              key: `telemetry-${telemetry.telemetry_manual_id}`,
+              onLoadMetadata: () => formatTelemetryMetadata(telemetry, deployment, critter)
+            };
+          }) ?? []
+      );
+    },
+    []
+  );
 
   const telemetryPoints: ISurveyMapPoint[] = useMemo(() => {
     const deployments: IAnimalDeployment[] = surveyContext.deploymentDataLoader.data ?? [];
@@ -109,9 +112,9 @@ export const SurveyDataTelemetry = () => {
 
     return combineTelemetryData(telemetryDataLoader.data ?? [], deployments, critters);
   }, [
-    surveyContext.critterDataLoader.data,
-    telemetryDataLoader.data,
     surveyContext.deploymentDataLoader.data,
+    surveyContext.critterDataLoader.data,
+    combineTelemetryData,
     telemetryDataLoader.data
   ]);
 
