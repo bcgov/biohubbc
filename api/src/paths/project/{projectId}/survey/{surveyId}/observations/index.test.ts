@@ -75,7 +75,7 @@ describe('insertUpdateManualSurveyObservations', () => {
       surveyObservations
     };
 
-    const requestHandler = observationRecords.insertUpdateManualSurveyObservations();
+    const requestHandler = observationRecords.putObservations();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -126,7 +126,7 @@ describe('insertUpdateManualSurveyObservations', () => {
     };
 
     try {
-      const requestHandler = observationRecords.insertUpdateManualSurveyObservations();
+      const requestHandler = observationRecords.putObservations();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();

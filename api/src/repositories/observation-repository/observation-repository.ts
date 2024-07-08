@@ -323,8 +323,6 @@ export class ObservationRepository extends BaseRepository {
         .join(', ')
     );
 
-    console.log(sqlStatement);
-
     sqlStatement.append(`
       ON CONFLICT
         (survey_observation_id)
