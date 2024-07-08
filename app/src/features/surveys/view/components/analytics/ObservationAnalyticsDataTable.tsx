@@ -20,7 +20,8 @@ import {
   getSamplingPeriodColDef,
   getSamplingSiteColDef,
   getSpeciesColDef
-} from './utils/AnalyticsGridColumnDefinitions';
+} from './components/utils/AnalyticsGridColumnDefinitions';
+import { findSampleMethod, findSamplePeriod, findSampleSite } from './components/utils/FindRecords';
 
 interface IObservationAnalyticsDataTableProps {
   groupByColumns: string[];
@@ -47,8 +48,10 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
   const { groupByColumns, groupByQuantitativeMeasurements, groupByQualitativeMeasurements } = props;
   const biohubApi = useBiohubApi();
 
-  const { surveyId } = useSurveyContext();
+  const surveyContext = useSurveyContext();
   const taxonomyContext = useTaxonomyContext();
+
+  const { surveyId } = surveyContext;
 
   const analyticsDataLoader = useDataLoader(
     (
@@ -72,7 +75,7 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
       groupByQuantitativeMeasurements,
       groupByQualitativeMeasurements
     );
-  }, [groupByColumns, groupByQuantitativeMeasurements, groupByQualitativeMeasurements]);
+  }, [surveyId, groupByColumns, groupByQuantitativeMeasurements, groupByQualitativeMeasurements]);
 
   if (!analyticsDataLoader.data?.length) {
     return (
@@ -101,7 +104,7 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
     return newRow;
   });
 
-  let columns: GridColDef<IObservationAnalyticsRow>[] = [
+  const columns: GridColDef<IObservationAnalyticsRow>[] = [
     getRowCountColDef(),
     getIndividualCountColDef(),
     getIndividualPercentageColDef(),
@@ -116,25 +119,30 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
   ];
 
   const keys = Object.keys(rows[0]);
+  const sampleSites = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
 
   if (keys.includes('itis_tsn')) {
-    columns = [...columns, getSpeciesColDef(taxonomyContext)];
+    columns.push(getSpeciesColDef(taxonomyContext.getCachedSpeciesTaxonomyById));
   }
 
   if (keys.includes('observation_date')) {
-    columns = [...columns, getDateColDef()];
+    columns.push(getDateColDef());
   }
 
   if (keys.includes('survey_sample_site_id')) {
-    columns = [...columns, getSamplingSiteColDef()];
+    columns.push(getSamplingSiteColDef((survey_sample_site_id) => findSampleSite(sampleSites, survey_sample_site_id)));
   }
 
   if (keys.includes('survey_sample_method_id')) {
-    columns = [...columns, getSamplingMethodColDef()];
+    columns.push(
+      getSamplingMethodColDef((survey_sample_method_id) => findSampleMethod(sampleSites, survey_sample_method_id))
+    );
   }
 
   if (keys.includes('survey_sample_period_id')) {
-    columns = [...columns, getSamplingPeriodColDef()];
+    columns.push(
+      getSamplingPeriodColDef((survey_sample_period_id) => findSamplePeriod(sampleSites, survey_sample_period_id))
+    );
   }
 
   const rowHeight = 50;
@@ -161,7 +169,7 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
         sx={{
           '& .MuiDataGrid-columnHeaderDraggableContainer': { minWidth: '50px' },
           '& .MuiDataGrid-cellContent, .MuiTypography-root': {
-            textTransform: 'capitalize !important',
+            textTransform: 'capitalize',
             fontSize: '0.9rem'
           }
         }}

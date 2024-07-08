@@ -8,7 +8,7 @@ import SurveyObservationAnalytics from '../analytics/SurveyObservationAnalytics'
 import SurveySpatialObservationDataTable from '../spatial-data/SurveySpatialObservationDataTable';
 
 export enum SurveyDataContainerViewEnum {
-  RAW = 'RAW',
+  COUNTS = 'COUNTS',
   ANALYTICS = 'ANALYTICS'
 }
 
@@ -19,10 +19,10 @@ interface ISurveyDataContainerProps {
 const SurveyDataContainer = (props: ISurveyDataContainerProps) => {
   const { isLoading } = props;
 
-  const [activeDataView, setActiveDataView] = useState<SurveyDataContainerViewEnum>(SurveyDataContainerViewEnum.RAW);
+  const [activeDataView, setActiveDataView] = useState<SurveyDataContainerViewEnum>(SurveyDataContainerViewEnum.COUNTS);
 
   const views = [
-    { label: 'Raw', value: 'RAW' },
+    { label: 'Counts', value: 'COUNTS' },
     { label: 'Analytics', value: 'ANALYTICS' }
   ];
 
@@ -59,7 +59,7 @@ const SurveyDataContainer = (props: ISurveyDataContainerProps) => {
       </Box>
       <Divider sx={{ mt: 2, mb: 1 }} />
       <Box p={2}>
-        {activeDataView === SurveyDataContainerViewEnum.RAW && (
+        {activeDataView === SurveyDataContainerViewEnum.COUNTS && (
           <SurveySpatialObservationDataTable isLoading={isLoading} />
         )}
         {activeDataView === SurveyDataContainerViewEnum.ANALYTICS && <SurveyObservationAnalytics />}
