@@ -24,7 +24,8 @@ export const SurveyDataTelemetry = () => {
     telemetryDataLoader.refresh(
       surveyContext.deploymentDataLoader.data?.map((deployment) => deployment.deployment_id) ?? []
     );
-  }, [surveyContext.deploymentDataLoader.data, telemetryDataLoader]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surveyContext.deploymentDataLoader.data]);
 
   /**
    * Formats the metadata for a telemetry point.

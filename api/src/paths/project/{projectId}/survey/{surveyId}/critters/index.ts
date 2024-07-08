@@ -110,7 +110,7 @@ GET.apiDoc = {
 
 POST.apiDoc = {
   description:
-    'Creates a new critter in critterbase, and if successful, adds the a link to the critter_id under this survey.',
+    'Creates a new critter in CritterBase, and if successful, adds a corresponding SIMS critter record under this survey.',
   tags: ['critterbase'],
   security: [
     {

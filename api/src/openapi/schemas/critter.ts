@@ -37,6 +37,56 @@ export const critterSchema: OpenAPIV3.SchemaObject = {
     critter_comment: {
       type: 'string',
       nullable: true
+    },
+    mortality: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['mortality_id', 'mortality_timestamp'],
+        properties: {
+          mortality_id: {
+            type: 'string'
+          },
+          mortality_timestamp: {
+            type: 'string'
+          }
+        }
+      }
+    },
+    collection_units: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: [
+          'critter_collection_unit_id',
+          'collection_category_id',
+          'collection_unit_id',
+          'unit_name',
+          'category_name'
+        ],
+        properties: {
+          critter_collection_unit_id: {
+            type: 'string',
+            format: 'uuid'
+          },
+          collection_category_id: {
+            type: 'string',
+            format: 'uuid'
+          },
+          collection_unit_id: {
+            type: 'string',
+            format: 'uuid'
+          },
+          unit_name: {
+            type: 'string'
+          },
+          category_name: {
+            type: 'string'
+          }
+        }
+      }
     }
   }
 };
