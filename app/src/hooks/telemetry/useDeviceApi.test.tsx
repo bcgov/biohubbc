@@ -4,7 +4,7 @@ import { Device } from 'features/surveys/view/survey-animals/telemetry-device/de
 import { useDeviceApi } from './useDeviceApi';
 
 describe('useDeviceApi', () => {
-  let mock: any;
+  let mock: MockAdapter;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);

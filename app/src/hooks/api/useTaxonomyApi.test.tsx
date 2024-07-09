@@ -7,7 +7,7 @@ import { AuthProvider, AuthProviderProps } from 'react-oidc-context';
 import useTaxonomyApi from './useTaxonomyApi';
 
 describe('useTaxonomyApi', () => {
-  let mock: any;
+  let mock: MockAdapter;
 
   const authConfig: AuthProviderProps = {
     authority: 'authority',

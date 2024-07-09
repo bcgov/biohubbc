@@ -1,5 +1,5 @@
 import { useConfigContext } from 'hooks/useContext';
-import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { IPartialTaxonomy, ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import qs from 'qs';
 import useAxios from './useAxios';
 
@@ -10,11 +10,16 @@ const useTaxonomyApi = () => {
   /**
    * Searches for taxon records based on ITIS TSNs.
    *
+   * TODO: Update the return type to `ITaxonomy[]` once the BioHub API endpoint is updated to return the extra `rank`
+   * and `kingdom` fields.
+   *
    * @param {number[]} tsns
-   * @return {*}  {Promise<ITaxonomy[]>}
+   * @return {*}  {Promise<IPartialTaxonomy[]>}
    */
-  const getSpeciesFromIds = async (tsns: number[]): Promise<ITaxonomy[]> => {
-    const { data } = await apiAxios.get<{ searchResponse: ITaxonomy[] }>(config.BIOHUB_TAXON_TSN_PATH, {
+  const getSpeciesFromIds = async (tsns: number[]): Promise<IPartialTaxonomy[]> => {
+    const { data } = await apiAxios.get<{
+      searchResponse: IPartialTaxonomy[];
+    }>(config.BIOHUB_TAXON_TSN_PATH, {
       params: {
         tsn: [...new Set(tsns)]
       },

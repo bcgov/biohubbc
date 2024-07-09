@@ -3,7 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import useProjectParticipationApi from './useProjectParticipationApi';
 
 describe('useProjectParticipationApi', () => {
-  let mock: any;
+  let mock: MockAdapter;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);

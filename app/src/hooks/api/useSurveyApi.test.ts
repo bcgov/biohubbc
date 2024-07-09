@@ -6,7 +6,7 @@ import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
   IDetailedCritterWithInternalId,
-  IGetSurveyListResponse,
+  IFindSurveysResponse,
   SurveyBasicFieldsObject
 } from 'interfaces/useSurveyApi.interface';
 import { ApiPaginationResponseParams } from 'types/misc';
@@ -14,7 +14,7 @@ import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
 
 describe('useSurveyApi', () => {
-  let mock: any;
+  let mock: MockAdapter;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
@@ -49,7 +49,7 @@ describe('useSurveyApi', () => {
     it('fetches an array of surveys', async () => {
       const projectId = 1;
 
-      const res: IGetSurveyListResponse = {
+      const res: IFindSurveysResponse = {
         surveys: [{ survey_id: 1 }, { survey_id: 2 }] as SurveyBasicFieldsObject[],
         pagination: null as unknown as ApiPaginationResponseParams
       };

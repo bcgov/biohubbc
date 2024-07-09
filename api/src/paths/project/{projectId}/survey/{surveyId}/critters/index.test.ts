@@ -15,7 +15,15 @@ describe('getCrittersFromSurvey', () => {
     const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
 
     const mockSurveyCritter = { critter_id: 123, survey_id: 123, critterbase_critter_id: 'critterbase1' };
-    const mockCBCritter = { critter_id: 'critterbase1' };
+    const mockCBCritter = {
+      critter_id: 'critterbase1',
+      wlh_id: 'wlh1',
+      animal_id: 'animal1',
+      sex: 'unknown',
+      itis_tsn: 12345,
+      itis_scientific_name: 'species1',
+      critter_comment: 'comment1'
+    };
 
     const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
     const mockGetCrittersInSurvey = sinon
