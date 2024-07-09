@@ -52,7 +52,7 @@ export const PUT: Operation = [
       ]
     };
   }),
-  insertUpdateManualSurveyObservations()
+  putObservations()
 ];
 
 GET.apiDoc = {
@@ -168,7 +168,8 @@ PUT.apiDoc = {
                         type: 'integer',
                         minimum: 1,
                         nullable: true,
-                        description: 'The survey observation ID. If provided observation, the record will be updated.'
+                        description:
+                          'The survey observation ID. If provided, the matching existing observation record will be updated. If not provided, a new observation record will be inserted.'
                       },
                       itis_tsn: {
                         type: 'integer'
@@ -229,9 +230,11 @@ PUT.apiDoc = {
                       ],
                       properties: {
                         observation_subcount_id: {
-                          type: 'number',
+                          type: 'integer',
+                          minimum: 1,
                           nullable: true,
-                          description: 'The observation subcount ID. If provided, the subcount record will be updated.'
+                          description:
+                            'The observation subcount ID. If provided, the mataching existing subcount record will be updated. If not provided, a new subcount record will be inserted.'
                         },
                         subcount: {
                           type: 'number',
@@ -407,7 +410,7 @@ export function getSurveyObservations(): RequestHandler {
  * @export
  * @return {*}  {RequestHandler}
  */
-export function insertUpdateManualSurveyObservations(): RequestHandler {
+export function putObservations(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
 
