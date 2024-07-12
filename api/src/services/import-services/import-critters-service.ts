@@ -1,4 +1,4 @@
-import { keys, omit, toUpper, uniq } from 'lodash';
+import { capitalize, keys, omit, toUpper, uniq } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../database/db';
@@ -35,7 +35,7 @@ import { CsvCritter, PartialCsvCritter, Row, Validation, ValidationError } from 
 
 const defaultLog = getLogger('services/import/import-critters-service');
 
-const CSV_CRITTER_SEX_OPTIONS = ['UNKNOWN', 'MALE', 'FEMALE'];
+const CSV_CRITTER_SEX_OPTIONS = ['UNKNOWN', 'MALE', 'FEMALE', 'HERMAPHRODITIC'];
 
 /**
  *
@@ -140,7 +140,7 @@ export class ImportCrittersService extends DBService {
   _getCritterFromRow(row: CsvCritter): ICreateCritter {
     return {
       critter_id: row.critter_id,
-      sex: row.sex,
+      sex: capitalize(row.sex),
       itis_tsn: row.itis_tsn,
       animal_id: row.animal_id,
       wlh_id: row.wlh_id,
@@ -295,7 +295,9 @@ export class ImportCrittersService extends DBService {
           return;
         }
         // Attempt to find the collection unit with the cell value from the mapping
-        const collectionUnitMatch = collectionUnitColumn.collectionUnits.find((unit) => unit.unit_name === row[column]);
+        const collectionUnitMatch = collectionUnitColumn.collectionUnits.find(
+          (unit) => unit.unit_name.toLowerCase() === String(row[column]).toLowerCase()
+        );
         // Collection unit must be a valid value
         if (!collectionUnitMatch) {
           errors.push({ row: index, message: `Invalid ${column}. Cell value is not valid.` });

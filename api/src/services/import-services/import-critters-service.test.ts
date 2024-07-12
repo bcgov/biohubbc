@@ -435,11 +435,11 @@ describe('ImportCrittersService', () => {
         expect(validation.errors.length).to.be.eq(2);
         expect(validation.errors).to.be.deep.equal([
           {
-            message: 'Invalid SEX. Expecting: UNKNOWN, MALE, FEMALE.',
+            message: 'Invalid SEX. Expecting: UNKNOWN, MALE, FEMALE, HERMAPHRODITIC.',
             row: 0
           },
           {
-            message: 'Invalid SEX. Expecting: UNKNOWN, MALE, FEMALE.',
+            message: 'Invalid SEX. Expecting: UNKNOWN, MALE, FEMALE, HERMAPHRODITIC.',
             row: 1
           }
         ]);
