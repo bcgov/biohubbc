@@ -87,7 +87,7 @@ export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
           capture_id: props?.formObject?.capture_id,
           critter_id: props.critter.critter_id,
           capture_location: {
-            location_id: props?.formObject?.capture_location.location_id,
+            location_id: props?.formObject?.capture_location?.location_id,
             latitude: props?.formObject?.capture_location?.latitude ?? ('' as unknown as number),
             longitude: props?.formObject?.capture_location?.longitude ?? ('' as unknown as number),
             coordinate_uncertainty:

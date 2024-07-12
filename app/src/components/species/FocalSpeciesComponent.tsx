@@ -1,7 +1,7 @@
 import Stack from '@mui/material/Stack';
 import AlertBar from 'components/alert/AlertBar';
 import { useFormikContext } from 'formik';
-import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { IPartialTaxonomy, ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import get from 'lodash-es/get';
 import SelectedSpecies from './components/SelectedSpecies';
 import SpeciesAutocompleteField from './components/SpeciesAutocompleteField';
@@ -11,7 +11,7 @@ const FocalSpeciesComponent = () => {
 
   const selectedSpecies: ITaxonomy[] = get(values, 'species.focal_species') || [];
 
-  const handleAddSpecies = (species?: ITaxonomy) => {
+  const handleAddSpecies = (species?: IPartialTaxonomy) => {
     setFieldValue(`species.focal_species[${selectedSpecies.length}]`, species);
     setFieldError(`species.focal_species`, undefined);
   };

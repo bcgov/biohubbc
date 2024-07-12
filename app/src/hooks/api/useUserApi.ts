@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import { IGetUserProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 
 /**
@@ -68,8 +69,20 @@ const useUserApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get projects for a system user id.
+   *
+   * @param {number} systemUserId
+   * @return {*} {Promise<IGetUserProjectsListResponse[]>}
+   */
+  const getProjectList = async (systemUserId: number): Promise<IGetUserProjectsListResponse[]> => {
+    const { data } = await axios.get(`/api/user/${systemUserId}/projects/get`);
+    return data;
+  };
+
   return {
     getUser,
+    getProjectList,
     getUserById,
     getUsersList,
     deleteSystemUser,

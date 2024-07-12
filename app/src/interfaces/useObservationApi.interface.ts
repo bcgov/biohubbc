@@ -35,7 +35,7 @@ export type StandardObservationColumns = {
   survey_sample_method_id: number | null;
   survey_sample_period_id: number | null;
   count: number | null;
-  observation_date: Date;
+  observation_date: string;
   observation_time: string;
   latitude: number | null;
   longitude: number | null;

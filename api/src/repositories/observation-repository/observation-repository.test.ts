@@ -4,7 +4,7 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SQLStatement } from 'sql-template-strings';
-import { getMockDBConnection } from '../__mocks__/db';
+import { getMockDBConnection } from '../../__mocks__/db';
 import { InsertObservation, ObservationRepository, UpdateObservation } from './observation-repository';
 
 chai.use(sinonChai);
