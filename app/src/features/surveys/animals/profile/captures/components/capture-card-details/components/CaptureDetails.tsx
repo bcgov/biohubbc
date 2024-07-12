@@ -24,10 +24,6 @@ export const CaptureDetails = (props: ICaptureDetailsProps) => {
   const captureLocation = capture.capture_location;
   const captureComment = capture.capture_comment;
 
-  if (!captureDate && (!captureLocation.latitude || !captureLocation.longitude) && !captureComment) {
-    return null;
-  }
-
   return (
     <Stack gap={2}>
       <Stack direction="row" spacing={3}>
@@ -52,9 +48,11 @@ export const CaptureDetails = (props: ICaptureDetailsProps) => {
             sx={{ textTransform: 'uppercase', mb: 0.5 }}>
             Capture location
           </Typography>
-          <Typography color="textSecondary" variant="body2">
-            {captureLocation.latitude},&nbsp;{captureLocation.longitude}
-          </Typography>
+          {captureLocation && (
+            <Typography color="textSecondary" variant="body2">
+              {captureLocation.latitude},&nbsp;{captureLocation.longitude}
+            </Typography>
+          )}
         </Box>
       </Stack>
 

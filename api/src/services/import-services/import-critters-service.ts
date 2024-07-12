@@ -89,7 +89,7 @@ export class ImportCrittersService extends DBService {
   _getCritterRowsToValidate(rows: Row[], collectionUnitColumns: string[]): PartialCsvCritter[] {
     return rows.map((row) => {
       // Standard critter properties from CSV
-      const standardCritterRow = {
+      const standardCritterRow: PartialCsvCritter = {
         critter_id: uuid(), // Generate a uuid for each critter for convienence
         sex: getSexFromRow(row),
         itis_tsn: getTsnFromRow(row),
@@ -294,6 +294,7 @@ export class ImportCrittersService extends DBService {
           delete row[column];
           return;
         }
+
         // Attempt to find the collection unit with the cell value from the mapping
         const collectionUnitMatch = collectionUnitColumn.collectionUnits.find(
           (unit) => unit.unit_name.toLowerCase() === String(row[column]).toLowerCase()

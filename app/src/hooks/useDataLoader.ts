@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import { AsyncFunction, useAsync } from './useAsync';
 import useIsMounted from './useIsMounted';
 
@@ -85,41 +85,35 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
 
   const getData = useAsync(fetchData);
 
-  const loadData = useCallback(
-    async (...args: AFArgs): Promise<AFResponse | undefined> => {
-      try {
-        setIsLoading(true);
-        setError(undefined);
-        setIsReady(false);
+  const loadData = async (...args: AFArgs): Promise<AFResponse | undefined> => {
+    try {
+      setIsLoading(true);
 
-        const response = await getData(...args);
+      const response = await getData(...args);
 
-        if (!isMounted()) {
-          return;
-        }
-
-        setData(response);
-
-        return response;
-      } catch (error) {
-        if (!isMounted()) {
-          return;
-        }
-
-        setError(error);
-        setIsLoading(false);
-
-        onError?.(error);
-      } finally {
-        if (isMounted()) {
-          setIsLoading(false);
-          setIsReady(true);
-          setHasLoaded(true);
-        }
+      if (!isMounted()) {
+        return;
       }
-    },
-    [getData, isMounted, onError]
-  );
+
+      setData(response);
+
+      return response;
+    } catch (error) {
+      if (!isMounted()) {
+        return;
+      }
+
+      setError(error);
+
+      onError?.(error);
+    } finally {
+      if (isMounted()) {
+        setIsLoading(false);
+        setIsReady(true);
+        setHasLoaded(true);
+      }
+    }
+  };
 
   const load = async (...args: AFArgs) => {
     if (oneTimeLoad) {
@@ -130,19 +124,12 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
     return loadData(...args);
   };
 
-  const refresh = useCallback(
-    async (...args: AFArgs) => {
-      // Clear previous data and state
-      setData(undefined);
-      setError(undefined);
-      setIsLoading(false);
-      setIsReady(false);
-
-      // Call loadData to fetch new data
-      return loadData(...args);
-    },
-    [loadData]
-  );
+  const refresh = async (...args: AFArgs) => {
+    setError(undefined);
+    setIsLoading(false);
+    setIsReady(false);
+    return loadData(...args);
+  };
 
   const clearError = () => {
     setError(undefined);

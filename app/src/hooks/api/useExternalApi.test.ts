@@ -3,7 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import useExternalApi from './useExternalApi';
 
 describe('useExternalApi', () => {
-  let mock: any;
+  let mock: MockAdapter;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);

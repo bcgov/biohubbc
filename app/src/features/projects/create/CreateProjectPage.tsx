@@ -95,7 +95,7 @@ const CreateProjectPage = () => {
   };
 
   const handleCancel = () => {
-    history.push('/admin/projects');
+    history.push('/admin/summary');
   };
 
   /**

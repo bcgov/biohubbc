@@ -143,7 +143,7 @@ const LandingActions = () => {
           {mayViewProjects && (
             <Button
               component={Link}
-              to="/admin/projects"
+              to="/admin/summary"
               variant="contained"
               sx={classes.heroButton}
               size="large"

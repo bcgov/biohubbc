@@ -33,8 +33,11 @@ export const MeasurementDetails = (props: IMeasurementDetailsProps) => {
       <Box maxHeight="300px" sx={{ overflow: 'auto', pr: 1 }}>
         {allMeasurements.map((measurement) => (
           <Paper variant="outlined" sx={{ px: 3, py: 2, bgcolor: grey[100], mt: 1 }} key={v4()}>
-            <Typography fontWeight={700}>
-              {startCase(measurement.measurement_name)}: <Typography component="span">{measurement.value}</Typography>
+            <Typography fontWeight={700} variant="body2">
+              {startCase(measurement.measurement_name)}:{' '}
+              <Typography component="span" variant="body2">
+                {measurement.value}
+              </Typography>
             </Typography>
           </Paper>
         ))}
