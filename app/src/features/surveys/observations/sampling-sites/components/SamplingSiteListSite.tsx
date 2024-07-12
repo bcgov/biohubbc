@@ -13,7 +13,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IStaticLayer } from 'components/map/components/StaticLayers';
 import { SamplingSiteListMethod } from 'features/surveys/observations/sampling-sites/components/SamplingSiteListMethod';
-import SamplingStratumChips from 'features/surveys/sampling-information/sites/edit/form/SamplingStratumChips';
+import { SamplingStratumChips } from 'features/surveys/sampling-information/sites/edit/form/SamplingStratumChips';
 import SurveyMap from 'features/surveys/view/SurveyMap';
 import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
 

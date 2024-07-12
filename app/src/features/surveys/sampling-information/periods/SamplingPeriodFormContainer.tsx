@@ -16,7 +16,7 @@ import Stack from '@mui/material/Stack';
 import { GridMoreVertIcon } from '@mui/x-data-grid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
-import { ISurveySampleMethodData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
+import { ISurveySampleMethodFormData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
 import { CreateSamplingPeriodFormDialog } from 'features/surveys/sampling-information/periods/create/CreateSamplingPeriodFormDialog';
 import { EditSamplingPeriodFormDialog } from 'features/surveys/sampling-information/periods/edit/EditSamplingPeriodFormDialog';
 import { getIn, useFormikContext } from 'formik';
@@ -41,14 +41,6 @@ export const SurveySampleMethodPeriodArrayItemInitialValues = {
   end_date: '',
   start_time: '',
   end_time: ''
-};
-
-export const SurveySampleMethodDataInitialValues = {
-  survey_sample_method_id: null,
-  survey_sample_site_id: null,
-  description: '',
-  sample_periods: [SurveySampleMethodPeriodArrayItemInitialValues],
-  method_response_metric_id: '' as unknown as null
 };
 
 export const SamplingSiteMethodPeriodYupSchema = yup
@@ -79,7 +71,7 @@ export const SamplingSiteMethodPeriodYupSchema = yup
   });
 
 interface ISamplingPeriodFormContainerProps {
-  survey_sample_method: ISurveySampleMethodData;
+  survey_sample_method: ISurveySampleMethodFormData;
   index: number;
 }
 

@@ -66,7 +66,7 @@ export class SampleMethodRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} surveySampleSiteId
-   * @return {*}  {Promise<SampleMethodDetails[]>}
+   * @return {*}  {Promise<SampleMethodRecord[]>}
    * @memberof SampleMethodRepository
    */
   async getSampleMethodsForSurveySampleSiteId(

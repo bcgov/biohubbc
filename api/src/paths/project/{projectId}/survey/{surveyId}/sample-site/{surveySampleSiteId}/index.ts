@@ -100,20 +100,32 @@ PUT.apiDoc = {
                   items: {
                     type: 'object',
                     additionalProperties: false,
-                    required: ['method_technique_id', 'description', 'sample_periods', 'method_response_metric_id'],
+                    required: [
+                      'survey_sample_method_id',
+                      'survey_sample_site_id',
+                      'method_technique_id',
+                      'method_response_metric_id',
+                      'description',
+                      'sample_periods'
+                    ],
                     properties: {
-                      survey_sample_site_id: {
-                        type: 'integer',
-                        nullable: true
-                      },
                       survey_sample_method_id: {
                         type: 'integer',
+                        minimum: 1,
+                        nullable: true
+                      },
+                      survey_sample_site_id: {
+                        type: 'integer',
+                        minimum: 1,
                         nullable: true
                       },
                       method_technique_id: {
                         type: 'integer',
-                        minimum: 1,
-                        nullable: true
+                        minimum: 1
+                      },
+                      method_response_metric_id: {
+                        type: 'integer',
+                        minimum: 1
                       },
                       description: {
                         type: 'string'
@@ -150,10 +162,6 @@ PUT.apiDoc = {
                             }
                           }
                         }
-                      },
-                      method_response_metric_id: {
-                        type: 'integer',
-                        minimum: 1
                       }
                     }
                   }
@@ -219,19 +227,8 @@ PUT.apiDoc = {
 
 export function updateSurveySampleSite(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required path param `surveyId`');
-    }
-
-    if (!req.params.surveySampleSiteId) {
-      throw new HTTP400('Missing required path param `surveySampleSiteId`');
-    }
-
-    if (!req.body.sampleSite) {
-      throw new HTTP400('Missing required body param `sampleSite`');
-    }
-
     const surveyId = Number(req.params.surveyId);
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -437,7 +434,16 @@ GET.apiDoc = {
           schema: {
             type: 'object',
             additionalProperties: false,
-            required: ['survey_sample_site_id', 'survey_id', 'name', 'description', 'geojson'],
+            required: [
+              'survey_sample_site_id',
+              'survey_id',
+              'name',
+              'description',
+              'geojson',
+              'sample_methods',
+              'blocks',
+              'stratums'
+            ],
             properties: {
               survey_sample_site_id: {
                 type: 'integer',
@@ -470,6 +476,14 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
+                  required: [
+                    'survey_sample_method_id',
+                    'survey_sample_site_id',
+                    'method_response_metric_id',
+                    'description',
+                    'sample_periods',
+                    'technique'
+                  ],
                   properties: {
                     survey_sample_method_id: {
                       type: 'integer',
@@ -479,7 +493,10 @@ GET.apiDoc = {
                       type: 'integer',
                       minimum: 1
                     },
-                    technique: techniqueSimpleViewSchema,
+                    method_response_metric_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
                     description: {
                       type: 'string',
                       maxLength: 250
@@ -523,7 +540,7 @@ GET.apiDoc = {
                         }
                       }
                     },
-                    method_response_metric_id: { type: 'integer', minimum: 1 }
+                    technique: techniqueSimpleViewSchema
                   }
                 }
               },
@@ -532,7 +549,13 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: ['survey_sample_block_id', 'survey_sample_site_id', 'survey_block_id'],
+                  required: [
+                    'survey_sample_block_id',
+                    'survey_sample_site_id',
+                    'survey_block_id',
+                    'name',
+                    'description'
+                  ],
                   properties: {
                     survey_sample_block_id: {
                       type: 'number'
@@ -557,7 +580,13 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: ['survey_sample_stratum_id', 'survey_sample_site_id', 'survey_stratum_id'],
+                  required: [
+                    'survey_sample_stratum_id',
+                    'survey_sample_site_id',
+                    'survey_stratum_id',
+                    'name',
+                    'description'
+                  ],
                   properties: {
                     survey_sample_stratum_id: {
                       type: 'number'

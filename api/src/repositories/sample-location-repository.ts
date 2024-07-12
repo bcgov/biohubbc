@@ -7,7 +7,7 @@ import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 import { SampleBlockRecord, UpdateSampleBlockRecord } from './sample-blocks-repository';
-import { SampleMethodDetails, UpdateSampleMethodRecord } from './sample-method-repository';
+import { SampleMethodRecord, UpdateSampleMethodRecord } from './sample-method-repository';
 import { SamplePeriodRecord } from './sample-period-repository';
 import { SampleStratumRecord, UpdateSampleStratumRecord } from './sample-stratums-repository';
 
@@ -22,14 +22,23 @@ export const SampleLocationRecord = z.object({
   description: z.string().nullable(),
   geojson: z.any(),
   sample_methods: z.array(
-    SampleMethodDetails.pick({
+    SampleMethodRecord.pick({
       survey_sample_method_id: true,
       survey_sample_site_id: true,
-      technique: true,
       description: true,
       method_response_metric_id: true
     }).extend(
       z.object({
+        technique: z.object({
+          method_technique_id: z.number(),
+          name: z.string(),
+          description: z.string().nullable(),
+          attractants: z.array(
+            z.object({
+              attractant_lookup_id: z.number()
+            })
+          )
+        }),
         sample_periods: z.array(
           SamplePeriodRecord.pick({
             survey_sample_period_id: true,
@@ -135,26 +144,29 @@ export class SampleLocationRepository extends BaseRepository {
     const queryBuilder = knex
       .queryBuilder()
       .with('w_method_technique_attractant', (qb) => {
-        qb.select('mta.method_technique_id')
-          .select(
-            knex.raw(
-              `JSON_AGG(JSON_BUILD_OBJECT('method_technique_attractant_id', mta.method_technique_attractant_id)) AS attractants`
-            )
-          )
+        // Gather technique attractants
+        qb.select(
+          'mta.method_technique_id',
+          knex.raw(`
+          json_agg(json_build_object(
+            'attractant_lookup_id', mta.attractant_lookup_id
+          )) as attractants`)
+        )
           .from({ mta: 'method_technique_attractant' })
           .groupBy('mta.method_technique_id');
       })
       .with('w_method_technique', (qb) => {
-        qb.select('mt.method_technique_id')
-          .select(
-            knex.raw(`
-      JSON_BUILD_OBJECT(
-        'method_technique_id', mt.method_technique_id,
-        'name', mt.name,
-        'description', mt.description
-      ) AS method_technique
-    `)
-          )
+        // Gather method techniques
+        qb.select(
+          'mt.method_technique_id',
+          knex.raw(`
+          json_build_object(
+            'method_technique_id', mt.method_technique_id,
+            'name', mt.name,
+            'description', mt.description,
+            'attractants', COALESCE(wmta.attractants, '[]'::json)
+          ) as method_technique`)
+        )
           .from({ mt: 'method_technique' })
           .leftJoin('w_method_technique_attractant as wmta', 'wmta.method_technique_id', 'mt.method_technique_id');
       })
@@ -170,8 +182,7 @@ export class SampleLocationRepository extends BaseRepository {
             'start_time', ssp.start_time,
             'end_date', ssp.end_date,
             'end_time', ssp.end_time
-          ) ORDER BY ssp.start_date, ssp.start_time) as sample_periods
-        `)
+          ) ORDER BY ssp.start_date, ssp.start_time) as sample_periods`)
         )
           .from({ ssp: 'survey_sample_period' })
           .groupBy('ssp.survey_sample_method_id');
@@ -236,9 +247,10 @@ export class SampleLocationRepository extends BaseRepository {
         'sss.name',
         'sss.description',
         'sss.geojson',
-        knex.raw(`COALESCE(wssm.sample_methods, '[]'::json) as sample_methods,
-      COALESCE(wssb.blocks, '[]'::json) as blocks,
-      COALESCE(wssst.stratums, '[]'::json) as stratums`)
+        knex.raw(`
+        COALESCE(wssm.sample_methods, '[]'::json) as sample_methods,
+        COALESCE(wssb.blocks, '[]'::json) as blocks,
+        COALESCE(wssst.stratums, '[]'::json) as stratums`)
       )
       .from({ sss: 'survey_sample_site' })
       .leftJoin('w_survey_sample_method as wssm', 'wssm.survey_sample_site_id', 'sss.survey_sample_site_id')
@@ -337,8 +349,9 @@ export class SampleLocationRepository extends BaseRepository {
         qb.select(
           'mta.method_technique_id',
           knex.raw(`
-        json_agg(json_build_object(mta.method_technique_attractant_id)
-        ) as attractants`)
+          json_agg(json_build_object(
+            'attractant_lookup_id', mta.attractant_lookup_id
+          )) as attractants`)
         )
           .from({ mta: 'method_technique_attractant' })
           .groupBy('mta.method_technique_id');
@@ -370,8 +383,7 @@ export class SampleLocationRepository extends BaseRepository {
             'start_time', ssp.start_time,
             'end_date', ssp.end_date,
             'end_time', ssp.end_time
-          )) as sample_periods
-        `)
+          ) ORDER BY ssp.start_date, ssp.start_time) as sample_periods`)
         )
           .from({ ssp: 'survey_sample_period' })
           .groupBy('ssp.survey_sample_method_id');
@@ -437,9 +449,10 @@ export class SampleLocationRepository extends BaseRepository {
         'sss.name',
         'sss.description',
         'sss.geojson',
-        knex.raw(`COALESCE(wssm.sample_methods, '[]'::json) as sample_methods,
-      COALESCE(wssb.blocks, '[]'::json) as blocks,
-      COALESCE(wssst.stratums, '[]'::json) as stratums`)
+        knex.raw(`
+        COALESCE(wssm.sample_methods, '[]'::json) as sample_methods,
+        COALESCE(wssb.blocks, '[]'::json) as blocks,
+        COALESCE(wssst.stratums, '[]'::json) as stratums`)
       )
       .from({ sss: 'survey_sample_site' })
       .leftJoin('w_survey_sample_method as wssm', 'wssm.survey_sample_site_id', 'sss.survey_sample_site_id')

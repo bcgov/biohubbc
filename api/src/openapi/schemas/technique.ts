@@ -80,7 +80,7 @@ const techniqueAttributesSchema: OpenAPIV3.SchemaObject = {
 
 export const techniqueSimpleViewSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
-  required: ['method_technique_id', 'name', 'description'],
+  required: ['method_technique_id', 'name', 'description', 'attractants'],
   additionalProperties: false,
   properties: {
     method_technique_id: {
@@ -93,8 +93,10 @@ export const techniqueSimpleViewSchema: OpenAPIV3.SchemaObject = {
     },
     description: {
       type: 'string',
-      description: 'Description of the technique.'
-    }
+      description: 'Description of the technique.',
+      nullable: true
+    },
+    attractants: techniqueAttractantsSchema
   }
 };
 

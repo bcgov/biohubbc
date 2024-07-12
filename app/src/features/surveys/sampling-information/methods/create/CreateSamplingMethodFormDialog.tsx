@@ -1,6 +1,6 @@
 import EditDialog from 'components/dialog/EditDialog';
 import {
-  ISurveySampleMethodData,
+  ISurveySampleMethodFormData,
   SamplingMethodForm,
   SamplingSiteMethodYupSchema,
   SurveySampleMethodDataInitialValues
@@ -8,7 +8,7 @@ import {
 
 interface ICreateSamplingMethodFormDialogProps {
   open: boolean;
-  onSubmit: (data: ISurveySampleMethodData) => void;
+  onSubmit: (data: ISurveySampleMethodFormData) => void;
   onClose: () => void;
 }
 
@@ -18,24 +18,22 @@ interface ICreateSamplingMethodFormDialogProps {
  * @returns
  */
 export const CreateSamplingMethodFormDialog = (props: ICreateSamplingMethodFormDialogProps) => {
-  const handleSubmit = (values: ISurveySampleMethodData) => {
-    props.onSubmit(values);
-  };
+  const { open, onSubmit, onClose } = props;
 
   return (
-    <EditDialog
+    <EditDialog<ISurveySampleMethodFormData>
       dialogTitle={'Add Sampling Method'}
-      open={props.open}
+      open={open}
       dialogLoading={false}
       component={{
         element: <SamplingMethodForm />,
-        initialValues: SurveySampleMethodDataInitialValues,
+        initialValues: SurveySampleMethodDataInitialValues(),
         validationSchema: SamplingSiteMethodYupSchema
       }}
       dialogSaveButtonLabel="Add"
-      onCancel={() => props.onClose()}
+      onCancel={() => onClose()}
       onSave={(formValues) => {
-        handleSubmit(formValues);
+        onSubmit(formValues);
       }}
     />
   );

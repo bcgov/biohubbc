@@ -32,7 +32,6 @@ export const SamplingTechniqueContainer = () => {
   const [bulkActionMenuAnchorEl, setBulkActionMenuAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   useEffect(() => {
-    console.log('refreshing techniques');
     surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surveyContext.projectId, surveyContext.surveyId]);

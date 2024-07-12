@@ -4,7 +4,7 @@ import SamplingSiteMapControl from 'features/surveys/sampling-information/sites/
 import { useFormikContext } from 'formik';
 import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 
-const SurveySamplingSiteImportForm = () => {
+export const SampleSiteImportForm = () => {
   const formikProps = useFormikContext<ICreateSamplingSiteRequest>();
 
   return (
@@ -34,5 +34,3 @@ const SurveySamplingSiteImportForm = () => {
     </>
   );
 };
-
-export default SurveySamplingSiteImportForm;

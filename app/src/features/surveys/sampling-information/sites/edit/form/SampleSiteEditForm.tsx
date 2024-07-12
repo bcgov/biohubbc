@@ -17,11 +17,7 @@ import yup from 'utils/YupSchema';
 import SurveySamplingSiteEditForm from '../../components/map/SurveySampleSiteEditForm';
 import SampleSiteGeneralInformationForm from './SampleSiteGeneralInformationForm';
 
-export interface ISampleSiteEditFormProps {
-  isSubmitting: boolean;
-}
-
-export const samplingSiteYupSchema = yup.object({
+export const SampleSiteEditFormYupSchema = yup.object({
   name: yup.string().default('').min(1, 'Minimum 1 character.').max(50, 'Maximum 50 characters.'),
   description: yup.string().default('').nullable(),
   survey_sample_sites: yup
@@ -32,6 +28,10 @@ export const samplingSiteYupSchema = yup.object({
     .array(yup.object().concat(SamplingSiteMethodYupSchema))
     .min(1, 'At least one sampling method is required')
 });
+
+export interface ISampleSiteEditFormProps {
+  isSubmitting: boolean;
+}
 
 /**
  * Returns a form for editing a sampling site
@@ -49,29 +49,33 @@ const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
         <Stack gap={5}>
           <HorizontalSplitFormComponent
             title="General Information"
-            summary="Specify the name and description for this sampling site"
-            component={<SampleSiteGeneralInformationForm />}></HorizontalSplitFormComponent>
+            summary="Specify the name and description for this sampling site">
+            <SampleSiteGeneralInformationForm />
+          </HorizontalSplitFormComponent>
 
           <Divider />
 
           <HorizontalSplitFormComponent
             title="Site Location"
-            summary="Import or draw sampling site locations used for this survey."
-            component={<SurveySamplingSiteEditForm />}></HorizontalSplitFormComponent>
+            summary="Import or draw sampling site locations used for this survey.">
+            <SurveySamplingSiteEditForm />
+          </HorizontalSplitFormComponent>
 
           <Divider />
 
           <HorizontalSplitFormComponent
             title="Sampling Methods"
-            summary="Specify sampling methods that were used to collect data."
-            component={<SamplingMethodFormContainer />}></HorizontalSplitFormComponent>
+            summary="Specify sampling methods that were used to collect data.">
+            <SamplingMethodFormContainer />
+          </HorizontalSplitFormComponent>
 
           <Divider />
 
           <HorizontalSplitFormComponent
             title="Site Groups"
-            summary="Enter the stratum or group to which this site belongs."
-            component={<SamplingSiteGroupingsForm />}></HorizontalSplitFormComponent>
+            summary="Enter the stratum or group to which this site belongs.">
+            <SamplingSiteGroupingsForm />
+          </HorizontalSplitFormComponent>
 
           <Divider />
 

@@ -1,15 +1,15 @@
 import EditDialog from 'components/dialog/EditDialog';
 import { IGetSampleMethodRecord } from 'interfaces/useSamplingSiteApi.interface';
 import {
-  ISurveySampleMethodData,
+  ISurveySampleMethodFormData,
   SamplingMethodForm,
   SamplingSiteMethodYupSchema
 } from '../components/SamplingMethodForm';
 
 interface IEditSamplingMethodFormDialogProps {
   open: boolean;
-  initialData: IGetSampleMethodRecord | ISurveySampleMethodData;
-  onSubmit: (data: IGetSampleMethodRecord | ISurveySampleMethodData, index?: number) => void;
+  initialData: IGetSampleMethodRecord | ISurveySampleMethodFormData;
+  onSubmit: (data: IGetSampleMethodRecord | ISurveySampleMethodFormData, index?: number) => void;
   onClose: () => void;
 }
 

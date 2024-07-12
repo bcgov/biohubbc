@@ -20,7 +20,7 @@ interface ISamplingStratumChips {
  * @param props
  * @returns
  */
-const SamplingStratumChips = (props: ISamplingStratumChips) => {
+export const SamplingStratumChips = (props: ISamplingStratumChips) => {
   const surveyContext = useContext(SurveyContext);
 
   // Determine colours for stratum labels
@@ -45,5 +45,3 @@ const SamplingStratumChips = (props: ISamplingStratumChips) => {
     </Stack>
   );
 };
-
-export default SamplingStratumChips;

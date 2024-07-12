@@ -54,7 +54,7 @@ export const TechniqueAttributesForm = <FormValues extends CreateTechniqueFormVa
             {values.attributes.map((attribute, index) => {
               return (
                 // Quantitative and qualitative measurements might have the same attribute_id, so use temporary _id
-                <Collapse key={attribute._id}>
+                <Collapse key={attribute.attribute_id ?? attribute._id}>
                   <Box mb={2}>
                     <TechniqueAttributeForm
                       attributeTypeDefinitions={attributeTypeDefinitions}
