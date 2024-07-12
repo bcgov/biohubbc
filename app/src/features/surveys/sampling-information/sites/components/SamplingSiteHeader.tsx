@@ -93,7 +93,7 @@ export const SamplingSiteHeader = (props: ISamplingSiteHeaderProps) => {
                 variant="outlined"
                 color="primary"
                 onClick={() => {
-                  history.push(`/admin/projects/${project_id}/surveys/${survey_id}/observations`);
+                  history.push(`/admin/projects/${project_id}/surveys/${survey_id}/sampling`);
                 }}>
                 Cancel
               </Button>

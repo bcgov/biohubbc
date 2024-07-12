@@ -10,35 +10,48 @@ import { useSurveyContext } from 'hooks/useContext';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
-import { ISurveySampleMethodPeriodData } from '../../periods/SamplingPeriodFormContainer';
+import {
+  ISurveySampleMethodPeriodData,
+  SamplingSiteMethodPeriodYupSchema
+} from '../../periods/SamplingPeriodFormContainer';
 
-export interface ISurveySampleMethodData {
+export interface ISurveySampleMethodFormData {
   _id?: string; // Internal ID used only for a unique key prop. Should not be sent to the API.
   survey_sample_method_id: number | null;
   survey_sample_site_id: number | null;
-  method_technique_id: number | null;
-  description: string;
-  sample_periods: ISurveySampleMethodPeriodData[];
   method_response_metric_id: number | null;
+  description: string;
+  technique: {
+    method_technique_id: number | null;
+  };
+  sample_periods: ISurveySampleMethodPeriodData[];
 }
 
-export const SurveySampleMethodDataInitialValues = {
+/**
+ * Returns initial values for the survey sampling method form.
+ */
+export const SurveySampleMethodDataInitialValues: () => ISurveySampleMethodFormData = () => ({
   _id: v4(),
   survey_sample_method_id: null,
   survey_sample_site_id: null,
-  method_technique_id: null,
+  method_response_metric_id: null,
   description: '',
-  sample_periods: [],
-  method_response_metric_id: null
-};
+  technique: {
+    method_technique_id: null
+  },
+  sample_periods: []
+});
 
 export const SamplingSiteMethodYupSchema = yup.object({
-  method_technique_id: yup.number().required('Technique is required.').typeError('Technique is required'),
   method_response_metric_id: yup
     .number()
     .typeError('Response Metric is required')
     .required('Response Metric is required'),
-  description: yup.string().max(250, 'Maximum 250 characters')
+  description: yup.string().max(250, 'Maximum 250 characters'),
+  technique: yup.object({
+    method_technique_id: yup.number().required('Technique is required.').typeError('Technique is required')
+  }),
+  sample_periods: yup.array(SamplingSiteMethodPeriodYupSchema)
 });
 
 /**
@@ -50,7 +63,7 @@ export const SamplingMethodForm = () => {
   const codesContext = useContext(CodesContext);
   const surveyContext = useSurveyContext();
 
-  const { setFieldValue } = useFormikContext<ISurveySampleMethodData>();
+  const { setFieldValue } = useFormikContext<ISurveySampleMethodFormData>();
 
   const methodResponseMetricOptions: IAutocompleteFieldOption<number>[] =
     codesContext.codesDataLoader.data?.method_response_metrics.map((option) => ({
@@ -77,12 +90,12 @@ export const SamplingMethodForm = () => {
           <SelectWithSubtextField
             id="method_technique_id"
             label="Technique"
-            name="method_technique_id"
+            name="technique.method_technique_id"
             options={
               techniques?.map((option) => ({
                 value: option.method_technique_id,
                 label: option.name,
-                description: option.description ?? undefined
+                subText: option.description ?? undefined
               })) ?? []
             }></SelectWithSubtextField>
           {/* <AutocompleteField
@@ -90,7 +103,7 @@ export const SamplingMethodForm = () => {
             label="Technique"
             name="method_technique_id"
             // showValue={true}
-            loading={surveyContext.techniqueDataLoader.isLoading}
+            loading={samplingInformationContext.techniqueDataLoader.isLoading}
             options={
               techniques?.map((option) => ({
                 value: option.method_technique_id,

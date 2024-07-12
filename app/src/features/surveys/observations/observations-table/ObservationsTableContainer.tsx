@@ -48,7 +48,7 @@ import {
   getMeasurementColumnDefinitions
 } from './grid-column-definitions/GridColumnDefinitionsUtils';
 
-const ObservationComponent = () => {
+const ObservationsTableContainer = () => {
   const codesContext = useCodesContext();
 
   const surveyContext = useContext(SurveyContext);
@@ -191,4 +191,4 @@ const ObservationComponent = () => {
   );
 };
 
-export default ObservationComponent;
+export default ObservationsTableContainer;

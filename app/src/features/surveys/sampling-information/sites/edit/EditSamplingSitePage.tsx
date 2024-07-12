@@ -1,8 +1,10 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
+import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
+import { ISurveySampleMethodFormData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
@@ -10,11 +12,33 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { IEditSamplingSiteRequest, IGetSampleLocationDetailsForUpdate } from 'interfaces/useSamplingSiteApi.interface';
+import {
+  IEditSampleSiteRequest,
+  IGetSampleBlockDetails,
+  IGetSampleMethodDetails,
+  IGetSampleStratumDetails
+} from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import SamplingSiteHeader from '../components/SamplingSiteHeader';
-import SampleSiteEditForm, { samplingSiteYupSchema } from './form/SampleSiteEditForm';
+import SampleSiteEditForm, { SampleSiteEditFormYupSchema } from './form/SampleSiteEditForm';
+
+/**
+ * Interface for the form data used in the Edit Sampling Site form.
+ *
+ * @export
+ * @interface IEditSampleSiteFormData
+ */
+export interface IEditSampleSiteFormData {
+  survey_sample_site_id: number | null;
+  survey_id: number;
+  name: string;
+  description: string;
+  geojson: Feature;
+  sample_methods: (IGetSampleMethodDetails | ISurveySampleMethodFormData)[];
+  blocks: IGetSampleBlockDetails[];
+  stratums: IGetSampleStratumDetails[];
+}
 
 /**
  * Page to edit a sampling site.
@@ -27,7 +51,7 @@ export const EditSamplingSitePage = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
   const surveySampleSiteId = Number(urlParams['survey_sample_site_id']);
 
-  const [initialFormValues, setInitialFormValues] = useState<IGetSampleLocationDetailsForUpdate>();
+  const [initialFormValues, setInitialFormValues] = useState<IEditSampleSiteFormData>();
 
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
@@ -35,10 +59,9 @@ export const EditSamplingSitePage = () => {
 
   const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
-  const formikRef = useRef<FormikProps<IGetSampleLocationDetailsForUpdate>>(null);
+  const formikRef = useRef<FormikProps<IEditSampleSiteFormData>>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
   const projectId = surveyContext.projectId;
   const surveyId = surveyContext.surveyId;
@@ -52,14 +75,12 @@ export const EditSamplingSitePage = () => {
   }
 
   useEffect(() => {
-    if (samplingSiteDataLoader.data) {
-      const data = samplingSiteDataLoader.data;
-
-      data.sample_methods.forEach((method) => (method.method_technique_id = method.technique.method_technique_id));
-
-      setInitialFormValues(data);
-      formikRef.current?.setValues(data);
+    if (!samplingSiteDataLoader.data) {
+      return;
     }
+
+    setInitialFormValues(samplingSiteDataLoader.data);
+    // formikRef.current?.setValues(samplingSiteDataLoader.data);
   }, [samplingSiteDataLoader.data]);
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -77,12 +98,12 @@ export const EditSamplingSitePage = () => {
     });
   };
 
-  const handleSubmit = async (values: IGetSampleLocationDetailsForUpdate) => {
+  const handleSubmit = async (values: IEditSampleSiteFormData) => {
     try {
       setIsSubmitting(true);
 
-      // create edit request
-      const editSampleSite: IEditSamplingSiteRequest = {
+      // Format raw form values into the expected request format
+      const editSampleSite: IEditSampleSiteRequest = {
         sampleSite: {
           name: values.name,
           description: values.description,
@@ -92,9 +113,9 @@ export const EditSamplingSitePage = () => {
           methods: values.sample_methods.map((method) => ({
             survey_sample_method_id: method.survey_sample_method_id,
             survey_sample_site_id: method.survey_sample_site_id,
-            method_technique_id: method.method_technique_id,
-            description: method.description,
             method_response_metric_id: method.method_response_metric_id,
+            description: method.description,
+            method_technique_id: method.technique.method_technique_id,
             sample_periods: method.sample_periods
           })),
           blocks: values.blocks.map((block) => ({ survey_block_id: block.survey_block_id })),
@@ -106,8 +127,6 @@ export const EditSamplingSitePage = () => {
       await biohubApi.samplingSite
         .editSampleSite(surveyContext.projectId, surveyContext.surveyId, surveySampleSiteId, editSampleSite)
         .then(() => {
-          // Disable cancel prompt so we can navigate away from the page after saving
-          setEnableCancelCheck(false);
           setIsSubmitting(false);
 
           // Refresh the context, so the next page loads with the latest data
@@ -115,7 +134,7 @@ export const EditSamplingSitePage = () => {
 
           // create complete, navigate back to observations page
           history.push(
-            `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`,
+            `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`,
             SKIP_CONFIRMATION_DIALOG
           );
           surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
@@ -155,16 +174,17 @@ export const EditSamplingSitePage = () => {
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
+      <Prompt when={true} message={locationChangeInterceptor} />
       <Formik
         innerRef={formikRef}
         initialValues={initialFormValues}
-        validationSchema={samplingSiteYupSchema}
+        validationSchema={SampleSiteEditFormYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         enableReinitialize
         onSubmit={handleSubmit}>
         <Box display="flex" flexDirection="column" height="100%">
+          <FormikErrorSnackbar />
           <SamplingSiteHeader
             project_id={surveyContext.projectId}
             survey_id={surveyContext.surveyId}

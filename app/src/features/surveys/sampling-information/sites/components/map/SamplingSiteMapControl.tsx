@@ -22,7 +22,7 @@ import SampleSiteFileUploadItemProgressBar from 'features/surveys/sampling-infor
 import SampleSiteFileUploadItemSubtext from 'features/surveys/sampling-information/sites/components/map/file-upload/SampleSiteFileUploadItemSubtext';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
-import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
+import { ICreateSamplingSiteRequest, ISurveySampleSite } from 'interfaces/useSamplingSiteApi.interface';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
@@ -32,7 +32,6 @@ import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { boundaryUploadHelper, calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { pluralize, shapeFileFeatureDesc, shapeFileFeatureName } from 'utils/Utils';
-import { ISurveySampleSite } from '../../create/CreateSamplingSitePage';
 
 const useStyles = () => {
   return {

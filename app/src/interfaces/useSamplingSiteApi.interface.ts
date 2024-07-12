@@ -33,7 +33,7 @@ export interface IEditSampleSiteRequest {
     description: string;
     survey_id: number;
     survey_sample_sites: Feature[]; // extracted list from shape files (used for formik loading)
-    geojson?: Feature; // geojson object from map (used for sending to api) // TODO NICK: IS THIS USED??
+    geojson?: Feature; // geojson object from map (used for sending to api)
     methods: ISurveySampleMethod[];
     blocks: { survey_block_id: number }[];
     stratums: { survey_stratum_id: number }[];

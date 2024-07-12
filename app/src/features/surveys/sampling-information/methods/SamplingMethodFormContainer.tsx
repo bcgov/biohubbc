@@ -20,13 +20,14 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { CodesContext } from 'contexts/codesContext';
-import { ISurveySampleMethodData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
+import { ISurveySampleMethodFormData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
 import { CreateSamplingMethodFormDialog } from 'features/surveys/sampling-information/methods/create/CreateSamplingMethodFormDialog';
 import { EditSamplingMethodFormDialog } from 'features/surveys/sampling-information/methods/edit/EditSamplingMethodFormDialog';
 import { SamplingPeriodFormContainer } from 'features/surveys/sampling-information/periods/SamplingPeriodFormContainer';
+import { ICreateSampleSiteFormData } from 'features/surveys/sampling-information/sites/create/CreateSamplingSitePage';
+import { IEditSampleSiteFormData } from 'features/surveys/sampling-information/sites/edit/EditSamplingSitePage';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
-import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
 import { useContext, useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { getCodesName } from 'utils/Utils';
@@ -37,11 +38,13 @@ import { getCodesName } from 'utils/Utils';
  * @returns
  */
 export const SamplingMethodFormContainer = () => {
-  const { values, errors, setFieldValue, setFieldTouched } = useFormikContext<ICreateSamplingSiteRequest>();
+  const { values, errors, setFieldValue, setFieldTouched } = useFormikContext<
+    ICreateSampleSiteFormData | IEditSampleSiteFormData
+  >();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [editData, setEditData] = useState<{ data: ISurveySampleMethodData; index: number } | undefined>(undefined);
+  const [editData, setEditData] = useState<{ data: ISurveySampleMethodFormData; index: number } | undefined>(undefined);
 
   const surveyContext = useSurveyContext();
 
@@ -148,83 +151,89 @@ export const SamplingMethodFormContainer = () => {
             </Alert>
           )}
           <Stack component={TransitionGroup} gap={1.5}>
-            {values.sample_methods.map((item, index) => (
-              <Collapse key={`sample_method_${item._id}`}>
-                <Card
-                  variant="outlined"
-                  sx={{
-                    background: grey[50],
-                    border: `1px solid ${grey[400]}`,
-                    '& .MuiCardHeader-root': {
-                      pb: 1
-                    },
-                    pb: 2
-                  }}>
-                  <CardHeader
-                    title={
-                      <Box display="flex">
-                        <Typography component="span" variant="h5">
-                          {
-                            surveyContext.techniqueDataLoader.data?.techniques.find(
-                              (technique) => technique.method_technique_id === item.method_technique_id
-                            )?.name
-                          }
-                        </Typography>
-                        <Box sx={{ ml: 1 }}>
-                          <ColouredRectangleChip
-                            colour={blueGrey}
-                            label={
-                              getCodesName(
-                                codesContext.codesDataLoader.data,
-                                'method_response_metrics',
-                                item.method_response_metric_id || 0
-                              ) ?? ''
-                            }
-                          />
-                        </Box>
-                      </Box>
-                    }
-                    action={
-                      <IconButton
-                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                          handleMenuClick(event, index)
-                        }
-                        aria-label="settings">
-                        <MoreVertIcon />
-                      </IconButton>
-                    }
-                  />
-                  <CardContent
+            {values.sample_methods.map((sampleMethod, index) => {
+              return (
+                <Collapse
+                  key={`sample_method_${
+                    sampleMethod.survey_sample_method_id ?? ('_id' in sampleMethod && sampleMethod._id) ?? index
+                  }`}>
+                  <Card
+                    variant="outlined"
                     sx={{
-                      pt: 0,
-                      pb: '6px !important'
+                      background: grey[50],
+                      border: `1px solid ${grey[400]}`,
+                      '& .MuiCardHeader-root': {
+                        pb: 1
+                      },
+                      pb: 2
                     }}>
-                    <Stack gap={2}>
-                      {item.description && (
-                        <Typography
-                          color="textSecondary"
-                          sx={{
-                            display: '-webkit-box',
-                            WebkitLineClamp: '2',
-                            WebkitBoxOrient: 'vertical',
-                            maxWidth: '92ch',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis'
-                          }}>
-                          {item.description}
-                        </Typography>
-                      )}
-                      <Divider sx={{ mt: 0.5 }} />
-                      <Box py={1}>
-                        {item.method_technique_id && (
-                          <SamplingPeriodFormContainer index={index} survey_sample_method={item} />
+                    <CardHeader
+                      title={
+                        <Box display="flex">
+                          <Typography component="span" variant="h5">
+                            {
+                              surveyContext.techniqueDataLoader.data?.techniques.find(
+                                (technique) =>
+                                  technique.method_technique_id === sampleMethod.technique.method_technique_id
+                              )?.name
+                            }
+                          </Typography>
+                          <Box sx={{ ml: 1 }}>
+                            <ColouredRectangleChip
+                              colour={blueGrey}
+                              label={
+                                getCodesName(
+                                  codesContext.codesDataLoader.data,
+                                  'method_response_metrics',
+                                  sampleMethod.method_response_metric_id || 0
+                                ) ?? ''
+                              }
+                            />
+                          </Box>
+                        </Box>
+                      }
+                      action={
+                        <IconButton
+                          onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+                            handleMenuClick(event, index)
+                          }
+                          aria-label="settings">
+                          <MoreVertIcon />
+                        </IconButton>
+                      }
+                    />
+                    <CardContent
+                      sx={{
+                        pt: 0,
+                        pb: '6px !important'
+                      }}>
+                      <Stack gap={2}>
+                        {sampleMethod.description && (
+                          <Typography
+                            color="textSecondary"
+                            sx={{
+                              display: '-webkit-box',
+                              WebkitLineClamp: '2',
+                              WebkitBoxOrient: 'vertical',
+                              maxWidth: '92ch',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis'
+                            }}>
+                            {sampleMethod.description}
+                          </Typography>
                         )}
-                      </Box>
-                    </Stack>
-                  </CardContent>
-                </Card>
-              </Collapse>
-            ))}
+                        <Divider sx={{ mt: 0.5 }} />
+                        <Box py={1}>
+                          {sampleMethod.technique.method_technique_id && (
+                            <SamplingPeriodFormContainer index={index} survey_sample_method={sampleMethod} />
+                          )}
+                        </Box>
+                      </Stack>
+                    </CardContent>
+                  </Card>
+                </Collapse>
+              );
+            })}
 
             <Button
               sx={{

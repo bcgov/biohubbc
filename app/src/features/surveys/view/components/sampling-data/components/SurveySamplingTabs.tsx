@@ -31,7 +31,7 @@ export const SurveySamplingTabs = () => {
       surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [surveyContext.projectId, surveyContext.surveyId]);
+  }, [activeView]);
 
   useEffect(() => {
     // Load the data initially once per tab, if/when the active view changes
@@ -43,10 +43,10 @@ export const SurveySamplingTabs = () => {
     }
   }, [
     activeView,
-    surveyContext.projectId,
+    surveyContext.techniqueDataLoader,
     surveyContext.sampleSiteDataLoader,
-    surveyContext.surveyId,
-    surveyContext.techniqueDataLoader
+    surveyContext.projectId,
+    surveyContext.surveyId
   ]);
 
   return (

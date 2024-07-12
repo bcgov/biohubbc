@@ -2,25 +2,31 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateSamplingSiteI18N } from 'constants/i18n';
-import { SamplingSiteMethodYupSchema } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
+import { ISurveySampleMethodFormData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
 import { Formik, FormikProps } from 'formik';
-import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { ICreateSamplingSiteRequest } from 'interfaces/useSamplingSiteApi.interface';
+import { ICreateSamplingSiteRequest, ISurveySampleSite } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSurveyBlock, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
-import yup from 'utils/YupSchema';
-import { SamplingSiteMethodPeriodYupSchema } from '../../periods/SamplingPeriodFormContainer';
 import SamplingSiteHeader from '../components/SamplingSiteHeader';
-import SampleSiteCreateForm from './form/SampleSiteCreateForm';
+import SampleSiteCreateForm, { SampleSiteCreateFormYupSchema } from './form/SampleSiteCreateForm';
 
-export interface ISurveySampleSite {
-  name: string;
-  description: string;
-  geojson: Feature;
+/**
+ * Interface for the form data used in the Create Sampling Site form.
+ *
+ * @export
+ * @interface ICreateSampleSiteFormData
+ */
+export interface ICreateSampleSiteFormData {
+  survey_id: number;
+  survey_sample_sites: ISurveySampleSite[]; // extracted list from shape files
+  sample_methods: ISurveySampleMethodFormData[];
+  blocks: IGetSurveyBlock[];
+  stratums: IGetSurveyStratum[];
 }
 
 /**
@@ -36,42 +42,14 @@ export const CreateSamplingSitePage = () => {
   const projectContext = useProjectContext();
   const dialogContext = useDialogContext();
 
-  const formikRef = useRef<FormikProps<ICreateSamplingSiteRequest>>(null);
+  const formikRef = useRef<FormikProps<ICreateSampleSiteFormData>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
   const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-
-  const samplingSiteYupSchema = yup.object({
-    survey_sample_sites: yup
-      .array(
-        yup.object({
-          name: yup.string().default(''),
-          description: yup.string().default(''),
-          geojson: yup.object({})
-        })
-      )
-      .min(1, 'At least one sampling site location is required'),
-    sample_methods: yup
-      .array()
-      .of(
-        SamplingSiteMethodYupSchema.shape({
-          sample_periods: yup
-            .array()
-            .of(SamplingSiteMethodPeriodYupSchema)
-            .min(
-              1,
-              'At least one sampling period is required for each method, describing when exactly this method was done'
-            )
-        })
-      ) // Ensure each item in the array conforms to SamplingSiteMethodYupSchema
-      .min(1, 'At least one sampling method is required') // Add check for at least one item in the array
-  });
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
@@ -88,20 +66,19 @@ export const CreateSamplingSitePage = () => {
     });
   };
 
-  const handleSubmit = async (values: ICreateSamplingSiteRequest) => {
+  const handleSubmit = async (values: ICreateSampleSiteFormData) => {
     try {
       setIsSubmitting(true);
 
       // Remove internal _id property of newly created sample_methods used only as a unique key prop
       const { sample_methods, ...otherValues } = values;
 
-      const data = {
+      const data: ICreateSamplingSiteRequest = {
         ...otherValues,
         sample_methods: sample_methods.map((method) => ({
           survey_sample_method_id: method.survey_sample_method_id,
           survey_sample_site_id: method.survey_sample_site_id,
-          method_technique_id: method.method_technique_id,
-          // technique: { method_technique_id: method.technique.method_technique_id },
+          method_technique_id: method.technique.method_technique_id,
           description: method.description,
           sample_periods: method.sample_periods,
           method_response_metric_id: method.method_response_metric_id
@@ -110,15 +87,12 @@ export const CreateSamplingSitePage = () => {
 
       await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, data);
 
-      // Disable cancel prompt so we can navigate away from the page after saving
-      setEnableCancelCheck(false);
-
       // Refresh the context, so the next page loads with the latest data
       surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
       // create complete, navigate back to observations page
       history.push(
-        `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`,
+        `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`,
         SKIP_CONFIRMATION_DIALOG
       );
     } catch (error) {
@@ -134,7 +108,7 @@ export const CreateSamplingSitePage = () => {
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
+      <Prompt when={true} message={locationChangeInterceptor} />
       <Formik
         innerRef={formikRef}
         initialValues={{
@@ -146,7 +120,7 @@ export const CreateSamplingSitePage = () => {
           blocks: [],
           stratums: []
         }}
-        validationSchema={samplingSiteYupSchema}
+        validationSchema={SampleSiteCreateFormYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={handleSubmit}>

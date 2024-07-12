@@ -94,7 +94,7 @@ const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
               variant="outlined"
               color="primary"
               component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`}>
+              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`}>
               Cancel
             </Button>
           </Stack>
