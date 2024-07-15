@@ -3,8 +3,8 @@ import { Knex } from 'knex';
 /**
  * Populate lookup values for the environment_quantitative, environment_qualitative, and
  * environment_qualitative_option tables.
- * 
- * This migration file inserts values into method lookup table, technique attribute qual and quant tables, 
+ *
+ * This migration file inserts values into method lookup table, technique attribute qual and quant tables,
  * method lookup quant and qual and qualitative options and attractants
  *
  * @export
