@@ -42,12 +42,20 @@ POST.apiDoc = {
     {
       in: 'path',
       name: 'projectId',
-      required: true
+      required: true,
+      schema: {
+        type: 'integer',
+        minimum: 1
+      }
     },
     {
       in: 'path',
       name: 'surveyId',
-      required: true
+      required: true,
+      schema: {
+        type: 'integer',
+        minimum: 1
+      }
     }
   ],
   requestBody: {
@@ -81,7 +89,8 @@ POST.apiDoc = {
               survey_critter_ids: {
                 type: 'array',
                 items: {
-                  type: 'number'
+                  type: 'integer',
+                  minimum: 1
                 }
               }
             }
