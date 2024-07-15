@@ -259,11 +259,12 @@ export function addCritterToSurvey(): RequestHandler {
     let critterId = req.body.critter_id;
 
     const connection = getDBConnection(req['keycloak_token']);
-    const surveyService = new SurveyCritterService(connection);
-    const cb = new CritterbaseService(user);
 
     try {
       await connection.open();
+
+      const surveyService = new SurveyCritterService(connection);
+      const cb = new CritterbaseService(user);
 
       // If request does not include critter ID, create a new critter and use its critter ID
       let result = null;
