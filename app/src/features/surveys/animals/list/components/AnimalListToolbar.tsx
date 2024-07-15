@@ -36,7 +36,7 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
 
   const handleImportAnimals = async (file: File) => {
     try {
-      await biohubApi.survey.importCrittersFromCsv(file, surveyContext.projectId, surveyContext.projectId);
+      await biohubApi.survey.importCrittersFromCsv(file, surveyContext.projectId, surveyContext.surveyId);
       surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
     } catch (err: any) {
       dialogContext.setErrorDialog({
