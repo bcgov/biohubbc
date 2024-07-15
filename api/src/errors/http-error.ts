@@ -1,5 +1,6 @@
 import { DatabaseError } from 'pg';
 import { ApiError } from './api-error';
+import { BaseError } from './base-error';
 
 export enum HTTPErrorType {
   BAD_REQUEST = 'Bad Request',
@@ -9,24 +10,13 @@ export enum HTTPErrorType {
   INTERNAL_SERVER_ERROR = 'Internal Server Error'
 }
 
-export class HTTPError extends Error {
+export class HTTPError extends BaseError {
   status: number;
-  errors?: (string | object)[];
 
   constructor(name: HTTPErrorType, status: number, message: string, errors?: (string | object)[], stack?: string) {
-    super(message);
+    super(name, message, errors, stack);
 
-    this.name = name;
     this.status = status;
-    this.errors = errors || [];
-
-    if (stack) {
-      this.stack = stack;
-    }
-
-    if (!this.stack) {
-      Error.captureStackTrace(this);
-    }
   }
 }
 
@@ -125,9 +115,5 @@ export const ensureHTTPError = (error: HTTPError | ApiError | Error | any): HTTP
     );
   }
 
-  if (error instanceof Error) {
-    return new HTTP500('Unexpected Error', [error.name, error.message]);
-  }
-
-  return new HTTP500('Unexpected Error');
+  return new HTTP500('Unexpected Error', [error]);
 };
