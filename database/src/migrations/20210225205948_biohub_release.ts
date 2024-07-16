@@ -3,7 +3,9 @@ import { Knex } from 'knex';
 import path from 'path';
 
 const DB_USER_API_PASS = process.env.DB_USER_API_PASS;
-const DB_USER_API = process.env.DB_USER_API;
+// const DB_USER_API = process.env.DB_USER_API;
+
+// Hardcoded 'spi' and 'biohub_api' for crunchyDB (spi migration) and SIMS, respectively
 
 const DB_RELEASE = 'release.0.34';
 
@@ -128,26 +130,36 @@ export async function up(knex: Knex): Promise<void> {
     -- setup api user
     DO $$ 
     BEGIN
-        IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = '${DB_USER_API}') THEN
-            create user ${DB_USER_API} password '${DB_USER_API_PASS}';
-            
+        IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'biohub_api') THEN
+            create user biohub_api password '${DB_USER_API_PASS}';
         END IF;
     END $$;
 
-    -- create user ${DB_USER_API} password '${DB_USER_API_PASS}';
-    alter schema biohub_dapi_v1 owner to ${DB_USER_API};
+    DO $$ 
+    BEGIN
+        IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'spi') THEN
+            create user spi password '${DB_USER_API_PASS}';
+        END IF;
+    END $$;
+
+    -- create user biohub_api password '${DB_USER_API_PASS}';
+    alter schema biohub_dapi_v1 owner to biohub_api;
 
     -- Grant rights on biohub_dapi_v1 to biohub_api user
-    grant all on schema biohub_dapi_v1 to ${DB_USER_API};
+    grant all on schema biohub_dapi_v1 to biohub_api;
     grant all on schema biohub_dapi_v1 to postgres;
-    alter DEFAULT PRIVILEGES in SCHEMA biohub_dapi_v1 grant ALL on tables to ${DB_USER_API};
+    alter DEFAULT PRIVILEGES in SCHEMA biohub_dapi_v1 grant ALL on tables to biohub_api;
     alter DEFAULT PRIVILEGES in SCHEMA biohub_dapi_v1 grant ALL on tables to postgres;
 
-    -- Biohub grants
-    GRANT USAGE ON SCHEMA biohub TO ${DB_USER_API};
-    ALTER DEFAULT PRIVILEGES IN SCHEMA biohub GRANT ALL ON TABLES TO ${DB_USER_API};
+    -- Biohub grants for SIMS
+    GRANT USAGE ON SCHEMA biohub TO biohub_api;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA biohub GRANT ALL ON TABLES TO biohub_api;
 
-    alter role ${DB_USER_API} set search_path to biohub_dapi_v1, biohub, public, topology;
+    -- Biohub grants for Postgres Operator/crunchyDB
+    GRANT USAGE ON SCHEMA biohub TO spi;
+    ALTER DEFAULT PRIVILEGES IN SCHEMA biohub GRANT ALL ON TABLES TO spi;
+
+    alter role biohub_api set search_path to biohub_dapi_v1, biohub, public, topology;
 
     ${biohub_ddl}
     ${populate_user_identity_source}
@@ -213,7 +225,7 @@ export async function up(knex: Knex): Promise<void> {
 
     set role postgres;
     set search_path = biohub;
-    grant execute on function biohub.api_set_context(_system_user_identifier system_user.user_identifier%type, _user_identity_source_name user_identity_source.name%type) to ${DB_USER_API};
+    grant execute on function biohub.api_set_context(_system_user_identifier system_user.user_identifier%type, _user_identity_source_name user_identity_source.name%type) to biohub_api;
   `);
 }
 
@@ -221,6 +233,6 @@ export async function down(knex: Knex): Promise<void> {
   await knex.raw(`
     DROP SCHEMA IF EXISTS biohub CASCADE;
     DROP SCHEMA IF EXISTS biohub_dapi_v1 CASCADE;
-    DROP USER IF EXISTS ${DB_USER_API};
+    DROP USER IF EXISTS biohub_api;
   `);
 }
