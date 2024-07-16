@@ -119,5 +119,20 @@ export const ensureHTTPError = (error: HTTPError | ApiError | Error | any): HTTP
     return new HTTP500('Unexpected Error', [{ name: error.name, message: error.message }]);
   }
 
+  if (isAjvError(error)) {
+    return new HTTPError(HTTPErrorType.BAD_REQUEST, error.status, 'Request Validation Error', error.errors);
+  }
+
   return new HTTP500('Unexpected Error', [error]);
+};
+
+/**
+ * Checks if an error object is a AJV validation error.
+ *
+ * @see https://github.com/kogosoftwarellc/open-api/blob/main/packages/openapi-request-validator/index.ts
+ * @param {any} error - Error object
+ * @returns {boolean}
+ */
+const isAjvError = (error: any): error is { status: number; errors: any[] } => {
+  return 'status' in error && 'errors' in error;
 };
