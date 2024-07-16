@@ -49,8 +49,7 @@ export const observationStandardColumnValidator: IXLSXCSVValidator = {
   columnAliases: {
     ITIS_TSN: [TAXON, SPECIES, TSN],
     LATITUDE: [LAT],
-    LONGITUDE: [LON, LONG, LNG],
-    TEST: []
+    LONGITUDE: [LON, LONG, LNG]
   }
 };
 
