@@ -159,6 +159,13 @@ export interface ICollectionUnitWithCategory {
   description: string | null;
 }
 
+export interface ICollectionCategory {
+  collection_category_id: string;
+  category_name: string;
+  description: string | null;
+  itis_tsn: number;
+}
+
 /**
  * A Critterbase quantitative measurement.
  */
@@ -468,9 +475,9 @@ export class CritterbaseService {
    *
    * @async
    * @param {string} tsn - ITIS TSN
-   * @returns {Promise<>} Collection categories
+   * @returns {Promise<ICollectionCategory[]>} Collection categories
    */
-  async findTaxonCollectionCategories(tsn: string) {
+  async findTaxonCollectionCategories(tsn: string): Promise<ICollectionCategory[]> {
     const response = await this.axiosInstance.get(`/xref/taxon-collection-categories?tsn=${tsn}`);
 
     return response.data;

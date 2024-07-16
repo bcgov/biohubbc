@@ -9,9 +9,33 @@ import { replaceCellDates, trimCellWhitespace } from './cell-utils';
 const defaultLog = getLogger('src/utils/xlsx-utils/worksheet-utils');
 
 export interface IXLSXCSVValidator {
-  columnNames: string[];
-  columnTypes: string[];
-  columnAliases?: Record<string, string[]>;
+  /**
+   * Uppercase column headers
+   *
+   * @see column-cell-utils.ts
+   *
+   */
+  columnNames: Array<Uppercase<string>>;
+  /**
+   * Supported column cell types
+   *
+   */
+  columnTypes: Array<'string' | 'number' | 'date'>;
+  /**
+   * Allowed aliases / mappings for column headers.
+   *
+   * Note: This is similar to type Record<string, string[]>
+   * where columnAliases keys must be a value in columnNames.
+   *
+   * @example
+   * {
+   *  columnNames: ['ITIS_TSN'],
+   *  columnTypes: ['string'],
+   *  columnAliases: { ITIS_TSN: ['TAXON', 'SPECIES'] }
+   * }
+   *
+   */
+  columnAliases?: { [K in Array<Uppercase<string>>[number]]: string[] };
 }
 
 /**
@@ -326,6 +350,7 @@ export function validateCsvFile(xlsxWorksheet: xlsx.WorkSheet, columnValidator: 
  * This function pulls out any non-standard columns from a CSV so they can be processed separately.
  *
  * @param {xlsx.WorkSheet} xlsxWorksheet The worksheet to pull the columns from
+ * @param {IXLSXCSVValidator} columnValidator The column validator
  * @returns {*} string[] The list of non-standard columns found in the CSV
  */
 export function getNonStandardColumnNamesFromWorksheet(
@@ -335,11 +360,13 @@ export function getNonStandardColumnNamesFromWorksheet(
   const columns = getHeadersUpperCase(xlsxWorksheet);
 
   let aliasColumns: string[] = [];
+
   // Create a list of all column names and aliases
   if (columnValidator.columnAliases) {
     aliasColumns = Object.values(columnValidator.columnAliases).flat();
   }
 
+  // Combine the column validator headers and all aliases
   const standardColumNames = [...columnValidator.columnNames, ...aliasColumns];
 
   // Only return column names not in the validation CSV Column validator (ie: only return the non-standard columns)

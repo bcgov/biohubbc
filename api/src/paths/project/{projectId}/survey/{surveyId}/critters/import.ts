@@ -32,7 +32,7 @@ export const POST: Operation = [
 
 POST.apiDoc = {
   description: 'Upload survey critters submission file',
-  tags: ['observations'],
+  tags: ['critterbase', 'survey'],
   security: [
     {
       Bearer: []
@@ -85,6 +85,7 @@ POST.apiDoc = {
           schema: {
             type: 'object',
             additionalProperties: false,
+            required: ['survey_critter_ids'],
             properties: {
               survey_critter_ids: {
                 type: 'array',
