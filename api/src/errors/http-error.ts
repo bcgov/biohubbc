@@ -115,12 +115,12 @@ export const ensureHTTPError = (error: HTTPError | ApiError | Error | any): HTTP
     );
   }
 
-  if (error instanceof Error) {
-    return new HTTP500('Unexpected Error', [{ name: error.name, message: error.message }]);
-  }
-
   if (isAjvError(error)) {
     return new HTTPError(HTTPErrorType.BAD_REQUEST, error.status, 'Request Validation Error', error.errors);
+  }
+
+  if (error instanceof Error) {
+    return new HTTP500('Unexpected Error', [{ name: error.name, message: error.message }]);
   }
 
   return new HTTP500('Unexpected Error', [error]);
@@ -134,5 +134,5 @@ export const ensureHTTPError = (error: HTTPError | ApiError | Error | any): HTTP
  * @returns {boolean}
  */
 const isAjvError = (error: any): error is { status: number; errors: any[] } => {
-  return 'status' in error && 'errors' in error;
+  return typeof error === 'object' && 'status' in error && 'errors' in error;
 };

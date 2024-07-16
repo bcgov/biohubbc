@@ -74,6 +74,22 @@ describe('ensureHTTPError', () => {
     ]);
   });
 
+  it('returns a HTTPError when a AJVError object provided', function () {
+    const ajvError = { status: 400, errors: [{ instancePath: '/path' }] };
+
+    const ensuredError = ensureHTTPError(ajvError);
+
+    expect(ensuredError).to.be.instanceof(HTTPError);
+
+    expect(ensuredError.status).to.equal(400);
+    expect(ensuredError.message).to.equal('Request Validation Error');
+    expect(ensuredError.errors).to.eql([
+      {
+        instancePath: '/path'
+      }
+    ]);
+  });
+
   it('returns a HTTPError when a non Http Error provided', function () {
     const nonHttpError = new Error('a non http error');
 
@@ -83,7 +99,7 @@ describe('ensureHTTPError', () => {
 
     expect(ensuredError.status).to.equal(500);
     expect(ensuredError.message).to.equal('Unexpected Error');
-    expect(ensuredError.errors).to.eql(['Error', 'a non http error']);
+    expect(ensuredError.errors).to.eql([{ message: 'a non http error', name: 'Error' }]);
   });
 
   it('returns a generic HTTPError when a non Error provided', function () {
@@ -95,6 +111,6 @@ describe('ensureHTTPError', () => {
 
     expect(ensuredError.status).to.equal(500);
     expect(ensuredError.message).to.equal('Unexpected Error');
-    expect(ensuredError.errors).to.eql([]);
+    expect(ensuredError.errors).to.eql(['not an Error']);
   });
 });
