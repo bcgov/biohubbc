@@ -250,13 +250,14 @@ export function deployDevice(): RequestHandler {
     };
 
     const connection = getDBConnection(req['keycloak_token']);
-    const surveyCritterService = new SurveyCritterService(connection);
-    const bctwService = new BctwService(user);
 
     try {
       await connection.open();
 
+      const surveyCritterService = new SurveyCritterService(connection);
       await surveyCritterService.upsertDeployment(critterId, newDeploymentId);
+
+      const bctwService = new BctwService(user);
       await bctwService.deployDevice(newDeploymentDevice);
 
       await connection.commit();
@@ -279,11 +280,15 @@ export function updateDeployment(): RequestHandler {
       username: req['system_user']?.user_identifier
     };
     const critterId = Number(req.params.critterId);
+
     const connection = getDBConnection(req['keycloak_token']);
-    const surveyCritterService = new SurveyCritterService(connection);
-    const bctw = new BctwService(user);
+
     try {
       await connection.open();
+
+      const surveyCritterService = new SurveyCritterService(connection);
+      const bctw = new BctwService(user);
+
       await surveyCritterService.upsertDeployment(critterId, req.body.deployment_id);
       await bctw.updateDeployment(req.body);
       await connection.commit();

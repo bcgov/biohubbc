@@ -113,14 +113,14 @@ export function deleteDeployment(): RequestHandler {
     const critterId = Number(req.params.critterId);
 
     const connection = getDBConnection(req['keycloak_token']);
-    const surveyCritterService = new SurveyCritterService(connection);
-    const bctwService = new BctwService(user);
 
     try {
       await connection.open();
 
+      const surveyCritterService = new SurveyCritterService(connection);
       await surveyCritterService.removeDeployment(critterId, deploymentId);
 
+      const bctwService = new BctwService(user);
       await bctwService.deleteDeployment(deploymentId);
 
       await connection.commit();
