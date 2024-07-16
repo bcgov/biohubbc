@@ -15,7 +15,7 @@ export interface IXLSXCSVValidator {
    * @see column-cell-utils.ts
    *
    */
-  columnNames: Array<Uppercase<string>>;
+  columnNames: Uppercase<string>[];
   /**
    * Supported column cell types
    *
@@ -24,18 +24,8 @@ export interface IXLSXCSVValidator {
   /**
    * Allowed aliases / mappings for column headers.
    *
-   * Note: This is similar to type Record<string, string[]>
-   * where columnAliases keys must be a value in columnNames.
-   *
-   * @example
-   * {
-   *  columnNames: ['ITIS_TSN'],
-   *  columnTypes: ['string'],
-   *  columnAliases: { ITIS_TSN: ['TAXON', 'SPECIES'] }
-   * }
-   *
    */
-  columnAliases?: { [K in Array<Uppercase<string>>[number]]: string[] };
+  columnAliases?: Record<Uppercase<string>, Uppercase<string>[]>;
 }
 
 /**
