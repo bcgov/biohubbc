@@ -133,6 +133,6 @@ export const ensureHTTPError = (error: HTTPError | ApiError | Error | any): HTTP
  * @param {any} error - Error object
  * @returns {boolean}
  */
-const isAjvError = (error: any): error is { status: number; errors: any[] } => {
+export const isAjvError = (error: any): error is { status: number; errors: any[] } => {
   return typeof error === 'object' && 'status' in error && 'errors' in error;
 };

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import { DatabaseError } from 'pg';
 import { ApiError, ApiErrorType } from './api-error';
-import { ensureHTTPError, HTTP400, HTTP401, HTTP403, HTTP409, HTTP500, HTTPError } from './http-error';
+import { ensureHTTPError, HTTP400, HTTP401, HTTP403, HTTP409, HTTP500, HTTPError, isAjvError } from './http-error';
 
 describe('HTTPError', () => {
   describe('No error value provided', () => {
@@ -112,5 +112,24 @@ describe('ensureHTTPError', () => {
     expect(ensuredError.status).to.equal(500);
     expect(ensuredError.message).to.equal('Unexpected Error');
     expect(ensuredError.errors).to.eql(['not an Error']);
+  });
+});
+
+describe('isAjvError', () => {
+  it('should return false when not an object', () => {
+    expect(isAjvError('not ajv')).to.be.false;
+    expect(isAjvError([])).to.be.false;
+    expect(isAjvError(1)).to.be.false;
+  });
+
+  it('should return false when missing status or errors', () => {
+    expect(isAjvError({ status: 1 })).to.be.false;
+    expect(isAjvError({ errors: 1 })).to.be.false;
+    expect(isAjvError({ status: 1, oops: 'oops' })).to.be.false;
+  });
+
+  it('should return true when errors and status both defined', () => {
+    expect(isAjvError({ status: 1, errors: [] })).to.be.true;
+    expect(isAjvError({ status: 1, errors: ['hello'] })).to.be.true;
   });
 });
