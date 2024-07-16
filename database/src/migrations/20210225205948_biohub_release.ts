@@ -128,7 +128,7 @@ export async function up(knex: Knex): Promise<void> {
     -- setup api user
     DO $$ 
     BEGIN
-        IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'spi') THEN
+        IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = '${DB_USER_API}') THEN
             create user ${DB_USER_API} password '${DB_USER_API_PASS}';
             
         END IF;
