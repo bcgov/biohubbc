@@ -129,12 +129,12 @@ export async function up(knex: Knex): Promise<void> {
     DO $$ 
     BEGIN
         IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'spi') THEN
-            create user if not exists ${DB_USER_API} password '${DB_USER_API_PASS}';
+            create user ${DB_USER_API} password '${DB_USER_API_PASS}';
             
         END IF;
     END $$;
 
-    -- create user if not exists ${DB_USER_API} password '${DB_USER_API_PASS}';
+    -- create user ${DB_USER_API} password '${DB_USER_API_PASS}';
     alter schema biohub_dapi_v1 owner to ${DB_USER_API};
 
     -- Grant rights on biohub_dapi_v1 to biohub_api user
