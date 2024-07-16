@@ -116,7 +116,7 @@ export const ensureHTTPError = (error: HTTPError | ApiError | Error | any): HTTP
   }
 
   if (error instanceof Error) {
-    return new HTTP500('Unexpected Error', [error.name, error.message]);
+    return new HTTP500('Unexpected Error', [{ name: error.name, message: error.message }]);
   }
 
   return new HTTP500('Unexpected Error', [error]);
