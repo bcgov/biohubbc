@@ -215,8 +215,6 @@ export function getCrittersFromSurvey(): RequestHandler {
       await connection.open();
 
       const surveyService = new SurveyCritterService(connection);
-      const critterbaseService = new CritterbaseService(user);
-
       const surveyCritters = await surveyService.getCrittersInSurvey(surveyId);
 
       // Exit early if surveyCritters list is empty
@@ -225,6 +223,8 @@ export function getCrittersFromSurvey(): RequestHandler {
       }
 
       const critterIds = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
+
+      const critterbaseService = new CritterbaseService(user);
       const result = await critterbaseService.getMultipleCrittersByIds(critterIds);
 
       const critterMap = new Map();
@@ -263,16 +263,16 @@ export function addCritterToSurvey(): RequestHandler {
     try {
       await connection.open();
 
-      const surveyService = new SurveyCritterService(connection);
-      const cb = new CritterbaseService(user);
+      const critterbaseService = new CritterbaseService(user);
 
       // If request does not include critter ID, create a new critter and use its critter ID
       let result = null;
       if (!critterId) {
-        result = await cb.createCritter(req.body);
+        result = await critterbaseService.createCritter(req.body);
         critterId = result.critter_id;
       }
 
+      const surveyService = new SurveyCritterService(connection);
       const response = await surveyService.addCritterToSurvey(surveyId, critterId);
 
       await connection.commit();
