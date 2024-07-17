@@ -4,14 +4,8 @@ import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
 import { ApiGeneralError } from '../../../errors/api-error';
 import { getLogger } from '../../../utils/logger';
-import {
-  critterStandardColumnValidator,
-  getAliasFromRow,
-  getDescriptionFromRow,
-  getSexFromRow,
-  getTsnFromRow,
-  getWlhIdFromRow
-} from '../../../utils/xlsx-utils/column-cell-utils';
+import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
+import { generateCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { getNonStandardColumnNamesFromWorksheet, IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
 import {
   CritterbaseService,
@@ -46,7 +40,20 @@ export class ImportCrittersService extends DBService implements CSVImportService
   surveyCritterService: SurveyCritterService;
 
   surveyId: number;
-  columnValidator: IXLSXCSVValidator;
+
+  /**
+   * An XLSX validation config for the standard columns of a Critter CSV.
+   *
+   * Note: `satisfies` allows `keyof` to correctly infer key types, while also
+   * enforcing uppercase object keys.
+   */
+  columnValidator = {
+    ITIS_TSN: { type: 'number', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
+    SEX: { type: 'string' },
+    ALIAS: { type: 'string', aliases: CSV_COLUMN_ALIASES.ALIAS },
+    WLH_ID: { type: 'string' },
+    DESCRIPTION: { type: 'string', aliases: CSV_COLUMN_ALIASES.DESCRIPTION }
+  } satisfies IXLSXCSVValidator;
 
   /**
    * Instantiates an instance of ImportCrittersService
@@ -58,7 +65,6 @@ export class ImportCrittersService extends DBService implements CSVImportService
     super(connection);
 
     this.surveyId = surveyId;
-    this.columnValidator = critterStandardColumnValidator;
 
     this.platformService = new PlatformService(connection);
     this.surveyCritterService = new SurveyCritterService(connection);
@@ -178,15 +184,17 @@ export class ImportCrittersService extends DBService implements CSVImportService
   getRowsToValidate(rows: Row[], worksheet: WorkSheet): PartialCsvCritter[] {
     const collectionUnitColumns = this._getNonStandardColumns(worksheet);
 
+    const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
+
     return rows.map((row) => {
       // Standard critter properties from CSV
       const standardCritterRow = {
         critter_id: uuid(), // Generate a uuid for each critter for convienence
-        sex: getSexFromRow(row),
-        itis_tsn: getTsnFromRow(row),
-        wlh_id: getWlhIdFromRow(row),
-        animal_id: getAliasFromRow(row),
-        critter_comment: getDescriptionFromRow(row)
+        sex: getCellValue(row, 'SEX'),
+        itis_tsn: getCellValue(row, 'ITIS_TSN'),
+        wlh_id: getCellValue(row, 'WLH_ID'),
+        animal_id: getCellValue(row, 'ALIAS'),
+        critter_comment: getCellValue(row, 'DESCRIPTION')
       };
 
       // All other properties must be collection units ie: `population unit` or `herd unit` etc...

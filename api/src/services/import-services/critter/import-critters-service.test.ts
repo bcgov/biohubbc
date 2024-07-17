@@ -3,12 +3,11 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { WorkSheet } from 'xlsx';
 import { MediaFile } from '../../../utils/media/media-file';
-import { critterStandardColumnValidator } from '../../../utils/xlsx-utils/column-cell-utils';
 import * as xlsxUtils from '../../../utils/xlsx-utils/worksheet-utils';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { IBulkCreateResponse } from '../../critterbase-service';
-import { CsvCritter, PartialCsvCritter } from './critter/import-critters-service.interfacee';
-import { ImportCrittersService } from './critter/import-critters-servicee';
+import { ImportCrittersService } from './import-critters-service';
+import { CsvCritter, PartialCsvCritter } from './import-critters-service.interface';
 
 chai.use(sinonChai);
 
@@ -28,9 +27,9 @@ describe('ImportCrittersService', () => {
           BAD_COLLECTION: 'Bad'
         }
       ];
-      const service = new ImportCrittersService(mockConnection);
+      const service = new ImportCrittersService(mockConnection, 1);
 
-      const parsedRow = service._getCritterRowsToValidate(rows, ['COLLECTION', 'TEST'])[0];
+      const parsedRow = service.getRowsToValidate(rows, ['COLLECTION', 'TEST'])[0];
 
       expect(parsedRow.sex).to.be.eq('Male');
       expect(parsedRow.itis_tsn).to.be.eq(1);
@@ -54,7 +53,7 @@ describe('ImportCrittersService', () => {
         critter_comment: 'comment',
         extra_property: 'test'
       };
-      const service = new ImportCrittersService(mockConnection);
+      const service = new ImportCrittersService(mockConnection, 1);
 
       const critter = service._getCritterFromRow(row);
 
@@ -81,7 +80,7 @@ describe('ImportCrittersService', () => {
         COLLECTION: 'ID1',
         HERD: 'ID2'
       };
-      const service = new ImportCrittersService(mockConnection);
+      const service = new ImportCrittersService(mockConnection, 1);
 
       const collectionUnits = service._getCollectionUnitsFromRow(row);
 
@@ -98,12 +97,12 @@ describe('ImportCrittersService', () => {
     });
 
     it('should return unique list of tsns', async () => {
-      const service = new ImportCrittersService(mockConnection);
+      const service = new ImportCrittersService(mockConnection, 1);
 
       const mockWorksheet = {} as unknown as WorkSheet;
 
       const getRowsStub = sinon
-        .stub(service, '_getRows')
+        .stub(service, 'getRows')
         .returns([{ itis_tsn: 1 }, { itis_tsn: 2 }, { itis_tsn: 2 }] as any);
 
       const getTaxonomyStub = sinon.stub(service.platformService, 'getTaxonomyByTsns').resolves([

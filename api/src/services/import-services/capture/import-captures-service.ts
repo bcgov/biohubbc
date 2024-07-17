@@ -1,18 +1,8 @@
 import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
-import {
-  captureStandardColumnValidator,
-  getCaptureDateFromRow,
-  getCaptureLatitudeFromRow,
-  getCaptureLongitudeFromRow,
-  getCaptureTimeFromRow,
-  getDescriptionFromRow,
-  getReleaseDateFromRow,
-  getReleaseLatitudeFromRow,
-  getReleaseLongitudeFromRow,
-  getReleaseTimeFromRow
-} from '../../../utils/xlsx-utils/column-cell-utils';
+import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
+import { generateCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
 import { CritterbaseService, IBulkCreate } from '../../critterbase-service';
 import { DBService } from '../../db-service';
@@ -27,10 +17,6 @@ import { CsvCapture, CsvCaptureSchema, PartialCsvCapture } from './import-captur
  */
 export class ImportCapturesService extends DBService implements CSVImportService<CsvCapture, PartialCsvCapture> {
   /**
-   * Standard column validator
-   */
-  columnValidator: IXLSXCSVValidator;
-  /**
    * Critterbase service
    */
   critterbaseService: CritterbaseService;
@@ -42,6 +28,26 @@ export class ImportCapturesService extends DBService implements CSVImportService
   critterbaseCritterId?: string;
 
   /**
+   * An XLSX validation config for the standard columns of a Capture CSV.
+   *
+   * Note: `satisfies` allows `keyof` to correctly infer key types, while also
+   * enforcing uppercase object keys.
+   */
+  columnValidator = {
+    ALIAS: { type: 'string', aliases: CSV_COLUMN_ALIASES.ALIAS },
+    CAPTURE_DATE: { type: 'date' },
+    CAPTURE_TIME: { type: 'string' },
+    CAPTURE_LATITUDE: { type: 'number' },
+    CAPTURE_LONGITUDE: { type: 'number' },
+    RELEASE_DATE: { type: 'date' },
+    RELEASE_TIME: { type: 'string' },
+    RELEASE_LATITUDE: { type: 'number' },
+    RELEASE_LONGITUDE: { type: 'number' },
+    CAPTURE_COMMENT: { type: 'string' },
+    RELEASE_COMMENT: { type: 'string' }
+  } satisfies IXLSXCSVValidator;
+
+  /**
    * Construct an instance of ImportCapturesService
    *
    * @param {IDBConnection} connection - DB connection
@@ -49,8 +55,6 @@ export class ImportCapturesService extends DBService implements CSVImportService
    */
   constructor(connection: IDBConnection, critterbaseCritterId?: string) {
     super(connection);
-
-    this.columnValidator = captureStandardColumnValidator;
 
     this.critterbaseCritterId = critterbaseCritterId;
 
@@ -81,19 +85,22 @@ export class ImportCapturesService extends DBService implements CSVImportService
    * @returns {PartialCsvCapture[]} CSV captures before validation
    */
   getRowsToValidate(rows: Row[]): PartialCsvCapture[] {
+    const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
+
     return rows.map((row) => {
       return {
         critter_id: this.getCritterIdFromRow(row), // only property we know will be defined
         capture_location_id: uuid(),
-        capture_date: getCaptureDateFromRow(row),
-        capture_time: getCaptureTimeFromRow(row),
-        capture_latitude: getCaptureLatitudeFromRow(row),
-        capture_longitude: getCaptureLongitudeFromRow(row),
-        release_date: getReleaseDateFromRow(row),
-        release_time: getReleaseTimeFromRow(row),
-        release_latitude: getReleaseLatitudeFromRow(row),
-        release_longitude: getReleaseLongitudeFromRow(row),
-        capture_comment: getDescriptionFromRow(row)
+        capture_date: getCellValue(row, 'CAPTURE_DATE'),
+        capture_time: getCellValue(row, 'CAPTURE_TIME'),
+        capture_latitude: getCellValue(row, 'CAPTURE_LATITUDE'),
+        capture_longitude: getCellValue(row, 'CAPTURE_LONGITUDE'),
+        release_date: getCellValue(row, 'RELEASE_DATE'),
+        release_time: getCellValue(row, 'RELEASE_TIME'),
+        release_latitude: getCellValue(row, 'RELEASE_LATITUDE'),
+        release_longitude: getCellValue(row, 'RELEASE_LONGITUDE'),
+        capture_comment: getCellValue(row, 'CAPTURE_COMMENT'),
+        release_comment: getCellValue(row, 'RELEASE_COMMENT')
       };
     });
   }
