@@ -2,7 +2,7 @@ import { AxiosResponse } from 'axios';
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { CritterbaseService, ICritter } from './critterbase-service';
+import { CritterbaseService, ICreateCritter } from './critterbase-service';
 import { KeycloakService } from './keycloak-service';
 
 chai.use(sinonChai);
@@ -145,12 +145,11 @@ describe('CritterbaseService', () => {
 
     describe('createCritter', () => {
       it('should create a critter', async () => {
-        const data: ICritter = {
+        const data: ICreateCritter = {
           wlh_id: 'aaaa',
           animal_id: 'aaaa',
           sex: 'male',
           itis_tsn: 1,
-          itis_scientific_name: 'Name',
           critter_comment: 'None.'
         };
         const axiosStub = sinon.stub(cb.axiosInstance, 'post').resolves({ data: [] });

@@ -94,11 +94,11 @@ export function getDeploymentsInSurvey(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req['keycloak_token']);
 
-    const surveyCritterService = new SurveyCritterService(connection);
-    const bctwService = new BctwService(user);
-
     try {
       await connection.open();
+
+      const surveyCritterService = new SurveyCritterService(connection);
+      const bctwService = new BctwService(user);
 
       const critter_ids = (await surveyCritterService.getCrittersInSurvey(surveyId)).map(
         (critter) => critter.critterbase_critter_id
