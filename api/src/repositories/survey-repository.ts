@@ -1,3 +1,4 @@
+import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
@@ -5,12 +6,13 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
+  FindSurveysResponse,
   GetAttachmentsData,
   GetReportAttachmentsData,
   GetSurveyProprietorData,
-  GetSurveyPurposeAndMethodologyData
+  GetSurveyPurposeAndMethodologyData,
+  ISurveyAdvancedFilters
 } from '../models/survey-view';
-import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
@@ -46,20 +48,23 @@ export interface ISurveyProprietorModel {
 }
 
 const SurveyRecord = z.object({
-  project_id: z.number(),
   survey_id: z.number(),
-  name: z.string().nullable(),
+  project_id: z.number(),
   uuid: z.string().uuid().nullable(),
-  start_date: z.string(),
-  end_date: z.string().nullable(),
+  name: z.string().nullable(),
   additional_details: z.string().nullable(),
-  progress_id: z.number(),
-  comments: z.string().nullable(),
+  start_date: z.string(),
+  lead_first_name: z.string().nullable(),
+  lead_last_name: z.string().nullable(),
+  end_date: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
-  revision_count: z.number()
+  revision_count: z.number(),
+  ecological_season_id: z.number().nullable(),
+  comments: z.string().nullable(),
+  progress_id: z.number()
 });
 
 export type SurveyRecord = z.infer<typeof SurveyRecord>;
@@ -113,8 +118,6 @@ export const SurveyBasicFields = z.object({
 
 export type SurveyBasicFields = z.infer<typeof SurveyBasicFields>;
 
-const defaultLog = getLogger('repositories/survey-repository');
-
 export class SurveyRepository extends BaseRepository {
   /**
    * Deletes a survey and any associations for a given survey
@@ -126,6 +129,134 @@ export class SurveyRepository extends BaseRepository {
     const sqlStatement = SQL`call api_delete_survey(${surveyId})`;
 
     await this.connection.sql(sqlStatement);
+  }
+
+  /**
+   * Constructs a non-paginated query used to get a list of surveys based on the user's permissions and filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @return {*}  Promise<Knex.QueryBuilder>
+   * @memberof SurveyRepository
+   */
+  _makeFindSurveysQuery(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    const query = knex
+      .select([
+        's.survey_id',
+        's.project_id',
+        's.name',
+        's.progress_id',
+        's.start_date',
+        's.end_date',
+        knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
+        knex.raw('array_remove(array_agg(distinct sp.itis_tsn), null) as focal_species'),
+        knex.raw('array_remove(array_agg(distinct st.type_id), null) as types')
+      ])
+      .from('survey as s')
+      .leftJoin('project as p', 'p.project_id', 's.project_id')
+      .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
+      .leftJoin('survey_type as st', 'st.survey_id', 's.survey_id')
+      .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
+      .leftJoin('region_lookup as rl', 'rl.region_id', 'sr.region_id')
+      .leftJoin('project_participation as ppa', 'ppa.project_id', 's.project_id')
+      .groupBy('s.survey_id', 's.project_id', 's.name', 's.progress_id', 's.start_date', 's.end_date');
+
+    // Ensure that users can only see surveys that they are participating in, unless they are an administrator.
+    if (!isUserAdmin) {
+      query.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder.select('project_id').from('project_participation').where('system_user_id', systemUserId);
+      });
+    }
+
+    if (filterFields.system_user_id) {
+      query.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
+      });
+    }
+
+    // Start Date filter
+    if (filterFields.start_date) {
+      query.andWhere('s.start_date', '>=', filterFields.start_date);
+    }
+
+    // End Date filter
+    if (filterFields.end_date) {
+      query.andWhere('s.end_date', '<=', filterFields.end_date);
+    }
+
+    // Project Name filter (like match)
+    if (filterFields.survey_name) {
+      query.andWhere('s.name', 'ilike', `%${filterFields.survey_name}%`);
+    }
+
+    // Focal Species filter
+    if (filterFields.itis_tsns?.length) {
+      // multiple
+      query.whereIn('sp.itis_tsn', filterFields.itis_tsns);
+    } else if (filterFields.itis_tsn) {
+      // single
+      query.where('sp.itis_tsn', filterFields.itis_tsn);
+    }
+
+    // Keyword Search filter
+    if (filterFields.keyword) {
+      const keywordMatch = `%${filterFields.keyword}%`;
+      query.where((subQueryBuilder) => {
+        subQueryBuilder
+          .where('s.name', 'ilike', keywordMatch)
+          .orWhere('s.additional_details', 'ilike', keywordMatch)
+          .orWhere('s.comments', 'ilike', keywordMatch);
+
+        // If the keyword is a number, also match on survey Id
+        if (!isNaN(Number(filterFields.keyword))) {
+          subQueryBuilder.orWhere('s.survey_id', Number(filterFields.keyword));
+        }
+      });
+    }
+
+    return query;
+  }
+
+  /**
+   * Retrieves the paginated list of all surveys that are available to the user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<FindSurveysResponse[]>}
+   * @memberof SurveyRepository
+   */
+  async findSurveys(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<FindSurveysResponse[]> {
+    const query = this._makeFindSurveysQuery(isUserAdmin, systemUserId, filterFields);
+
+    // Pagination
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(query, FindSurveysResponse);
+
+    return response.rows;
   }
 
   /**
@@ -472,6 +603,38 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
+   * Returns the total number of surveys that the user has access to
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyService
+   */
+  async findSurveysCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters
+  ): Promise<number> {
+    const surveyListQuery = this._makeFindSurveysQuery(isUserAdmin, systemUserId, filterFields);
+
+    const knex = getKnex();
+
+    const queryBuilder = knex.from(surveyListQuery.as('slq')).select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get survey count', [
+        'SurveyRepository->findSurveysCount',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].count;
+  }
+
+  /**
    * Returns the total number of surveys belonging to the given project.
    *
    * @param {number} projectId
@@ -481,15 +644,14 @@ export class SurveyRepository extends BaseRepository {
   async getSurveyCountByProjectId(projectId: number): Promise<number> {
     const sqlStatement = SQL`
       SELECT
-        COUNT(*) as survey_count
+        COUNT(*)::integer AS count
       FROM
-        survey as s
+        survey
       WHERE
-        s.project_id = ${projectId}
-      ;
+        project_id = ${projectId};
     `;
 
-    const response = await this.connection.sql(sqlStatement, z.object({ survey_count: z.string().transform(Number) }));
+    const response = await this.connection.sql(sqlStatement, z.object({ count: z.number() }));
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get survey count', [
@@ -498,7 +660,7 @@ export class SurveyRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].survey_count;
+    return response.rows[0].count;
   }
 
   /**
@@ -977,8 +1139,6 @@ export class SurveyRepository extends BaseRepository {
    * @memberof SurveyRepository
    */
   async getIndigenousPartnershipsBySurveyId(surveyId: number): Promise<IndigenousPartnershipRecord[]> {
-    defaultLog.debug({ label: 'getIndigenousPartnershipsBySurveyId', surveyId });
-
     const sqlStatement = SQL`
       SELECT
         *
@@ -1009,8 +1169,6 @@ export class SurveyRepository extends BaseRepository {
    * @memberof SurveyRepository
    */
   async getStakeholderPartnershipsBySurveyId(surveyId: number): Promise<StakeholderPartnershipRecord[]> {
-    defaultLog.debug({ label: 'getStakeholderPartnershipsBySurveyId', surveyId });
-
     const sqlStatement = SQL`
       SELECT
         *
@@ -1046,7 +1204,6 @@ export class SurveyRepository extends BaseRepository {
     firstNationsIds: number[],
     surveyId: number
   ): Promise<IndigenousPartnershipRecord[]> {
-    defaultLog.debug({ label: 'insertIndigenousPartnerships', firstNationsIds, surveyId });
     const queryBuilder = getKnex()
       .table('survey_first_nation_partnership')
       .insert(
@@ -1081,7 +1238,6 @@ export class SurveyRepository extends BaseRepository {
     stakeholderPartners: string[],
     surveyId: number
   ): Promise<StakeholderPartnershipRecord[]> {
-    defaultLog.debug({ label: 'insertStakeholderPartnerships', stakeholderPartners, surveyId });
     const queryBuilder = getKnex()
       .table('survey_stakeholder_partnership')
       .insert(
@@ -1112,7 +1268,6 @@ export class SurveyRepository extends BaseRepository {
    * @memberof SurveyRepository
    */
   async deleteIndigenousPartnershipsData(surveyId: number): Promise<number> {
-    defaultLog.debug({ label: 'deleteIndigenousPartnershipsData', surveyId });
     const queryBuilder = getKnex().table('survey_first_nation_partnership').delete().where('survey_id', surveyId);
 
     const response = await this.connection.knex(queryBuilder);
@@ -1128,7 +1283,6 @@ export class SurveyRepository extends BaseRepository {
    * @memberof SurveyRepository
    */
   async deleteStakeholderPartnershipsData(surveyId: number): Promise<number> {
-    defaultLog.debug({ label: 'deleteStakeholderPartnershipsData', surveyId });
     const queryBuilder = getKnex().table('survey_stakeholder_partnership').delete().where('survey_id', surveyId);
 
     const response = await this.connection.knex(queryBuilder);

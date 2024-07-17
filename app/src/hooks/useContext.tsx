@@ -1,7 +1,9 @@
+import { AnimalPageContext, IAnimalPageContext } from 'contexts/animalPageContext';
 import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { DialogContext, IDialogContext } from 'contexts/dialogContext';
 import { IObservationsContext, ObservationsContext } from 'contexts/observationsContext';
+import { IObservationsPageContext, ObservationsPageContext } from 'contexts/observationsPageContext';
 import { IObservationsTableContext, ObservationsTableContext } from 'contexts/observationsTableContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
@@ -112,6 +114,23 @@ export const useObservationsContext = (): IObservationsContext => {
 };
 
 /**
+ * Returns an instance of `IObservationsPageContext` from `ObservationsPageContext`.
+ *
+ * @return {*}  {IObservationsPageContext}
+ */
+export const useObservationsPageContext = (): IObservationsPageContext => {
+  const context = useContext(ObservationsPageContext);
+
+  if (!context) {
+    throw Error(
+      'ObservationsPageContext is undefined, please verify you are calling useObservationsPageContext() as child of an <ObservationsPageContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
  * Returns an instance of `IObservationsTableContext` from `ObservationsTableContext`.
  *
  * @return {*}  {IObservationsTableContext}
@@ -156,6 +175,23 @@ export const useTaxonomyContext = (): ITaxonomyContext => {
   if (!context) {
     throw Error(
       'TaxonomyContext is undefined, please verify you are calling useTaxonomyContext() as child of an <TaxonomyContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
+ * Returns an instance of `IAnimalPageContext` from `AnimalPageContext`.
+ *
+ * @return {*}  {ISurveyContext}
+ */
+export const useAnimalPageContext = (): IAnimalPageContext => {
+  const context = useContext(AnimalPageContext);
+
+  if (!context) {
+    throw Error(
+      'AnimalPageContext is undefined, please verify you are calling useAnimalPageContext() as child of an <AnimalPageContextProvider> component.'
     );
   }
 

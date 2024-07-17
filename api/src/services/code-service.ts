@@ -1,7 +1,9 @@
 import { IDBConnection } from '../database/db';
 import { CodeRepository, IAllCodeSets } from '../repositories/code-repository';
+import { EnvironmentType } from '../repositories/observation-subcount-environment-repository';
 import { getLogger } from '../utils/logger';
 import { DBService } from './db-service';
+import { ObservationSubCountEnvironmentService } from './observation-subcount-environment-service';
 
 const defaultLog = getLogger('services/code-queries');
 
@@ -32,7 +34,6 @@ export class CodeService extends DBService {
       iucn_conservation_action_level_2_subclassification,
       iucn_conservation_action_level_3_subclassification,
       proprietor_type,
-      program,
       system_roles,
       project_roles,
       administrative_activity_status_type,
@@ -53,7 +54,6 @@ export class CodeService extends DBService {
       await this.codeRepository.getIUCNConservationActionLevel2Subclassification(),
       await this.codeRepository.getIUCNConservationActionLevel3Subclassification(),
       await this.codeRepository.getProprietorType(),
-      await this.codeRepository.getProgram(),
       await this.codeRepository.getSystemRoles(),
       await this.codeRepository.getProjectRoles(),
       await this.codeRepository.getAdministrativeActivityStatusType(),
@@ -75,7 +75,6 @@ export class CodeService extends DBService {
       iucn_conservation_action_level_1_classification,
       iucn_conservation_action_level_2_subclassification,
       iucn_conservation_action_level_3_subclassification,
-      program,
       proprietor_type,
       system_roles,
       project_roles,
@@ -87,6 +86,29 @@ export class CodeService extends DBService {
       sample_methods,
       survey_progress,
       method_response_metrics
+    };
+  }
+
+  /**
+   * Find qualitative and quantitative environments that match the given search terms.
+   *
+   * @param {string[]} searchTerms
+   * @return {*}  {Promise<EnvironmentType>}
+   * @memberof CodeService
+   */
+  async findSubcountEnvironments(searchTerms: string[]): Promise<EnvironmentType> {
+    defaultLog.debug({ message: 'getEnvironments' });
+
+    const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
+
+    const [qualitative_environments, quantitative_environments] = await Promise.all([
+      await observationSubCountEnvironmentService.findQualitativeEnvironmentTypeDefinitions(searchTerms),
+      await observationSubCountEnvironmentService.findQuantitativeEnvironmentTypeDefinitions(searchTerms)
+    ]);
+
+    return {
+      qualitative_environments,
+      quantitative_environments
     };
   }
 }

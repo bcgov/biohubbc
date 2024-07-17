@@ -15,6 +15,7 @@ export interface IAutocompleteField<T extends string | number> {
   label: string;
   name: string;
   options: IAutocompleteFieldOption<T>[];
+  disabled?: boolean;
   loading?: boolean;
   sx?: TextFieldProps['sx']; //https://github.com/TypeStrong/fork-ts-checker-webpack-plugin/issues/271#issuecomment-1561891271
   required?: boolean;
@@ -51,7 +52,6 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
 
   return (
     <Autocomplete
-      autoSelect
       clearOnBlur
       blurOnSelect
       handleHomeEndKeys
@@ -63,6 +63,7 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
       isOptionEqualToValue={handleGetOptionSelected}
       getOptionDisabled={props.getOptionDisabled}
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
+      disabled={props?.disabled || false}
       sx={props.sx}
       loading={props.loading}
       onChange={(event, option) => {
@@ -73,6 +74,11 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
 
         setFieldValue(props.name, option?.value);
       }}
+      onInputChange={(_event, _value, reason) => {
+        if (reason === 'clear') {
+          setFieldValue(props.name, '');
+        }
+      }}
       renderInput={(params) => (
         <TextField
           {...params}
@@ -80,6 +86,8 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
           label={props.label}
           variant="outlined"
           fullWidth
+          disabled={props?.disabled || false}
+          sx={{ opacity: props?.disabled ? 0.25 : 1 }}
           error={get(touched, props.name) && Boolean(get(errors, props.name))}
           helperText={get(touched, props.name) && get(errors, props.name)}
           InputProps={{

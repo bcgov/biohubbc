@@ -16,22 +16,34 @@ export interface QueryParam {
 }
 
 export interface ICritter {
-  critter_id?: string;
-  wlh_id: string;
-  animal_id: string;
+  critter_id: string;
+  wlh_id: string | null;
+  animal_id: string | null;
   sex: string;
   itis_tsn: number;
   itis_scientific_name: string;
-  critter_comment: string;
+  critter_comment: string | null;
+}
+
+export interface ICreateCritter {
+  critter_id?: string;
+  wlh_id?: string | null;
+  animal_id: string; // NOTE: In critterbase this is optional. For SIMS it should be required.
+  sex: string;
+  itis_tsn: number;
+  critter_comment?: string | null;
 }
 
 export interface ICapture {
   capture_id?: string;
   critter_id: string;
+  capture_method_id?: string | null;
   capture_location_id: string;
   release_location_id: string;
-  capture_timestamp: string;
-  release_timestamp: string;
+  capture_date: string;
+  capture_time?: string | null;
+  release_date?: string | null;
+  release_time?: string | null;
   capture_comment: string;
   release_comment: string;
 }
@@ -110,15 +122,48 @@ export interface ICollection {
 }
 
 export interface IBulkCreate {
-  critters: ICritter[];
-  captures: ICapture[];
-  collections: ICollection[];
-  mortalities: IMortality[];
-  locations: ILocation[];
-  markings: IMarking[];
-  quantitative_measurements: IQuantMeasurement[];
-  qualitative_measurements: IQualMeasurement[];
-  families: IFamilyPayload[];
+  critters?: ICreateCritter[];
+  captures?: ICapture[];
+  collections?: ICollection[];
+  mortalities?: IMortality[];
+  locations?: ILocation[];
+  markings?: IMarking[];
+  quantitative_measurements?: IQuantMeasurement[];
+  qualitative_measurements?: IQualMeasurement[];
+  families?: IFamilyPayload[];
+}
+
+interface IBulkResponse {
+  critters: number;
+  captures: number;
+  collections: number;
+  mortalities: number;
+  locations: number;
+  markings: number;
+  quantitative_measurements: number;
+  qualitative_measurements: number;
+  families: number;
+  family_parents: number;
+  family_chidren: number;
+}
+
+export interface IBulkCreateResponse {
+  created: IBulkResponse;
+}
+
+export interface ICollectionUnitWithCategory {
+  collection_unit_id: string;
+  collection_category_id: string;
+  category_name: string;
+  unit_name: string;
+  description: string | null;
+}
+
+export interface ICollectionCategory {
+  collection_category_id: string;
+  category_name: string;
+  description: string | null;
+  itis_tsn: number;
 }
 
 /**
@@ -182,7 +227,6 @@ export type CBQuantitativeMeasurementTypeDefinition = z.infer<typeof CBQuantitat
  * A Critterbase qualitative measurement option definition (ie. drop-down option).
  */
 const CBQualitativeOption = z.object({
-  taxon_measurement_id: z.string(),
   qualitative_option_id: z.string(),
   option_label: z.string(),
   option_value: z.number(),
@@ -333,9 +377,7 @@ export class CritterbaseService {
     return this._makeGetRequest(CbRoutes[route], params);
   }
 
-  async getTaxonMeasurements(
-    tsn: string
-  ): Promise<{
+  async getTaxonMeasurements(tsn: string): Promise<{
     qualitative: CBQualitativeMeasurementTypeDefinition[];
     quantitative: CBQuantitativeMeasurementTypeDefinition[];
   }> {
@@ -343,9 +385,9 @@ export class CritterbaseService {
     return response;
   }
 
-  async getTaxonBodyLocations(taxon_id: string) {
+  async getTaxonBodyLocations(tsn: string) {
     return this._makeGetRequest(CbRoutes['taxon-marking-body-locations'], [
-      { key: 'taxon_id', value: taxon_id },
+      { key: 'tsn', value: tsn },
       { key: 'format', value: 'asSelect' }
     ]);
   }
@@ -369,7 +411,7 @@ export class CritterbaseService {
     return this._makeGetRequest(`${CRITTER_ENDPOINT}/${critter_id}`, [{ key: 'format', value: 'detail' }]);
   }
 
-  async createCritter(data: ICritter) {
+  async createCritter(data: ICreateCritter) {
     const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}/create`, data);
     return response.data;
   }
@@ -379,7 +421,12 @@ export class CritterbaseService {
     return response.data;
   }
 
-  async getMultipleCrittersByIds(critter_ids: string[]) {
+  async bulkCreate(data: IBulkCreate): Promise<IBulkCreateResponse> {
+    const response = await this.axiosInstance.post(BULK_ENDPOINT, data);
+    return response.data;
+  }
+
+  async getMultipleCrittersByIds(critter_ids: string[]): Promise<ICritter[]> {
     const response = await this.axiosInstance.post(CRITTER_ENDPOINT, { critter_ids });
     return response.data;
   }
@@ -421,5 +468,31 @@ export class CritterbaseService {
     });
 
     return data;
+  }
+
+  /**
+   * Find collection categories by tsn. Includes hierarchies.
+   *
+   * @async
+   * @param {string} tsn - ITIS TSN
+   * @returns {Promise<ICollectionCategory[]>} Collection categories
+   */
+  async findTaxonCollectionCategories(tsn: string): Promise<ICollectionCategory[]> {
+    const response = await this.axiosInstance.get(`/xref/taxon-collection-categories?tsn=${tsn}`);
+
+    return response.data;
+  }
+
+  /**
+   * Find collection units by tsn. Includes hierarchies.
+   *
+   * @async
+   * @param {string} tsn - ITIS TSN
+   * @returns {Promise<ICollectionUnitWithCategory[]>} Collection units
+   */
+  async findTaxonCollectionUnits(tsn: string): Promise<ICollectionUnitWithCategory[]> {
+    const response = await this.axiosInstance.get(`/xref/taxon-collection-units?tsn=${tsn}`);
+
+    return response.data;
   }
 }

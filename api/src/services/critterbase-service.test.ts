@@ -2,7 +2,7 @@ import { AxiosResponse } from 'axios';
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { CritterbaseService, CRITTERBASE_API_HOST, ICritter } from './critterbase-service';
+import { CritterbaseService, ICreateCritter } from './critterbase-service';
 import { KeycloakService } from './keycloak-service';
 
 chai.use(sinonChai);
@@ -53,7 +53,7 @@ describe('CritterbaseService', () => {
       const result = await cb._makeGetRequest(endpoint, []);
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockAxios).to.have.been.calledOnceWith(`${CRITTERBASE_API_HOST}${endpoint}?`);
+      expect(mockAxios).to.have.been.calledOnceWith(`${endpoint}?`);
     });
 
     it('should make an axios get request with params', async () => {
@@ -67,7 +67,7 @@ describe('CritterbaseService', () => {
       const result = await cb._makeGetRequest(endpoint, queryParams);
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockAxios).to.have.been.calledOnceWith(`${CRITTERBASE_API_HOST}${endpoint}?param=param`);
+      expect(mockAxios).to.have.been.calledOnceWith(`${endpoint}?param=param`);
     });
   });
 
@@ -102,7 +102,7 @@ describe('CritterbaseService', () => {
         const mockGetRequest = sinon.stub(cb, '_makeGetRequest');
         await cb.getTaxonBodyLocations('asdf');
         expect(mockGetRequest).to.have.been.calledOnceWith('/xref/taxon-marking-body-locations', [
-          { key: 'taxon_id', value: 'asdf' },
+          { key: 'tsn', value: 'asdf' },
           { key: 'format', value: 'asSelect' }
         ]);
       });
@@ -145,12 +145,11 @@ describe('CritterbaseService', () => {
 
     describe('createCritter', () => {
       it('should create a critter', async () => {
-        const data: ICritter = {
+        const data: ICreateCritter = {
           wlh_id: 'aaaa',
           animal_id: 'aaaa',
           sex: 'male',
           itis_tsn: 1,
-          itis_scientific_name: 'Name',
           critter_comment: 'None.'
         };
         const axiosStub = sinon.stub(cb.axiosInstance, 'post').resolves({ data: [] });

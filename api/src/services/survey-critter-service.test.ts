@@ -34,28 +34,28 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('addCritterToSurvey', () => {
+  describe('addCrittersToSurvey', () => {
     it('returns the first row on success', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyCritterService(dbConnection);
 
-      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'addCritterToSurvey').resolves();
+      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'addCrittersToSurvey').resolves([1]);
 
       const response = await service.addCritterToSurvey(1, 'critter_id');
 
       expect(repoStub).to.be.calledOnce;
-      expect(response).to.be.undefined;
+      expect(response).to.be.equal(1);
     });
   });
 
-  describe('removeCritterFromSurvey', () => {
+  describe('removeCrittersFromSurvey', () => {
     it('returns the first row on success', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyCritterService(dbConnection);
 
-      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'removeCritterFromSurvey').resolves();
+      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'removeCrittersFromSurvey').resolves();
 
-      const response = await service.removeCritterFromSurvey(1, 1);
+      const response = await service.removeCrittersFromSurvey(1, [1]);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.be.undefined;

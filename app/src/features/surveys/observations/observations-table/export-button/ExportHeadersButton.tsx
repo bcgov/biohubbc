@@ -37,7 +37,7 @@ const ExportHeadersButton = () => {
   };
 
   return (
-    <IconButton title="Download template CSV" onClick={handleDownload} aria-label="Download template CSV">
+    <IconButton title="Download Observation CSV" onClick={handleDownload} aria-label="Download Observation CSV">
       <Icon path={mdiTrayArrowDown} size={1} />
     </IconButton>
   );

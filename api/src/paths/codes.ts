@@ -30,7 +30,6 @@ GET.apiDoc = {
               'iucn_conservation_action_level_2_subclassification',
               'iucn_conservation_action_level_3_subclassification',
               'proprietor_type',
-              'program',
               'system_roles',
               'project_roles',
               'administrative_activity_status_type',
@@ -185,21 +184,6 @@ GET.apiDoc = {
                     },
                     is_first_nation: {
                       type: 'boolean'
-                    }
-                  }
-                }
-              },
-              program: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
                     }
                   }
                 }
@@ -395,7 +379,7 @@ GET.apiDoc = {
  * @returns {RequestHandler}
  */
 export function getAllCodes(): RequestHandler {
-  return async (req, res) => {
+  return async (_, res) => {
     const connection = getAPIUserDBConnection();
 
     try {

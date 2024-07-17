@@ -7,7 +7,7 @@ import { AuthProvider, AuthProviderProps } from 'react-oidc-context';
 import useTaxonomyApi from './useTaxonomyApi';
 
 describe('useTaxonomyApi', () => {
-  let mock: any;
+  let mock: MockAdapter;
 
   const authConfig: AuthProviderProps = {
     authority: 'authority',
@@ -44,13 +44,13 @@ describe('useTaxonomyApi', () => {
         searchResponse: [
           {
             tsn: '1',
-            commonName: 'something',
-            scientificName: 'something'
+            commonNames: ['Something'],
+            scientificName: 'Something'
           },
           {
             tsn: '2',
-            commonName: 'anything',
-            scientificName: 'anything'
+            commonNames: ['Anything'],
+            scientificName: 'Anything'
           }
         ]
       };
@@ -76,13 +76,13 @@ describe('useTaxonomyApi', () => {
         searchResponse: [
           {
             tsn: '3',
-            commonName: 'something',
-            scientificName: 'something'
+            commonNames: ['Something'],
+            scientificName: 'Something'
           },
           {
             tsn: '4',
-            commonName: 'anything',
-            scientificName: 'anything'
+            commonNames: ['Anything'],
+            scientificName: 'Anything'
           }
         ]
       };

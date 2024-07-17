@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { ObservationSubCountMeasurementRepository } from '../repositories/observation-subcount-measurement-repository';
+import { EnvironmentType } from '../repositories/observation-subcount-environment-repository';
 import {
   InsertObservationSubCount,
   InsertSubCountEvent,
@@ -13,6 +13,8 @@ import {
   CritterbaseService
 } from './critterbase-service';
 import { DBService } from './db-service';
+import { ObservationSubCountEnvironmentService } from './observation-subcount-environment-service';
+import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
 
 export class SubCountService extends DBService {
   subCountRepository: SubCountRepository;
@@ -47,7 +49,7 @@ export class SubCountService extends DBService {
   /**
    * Delete observation_subcount records for the given set of survey observation ids.
    *
-   * Note: Also deletes all related child records (subcount_critter, subcount_event).
+   * Note: Also deletes all related child records.
    *
    * @param {number} surveyId
    * @param {number[]} surveyObservationIds
@@ -55,13 +57,16 @@ export class SubCountService extends DBService {
    * @memberof SubCountService
    */
   async deleteObservationSubCountRecords(surveyId: number, surveyObservationIds: number[]): Promise<void> {
-    const repo = new ObservationSubCountMeasurementRepository(this.connection);
-
     // Delete child subcount_critter records, if any
     await this.subCountRepository.deleteSubCountCritterRecordsForObservationId(surveyId, surveyObservationIds);
 
     // Delete child observation measurements, if any
-    await repo.deleteObservationMeasurements(surveyId, surveyObservationIds);
+    const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
+    await observationSubCountMeasurementService.deleteObservationMeasurements(surveyId, surveyObservationIds);
+
+    // Delete child environments, if any
+    const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
+    await observationSubCountEnvironmentService.deleteObservationEnvironments(surveyId, surveyObservationIds);
 
     // Delete observation_subcount records, if any
     return this.subCountRepository.deleteObservationSubCountRecords(surveyId, surveyObservationIds);
@@ -78,13 +83,11 @@ export class SubCountService extends DBService {
    *   }>}
    * @memberof SubCountService
    */
-  async getMeasurementTypeDefinitionsForSurvey(
-    surveyId: number
-  ): Promise<{
+  async getMeasurementTypeDefinitionsForSurvey(surveyId: number): Promise<{
     qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
     quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
   }> {
-    const observationSubCountMeasurementService = new ObservationSubCountMeasurementRepository(this.connection);
+    const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
 
     // Fetch all unique taxon_measurement_ids for qualitative and quantitative measurements
     const [qualitativeTaxonMeasurementIds, quantitativeTaxonMeasurementIds] = await Promise.all([
@@ -104,5 +107,27 @@ export class SubCountService extends DBService {
     ]);
 
     return { qualitative_measurements: response[0], quantitative_measurements: response[1] };
+  }
+
+  /**
+   * Returns a unique set of all environment type definitions for all environments of all observations in the given
+   * survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<EnvironmentType>}
+   * @memberof SubCountService
+   */
+  async getEnvironmentTypeDefinitionsForSurvey(surveyId: number): Promise<EnvironmentType> {
+    const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(this.connection);
+
+    const [qualitativeEnvironmentTypeDefinitions, quantitativeEnvironmentTypeDefinitions] = await Promise.all([
+      observationSubCountEnvironmentService.getQualitativeEnvironmentTypeDefinitions(surveyId),
+      observationSubCountEnvironmentService.getQuantitativeEnvironmentTypeDefinitions(surveyId)
+    ]);
+
+    return {
+      qualitative_environments: qualitativeEnvironmentTypeDefinitions,
+      quantitative_environments: quantitativeEnvironmentTypeDefinitions
+    };
   }
 }

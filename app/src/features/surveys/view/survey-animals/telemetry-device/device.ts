@@ -9,6 +9,8 @@ export type IDeploymentTimespan = InferType<typeof AnimalDeploymentTimespanSchem
 
 export type IAnimalTelemetryDevice = InferType<typeof AnimalTelemetryDeviceSchema>;
 
+export type ICreateAnimalDeployment = InferType<typeof CreateAnimalDeployment>;
+
 export type ITelemetryPointCollection = { points: FeatureCollection; tracks: FeatureCollection };
 
 const req = 'Required.';
@@ -46,6 +48,17 @@ export const AnimalDeploymentSchema = yup.object({}).shape({
   device_model: yup.string(),
   frequency: numSchema,
   frequency_unit: yup.string()
+});
+
+export const CreateAnimalDeployment = yup.object({
+  critter_id: yup.string().uuid().required(req), // Critterbase critter_id
+  device_id: intSchema,
+  device_make: yup.string().required(req),
+  frequency: numSchema.optional(),
+  frequency_unit: yup.string().optional(),
+  device_model: yup.string().optional(),
+  attachment_start: yup.string().isValidDateString(),
+  attachment_end: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('attachment_start')
 });
 
 export interface IAnimalTelemetryDeviceFile extends IAnimalTelemetryDevice {

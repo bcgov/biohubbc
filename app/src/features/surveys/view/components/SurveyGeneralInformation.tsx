@@ -63,7 +63,7 @@ const SurveyGeneralInformation = () => {
       <Box className="row">
         <Typography component="dt">Species of Interest</Typography>
         <Typography component="dd">
-          {species.focal_species?.map((focalSpecies: ITaxonomy, index: number) => {
+          {species.focal_species?.map((focalSpecies: ITaxonomy) => {
             return (
               <Typography
                 component="span"
@@ -81,7 +81,7 @@ const SurveyGeneralInformation = () => {
                     display: 'none'
                   }
                 }}>
-                {[focalSpecies.commonName, `(${focalSpecies.scientificName})`].filter(Boolean).join(' ')}
+                {[...focalSpecies.commonNames, `(${focalSpecies.scientificName})`].filter(Boolean).join(' ')}
               </Typography>
             );
           })}
@@ -91,7 +91,7 @@ const SurveyGeneralInformation = () => {
       <Box className="row">
         <Typography component="dt">Secondary Species</Typography>
         <Typography component="dd">
-          {species.ancillary_species?.map((ancillarySpecies: ITaxonomy, index: number) => {
+          {species.ancillary_species?.map((ancillarySpecies: ITaxonomy) => {
             return (
               <Typography
                 component="span"
@@ -109,12 +109,12 @@ const SurveyGeneralInformation = () => {
                     display: 'none'
                   }
                 }}>
-                {[ancillarySpecies.commonName, `(${ancillarySpecies.scientificName})`].filter(Boolean).join(' ')}
+                {[...ancillarySpecies.commonNames, `(${ancillarySpecies.scientificName})`].filter(Boolean).join(' ')}
               </Typography>
             );
           })}
           {species.ancillary_species?.length <= 0 && (
-            <Typography component="dd">No secondary species of interest</Typography>
+            <Typography component="span">No secondary species of interest</Typography>
           )}
         </Typography>
       </Box>

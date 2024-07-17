@@ -38,7 +38,7 @@ describe('getSelf', () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      systemUserId: () => (null as unknown) as number
+      systemUserId: () => null as unknown as number
     });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();

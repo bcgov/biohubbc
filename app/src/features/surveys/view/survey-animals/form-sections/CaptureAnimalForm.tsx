@@ -34,7 +34,7 @@ import FormLocationPreview from './LocationEntryForm';
  * @returns {*}
  */
 export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
-  const cbApi = useCritterbaseApi();
+  const critterbaseApi = useCritterbaseApi();
   const dialog = useDialogContext();
 
   const [loading, setLoading] = useState(false);
@@ -58,11 +58,11 @@ export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
         values = { ...values, capture_location: { ...values.capture_location, latitude, longitude } };
       }
       if (props.formMode === ANIMAL_FORM_MODE.ADD) {
-        await cbApi.capture.createCapture(values);
+        await critterbaseApi.capture.createCapture(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully created capture.` });
       }
       if (props.formMode === ANIMAL_FORM_MODE.EDIT) {
-        await cbApi.capture.updateCapture(values);
+        await critterbaseApi.capture.updateCapture(values);
         dialog.setSnackbar({ open: true, snackbarMessage: `Successfully edited capture.` });
       }
     } catch (err) {
@@ -87,7 +87,7 @@ export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
           capture_id: props?.formObject?.capture_id,
           critter_id: props.critter.critter_id,
           capture_location: {
-            location_id: props?.formObject?.capture_location.location_id,
+            location_id: props?.formObject?.capture_location?.location_id,
             latitude: props?.formObject?.capture_location?.latitude ?? ('' as unknown as number),
             longitude: props?.formObject?.capture_location?.longitude ?? ('' as unknown as number),
             coordinate_uncertainty:
@@ -103,8 +103,10 @@ export const CaptureAnimalForm = (props: AnimalFormProps<ICaptureResponse>) => {
                 coordinate_uncertainty_unit: props?.formObject?.release_location?.coordinate_uncertainty_unit ?? 'm'
               }
             : undefined,
-          capture_timestamp: props?.formObject?.capture_timestamp as unknown as Date,
-          release_timestamp: (props?.formObject?.release_timestamp as unknown as Date) ?? undefined,
+          capture_date: props?.formObject?.capture_date ?? '',
+          capture_time: props?.formObject?.capture_date ?? '',
+          release_date: props?.formObject?.release_date ?? '',
+          release_time: props?.formObject?.release_time ?? '',
           capture_comment: props?.formObject?.capture_comment ?? undefined,
           release_comment: props?.formObject?.release_comment ?? undefined
         },

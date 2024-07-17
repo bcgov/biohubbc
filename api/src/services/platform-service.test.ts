@@ -3,8 +3,8 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ObservationRecord } from '../repositories/observation-repository';
 import * as featureFlagUtils from '../utils/feature-flag-utils';
+import { ObservationRecord } from '../repositories/observation-repository/observation-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { AttachmentService } from './attachment-service';
 import { HistoryPublishService } from './history-publish-service';
@@ -55,7 +55,7 @@ describe('PlatformService', () => {
 
       const _generateSurveyDataPackageStub = sinon
         .stub(PlatformService.prototype, '_generateSurveyDataPackage')
-        .resolves(({ id: '123-456-789' } as unknown) as any);
+        .resolves({ id: '123-456-789' } as unknown as any);
 
       sinon.stub(axios, 'post').resolves({});
 
@@ -84,7 +84,7 @@ describe('PlatformService', () => {
 
       const _generateSurveyDataPackageStub = sinon
         .stub(PlatformService.prototype, '_generateSurveyDataPackage')
-        .resolves(({ id: '123-456-789' } as unknown) as any);
+        .resolves({ id: '123-456-789' } as unknown as any);
 
       sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789', artifact_upload_keys: [] } });
 
@@ -131,7 +131,7 @@ describe('PlatformService', () => {
 
       const getAllSurveyObservationsStub = sinon
         .stub(ObservationService.prototype, 'getAllSurveyObservations')
-        .resolves([({ survey_observation_id: 2 } as unknown) as ObservationRecord]);
+        .resolves([{ survey_observation_id: 2 } as unknown as ObservationRecord]);
 
       const getSurveyLocationsDataStub = sinon
         .stub(SurveyService.prototype, 'getSurveyLocationsData')

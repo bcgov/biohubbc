@@ -4,7 +4,7 @@ import { v4 } from 'uuid';
 import { useFamilyApi } from './useFamilyApi';
 
 describe('useFamily', () => {
-  let mock: any;
+  let mock: MockAdapter;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);

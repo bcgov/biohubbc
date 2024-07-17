@@ -15,11 +15,11 @@ import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { FormikProps } from 'formik';
-import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
@@ -28,7 +28,7 @@ import EditSurveyForm from './EditSurveyForm';
 /**
  * Page to create a survey.
  *
- * @return {*}
+ * @returns {*}
  */
 const EditSurveyPage = () => {
   const biohubApi = useBiohubApi();
@@ -40,8 +40,9 @@ const EditSurveyPage = () => {
   const formikRef = useRef<FormikProps<IEditSurveyRequest>>(null);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
-  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+  const [enableCancelCheck, setEnableCancelCheck] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState(false);
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
   const dialogContext = useContext(DialogContext);
   const codesContext = useContext(CodesContext);
@@ -68,24 +69,7 @@ const EditSurveyPage = () => {
 
   const surveyData = editSurveyDataLoader.data?.surveyData;
 
-  const defaultCancelDialogProps = {
-    dialogTitle: EditSurveyI18N.cancelTitle,
-    dialogText: EditSurveyI18N.cancelText,
-    open: false,
-    onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onYes: () => {
-      dialogContext.setYesNoDialog({ open: false });
-      history.push('details');
-    }
-  };
-
   const handleCancel = () => {
-    dialogContext.setYesNoDialog(defaultCancelDialogProps);
     history.push('details');
   };
 
@@ -111,12 +95,34 @@ const EditSurveyPage = () => {
    */
   const handleSubmit = async (values: IEditSurveyRequest) => {
     setIsSaving(true);
+
     try {
-      const response = await biohubApi.survey.updateSurvey(
-        projectContext.projectId,
-        surveyId,
-        values as unknown as SurveyUpdateObject
-      );
+      const response = await biohubApi.survey.updateSurvey(projectContext.projectId, surveyId, {
+        blocks: values.blocks,
+        funding_sources: values.funding_sources,
+        locations: values.locations.map((location) => ({
+          survey_location_id: location.survey_location_id,
+          geojson: location.geojson,
+          name: location.name,
+          description: location.description,
+          revision_count: location.revision_count
+        })),
+        participants: values.participants,
+        partnerships: values.partnerships,
+        permit: values.permit,
+        proprietor: values.proprietor,
+        purpose_and_methodology: values.purpose_and_methodology,
+        site_selection: {
+          stratums: values.site_selection.stratums.map((stratum) => ({
+            survey_stratum_id: stratum.survey_stratum_id,
+            name: stratum.name,
+            description: stratum.description
+          })),
+          strategies: values.site_selection.strategies
+        },
+        species: values.species,
+        survey_details: values.survey_details
+      });
 
       if (!response?.id) {
         showEditErrorDialog({
@@ -129,7 +135,10 @@ const EditSurveyPage = () => {
 
       surveyContext.surveyDataLoader.refresh(projectContext.projectId, surveyContext.surveyId);
 
-      history.push(`/admin/projects/${projectContext.projectId}/surveys/${response.id}/details`);
+      history.push(
+        `/admin/projects/${projectContext.projectId}/surveys/${response.id}/details`,
+        SKIP_CONFIRMATION_DIALOG
+      );
     } catch (error) {
       const apiError = error as APIError;
       showEditErrorDialog({
@@ -142,39 +151,13 @@ const EditSurveyPage = () => {
     }
   };
 
-  /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location, action: History.Action) => {
-    if (!dialogContext.yesNoDialogProps.open) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        ...defaultCancelDialogProps,
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        },
-        open: true
-      });
-      return false;
-    }
-
-    // If the cancel dialog is already open and another location change action is triggered: allow it
-    return true;
-  };
-
   if (!codesContext.codesDataLoader.data || !projectContext.projectDataLoader.data || !surveyData) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
+      <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
       <PageHeader
         title="Edit Survey Details"
         breadCrumbJSX={

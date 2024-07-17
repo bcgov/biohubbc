@@ -17,23 +17,19 @@ describe('SurveyBlockService', () => {
 
   describe('getSurveyBlocksForSurveyId', () => {
     it('should succeed with valid data', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rows: [
           {
             survey_block_id: 1,
             survey_id: 1,
             name: '',
             description: '',
-            create_date: '',
-            create_user: 1,
-            update_date: '',
-            update_user: 1,
             revision_count: 1,
             sample_block_count: 1
           }
         ],
         rowCount: 1
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         sql: () => mockResponse
       });
@@ -47,10 +43,10 @@ describe('SurveyBlockService', () => {
     });
 
     it('should succeed with empty data', async () => {
-      const mockResponse = ({
+      const mockResponse = {
         rows: [],
         rowCount: 0
-      } as any) as Promise<QueryResult<any>>;
+      } as any as Promise<QueryResult<any>>;
       const dbConnection = getMockDBConnection({
         sql: () => mockResponse
       });
@@ -94,10 +90,6 @@ describe('SurveyBlockService', () => {
           survey_id: 1,
           name: 'Old Block',
           description: 'Updated',
-          create_date: '',
-          create_user: 1,
-          update_date: '',
-          update_user: 1,
           revision_count: 1
         },
         {
@@ -106,10 +98,6 @@ describe('SurveyBlockService', () => {
           survey_id: 1,
           name: 'Old Block',
           description: 'Going to be deleted',
-          create_date: '',
-          create_user: 1,
-          update_date: '',
-          update_user: 1,
           revision_count: 1
         }
       ]);
@@ -137,10 +125,6 @@ describe('SurveyBlockService', () => {
         survey_id: 1,
         name: 'Deleted record',
         description: '',
-        create_date: '',
-        create_user: 1,
-        update_date: '',
-        update_user: 1,
         revision_count: 1
       };
 

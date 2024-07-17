@@ -4,11 +4,7 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
   projectData: {
     project: {
       project_id: 1,
-      project_name: 'Test Project Name',
-      project_programs: [],
-      start_date: '1998-10-10',
-      end_date: '2021-02-26',
-      completion_status: 'Active'
+      project_name: 'Test Project Name'
     },
     objectives: {
       objectives: 'Et ad et in culpa si'

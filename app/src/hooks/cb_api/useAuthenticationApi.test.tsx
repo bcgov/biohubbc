@@ -4,7 +4,7 @@ import { v4 } from 'uuid';
 import { useAuthentication } from './useAuthenticationApi';
 
 describe('useAuthenticationApi', () => {
-  let mock: any;
+  let mock: MockAdapter;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);

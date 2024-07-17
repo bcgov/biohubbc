@@ -59,9 +59,7 @@ export class FundingSourceService extends DBService {
    *   }>)}
    * @memberof FundingSourceService
    */
-  async getFundingSource(
-    fundingSourceId: number
-  ): Promise<{
+  async getFundingSource(fundingSourceId: number): Promise<{
     funding_source: FundingSource & FundingSourceSupplementaryData;
     funding_source_survey_references: (SurveyFundingSource | SurveyFundingSourceSupplementaryData)[];
   }> {
@@ -108,21 +106,6 @@ export class FundingSourceService extends DBService {
   /*
    * SURVEY FUNDING SOURCE FUNCTIONS
    */
-
-  /**
-   * Fetch a single survey funding source by survey id and funding source id.
-   *
-   * @param {number} surveyId
-   * @param {number} fundingSourceId
-   * @return {*}  {Promise<SurveyFundingSource>}
-   * @memberof FundingSourceService
-   */
-  async getSurveyFundingSourceByFundingSourceId(
-    surveyId: number,
-    fundingSourceId: number
-  ): Promise<SurveyFundingSource> {
-    return this.fundingSourceRepository.getSurveyFundingSourceByFundingSourceId(surveyId, fundingSourceId);
-  }
 
   /**
    * Fetch all survey funding sources by survey id.

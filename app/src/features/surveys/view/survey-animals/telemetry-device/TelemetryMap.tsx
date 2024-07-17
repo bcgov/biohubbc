@@ -116,7 +116,7 @@ const TelemetryMap = ({ deploymentData, telemetryData }: ITelemetryMapProps): JS
     }
   }, [telemetryData?.points.features]);
 
-  const point = (feature: Feature, latlng: LatLng) => {
+  const point = (_feature: Feature, latlng: LatLng) => {
     return new L.CircleMarker(latlng, { radius: 5, fillOpacity: 1 });
   };
 

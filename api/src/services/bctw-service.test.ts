@@ -6,7 +6,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import {
   BctwService,
-  BCTW_API_HOST,
   DELETE_DEPLOYMENT_ENDPOINT,
   DEPLOY_DEVICE_ENDPOINT,
   GET_CODE_ENDPOINT,
@@ -84,7 +83,7 @@ describe('BctwService', () => {
       const result = await bctwService._makeGetRequest(endpoint);
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockAxios).to.have.been.calledOnceWith(`${BCTW_API_HOST}${endpoint}`);
+      expect(mockAxios).to.have.been.calledOnceWith(`${endpoint}`);
     });
 
     it('should make an axios get request with params', async () => {
@@ -98,7 +97,7 @@ describe('BctwService', () => {
       const result = await bctwService._makeGetRequest(endpoint, queryParams);
 
       expect(result).to.equal(mockResponse.data);
-      expect(mockAxios).to.have.been.calledOnceWith(`${BCTW_API_HOST}${endpoint}?param=${queryParams['param']}`);
+      expect(mockAxios).to.have.been.calledOnceWith(`${endpoint}?param=${queryParams['param']}`);
     });
   });
 
@@ -221,7 +220,7 @@ describe('BctwService', () => {
     describe('uploadKeyX', () => {
       it('should send a post request', async () => {
         const mockAxios = sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: { results: [], errors: [] } });
-        const mockMulterFile = ({ buffer: 'buffer', originalname: 'originalname' } as unknown) as Express.Multer.File;
+        const mockMulterFile = { buffer: 'buffer', originalname: 'originalname' } as unknown as Express.Multer.File;
         sinon.stub(FormData.prototype, 'append');
         const mockGetFormDataHeaders = sinon
           .stub(FormData.prototype, 'getHeaders')
@@ -236,7 +235,7 @@ describe('BctwService', () => {
 
       it('should throw an error if the response body has errors', async () => {
         sinon.stub(bctwService.axiosInstance, 'post').resolves({ data: { results: [], errors: [{ error: 'error' }] } });
-        const mockMulterFile = ({ buffer: 'buffer', originalname: 'originalname' } as unknown) as Express.Multer.File;
+        const mockMulterFile = { buffer: 'buffer', originalname: 'originalname' } as unknown as Express.Multer.File;
         sinon.stub(FormData.prototype, 'append');
         sinon.stub(FormData.prototype, 'getHeaders').resolves({ 'content-type': 'multipart/form-data' });
 

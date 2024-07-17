@@ -66,7 +66,7 @@ export const SystemRoleRouteGuard = (props: ISystemRoleRouteGuardProps) => {
     return <CircularProgress className="pageProgress" data-testid="system-role-guard-spinner" />;
   }
 
-  if (!hasAtLeastOneValidValue(props.validRoles, authStateContext.simsUserWrapper.roleNames)) {
+  if (!hasAtLeastOneValidValue(validRoles, authStateContext.simsUserWrapper.roleNames)) {
     return <Redirect to="/forbidden" />;
   }
 

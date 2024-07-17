@@ -41,7 +41,12 @@ export const EditSurveyI18N = {
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
   createErrorTitle: 'Error Editing Survey',
   createErrorText:
-    'An error has occurred while attempting to create your survey, please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to edit your survey, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const CancelDialogI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?'
 };
 
 export const AttachmentsI18N = {
@@ -171,6 +176,54 @@ export const SubmitSurveyBiohubI18N = {
   submitSurveyBiohubNoSubmissionDataDialogText: 'No new data or information has been added to this survey to submit.'
 };
 
+export const CreateAnimalI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Animal',
+  createErrorText:
+    'An error has occurred while attempting to create your animal, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditAnimalI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Editing Animal',
+  createErrorText:
+    'An error has occurred while attempting to edit your animal, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const CreateCaptureI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Capture',
+  createErrorText:
+    'An error has occurred while attempting to create your capture, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditCaptureI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Editing Capture',
+  createErrorText:
+    'An error has occurred while attempting to edit your capture, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const CreateMortalityI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Mortality',
+  createErrorText:
+    'An error has occurred while attempting to create your mortality, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditMortalityI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  editErrorTitle: 'Error Editing Mortality',
+  editErrorText:
+    'An error has occurred while attempting to edit your mortality, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const SurveyAnimalsI18N = {
   animalIndividualsHelp:
     'Animals are animals that have been captured, marked, measured, or have died, generating data that applies to one specific individual.',
@@ -217,7 +270,11 @@ export const SurveyAnimalsI18N = {
   wlhIdHelp: 'An ID used to identify animals in the BC Wildlife Health Program',
   sexHelp: 'The sex of this critter. Leave as Unknown if unsure.',
   telemetryDeviceHelp:
-    'Devices transmit telemetry data while they are attached to an animal during a deployment. Animals may have multiple devices and deployments, however a single device may not have overlapping deployments.'
+    'Devices transmit telemetry data while they are attached to an animal during a deployment. Animals may have multiple devices and deployments, however a single device may not have overlapping deployments.',
+  // Animal CSV import strings
+  importRecordsSuccessSnackbarMessage: 'Animals imported successfully.',
+  importRecordsErrorDialogTitle: 'Error Importing Animal Records',
+  importRecordsErrorDialogText: 'An error occurred while importing animal records.'
 } as const;
 
 export const FundingSourceI18N = {
@@ -287,6 +344,16 @@ export const ObservationsTableI18N = {
     'Are you sure you want to delete these columns? This action cannot be undone.',
   removeMultipleMeasurementColumnsButtonText: 'Delete Columns',
 
+  // Delete environment columns
+  removeSingleEnvironmentColumnDialogTitle: 'Delete environment column?',
+  removeSingleEnvironmentColumnDialogText:
+    'Are you sure you want to delete this environment column? This action cannot be undone.',
+  removeSingleEnvironmentColumnButtonText: 'Delete Columns',
+  removeMultipleEnvironmentColumnsDialogTitle: (count: number) => `Delete ${count} ${p(count, 'column')}?`,
+  removeMultipleEnvironmentColumnsDialogText:
+    'Are you sure you want to delete these columns? This action cannot be undone.',
+  removeMultipleEnvironmentColumnsButtonText: 'Delete Columns',
+
   // Save observation records success
   saveRecordsSuccessSnackbarMessage: 'Observations updated successfully.',
   // Save observation records error
@@ -311,6 +378,15 @@ export const ObservationsTableI18N = {
     'An error has occurred while attempting to delete measurement columns for this survey. Please try again. If the error persists, please contact your system administrator.',
   deleteMultipleMeasurementColumnSuccessSnackbarMessage: (count: number) =>
     `Deleted ${count} measurement ${p(count, 'column')} successfully.`,
+
+  // Delete environment columns success
+  deleteSingleEnvironmentColumnSuccessSnackbarMessage: 'Deleted environment column successfully.',
+  // Delete environment columns error
+  removeEnvironmentColumnsErrorDialogTitle: 'Error Deleting Environment Columns',
+  removeEnvironmentColumnsErrorDialogText:
+    'An error has occurred while attempting to delete environment columns for this survey. Please try again. If the error persists, please contact your system administrator.',
+  deleteMultipleEnvironmentColumnSuccessSnackbarMessage: (count: number) =>
+    `Deleted ${count} environment ${p(count, 'column')} successfully.`,
 
   // Import observation records
   importRecordsSuccessSnackbarMessage: 'Observations imported successfully.',

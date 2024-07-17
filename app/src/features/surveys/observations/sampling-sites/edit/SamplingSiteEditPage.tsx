@@ -7,13 +7,15 @@ import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Formik, FormikProps } from 'formik';
 import { Feature } from 'geojson';
-import History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { IEditSamplingSiteRequest, IGetSampleLocationDetailsForUpdate } from 'interfaces/useSamplingSiteApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
-import SamplingSiteHeader from '../SamplingSiteHeader';
-import SampleSiteEditForm, { IEditSamplingSiteRequest, samplingSiteYupSchema } from './components/SampleSiteEditForm';
+import SamplingSiteHeader from '../components/SamplingSiteHeader';
+import SampleSiteEditForm, { samplingSiteYupSchema } from './form/SampleSiteEditForm';
 
 /**
  * Page to edit a sampling site.
@@ -26,61 +28,35 @@ const SamplingSiteEditPage = () => {
   const urlParams: Record<string, string | number | undefined> = useParams();
   const surveySampleSiteId = Number(urlParams['survey_sample_site_id']);
 
+  const [initialFormValues, setInitialFormValues] = useState<IGetSampleLocationDetailsForUpdate>();
+
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+
   const surveyContext = useContext(SurveyContext);
   const dialogContext = useContext(DialogContext);
 
-  const formikRef = useRef<FormikProps<IEditSamplingSiteRequest>>(null);
+  const formikRef = useRef<FormikProps<IGetSampleLocationDetailsForUpdate>>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
-  const [initialFormData, setInitialFormData] = useState<IEditSamplingSiteRequest>({
-    sampleSite: {
-      survey_id: surveyContext.surveyId,
-      name: '',
-      description: '',
-      survey_sample_sites: [],
-      methods: [],
-      blocks: [],
-      stratums: []
-    }
-  });
 
-  // Initial load of the sampling site data
+  const projectId = surveyContext.projectId;
+  const surveyId = surveyContext.surveyId;
+
+  const samplingSiteDataLoader = useDataLoader(() =>
+    biohubApi.samplingSite.getSampleSiteById(projectId, surveyId, surveySampleSiteId)
+  );
+
+  if (!samplingSiteDataLoader.data) {
+    samplingSiteDataLoader.load();
+  }
+
   useEffect(() => {
-    if (surveyContext.sampleSiteDataLoader.data) {
-      const data = surveyContext.sampleSiteDataLoader.data.sampleSites.find(
-        (sampleSite) => sampleSite.survey_sample_site_id === surveySampleSiteId
-      );
-
-      if (data !== undefined) {
-        const formInitialValues: IEditSamplingSiteRequest = {
-          sampleSite: {
-            name: data.name,
-            description: data.description,
-            survey_id: data.survey_id,
-            survey_sample_sites: [data.geojson as unknown as Feature],
-            methods:
-              data.sample_methods?.map((item) => {
-                return {
-                  survey_sample_method_id: item.survey_sample_method_id,
-                  survey_sample_site_id: item.survey_sample_site_id,
-                  method_lookup_id: item.method_lookup_id,
-                  method_response_metric_id: item.method_response_metric_id,
-                  description: item.description,
-                  periods: item.sample_periods || []
-                };
-              }) || [],
-            blocks: data.sample_blocks || [],
-            stratums: data.sample_stratums || []
-          }
-        };
-        setInitialFormData(formInitialValues);
-        formikRef.current?.setValues(formInitialValues);
-      }
+    if (samplingSiteDataLoader.data) {
+      setInitialFormValues(samplingSiteDataLoader.data);
+      formikRef.current?.setValues(samplingSiteDataLoader.data);
     }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [surveyContext.sampleSiteDataLoader]);
+  }, [samplingSiteDataLoader.data]);
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
@@ -97,21 +73,21 @@ const SamplingSiteEditPage = () => {
     });
   };
 
-  const handleSubmit = async (values: IEditSamplingSiteRequest) => {
+  const handleSubmit = async (values: IGetSampleLocationDetailsForUpdate) => {
     try {
       setIsSubmitting(true);
 
       // create edit request
       const editSampleSite: IEditSamplingSiteRequest = {
         sampleSite: {
-          name: values.sampleSite.name,
-          description: values.sampleSite.description,
-          survey_id: values.sampleSite.survey_id,
-          survey_sample_sites: values.sampleSite.survey_sample_sites as unknown as Feature[],
-          geojson: values.sampleSite.survey_sample_sites[0],
-          methods: values.sampleSite.methods,
-          blocks: values.sampleSite.blocks,
-          stratums: values.sampleSite.stratums
+          name: values.name,
+          description: values.description,
+          survey_id: values.survey_id,
+          survey_sample_sites: [values.geojson as Feature],
+          geojson: values.geojson,
+          methods: values.sample_methods,
+          blocks: values.blocks.map((block) => ({ survey_block_id: block.survey_block_id })),
+          stratums: values.stratums.map((stratum) => ({ survey_stratum_id: stratum.survey_stratum_id }))
         }
       };
 
@@ -127,7 +103,10 @@ const SamplingSiteEditPage = () => {
           surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
           // create complete, navigate back to observations page
-          history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`);
+          history.push(
+            `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/observations`,
+            SKIP_CONFIRMATION_DIALOG
+          );
           surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
         })
         .catch((error: any) => {
@@ -159,50 +138,16 @@ const SamplingSiteEditPage = () => {
     }
   };
 
-  /**
-   * Intercepts all navigation attempts (when used with a `Prompt`).
-   *
-   * Returning true allows the navigation, returning false prevents it.
-   *
-   * @param {History.Location} location
-   * @return {*}
-   */
-  const handleLocationChange = (location: History.Location, action: History.Action) => {
-    if (!dialogContext.yesNoDialogProps.open) {
-      // If the cancel dialog is not open: open it
-      dialogContext.setYesNoDialog({
-        open: true,
-        dialogTitle: CreateSamplingSiteI18N.cancelTitle,
-        dialogText: CreateSamplingSiteI18N.cancelText,
-        onClose: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onNo: () => {
-          dialogContext.setYesNoDialog({ open: false });
-        },
-        onYes: () => {
-          dialogContext.setYesNoDialog({ open: false });
-          history.push(location.pathname);
-        }
-      });
-      return false;
-    }
-
-    // If the cancel dialog is already open and another location change action is triggered: allow it
-    return true;
-  };
-
-  if (!surveyContext.surveyDataLoader.data || !surveyContext.sampleSiteDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data || !initialFormValues) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={handleLocationChange} />
-
+      <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
       <Formik
         innerRef={formikRef}
-        initialValues={initialFormData}
+        initialValues={initialFormValues}
         validationSchema={samplingSiteYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
@@ -217,7 +162,6 @@ const SamplingSiteEditPage = () => {
             title="Edit Sampling Site"
             breadcrumb="Edit Sampling Site"
           />
-
           <SampleSiteEditForm isSubmitting={isSubmitting} />
         </Box>
       </Formik>

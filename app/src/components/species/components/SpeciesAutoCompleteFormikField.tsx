@@ -21,10 +21,10 @@ type SpeciesAutoCompleteFormikFieldProps = Pick<
  * @returns {*}
  */
 export const SpeciesAutoCompleteFormikField = (props: SpeciesAutoCompleteFormikFieldProps) => {
-  const bhApi = useBiohubApi();
+  const biohubApi = useBiohubApi();
 
   const { values, touched, errors, setFieldValue, setFieldError } = useFormikContext();
-  const { data: taxon, load: loadTaxon, clearData } = useDataLoader(bhApi.taxonomy.getSpeciesFromIds);
+  const { data: taxon, load: loadTaxon, clearData } = useDataLoader(biohubApi.taxonomy.getSpeciesFromIds);
 
   const tsn = get(values, props.formikFieldName);
 
@@ -44,7 +44,7 @@ export const SpeciesAutoCompleteFormikField = (props: SpeciesAutoCompleteFormikF
       key={`${taxon?.[0].tsn}-formik-species-auto-complete`}
       formikFieldName={props.formikFieldName}
       disabled={props.disabled}
-      label={'Taxon'}
+      label={'Species'}
       required={props.required}
       error={Boolean(get(touched, props.formikFieldName)) && get(errors, props.formikFieldName)}
       defaultSpecies={taxon?.[0]}

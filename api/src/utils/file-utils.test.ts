@@ -1,4 +1,4 @@
-import AWS from 'aws-sdk';
+import { S3Client } from '@aws-sdk/client-s3';
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
@@ -15,7 +15,7 @@ import {
 
 describe('deleteFileFromS3', () => {
   it('returns null when no key specified', async () => {
-    const result = await deleteFileFromS3((null as unknown) as string);
+    const result = await deleteFileFromS3(null as unknown as string);
 
     expect(result).to.be.null;
   });
@@ -23,7 +23,7 @@ describe('deleteFileFromS3', () => {
 
 describe('getS3SignedURL', () => {
   it('returns null when no key specified', async () => {
-    const result = await getS3SignedURL((null as unknown) as string);
+    const result = await getS3SignedURL(null as unknown as string);
 
     expect(result).to.be.null;
   });
@@ -97,16 +97,16 @@ describe('getS3HostUrl', () => {
 
     const result = getS3HostUrl();
 
-    expect(result).to.equal('nrs.objectstore.gov.bc.ca');
+    expect(result).to.equal('https://nrs.objectstore.gov.bc.ca');
   });
 
   it('should successfully produce an S3 host url', () => {
-    process.env.OBJECT_STORE_URL = 's3.host.example.com';
+    process.env.OBJECT_STORE_URL = 'http://s3.host.example.com';
     process.env.OBJECT_STORE_BUCKET_NAME = 'test-bucket-name';
 
     const result = getS3HostUrl();
 
-    expect(result).to.equal('s3.host.example.com/test-bucket-name');
+    expect(result).to.equal('http://s3.host.example.com/test-bucket-name');
   });
 
   it('should successfully append a key to an S3 host url', () => {
@@ -115,7 +115,7 @@ describe('getS3HostUrl', () => {
 
     const result = getS3HostUrl('my-test-file.txt');
 
-    expect(result).to.equal('s3.host.example.com/test-bucket-name/my-test-file.txt');
+    expect(result).to.equal('https://s3.host.example.com/test-bucket-name/my-test-file.txt');
   });
 });
 
@@ -131,7 +131,7 @@ describe('_getS3Client', () => {
     process.env.OBJECT_STORE_SECRET_KEY_ID = 'bbbb';
 
     const result = _getS3Client();
-    expect(result).to.be.instanceOf(AWS.S3);
+    expect(result).to.be.instanceOf(S3Client);
   });
 });
 
@@ -153,33 +153,6 @@ describe('_getClamAvScanner', () => {
 
     const result = _getClamAvScanner();
     expect(result).to.not.be.null;
-  });
-
-  it('should return null if enable file virus scan is not set to true', () => {
-    process.env.ENABLE_FILE_VIRUS_SCAN = 'false';
-    process.env.CLAMAV_HOST = 'host';
-    process.env.CLAMAV_PORT = '1111';
-
-    const result = _getClamAvScanner();
-    expect(result).to.be.null;
-  });
-
-  it('should return null if CLAMAV_HOST is not set', () => {
-    process.env.ENABLE_FILE_VIRUS_SCAN = 'true';
-    delete process.env.CLAMAV_HOST;
-    process.env.CLAMAV_PORT = '1111';
-
-    const result = _getClamAvScanner();
-    expect(result).to.be.null;
-  });
-
-  it('should return null if CLAMAV_PORT is not set', () => {
-    process.env.ENABLE_FILE_VIRUS_SCAN = 'true';
-    process.env.CLAMAV_HOST = 'host';
-    delete process.env.CLAMAV_PORT;
-
-    const result = _getClamAvScanner();
-    expect(result).to.be.null;
   });
 });
 
@@ -212,18 +185,32 @@ describe('_getObjectStoreUrl', () => {
     process.env.OBJECT_STORE_URL = OBJECT_STORE_URL;
   });
 
-  it('should return an object store bucket name', () => {
-    process.env.OBJECT_STORE_URL = 'test-url1';
+  it('should return an object store bucket name that http protocol', () => {
+    process.env.OBJECT_STORE_URL = 'http://s3.host.example.com';
 
     const result = _getObjectStoreUrl();
-    expect(result).to.equal('test-url1');
+    expect(result).to.equal('http://s3.host.example.com');
+  });
+
+  it('should return an object store bucket name that https protocol', () => {
+    process.env.OBJECT_STORE_URL = 'https://s3.host.example.com';
+
+    const result = _getObjectStoreUrl();
+    expect(result).to.equal('https://s3.host.example.com');
+  });
+
+  it('should return an object store bucket name that had no protocol', () => {
+    process.env.OBJECT_STORE_URL = 's3.host.example.com';
+
+    const result = _getObjectStoreUrl();
+    expect(result).to.equal('https://s3.host.example.com');
   });
 
   it('should return its default value', () => {
     delete process.env.OBJECT_STORE_URL;
 
     const result = _getObjectStoreUrl();
-    expect(result).to.equal('nrs.objectstore.gov.bc.ca');
+    expect(result).to.equal('https://nrs.objectstore.gov.bc.ca');
   });
 });
 

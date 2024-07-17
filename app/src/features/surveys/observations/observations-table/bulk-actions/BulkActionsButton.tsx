@@ -36,7 +36,8 @@ export const BulkActionsButton = (props: IBulkActionsButtonProps) => {
         }}
         edge="end"
         disabled={numSelectedRows === 0}
-        aria-label="observation options">
+        aria-label="observation options"
+        title="Bulk Actions">
         <Icon size={1} path={mdiDotsVertical} />
       </IconButton>
       <Menu

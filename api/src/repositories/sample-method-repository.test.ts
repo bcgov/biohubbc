@@ -17,7 +17,7 @@ describe('SampleMethodRepository', () => {
   describe('getSampleMethodsForSurveySampleSiteId', () => {
     it('should return non-empty rows', async () => {
       const mockRows: any[] = [{}, {}];
-      const mockResponse = ({ rows: mockRows, rowCount: 2 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: mockRows, rowCount: 2 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const mockSurveyId = 1;
@@ -31,7 +31,7 @@ describe('SampleMethodRepository', () => {
 
     it('should return empty rows', async () => {
       const mockRows: any[] = [];
-      const mockResponse = ({ rows: mockRows, rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: mockRows, rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const mockSurveyId = 1;
@@ -47,7 +47,7 @@ describe('SampleMethodRepository', () => {
   describe('updateSampleMethod', () => {
     it('should update the record and return a single row', async () => {
       const mockRow = {};
-      const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [mockRow], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const surveyId = 1;
@@ -57,7 +57,7 @@ describe('SampleMethodRepository', () => {
         method_response_metric_id: 1,
         method_lookup_id: 3,
         description: 'description',
-        periods: [
+        sample_periods: [
           {
             end_date: '2023-01-02',
             start_date: '2023-10-02',
@@ -84,7 +84,7 @@ describe('SampleMethodRepository', () => {
     });
 
     it('throws an error if rowCount is falsy', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const surveyId = 1;
@@ -94,7 +94,7 @@ describe('SampleMethodRepository', () => {
         method_lookup_id: 3,
         method_response_metric_id: 1,
         description: 'description',
-        periods: [
+        sample_periods: [
           {
             end_date: '2023-01-02',
             start_date: '2023-10-02',
@@ -127,7 +127,7 @@ describe('SampleMethodRepository', () => {
   describe('insertSampleMethod', () => {
     it('should insert a record and return a single row', async () => {
       const mockRow = {};
-      const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [mockRow], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const sampleMethod: InsertSampleMethodRecord = {
@@ -135,7 +135,7 @@ describe('SampleMethodRepository', () => {
         method_lookup_id: 3,
         method_response_metric_id: 1,
         description: 'description',
-        periods: [
+        sample_periods: [
           {
             end_date: '2023-01-02',
             start_date: '2023-10-02',
@@ -160,7 +160,7 @@ describe('SampleMethodRepository', () => {
     });
 
     it('throws an error if rowCount is falsy', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const sampleMethod: InsertSampleMethodRecord = {
@@ -168,7 +168,7 @@ describe('SampleMethodRepository', () => {
         method_response_metric_id: 1,
         method_lookup_id: 3,
         description: 'description',
-        periods: [
+        sample_periods: [
           {
             end_date: '2023-01-02',
             start_date: '2023-10-02',
@@ -199,7 +199,7 @@ describe('SampleMethodRepository', () => {
   describe('deleteSampleMethodRecord', () => {
     it('should delete a record and return a single row', async () => {
       const mockRow = {};
-      const mockResponse = ({ rows: [mockRow], rowCount: 1 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [mockRow], rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const surveySampleMethodId = 1;
@@ -212,7 +212,7 @@ describe('SampleMethodRepository', () => {
     });
 
     it('throws an error if rowCount is falsy', async () => {
-      const mockResponse = ({ rows: [], rowCount: 0 } as any) as Promise<QueryResult<any>>;
+      const mockResponse = { rows: [], rowCount: 0 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const mockSurveyId = 1001;

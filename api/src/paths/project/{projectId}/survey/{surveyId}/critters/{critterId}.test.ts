@@ -6,54 +6,13 @@ import { HTTPError } from '../../../../../../errors/http-error';
 import { CritterbaseService } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
-import { DELETE, PATCH, removeCritterFromSurvey, updateSurveyCritter } from './{critterId}';
+import { PATCH, updateSurveyCritter } from './{critterId}';
 
 describe('critterId openapi schema', () => {
   const ajv = new Ajv();
 
   it('PATCH is valid openapi v3 schema', () => {
-    expect(ajv.validateSchema((PATCH.apiDoc as unknown) as object)).to.be.true;
-  });
-
-  it('DELETE is valid openapi v3 schema', () => {
-    expect(ajv.validateSchema((DELETE.apiDoc as unknown) as object)).to.be.true;
-  });
-});
-
-describe('removeCritterFromSurvey', () => {
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
-
-  it('removes critter from survey', async () => {
-    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-    sinon.stub(SurveyCritterService.prototype, 'removeCritterFromSurvey').resolves();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-    const requestHandler = removeCritterFromSurvey();
-
-    await requestHandler(mockReq, mockRes, mockNext);
-
-    expect(mockRes.statusValue).to.equal(200);
-  });
-
-  it('catches and re-throws errors', async () => {
-    const mockError = new Error('a test error');
-
-    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-    sinon.stub(SurveyCritterService.prototype, 'removeCritterFromSurvey').rejects(mockError);
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-    const requestHandler = removeCritterFromSurvey();
-
-    try {
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect(actualError).to.equal(mockError);
-    }
+    expect(ajv.validateSchema(PATCH.apiDoc as unknown as object)).to.be.true;
   });
 });
 

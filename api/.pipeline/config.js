@@ -100,7 +100,7 @@ const phases = {
     memoryRequest: '100Mi',
     memoryLimit: '4Gi',
     replicas: '1',
-    replicasMax: (isStaticDeployment && '2') || '1'
+    replicasMax: '1'
   },
   test: {
     namespace: 'af2668-test',

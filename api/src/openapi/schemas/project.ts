@@ -17,20 +17,13 @@ export const projectCreatePostRequestObject = {
         project_name: {
           type: 'string'
         },
-        project_programs: {
-          type: 'array',
-          minItems: 1,
-          items: {
-            type: 'number'
-          }
-        },
         start_date: {
           type: 'string',
           description: 'ISO 8601 date string'
         },
         end_date: {
           type: 'string',
-          description: 'ISO 8601 date string',
+          description: 'ISO 8601 datetime string',
           nullable: true
         }
       }
@@ -112,7 +105,7 @@ const projectUpdateProperties = {
     description: 'Basic project metadata',
     type: 'object',
     additionalProperties: false,
-    required: ['project_name', 'project_programs', 'start_date', 'end_date', 'revision_count'],
+    required: ['project_name', 'revision_count'],
     nullable: true,
     properties: {
       project_id: {
@@ -128,23 +121,6 @@ const projectUpdateProperties = {
       },
       project_name: {
         type: 'string'
-      },
-      project_programs: {
-        type: 'array',
-        items: {
-          type: 'number'
-        }
-      },
-      start_date: {
-        type: 'string',
-        format: 'date',
-        description: 'ISO 8601 date string for the project start date'
-      },
-      end_date: {
-        type: 'string',
-        format: 'date',
-        description: 'ISO 8601 date string for the project end date',
-        nullable: true
       },
       revision_count: {
         type: 'number'
@@ -242,7 +218,7 @@ const projectUpdateProperties = {
           type: 'string'
         },
         record_end_date: {
-          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+          type: 'string',
           description: 'Determines if the user record has expired',
           nullable: true
         },

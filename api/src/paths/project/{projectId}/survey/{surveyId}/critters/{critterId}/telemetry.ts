@@ -12,8 +12,9 @@ import { SurveyCritterService } from '../../../../../../../services/survey-critt
 import { getLogger } from '../../../../../../../utils/logger';
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters/{critterId}/telemetry');
 
-const GeoJSONFeatureCollectionFeaturesItems = (GeoJSONFeatureCollection.properties
-  ?.features as OpenAPIV3.ArraySchemaObject)?.items as OpenAPIV3.SchemaObject;
+const GeoJSONFeatureCollectionFeaturesItems = (
+  GeoJSONFeatureCollection.properties?.features as OpenAPIV3.ArraySchemaObject
+)?.items as OpenAPIV3.SchemaObject;
 
 const GeoJSONTelemetryPointsAPISchema: OpenAPIV3.SchemaObject = {
   ...GeoJSONFeatureCollection,
@@ -265,11 +266,11 @@ export function getCritterTelemetry(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
 
     const connection = getDBConnection(req['keycloak_token']);
-    const surveyCritterService = new SurveyCritterService(connection);
-    const bctwService = new BctwService(user);
 
     try {
       await connection.open();
+
+      const surveyCritterService = new SurveyCritterService(connection);
       const surveyCritters = await surveyCritterService.getCrittersInSurvey(surveyId);
 
       const critter = surveyCritters.find((surveyCritter) => surveyCritter.critter_id === critterId);
@@ -280,8 +281,8 @@ export function getCritterTelemetry(): RequestHandler {
       const startDate = new Date(String(req.query.startDate));
       const endDate = new Date(String(req.query.endDate));
 
+      const bctwService = new BctwService(user);
       const points = await bctwService.getCritterTelemetryPoints(critter.critterbase_critter_id, startDate, endDate);
-
       const tracks = await bctwService.getCritterTelemetryTracks(critter.critterbase_critter_id, startDate, endDate);
 
       await connection.commit();

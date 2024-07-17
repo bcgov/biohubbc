@@ -11,44 +11,49 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
+import {
+  GenericDateColDef,
+  GenericLatitudeColDef,
+  GenericLongitudeColDef,
+  GenericTimeColDef
+} from 'components/data-grid/GenericGridColumnDefinitions';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
-import { ConfigureColumnsContainer } from 'features/surveys/observations/observations-table/configure-table/ConfigureColumnsContainer';
 import { DiscardChangesButton } from 'features/surveys/observations/observations-table/discard-changes/DiscardChangesButton';
 import {
   ISampleMethodOption,
   ISamplePeriodOption,
   ISampleSiteOption,
-  ObservationActionsColDef,
   ObservationCountColDef,
-  ObservationDateColDef,
-  ObservationLatitudeColDef,
-  ObservationLongitudeColDef,
-  ObservationTimeColDef,
   SampleMethodColDef,
   SamplePeriodColDef,
   SampleSiteColDef,
   TaxonomyColDef
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitions';
-import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-observations/ImportObservationsButton';
+import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-obsevations/ImportObservationsButton';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
-import { useCodesContext, useObservationsTableContext } from 'hooks/useContext';
+import { useCodesContext, useObservationsPageContext, useObservationsTableContext } from 'hooks/useContext';
 import {
   IGetSampleLocationDetails,
   IGetSampleMethodRecord,
   IGetSamplePeriodRecord
-} from 'interfaces/useSurveyApi.interface';
+} from 'interfaces/useSamplingSiteApi.interface';
 import { useContext } from 'react';
 import { getCodesName } from 'utils/Utils';
+import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
-import { getMeasurementColumnDefinitions } from './grid-column-definitions/GridColumnDefinitionsUtils';
+import {
+  getEnvironmentColumnDefinitions,
+  getMeasurementColumnDefinitions
+} from './grid-column-definitions/GridColumnDefinitionsUtils';
 
 const ObservationComponent = () => {
   const codesContext = useCodesContext();
 
   const surveyContext = useContext(SurveyContext);
 
+  const observationsPageContext = useObservationsPageContext();
   const observationsTableContext = useObservationsTableContext();
 
   // Collect sample sites
@@ -88,21 +93,20 @@ const ObservationComponent = () => {
 
   // The column definitions of the columns to render in the observations table
   const columns: GridColDef<IObservationTableRow>[] = [
+    // Add standard observation columns to the table
     TaxonomyColDef({ hasError: observationsTableContext.hasError }),
     SampleSiteColDef({ sampleSiteOptions, hasError: observationsTableContext.hasError }),
     SampleMethodColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
     SamplePeriodColDef({ samplePeriodOptions, hasError: observationsTableContext.hasError }),
     ObservationCountColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
-    ObservationDateColDef({ hasError: observationsTableContext.hasError }),
-    ObservationTimeColDef({ hasError: observationsTableContext.hasError }),
-    ObservationLatitudeColDef({ hasError: observationsTableContext.hasError }),
-    ObservationLongitudeColDef({ hasError: observationsTableContext.hasError }),
+    GenericDateColDef({ field: 'observation_date', headerName: 'Date', hasError: observationsTableContext.hasError }),
+    GenericTimeColDef({ field: 'observation_time', headerName: 'Time', hasError: observationsTableContext.hasError }),
+    GenericLatitudeColDef({ field: 'latitude', headerName: 'Lat', hasError: observationsTableContext.hasError }),
+    GenericLongitudeColDef({ field: 'longitude', headerName: 'Long', hasError: observationsTableContext.hasError }),
     // Add measurement columns to the table
     ...getMeasurementColumnDefinitions(observationsTableContext.measurementColumns, observationsTableContext.hasError),
-    ObservationActionsColDef({
-      disabled: observationsTableContext.isSaving,
-      onDelete: observationsTableContext.deleteObservationRecords
-    })
+    // Add environment columns to the table
+    ...getEnvironmentColumnDefinitions(observationsTableContext.environmentColumns, observationsTableContext.hasError)
   ];
 
   return (
@@ -127,38 +131,41 @@ const ObservationComponent = () => {
 
         <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
           <ImportObservationsButton
-            disabled={observationsTableContext.isSaving}
-            onStart={() => observationsTableContext.setDisabled(true)}
+            disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
+            onStart={() => observationsPageContext.setIsDisabled(true)}
             onSuccess={() => observationsTableContext.refreshObservationRecords()}
-            onFinish={() => observationsTableContext.setDisabled(false)}
+            onFinish={() => observationsPageContext.setIsDisabled(false)}
           />
           <Button
             variant="contained"
             color="primary"
             startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => observationsTableContext.addObservationRecord()}
-            disabled={observationsTableContext.isSaving}>
+            disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}>
             Add Record
           </Button>
           <Collapse in={observationsTableContext.hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
             <Box whiteSpace="nowrap" display="flex" sx={{ gap: 1, pr: 1 }}>
               <LoadingButton
-                loading={observationsTableContext.isSaving}
+                loading={observationsTableContext.isSaving || observationsTableContext.isDisabled}
                 variant="contained"
                 color="primary"
                 onClick={() => observationsTableContext.saveObservationRecords()}
-                disabled={observationsTableContext.isSaving}>
+                disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}>
                 Save
               </LoadingButton>
               <DiscardChangesButton
-                disabled={observationsTableContext.isSaving}
+                disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
                 onDiscard={() => observationsTableContext.discardChanges()}
               />
             </Box>
           </Collapse>
+          <ConfigureColumnsButton
+            disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
+            columns={columns}
+          />
           <ExportHeadersButton />
-          <ConfigureColumnsContainer disabled={observationsTableContext.isSaving} columns={columns} />
-          <BulkActionsButton disabled={observationsTableContext.isSaving} />
+          <BulkActionsButton disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled} />
         </Stack>
       </Toolbar>
 
@@ -175,7 +182,7 @@ const ObservationComponent = () => {
             isLoading={
               observationsTableContext.isLoading ||
               observationsTableContext.isSaving ||
-              observationsTableContext.disabled
+              observationsTableContext.isDisabled
             }
             columns={columns}
           />

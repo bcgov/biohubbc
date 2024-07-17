@@ -9,14 +9,15 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ProjectRoleGuard } from 'components/security/Guards';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
-import { firstOrNull } from 'utils/Utils';
-import SurveyProgressChip from '../view/components/SurveyProgressChip';
+import { firstOrNull, getFormattedDate } from 'utils/Utils';
+import { SurveyProgressChip } from '../components/SurveyProgressChip';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -27,6 +28,7 @@ const pageSizeOptions = [10, 25, 50];
  */
 const SurveysListPage = () => {
   const projectContext = useContext(ProjectContext);
+
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: pageSizeOptions[0]
@@ -72,10 +74,36 @@ const SurveysListPage = () => {
     {
       field: 'progress',
       headerName: 'Progress',
-      flex: 0.5,
+      flex: 0.25,
       disableColumnMenu: true,
-      sortable: false,
-      renderCell: (params) => <SurveyProgressChip progress_id={params.row.progress_id} />
+      renderCell: (params) => (
+        <Box>
+          <SurveyProgressChip progress_id={params.row.progress_id} />
+        </Box>
+      )
+    },
+    {
+      field: 'start_date',
+      headerName: 'Start Date',
+      flex: 0.3,
+      disableColumnMenu: true,
+      renderCell: (params) => (
+        <Typography variant="body2">{getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.start_date)}</Typography>
+      )
+    },
+    {
+      field: 'end_date',
+      headerName: 'End Date',
+      flex: 0.3,
+      disableColumnMenu: true,
+      renderCell: (params) =>
+        params.row.end_date ? (
+          <Typography variant="body2">{getFormattedDate(DATE_FORMAT.MediumDateFormat, params.row.end_date)}</Typography>
+        ) : (
+          <Typography variant="body2" color="textSecondary">
+            None
+          </Typography>
+        )
     }
   ];
 

@@ -28,9 +28,8 @@ export const surveyDetailsSchema: OpenAPIV3.SchemaObject = {
       type: 'string'
     },
     start_date: {
-      description: 'Survey start date',
       type: 'string',
-      format: 'date'
+      description: 'Survey start date. ISO 8601 date string.'
     },
     end_date: {
       description: 'Survey end date',
@@ -94,13 +93,11 @@ export const surveyFundingSourceSchema: OpenAPIV3.SchemaObject = {
     start_date: {
       description: 'Funding source start date',
       type: 'string',
-      format: 'date',
       nullable: true
     },
     end_date: {
       description: 'Funding source end date',
       type: 'string',
-      format: 'date',
       nullable: true
     },
     description: {
@@ -115,18 +112,30 @@ export const focalSpeciesSchema: OpenAPIV3.SchemaObject = {
   title: 'focal species response object',
   type: 'object',
   additionalProperties: false,
+  required: ['tsn', 'commonNames', 'scientificName'],
   properties: {
     tsn: {
       description: 'Taxonomy tsn',
       type: 'number'
     },
-    commonName: {
-      description: 'Taxonomy common name',
-      type: 'string',
+    commonNames: {
+      description: 'Taxonomy common names',
+      type: 'array',
+      items: {
+        type: 'string'
+      },
       nullable: true
     },
     scientificName: {
       description: 'Taxonomy scientific name',
+      type: 'string'
+    },
+    rank: {
+      description: 'Taxonomy rank name',
+      type: 'string'
+    },
+    kingdom: {
+      description: 'Taxonomy kingdom name',
       type: 'string'
     }
   }
@@ -136,18 +145,30 @@ export const ancillarySpeciesSchema: OpenAPIV3.SchemaObject = {
   title: 'ancillary species response object',
   type: 'object',
   additionalProperties: false,
+  required: ['tsn', 'commonNames', 'scientificName'],
   properties: {
     tsn: {
       description: 'Taxonomy tsn',
       type: 'number'
     },
-    commonName: {
-      description: 'Taxonomy common name',
-      type: 'string',
+    commonNames: {
+      description: 'Taxonomy common names',
+      type: 'array',
+      items: {
+        type: 'string'
+      },
       nullable: true
     },
     scientificName: {
       description: 'Taxonomy scientific name',
+      type: 'string'
+    },
+    rank: {
+      description: 'Taxonomy rank name',
+      type: 'string'
+    },
+    kingdom: {
+      description: 'Taxonomy kingdom name',
       type: 'string'
     }
   }
@@ -180,6 +201,7 @@ export const surveyPermitSchema: OpenAPIV3.SchemaObject = {
     permits: {
       description: 'Permits',
       type: 'array',
+      required: ['permit_id', 'permit_number', 'permit_type'],
       items: {
         type: 'object',
         properties: {
@@ -241,13 +263,11 @@ export const surveyFundingSourceDataSchema: OpenAPIV3.SchemaObject = {
     start_date: {
       description: 'Funding source start date',
       type: 'string',
-      format: 'date',
       nullable: true
     },
     end_date: {
       description: 'Funding source end date',
       type: 'string',
-      format: 'date',
       nullable: true
     },
     description: {
@@ -378,6 +398,10 @@ export const surveyLocationSchema: OpenAPIV3.SchemaObject = {
       type: 'integer',
       nullable: true
     },
+    survey_id: {
+      description: 'Survey id',
+      type: 'integer'
+    },
     leaflet_id: {
       description: 'Leaflet id',
       type: 'integer',
@@ -439,6 +463,7 @@ export const surveySiteSelectionSchema: OpenAPIV3.SchemaObject = {
       type: 'array',
       items: {
         type: 'object',
+        additionalProperties: false,
         required: ['name', 'description'],
         properties: {
           name: {
@@ -453,14 +478,22 @@ export const surveySiteSelectionSchema: OpenAPIV3.SchemaObject = {
           survey_id: {
             description: 'Survey id',
             type: 'integer',
-            minimum: 1
+            nullable: true
           },
           survey_stratum_id: {
             description: 'Survey stratum id',
             type: 'integer',
+            nullable: true,
             minimum: 1
           },
-          ...updateCreateUserPropertiesSchema.properties
+          sample_stratum_count: {
+            description: 'Sample stratum count',
+            type: 'number'
+          },
+          revision_count: {
+            description: 'Revision count',
+            type: 'integer'
+          }
         }
       }
     }
@@ -471,12 +504,13 @@ export const surveyBlockSchema: OpenAPIV3.SchemaObject = {
   title: 'Survey Block',
   type: 'object',
   additionalProperties: false,
-  required: ['name', 'description', 'sample_block_count'],
+  required: ['name', 'description'],
   properties: {
     survey_block_id: {
       description: 'Survey block id',
       type: 'integer',
-      nullable: true
+      nullable: true,
+      minimum: 1
     },
     survey_id: {
       description: 'Survey id',
@@ -485,17 +519,22 @@ export const surveyBlockSchema: OpenAPIV3.SchemaObject = {
     },
     name: {
       description: 'Name',
-      type: 'string'
+      type: 'string',
+      nullable: true
     },
     description: {
       description: 'Description',
-      type: 'string'
+      type: 'string',
+      nullable: true
     },
     sample_block_count: {
       description: 'Sample block count',
       type: 'number'
     },
-    ...updateCreateUserPropertiesSchema.properties
+    revision_count: {
+      description: 'Revision count',
+      type: 'integer'
+    }
   }
 };
 
@@ -531,8 +570,8 @@ export const surveySupplementaryDataSchema: OpenAPIV3.SchemaObject = {
           minimum: 1
         },
         event_timestamp: {
-          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-          description: 'ISO 8601 date string for the project start date'
+          type: 'string',
+          description: 'ISO 8601 date string'
         },
         submission_uuid: {
           type: 'string',

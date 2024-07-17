@@ -1,5 +1,5 @@
 import { SurveyContext } from 'contexts/surveyContext';
-import { SurveySectionFullPageLayout } from 'features/surveys/components/SurveySectionFullPageLayout';
+import { SurveySectionFullPageLayout } from 'features/surveys/components/layout/SurveySectionFullPageLayout';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -11,12 +11,14 @@ import { AnimalSection } from './AnimalSection';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 
 export const SurveyAnimalsPage = () => {
-  const bhApi = useBiohubApi();
-  const cbApi = useCritterbaseApi();
-  const { surveyId, projectId } = useContext(SurveyContext);
-  const { cid } = useQuery();
+  const biohubApi = useBiohubApi();
+  const critterbaseApi = useCritterbaseApi();
 
-  const survey_critter_id = Number(cid);
+  const { surveyId, projectId } = useContext(SurveyContext);
+
+  const { critter_id } = useQuery();
+
+  const survey_critter_id = Number(critter_id);
 
   const [selectedSection, setSelectedSection] = useState<ANIMAL_SECTION>(ANIMAL_SECTION.GENERAL);
   const [openAddCritter, setOpenAddCritter] = useState(false);
@@ -26,9 +28,9 @@ export const SurveyAnimalsPage = () => {
     load: loadCritters,
     refresh: refreshSurveyCritters,
     isLoading: crittersLoading
-  } = useDataLoader(() => bhApi.survey.getSurveyCritters(projectId, surveyId));
+  } = useDataLoader(() => biohubApi.survey.getSurveyCritters(projectId, surveyId));
 
-  const { data: detailedCritter, refresh: refreshCritter } = useDataLoader(cbApi.critters.getDetailedCritter);
+  const { data: detailedCritter, refresh: refreshCritter } = useDataLoader(critterbaseApi.critters.getDetailedCritter);
 
   loadCritters();
 
@@ -44,7 +46,7 @@ export const SurveyAnimalsPage = () => {
       await refreshCritter(focusCritter.critter_id);
     };
     getDetailedCritterOnMount();
-  }, [surveyCritters, survey_critter_id, cbApi.critters, detailedCritter, refreshCritter]);
+  }, [surveyCritters, survey_critter_id, critterbaseApi.critters, detailedCritter, refreshCritter]);
 
   return (
     <>

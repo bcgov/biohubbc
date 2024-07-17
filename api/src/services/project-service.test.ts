@@ -2,7 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { GetIUCNClassificationData, GetObjectivesData, ProjectData, ProjectListData } from '../models/project-view';
+import {
+  FindProjectsResponse,
+  GetIUCNClassificationData,
+  GetObjectivesData,
+  ProjectData
+} from '../models/project-view';
 import { ProjectRepository } from '../repositories/project-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ProjectService } from './project-service';
@@ -14,53 +19,53 @@ describe('ProjectService', () => {
     sinon.restore();
   });
 
-  describe('getProjectList', () => {
+  describe('findProjects', () => {
     it('returns rows on success', async () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectService(dbConnection);
 
-      const data: ProjectListData[] = [
+      const data: FindProjectsResponse[] = [
         {
           project_id: 123,
           name: 'Project 1',
-          project_programs: [],
+          start_date: '2021-01-01',
+          end_date: '2021-12-31',
           regions: [],
-          start_date: '1900-01-01',
-          end_date: '2200-10-10'
+          focal_species: [],
+          types: [1, 2, 3]
         },
         {
           project_id: 456,
           name: 'Project 2',
-          project_programs: [],
+          start_date: '2021-01-01',
+          end_date: '2021-12-31',
           regions: [],
-          start_date: '1900-01-01',
-          end_date: '2000-12-31'
+          focal_species: [],
+          types: [1, 2, 3]
         }
       ];
 
-      const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectList').resolves(data);
+      const repoStub = sinon.stub(ProjectRepository.prototype, 'findProjects').resolves(data);
 
-      const response = await service.getProjectList(true, 1, {});
+      const response = await service.findProjects(true, 1, {});
 
       expect(repoStub).to.be.calledOnce;
       expect(response[0].project_id).to.equal(123);
       expect(response[0].name).to.equal('Project 1');
-      expect(response[0].completion_status).to.equal('Active');
 
       expect(response[1].project_id).to.equal(456);
       expect(response[1].name).to.equal('Project 2');
-      expect(response[1].completion_status).to.equal('Completed');
     });
   });
 
-  describe('getProjectCount', () => {
+  describe('findProjectsCount', () => {
     it('returns the total project count', async () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectService(dbConnection);
 
-      const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectCount').resolves(69);
+      const repoStub = sinon.stub(ProjectRepository.prototype, 'findProjectsCount').resolves(69);
 
-      const response = await service.getProjectCount({}, false, 1001);
+      const response = await service.findProjectsCount(false, 1001, {});
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(69);
@@ -72,7 +77,7 @@ describe('ProjectService', () => {
       const dbConnection = getMockDBConnection();
       const service = new ProjectService(dbConnection);
 
-      const data = ({ project_id: 1 } as unknown) as ProjectData;
+      const data = { project_id: 1 } as unknown as ProjectData;
 
       const repoStub = sinon.stub(ProjectRepository.prototype, 'getProjectData').resolves(data);
 

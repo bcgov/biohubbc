@@ -27,13 +27,13 @@ export const registerMockDBConnection = (config?: Partial<IDBConnection>): IDBCo
 export const getMockDBConnection = (config?: Partial<IDBConnection>): IDBConnection => {
   return {
     systemUserId: () => {
-      return (null as unknown) as number;
+      return null as unknown as number;
     },
     systemUserGUID: () => {
-      return (null as unknown) as string;
+      return null as unknown as string;
     },
     systemUserIdentifier: () => {
-      return (null as unknown) as string;
+      return null as unknown as string;
     },
     open: async () => {
       // do nothing
@@ -48,13 +48,13 @@ export const getMockDBConnection = (config?: Partial<IDBConnection>): IDBConnect
       // do nothing
     },
     query: async () => {
-      return (undefined as unknown) as QueryResult<any>;
+      return undefined as unknown as QueryResult<any>;
     },
     sql: async () => {
-      return (undefined as unknown) as QueryResult<any>;
+      return undefined as unknown as QueryResult<any>;
     },
     knex: async () => {
-      return (undefined as unknown) as QueryResult<any>;
+      return undefined as unknown as QueryResult<any>;
     },
     ...config
   };
@@ -66,6 +66,10 @@ export class MockReq {
   params = {};
   body = {};
   files: any[] = [];
+  // Exists on authenticated requests. @see authentication.ts and authorization.ts
+  keycloak_token?: Record<string, any>;
+  // Exists on authenticated requests. @see authentication.ts and authorization.ts
+  system_user?: Record<string, any>;
 }
 
 export type ExtendedMockRes = MockRes & Response;

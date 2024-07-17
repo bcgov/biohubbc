@@ -17,9 +17,6 @@ describe('ProjectData', () => {
         project_id: 1,
         uuid: 'uuid',
         project_name: '',
-        project_programs: [],
-        start_date: '2005-01-01',
-        end_date: '2006-01-01',
         comments: '',
         revision_count: 1
       };
@@ -31,18 +28,6 @@ describe('ProjectData', () => {
 
     it('sets name', () => {
       expect(data.project_name).to.equal('');
-    });
-
-    it('sets programs', () => {
-      expect(data.project_programs).to.eql([]);
-    });
-
-    it('sets start_date', () => {
-      expect(data.start_date).to.eql('2005-01-01');
-    });
-
-    it('sets end_date', () => {
-      expect(data.end_date).to.eql('2006-01-01');
     });
   });
 
@@ -63,9 +48,6 @@ describe('ProjectData', () => {
         project_id: 1,
         uuid: 'uuid',
         project_name: 'project name',
-        project_programs: [1],
-        start_date: '2020-04-20T07:00:00.000Z',
-        end_date: '2020-05-20T07:00:00.000Z',
         comments: '',
         revision_count: 1
       };
@@ -77,18 +59,6 @@ describe('ProjectData', () => {
 
     it('sets name', () => {
       expect(data.project_name).to.equal(projectData.name);
-    });
-
-    it('sets type', () => {
-      expect(data.project_programs).to.eql([1]);
-    });
-
-    it('sets start_date', () => {
-      expect(data.start_date).to.eql('2020-04-20T07:00:00.000Z');
-    });
-
-    it('sets end_date', () => {
-      expect(data.end_date).to.eql('2020-05-20T07:00:00.000Z');
     });
   });
 });
@@ -133,7 +103,7 @@ describe('GetIUCNClassificationData', () => {
     let iucnClassificationData: GetIUCNClassificationData;
 
     before(() => {
-      iucnClassificationData = new GetIUCNClassificationData((null as unknown) as any[]);
+      iucnClassificationData = new GetIUCNClassificationData(null as unknown as any[]);
     });
 
     it('sets classification details', function () {
@@ -185,7 +155,7 @@ describe('GetAttachmentsData', () => {
     let data: GetAttachmentsData;
 
     before(() => {
-      data = new GetAttachmentsData((null as unknown) as any[]);
+      data = new GetAttachmentsData(null as unknown as any[]);
     });
 
     it('sets attachmentDetails', function () {
@@ -288,7 +258,7 @@ describe('GetAttachmentsData', () => {
 describe('GetReportAttachmentsData', () => {
   describe('No values provided', () => {
     it('sets attachmentDetails', function () {
-      const data: GetReportAttachmentsData = new GetReportAttachmentsData((null as unknown) as any[]);
+      const data: GetReportAttachmentsData = new GetReportAttachmentsData(null as unknown as any[]);
 
       expect(data.attachmentDetails).to.eql([]);
     });

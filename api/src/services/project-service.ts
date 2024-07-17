@@ -1,18 +1,16 @@
-import { default as dayjs } from 'dayjs';
-import { Feature } from 'geojson';
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/http-error';
 import { IPostIUCN, PostProjectObject } from '../models/project-create';
 import { IPutIUCN, PutIUCNData, PutObjectivesData, PutProjectData } from '../models/project-update';
 import {
+  FindProjectsResponse,
   GetAttachmentsData,
   GetIUCNClassificationData,
   GetObjectivesData,
   GetReportAttachmentsData,
   IGetProject,
   IProjectAdvancedFilters,
-  ProjectData,
-  ProjectListData
+  ProjectData
 } from '../models/project-view';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { ProjectUser } from '../repositories/project-participation-repository';
@@ -25,19 +23,7 @@ import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PlatformService } from './platform-service';
 import { ProjectParticipationService } from './project-participation-service';
-import { RegionService } from './region-service';
 import { SurveyService } from './survey-service';
-
-/**
- * Project Completion Status
- *
- * @export
- * @enum {string}
- */
-export enum COMPLETION_STATUS {
-  COMPLETED = 'Completed',
-  ACTIVE = 'Active'
-}
 
 export class ProjectService extends DBService {
   attachmentService: AttachmentService;
@@ -58,46 +44,43 @@ export class ProjectService extends DBService {
   }
 
   /**
-   * Retrieves the paginated list of all projects that are available to the user.
+   * Retrieves the paginated list of all projects that are available to the user, based on their permissions and
+   * provided filter criteria.
    *
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId
+   * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {IProjectAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {(Promise<(ProjectListData & { completion_status: COMPLETION_STATUS })[]>)}
+   * @return {*}  {(Promise<(FindProjectsResponse)[]>)}
    * @memberof ProjectService
    */
-  async getProjectList(
+  async findProjects(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<(ProjectListData & { completion_status: COMPLETION_STATUS })[]> {
-    const response = await this.projectRepository.getProjectList(isUserAdmin, systemUserId, filterFields, pagination);
+  ): Promise<FindProjectsResponse[]> {
+    const response = await this.projectRepository.findProjects(isUserAdmin, systemUserId, filterFields, pagination);
 
-    return response.map((row) => ({
-      ...row,
-      completion_status:
-        (row.end_date && dayjs(row.end_date).endOf('day').isBefore(dayjs()) && COMPLETION_STATUS.COMPLETED) ||
-        COMPLETION_STATUS.ACTIVE
-    }));
+    return response;
   }
 
   /**
-   * Returns the total count of projects that are visible to the given user.
+   * Retrieves the count of all projects that are available to the user, based on their permissions and provided
+   * filter criteria.
    *
-   * @param {IProjectAdvancedFilters} filterFields
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IProjectAdvancedFilters} filterFields
    * @return {*}  {Promise<number>}
    * @memberof ProjectService
    */
-  async getProjectCount(
-    filterFields: IProjectAdvancedFilters,
+  async findProjectsCount(
     isUserAdmin: boolean,
-    systemUserId: number | null
+    systemUserId: number | null,
+    filterFields: IProjectAdvancedFilters
   ): Promise<number> {
-    return this.projectRepository.getProjectCount(filterFields, isUserAdmin, systemUserId);
+    return this.projectRepository.findProjectsCount(isUserAdmin, systemUserId, filterFields);
   }
 
   /**
@@ -214,9 +197,6 @@ export class ProjectService extends DBService {
       )
     );
 
-    // Handle project programs
-    promises.push(this.insertPrograms(projectId, postProjectData.project.project_programs));
-
     //Handle project participants
     promises.push(this.projectParticipationService.postProjectParticipants(projectId, postProjectData.participants));
 
@@ -262,32 +242,6 @@ export class ProjectService extends DBService {
   }
 
   /**
-   * Insert region data.
-   *
-   * @param {number} projectId
-   * @param {Feature[]} features
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectService
-   */
-  async insertRegion(projectId: number, features: Feature[]): Promise<void> {
-    const regionService = new RegionService(this.connection);
-    return regionService.addRegionsToProjectFromFeatures(projectId, features);
-  }
-
-  /**
-   * Insert programs data.
-   *
-   * @param {number} projectId
-   * @param {number[]} projectPrograms
-   * @return {*}  {Promise<void>}
-   * @memberof ProjectService
-   */
-  async insertPrograms(projectId: number, projectPrograms: number[]): Promise<void> {
-    await this.projectRepository.deletePrograms(projectId);
-    await this.projectRepository.insertProgram(projectId, projectPrograms);
-  }
-
-  /**
    * Updates the project
    *
    * @param {number} projectId
@@ -304,10 +258,6 @@ export class ProjectService extends DBService {
 
     if (entities?.iucn) {
       promises.push(this.updateIUCNData(projectId, entities));
-    }
-
-    if (entities?.project?.project_programs) {
-      promises.push(this.insertPrograms(projectId, entities?.project?.project_programs));
     }
 
     if (entities?.participants) {

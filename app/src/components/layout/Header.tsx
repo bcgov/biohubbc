@@ -259,7 +259,7 @@ const Header: React.FC = () => {
                   <MenuItem
                     tabIndex={1}
                     component={RouterLink}
-                    to="/admin/projects"
+                    to="/admin/summary"
                     id="menu_projects_sm"
                     onClick={hideMobileMenu}>
                     Projects
@@ -275,6 +275,11 @@ const Header: React.FC = () => {
                     to="/admin/funding-sources"
                     onClick={hideMobileMenu}>
                     Funding Sources
+                  </MenuItem>
+                </SystemRoleGuard>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <MenuItem component={RouterLink} to="/standards" id="menu_standards" onClick={hideMobileMenu}>
+                    Standards
                   </MenuItem>
                 </SystemRoleGuard>
                 <MenuItem component="button" onClick={showSupportDialog} sx={{ width: '100%' }}>
@@ -335,7 +340,7 @@ const Header: React.FC = () => {
                   </RouterLink>
                 </UnAuthGuard>
                 <AuthGuard>
-                  <RouterLink to="/admin/projects" id="menu_projects">
+                  <RouterLink to="/admin/summary" id="menu_projects">
                     Projects
                   </RouterLink>
                 </AuthGuard>
@@ -347,6 +352,11 @@ const Header: React.FC = () => {
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <RouterLink to="/admin/funding-sources" id="menu_admin_funding_sources">
                     Funding Sources
+                  </RouterLink>
+                </SystemRoleGuard>
+                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                  <RouterLink to="/standards" id="menu_standards">
+                    Standards
                   </RouterLink>
                 </SystemRoleGuard>
                 <Button

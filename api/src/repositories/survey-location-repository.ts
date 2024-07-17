@@ -3,16 +3,16 @@ import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostSurveyLocationData } from '../models/survey-update';
 import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
-import { GeoJSONFeatureZodSchema } from '../zod-schema/geoJsonZodSchema';
 import { BaseRepository } from './base-repository';
 
 export const SurveyLocationRecord = z.object({
   survey_location_id: z.number(),
+  survey_id: z.number(),
   name: z.string(),
   description: z.string(),
   geometry: z.record(z.any()).nullable(),
   geography: z.string(),
-  geojson: z.array(GeoJSONFeatureZodSchema),
+  geojson: z.any(),
   revision_count: z.number()
 });
 
@@ -29,11 +29,11 @@ export class SurveyLocationRepository extends BaseRepository {
     const sqlStatement = SQL`
       INSERT INTO survey_location (
         survey_id,
-        name, 
-        description,         
+        name,
+        description,
         geojson,
         geography
-      ) 
+      )
       VALUES (
         ${surveyId},
         ${data.name},
@@ -56,9 +56,9 @@ export class SurveyLocationRepository extends BaseRepository {
    */
   async updateSurveyLocation(data: PostSurveyLocationData): Promise<void> {
     const sqlStatement = SQL`
-      UPDATE 
+      UPDATE
         survey_location
-      SET 
+      SET
         name = ${data.name},
         description = ${data.description},
         geojson = ${JSON.stringify(data.geojson)},
@@ -67,7 +67,7 @@ export class SurveyLocationRepository extends BaseRepository {
                         public.ST_SetSRID(`.append(generateGeometryCollectionSQL(data.geojson)).append(`, 4326)
                       )
                     )
-      WHERE 
+      WHERE
         survey_location_id = ${data.survey_location_id};
     `);
 
@@ -84,7 +84,14 @@ export class SurveyLocationRepository extends BaseRepository {
   async getSurveyLocationsData(surveyId: number): Promise<SurveyLocationRecord[]> {
     const sqlStatement = SQL`
       SELECT
-        *
+        survey_id,
+        survey_location_id,
+        name,
+        description,
+        geometry,
+        geography,
+        geojson,
+        revision_count
       FROM
         survey_location
       WHERE
@@ -99,12 +106,24 @@ export class SurveyLocationRepository extends BaseRepository {
    * Deletes a survey location for a given survey location id
    *
    * @param surveyLocationId
-   * @returns {*} Promise<GetSurveyLocationData[]>
+   * @returns {*} Promise<SurveyLocationData[]>
    * @memberof SurveyLocationRepository
    */
   async deleteSurveyLocation(surveyLocationId: number): Promise<SurveyLocationRecord> {
     const sql = SQL`
-    DELETE FROM survey_location WHERE survey_location_id = ${surveyLocationId} RETURNING *;`;
+      DELETE FROM survey_location
+        WHERE
+          survey_location_id = ${surveyLocationId}
+      RETURNING
+        survey_location_id,
+        survey_id,
+        name,
+        description,
+        geometry,
+        geography,
+        geojson,
+        revision_count;
+    `;
     const response = await this.connection.sql(sql, SurveyLocationRecord);
 
     if (!response?.rowCount) {

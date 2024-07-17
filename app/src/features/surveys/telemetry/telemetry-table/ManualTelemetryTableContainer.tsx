@@ -20,29 +20,30 @@ import FileUploadDialog from 'components/dialog/FileUploadDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { TelemetryTableI18N } from 'constants/i18n';
-import { getSurveySessionStorageKey, SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useContext, useDeferredValue, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
 import ManualTelemetryTable from './ManualTelemetryTable';
 
 const ManualTelemetryTableContainer = () => {
+  const telemetryApi = useTelemetryApi();
+
+  const dialogContext = useContext(DialogContext);
+  const telemetryTableContext = useTelemetryTableContext();
+  const surveyContext = useContext(SurveyContext);
+
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [processingRecords, setProcessingRecords] = useState(false);
   const [showConfirmRemoveAllDialog, setShowConfirmRemoveAllDialog] = useState(false);
   const [contextMenuAnchorEl, setContextMenuAnchorEl] = useState<Element | null>(null);
   const [columnVisibilityMenuAnchorEl, setColumnVisibilityMenuAnchorEl] = useState<Element | null>(null);
-  const [hiddenFields, setHiddenFields] = useState<string[]>([]);
 
-  const dialogContext = useContext(DialogContext);
-  const telemetryTableContext = useTelemetryTableContext();
-  const surveyContext = useContext(SurveyContext);
-  const telemetryApi = useTelemetryApi();
+  const deferredUnsavedChanges = useDeferredValue(telemetryTableContext.hasUnsavedChanges);
 
-  const { hasUnsavedChanges, validationModel, _muiDataGridApiRef } = telemetryTableContext;
+  const numSelectedRows = telemetryTableContext.rowSelectionModel.length;
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
@@ -56,81 +57,8 @@ const ManualTelemetryTableContainer = () => {
     setColumnVisibilityMenuAnchorEl(null);
   };
 
-  /**
-   * Toggles visibility for a particular column
-   */
-  const toggleColumnVisibility = (field: string) => {
-    setHiddenFields((prev) => {
-      if (prev.includes(field)) {
-        return prev.filter((hiddenField) => hiddenField !== field);
-      } else {
-        return [...prev, field];
-      }
-    });
-  };
-
-  // The array of columns that may be toggled as hidden or visible
-  const hideableColumns = useMemo(() => {
-    return telemetryTableContext.getColumns().filter((column) => {
-      return column && column.type && !['actions', 'checkboxSelection'].includes(column.type) && column.hideable;
-    });
-  }, [telemetryTableContext.getColumns]);
-
-  /**
-   * Toggles whether all columns are hidden or visible.
-   */
-  const toggleShowHideAll = useCallback(() => {
-    if (hiddenFields.length > 0) {
-      setHiddenFields([]);
-    } else {
-      setHiddenFields(hideableColumns.map((column) => column.field));
-    }
-  }, [hiddenFields]);
-
-  /**
-   * Whenever hidden fields updates, trigger an update in visiblity for the table.
-   */
-  useEffect(() => {
-    _muiDataGridApiRef.current.setColumnVisibilityModel({
-      ...Object.fromEntries(hideableColumns.map((column) => [column.field, true])),
-      ...Object.fromEntries(hiddenFields.map((field) => [field, false]))
-    });
-  }, [hideableColumns, hiddenFields]);
-
-  /**
-   * On first mount, load visibility state from session storage, if it exists.
-   */
-  useEffect(() => {
-    const fieldsJson: string | null = sessionStorage.getItem(
-      getSurveySessionStorageKey(surveyId, SIMS_TELEMETRY_HIDDEN_COLUMNS)
-    );
-
-    if (!fieldsJson) {
-      return;
-    }
-
-    try {
-      const fields: string[] = JSON.parse(fieldsJson);
-      setHiddenFields(fields);
-    } catch {
-      return;
-    }
-  }, []);
-
-  /**
-   * Persist visibility state in session
-   */
-  useEffect(() => {
-    sessionStorage.setItem(
-      getSurveySessionStorageKey(surveyId, SIMS_TELEMETRY_HIDDEN_COLUMNS),
-      JSON.stringify(hiddenFields)
-    );
-  }, [hiddenFields]);
-
-  const { projectId, surveyId } = surveyContext;
-
   const handleFileImport = async (file: File) => {
-    telemetryApi.uploadCsvForImport(projectId, surveyId, file).then((response) => {
+    telemetryApi.uploadCsvForImport(surveyContext.projectId, surveyContext.surveyId, file).then((response) => {
       setShowImportDialog(false);
       setProcessingRecords(true);
       telemetryApi
@@ -160,8 +88,6 @@ const ManualTelemetryTableContainer = () => {
     });
   };
 
-  const numSelectedRows = telemetryTableContext.rowSelectionModel.length;
-
   return (
     <>
       <FileUploadDialog
@@ -169,6 +95,7 @@ const ManualTelemetryTableContainer = () => {
         dialogTitle="Import Telemetry CSV"
         onClose={() => setShowImportDialog(false)}
         onUpload={handleFileImport}
+        uploadButtonLabel="Import"
         FileUploadProps={{
           dropZoneProps: { maxNumFiles: 1, acceptedFileExtensions: '.csv' },
           status: UploadFileStatus.STAGED
@@ -220,7 +147,7 @@ const ManualTelemetryTableContainer = () => {
               disabled={telemetryTableContext.isSaving}>
               Add Record
             </Button>
-            <Collapse in={hasUnsavedChanges} orientation="horizontal">
+            <Collapse in={deferredUnsavedChanges} orientation="horizontal">
               <Stack flexDirection="row" whiteSpace="nowrap" gap={1}>
                 <LoadingButton
                   loading={telemetryTableContext.isSaving}
@@ -239,59 +166,65 @@ const ManualTelemetryTableContainer = () => {
                 </Button>
               </Stack>
             </Collapse>
-            {hideableColumns.length > 0 && (
-              <>
-                <IconButton
-                  onClick={(event) => setColumnVisibilityMenuAnchorEl(event.currentTarget)}
-                  disabled={telemetryTableContext.isSaving}>
-                  <Icon path={mdiCogOutline} size={1} />
-                </IconButton>
-                <Menu
-                  anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'right'
-                  }}
-                  transformOrigin={{
-                    vertical: 'top',
-                    horizontal: 'right'
-                  }}
-                  id="survey-observations-table-actions-menu"
-                  anchorEl={columnVisibilityMenuAnchorEl}
-                  open={Boolean(columnVisibilityMenuAnchorEl)}
-                  onClose={handleCloseColumnVisibilityMenu}
-                  MenuListProps={{
-                    'aria-labelledby': 'basic-button'
-                  }}>
-                  <MenuItem dense onClick={() => toggleShowHideAll()}>
-                    <ListItemIcon>
-                      <Checkbox
-                        sx={{ ml: -1 }}
-                        indeterminate={hiddenFields.length > 0 && hiddenFields.length < hideableColumns.length}
-                        checked={hiddenFields.length === 0}
-                      />
-                    </ListItemIcon>
-                    <ListItemText sx={{ textTransform: 'uppercase' }}>Show/Hide All</ListItemText>
-                  </MenuItem>
-                  <Divider />
-                  <Box
-                    sx={{
-                      xs: { maxHeight: '300px' },
-                      lg: { maxHeight: '400px' }
-                    }}>
-                    {hideableColumns.map((column) => {
-                      return (
-                        <MenuItem dense key={column.field} onClick={() => toggleColumnVisibility(column.field)}>
-                          <ListItemIcon>
-                            <Checkbox sx={{ ml: -1 }} checked={!hiddenFields.includes(column.field)} />
-                          </ListItemIcon>
-                          <ListItemText>{column.headerName}</ListItemText>
-                        </MenuItem>
-                      );
-                    })}
-                  </Box>
-                </Menu>
-              </>
-            )}
+            <IconButton
+              onClick={(event) => setColumnVisibilityMenuAnchorEl(event.currentTarget)}
+              disabled={telemetryTableContext.isSaving}>
+              <Icon path={mdiCogOutline} size={1} />
+            </IconButton>
+            <Menu
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}
+              id="survey-observations-table-actions-menu"
+              anchorEl={columnVisibilityMenuAnchorEl}
+              open={Boolean(columnVisibilityMenuAnchorEl)}
+              onClose={handleCloseColumnVisibilityMenu}
+              MenuListProps={{
+                'aria-labelledby': 'basic-button'
+              }}>
+              <MenuItem dense onClick={() => telemetryTableContext.toggleColumnsVisibility()}>
+                <ListItemIcon>
+                  <Checkbox
+                    sx={{ ml: -1 }}
+                    indeterminate={
+                      telemetryTableContext.hiddenColumns.length > 0 &&
+                      telemetryTableContext.hiddenColumns.length <
+                        telemetryTableContext.getColumns({ hideable: true }).length
+                    }
+                    checked={telemetryTableContext.hiddenColumns.length === 0}
+                  />
+                </ListItemIcon>
+                <ListItemText sx={{ textTransform: 'uppercase' }}>Show/Hide All</ListItemText>
+              </MenuItem>
+              <Divider />
+              <Box
+                sx={{
+                  xs: { maxHeight: '300px' },
+                  lg: { maxHeight: '400px' }
+                }}>
+                {telemetryTableContext.getColumns({ hideable: true }).map((column) => {
+                  return (
+                    <MenuItem
+                      dense
+                      key={column.field}
+                      onClick={() => telemetryTableContext.toggleColumnsVisibility({ columns: [column.field] })}>
+                      <ListItemIcon>
+                        <Checkbox
+                          sx={{ ml: -1 }}
+                          checked={!telemetryTableContext.hiddenColumns.includes(column.field)}
+                        />
+                      </ListItemIcon>
+                      <ListItemText>{column.headerName}</ListItemText>
+                    </MenuItem>
+                  );
+                })}
+              </Box>
+            </Menu>
             <Box>
               <IconButton
                 onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -336,7 +269,10 @@ const ManualTelemetryTableContainer = () => {
 
         <Divider flexItem></Divider>
 
-        <DataGridValidationAlert validationModel={validationModel} muiDataGridApiRef={_muiDataGridApiRef.current} />
+        <DataGridValidationAlert
+          validationModel={telemetryTableContext.validationModel}
+          muiDataGridApiRef={telemetryTableContext._muiDataGridApiRef.current}
+        />
 
         <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
           <Box position="absolute" width="100%" height="100%">

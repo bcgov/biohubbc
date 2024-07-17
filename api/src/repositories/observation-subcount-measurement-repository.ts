@@ -4,6 +4,7 @@ import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
 
 export const ObservationSubCountQualitativeMeasurementRecord = z.object({
+  observation_subcount_qualitative_measurement_id: z.number(),
   observation_subcount_id: z.number(),
   critterbase_taxon_measurement_id: z.string().uuid(),
   critterbase_measurement_qualitative_option_id: z.string().uuid(),
@@ -18,6 +19,7 @@ export type ObservationSubCountQualitativeMeasurementRecord = z.infer<
 >;
 
 export const ObservationSubCountQuantitativeMeasurementRecord = z.object({
+  observation_subcount_quantitative_measurement_id: z.number(),
   observation_subcount_id: z.number(),
   critterbase_taxon_measurement_id: z.string().uuid(),
   value: z.number(),
@@ -41,6 +43,7 @@ export interface InsertObservationSubCountQuantitativeMeasurementRecord {
   critterbase_taxon_measurement_id: string;
   value: number;
 }
+
 export class ObservationSubCountMeasurementRepository extends BaseRepository {
   async insertObservationQualitativeMeasurementRecords(
     record: InsertObservationSubCountQualitativeMeasurementRecord[]
@@ -68,6 +71,13 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
     return response.rows;
   }
 
+  /**
+   * Deletes all observation measurements for a given survey and set of survey observation ids.
+   *
+   * @param {number} surveyId
+   * @param {number[]} surveyObservationId
+   * @memberof ObservationSubCountMeasurementRepository
+   */
   async deleteObservationMeasurements(surveyId: number, surveyObservationId: number[]) {
     await this.deleteObservationQualitativeMeasurementRecordsForSurveyObservationIds(surveyObservationId, surveyId);
     await this.deleteObservationQuantitativeMeasurementRecordsForSurveyObservationIds(surveyObservationId, surveyId);

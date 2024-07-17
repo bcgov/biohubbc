@@ -2,8 +2,8 @@ import { AxiosInstance } from 'axios';
 import { ICreateCritterMeasurement } from 'features/surveys/view/survey-animals/animal';
 import { IQualitativeMeasurementResponse, IQuantitativeMeasurementResponse } from 'interfaces/useCritterApi.interface';
 
-type CreateQualitativeMeasurement = Omit<ICreateCritterMeasurement, 'measurement_quantitative_id' | 'value'>;
-type CreateQuantitativeMeasurement = Omit<
+export type CreateQualitativeMeasurement = Omit<ICreateCritterMeasurement, 'measurement_quantitative_id' | 'value'>;
+export type CreateQuantitativeMeasurement = Omit<
   ICreateCritterMeasurement,
   'measurement_qualitative_id' | 'qualitative_option_id'
 >;

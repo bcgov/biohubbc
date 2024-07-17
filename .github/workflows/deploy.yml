@@ -6,6 +6,7 @@ on:
   pull_request:
     types: [opened, reopened, synchronize, ready_for_review]
     branches-ignore:
+      - test
       - prod
 
 concurrency:
@@ -128,7 +129,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
   # Build the web frontend app image
   buildAPP:
@@ -151,7 +152,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       # Load repo from cache
       - name: Cache repo
@@ -213,7 +214,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       # Load repo from cache
       - name: Cache repo
@@ -274,7 +275,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       # Load repo from cache
       - name: Cache repo
@@ -330,7 +331,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       # Load repo from cache
       - name: Cache repo
@@ -390,7 +391,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       # Load repo from cache
       - name: Cache repo
@@ -444,7 +445,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       # Load repo from cache
       - name: Cache repo
@@ -499,7 +500,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       # Load repo from cache
       - name: Cache repo
@@ -556,7 +557,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       # Load repo from cache
       - name: Cache repo

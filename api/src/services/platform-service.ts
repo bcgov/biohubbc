@@ -45,14 +45,16 @@ export interface IArtifact {
 
 export interface IItisSearchResult {
   tsn: string;
-  commonName?: string;
+  commonNames?: string[];
   scientificName: string;
 }
 
 export interface ITaxonomy {
   tsn: number;
-  commonName?: string;
+  commonNames?: string[];
   scientificName: string;
+  rank: string;
+  kingdom: string;
 }
 
 const getBackboneInternalApiHost = () => process.env.BACKBONE_INTERNAL_API_HOST || '';
@@ -74,7 +76,7 @@ export class PlatformService extends DBService {
   /**
    * Get taxonomic data from BioHub.
    *
-   * @param {(string | number)[]} ids
+   * @param {(string | number)[]} tsns
    * @return {*}  {Promise<IItisSearchResult[]>}
    * @memberof PlatformService
    */
@@ -268,7 +270,10 @@ export class PlatformService extends DBService {
         const artifact = {
           submission_uuid: submissionUUID,
           artifact_upload_key: artifactUploadKey,
-          data: s3File.Body as Buffer,
+          // TODO: Cast to unknown required due to issue in aws-sdk v3 typings
+          // See https://stackoverflow.com/questions/76142043/getting-a-readable-from-getobject-in-aws-s3-sdk-v3
+          // See https://github.com/aws/aws-sdk-js-v3/issues/4720
+          data: s3File.Body as unknown as Buffer,
           fileName: attachment.file_name,
           mimeType: s3File.ContentType || mime.getType(attachment.file_name) || 'application/octet-stream'
         };
@@ -319,7 +324,10 @@ export class PlatformService extends DBService {
         const artifact = {
           submission_uuid: submissionUUID,
           artifact_upload_key: artifactUploadKey,
-          data: s3File.Body as Buffer,
+          // TODO: Cast to unknown required due to issue in aws-sdk v3 typings
+          // See https://stackoverflow.com/questions/76142043/getting-a-readable-from-getobject-in-aws-s3-sdk-v3
+          // See https://github.com/aws/aws-sdk-js-v3/issues/4720
+          data: s3File.Body as unknown as Buffer,
           fileName: attachment.file_name,
           mimeType: s3File.ContentType || mime.getType(attachment.file_name) || 'application/octet-stream'
         };
