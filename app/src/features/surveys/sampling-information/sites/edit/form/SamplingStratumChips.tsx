@@ -1,43 +1,30 @@
-import { Color, colors } from '@mui/material';
+import { blue, cyan, orange, pink, purple, teal } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import { SurveyContext } from 'contexts/surveyContext';
 import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
-import { useContext } from 'react';
 
-interface IStratumChipColours {
-  stratum: string;
-  colour: Color;
-}
+const SAMPLING_SITE_CHIP_COLOURS = [purple, blue, pink, teal, cyan, orange];
 
-interface ISamplingStratumChips {
+interface ISamplingStratumChipsProps {
   sampleSite: IGetSampleLocationDetails;
 }
 
 /**
  * Returns horizontal stack of ColouredRectangleChip for displaying sample stratums
  *
- * @param props
- * @returns
+ * @param {ISamplingStratumChipsProps} props
+ * @returns {*}
  */
-export const SamplingStratumChips = (props: ISamplingStratumChips) => {
-  const surveyContext = useContext(SurveyContext);
-
-  // Determine colours for stratum labels
-  const orderedColours = [colors.purple, colors.blue, colors.pink, colors.teal, colors.cyan, colors.orange];
-  const stratums = surveyContext.surveyDataLoader.data?.surveyData.site_selection.stratums;
-  const stratumChipColours: IStratumChipColours[] =
-    stratums?.map((stratum, index) => ({
-      stratum: stratum.name,
-      colour: orderedColours[index % orderedColours.length]
-    })) ?? [];
-
+export const SamplingStratumChips = (props: ISamplingStratumChipsProps) => {
   return (
     <Stack direction="row" spacing={1}>
       {props.sampleSite.stratums.map((stratum, index) => (
         <ColouredRectangleChip
           key={`${stratum.name}-${index}`}
-          colour={stratumChipColours.find((colour) => colour.stratum === stratum.name)?.colour ?? colors.grey}
+          colour={
+            // Cycle through the sampling site chip colours
+            SAMPLING_SITE_CHIP_COLOURS[index] ?? SAMPLING_SITE_CHIP_COLOURS[index % SAMPLING_SITE_CHIP_COLOURS.length]
+          }
           label={stratum.name}
           title="Stratum"
         />

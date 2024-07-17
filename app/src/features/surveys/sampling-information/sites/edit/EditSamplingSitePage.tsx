@@ -80,7 +80,6 @@ export const EditSamplingSitePage = () => {
     }
 
     setInitialFormValues(samplingSiteDataLoader.data);
-    // formikRef.current?.setValues(samplingSiteDataLoader.data);
   }, [samplingSiteDataLoader.data]);
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {

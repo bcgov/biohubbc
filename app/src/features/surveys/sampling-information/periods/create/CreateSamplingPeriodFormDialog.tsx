@@ -15,7 +15,7 @@ interface ICreateSamplingPeriodFormDialogProps {
 /**
  * Returns a form for creating a sampling Period
  *
- * @returns
+ * @returns {*}
  */
 export const CreateSamplingPeriodFormDialog = (props: ICreateSamplingPeriodFormDialogProps) => {
   const handleSubmit = (values: ISurveySampleMethodPeriodData) => {
