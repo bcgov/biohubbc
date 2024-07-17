@@ -5,27 +5,26 @@ import { MediaFile } from '../media/media-file';
 import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
 import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
+import { getColumnAliasesFromValidator, getColumnNamesFromValidator } from './column-validator-utils';
 
 const defaultLog = getLogger('src/utils/xlsx-utils/worksheet-utils');
 
-export interface IXLSXCSVValidator {
-  /**
-   * Uppercase column headers
-   *
-   * @see column-cell-utils.ts
-   *
-   */
-  columnNames: Uppercase<string>[];
+export interface IXLSXCSVColumn {
   /**
    * Supported column cell types
    *
    */
-  columnTypes: Array<'string' | 'number' | 'date'>;
+  type: 'string' | 'number' | 'date';
   /**
    * Allowed aliases / mappings for column headers.
    *
    */
-  columnAliases?: Record<Uppercase<string>, Uppercase<string>[]>;
+  aliases?: Uppercase<string>[];
+}
+
+// Record with column name and column spec
+export interface IXLSXCSVValidator {
+  [columnName: Uppercase<string>]: IXLSXCSVColumn;
 }
 
 /**
@@ -195,15 +194,14 @@ export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<string
  * @return {*}  {boolean}
  */
 export const validateWorksheetHeaders = (worksheet: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean => {
-  const { columnNames, columnAliases } = columnValidator;
+  // Get column names and aliases from validator
+  const columnNames = getColumnNamesFromValidator(columnValidator);
+  const columnAliases = getColumnAliasesFromValidator(columnValidator);
 
   const worksheetHeaders = getHeadersUpperCase(worksheet);
 
   return columnNames.every((expectedHeader) => {
-    return (
-      columnAliases?.[expectedHeader]?.some((alias) => worksheetHeaders.includes(alias)) ||
-      worksheetHeaders.includes(expectedHeader)
-    );
+    return columnAliases.some((alias) => worksheetHeaders.includes(alias)) || worksheetHeaders.includes(expectedHeader);
   });
 };
 
@@ -219,18 +217,20 @@ export const validateWorksheetColumnTypes = (
   worksheet: xlsx.WorkSheet,
   columnValidator: IXLSXCSVValidator
 ): boolean => {
-  const rowValueTypes: string[] = columnValidator.columnTypes;
   const worksheetRows = getWorksheetRows(worksheet);
+  const columnNames = getColumnNamesFromValidator(columnValidator);
 
   return worksheetRows.every((row) => {
-    return Object.values(columnValidator.columnNames).every((_, index) => {
+    return columnNames.every((columnName, index) => {
       const value = row[index];
       const type = typeof value;
-      if (rowValueTypes[index] === 'date') {
+      const columnSpec: IXLSXCSVColumn = columnValidator[columnName];
+
+      if (columnSpec.type === 'date') {
         return dayjs(value).isValid();
       }
 
-      if (rowValueTypes[index] === type) {
+      if (columnSpec.type === type) {
         return true;
       }
 
@@ -349,14 +349,12 @@ export function getNonStandardColumnNamesFromWorksheet(
 ): string[] {
   const columns = getHeadersUpperCase(xlsxWorksheet);
 
-  let aliasColumns: string[] = [];
-  // Create a list of all column names and aliases
-  if (columnValidator.columnAliases) {
-    aliasColumns = Object.values(columnValidator.columnAliases).flat();
-  }
+  // Get column headers and aliases
+  const columnValidatorHeaders = getColumnNamesFromValidator(columnValidator);
+  const columnValidatorAliases = getColumnAliasesFromValidator(columnValidator);
 
   // Combine the column validator headers and all aliases
-  const standardColumNames = [...columnValidator.columnNames, ...aliasColumns];
+  const standardColumNames = [...columnValidatorHeaders, ...columnValidatorAliases];
 
   // Only return column names not in the validation CSV Column validator (ie: only return the non-standard columns)
   return columns.filter((column) => !standardColumNames.includes(column));
