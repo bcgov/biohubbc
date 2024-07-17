@@ -113,12 +113,29 @@ const useTechniqueApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Delete techniques.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number[]} methodTechniqueIds[]
+   * @return {*}  {Promise<void>}
+   */
+  const deleteTechniques = async (projectId: number, surveyId: number, methodTechniqueIds: number[]): Promise<void> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/technique/delete`, {
+      methodTechniqueIds
+    });
+
+    return data;
+  };
+
   return {
     createTechniques,
     updateTechnique,
     getTechniqueById,
     getTechniquesForSurvey,
-    deleteTechnique
+    deleteTechnique,
+    deleteTechniques
   };
 };
 

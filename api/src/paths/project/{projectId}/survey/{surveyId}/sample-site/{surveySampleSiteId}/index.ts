@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/http-error';
+import { HTTP400, HTTP409 } from '../../../../../../../errors/http-error';
 import { GeoJSONFeature } from '../../../../../../../openapi/schemas/geoJson';
 import { techniqueSimpleViewSchema } from '../../../../../../../openapi/schemas/technique';
 import { UpdateSampleLocationRecord } from '../../../../../../../repositories/sample-location-repository';
@@ -18,7 +18,7 @@ export const PUT: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -262,7 +262,7 @@ export const DELETE: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -326,6 +326,9 @@ DELETE.apiDoc = {
     403: {
       $ref: '#/components/responses/403'
     },
+    409: {
+      $ref: '#/components/responses/409'
+    },
     500: {
       $ref: '#/components/responses/500'
     },
@@ -355,7 +358,7 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
       ]);
 
       if (samplingSiteObservationsCount > 0) {
-        throw new HTTP400('Cannot delete a sample site that is associated with an observation');
+        throw new HTTP409('Cannot delete a sample site that is associated with an observation');
       }
 
       const sampleLocationService = new SampleLocationService(connection);

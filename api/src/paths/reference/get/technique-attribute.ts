@@ -37,7 +37,8 @@ GET.apiDoc = {
               additionalProperties: false,
               properties: {
                 method_lookup_id: {
-                  type: 'number'
+                  type: 'integer',
+                  minimum: 1
                 },
                 quantitative_attributes: {
                   type: 'array',

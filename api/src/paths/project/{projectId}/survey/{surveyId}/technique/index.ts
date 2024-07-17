@@ -9,8 +9,6 @@ import {
 } from '../../../../../../openapi/schemas/pagination';
 import { techniqueCreateSchema, techniqueViewSchema } from '../../../../../../openapi/schemas/technique';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { AttractantService } from '../../../../../../services/attractants-service';
-import { TechniqueAttributeService } from '../../../../../../services/technique-attributes-service';
 import { TechniqueService } from '../../../../../../services/technique-service';
 import { getLogger } from '../../../../../../utils/logger';
 import {
@@ -121,51 +119,14 @@ export function createTechniques(): RequestHandler {
 
       const surveyId = Number(req.params.surveyId);
 
-      // Create the techniques
       const techniqueService = new TechniqueService(connection);
-      const techniques = await techniqueService.insertTechniquesForSurvey(surveyId, req.body.techniques);
-
-      // Insert additional technique information
-      const attractantsService = new AttractantService(connection);
-      const techniqueAttributeService = new TechniqueAttributeService(connection);
-      const promises = [];
-      for (const technique of techniques) {
-        const { attractants, attributes } = technique;
-
-        // Insert attractants
-        if (technique.attractants.length) {
-          promises.push(
-            attractantsService.insertTechniqueAttractants(surveyId, technique.method_technique_id, attractants)
-          );
-        }
-
-        // Insert qualitative attributes
-        if (technique.attributes.qualitative_attributes.length) {
-          promises.push(
-            techniqueAttributeService.insertQualitativeAttributesForTechnique(
-              technique.method_technique_id,
-              attributes.qualitative_attributes
-            )
-          );
-        }
-
-        // Insert quantitative attributes
-        if (technique.attributes.quantitative_attributes.length) {
-          promises.push(
-            techniqueAttributeService.insertQuantitativeAttributesForTechnique(
-              technique.method_technique_id,
-              attributes.quantitative_attributes
-            )
-          );
-        }
-      }
-      await Promise.all(promises);
+      await techniqueService.insertTechniquesForSurvey(surveyId, req.body.techniques);
 
       await connection.commit();
 
-      return res.status(200).send(techniques);
+      return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'insertTechniques', message: 'error', error });
+      defaultLog.error({ label: 'createTechniques', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

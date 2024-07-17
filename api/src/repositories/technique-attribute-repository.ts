@@ -1,3 +1,4 @@
+import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
@@ -18,18 +19,6 @@ export interface IQualitativeAttributePostData {
   method_lookup_attribute_qualitative_id: string;
 }
 
-// export interface IQuantitativeAttributeRecord {
-//   method_technique_attribute_quantitative_id: number;
-//   method_lookup_attribute_quantitative_id: string;
-//   value: number;
-// }
-
-// export interface IQualitativeAttributeRecord {
-//   method_technique_attribute_qualitative_id: number;
-//   method_lookup_attribute_qualitative_id: string;
-//   method_lookup_attribute_qualitative_option_id: string;
-// }
-
 const TechniqueAttributeQuantitative = z.object({
   method_lookup_attribute_quantitative_id: z.string().uuid(),
   name: z.string(),
@@ -38,11 +27,6 @@ const TechniqueAttributeQuantitative = z.object({
   min: z.number().nullable(),
   max: z.number().nullable()
 });
-
-// export interface ITechniqueAttributesObject {
-//   quantitative_attributes: IQuantitativeAttributeRecord[];
-//   qualitative_attributes: IQualitativeAttributeRecord[];
-// }
 
 const TechniqueAttributeQualitativeOption = z.object({
   method_lookup_attribute_qualitative_option_id: z.string(),
@@ -56,12 +40,6 @@ const TechniqueAttributeQualitative = z.object({
   description: z.string().nullable(),
   options: z.array(TechniqueAttributeQualitativeOption)
 });
-
-// export interface IGetTechniqueAttributes {
-//   method_lookup_id: number;
-//   quantitative_attributes: ITechniqueAttributeQuantitative[];
-//   qualitative_attributes: ITechniqueAttributeQualitative[];
-// }
 
 export const TechniqueAttributesLookupObject = z.object({
   method_lookup_id: z.number(),
@@ -525,5 +503,43 @@ export class TechniqueAttributeRepository extends BaseRepository {
         'rows was null or undefined, expected rows != null'
       ]);
     }
+  }
+
+  /**
+   * Delete all qualitative and quantitative attribute records for a technique.
+   *
+   * @param {number} surveyId
+   * @param {number} methodTechniqueId
+   * @return {*}  {Promise<void>}
+   * @memberof TechniqueAttributeRepository
+   */
+  async deleteAllTechniqueAttributes(surveyId: number, methodTechniqueId: number): Promise<void> {
+    defaultLog.debug({ label: 'deleteAllTechniqueAttributes', surveyId, methodTechniqueId });
+
+    // Query to delete all qualitative attributes for a technique
+    const sqlStatement1 = SQL`
+      DELETE FROM 
+        method_technique_attribute_qualitative using method_technique 
+      WHERE 
+        method_technique.method_technique_id = method_technique_attribute_qualitative.method_technique_id 
+      AND
+        method_technique_attribute_qualitative.method_technique_id = ${methodTechniqueId}
+      AND
+        method_technique.survey_id = ${surveyId}
+    `;
+
+    // Query to delete all qualitative attributes for a technique
+    const sqlStatement2 = SQL`
+      DELETE FROM 
+        method_technique_attribute_quantitative using method_technique 
+      WHERE 
+        method_technique.method_technique_id = method_technique_attribute_quantitative.method_technique_id 
+      AND 
+        method_technique_attribute_quantitative.method_technique_id = ${methodTechniqueId}
+      AND
+        method_technique.survey_id = ${surveyId}
+    `;
+
+    await Promise.all([this.connection.sql(sqlStatement1), this.connection.sql(sqlStatement2)]);
   }
 }

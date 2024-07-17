@@ -11,6 +11,12 @@ export interface SamplingSiteManageHeaderProps {
   survey_name: string;
 }
 
+/**
+ * Header for the sampling site manage page.
+ *
+ * @param {SamplingSiteManageHeaderProps} props
+ * @return {*}
+ */
 export const SamplingSiteManageHeader = (props: SamplingSiteManageHeaderProps) => {
   const { project_id, project_name, survey_id, survey_name } = props;
 

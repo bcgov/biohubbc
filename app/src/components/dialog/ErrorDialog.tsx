@@ -111,9 +111,7 @@ export const ErrorDialog = (props: IErrorDialogProps) => {
                 <ErrorDetailsList errors={props.dialogErrorDetails} />
               </Collapse>
             </Box>
-          ) : (
-            <></>
-          )}
+          ) : null}
         </Stack>
       </DialogContent>
 

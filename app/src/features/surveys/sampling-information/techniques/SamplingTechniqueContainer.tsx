@@ -13,6 +13,8 @@ import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { DeleteTechniquesBulkI18N } from 'constants/i18n';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -27,6 +29,8 @@ export const SamplingTechniqueContainer = () => {
   const surveyContext = useSurveyContext();
   const dialogContext = useDialogContext();
 
+  const biohubApi = useBiohubApi();
+
   // Multi-select row action menu
   const [bulkActionTechniques, setBulkActionTechniques] = useState<GridRowSelectionModel>([]);
   const [bulkActionMenuAnchorEl, setBulkActionMenuAnchorEl] = useState<MenuProps['anchorEl']>(null);
@@ -39,16 +43,41 @@ export const SamplingTechniqueContainer = () => {
   const techniqueCount = surveyContext.techniqueDataLoader.data?.count ?? 0;
   const techniques = surveyContext.techniqueDataLoader.data?.techniques ?? [];
 
+  const handleBulkDeleteTechniques = async () => {
+    await biohubApi.technique
+      .deleteTechniques(surveyContext.projectId, surveyContext.surveyId, bulkActionTechniques.map(Number))
+      .then(() => {
+        dialogContext.setYesNoDialog({ open: false });
+        setBulkActionTechniques([]);
+        setBulkActionMenuAnchorEl(null);
+        surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      })
+      .catch((error: any) => {
+        dialogContext.setYesNoDialog({ open: false });
+        setBulkActionTechniques([]);
+        setBulkActionMenuAnchorEl(null);
+        dialogContext.setSnackbar({
+          snackbarMessage: (
+            <>
+              <Typography variant="body2" component="div">
+                <strong>Error Deleting Sampling Sites</strong>
+              </Typography>
+              <Typography variant="body2" component="div">
+                {String(error)}
+              </Typography>
+            </>
+          ),
+          open: true
+        });
+      });
+  };
+
   const deleteBulkTechniquesDialog = () => {
     dialogContext.setYesNoDialog({
-      dialogTitle: 'Delete Techniques?',
-      dialogContent: (
-        <Typography variant="body1" component="div" color="textSecondary">
-          Are you sure you want to delete this technique?
-        </Typography>
-      ),
-      yesButtonLabel: 'Delete Technique',
-      noButtonLabel: 'Cancel',
+      dialogTitle: DeleteTechniquesBulkI18N.deleteTitle,
+      dialogText: DeleteTechniquesBulkI18N.deleteText,
+      yesButtonLabel: DeleteTechniquesBulkI18N.yesButtonLabel,
+      noButtonLabel: DeleteTechniquesBulkI18N.noButtonLabel,
       yesButtonProps: { color: 'error' },
       onClose: () => {
         dialogContext.setYesNoDialog({ open: false });
@@ -58,7 +87,7 @@ export const SamplingTechniqueContainer = () => {
       },
       open: true,
       onYes: () => {
-        // handleDeleteTechnique();
+        handleBulkDeleteTechniques();
       }
     });
   };

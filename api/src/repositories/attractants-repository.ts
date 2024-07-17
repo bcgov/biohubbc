@@ -134,7 +134,7 @@ export class AttractantRepository extends BaseRepository {
   }
 
   /**
-   * Delete all technique attractants.
+   * Delete all technique attractants of a survey.
    *
    * @param {number} surveyId
    * @param {number} methodTechniqueId
@@ -143,23 +143,18 @@ export class AttractantRepository extends BaseRepository {
    */
   async deleteAllTechniqueAttractants(surveyId: number, methodTechniqueId: number): Promise<void> {
     const sqlStatement = SQL`
-      DELETE
-      FROM method_technique_attractant mta
-        USING method_technique mt
-      WHERE mt.method_technique_id = mta.method_technique_id AND
-        mt.survey_id = ${surveyId} AND
+      DELETE FROM 
+        method_technique_attractant mta
+      USING 
+        method_technique mt
+      WHERE 
+        mt.method_technique_id = mta.method_technique_id
+      AND
         mta.method_technique_id = ${methodTechniqueId}
-      RETURNING
-        method_technique_attractant_id;
+      AND
+        mt.survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql(sqlStatement);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete technique', [
-        'AttractantRepository->deleteTechnique',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
+    await this.connection.sql(sqlStatement);
   }
 }

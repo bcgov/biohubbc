@@ -15,10 +15,6 @@ export const SamplingPeriodForm = () => {
   return (
     <form>
       <Box component="fieldset">
-        {/* <Box> */}
-        {/* <FieldArray
-          name="sample_periods"
-          render={(arrayHelpers: FieldArrayRenderProps) => ( */}
         <Box>
           <Stack
             flexDirection="row"
@@ -36,8 +32,6 @@ export const SamplingPeriodForm = () => {
                   dateId: `start_date`,
                   dateRequired: true,
                   dateIcon: mdiCalendarMonthOutline
-                  //   dateError: get(errors, 'sample_periods'),
-                  //   dateHelperText: get(errors, 'sample_periods')
                 }}
                 time={{
                   timeLabel: '',
@@ -45,10 +39,7 @@ export const SamplingPeriodForm = () => {
                   timeId: `start_time`,
                   timeRequired: false,
                   timeIcon: mdiClockOutline
-                  //   dateError: get(errors, 'sample_periods'),
-                  //   dateHelperText: get(errors, 'sample_periods')
                 }}
-                // parentName={`sample_periods`}
                 formikProps={formikProps}
               />
               {errors && typeof errors !== 'string' && errors && typeof errors === 'string' && (
@@ -84,7 +75,6 @@ export const SamplingPeriodForm = () => {
                   timeRequired: false,
                   timeIcon: mdiClockOutline
                 }}
-                // parentName={`sample_periods`}
                 formikProps={formikProps}
               />
               {errors && typeof errors !== 'string' && errors && typeof errors === 'string' && (
@@ -101,9 +91,6 @@ export const SamplingPeriodForm = () => {
             </Stack>
           </Stack>
         </Box>
-        {/* )}
-        /> */}
-        {/* </Box> */}
       </Box>
     </form>
   );

@@ -6,6 +6,11 @@ import { SamplingSiteManageSiteList } from 'features/surveys/sampling-informatio
 import { SamplingTechniqueContainer } from 'features/surveys/sampling-information/techniques/SamplingTechniqueContainer';
 import { useProjectContext, useSurveyContext } from 'hooks/useContext';
 
+/**
+ * Page for managing sampling information (sampling techniques and sites).
+ *
+ * @return {*}
+ */
 export const SamplingSiteManagePage = () => {
   const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();

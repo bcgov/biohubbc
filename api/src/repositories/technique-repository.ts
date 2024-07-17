@@ -8,7 +8,6 @@ import { BaseRepository } from './base-repository';
 import { IQualitativeAttributePostData, IQuantitativeAttributePostData } from './technique-attribute-repository';
 
 export interface ITechniquePostData {
-  survey_id: number;
   name: string;
   description: string | null;
   distance_threshold: number | null;
@@ -268,9 +267,11 @@ export class TechniqueRepository extends BaseRepository {
    */
   async deleteTechnique(surveyId: number, methodTechniqueId: number): Promise<number> {
     const sqlStatement = SQL`
-      DELETE
-      FROM method_technique mt
-      WHERE mt.survey_id = ${surveyId} AND
+      DELETE FROM 
+        method_technique mt
+      WHERE 
+        mt.survey_id = ${surveyId} 
+      AND
         mt.method_technique_id = ${methodTechniqueId}
       RETURNING
         mt.method_technique_id;

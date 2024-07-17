@@ -317,11 +317,13 @@ GET.apiDoc = {
               },
               survey_progress: {
                 type: 'array',
+                description: 'Indicates the progress of a survey (e.g. planned, in progress, completed).',
                 items: {
                   type: 'object',
                   properties: {
                     id: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
                     name: {
                       type: 'string'
@@ -334,13 +336,16 @@ GET.apiDoc = {
               },
               method_response_metrics: {
                 type: 'array',
+                description:
+                  'Indicates the measurement type of a sampling method (e.g. count, precent cover, biomass, etc).',
                 items: {
                   type: 'object',
                   additionalProperties: false,
                   required: ['id', 'name', 'description'],
                   properties: {
                     id: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
                     name: {
                       type: 'string'
@@ -353,13 +358,15 @@ GET.apiDoc = {
               },
               attractants: {
                 type: 'array',
+                description: 'Describes the attractants that can be used by a sampling technique.',
                 items: {
                   type: 'object',
                   additionalProperties: false,
                   required: ['id', 'name', 'description'],
                   properties: {
                     id: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
                     name: {
                       type: 'string'

@@ -8,6 +8,13 @@ import {
 } from '../repositories/technique-attribute-repository';
 import { DBService } from './db-service';
 
+/**
+ * Service layer for technique attributes.
+ *
+ * @export
+ * @class TechniqueAttributeService
+ * @extends {DBService}
+ */
 export class TechniqueAttributeService extends DBService {
   techniqueAttributeRepository: TechniqueAttributeRepository;
 
@@ -117,6 +124,18 @@ export class TechniqueAttributeService extends DBService {
       methodTechniqueId,
       methodLookupAttributeQualitativeIds
     );
+  }
+
+  /**
+   * Delete all quantitative and qualitative attribute records for a technique.
+   *
+   * @param {number} surveyId
+   * @param {number} methodTechniqueId
+   * @return {*}  {Promise<void>}
+   * @memberof TechniqueAttributeService
+   */
+  async deleteAllTechniqueAttributes(surveyId: number, methodTechniqueId: number): Promise<void> {
+    return this.techniqueAttributeRepository.deleteAllTechniqueAttributes(surveyId, methodTechniqueId);
   }
 
   /**

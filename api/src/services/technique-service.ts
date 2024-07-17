@@ -9,16 +9,26 @@ import {
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { AttractantService } from './attractants-service';
 import { DBService } from './db-service';
+import { TechniqueAttributeService } from './technique-attributes-service';
 
+/**
+ * Service layer for techniques.
+ *
+ * @export
+ * @class TechniqueService
+ * @extends {DBService}
+ */
 export class TechniqueService extends DBService {
   techniqueRepository: TechniqueRepository;
   attractantService: AttractantService;
+  techniqueAttributeService: TechniqueAttributeService;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
     this.techniqueRepository = new TechniqueRepository(connection);
     this.attractantService = new AttractantService(connection);
+    this.techniqueAttributeService = new TechniqueAttributeService(connection);
   }
 
   /**
@@ -61,13 +71,14 @@ export class TechniqueService extends DBService {
    *
    * @param {number} surveyId
    * @param {ITechniquePostData[]} techniques
-   * @return {*}  {(Promise<(ITechniquePostData & { method_technique_id: number })[]>)}
+   * @return {*}  {Promise<{ method_technique_id: number }[]>}
    * @memberof TechniqueService
    */
   async insertTechniquesForSurvey(
     surveyId: number,
     techniques: ITechniquePostData[]
-  ): Promise<(ITechniquePostData & { method_technique_id: number })[]> {
+  ): Promise<{ method_technique_id: number }[]> {
+    // Insert each technique record
     const promises = techniques.map(async (technique) => {
       const rowForInsert: ITechniqueRowDataForInsert = {
         name: technique.name,
@@ -76,9 +87,41 @@ export class TechniqueService extends DBService {
         distance_threshold: technique.distance_threshold
       };
 
+      // Insert root technique record
       const { method_technique_id } = await this.techniqueRepository.insertTechnique(surveyId, rowForInsert);
 
-      return { ...technique, method_technique_id };
+      const promises = [];
+
+      // Insert attractants
+      if (technique.attractants.length) {
+        promises.push(
+          this.attractantService.insertTechniqueAttractants(surveyId, method_technique_id, technique.attractants)
+        );
+      }
+
+      // Insert qualitative attributes
+      if (technique.attributes.qualitative_attributes.length) {
+        promises.push(
+          this.techniqueAttributeService.insertQualitativeAttributesForTechnique(
+            method_technique_id,
+            technique.attributes.qualitative_attributes
+          )
+        );
+      }
+
+      // Insert quantitative attributes
+      if (technique.attributes.quantitative_attributes.length) {
+        promises.push(
+          this.techniqueAttributeService.insertQuantitativeAttributesForTechnique(
+            method_technique_id,
+            technique.attributes.quantitative_attributes
+          )
+        );
+      }
+
+      await Promise.all(promises);
+
+      return { method_technique_id };
     });
 
     return Promise.all(promises);
@@ -105,9 +148,13 @@ export class TechniqueService extends DBService {
    * @memberof TechniqueService
    */
   async deleteTechnique(surveyId: number, methodTechniqueId: number): Promise<number> {
-    // Delete any attributes on the technique
+    // Delete any attractants on the technique
     await this.attractantService.deleteAllTechniqueAttractants(surveyId, methodTechniqueId);
 
+    // Delete any attributes on the technique
+    await this.techniqueAttributeService.deleteAllTechniqueAttributes(surveyId, methodTechniqueId);
+
+    // Delete the technique
     return this.techniqueRepository.deleteTechnique(surveyId, methodTechniqueId);
   }
 }

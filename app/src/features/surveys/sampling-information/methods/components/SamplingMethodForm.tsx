@@ -97,27 +97,8 @@ export const SamplingMethodForm = () => {
                 label: option.name,
                 subText: option.description ?? undefined
               })) ?? []
-            }></SelectWithSubtextField>
-          {/* <AutocompleteField
-            id="method_technique_id"
-            label="Technique"
-            name="method_technique_id"
-            // showValue={true}
-            loading={samplingInformationContext.techniqueDataLoader.isLoading}
-            options={
-              techniques?.map((option) => ({
-                value: option.method_technique_id,
-                label: option.name,
-                description: option.description ?? undefined
-              })) ?? []
             }
-            onChange={(_, value) => {
-
-              if (value?.value) {
-                setFieldValue('method_technique_id', value.value);
-              }
-            }}
-          /> */}
+          />
           <AutocompleteField
             id="method_response_metric_id"
             label="Response Metric"

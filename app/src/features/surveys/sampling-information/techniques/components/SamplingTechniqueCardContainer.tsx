@@ -13,6 +13,7 @@ import { GridOverlay } from '@mui/x-data-grid/components/containers/GridOverlay'
 import { GridColDef } from '@mui/x-data-grid/models/colDef/gridColDef';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { DeleteTechniqueI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { IGetTechniqueResponse } from 'interfaces/useTechniqueApi.interface';
@@ -87,14 +88,10 @@ export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(prop
    */
   const deleteTechniqueDialog = () => {
     dialogContext.setYesNoDialog({
-      dialogTitle: 'Delete Technique?',
-      dialogContent: (
-        <Typography variant="body1" component="div" color="textSecondary">
-          Are you sure you want to delete this technique?
-        </Typography>
-      ),
-      yesButtonLabel: 'Delete Technique',
-      noButtonLabel: 'Cancel',
+      dialogTitle: DeleteTechniqueI18N.deleteTitle,
+      dialogText: DeleteTechniqueI18N.deleteText,
+      yesButtonLabel: DeleteTechniqueI18N.yesButtonLabel,
+      noButtonLabel: DeleteTechniqueI18N.noButtonLabel,
       yesButtonProps: { color: 'error' },
       onClose: () => {
         dialogContext.setYesNoDialog({ open: false });

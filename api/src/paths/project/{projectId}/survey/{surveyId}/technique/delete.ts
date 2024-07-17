@@ -2,10 +2,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400, HTTP409 } from '../../../../../../errors/http-error';
+import { HTTP409 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
-import { SampleLocationService } from '../../../../../../services/sample-location-service';
+import { TechniqueService } from '../../../../../../services/technique-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/delete');
@@ -26,11 +26,11 @@ export const POST: Operation = [
       ]
     };
   }),
-  deleteSurveySampleSiteRecords()
+  deleteSurveyTechniqueRecords()
 ];
 
 POST.apiDoc = {
-  description: 'Delete survey sample sites.',
+  description: 'Delete survey techniques.',
   tags: ['survey'],
   security: [
     {
@@ -58,19 +58,21 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Survey sample site delete request object.',
+    description: 'Survey technique delete request object.',
     content: {
       'application/json': {
         schema: {
           type: 'object',
           additionalProperties: false,
-          required: ['surveySampleSiteIds'],
+          required: ['methodTechniqueIds'],
           properties: {
-            surveySampleSiteIds: {
+            methodTechniqueIds: {
               items: {
                 type: 'integer',
                 minimum: 1
-              }
+              },
+              minItems: 1,
+              description: 'An array of technique record IDs to delete.'
             }
           }
         }
@@ -79,7 +81,7 @@ POST.apiDoc = {
   },
   responses: {
     204: {
-      description: 'Delete survey sample site OK'
+      description: 'Delete survey techniques OK'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -102,14 +104,10 @@ POST.apiDoc = {
   }
 };
 
-export function deleteSurveySampleSiteRecords(): RequestHandler {
+export function deleteSurveyTechniqueRecords(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const surveySampleSiteIds = req.body.surveySampleSiteIds as number[];
-
-    if (!surveySampleSiteIds) {
-      throw new HTTP400('Missing required body `surveySampleSiteIds`');
-    }
+    const methodTechniqueIds = req.body.methodTechniqueIds as number[];
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -117,19 +115,21 @@ export function deleteSurveySampleSiteRecords(): RequestHandler {
       await connection.open();
 
       const observationService = new ObservationService(connection);
-      const sampleLocationService = new SampleLocationService(connection);
 
-      const observationCount = await observationService.getObservationsCountBySampleSiteIds(
+      const observationCount = await observationService.getObservationsCountByTechniqueIds(
         surveyId,
-        surveySampleSiteIds
+        methodTechniqueIds
       );
 
       if (observationCount > 0) {
-        throw new HTTP409(`Cannot delete a sampling site that is associated with an observation`);
+        throw new HTTP409('Cannot delete a technique that is associated with an observation');
       }
 
-      for (const surveySampleSiteId of surveySampleSiteIds) {
-        await sampleLocationService.deleteSampleSiteRecord(surveyId, surveySampleSiteId);
+      const techniqueService = new TechniqueService(connection);
+
+      // TODO Update to handle all deletes in one request rather than one at a time
+      for (const methodTechniqueId of methodTechniqueIds) {
+        await techniqueService.deleteTechnique(surveyId, methodTechniqueId);
       }
 
       await connection.commit();
