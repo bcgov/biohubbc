@@ -14,10 +14,10 @@ interface IEditSamplingPeriodFormDialogProps {
 }
 
 /**
- * Returns a form for editing a sampling MethodPeriod
+ * Renders a form for editing a sampling period.
  *
- * @param props
- * @returns
+ * @param {IEditSamplingPeriodFormDialogProps} props
+ * @returns {*}
  */
 export const EditSamplingPeriodFormDialog = (props: IEditSamplingPeriodFormDialogProps) => {
   const { open, initialData, onSubmit, onClose } = props;

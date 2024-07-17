@@ -46,6 +46,12 @@ interface ISampleSiteCreateFormProps {
   isSubmitting: boolean;
 }
 
+/**
+ * Renders sampling site create form.
+ *
+ * @param {ISampleSiteCreateFormProps} props
+ * @returns {*}
+ */
 const SampleSiteCreateForm = (props: ISampleSiteCreateFormProps) => {
   const { isSubmitting } = props;
 
