@@ -2,10 +2,22 @@ import { Request } from 'express';
 import { ApiPaginationOptions, ApiPaginationResults } from '../zod-schema/pagination';
 
 /**
- * Generates the API pagination options object from the given request
+ * Generates the API pagination options object from the given request.
+ *
+ * Used in conjunction with a request leveraging the `paginationRequestQueryParamSchema` params.
+ *
+ * @example
+ * GET.apiDoc = {
+ *   //...
+ *   parameters: [
+ *     //...
+ *     ...paginationRequestQueryParamSchema
+ *   ],
+ *   //...
+ * }
  *
  * @param {Request} request
- * @returns {ApiPaginationOptions | undefined}
+ * @return {*}  {Partial<ApiPaginationOptions>}
  */
 export const makePaginationOptionsFromRequest = (request: Request): Partial<ApiPaginationOptions> => {
   const page: number | undefined = request.query.page ? Number(request.query.page) : undefined;
@@ -26,6 +38,8 @@ export const makePaginationOptionsFromRequest = (request: Request): Partial<ApiP
 /**
  * Generates the pagination response object from the given pagination request params.
  *
+ * Used in conjunction with a the output of `makePaginationOptionsFromRequest`.
+ *
  * @param {number} total
  * @param {Partial<ApiPaginationOptions>} [pagination]
  * @returns
@@ -45,9 +59,10 @@ export const makePaginationResponse = (
 };
 
 /**
- * If the given pagination object contains all of the necessary request params
- * needed to facilitate pagination, returns an instance of `ApiPaginationOptions`.
- * Else, returns `undefined`.
+ * Returns `ApiPaginationOptions` if the given pagination object contains all of the necessary request params needed to
+ * facilitate pagination, otherwise returns `undefined`.
+ *
+ * Used in conjunction with the output of `makePaginationOptionsFromRequest`.
  *
  * @param {Partial<ApiPaginationOptions>} pagination
  * @returns {boolean}

@@ -8,7 +8,7 @@ import {
 import useAdminApi from './useAdminApi';
 
 describe('useAdminApi', () => {
-  let mock: any;
+  let mock: MockAdapter;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);

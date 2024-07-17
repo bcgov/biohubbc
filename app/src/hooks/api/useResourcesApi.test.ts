@@ -3,7 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import useResourcesApi from './useResourcesApi';
 
 describe('useResourcesApi', () => {
-  let mock: any;
+  let mock: MockAdapter;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);

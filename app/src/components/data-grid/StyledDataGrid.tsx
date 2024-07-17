@@ -1,12 +1,10 @@
-import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import { DataGrid, DataGridProps, GridValidRowModel } from '@mui/x-data-grid';
+import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { useCallback } from 'react';
 import StyledDataGridOverlay from './StyledDataGridOverlay';
 
-const StyledLoadingOverlay = () => (
-  <Box width="100%" height="100%" sx={{ backgroundColor: grey[300], opacity: 0.25 }}></Box>
-);
+const StyledLoadingOverlay = () => <SkeletonList numberOfLines={8} />;
 export type StyledDataGridProps = DataGridProps & {
   noRowsMessage?: string;
 };
@@ -18,11 +16,12 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
 
   return (
     <DataGrid<R>
-      {...props}
       autoHeight
+      {...props}
       slots={{
         loadingOverlay: StyledLoadingOverlay,
-        noRowsOverlay: noRowsOverlay
+        noRowsOverlay: noRowsOverlay,
+        ...props.slots
       }}
       sx={{
         border: 'none',
@@ -49,7 +48,8 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
         },
         '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },
         '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': { py: '15px' },
-        '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': { py: '22px' }
+        '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': { py: '22px' },
+        ...props.sx
       }}
     />
   );

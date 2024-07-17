@@ -66,6 +66,10 @@ export class MockReq {
   params = {};
   body = {};
   files: any[] = [];
+  // Exists on authenticated requests. @see authentication.ts and authorization.ts
+  keycloak_token?: Record<string, any>;
+  // Exists on authenticated requests. @see authentication.ts and authorization.ts
+  system_user?: Record<string, any>;
 }
 
 export type ExtendedMockRes = MockRes & Response;

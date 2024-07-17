@@ -15,8 +15,8 @@ jest.mock('../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
-  project: {
-    getAllUserProjectsForView: jest.fn<Promise<IGetUserProjectsListResponse[]>, []>()
+  user: {
+    getProjectList: jest.fn<Promise<IGetUserProjectsListResponse[]>, []>()
   },
   projectParticipants: {
     removeProjectParticipant: jest.fn<Promise<boolean>, []>(),
@@ -43,7 +43,7 @@ const mockUser: ISystemUser = {
 describe('UsersDetailProjects', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
-    mockUseApi.project.getAllUserProjectsForView.mockClear();
+    mockUseApi.user.getProjectList.mockClear();
     mockUseApi.codes.getAllCodeSets.mockClear();
   });
 
@@ -72,7 +72,7 @@ describe('UsersDetailProjects', () => {
       coordinator_agency: [{ id: 1, name: 'agency 1' }]
     } as any);
 
-    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([]);
+    mockUseApi.user.getProjectList.mockResolvedValue([]);
 
     const { getByTestId, getAllByText } = render(
       <Router history={history}>
@@ -94,7 +94,7 @@ describe('UsersDetailProjects', () => {
       project_roles: [{ id: 1, name: 'Coordinator' }]
     } as any);
 
-    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
+    mockUseApi.user.getProjectList.mockResolvedValue([
       {
         project_participation_id: 4,
         project_id: 2,
@@ -126,7 +126,7 @@ describe('UsersDetailProjects', () => {
       project_roles: [{ id: 1, name: 'Coordinator' }]
     } as any);
 
-    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
+    mockUseApi.user.getProjectList.mockResolvedValue([
       {
         project_participation_id: 4,
         project_id: 1,
@@ -168,7 +168,7 @@ describe('UsersDetailProjects', () => {
       project_roles: [{ id: 1, name: 'Coordinator' }]
     } as any);
 
-    mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
+    mockUseApi.user.getProjectList.mockResolvedValue([
       {
         project_participation_id: 4,
         project_id: 1,
@@ -206,7 +206,7 @@ describe('UsersDetailProjects', () => {
         project_roles: [{ id: 1, name: 'Coordinator' }]
       } as any);
 
-      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.user.getProjectList.mockResolvedValue([
         {
           project_participation_id: 4,
           project_id: 1,
@@ -253,7 +253,7 @@ describe('UsersDetailProjects', () => {
 
       mockUseApi.projectParticipants.removeProjectParticipant.mockResolvedValue(true);
 
-      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.user.getProjectList.mockResolvedValue([
         {
           project_participation_id: 4,
           project_id: 1,
@@ -288,7 +288,7 @@ describe('UsersDetailProjects', () => {
         expect(getAllByText('secondProjectName').length).toEqual(1);
       });
 
-      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.user.getProjectList.mockResolvedValue([
         {
           project_participation_id: 8,
           project_id: 5,
@@ -328,7 +328,7 @@ describe('UsersDetailProjects', () => {
         ]
       } as any);
 
-      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.user.getProjectList.mockResolvedValue([
         {
           project_participation_id: 4,
           project_id: 1,
@@ -372,7 +372,7 @@ describe('UsersDetailProjects', () => {
         ]
       } as any);
 
-      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.user.getProjectList.mockResolvedValue([
         {
           project_participation_id: 4,
           project_id: 1,
@@ -430,7 +430,7 @@ describe('UsersDetailProjects', () => {
         ]
       } as any);
 
-      mockUseApi.project.getAllUserProjectsForView.mockResolvedValue([
+      mockUseApi.user.getProjectList.mockResolvedValue([
         {
           project_participation_id: 4,
           project_id: 1,

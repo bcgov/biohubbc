@@ -95,11 +95,11 @@ export function updateSurveyCritter(): RequestHandler {
 
     const connection = getDBConnection(req['keycloak_token']);
     try {
-      await connection.open();
-
       if (!critterbaseCritterId) {
         throw new HTTPError(HTTPErrorType.BAD_REQUEST, 400, 'No external critter ID was found.');
       }
+
+      await connection.open();
 
       const surveyService = new SurveyCritterService(connection);
       await surveyService.updateCritter(critterId, critterbaseCritterId);
