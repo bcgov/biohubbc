@@ -35,32 +35,26 @@ const SpeciesStandardsToolbar = (props: ISpeciesStandardsToolbarProps) => {
 
   return (
     <Box>
-      <ToggleButtonGroup
-        value={props.activeView}
-        onChange={updateDatasetView}
-        exclusive
-        sx={{
-          display: 'flex',
-          gap: 1,
-          '& Button': {
-            py: 0.5,
-            px: 1.5,
-            border: 'none',
-            borderRadius: '4px !important',
-            fontSize: '0.875rem',
-            fontWeight: 700,
-            letterSpacing: '0.02rem'
-          }
-        }}>
+      <ToggleButtonGroup value={props.activeView} onChange={updateDatasetView} exclusive>
         {props.views.map((view) => (
-          <ToggleButton
-            key={view.value}
-            component={Button}
-            color="primary"
-            startIcon={<Icon path={view.icon} size={0.75} />}
-            value={view.value}>
-            {view.label}
-          </ToggleButton>
+          <>
+            <ToggleButton
+              key={view.value}
+              component={Button}
+              color="primary"
+              startIcon={<Icon path={view.icon} size={0.75} />}
+              value={view.value}>
+              {view.label}
+            </ToggleButton>
+            <ToggleButton
+              key={view.value}
+              component={Button}
+              color="primary"
+              startIcon={<Icon path={view.icon} size={0.75} />}
+              value={view.value}>
+              {view.label}
+            </ToggleButton>
+          </>
         ))}
       </ToggleButtonGroup>
     </Box>

@@ -16,7 +16,6 @@ const SpeciesStandardsPage = () => {
   const standardsDataLoader = useDataLoader((species: ITaxonomy) =>
     biohubApi.standards.getSpeciesStandards(species.tsn)
   );
-
   return (
     <>
       <PageHeader title="Standards" />

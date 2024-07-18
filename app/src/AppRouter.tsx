@@ -108,7 +108,7 @@ const AppRouter: React.FC = () => {
 
       <RouteWithTitle path="/doublestandards" title={getTitle('Double Standards')}>
         <BaseLayout>
-          <DoubleStandardsPage/>
+          <DoubleStandardsPage />
         </BaseLayout>
       </RouteWithTitle>
 
