@@ -69,6 +69,7 @@ const DoubleStandardsPage = () => {
             </ToggleButtonGroup>
 
             {currentTab === 'SPECIES' && (
+              <>
               <SpeciesAutocompleteField
                 formikFieldName="tsn"
                 label={''}
@@ -78,9 +79,10 @@ const DoubleStandardsPage = () => {
                   }
                 }}
               />
+              <SpeciesStandardsResults data={standardsDataLoader.data} isLoading={standardsDataLoader.isLoading} />
+              </>
             )}
-            {/* This is te bit of code that shoes the results for search bar. Is there a way to make sure this is only showing when currentTab is species? */}
-            <SpeciesStandardsResults data={standardsDataLoader.data} isLoading={standardsDataLoader.isLoading} />
+            
 
             {/* Nothing really going on in this part riht now. Using the search bar to search methodologies in  */}
             {currentTab === 'METHODS' && (
