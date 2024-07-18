@@ -190,7 +190,7 @@ export class TechniqueRepository extends BaseRepository {
    * Get total count of all techniques for a survey.
    *
    * @param {number} surveyId
-   * @returns {*} {Promise<{id: number}[]>}
+   * @return {*}  {Promise<number>}
    * @memberof TechniqueRepository
    */
   async getTechniquesCountForSurveyId(surveyId: number): Promise<number> {
@@ -239,10 +239,13 @@ export class TechniqueRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {ITechniqueRowDataForUpdate} techniqueObject
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<{ method_technique_id: number }>}
    * @memberof TechniqueRepository
    */
-  async updateTechnique(surveyId: number, techniqueObject: ITechniqueRowDataForUpdate): Promise<void> {
+  async updateTechnique(
+    surveyId: number,
+    techniqueObject: ITechniqueRowDataForUpdate
+  ): Promise<{ method_technique_id: number }> {
     const queryBuilder = getKnex()
       .table('method_technique')
       .update({
@@ -252,9 +255,12 @@ export class TechniqueRepository extends BaseRepository {
         distance_threshold: techniqueObject.distance_threshold
       })
       .where('method_technique_id', techniqueObject.method_technique_id)
-      .andWhere('survey_id', surveyId);
+      .andWhere('survey_id', surveyId)
+      .returning('method_technique_id');
 
-    await this.connection.knex(queryBuilder, z.object({ method_technique_id: z.number() }));
+    const response = await this.connection.knex(queryBuilder, z.object({ method_technique_id: z.number() }));
+
+    return response.rows[0];
   }
 
   /**
@@ -262,10 +268,10 @@ export class TechniqueRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} methodTechniqueId
-   * @returns {*}
+   * @return {*}  {Promise<{ method_technique_id: number }>}
    * @memberof TechniqueRepository
    */
-  async deleteTechnique(surveyId: number, methodTechniqueId: number): Promise<number> {
+  async deleteTechnique(surveyId: number, methodTechniqueId: number): Promise<{ method_technique_id: number }> {
     const sqlStatement = SQL`
       DELETE FROM 
         method_technique mt
@@ -277,7 +283,12 @@ export class TechniqueRepository extends BaseRepository {
         mt.method_technique_id;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(
+      sqlStatement,
+      z.object({
+        method_technique_id: z.number()
+      })
+    );
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete technique', [

@@ -132,10 +132,13 @@ export class TechniqueService extends DBService {
    *
    * @param {number} surveyId
    * @param {ITechniqueRowDataForUpdate} technique
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<{ method_technique_id: number }>}
    * @memberof TechniqueService
    */
-  async updateTechnique(surveyId: number, technique: ITechniqueRowDataForUpdate): Promise<void> {
+  async updateTechnique(
+    surveyId: number,
+    technique: ITechniqueRowDataForUpdate
+  ): Promise<{ method_technique_id: number }> {
     return this.techniqueRepository.updateTechnique(surveyId, technique);
   }
 
@@ -144,10 +147,10 @@ export class TechniqueService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} methodTechniqueId
-   * @return {*}  {Promise<number>}
+   * @return {*}  {Promise<{ method_technique_id: number }>}
    * @memberof TechniqueService
    */
-  async deleteTechnique(surveyId: number, methodTechniqueId: number): Promise<number> {
+  async deleteTechnique(surveyId: number, methodTechniqueId: number): Promise<{ method_technique_id: number }> {
     // Delete any attractants on the technique
     await this.attractantService.deleteAllTechniqueAttractants(surveyId, methodTechniqueId);
 

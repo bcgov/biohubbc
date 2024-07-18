@@ -328,13 +328,13 @@ export class TechniqueAttributeRepository extends BaseRepository {
    *
    * @param {number} methodTechniqueId
    * @param {IQualitativeAttributePostData[]} attributes
-   * @returns {*} {Promise<{id: number}[]>}
+   * @return {*}  {(Promise<{ method_technique_attribute_qualitative_id: number }[] | undefined>)}
    * @memberof TechniqueAttributeRepository
    */
   async insertQualitativeAttributesForTechnique(
     methodTechniqueId: number,
     attributes: IQualitativeAttributePostData[]
-  ): Promise<void> {
+  ): Promise<{ method_technique_attribute_qualitative_id: number }[] | undefined> {
     defaultLog.debug({ label: 'insertQualitativeAttributesForTechnique', methodTechniqueId });
 
     if (!attributes.length) {
@@ -352,7 +352,12 @@ export class TechniqueAttributeRepository extends BaseRepository {
       .into('method_technique_attribute_qualitative')
       .returning('method_technique_attribute_qualitative_id');
 
-    await this.connection.knex(queryBuilder, z.object({ method_technique_attribute_qualitative_id: z.number() }));
+    const response = await this.connection.knex(
+      queryBuilder,
+      z.object({ method_technique_attribute_qualitative_id: z.number() })
+    );
+
+    return response.rows;
   }
 
   /**
@@ -360,13 +365,13 @@ export class TechniqueAttributeRepository extends BaseRepository {
    *
    * @param {number} methodTechniqueId
    * @param {IQuantitativeAttributePostData[]} attributes
-   * @returns {*} {Promise<{id: number}[]>}
+   * @return {*}  {(Promise<{ method_technique_attribute_quantitative_id: number }[] | undefined>)}
    * @memberof TechniqueAttributeRepository
    */
   async insertQuantitativeAttributesForTechnique(
     methodTechniqueId: number,
     attributes: IQuantitativeAttributePostData[]
-  ): Promise<void> {
+  ): Promise<{ method_technique_attribute_quantitative_id: number }[] | undefined> {
     defaultLog.debug({ label: 'insertQuantitativeAttributesForTechnique', methodTechniqueId });
 
     if (!attributes.length) {
@@ -384,7 +389,12 @@ export class TechniqueAttributeRepository extends BaseRepository {
       .into('method_technique_attribute_quantitative')
       .returning('method_technique_attribute_quantitative_id');
 
-    await this.connection.knex(queryBuilder, z.object({ method_technique_attribute_quantitative_id: z.number() }));
+    const response = await this.connection.knex(
+      queryBuilder,
+      z.object({ method_technique_attribute_quantitative_id: z.number() })
+    );
+
+    return response.rows;
   }
 
   /**
@@ -392,13 +402,13 @@ export class TechniqueAttributeRepository extends BaseRepository {
    *
    * @param {number} methodTechniqueId
    * @param {IQuantitativeAttributePostData} attribute
-   * @returns {*} {Promise<{id: number}[]>}
+   * @return {*}  {Promise<{ method_technique_attribute_quantitative_id: number }>}
    * @memberof TechniqueAttributeRepository
    */
   async updateQuantitativeAttributeForTechnique(
     methodTechniqueId: number,
     attribute: IQuantitativeAttributePostData
-  ): Promise<void> {
+  ): Promise<{ method_technique_attribute_quantitative_id: number }> {
     defaultLog.debug({ label: 'updateQuantitativeAttributesForTechnique', methodTechniqueId });
 
     const queryBuilder = getKnex()
@@ -407,9 +417,15 @@ export class TechniqueAttributeRepository extends BaseRepository {
         method_lookup_attribute_quantitative_id: attribute.method_lookup_attribute_quantitative_id,
         value: attribute.value
       })
-      .where('method_technique_attribute_quantitative_id', attribute.method_technique_attribute_quantitative_id);
+      .where('method_technique_attribute_quantitative_id', attribute.method_technique_attribute_quantitative_id)
+      .returning('method_technique_attribute_quantitative_id');
 
-    await this.connection.knex(queryBuilder, z.object({ method_technique_attribute_quantitative_id: z.number() }));
+    const response = await this.connection.knex(
+      queryBuilder,
+      z.object({ method_technique_attribute_quantitative_id: z.number() })
+    );
+
+    return response.rows[0];
   }
 
   /**
@@ -417,13 +433,13 @@ export class TechniqueAttributeRepository extends BaseRepository {
    *
    * @param {number} methodTechniqueId
    * @param {IQualitativeAttributePostData} attribute
-   * @returns {*} {Promise<{id: number}[]>}
+   * @return {*}  {Promise<{ method_technique_attribute_qualitative_id: number }>}
    * @memberof TechniqueAttributeRepository
    */
   async updateQualitativeAttributeForTechnique(
     methodTechniqueId: number,
     attribute: IQualitativeAttributePostData
-  ): Promise<void> {
+  ): Promise<{ method_technique_attribute_qualitative_id: number }> {
     defaultLog.debug({ label: 'updateQualitativeAttributesForTechnique', methodTechniqueId });
 
     const queryBuilder = getKnex()
@@ -432,24 +448,31 @@ export class TechniqueAttributeRepository extends BaseRepository {
         method_lookup_attribute_qualitative_id: attribute.method_lookup_attribute_qualitative_id,
         method_lookup_attribute_qualitative_option_id: attribute.method_lookup_attribute_qualitative_option_id
       })
-      .where('method_technique_attribute_qualitative_id', attribute.method_technique_attribute_qualitative_id);
+      .where('method_technique_attribute_qualitative_id', attribute.method_technique_attribute_qualitative_id)
+      .returning('method_technique_attribute_qualitative_id');
 
-    await this.connection.knex(queryBuilder, z.object({ method_technique_attribute_qualitative_id: z.number() }));
+    const response = await this.connection.knex(
+      queryBuilder,
+      z.object({ method_technique_attribute_qualitative_id: z.number() })
+    );
+
+    return response.rows[0];
   }
 
   /**
    * Delete qualitative attribute records for a technique.
    *
+   * @param {number} surveyId
    * @param {number} methodTechniqueId
-   * @param {number[]}  methodTechniqueAttributeQualitativeIds
-   * @returns {*}
+   * @param {number[]} methodTechniqueAttributeQualitativeIds
+   * @return {*}  {Promise<{ method_technique_attribute_qualitative_id: number }[]>}
    * @memberof TechniqueAttributeRepository
    */
   async deleteQualitativeAttributesForTechnique(
     surveyId: number,
     methodTechniqueId: number,
     methodTechniqueAttributeQualitativeIds: number[]
-  ): Promise<void> {
+  ): Promise<{ method_technique_attribute_qualitative_id: number }[]> {
     defaultLog.debug({ label: 'deleteQualitativeAttributesForTechnique', methodTechniqueId });
 
     const queryBuilder = getKnex()
@@ -459,31 +482,39 @@ export class TechniqueAttributeRepository extends BaseRepository {
       .whereIn('method_technique_attribute_qualitative_id', methodTechniqueAttributeQualitativeIds)
       .andWhere('mtaq.method_technique_id', methodTechniqueId)
       .andWhere('mt.survey_id', surveyId)
-      .returning('*');
+      .returning('method_technique_attribute_qualitative.method_technique_attribute_qualitative_id');
 
-    const response = await this.connection.knex(queryBuilder);
+    const response = await this.connection.knex(
+      queryBuilder,
+      z.object({
+        method_technique_attribute_qualitative_id: z.number()
+      })
+    );
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete qualitative attribute', [
-        'TechniqueAttributeRepository->deleteQuantitativeAttributesForTechnique',
+        'TechniqueAttributeRepository->deleteQualitativeAttributesForTechnique',
         'rows was null or undefined, expected rows != null'
       ]);
     }
+
+    return response.rows;
   }
 
   /**
    * Delete quantitative attribute records for a technique.
    *
+   * @param {number} surveyId
    * @param {number} methodTechniqueId
    * @param {number[]} methodTechniqueAttributeQuantitativeIds
-   * @returns {*}
+   * @return {*}  {Promise<{ method_technique_attribute_quantitative_id: number }[]>}
    * @memberof TechniqueAttributeRepository
    */
   async deleteQuantitativeAttributesForTechnique(
     surveyId: number,
     methodTechniqueId: number,
     methodTechniqueAttributeQuantitativeIds: number[]
-  ): Promise<void> {
+  ): Promise<{ method_technique_attribute_quantitative_id: number }[]> {
     defaultLog.debug({ label: 'deleteQuantitativeAttributesForTechnique', methodTechniqueId });
 
     const queryBuilder = getKnex()
@@ -493,9 +524,14 @@ export class TechniqueAttributeRepository extends BaseRepository {
       .whereIn('method_technique_attribute_quantitative_id', methodTechniqueAttributeQuantitativeIds)
       .andWhere('mtaq.method_technique_id', methodTechniqueId)
       .andWhere('mt.survey_id', surveyId)
-      .returning('*');
+      .returning('method_technique_attribute_quantitative.method_technique_attribute_quantitative_id');
 
-    const response = await this.connection.knex(queryBuilder);
+    const response = await this.connection.knex(
+      queryBuilder,
+      z.object({
+        method_technique_attribute_quantitative_id: z.number()
+      })
+    );
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete quantitative attribute', [
@@ -503,6 +539,8 @@ export class TechniqueAttributeRepository extends BaseRepository {
         'rows was null or undefined, expected rows != null'
       ]);
     }
+
+    return response.rows;
   }
 
   /**
@@ -510,10 +548,19 @@ export class TechniqueAttributeRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} methodTechniqueId
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<{
+   *     qualitative_attributes: { method_technique_attribute_qualitative_id: number }[];
+   *     quantitative_attributes: { method_technique_attribute_quantitative_id: number }[];
+   *   }>}
    * @memberof TechniqueAttributeRepository
    */
-  async deleteAllTechniqueAttributes(surveyId: number, methodTechniqueId: number): Promise<void> {
+  async deleteAllTechniqueAttributes(
+    surveyId: number,
+    methodTechniqueId: number
+  ): Promise<{
+    qualitative_attributes: { method_technique_attribute_qualitative_id: number }[];
+    quantitative_attributes: { method_technique_attribute_quantitative_id: number }[];
+  }> {
     defaultLog.debug({ label: 'deleteAllTechniqueAttributes', surveyId, methodTechniqueId });
 
     // Query to delete all qualitative attributes for a technique
@@ -526,6 +573,8 @@ export class TechniqueAttributeRepository extends BaseRepository {
         method_technique_attribute_qualitative.method_technique_id = ${methodTechniqueId}
       AND
         method_technique.survey_id = ${surveyId}
+      RETURNING 
+        method_technique_attribute_qualitative.method_technique_attribute_qualitative_id;
     `;
 
     // Query to delete all qualitative attributes for a technique
@@ -538,8 +587,28 @@ export class TechniqueAttributeRepository extends BaseRepository {
         method_technique_attribute_quantitative.method_technique_id = ${methodTechniqueId}
       AND
         method_technique.survey_id = ${surveyId}
+      RETURNING 
+        method_technique_attribute_quantitative.method_technique_attribute_quantitative_id;
     `;
 
-    await Promise.all([this.connection.sql(sqlStatement1), this.connection.sql(sqlStatement2)]);
+    const response = await Promise.all([
+      this.connection.sql(
+        sqlStatement1,
+        z.object({
+          method_technique_attribute_qualitative_id: z.number()
+        })
+      ),
+      this.connection.sql(
+        sqlStatement2,
+        z.object({
+          method_technique_attribute_quantitative_id: z.number()
+        })
+      )
+    ]);
+
+    return {
+      qualitative_attributes: response[0].rows,
+      quantitative_attributes: response[1].rows
+    };
   }
 }
