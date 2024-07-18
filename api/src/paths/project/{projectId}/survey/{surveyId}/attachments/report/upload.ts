@@ -84,7 +84,8 @@ POST.apiDoc = {
                     type: 'string'
                   },
                   mimetype: {
-                    type: 'string'
+                    type: 'string',
+                    enum: ['text/plain']
                   },
                   buffer: {
                     type: 'object',
