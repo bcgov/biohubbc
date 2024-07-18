@@ -66,7 +66,7 @@ POST.apiDoc = {
           required: ['media', 'attachmentMeta'],
           properties: {
             media: {
-              description: 'Attachment upload file.',
+              description: 'Attachment report upload file.',
               type: 'array',
               minItems: 1,
               maxItems: 1,
