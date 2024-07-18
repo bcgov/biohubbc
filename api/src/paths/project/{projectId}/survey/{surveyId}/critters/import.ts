@@ -152,7 +152,7 @@ export function importCsv(): RequestHandler {
       // Critter CSV import service - child of CSVImportStrategy
       const importCsvCritters = new ImportCrittersService(connection, surveyId);
 
-      // CSV import strategy with injected import service - parent
+      // Inject the import service into the CSV import strategy
       const csvImportStrategry = new CSVImportStrategy(importCsvCritters);
 
       // Import CSV data with strategy class

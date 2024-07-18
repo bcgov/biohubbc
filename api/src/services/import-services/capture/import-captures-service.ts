@@ -6,7 +6,7 @@ import { generateCellGetterFromColumnValidator } from '../../../utils/xlsx-utils
 import { IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
 import { CritterbaseService, IBulkCreate } from '../../critterbase-service';
 import { DBService } from '../../db-service';
-import { CSVImportService, Row } from '../import-types';
+import { CSVImportService, Row } from '../csv-import-strategy.interface';
 import { CsvCapture, CsvCaptureSchema, PartialCsvCapture } from './import-captures-service.interface';
 
 /**

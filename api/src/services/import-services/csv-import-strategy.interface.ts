@@ -54,14 +54,17 @@ export interface CSVImportService<ValidatedRow, PartialRow> {
 
 /**
  * CSV validation error
+ *
  */
 export type ValidationError = {
   /**
    * CSV row index
+   *
    */
   row: number;
   /**
    * CSV row error message
+   *
    */
   message: string;
 };

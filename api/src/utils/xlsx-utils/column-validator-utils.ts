@@ -1,8 +1,12 @@
-import { Row } from '../../services/import-services/import-types';
+import { Row } from '../../services/import-services/csv-import-strategy.interface';
 import { IXLSXCSVColumn, IXLSXCSVValidator } from './worksheet-utils';
+
+// TODO: Move the IXLSXCSVValidator type to this file
 
 /**
  * Get column names / headers from column validator.
+ *
+ * Note: This actually returns Uppercase<string>[] but for convenience we define the return as string[]
  *
  * @param {IXLSXCSVValidator} columnValidator
  * @returns {*} {string[]} Column names / headers
@@ -14,22 +18,16 @@ export const getColumnNamesFromValidator = (columnValidator: IXLSXCSVValidator):
 /**
  * Get flattened list of ALL column aliases from column validator.
  *
+ * Note: This actually returns Uppercase<string>[] but for convenience we define the return as string[]
+ *
  * @param {IXLSXCSVValidator} columnValidator
  * @returns {*} {string[]} Column aliases
  */
 export const getColumnAliasesFromValidator = (columnValidator: IXLSXCSVValidator): string[] => {
   const columnNames = getColumnNamesFromValidator(columnValidator);
 
-  let columnAliases: string[] = [];
-
-  for (const columnName of columnNames) {
-    const columnSpec: IXLSXCSVColumn = columnValidator[columnName];
-    if (columnSpec.aliases?.length) {
-      columnAliases = columnAliases.concat(columnSpec.aliases);
-    }
-  }
-
-  return columnAliases;
+  // Return flattened list of column validator aliases
+  return columnNames.flatMap((columnName) => (columnValidator[columnName] as IXLSXCSVColumn).aliases ?? []);
 };
 
 /**
@@ -50,12 +48,12 @@ export const getColumnValidatorSpecification = (columnValidator: IXLSXCSVValidat
 };
 
 /**
- * Generate a cell value getter from a column validator.
+ * Generate a cell getter from a column validator.
  *
  * Note: This will attempt to retrive the cell value from the row by the known header first.
  * If not found, it will then attempt to retrieve the value by the column header aliases.
  *
- * TODO: Can the internal typing for this be improved?
+ * TODO: Can the internal typing for this be improved (without the `as` cast)?
  *
  * @example
  * const getCellValue = generateCellGetterFromColumnValidator(columnValidator)

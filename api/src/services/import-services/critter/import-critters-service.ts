@@ -17,7 +17,7 @@ import {
 import { DBService } from '../../db-service';
 import { PlatformService } from '../../platform-service';
 import { SurveyCritterService } from '../../survey-critter-service';
-import { CSVImportService, Row, Validation, ValidationError } from '../import-types';
+import { CSVImportService, Row, Validation, ValidationError } from '../csv-import-strategy.interface';
 import { CsvCritter, PartialCsvCritter } from './import-critters-service.interface';
 
 const defaultLog = getLogger('services/import/import-critters-service');
@@ -123,14 +123,12 @@ export class ImportCrittersService extends DBService implements CSVImportService
   }
 
   /**
-   * Get a Set of valid ITIS TSNS from xlsx worksheet.
+   * Get a Set of valid ITIS TSNS from xlsx worksheet rows.
    *
    * @async
    * @returns {Promise<string[]>} Unique Set of valid TSNS from worksheet.
    */
   async _getValidTsns(rows: PartialCsvCritter[]): Promise<string[]> {
-    //const rows = this._getRows(worksheet);
-
     // Get a unique list of tsns from worksheet
     const critterTsns = uniq(rows.map((row) => String(row.itis_tsn)));
 

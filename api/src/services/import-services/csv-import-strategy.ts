@@ -8,7 +8,7 @@ import {
   getWorksheetRowObjects,
   validateCsvFile
 } from '../../utils/xlsx-utils/worksheet-utils';
-import { CSVImportService } from './import-types';
+import { CSVImportService } from './csv-import-strategy.interface';
 
 /**
  * CSV Import Strategy - Used with `CSVImportService` classes.

@@ -1,4 +1,5 @@
 import { default as dayjs } from 'dayjs';
+import { intersection } from 'lodash';
 import xlsx, { CellObject } from 'xlsx';
 import { getLogger } from '../logger';
 import { MediaFile } from '../media/media-file';
@@ -195,13 +196,18 @@ export const getWorksheetRowObjects = (worksheet: xlsx.WorkSheet): Record<string
  */
 export const validateWorksheetHeaders = (worksheet: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean => {
   // Get column names and aliases from validator
-  const columnNames = getColumnNamesFromValidator(columnValidator);
-  const columnAliases = getColumnAliasesFromValidator(columnValidator);
+  const validatorHeaders = getColumnNamesFromValidator(columnValidator);
 
+  // Get column names from actual worksheet
   const worksheetHeaders = getHeadersUpperCase(worksheet);
 
-  return columnNames.every((expectedHeader) => {
-    return columnAliases.some((alias) => worksheetHeaders.includes(alias)) || worksheetHeaders.includes(expectedHeader);
+  // Check that every validator header has matching header or alias in worksheet
+  return validatorHeaders.every((header) => {
+    const aliases: string[] = columnValidator[header]?.aliases ?? [];
+    const columnHeaderAndAliases = [header, ...aliases];
+
+    // Intersect the worksheet headers against the column header and aliases
+    return intersection(columnHeaderAndAliases, worksheetHeaders).length;
   });
 };
 
@@ -354,8 +360,10 @@ export function getNonStandardColumnNamesFromWorksheet(
   const columnValidatorAliases = getColumnAliasesFromValidator(columnValidator);
 
   // Combine the column validator headers and all aliases
-  const standardColumNames = [...columnValidatorHeaders, ...columnValidatorAliases];
+  const standardColumnNames = new Set([...columnValidatorHeaders, ...columnValidatorAliases]);
+
+  console.log({ columns });
 
   // Only return column names not in the validation CSV Column validator (ie: only return the non-standard columns)
-  return columns.filter((column) => !standardColumNames.includes(column));
+  return columns.filter((column) => !standardColumnNames.has(column));
 }

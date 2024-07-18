@@ -2,8 +2,6 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { WorkSheet } from 'xlsx';
-import { MediaFile } from '../../../utils/media/media-file';
-import * as xlsxUtils from '../../../utils/xlsx-utils/worksheet-utils';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { IBulkCreateResponse } from '../../critterbase-service';
 import { ImportCrittersService } from './import-critters-service';
@@ -14,7 +12,7 @@ chai.use(sinonChai);
 const mockConnection = getMockDBConnection();
 
 describe('ImportCrittersService', () => {
-  describe('_getCritterRowsToValidate', () => {
+  describe('getRowsToValidate', () => {
     it('it should correctly format rows', () => {
       const rows = [
         {
@@ -29,7 +27,9 @@ describe('ImportCrittersService', () => {
       ];
       const service = new ImportCrittersService(mockConnection, 1);
 
-      const parsedRow = service.getRowsToValidate(rows, ['COLLECTION', 'TEST'])[0];
+      sinon.stub(service, '_getNonStandardColumns').returns(['COLLECTION']);
+
+      const parsedRow = service.getRowsToValidate(rows, {})[0];
 
       expect(parsedRow.sex).to.be.eq('Male');
       expect(parsedRow.itis_tsn).to.be.eq(1);
@@ -99,18 +99,16 @@ describe('ImportCrittersService', () => {
     it('should return unique list of tsns', async () => {
       const service = new ImportCrittersService(mockConnection, 1);
 
-      const mockWorksheet = {} as unknown as WorkSheet;
-
-      const getRowsStub = sinon
-        .stub(service, 'getRows')
-        .returns([{ itis_tsn: 1 }, { itis_tsn: 2 }, { itis_tsn: 2 }] as any);
-
       const getTaxonomyStub = sinon.stub(service.platformService, 'getTaxonomyByTsns').resolves([
         { tsn: '1', scientificName: 'a' },
         { tsn: '2', scientificName: 'b' }
       ]);
-      const tsns = await service._getValidTsns(mockWorksheet);
-      expect(getRowsStub).to.have.been.calledWith(mockWorksheet);
+
+      const tsns = await service._getValidTsns([
+        { critter_id: 'a', itis_tsn: 1 },
+        { critter_id: 'b', itis_tsn: 2 }
+      ]);
+
       expect(getTaxonomyStub).to.have.been.calledWith(['1', '2']);
       expect(tsns).to.deep.equal(['1', '2']);
     });
@@ -156,7 +154,7 @@ describe('ImportCrittersService', () => {
     ];
 
     it('should return collection unit mapping', async () => {
-      const service = new ImportCrittersService(mockConnection);
+      const service = new ImportCrittersService(mockConnection, 1);
 
       const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
       const mockWorksheet = {} as unknown as WorkSheet;
@@ -177,7 +175,7 @@ describe('ImportCrittersService', () => {
     });
 
     it('should return empty map when no collection unit columns', async () => {
-      const service = new ImportCrittersService(mockConnection);
+      const service = new ImportCrittersService(mockConnection, 1);
 
       const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
       const mockWorksheet = {} as unknown as WorkSheet;
@@ -193,7 +191,7 @@ describe('ImportCrittersService', () => {
     });
   });
 
-  describe('_insertCsvCrittersIntoSimsAndCritterbase', () => {
+  describe('insert', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -220,7 +218,7 @@ describe('ImportCrittersService', () => {
     ];
 
     it('should correctly parse collection units and critters and insert into sims / critterbase', async () => {
-      const service = new ImportCrittersService(mockConnection);
+      const service = new ImportCrittersService(mockConnection, 1);
 
       const critterbaseBulkCreateStub = sinon.stub(service.critterbaseService, 'bulkCreate');
       const simsAddSurveyCrittersStub = sinon.stub(service.surveyCritterService, 'addCrittersToSurvey');
@@ -228,7 +226,7 @@ describe('ImportCrittersService', () => {
       critterbaseBulkCreateStub.resolves({ created: { critters: 2, collections: 1 } } as IBulkCreateResponse);
       simsAddSurveyCrittersStub.resolves([1]);
 
-      const ids = await service._insertCsvCrittersIntoSimsAndCritterbase(1, critters);
+      const ids = await service.insert(critters);
 
       expect(critterbaseBulkCreateStub).to.have.been.calledWithExactly({
         critters: [
@@ -259,7 +257,7 @@ describe('ImportCrittersService', () => {
     });
 
     it('should throw error if response from critterbase is less than provided critters', async () => {
-      const service = new ImportCrittersService(mockConnection);
+      const service = new ImportCrittersService(mockConnection, 1);
 
       const critterbaseBulkCreateStub = sinon.stub(service.critterbaseService, 'bulkCreate');
       const simsAddSurveyCrittersStub = sinon.stub(service.surveyCritterService, 'addCrittersToSurvey');
@@ -268,7 +266,7 @@ describe('ImportCrittersService', () => {
       simsAddSurveyCrittersStub.resolves([1]);
 
       try {
-        await service._insertCsvCrittersIntoSimsAndCritterbase(1, critters);
+        await service.insert(critters);
         expect.fail();
       } catch (err: any) {
         expect(err.message).to.be.equal('Unable to fully import critters from CSV');
@@ -278,7 +276,7 @@ describe('ImportCrittersService', () => {
     });
   });
 
-  describe('_validateRows', () => {
+  describe('validateRows', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -318,8 +316,7 @@ describe('ImportCrittersService', () => {
     ];
 
     it('should return successful', async () => {
-      const service = new ImportCrittersService(mockConnection);
-      const getRowsStub = sinon.stub(service, '_getRows');
+      const service = new ImportCrittersService(mockConnection, 1);
       const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
@@ -356,9 +353,7 @@ describe('ImportCrittersService', () => {
         }
       ];
 
-      getRowsStub.returns(validRows);
-
-      const validation = await service._validateRows(1, {} as WorkSheet);
+      const validation = await service.validateRows(validRows, {} as WorkSheet);
 
       expect(validation.success).to.be.true;
 
@@ -387,8 +382,7 @@ describe('ImportCrittersService', () => {
     });
 
     it('should push error when sex is undefined or invalid', async () => {
-      const service = new ImportCrittersService(mockConnection);
-      const getRowsStub = sinon.stub(service, '_getRows');
+      const service = new ImportCrittersService(mockConnection, 1);
       const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
@@ -425,14 +419,12 @@ describe('ImportCrittersService', () => {
         }
       ];
 
-      getRowsStub.returns(invalidRows);
-
-      const validation = await service._validateRows(1, {} as WorkSheet);
+      const validation = await service.validateRows(invalidRows, {} as WorkSheet);
 
       expect(validation.success).to.be.false;
       if (!validation.success) {
-        expect(validation.errors.length).to.be.eq(2);
-        expect(validation.errors).to.be.deep.equal([
+        expect(validation.error.issues.length).to.be.eq(2);
+        expect(validation.error.issues).to.be.deep.equal([
           {
             message: 'Invalid SEX. Expecting: UNKNOWN, MALE, FEMALE.',
             row: 0
@@ -446,8 +438,7 @@ describe('ImportCrittersService', () => {
     });
 
     it('should push error when wlh_id is invalid regex / shape', async () => {
-      const service = new ImportCrittersService(mockConnection);
-      const getRowsStub = sinon.stub(service, '_getRows');
+      const service = new ImportCrittersService(mockConnection, 1);
       const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
@@ -484,14 +475,12 @@ describe('ImportCrittersService', () => {
         }
       ];
 
-      getRowsStub.returns(invalidRows);
-
-      const validation = await service._validateRows(1, {} as WorkSheet);
+      const validation = await service.validateRows(invalidRows, {} as WorkSheet);
 
       expect(validation.success).to.be.false;
       if (!validation.success) {
-        expect(validation.errors.length).to.be.eq(2);
-        expect(validation.errors).to.be.deep.equal([
+        expect(validation.error.issues.length).to.be.eq(2);
+        expect(validation.error.issues).to.be.deep.equal([
           {
             message: `Invalid WLH_ID. Example format '10-1000R'.`,
             row: 0
@@ -505,8 +494,7 @@ describe('ImportCrittersService', () => {
     });
 
     it('should push error when itis_tsn undefined or invalid option', async () => {
-      const service = new ImportCrittersService(mockConnection);
-      const getRowsStub = sinon.stub(service, '_getRows');
+      const service = new ImportCrittersService(mockConnection, 1);
       const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
@@ -543,14 +531,12 @@ describe('ImportCrittersService', () => {
         }
       ];
 
-      getRowsStub.returns(invalidRows);
-
-      const validation = await service._validateRows(1, {} as WorkSheet);
+      const validation = await service.validateRows(invalidRows, {} as WorkSheet);
 
       expect(validation.success).to.be.false;
       if (!validation.success) {
-        expect(validation.errors.length).to.be.eq(4);
-        expect(validation.errors).to.be.deep.equal([
+        expect(validation.error.issues.length).to.be.eq(4);
+        expect(validation.error.issues).to.be.deep.equal([
           {
             message: `Invalid ITIS_TSN.`,
             row: 0
@@ -572,8 +558,7 @@ describe('ImportCrittersService', () => {
     });
 
     it('should push error when itis_tsn undefined or invalid option', async () => {
-      const service = new ImportCrittersService(mockConnection);
-      const getRowsStub = sinon.stub(service, '_getRows');
+      const service = new ImportCrittersService(mockConnection, 1);
       const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
@@ -610,14 +595,12 @@ describe('ImportCrittersService', () => {
         }
       ];
 
-      getRowsStub.returns(invalidRows);
-
-      const validation = await service._validateRows(1, {} as WorkSheet);
+      const validation = await service.validateRows(invalidRows, {} as WorkSheet);
 
       expect(validation.success).to.be.false;
       if (!validation.success) {
-        expect(validation.errors.length).to.be.eq(4);
-        expect(validation.errors).to.be.deep.equal([
+        expect(validation.error.issues.length).to.be.eq(4);
+        expect(validation.error.issues).to.be.deep.equal([
           {
             message: `Invalid ITIS_TSN.`,
             row: 0
@@ -639,8 +622,7 @@ describe('ImportCrittersService', () => {
     });
 
     it('should push error if alias undefined, duplicate or exists in survey', async () => {
-      const service = new ImportCrittersService(mockConnection);
-      const getRowsStub = sinon.stub(service, '_getRows');
+      const service = new ImportCrittersService(mockConnection, 1);
       const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
@@ -677,14 +659,12 @@ describe('ImportCrittersService', () => {
         }
       ];
 
-      getRowsStub.returns(invalidRows);
-
-      const validation = await service._validateRows(1, {} as WorkSheet);
+      const validation = await service.validateRows(invalidRows, {} as WorkSheet);
 
       expect(validation.success).to.be.false;
       if (!validation.success) {
-        expect(validation.errors.length).to.be.eq(1);
-        expect(validation.errors).to.be.deep.equal([
+        expect(validation.error.issues.length).to.be.eq(1);
+        expect(validation.error.issues).to.be.deep.equal([
           {
             message: `Invalid ALIAS. Must be unique in Survey and CSV.`,
             row: 1
@@ -694,89 +674,91 @@ describe('ImportCrittersService', () => {
     });
   });
 
-  describe('_validate', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should throw error when csv validation fails', async () => {
-      const validateCsvStub = sinon.stub(xlsxUtils, 'validateCsvFile').returns(false);
-
-      const service = new ImportCrittersService(mockConnection);
-
-      sinon.stub(service, '_validateRows');
-
-      try {
-        await service._validate(1, {} as WorkSheet);
-        expect.fail();
-      } catch (err: any) {
-        expect(err.message).to.contain('Column validator failed.');
-      }
-      expect(validateCsvStub).to.have.been.calledOnceWithExactly({}, critterStandardColumnValidator);
-    });
-
-    it('should call _validateRows if csv validation succeeds', async () => {
-      const validateCsvStub = sinon.stub(xlsxUtils, 'validateCsvFile');
-
-      const service = new ImportCrittersService(mockConnection);
-
-      const validateRowsStub = sinon.stub(service, '_validateRows');
-
-      validateCsvStub.returns(true);
-      validateRowsStub.resolves({ success: true, data: [] });
-
-      const data = await service._validate(1, {} as WorkSheet);
-      expect(validateRowsStub).to.have.been.calledOnceWithExactly(1, {});
-      expect(data).to.be.deep.equal([]);
-    });
-
-    it('should throw error if row validation fails', async () => {
-      const validateCsvStub = sinon.stub(xlsxUtils, 'validateCsvFile');
-
-      const service = new ImportCrittersService(mockConnection);
-
-      const validateRowsStub = sinon.stub(service, '_validateRows');
-
-      validateCsvStub.returns(true);
-      validateRowsStub.resolves({ success: false, errors: [] });
-
-      try {
-        await service._validate(1, {} as WorkSheet);
-
-        expect.fail();
-      } catch (err: any) {
-        expect(err.message).to.contain('Failed to import Critter CSV.');
-      }
-      expect(validateRowsStub).to.have.been.calledOnceWithExactly(1, {});
-    });
-  });
-
-  describe('import', () => {
-    it('should pass values to correct methods', async () => {
-      const service = new ImportCrittersService(mockConnection);
-      const csv = new MediaFile('file', 'mime', Buffer.alloc(1));
-
-      const critter: CsvCritter = {
-        critter_id: 'id',
-        sex: 'Male',
-        itis_tsn: 1,
-        animal_id: 'Carl',
-        wlh_id: '10-1000',
-        critter_comment: 'comment',
-        COLLECTION: 'Unit'
-      };
-
-      const getWorksheetStub = sinon.stub(service, '_getWorksheet').returns({} as unknown as WorkSheet);
-      const validateStub = sinon.stub(service, '_validate').resolves([critter]);
-      const insertStub = sinon.stub(service, '_insertCsvCrittersIntoSimsAndCritterbase').resolves([1]);
-
-      const data = await service.import(1, csv);
-
-      expect(getWorksheetStub).to.have.been.calledWithExactly(csv);
-      expect(validateStub).to.have.been.calledWithExactly(1, {});
-      expect(insertStub).to.have.been.calledWithExactly(1, [critter]);
-
-      expect(data).to.be.deep.equal([1]);
-    });
-  });
+  //TODO: Move these to the strategy test suite
+  //
+  //describe('_validate', () => {
+  //  afterEach(() => {
+  //    sinon.restore();
+  //  });
+  //
+  //  it('should throw error when csv validation fails', async () => {
+  //    const validateCsvStub = sinon.stub(xlsxUtils, 'validateCsvFile').returns(false);
+  //
+  //    const service = new ImportCrittersService(mockConnection, 1);
+  //
+  //    sinon.stub(service, 'validateRows');
+  //
+  //    try {
+  //      await service._validate(1, {} as WorkSheet);
+  //      expect.fail();
+  //    } catch (err: any) {
+  //      expect(err.message).to.contain('Column validator failed.');
+  //    }
+  //    expect(validateCsvStub).to.have.been.calledOnceWithExactly({}, critterStandardColumnValidator);
+  //  });
+  //
+  //  it('should call _validateRows if csv validation succeeds', async () => {
+  //    const validateCsvStub = sinon.stub(xlsxUtils, 'validateCsvFile');
+  //
+  //    const service = new ImportCrittersService(mockConnection);
+  //
+  //    const validateRowsStub = sinon.stub(service, '_validateRows');
+  //
+  //    validateCsvStub.returns(true);
+  //    validateRowsStub.resolves({ success: true, data: [] });
+  //
+  //    const data = await service._validate(1, {} as WorkSheet);
+  //    expect(validateRowsStub).to.have.been.calledOnceWithExactly(1, {});
+  //    expect(data).to.be.deep.equal([]);
+  //  });
+  //
+  //  it('should throw error if row validation fails', async () => {
+  //    const validateCsvStub = sinon.stub(xlsxUtils, 'validateCsvFile');
+  //
+  //    const service = new ImportCrittersService(mockConnection);
+  //
+  //    const validateRowsStub = sinon.stub(service, '_validateRows');
+  //
+  //    validateCsvStub.returns(true);
+  //    validateRowsStub.resolves({ success: false, errors: [] });
+  //
+  //    try {
+  //      await service._validate(1, {} as WorkSheet);
+  //
+  //      expect.fail();
+  //    } catch (err: any) {
+  //      expect(err.message).to.contain('Failed to import Critter CSV.');
+  //    }
+  //    expect(validateRowsStub).to.have.been.calledOnceWithExactly(1, {});
+  //  });
+  //});
+  //
+  //describe('import', () => {
+  //  it('should pass values to correct methods', async () => {
+  //    const service = new ImportCrittersService(mockConnection);
+  //    const csv = new MediaFile('file', 'mime', Buffer.alloc(1));
+  //
+  //    const critter: CsvCritter = {
+  //      critter_id: 'id',
+  //      sex: 'Male',
+  //      itis_tsn: 1,
+  //      animal_id: 'Carl',
+  //      wlh_id: '10-1000',
+  //      critter_comment: 'comment',
+  //      COLLECTION: 'Unit'
+  //    };
+  //
+  //    const getWorksheetStub = sinon.stub(service, '_getWorksheet').returns({} as unknown as WorkSheet);
+  //    const validateStub = sinon.stub(service, '_validate').resolves([critter]);
+  //    const insertStub = sinon.stub(service, '_insertCsvCrittersIntoSimsAndCritterbase').resolves([1]);
+  //
+  //    const data = await service.import(1, csv);
+  //
+  //    expect(getWorksheetStub).to.have.been.calledWithExactly(csv);
+  //    expect(validateStub).to.have.been.calledWithExactly(1, {});
+  //    expect(insertStub).to.have.been.calledWithExactly(1, [critter]);
+  //
+  //    expect(data).to.be.deep.equal([1]);
+  //  });
+  //});
 });

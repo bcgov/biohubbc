@@ -64,13 +64,12 @@ describe('worksheet-utils', () => {
 
     it('should validate aliases', () => {
       const observationCSVColumnValidator: IXLSXCSVValidator = {
-        columnNames: ['SPECIES', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
-        columnTypes: ['number', 'number', 'date', 'string', 'number', 'number'],
-        columnAliases: {
-          LATITUDE: ['LAT'],
-          LONGITUDE: ['LON', 'LONG', 'LNG'],
-          SPECIES: ['TAXON']
-        }
+        SPECIES: { type: 'string', aliases: ['TAXON'] },
+        COUNT: { type: 'number' },
+        DATE: { type: 'string' },
+        TIME: { type: 'string' },
+        LATITUDE: { type: 'number', aliases: ['LAT'] },
+        LONGITUDE: { type: 'number', aliases: ['LON', 'LONG', 'LNG'] }
       };
 
       const mockWorksheet = {} as unknown as xlsx.WorkSheet;
@@ -87,12 +86,12 @@ describe('worksheet-utils', () => {
 
     it('should fail for unknown aliases', () => {
       const observationCSVColumnValidator: IXLSXCSVValidator = {
-        columnNames: ['SPECIES', 'COUNT', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
-        columnTypes: ['number', 'number', 'date', 'string', 'number', 'number'],
-        columnAliases: {
-          LATITUDE: ['LAT'],
-          LONGITUDE: ['LON', 'LONG', 'LNG']
-        }
+        SPECIES: { type: 'string', aliases: ['TAXON'] },
+        COUNT: { type: 'number' },
+        DATE: { type: 'string' },
+        TIME: { type: 'string' },
+        LATITUDE: { type: 'number', aliases: ['LAT'] },
+        LONGITUDE: { type: 'number', aliases: ['LON', 'LONG', 'LNG'] }
       };
 
       const mockWorksheet = {} as unknown as xlsx.WorkSheet;
