@@ -84,7 +84,7 @@ export const SamplingMethodForm = () => {
 
   return (
     <form>
-      <Stack gap={3} width={900}>
+      <Stack gap={3}>
         <Stack component="fieldset" gap={3}>
           <Typography component="legend">Details</Typography>
           <SelectWithSubtextField
