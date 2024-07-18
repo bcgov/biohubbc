@@ -57,8 +57,36 @@ POST.apiDoc = {
           required: ['media', 'attachmentMeta'],
           properties: {
             media: {
-              type: 'string',
-              format: 'binary'
+              description: 'Attachment import file.',
+              type: 'array',
+              minItems: 1,
+              maxItems: 1,
+              required: ['fieldname', 'originalname', 'mimetype', 'buffer'],
+              items: {
+                type: 'object',
+                properties: {
+                  fieldname: {
+                    type: 'string'
+                  },
+                  originalname: {
+                    type: 'string'
+                  },
+                  encoding: {
+                    type: 'string'
+                  },
+                  mimetype: {
+                    type: 'string'
+                  },
+                  buffer: {
+                    type: 'object',
+                    format: 'buffer'
+                  },
+                  size: {
+                    type: 'integer',
+                    minimum: 1
+                  }
+                }
+              }
             },
             attachmentMeta: {
               type: 'object',

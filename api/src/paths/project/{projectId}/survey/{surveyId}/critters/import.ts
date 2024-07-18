@@ -68,9 +68,38 @@ POST.apiDoc = {
           required: ['media'],
           properties: {
             media: {
-              description: 'Survey Critters submission import file.',
-              type: 'string',
-              format: 'binary'
+              description: 'Critter CSV import file.',
+              type: 'array',
+              minItems: 1,
+              maxItems: 1,
+              required: ['fieldname', 'originalname', 'mimetype', 'buffer'],
+              items: {
+                type: 'object',
+                properties: {
+                  fieldname: {
+                    type: 'string'
+                  },
+                  originalname: {
+                    type: 'string'
+                  },
+                  encoding: {
+                    type: 'string'
+                  },
+                  mimetype: {
+                    description: 'Must be a CSV file.',
+                    type: 'string',
+                    enum: ['text/csv']
+                  },
+                  buffer: {
+                    type: 'object',
+                    format: 'buffer'
+                  },
+                  size: {
+                    type: 'integer',
+                    minimum: 1
+                  }
+                }
+              }
             }
           }
         }
@@ -132,14 +161,6 @@ export function importCsv(): RequestHandler {
 
     try {
       await connection.open();
-
-      if (rawFiles.length !== 1) {
-        throw new HTTP400('Invalid number of files included. Expected 1 CSV file.');
-      }
-
-      if (!rawFile?.originalname.endsWith('.csv')) {
-        throw new HTTP400('Invalid file type. Expected a CSV file.');
-      }
 
       // Check for viruses / malware
       const virusScanResult = await scanFileForVirus(rawFile);

@@ -58,8 +58,36 @@ POST.apiDoc = {
           required: ['media'],
           properties: {
             media: {
-              type: 'string',
-              format: 'binary'
+              description: 'Attachment import file.',
+              type: 'array',
+              minItems: 1,
+              maxItems: 1,
+              required: ['fieldname', 'originalname', 'mimetype', 'buffer'],
+              items: {
+                type: 'object',
+                properties: {
+                  fieldname: {
+                    type: 'string'
+                  },
+                  originalname: {
+                    type: 'string'
+                  },
+                  encoding: {
+                    type: 'string'
+                  },
+                  mimetype: {
+                    type: 'string'
+                  },
+                  buffer: {
+                    type: 'object',
+                    format: 'buffer'
+                  },
+                  size: {
+                    type: 'integer',
+                    minimum: 1
+                  }
+                }
+              }
             }
           }
         }
@@ -116,11 +144,6 @@ POST.apiDoc = {
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
-
-    if (!rawMediaArray || !rawMediaArray.length) {
-      // no media objects included, skipping media upload step
-      throw new HTTP400('Missing upload data');
-    }
 
     const rawMediaFile: Express.Multer.File = rawMediaArray[0];
 

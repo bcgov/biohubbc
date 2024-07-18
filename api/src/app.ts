@@ -85,9 +85,9 @@ const openAPIFramework = initialize({
         }
 
         if (req.files && req.files.length) {
-          // Set original request file field to empty string to satisfy OpenAPI validation
           // See: https://www.npmjs.com/package/express-openapi#argsconsumesmiddleware
-          (req.files as Express.Multer.File[]).forEach((file) => (req.body[file.fieldname] = ''));
+          // Set request body media property to the incomming files
+          req.body.media = req.files;
         }
 
         return next();
