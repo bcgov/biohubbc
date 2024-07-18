@@ -47,11 +47,12 @@ const DoubleStandardsPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper>
           <Toolbar style={{ display: 'flex', justifyContent: 'flex-start', width: '100%' }}>
-            <div className="MuiContainer-root MuiContainer-maxWidthXl css-yx70ef-MuiContainer-root">
+            <Box
+              sx={{ backgroundColor: 'primary.main', padding: 2, borderRadius: 4, width: 'auto', textAlign: 'center' }}>
               <Typography variant="h4" sx={{ fontWeight: 'lighter', color: 'white' }}>
                 Standards for Species and Methodologies
               </Typography>
-            </div>
+            </Box>
           </Toolbar>
 
           <Box py={2} px={3}>
