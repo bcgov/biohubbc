@@ -147,21 +147,21 @@ export class SurveyCritterRepository extends BaseRepository {
    * Add critter to survey
    *
    * @param {number} surveyId
-   * @param {string} critterId
+   * @param {string[]} critterIds
    * @return {*}  {Promise<number>}
    * @memberof SurveyCritterRepository
    */
-  async addCritterToSurvey(surveyId: number, critterId: string): Promise<number> {
-    defaultLog.debug({ label: 'addCritterToSurvey', surveyId });
+  async addCrittersToSurvey(surveyId: number, critterIds: string[]): Promise<number[]> {
+    defaultLog.debug({ label: 'addCrittersToSurvey', surveyId });
 
     const queryBuilder = getKnex()
       .table('critter')
-      .insert({ survey_id: surveyId, critterbase_critter_id: critterId })
+      .insert(critterIds.map((critterId) => ({ survey_id: surveyId, critterbase_critter_id: critterId })))
       .returning('critter_id');
 
     const response = await this.connection.knex(queryBuilder);
 
-    return response.rows[0].critter_id;
+    return response.rows.map((row) => row.critter_id);
   }
 
   /**

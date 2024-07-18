@@ -28,7 +28,7 @@ import useUserApi from './api/useUserApi';
  */
 export const useBiohubApi = () => {
   const config = useConfigContext();
-  const apiAxios = useAxios(config?.API_HOST);
+  const apiAxios = useAxios(config.API_HOST);
 
   const project = useProjectApi(apiAxios);
 

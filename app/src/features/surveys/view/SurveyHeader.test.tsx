@@ -1,4 +1,5 @@
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
+import { ConfigContext, IConfig } from 'contexts/configContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
@@ -96,17 +97,19 @@ describe('SurveyHeader', () => {
   const renderComponent = (authState: IAuthState, projectAuthState: IProjectAuthStateContext) => {
     return render(
       <Router history={history}>
-        <ProjectContext.Provider value={mockProjectContext}>
-          <SurveyContext.Provider value={mockSurveyContext}>
-            <AuthStateContext.Provider value={authState}>
-              <ProjectAuthStateContext.Provider value={projectAuthState}>
-                <DialogContextProvider>
-                  <SurveyHeader />
-                </DialogContextProvider>
-              </ProjectAuthStateContext.Provider>
-            </AuthStateContext.Provider>
-          </SurveyContext.Provider>
-        </ProjectContext.Provider>
+        <ConfigContext.Provider value={{ FEATURE_FLAGS: [] as string[] } as IConfig}>
+          <ProjectContext.Provider value={mockProjectContext}>
+            <SurveyContext.Provider value={mockSurveyContext}>
+              <AuthStateContext.Provider value={authState}>
+                <ProjectAuthStateContext.Provider value={projectAuthState}>
+                  <DialogContextProvider>
+                    <SurveyHeader />
+                  </DialogContextProvider>
+                </ProjectAuthStateContext.Provider>
+              </AuthStateContext.Provider>
+            </SurveyContext.Provider>
+          </ProjectContext.Provider>
+        </ConfigContext.Provider>
       </Router>
     );
   };
