@@ -9,6 +9,7 @@ import { ImportCrittersService } from '../../../../../../services/import-service
 import { scanFileForVirus } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
+import { getFileFromRequest } from '../../../../../../utils/request';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/critters/import');
 
@@ -128,7 +129,7 @@ POST.apiDoc = {
 export function importCsv(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const rawMediaFile = req.files[0];
+    const rawMediaFile = getFileFromRequest(req);
 
     const connection = getDBConnection(req['keycloak_token']);
 

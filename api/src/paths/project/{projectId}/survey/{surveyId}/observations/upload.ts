@@ -8,6 +8,7 @@ import { authorizeRequestHandler } from '../../../../../../request-handlers/secu
 import { ObservationService } from '../../../../../../services/observation-service';
 import { scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
+import { getFileFromRequest } from '../../../../../../utils/request';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/upload');
 
@@ -113,7 +114,7 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
-    const rawMediaFile = req.files[0];
+    const rawMediaFile = getFileFromRequest(req);
 
     const connection = getDBConnection(req['keycloak_token']);
 

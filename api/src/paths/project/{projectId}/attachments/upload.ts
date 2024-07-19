@@ -9,6 +9,7 @@ import { authorizeRequestHandler } from '../../../../request-handlers/security/a
 import { AttachmentService } from '../../../../services/attachment-service';
 import { scanFileForVirus, uploadFileToS3 } from '../../../../utils/file-utils';
 import { getLogger } from '../../../../utils/logger';
+import { getFileFromRequest } from '../../../../utils/request';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/upload');
 
@@ -119,7 +120,7 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
-    const rawMediaFile = req.files[0];
+    const rawMediaFile = getFileFromRequest(req);
 
     defaultLog.debug({
       label: 'uploadMedia',

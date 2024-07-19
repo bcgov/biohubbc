@@ -23,7 +23,7 @@ const defaultLog = getLogger('app');
  */
 declare module 'express-serve-static-core' {
   interface Request {
-    files: Express.Multer.File[];
+    files?: Express.Multer.File[];
   }
 }
 

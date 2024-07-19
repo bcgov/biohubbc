@@ -11,6 +11,7 @@ import { BctwService, IBctwUser } from '../../../../../../../services/bctw-servi
 import { scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { checkFileForKeyx } from '../../../../../../../utils/media/media-utils';
+import { getFileFromRequest } from '../../../../../../../utils/request';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/keyx/upload');
 
@@ -135,7 +136,7 @@ POST.apiDoc = {
  */
 export function uploadKeyxMedia(): RequestHandler {
   return async (req, res) => {
-    const rawMediaFile = req.files[0];
+    const rawMediaFile = getFileFromRequest(req);
 
     defaultLog.debug({
       label: 'uploadKeyxMedia',
