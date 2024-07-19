@@ -31,7 +31,7 @@ const useStyles = () => {
     },
     pageTitle: {
       display: '-webkit-box',
-      WebkitLineClamp: '2',
+      WebkitLineClamp: 2,
       WebkitBoxOrient: 'vertical',
       paddingTop: theme.spacing(0.5),
       paddingBottom: theme.spacing(0.5),

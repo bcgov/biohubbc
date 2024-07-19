@@ -1,6 +1,7 @@
 import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
+import { useConfigContext } from 'hooks/useContext';
 import { PropsWithChildren, ReactElement, useContext } from 'react';
 import { hasAtLeastOneValidValue } from 'utils/authUtils';
 
@@ -48,6 +49,16 @@ export interface IProjectRoleGuardProps extends IGuardProps {
   validProjectPermissions: PROJECT_PERMISSION[];
 }
 
+export interface IFeatureFlagGuardProps extends IGuardProps {
+  /**
+   * An array of feature flag names.
+   *
+   * @type {string[]}
+   * @memberof IFeatureFlagGuardProps
+   */
+  featureFlags: string[];
+}
+
 /**
  * Renders `props.children` only if the user is authenticated and has at least 1 of the specified valid system roles.
  *
@@ -63,9 +74,9 @@ export const SystemRoleGuard = (props: PropsWithChildren<ISystemRoleGuardProps>)
   if (!hasSystemRole) {
     if (props.fallback) {
       return <>{props.fallback}</>;
-    } else {
-      return <></>;
     }
+
+    return <></>;
   }
 
   return <>{props.children}</>;
@@ -108,9 +119,9 @@ export const AuthGuard = (props: PropsWithChildren<IGuardProps>) => {
   if (!authStateContext.auth.isAuthenticated || authStateContext.simsUserWrapper.isLoading) {
     if (props.fallback) {
       return <>{props.fallback}</>;
-    } else {
-      return <></>;
     }
+
+    return <></>;
   }
 
   return <>{props.children}</>;
@@ -128,10 +139,42 @@ export const UnAuthGuard = (props: PropsWithChildren<IGuardProps>) => {
   if (authStateContext.auth.isAuthenticated) {
     if (props.fallback) {
       return <>{props.fallback}</>;
-    } else {
-      return <></>;
     }
+
+    return <></>;
   }
 
+  return <>{props.children}</>;
+};
+
+/**
+ * Renders `props.children` only if all specified feature flags do not exist.
+ *
+ * If at least one feature flag exists, the fallback will be rendered, or nothing if no fallback is provided.
+ *
+ * Feature flags are used to disable child components. to enabled a child component, simply remove all associated
+ * feature flags from the config (via the `REACT_APP_FEATURE_FLAGS` env var).
+ *
+ * Note: Recommend conforming to a consistent pattern when defining feature flags, to make feature flags easy to
+ * identify (ie: `[APP/API]_FF_<string>`)
+ *
+ * @param {*} props
+ * @return {*}
+ */
+export const FeatureFlagGuard = (props: PropsWithChildren<IFeatureFlagGuardProps>) => {
+  const config = useConfigContext();
+
+  const matchingFeatureFlags = config.FEATURE_FLAGS.filter((featureFlag) => props.featureFlags.includes(featureFlag));
+
+  if (matchingFeatureFlags.length) {
+    // Found at least one matching feature flag, render the fallback or nothing if no fallback is provided.
+    if (props.fallback) {
+      return <>{props.fallback}</>;
+    }
+
+    return <></>;
+  }
+
+  // No matching feature flags found, render the children.
   return <>{props.children}</>;
 };

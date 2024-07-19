@@ -1,3 +1,5 @@
+import { BaseError } from './base-error';
+
 export enum ApiErrorType {
   BUILD_SQL = 'Error constructing SQL query',
   EXECUTE_SQL = 'Error executing SQL query',
@@ -5,23 +7,9 @@ export enum ApiErrorType {
   UNKNOWN = 'Unknown Error'
 }
 
-export class ApiError extends Error {
-  errors?: (string | object)[];
-
+export class ApiError extends BaseError {
   constructor(name: ApiErrorType, message: string, errors?: (string | object)[], stack?: string) {
-    super(message);
-
-    this.name = name;
-    this.errors = errors || [];
-    this.stack = stack;
-
-    if (stack) {
-      this.stack = stack;
-    }
-
-    if (!this.stack) {
-      Error.captureStackTrace(this);
-    }
+    super(name, message, errors, stack);
   }
 }
 
