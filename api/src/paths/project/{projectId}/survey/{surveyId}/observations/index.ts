@@ -5,7 +5,7 @@ import { getDBConnection } from '../../../../../../database/db';
 import { observervationsWithSubcountDataSchema } from '../../../../../../openapi/schemas/observation';
 import { paginationRequestQueryParamSchema } from '../../../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { CritterbaseService } from '../../../../../../services/critterbase-service';
+import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { InsertUpdateObservations, ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
 import { ensureCompletePaginationOptions, makePaginationResponse } from '../../../../../../utils/pagination';
@@ -425,10 +425,12 @@ export function putObservations(): RequestHandler {
 
       const observationRows: InsertUpdateObservations[] = req.body.surveyObservations;
 
-      const critterBaseService = new CritterbaseService({
-        keycloak_guid: req.system_user?.user_guid,
-        username: req.system_user?.user_identifier
-      });
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
+
+      const critterBaseService = new CritterbaseService(user);
 
       // Validate measurement data against fetched measurement definition
       const isValid = await observationService.validateSurveyObservations(observationRows, critterBaseService);
