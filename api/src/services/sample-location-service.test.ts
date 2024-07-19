@@ -50,7 +50,7 @@ describe('SampleLocationService', () => {
         sample_methods: [
           {
             survey_sample_site_id: 1,
-            method_lookup_id: 1,
+            method_technique_id: 1,
             method_response_metric_id: 1,
             description: '',
             sample_periods: [
@@ -215,12 +215,12 @@ describe('SampleLocationService', () => {
       const methods = [
         {
           survey_sample_method_id: 2,
-          method_lookup_id: 3,
+          method_technique_id: 3,
           method_response_metric_id: 1,
           description: 'Cool method',
           sample_periods: []
         } as any,
-        { method_lookup_id: 4, method_response_metric_id: 1, description: 'Cool method', sample_periods: [] } as any
+        { method_technique_id: 4, method_response_metric_id: 1, description: 'Cool method', sample_periods: [] } as any
       ];
       const blocks = [
         {
@@ -319,7 +319,7 @@ describe('SampleLocationService', () => {
       });
       expect(insertSampleMethodStub).to.be.calledOnceWith({
         survey_sample_site_id: survey_sample_site_id,
-        method_lookup_id: 4,
+        method_technique_id: 4,
 
         method_response_metric_id: 1,
         description: 'Cool method',
@@ -328,7 +328,7 @@ describe('SampleLocationService', () => {
       expect(updateSampleMethodStub).to.be.calledOnceWith(mockSurveyId, {
         survey_sample_site_id: survey_sample_site_id,
         survey_sample_method_id: 2,
-        method_lookup_id: 3,
+        method_technique_id: 3,
         method_response_metric_id: 1,
         description: 'Cool method',
         sample_periods: []

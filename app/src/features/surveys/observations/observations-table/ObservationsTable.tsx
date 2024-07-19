@@ -27,8 +27,6 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
 
   return (
     <>
-      {props.isLoading && <SkeletonTable />}
-
       <DataGrid
         apiRef={observationsTableContext._muiDataGridApiRef}
         editMode="row"
@@ -70,6 +68,12 @@ const ObservationsTable = (props: ISpeciesObservationTableProps) => {
         rowHeight={56}
         getRowHeight={() => 'auto'}
         getRowClassName={(params) => (has(observationsTableContext.validationModel, params.row.id) ? 'error' : '')}
+        // Loading
+        loading={observationsTableContext.isLoading}
+        slots={{
+          loadingOverlay: SkeletonTable
+        }}
+        // Styles
         sx={{
           border: 'none',
           borderRadius: 0,
