@@ -75,7 +75,7 @@ export function deleteProject(): RequestHandler {
       throw new HTTP400('Missing required path param: `projectId`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
     const projectId = Number(req.params.projectId);
 
     try {

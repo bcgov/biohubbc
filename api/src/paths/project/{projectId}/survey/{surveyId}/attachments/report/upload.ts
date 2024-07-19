@@ -172,7 +172,7 @@ export function uploadMedia(): RequestHandler {
       files: { ...rawMediaFile, buffer: 'Too big to print' }
     });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

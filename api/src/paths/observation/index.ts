@@ -169,7 +169,7 @@ export function findObservations(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'getObservations' });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

@@ -113,7 +113,7 @@ GET.apiDoc = {
  */
 export function getFundingSources(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
     const filterFields: IFundingSourceSearchParams = req.query || {};
     try {
       await connection.open();
@@ -260,7 +260,7 @@ POST.apiDoc = {
  */
 export function postFundingSource(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
     const service = new FundingSourceService(connection);
     const data = req.body;
     try {

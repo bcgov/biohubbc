@@ -93,7 +93,7 @@ export function updateSurveyCritter(): RequestHandler {
 
     const critterId = Number(req.params.critterId);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
     try {
       if (!critterbaseCritterId) {
         throw new HTTPError(HTTPErrorType.BAD_REQUEST, 400, 'No external critter ID was found.');

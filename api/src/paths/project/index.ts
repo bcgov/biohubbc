@@ -183,7 +183,7 @@ export function findProjects(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'findProjects' });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

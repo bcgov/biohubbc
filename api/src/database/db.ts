@@ -209,7 +209,7 @@ export interface IDBConnection {
  *
  * const sqlStatement = SQL\`select * from table where id = ${id};\`;
  *
- * const connection = await getDBConnection(req['keycloak_token']);
+ * const connection = await getDBConnection(req.keycloak_token);
  *
  * try {
  *   await connection.open();

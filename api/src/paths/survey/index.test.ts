@@ -59,7 +59,7 @@ describe('findSurveys', () => {
       sort: undefined,
       order: undefined
     };
-    mockReq['keycloak_token'] = {};
+    mockreq.keycloak_token = {};
     mockReq['system_user'] = {
       role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
     };
@@ -125,7 +125,7 @@ describe('findSurveys', () => {
       sort: undefined,
       order: undefined
     };
-    mockReq['keycloak_token'] = {};
+    mockreq.keycloak_token = {};
     mockReq['system_user'] = {
       role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
     };

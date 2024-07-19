@@ -131,7 +131,7 @@ export function getAttachments(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Get attachments list', message: 'params', req_params: req.params });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
     const projectId = Number(req.params.projectId);
 
     try {

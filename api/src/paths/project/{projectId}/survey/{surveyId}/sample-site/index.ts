@@ -269,7 +269,7 @@ export function getSurveySampleLocationRecord(): RequestHandler {
       throw new HTTP400('Missing required param `surveyId`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -570,7 +570,7 @@ export function createSurveySampleSiteRecord(): RequestHandler {
       throw new HTTP400('Missing required path param `surveyId`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const sampleSite: PostSampleLocations = {

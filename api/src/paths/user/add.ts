@@ -132,11 +132,11 @@ export function addSystemRoleUser(): RequestHandler {
     const family_name: string = req.body?.family_name;
     const role_name: string = req.body?.role_name;
 
-    const sourceSystem = getKeycloakSource(req['keycloak_token']);
+    const sourceSystem = getKeycloakSource(req.keycloak_token);
 
     const connection = sourceSystem
       ? getServiceClientDBConnection(sourceSystem)
-      : getDBConnection(req['keycloak_token']);
+      : getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

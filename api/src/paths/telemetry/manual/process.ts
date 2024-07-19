@@ -97,7 +97,7 @@ export function processFile(): RequestHandler {
       keycloak_guid: req['system_user']?.user_guid,
       username: req['system_user']?.user_identifier
     };
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
     try {
       await connection.open();
 

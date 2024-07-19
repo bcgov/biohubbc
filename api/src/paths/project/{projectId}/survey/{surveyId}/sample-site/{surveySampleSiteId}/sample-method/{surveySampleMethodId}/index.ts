@@ -129,7 +129,7 @@ export function updateSurveySampleMethod(): RequestHandler {
     }
 
     const surveyId = Number(req.params.surveyId);
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const sampleMethod: UpdateSampleMethodRecord = {
@@ -243,7 +243,7 @@ export function deleteSurveySampleMethodRecord(): RequestHandler {
     }
 
     const surveyId = Number(req.params.surveyId);
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

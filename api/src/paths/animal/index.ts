@@ -184,7 +184,7 @@ export function findAnimals(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'findAnimals' });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

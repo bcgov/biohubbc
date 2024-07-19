@@ -249,7 +249,7 @@ export function deployDevice(): RequestHandler {
       deploymentId: newDeploymentId
     };
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -281,7 +281,7 @@ export function updateDeployment(): RequestHandler {
     };
     const critterId = Number(req.params.critterId);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

@@ -147,7 +147,7 @@ export function updateSurveySamplePeriod(): RequestHandler {
     }
 
     const surveyId = Number(req.params.surveyId);
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const samplePeriod: UpdateSamplePeriodRecord = {
@@ -280,7 +280,7 @@ export function deleteSurveySamplePeriodRecord(): RequestHandler {
       throw new HTTP400('Missing required param `surveySamplePeriodId`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

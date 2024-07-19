@@ -157,7 +157,7 @@ export function getSurveySampleMethodRecords(): RequestHandler {
     const surveySampleSiteId = Number(req.params.surveySampleSiteId);
     const surveyId = Number(req.params.surveyId);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -294,7 +294,7 @@ export function createSurveySampleSiteRecord(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     const surveySampleSiteId = Number(req.params.surveySampleSiteId);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const sampleSiteService = new SampleLocationService(connection);

@@ -373,7 +373,7 @@ export function getSurveyObservations(): RequestHandler {
 
     const paginationOptions: Partial<ApiPaginationOptions> = { page, limit, order, sort };
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -416,7 +416,7 @@ export function putObservations(): RequestHandler {
 
     defaultLog.debug({ label: 'insertUpdateSurveyObservations', surveyId });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

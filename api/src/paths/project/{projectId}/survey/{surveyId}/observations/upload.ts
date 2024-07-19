@@ -122,7 +122,7 @@ export function uploadMedia(): RequestHandler {
       throw new HTTP400('Too many files uploaded, expected 1');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const rawMediaFile = rawMediaArray[0];

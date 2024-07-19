@@ -24,7 +24,7 @@ describe('survey list', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    mockReq['keycloak_token'] = {};
+    mockreq.keycloak_token = {};
     mockReq.params = {
       projectId: '1'
     };
@@ -72,7 +72,7 @@ describe('survey list', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     const projectId = 3;
-    mockReq['keycloak_token'] = {};
+    mockreq.keycloak_token = {};
     mockReq.params = {
       projectId: String(projectId)
     };

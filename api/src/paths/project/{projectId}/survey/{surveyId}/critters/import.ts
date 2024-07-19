@@ -128,7 +128,7 @@ export function importCsv(): RequestHandler {
     const rawFiles = req.files as Express.Multer.File[];
     const rawFile = rawFiles[0];
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

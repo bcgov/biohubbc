@@ -108,7 +108,7 @@ export function deleteSurveySampleSiteRecords(): RequestHandler {
       throw new HTTP400('Missing required body `surveySampleSiteIds`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

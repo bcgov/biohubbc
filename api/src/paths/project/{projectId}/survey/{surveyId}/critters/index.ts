@@ -209,7 +209,7 @@ export function getCrittersFromSurvey(): RequestHandler {
     };
 
     const surveyId = Number(req.params.surveyId);
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -258,7 +258,7 @@ export function addCritterToSurvey(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     let critterId = req.body.critter_id;
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

@@ -219,7 +219,7 @@ export function findSurveys(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'findSurveys' });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
