@@ -1,0 +1,29 @@
+{
+  "name": "spi-migrate",
+  "version": "0.0.0",
+  "description": "Transforms migrated SPI data",
+  "license": "Apache-2.0",
+  "main": "spi",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bcgov/biohubbc.git"
+  },
+  "scripts": {
+    "start": "ts-node src/index.ts"
+  },
+  "engines": {
+    "node": ">= 18.0.0",
+    "npm": ">= 10.0.0"
+  },
+  "dependencies": {
+    "pg": "^8.7.1",
+    "sql-template-strings": "^2.2.2",
+    "ts-node": "^10.9.2",
+    "winston": "^3.3.3",
+    "typescript": "^4.7.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.11",
+    "@types/pg": "^8.11.6"
+  }
+}

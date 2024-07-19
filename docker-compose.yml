@@ -195,6 +195,29 @@ services:
         condition: service_healthy
     command: ["npm", "run", "setup"]
 
+  ## Run the database migrations and seeding
+  spi_transform:
+    image: ${DOCKER_PROJECT_NAME}-spi-transform-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-spi-transform-${DOCKER_NAMESPACE}-container
+    build:
+      context: ./spi
+      dockerfile: ./Dockerfile
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DB_HOST=${SPI_DB_HOST}
+      - DB_ADMIN=${SPI_DB_ADMIN}
+      - DB_ADMIN_PASS=${SPI_DB_ADMIN_PASS}
+      - DB_PORT=5434
+      - DB_DATABASE=${SPI_DB_DATABASE}
+      - DB_SCHEMA=${SPI_DB_SCHEMA}
+      - DB_USER_API=${SPI_DB_USER_API}
+      - DB_USER_API_PASS=${SPI_DB_USER_API_PASS}
+      - DB_SCHEMA_DAPI_V1=${SPI_DB_SCHEMA_DAPI_V1}
+    volumes:
+      - /opt/app-root/src/node_modules
+    networks:
+      - sims-network
+
 networks:
   sims-network:
     driver: bridge
