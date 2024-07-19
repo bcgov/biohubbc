@@ -225,7 +225,7 @@ export interface IDBConnection {
  * @param {object} keycloakToken
  * @return {*} {IDBConnection}
  */
-export const getDBConnection = function (keycloakToken: KeycloakUserInformation): IDBConnection {
+export const getDBConnection = function (keycloakToken?: KeycloakUserInformation): IDBConnection {
   if (!keycloakToken) {
     throw Error('Keycloak token is undefined');
   }

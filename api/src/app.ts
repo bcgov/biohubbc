@@ -12,10 +12,23 @@ import {
   replaceAuthorizationHeaderMiddleware
 } from './middleware/critterbase-proxy';
 import { rootAPIDoc } from './openapi/root-api-doc';
+import { SystemUser } from './repositories/user-repository';
 import { authenticateRequest, authenticateRequestOptional } from './request-handlers/security/authentication';
+import { KeycloakUserInformation } from './utils/keycloak-utils';
 import { getLogger } from './utils/logger';
 
 const defaultLog = getLogger('app');
+
+/**
+ * Extending express request type.
+ *
+ */
+declare module 'express-serve-static-core' {
+  interface Request {
+    keycloak_token?: KeycloakUserInformation;
+    system_user?: SystemUser;
+  }
+}
 
 const HOST = process.env.API_HOST;
 const PORT = Number(process.env.API_PORT);
