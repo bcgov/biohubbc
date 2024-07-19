@@ -40,9 +40,9 @@ export class AnalyticsService extends DBService {
       // Fetch observation counts from repository
       const counts = await this.analyticsRepository.getObservationCountByGroup(
         surveyIds,
-        groupByColumns.filter((column) => column.trim() !== ""),
-        groupByQuantitativeMeasurements.filter((column) => column.trim() !== ""),
-        groupByQualitativeMeasurements.filter((column) => column.trim() !== "")
+        groupByColumns.filter((column) => column.trim() !== ''),
+        groupByQuantitativeMeasurements.filter((column) => column.trim() !== ''),
+        groupByQualitativeMeasurements.filter((column) => column.trim() !== '')
       );
 
       // Extract unique measurement IDs
@@ -63,13 +63,15 @@ export class AnalyticsService extends DBService {
 
         const namedQualitativeMeasurements: QualitativeMeasurementAnalytics[] = [];
         for (const measurementId of Object.keys(qual_measurements)) {
-          const option_id = qual_measurements[measurementId];
+          const option_id = qual_measurements.find(
+            (measurement) => measurement.critterbase_taxon_measurement_id === measurementId
+          )?.option_id;
 
           const qualitativeMeasurement = qualitativeMeasurementDefinitions.find(
             (def) => def.taxon_measurement_id === measurementId
           );
 
-          if (qualitativeMeasurement) {
+          if (qualitativeMeasurement && option_id) {
             namedQualitativeMeasurements.push({
               option: {
                 option_id: option_id,
@@ -85,13 +87,15 @@ export class AnalyticsService extends DBService {
 
         const namedQuantitativeMeasurements: QuantitativeMeasurementAnalytics[] = [];
         for (const measurementId of Object.keys(quant_measurements)) {
-          const value = quant_measurements[measurementId];
+          const value = quant_measurements.find(
+            (measurement) => measurement.critterbase_taxon_measurement_id === measurementId
+          )?.value;
 
           const quantitativeMeasurement = quantitativeMeasurementDefinitions.find(
             (def) => def.taxon_measurement_id === measurementId
           );
 
-          if (quantitativeMeasurement) {
+          if (quantitativeMeasurement && value) {
             namedQuantitativeMeasurements.push({
               value: value,
               taxon_measurement_id: measurementId,

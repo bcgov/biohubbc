@@ -189,7 +189,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
 
   return (
     <>
-      {props.isLoading ? (
+      {props.isLoading || !paginatedDataLoader.data ? (
         <Stack>
           <SkeletonRow />
           <SkeletonRow />

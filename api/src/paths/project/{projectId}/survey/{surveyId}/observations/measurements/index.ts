@@ -122,8 +122,6 @@ export function getSurveyObservationMeasurements(): RequestHandler {
 
       const observationData = await subcountService.getMeasurementTypeDefinitionsForSurvey(surveyId);
 
-      console.log(observationData);
-
       return res.status(200).json(observationData);
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservationMeasurements', message: 'error', error });
