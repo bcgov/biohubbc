@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
+import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ImportCrittersService } from '../../../../../../services/import-services/import-critters-service';
 import { scanFileForVirus } from '../../../../../../utils/file-utils';
@@ -72,34 +73,7 @@ POST.apiDoc = {
               type: 'array',
               minItems: 1,
               maxItems: 1,
-              required: ['fieldname', 'originalname', 'mimetype', 'buffer'],
-              items: {
-                type: 'object',
-                properties: {
-                  fieldname: {
-                    type: 'string'
-                  },
-                  originalname: {
-                    type: 'string'
-                  },
-                  encoding: {
-                    type: 'string'
-                  },
-                  mimetype: {
-                    description: 'Must be a CSV file.',
-                    type: 'string',
-                    enum: ['text/csv']
-                  },
-                  buffer: {
-                    type: 'object',
-                    format: 'buffer'
-                  },
-                  size: {
-                    type: 'integer',
-                    minimum: 1
-                  }
-                }
-              }
+              items: csvFileSchema
             }
           }
         }

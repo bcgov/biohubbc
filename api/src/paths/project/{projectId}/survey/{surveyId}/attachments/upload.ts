@@ -4,6 +4,7 @@ import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
+import { fileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../services/attachment-service';
 import { scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
@@ -63,32 +64,7 @@ POST.apiDoc = {
               type: 'array',
               minItems: 1,
               maxItems: 1,
-              required: ['fieldname', 'originalname', 'mimetype', 'buffer'],
-              items: {
-                type: 'object',
-                properties: {
-                  fieldname: {
-                    type: 'string'
-                  },
-                  originalname: {
-                    type: 'string'
-                  },
-                  encoding: {
-                    type: 'string'
-                  },
-                  mimetype: {
-                    type: 'string'
-                  },
-                  buffer: {
-                    type: 'object',
-                    format: 'buffer'
-                  },
-                  size: {
-                    type: 'integer',
-                    minimum: 1
-                  }
-                }
-              }
+              items: fileSchema
             }
           }
         }

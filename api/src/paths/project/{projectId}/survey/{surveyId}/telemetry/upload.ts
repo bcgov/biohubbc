@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
+import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { TelemetryService } from '../../../../../../services/telemetry-service';
 import { scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
@@ -59,8 +60,10 @@ POST.apiDoc = {
           properties: {
             media: {
               description: 'A survey telemetry submission file.',
-              type: 'string',
-              format: 'binary'
+              type: 'array',
+              minItems: 1,
+              maxItems: 1,
+              items: csvFileSchema
             }
           }
         }
