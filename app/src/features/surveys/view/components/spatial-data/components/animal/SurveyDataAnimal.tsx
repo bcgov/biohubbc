@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import { SURVEY_MAP_LAYER_COLOURS } from 'constants/spatial';
+import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import {
   ISurveyMapPoint,
   ISurveyMapPointMetadata,
@@ -10,7 +10,7 @@ import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo } from 'react';
-import { createGeoJSONPoint } from 'utils/Utils';
+import { createGeoJSONFeature } from 'utils/spatial-utils';
 import SurveyDataLayer from '../map/SurveyDataMapContainer';
 import SurveyDataAnimalTable from './table/SurveyDataAnimalTable';
 
@@ -44,11 +44,7 @@ export const SurveyDataAnimal = () => {
       for (const capture of animal.captures ?? []) {
         if (capture.capture_location?.latitude && capture.capture_location?.longitude) {
           const point: ISurveyMapPoint = {
-            feature: {
-              type: 'Feature',
-              properties: {},
-              geometry: createGeoJSONPoint(capture.capture_location.latitude, capture.capture_location.longitude)
-            },
+            feature: createGeoJSONFeature(capture.capture_location.latitude, capture.capture_location.longitude),
             key: `capture-${capture.capture_id}`,
             onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
               const response = await critterbaseApi.capture.getCapture(capture.capture_id);

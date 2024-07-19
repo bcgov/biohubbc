@@ -1,5 +1,5 @@
 import { IStaticLayer } from 'components/map/components/StaticLayers';
-import { SURVEY_MAP_LAYER_COLOURS } from 'constants/spatial';
+import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import SurveyMap from 'features/surveys/view/SurveyMap';
 import SurveyMapPopup from 'features/surveys/view/SurveyMapPopup';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';

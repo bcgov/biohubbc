@@ -401,8 +401,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Retrieve a list of critters associated with the given survey with details taken from critterbase, including
-   * additiona information such as captures and mortality
+   * Retrieve a list of critters associated with the given survey with details from critterbase, including
+   * additional information such as captures and mortality
    *
    * @param {number} projectId
    * @param {number} surveyId

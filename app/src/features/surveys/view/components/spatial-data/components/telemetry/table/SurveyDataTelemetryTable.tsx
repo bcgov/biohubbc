@@ -43,7 +43,7 @@ const SurveyDataTelemetryTable = (props: ISurveyDataTelemetryTableProps) => {
    */
   const tableRows: ITelemetryData[] = useMemo(() => {
     return surveyContext.critterDeployments.map((item) => {
-      console.log(item);
+ 
       return {
         // Critters in this table may use multiple devices across multiple timespans
         id: item.deployment.deployment_id,

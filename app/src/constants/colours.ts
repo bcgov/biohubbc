@@ -102,3 +102,15 @@ export const getTaxonRankColour = generateColourMapGetter(TAXON_RANK_COLOUR_MAP)
  *
  */
 export const getNrmRegionColour = generateColourMapGetter(NRM_REGION_COLOUR_MAP);
+
+/**
+ * Colours for layers on the survey map
+ */
+export const SURVEY_MAP_LAYER_COLOURS = {
+  OBSERVATIONS_COLOUR: '#f15454',
+  STUDY_AREA_COLOUR: '#e3a82b',
+  SAMPLING_SITE_COLOUR: '#1f6fb5',
+  ANIMAL_COLOUR: '#f15454',
+  TELEMETRY_COLOUR: '#f15454',
+  DEFAULT_COLOUR: '#a7bfd1'
+};

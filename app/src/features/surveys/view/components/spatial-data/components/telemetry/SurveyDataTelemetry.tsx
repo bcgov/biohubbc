@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import { SURVEY_MAP_LAYER_COLOURS } from 'constants/spatial';
+import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import dayjs from 'dayjs';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { ISurveyMapPoint, ISurveyMapPointMetadata } from 'features/surveys/view/SurveyMap';

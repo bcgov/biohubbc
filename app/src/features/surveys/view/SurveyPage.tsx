@@ -35,7 +35,6 @@ const SurveyPage: React.FC = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Stack gap={3}>
           <TaxonomyContextProvider>
-            {/* <SurveySpatialData /> */}
             <SurveyDataContainer />
           </TaxonomyContextProvider>
 

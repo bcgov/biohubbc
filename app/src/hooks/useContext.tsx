@@ -149,9 +149,9 @@ export const useObservationsTableContext = (): IObservationsTableContext => {
 };
 
 /**
- * Returns an instance of `IObservationsDataContext` from `ObservationsDataContext`.
+ * Returns an instance of `ITelemetryDataContext` from `TelemetryDataContext`.
  *
- * @return {*}  {IObservationsDataContext}
+ * @return {*}  {ITelemetryDataContext}
  */
 export const useTelemetryDataContext = (): ITelemetryDataContext => {
   const context = useContext(TelemetryDataContext);
@@ -166,9 +166,9 @@ export const useTelemetryDataContext = (): ITelemetryDataContext => {
 };
 
 /**
- * Returns an instance of `IObservationsTableContext` from `ObservationsTableContext`.
+ * Returns an instance of `ITelemetryTableContext` from `TelemetryTableContext`.
  *
- * @return {*}  {IObservationsTableContext}
+ * @return {*}  {ITelemetryTableContext}
  */
 export const useTelemetryTableContext = (): ITelemetryTableContext => {
   const context = useContext(TelemetryTableContext);
@@ -183,7 +183,7 @@ export const useTelemetryTableContext = (): ITelemetryTableContext => {
 };
 
 /**
- * Returns an instance of `ITaxonomyContext` from `SurveyContext`.
+ * Returns an instance of `ITaxonomyContext` from `TaxonomyContext`.
  *
  * @return {*}  {ITaxonomyContext}
  */
@@ -202,7 +202,7 @@ export const useTaxonomyContext = (): ITaxonomyContext => {
 /**
  * Returns an instance of `IAnimalPageContext` from `AnimalPageContext`.
  *
- * @return {*}  {ISurveyContext}
+ * @return {*} {IAnimalPageContext}
  */
 export const useAnimalPageContext = (): IAnimalPageContext => {
   const context = useContext(AnimalPageContext);

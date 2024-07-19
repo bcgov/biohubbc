@@ -1,17 +1,17 @@
 import Box from '@mui/material/Box';
+import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { SURVEY_MAP_LAYER_COLOURS } from 'constants/spatial';
 import {
-  ISurveyMapPoint,
-  ISurveyMapPointMetadata,
-  ISurveyMapSupplementaryLayer
+    ISurveyMapPoint,
+    ISurveyMapPointMetadata,
+    ISurveyMapSupplementaryLayer
 } from 'features/surveys/view/SurveyMap';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import {
-  IGetSurveyObservationsGeometryObject,
-  IGetSurveyObservationsGeometryResponse
+    IGetSurveyObservationsGeometryObject,
+    IGetSurveyObservationsGeometryResponse
 } from 'interfaces/useObservationApi.interface';
 import { useCallback, useEffect, useMemo } from 'react';
 import { getFormattedDate } from 'utils/Utils';

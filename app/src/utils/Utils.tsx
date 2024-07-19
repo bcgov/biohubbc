@@ -2,7 +2,7 @@ import Typography from '@mui/material/Typography';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
-import { Feature, GeoJsonProperties, Geometry, Point, Position } from 'geojson';
+import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 import _ from 'lodash';
@@ -479,39 +479,3 @@ export const getRandomHexColor = (seed: number, min = 100, max = 170): string =>
  */
 export const isDefined = <T,>(value: T | undefined | null): value is T => value !== undefined && value !== null;
 
-/**
- * Creates a GeoJSON point from a set of coordinates and associated properties.
- *
- * @param latitude - The latitude coordinate.
- * @param longitude - The longitude coordinate.
- * @returns A GeoJSON point
- */
-export const createGeoJSONPoint = (latitude: number, longitude: number): Point => {
-  const coordinates: Position = [longitude, latitude];
-  const point: Point = {
-    type: 'Point',
-    coordinates
-  };
-
-  return point;
-};
-
-/**
- * Creates a GeoJSON feature with a point geometry from a set of coordinates and associated properties.
- *
- * @param latitude - The latitude coordinate.
- * @param longitude - The longitude coordinate.
- * @param properties - The properties associated with the feature.
- * @returns A GeoJSON feature with a point geometry.
- */
-const createGeoJSONFeature = (latitude: number, longitude: number, properties: GeoJsonProperties = {}): Feature => {
-  const point = createGeoJSONPoint(latitude, longitude);
-
-  return {
-    type: 'Feature',
-    geometry: point,
-    properties
-  };
-};
-
-export default createGeoJSONFeature;
