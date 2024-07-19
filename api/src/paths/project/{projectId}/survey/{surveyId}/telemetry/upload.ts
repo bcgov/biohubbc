@@ -150,8 +150,8 @@ export function uploadMedia(): RequestHandler {
       // Upload file to S3
       const metadata = {
         filename: rawMediaFile.originalname,
-        username: req['auth_payload']?.preferred_username ?? '',
-        email: req['auth_payload']?.email ?? ''
+        username: req.keycloak_token?.preferred_username ?? '',
+        email: req.keycloak_token?.email ?? ''
       };
 
       const result = await uploadFileToS3(rawMediaFile, key, metadata);
