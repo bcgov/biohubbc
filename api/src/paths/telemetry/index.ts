@@ -194,7 +194,7 @@ export function findTelemetry(): RequestHandler {
 
       const isUserAdmin = userHasValidRole(
         [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
-        req['system_user']['role_names']
+        req.system_user['role_names']
       );
 
       const filterFields = parseQueryParams(req);

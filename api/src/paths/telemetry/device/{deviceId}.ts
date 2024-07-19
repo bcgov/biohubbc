@@ -59,8 +59,8 @@ GET.apiDoc = {
 export function getDeviceDetails(): RequestHandler {
   return async (req, res) => {
     const user: IBctwUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
+      keycloak_guid: req.system_user?.user_guid,
+      username: req.system_user?.user_identifier
     };
     const bctwService = new BctwService(user);
     const deviceId = Number(req.params.deviceId);

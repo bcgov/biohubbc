@@ -258,8 +258,8 @@ GET.apiDoc = {
 export function getCritterTelemetry(): RequestHandler {
   return async (req, res) => {
     const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
+      keycloak_guid: req.system_user?.user_guid,
+      username: req.system_user?.user_identifier
     };
 
     const critterId = Number(req.params.critterId);

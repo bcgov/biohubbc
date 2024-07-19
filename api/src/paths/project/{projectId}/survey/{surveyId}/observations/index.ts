@@ -426,8 +426,8 @@ export function putObservations(): RequestHandler {
       const observationRows: InsertUpdateObservations[] = req.body.surveyObservations;
 
       const critterBaseService = new CritterbaseService({
-        keycloak_guid: req['system_user']?.user_guid,
-        username: req['system_user']?.user_identifier
+        keycloak_guid: req.system_user?.user_guid,
+        username: req.system_user?.user_identifier
       });
 
       // Validate measurement data against fetched measurement definition

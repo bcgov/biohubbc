@@ -94,8 +94,8 @@ export function processFile(): RequestHandler {
   return async (req, res) => {
     const submissionId = req.body.submission_id;
     const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
+      keycloak_guid: req.system_user?.user_guid,
+      username: req.system_user?.user_identifier
     };
     const connection = getDBConnection(req.keycloak_token);
     try {

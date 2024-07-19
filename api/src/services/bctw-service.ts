@@ -180,8 +180,8 @@ export const DELETE_MANUAL_TELEMETRY = '/manual-telemetry/delete';
 export const MANUAL_AND_VENDOR_TELEMETRY = '/all-telemetry';
 
 export const getBctwUser = (req: Request): IBctwUser => ({
-  keycloak_guid: req['system_user']?.user_guid,
-  username: req['system_user']?.user_identifier
+  keycloak_guid: req.system_user?.user_guid,
+  username: req.system_user?.user_identifier
 });
 
 export class BctwService {

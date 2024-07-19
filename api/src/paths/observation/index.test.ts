@@ -80,7 +80,7 @@ describe('findObservations', () => {
       order: undefined
     };
     mockreq.keycloak_token = {};
-    mockReq['system_user'] = {
+    mockreq.system_user = {
       role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
     };
 
@@ -173,7 +173,7 @@ describe('findObservations', () => {
       order: undefined
     };
     mockreq.keycloak_token = {};
-    mockReq['system_user'] = {
+    mockreq.system_user = {
       role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
     };
 

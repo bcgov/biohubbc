@@ -124,7 +124,7 @@ export function getFundingSources(): RequestHandler {
 
       await connection.commit();
 
-      const systemUserObject: SystemUser = req['system_user'];
+      const systemUserObject: SystemUser = req.system_user;
       if (!UserService.isAdmin(systemUserObject)) {
         // User is not an admin, strip sensitive fields from response
         response = removeNonAdminFieldsFromFundingSourcesResponse(response);

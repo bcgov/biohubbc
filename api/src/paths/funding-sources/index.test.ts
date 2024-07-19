@@ -67,7 +67,7 @@ describe('getFundingSources', () => {
         agency: null
       };
       // system_user would be set by the authorization-service, if this endpoint was called for real
-      mockReq['system_user'] = systemUser;
+      mockreq.system_user = systemUser;
 
       const requestHandler = getFundingSources();
 
@@ -128,7 +128,7 @@ describe('getFundingSources', () => {
         agency: null
       };
       // system_user would be set by the authorization-service, if this endpoint was called for real
-      mockReq['system_user'] = systemUser;
+      mockreq.system_user = systemUser;
 
       const requestHandler = getFundingSources();
 

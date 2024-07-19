@@ -165,8 +165,8 @@ export const getCritterbaseProxyMiddleware = () =>
       client.setHeader(
         'user',
         JSON.stringify({
-          keycloak_guid: req['system_user']?.user_guid,
-          username: req['system_user']?.user_identifier
+          keycloak_guid: req.system_user?.user_guid,
+          username: req.system_user?.user_identifier
         })
       );
     },

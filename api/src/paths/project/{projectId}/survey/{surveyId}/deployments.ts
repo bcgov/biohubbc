@@ -87,8 +87,8 @@ GET.apiDoc = {
 export function getDeploymentsInSurvey(): RequestHandler {
   return async (req, res) => {
     const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
+      keycloak_guid: req.system_user?.user_guid,
+      username: req.system_user?.user_identifier
     };
 
     const surveyId = Number(req.params.surveyId);
