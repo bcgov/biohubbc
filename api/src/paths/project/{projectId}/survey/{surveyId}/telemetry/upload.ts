@@ -114,24 +114,10 @@ export function uploadMedia(): RequestHandler {
   return async (req, res) => {
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
-    if (!rawMediaArray?.length) {
-      // no media objects included, skipping media upload step
-      throw new HTTP400('Missing upload data');
-    }
-
-    if (rawMediaArray.length !== 1) {
-      // no media objects included
-      throw new HTTP400('Too many files uploaded, expected 1');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       const rawMediaFile = rawMediaArray[0];
-
-      if (!rawMediaFile?.originalname.endsWith('.csv')) {
-        throw new HTTP400('Invalid file type, expected a CSV file.');
-      }
 
       await connection.open();
 
