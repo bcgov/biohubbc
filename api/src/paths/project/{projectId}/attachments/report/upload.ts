@@ -77,7 +77,7 @@ POST.apiDoc = {
                   mimetype: {
                     description: 'Must be a text file.',
                     type: 'string',
-                    enum: ['text/csv']
+                    enum: ['text/plain']
                   },
                   buffer: {
                     type: 'object',

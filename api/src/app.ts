@@ -85,10 +85,15 @@ const openAPIFramework = initialize({
         }
 
         if (req.files && req.files.length) {
-          // See: https://www.npmjs.com/package/express-openapi#argsconsumesmiddleware
-
-          // Multer moves the files in `req.body.media` --> `req.files`
-          // We assign the files to `req.body.media` to allow file validation in requestBody with OpenAPI
+          /**
+           * @see https://www.npmjs.com/package/express-openapi#argsconsumesmiddleware
+           *
+           * Multer transforms and moves the incoming files from `req.body.media` --> `req.files`.
+           *
+           * OpenAPI only allows validation on specific parts of the request object (requestBody / parameters...) this excludes the contents of `req.files`.
+           * To get around this we re-assign `req.body.media` to the Multer transformed files stored in `req.files`.
+           *
+           */
           req.body.media = req.files;
         }
 
