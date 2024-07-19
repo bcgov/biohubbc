@@ -92,6 +92,8 @@ const openAPIFramework = initialize({
          * OpenAPI only allows validation on specific parts of the request object (requestBody / parameters...) this excludes the contents of `req.files`.
          * To get around this we re-assign `req.body.media` to the Multer transformed files stored in `req.files`.
          *
+         * Files can be accessed via `req.body.media` OR `req.files`.
+         *
          */
         req.body.media = req.files;
 

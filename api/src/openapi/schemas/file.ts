@@ -48,12 +48,11 @@ export const fileSchema: OpenAPIV3.SchemaObject = {
  * CSV file schema.
  *
  * Note: This could be extended further to have a regex that validates the `originalname` ends with `.csv`
- * but I think the mimetype is enough for our needs.
+ * but I think the enum value for `mimetype` is enough for our needs.
  *
  */
 export const csvFileSchema: OpenAPIV3.SchemaObject = {
-  type: 'object',
-  required: ['fieldname', 'originalname', 'mimetype', 'buffer'],
+  ...fileSchema,
   properties: {
     ...fileSchema.properties,
     mimetype: {
