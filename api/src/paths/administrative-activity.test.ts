@@ -117,7 +117,7 @@ describe('getAdministrativeActivityStanding', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    mockreq.keycloak_token = {
+    mockReq.keycloak_token = {
       idir_user_guid: 'testguid',
       identity_provider: 'idir',
       idir_username: 'testuser',
@@ -158,7 +158,7 @@ describe('getAdministrativeActivityStanding', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    mockreq.keycloak_token = {
+    mockReq.keycloak_token = {
       idir_user_guid: 'testguid',
       identity_provider: 'idir',
       idir_username: 'testuser',

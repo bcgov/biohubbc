@@ -7,6 +7,7 @@ import { authorizeRequestHandler } from '../../request-handlers/security/authori
 import { UserService } from '../../services/user-service';
 import { getKeycloakSource } from '../../utils/keycloak-utils';
 import { getLogger } from '../../utils/logger';
+import { getKeycloakTokenFromRequest } from '../../utils/request';
 
 const defaultLog = getLogger('paths/user/add');
 
@@ -132,11 +133,11 @@ export function addSystemRoleUser(): RequestHandler {
     const family_name: string = req.body?.family_name;
     const role_name: string = req.body?.role_name;
 
-    const sourceSystem = getKeycloakSource(req.keycloak_token);
+    const keycloakToken = getKeycloakTokenFromRequest(req);
 
-    const connection = sourceSystem
-      ? getServiceClientDBConnection(sourceSystem)
-      : getDBConnection(req.keycloak_token);
+    const sourceSystem = getKeycloakSource(keycloakToken);
+
+    const connection = sourceSystem ? getServiceClientDBConnection(sourceSystem) : getDBConnection(keycloakToken);
 
     try {
       await connection.open();

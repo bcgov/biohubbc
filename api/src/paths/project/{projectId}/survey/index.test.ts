@@ -6,6 +6,7 @@ import { getSurveys } from '.';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
 import { SurveyService } from '../../../../services/survey-service';
+import { KeycloakUserInformation } from '../../../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 
 chai.use(sinonChai);
@@ -24,7 +25,7 @@ describe('survey list', () => {
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    mockreq.keycloak_token = {};
+    mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.params = {
       projectId: '1'
     };
@@ -72,7 +73,7 @@ describe('survey list', () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     const projectId = 3;
-    mockreq.keycloak_token = {};
+    mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.params = {
       projectId: String(projectId)
     };

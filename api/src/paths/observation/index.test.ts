@@ -7,6 +7,7 @@ import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { ObservationRecordWithSamplingAndSubcountData } from '../../repositories/observation-repository/observation-repository';
 import { ObservationService } from '../../services/observation-service';
+import { KeycloakUserInformation } from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { findObservations } from './index';
 
@@ -79,8 +80,8 @@ describe('findObservations', () => {
       sort: undefined,
       order: undefined
     };
-    mockreq.keycloak_token = {};
-    mockreq.system_user = {
+    mockReq.keycloak_token = {} as KeycloakUserInformation;
+    mockReq.system_user = {
       role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
     };
 
@@ -172,8 +173,8 @@ describe('findObservations', () => {
       sort: undefined,
       order: undefined
     };
-    mockreq.keycloak_token = {};
-    mockreq.system_user = {
+    mockReq.keycloak_token = {} as KeycloakUserInformation;
+    mockReq.system_user = {
       role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
     };
 

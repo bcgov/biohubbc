@@ -7,6 +7,7 @@ import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { FindSurveysResponse } from '../../models/survey-view';
 import { SurveyService } from '../../services/survey-service';
+import { KeycloakUserInformation } from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { findSurveys } from './index';
 
@@ -59,8 +60,8 @@ describe('findSurveys', () => {
       sort: undefined,
       order: undefined
     };
-    mockreq.keycloak_token = {};
-    mockreq.system_user = {
+    mockReq.keycloak_token = {} as KeycloakUserInformation;
+    mockReq.system_user = {
       role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
     };
 
@@ -125,8 +126,8 @@ describe('findSurveys', () => {
       sort: undefined,
       order: undefined
     };
-    mockreq.keycloak_token = {};
-    mockreq.system_user = {
+    mockReq.keycloak_token = {} as KeycloakUserInformation;
+    mockReq.system_user = {
       role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
     };
 

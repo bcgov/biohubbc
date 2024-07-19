@@ -6,6 +6,7 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { FindTelemetryResponse, TelemetryService } from '../../services/telemetry-service';
+import { KeycloakUserInformation } from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { findTelemetry } from './index';
 
@@ -57,8 +58,8 @@ describe('findTelemetry', () => {
       sort: undefined,
       order: undefined
     };
-    mockreq.keycloak_token = {};
-    mockreq.system_user = {
+    mockReq.keycloak_token = {} as KeycloakUserInformation;
+    mockReq.system_user = {
       role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
     };
 
@@ -103,8 +104,8 @@ describe('findTelemetry', () => {
       sort: undefined,
       order: undefined
     };
-    mockreq.keycloak_token = {};
-    mockreq.system_user = {
+    mockReq.keycloak_token = {} as KeycloakUserInformation;
+    mockReq.system_user = {
       role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
     };
 
