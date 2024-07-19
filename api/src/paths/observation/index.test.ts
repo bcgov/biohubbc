@@ -6,6 +6,7 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { ObservationRecordWithSamplingAndSubcountData } from '../../repositories/observation-repository/observation-repository';
+import { SystemUser } from '../../repositories/user-repository';
 import { ObservationService } from '../../services/observation-service';
 import { KeycloakUserInformation } from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
@@ -83,7 +84,7 @@ describe('findObservations', () => {
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.system_user = {
       role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
-    };
+    } as SystemUser;
 
     const requestHandler = findObservations();
 
@@ -176,7 +177,7 @@ describe('findObservations', () => {
     mockReq.keycloak_token = {} as KeycloakUserInformation;
     mockReq.system_user = {
       role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
-    };
+    } as SystemUser;
 
     const requestHandler = findObservations();
 
