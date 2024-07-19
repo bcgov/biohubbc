@@ -113,13 +113,11 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
-    const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
+    const rawMediaFile = req.files[0];
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const rawMediaFile = rawMediaArray[0];
-
       await connection.open();
 
       // Scan file for viruses using ClamAV

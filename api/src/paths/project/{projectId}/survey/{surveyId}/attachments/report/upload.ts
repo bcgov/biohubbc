@@ -161,9 +161,7 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
-    const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
-
-    const rawMediaFile: Express.Multer.File = rawMediaArray[0];
+    const rawMediaFile = req.files[0];
 
     defaultLog.debug({
       label: 'uploadMedia',

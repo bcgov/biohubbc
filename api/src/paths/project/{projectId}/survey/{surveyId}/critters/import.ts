@@ -128,8 +128,7 @@ POST.apiDoc = {
 export function importCsv(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const rawFiles = req.files as Express.Multer.File[];
-    const rawFile = rawFiles[0];
+    const rawMediaFile = req.files[0];
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -137,7 +136,7 @@ export function importCsv(): RequestHandler {
       await connection.open();
 
       // Check for viruses / malware
-      const virusScanResult = await scanFileForVirus(rawFile);
+      const virusScanResult = await scanFileForVirus(rawMediaFile);
 
       if (!virusScanResult) {
         throw new HTTP400('Malicious content detected, import cancelled.');
@@ -146,7 +145,7 @@ export function importCsv(): RequestHandler {
       const csvImporter = new ImportCrittersService(connection);
 
       // Pass the survey id and the csv (MediaFile) to the importer
-      const surveyCritterIds = await csvImporter.import(surveyId, parseMulterFile(rawFile));
+      const surveyCritterIds = await csvImporter.import(surveyId, parseMulterFile(rawMediaFile));
 
       defaultLog.info({ label: 'importCritterCsv', message: 'result', survey_critter_ids: surveyCritterIds });
 

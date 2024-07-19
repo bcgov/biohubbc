@@ -17,6 +17,16 @@ import { getLogger } from './utils/logger';
 
 const defaultLog = getLogger('app');
 
+/**
+ * Extending express request type.
+ *
+ */
+declare module 'express-serve-static-core' {
+  interface Request {
+    files: Express.Multer.File[];
+  }
+}
+
 const HOST = process.env.API_HOST;
 const PORT = Number(process.env.API_PORT);
 
@@ -95,7 +105,11 @@ const openAPIFramework = initialize({
          * Files can be accessed via `req.body.media` OR `req.files`.
          *
          */
-        req.body.media = req.files;
+
+        const multerFiles = req.files ?? [];
+
+        req.files = multerFiles;
+        req.body.media = multerFiles;
 
         return next();
       });
