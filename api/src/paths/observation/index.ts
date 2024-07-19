@@ -13,6 +13,7 @@ import {
   makePaginationOptionsFromRequest,
   makePaginationResponse
 } from '../../utils/pagination';
+import { getSystemUserFromRequest } from '../../utils/request';
 
 const defaultLog = getLogger('paths/observation/index');
 
@@ -176,9 +177,11 @@ export function findObservations(): RequestHandler {
 
       const systemUserId = connection.systemUserId();
 
+      const systemUser = getSystemUserFromRequest(req);
+
       const isUserAdmin = userHasValidRole(
         [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
-        req.system_user['role_names']
+        systemUser.role_names
       );
 
       const filterFields = parseQueryParams(req);

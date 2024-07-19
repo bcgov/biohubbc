@@ -257,11 +257,6 @@ GET.apiDoc = {
 
 export function getCritterTelemetry(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req.system_user?.user_guid,
-      username: req.system_user?.user_identifier
-    };
-
     const critterId = Number(req.params.critterId);
     const surveyId = Number(req.params.surveyId);
 
@@ -269,6 +264,11 @@ export function getCritterTelemetry(): RequestHandler {
 
     try {
       await connection.open();
+
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
 
       const surveyCritterService = new SurveyCritterService(connection);
       const surveyCritters = await surveyCritterService.getCrittersInSurvey(surveyId);

@@ -3,11 +3,11 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { FundingSource, FundingSourceSupplementaryData } from '../../repositories/funding-source-repository';
-import { SystemUser } from '../../repositories/user-repository';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { FundingSourceService, IFundingSourceSearchParams } from '../../services/funding-source-service';
 import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
+import { getSystemUserFromRequest } from '../../utils/request';
 
 const defaultLog = getLogger('paths/funding-sources/index');
 
@@ -124,8 +124,9 @@ export function getFundingSources(): RequestHandler {
 
       await connection.commit();
 
-      const systemUserObject: SystemUser = req.system_user;
-      if (!UserService.isAdmin(systemUserObject)) {
+      const systemUser = getSystemUserFromRequest(req);
+
+      if (!UserService.isAdmin(systemUser)) {
         // User is not an admin, strip sensitive fields from response
         response = removeNonAdminFieldsFromFundingSourcesResponse(response);
       }

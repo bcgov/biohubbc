@@ -164,9 +164,10 @@ export function uploadKeyxMedia(): RequestHandler {
       }
 
       const user: IBctwUser = {
-        keycloak_guid: req.system_user?.user_guid,
-        username: req.system_user?.user_identifier
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
       };
+
       const bctwService = new BctwService(user);
       const bctwUploadResult = await bctwService.uploadKeyX(rawMediaFile);
 

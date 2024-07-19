@@ -12,6 +12,7 @@ import {
   makePaginationOptionsFromRequest,
   makePaginationResponse
 } from '../../utils/pagination';
+import { getSystemUserFromRequest } from '../../utils/request';
 
 const defaultLog = getLogger('paths/project/index');
 
@@ -190,9 +191,11 @@ export function findProjects(): RequestHandler {
 
       const systemUserId = connection.systemUserId();
 
+      const systemUser = getSystemUserFromRequest(req);
+
       const isUserAdmin = userHasValidRole(
         [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
-        req.system_user['role_names']
+        systemUser.role_names
       );
 
       const filterFields = parseQueryParams(req);
