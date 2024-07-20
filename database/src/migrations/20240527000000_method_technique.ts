@@ -512,6 +512,40 @@ export async function up(knex: Knex): Promise<void> {
     CREATE INDEX survey_sample_method_idx2 ON survey_sample_method(method_technique_id);
 
     ----------------------------------------------------------------------------------------
+    -- Create audit/journal triggers
+    ----------------------------------------------------------------------------------------
+
+    CREATE TRIGGER audit_technique_attribute_quantitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.technique_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_technique_attribute_quantitative AFTER INSERT OR UPDATE OR DELETE ON biohub.technique_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+    CREATE TRIGGER audit_technique_attribute_qualitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.technique_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_technique_attribute_qualitative AFTER INSERT OR UPDATE OR DELETE ON biohub.technique_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+    CREATE TRIGGER audit_method_lookup_attribute_qualitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_method_lookup_attribute_qualitative AFTER INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+    CREATE TRIGGER audit_method_lookup_attribute_quantitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_method_lookup_attribute_quantitative AFTER INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+    CREATE TRIGGER audit_method_lookup_attribute_qualitative_option BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_qualitative_option FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_method_lookup_attribute_qualitative_option AFTER INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_qualitative_option FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+    CREATE TRIGGER audit_method_technique_attribute_quantitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_technique_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_method_technique_attribute_quantitative AFTER INSERT OR UPDATE OR DELETE ON biohub.method_technique_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+    CREATE TRIGGER audit_method_technique_attribute_qualitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_technique_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_method_technique_attribute_qualitative AFTER INSERT OR UPDATE OR DELETE ON biohub.method_technique_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+    CREATE TRIGGER audit_method_technique BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_technique FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_method_technique AFTER INSERT OR UPDATE OR DELETE ON biohub.method_technique FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+    CREATE TRIGGER audit_attractant_lookup BEFORE INSERT OR UPDATE OR DELETE ON biohub.attractant_lookup FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_attractant_lookup AFTER INSERT OR UPDATE OR DELETE ON biohub.attractant_lookup FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+    CREATE TRIGGER audit_method_technique_attractant BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_technique_attractant FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_method_technique_attractant AFTER INSERT OR UPDATE OR DELETE ON biohub.method_technique_attractant FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+    ----------------------------------------------------------------------------------------
     -- Alter method table to drop method lookup ID
     ----------------------------------------------------------------------------------------
 
@@ -549,40 +583,6 @@ export async function up(knex: Knex): Promise<void> {
 
     -- Add NOT NULL constraint to method_technique_id column
     ALTER TABLE survey_sample_method ALTER COLUMN method_technique_id SET NOT NULL;
-
-    ----------------------------------------------------------------------------------------
-    -- Create audit/journal triggers
-    ----------------------------------------------------------------------------------------
-
-    CREATE TRIGGER audit_technique_attribute_quantitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.technique_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_technique_attribute_quantitative AFTER INSERT OR UPDATE OR DELETE ON biohub.technique_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
-
-    CREATE TRIGGER audit_technique_attribute_qualitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.technique_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_technique_attribute_qualitative AFTER INSERT OR UPDATE OR DELETE ON biohub.technique_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
-
-    CREATE TRIGGER audit_method_lookup_attribute_qualitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_method_lookup_attribute_qualitative AFTER INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
-
-    CREATE TRIGGER audit_method_lookup_attribute_quantitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_method_lookup_attribute_quantitative AFTER INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
-
-    CREATE TRIGGER audit_method_lookup_attribute_qualitative_option BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_qualitative_option FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_method_lookup_attribute_qualitative_option AFTER INSERT OR UPDATE OR DELETE ON biohub.method_lookup_attribute_qualitative_option FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
-
-    CREATE TRIGGER audit_method_technique_attribute_quantitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_technique_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_method_technique_attribute_quantitative AFTER INSERT OR UPDATE OR DELETE ON biohub.method_technique_attribute_quantitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
-
-    CREATE TRIGGER audit_method_technique_attribute_qualitative BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_technique_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_method_technique_attribute_qualitative AFTER INSERT OR UPDATE OR DELETE ON biohub.method_technique_attribute_qualitative FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
-
-    CREATE TRIGGER audit_method_technique BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_technique FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_method_technique AFTER INSERT OR UPDATE OR DELETE ON biohub.method_technique FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
-
-    CREATE TRIGGER audit_attractant_lookup BEFORE INSERT OR UPDATE OR DELETE ON biohub.attractant_lookup FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_attractant_lookup AFTER INSERT OR UPDATE OR DELETE ON biohub.attractant_lookup FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
-
-    CREATE TRIGGER audit_method_technique_attractant BEFORE INSERT OR UPDATE OR DELETE ON biohub.method_technique_attractant FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_method_technique_attractant AFTER INSERT OR UPDATE OR DELETE ON biohub.method_technique_attractant FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
     ----------------------------------------------------------------------------------------
     -- Triggers for validating technique attributes
