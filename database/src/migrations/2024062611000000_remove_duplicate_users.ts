@@ -1,11 +1,24 @@
 import { Knex } from 'knex';
 
 /**
- * Fixes duplicate user records and references to duplicate user records
+ * Fixes duplicate system_user_ids AND references to duplicate system_user_ids
  *
- * - Removes references to duplicated users all tables referencing system_user_id
- * - Removes duplicate records in system_user table based on (user_identifier, user_identity_source_id, record_end_date) as the unique key
- * - Adds database constraints to prevent duplicates in system_user_id and administrative_activity
+ * Updates the following tables:
+ * - system_user: Update/end-dates duplicate system_user records.
+ * - system_user_role: Delete duplicate system_user_role records.
+ * - project_participation: Update system_user_id to the canonical system_user_id, and delete duplicate records.
+ * - survey_participation: Update system_user_id to the canonical system_user_id, and delete duplicate records.
+ * - webform_draft: Update system_user_id to the canonical system_user_id.
+ * - administrative_activity: Delete duplicate administrative_activity records.
+ *
+ * Updates/fixes several constraints:
+ * - system_user_nuk1: Don't allow more than 1 active record with the same user_guid.
+ * - system_user_nuk2: Don't allow more than 1 active record with the same user_identifier (case-insensitive) AND user_identity_source_id.
+ *
+ * Does not update the following tables:
+ * - audit_log: This table tracks the history of all changes to the database, including changes from this migration.
+ * - user_user_group: No data exists in this table at the time of writing.
+ * - grouping_participation: No data exists in this table at the time of writing.
  *
  * @export
  * @param {Knex} knex
@@ -13,262 +26,191 @@ import { Knex } from 'knex';
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`--sql
-    
-    SET SEARCH_PATH='biohub';
-
     ----------------------------------------------------------------------------------------
-    -- Alter existing system_user_role data
+    -- Drop existing constraints
     ----------------------------------------------------------------------------------------
 
-    -- Update references to duplicated user IDs
-    WITH DeduplicatedUsers AS (
-        SELECT 
-            MIN(su.system_user_id) AS deduplicated_system_user_id,
-            su.user_identity_source_id,
-            su.user_identifier
-        FROM 
-            system_user su
-        GROUP BY 
-            su.user_identity_source_id, su.user_identifier, su.record_end_date
-    )
-    UPDATE 
-        system_user_role AS sur
-    SET 
-        system_user_id = du.deduplicated_system_user_id
-    FROM 
-        DeduplicatedUsers AS du
-    WHERE 
-        sur.system_user_id IN (
-            SELECT su.system_user_id
-            FROM system_user su
-            WHERE su.user_identity_source_id = du.user_identity_source_id
-            AND su.user_identifier = du.user_identifier
+    SET SEARCH_PATH = 'biohub';
+
+    DROP INDEX IF EXISTS system_user_uk1;
+    DROP INDEX IF EXISTS system_user_nuk1;
+
+    ----------------------------------------------------------------------------------------
+    -- Find AND migrate duplicate system_user_ids
+    ----------------------------------------------------------------------------------------
+
+    WITH
+    -- Get all system_user records with a unique user_identifier (case-insensitive) and user_identity_source_id,
+    -- preferring the lowest system_user_id WHERE record_end_date is null
+    w_system_user_1 AS (
+      SELECT
+        DISTINCT ON (
+          LOWER(user_identifier),
+          user_identity_source_id
         )
-        AND sur.system_user_id NOT IN (
-            SELECT deduplicated_system_user_id
-            FROM DeduplicatedUsers
-        )
-        -- prevent updates that will introduce a duplicate and trigger a unique constraint error
-        AND NOT EXISTS (
+        system_user_id,
+        user_identity_source_id,
+        LOWER(user_identifier) AS user_identifier
+      FROM
+        system_user
+      ORDER BY
+        LOWER(user_identifier),
+        user_identity_source_id,
+        CASE WHEN record_end_date IS NULL THEN 0 ELSE 1 END,
+        system_user_id
+    ),
+    w_system_user_2 AS (
+      -- Get all system_user records with a unique user_identifier (case-insensitive) and user_identity_source_id,
+      -- aggregating all additional duplicate system_user_ids into an array
+      SELECT
+        LOWER(system_user.user_identifier) AS user_identifier,
+        user_identity_source_id,
+        array_agg(system_user.system_user_id) duplicate_system_user_ids
+      FROM
+        system_user
+      GROUP BY
+        LOWER(system_user.user_identifier),
+        system_user.user_identity_source_id
+    ),
+    w_system_user_3 AS (
+      -- Combine the two previous CTEs to get the canonical system_user_id to use when there are duplicate users, and
+      -- and a list of all system_user_ids that are duplicates (which does not include the canonical system_user_id).
+      SELECT
+        w_system_user_1.system_user_id,
+        w_system_user_1.user_identity_source_id,
+        array_remove(w_system_user_2.duplicate_system_user_ids, w_system_user_1.system_user_id) AS duplicate_system_user_ids
+      FROM
+        w_system_user_1
+      left join
+        w_system_user_2
+      ON w_system_user_1.user_identifier = w_system_user_2.user_identifier
+      AND w_system_user_1.user_identity_source_id = w_system_user_2.user_identity_source_id
+    ),
+    -- Update duplicate system_user_ids in the project_participation table to the canonical system_user_id, ignoring
+    -- records where the canonical system_user_id is already in use.
+    w_update_project_participation AS (
+        UPDATE project_participation AS pp
+        SET system_user_id = wsu3.system_user_id
+        FROM w_system_user_3 AS wsu3
+        WHERE pp.system_user_id = ANY(wsu3.duplicate_system_user_ids)
+          AND NOT EXISTS (
+              SELECT 1
+              FROM project_participation AS pp_check
+              WHERE pp_check.system_user_id = wsu3.system_user_id
+                AND pp_check.project_id = pp.project_id
+          )
+    ),
+    -- Delete all remaining references to duplicate system_user_ids in the project_participation table, as long as
+    -- there exists another record for the same project with the canonical system_user_id (which should be all of them
+    -- after the previous CTE ran).
+    w_delete_project_participation AS (
+        DELETE FROM project_participation
+        WHERE EXISTS (
             SELECT 1
-            FROM system_user_role sur_check
-            WHERE sur_check.system_user_id = du.deduplicated_system_user_id
-            AND sur_check.system_role_id = sur.system_role_id
-            AND sur_check.system_user_role_id <> sur.system_user_role_id
-    );
+            FROM w_system_user_3 AS wsu3
+            WHERE project_participation.system_user_id = ANY(wsu3.duplicate_system_user_ids)
+              AND project_participation.project_id IN (
+                  SELECT project_id
+                  FROM project_participation AS pp_check
+                  WHERE pp_check.system_user_id = wsu3.system_user_id
+              )
+        )
+    ),
+    -- Update duplicate system_user_ids in the survey_participation table to the canonical system_user_id, ignoring
+    -- records where the canonical system_user_id is already in use.
+    w_update_survey_participation AS (
+        UPDATE survey_participation AS sp
+        SET system_user_id = wsu3.system_user_id
+        FROM w_system_user_3 AS wsu3
+        WHERE sp.system_user_id = ANY(wsu3.duplicate_system_user_ids)
+          AND NOT EXISTS (
+              SELECT 1
+              FROM survey_participation AS sp_check
+              WHERE sp_check.system_user_id = wsu3.system_user_id
+                AND sp_check.survey_id = sp.survey_id
+          )
+    ),
+    -- Delete all remaining references to duplicate system_user_ids in the survey_participation table, as long as
+    -- there exists another record for the same survey with the canonical system_user_id (which should be all of them
+    -- after the previous CTE ran).
+    w_delete_survey_participation AS (
+        DELETE FROM survey_participation
+        WHERE EXISTS (
+            SELECT 1
+            FROM w_system_user_3 AS wsu3
+            WHERE survey_participation.system_user_id = ANY(wsu3.duplicate_system_user_ids)
+              AND survey_participation.survey_id IN (
+                  SELECT survey_id
+                  FROM survey_participation AS sp_check
+                  WHERE sp_check.system_user_id = wsu3.system_user_id
+              )
+        )
+    ),
+    -- Update duplicate system_user_ids in the webform_draft table to the canonical system_user_id
+    w_end_date_duplicate_webform_draft as (
+        UPDATE webform_draft  
+        SET 
+          system_user_id = wsu3.system_user_id
+        FROM w_system_user_3 wsu3
+        WHERE webform_draft.system_user_id = ANY(wsu3.duplicate_system_user_ids)
+    ),
+    -- Delete duplicate system_user_role records for duplicate system_user_ids
+    w_end_date_duplicate_system_user_role AS (
+      DELETE FROM system_user_role
+      USING w_system_user_3 wsu3
+      WHERE system_user_role.system_user_id = ANY(wsu3.duplicate_system_user_ids)
+    ),
+    -- End date all duplicate system_user records for duplicate system_user_ids
+    w_end_date_duplicate_system_user AS (
+      UPDATE system_user su
+      SET
+        record_end_date = NOW(),
+        notes = 'Duplicate user record; merged into system_user_id ' || wsu3.system_user_id || '.'
+      FROM w_system_user_3 wsu3
+      WHERE su.system_user_id = ANY(wsu3.duplicate_system_user_ids)
+    )
+    -- Return the combined results of the original CTEs (have to select something to run the query)
+    SELECT * FROM w_system_user_3;
 
     ----------------------------------------------------------------------------------------
-    -- Update system_user to include guid
+    -- Additional cleanup
     ----------------------------------------------------------------------------------------
 
-    -- Update references to duplicated user IDs
-    WITH DeduplicatedUsers AS (
-    SELECT 
-        MIN(su.system_user_id) AS deduplicated_system_user_id,
-        MAX(su.user_guid) as user_guid,
-        su.user_identity_source_id,
-        su.user_identifier,
-        su.record_end_date
-    FROM 
-        system_user su
-    GROUP BY 
-        su.user_identity_source_id, su.user_identifier, su.record_end_date
+    -- Remove any duplicate access request records, keeping the most recently updated or created record for each reported_system_user_id.
+    WITH w_ranked_administrative_activity AS (
+      SELECT
+        administrative_activity_id,
+        reported_system_user_id,
+        create_date,
+        update_date,
+        ROW_NUMBER() OVER (
+          PARTITION BY reported_system_user_id
+          ORDER BY
+            COALESCE(update_date, create_date) DESC
+        ) AS rank
+      FROM
+        administrative_activity
     )
-    UPDATE 
-        system_user as su
-    SET 
-        user_guid = du.user_guid,
-        record_end_date = NULL
-    FROM 
-        DeduplicatedUsers du
-    WHERE 
-        su.system_user_id = du.deduplicated_system_user_id
-    AND su.user_guid IS NULL;
-
-    ----------------------------------------------------------------------------------------
-    -- Update references to duplicate user IDs in all tables with a system_user_id column
-    ----------------------------------------------------------------------------------------
-
-    -- Remove references to duplicated users in the project_participation table
-    WITH DeduplicatedUsers AS (
-        SELECT MIN(system_user_id) AS deduplicated_system_user_id,
-        user_identity_source_id,
-        user_identifier
-        FROM system_user
-        GROUP BY user_identity_source_id, user_identifier, record_end_date
-    )
-    UPDATE project_participation AS pp
-    SET system_user_id = dedup.deduplicated_system_user_id
-    FROM DeduplicatedUsers AS dedup
-    WHERE pp.system_user_id IN (
-        SELECT system_user_id
-        FROM system_user
-        WHERE user_identity_source_id = dedup.user_identity_source_id
-        AND user_identifier = dedup.user_identifier
-    )
-    AND pp.system_user_id NOT IN (
-        SELECT deduplicated_system_user_id
-        FROM DeduplicatedUsers
-    );
-
-    -- Deduplicate audit_log records
-    WITH DeduplicatedUsers AS (
-        SELECT MIN(system_user_id) AS deduplicated_system_user_id,
-        user_identity_source_id,
-        user_identifier
-        FROM system_user
-        GROUP BY user_identity_source_id, user_identifier, record_end_date
-    )
-    UPDATE audit_log AS pp
-    SET system_user_id = dedup.deduplicated_system_user_id
-    FROM DeduplicatedUsers AS dedup
-    WHERE pp.system_user_id IN (
-        SELECT system_user_id
-        FROM system_user
-        WHERE user_identity_source_id = dedup.user_identity_source_id
-        AND user_identifier = dedup.user_identifier
-    )
-    AND pp.system_user_id NOT IN (
-        SELECT deduplicated_system_user_id
-        FROM DeduplicatedUsers
-    );
-
-    -- Deduplicate webform_draft records
-    WITH DeduplicatedUsers AS (
-        SELECT MIN(system_user_id) AS deduplicated_system_user_id,
-        user_identity_source_id,
-        user_identifier
-        FROM system_user
-        GROUP BY user_identity_source_id, user_identifier, record_end_date
-    )
-    UPDATE webform_draft AS pp
-    SET system_user_id = dedup.deduplicated_system_user_id
-    FROM DeduplicatedUsers AS dedup
-    WHERE pp.system_user_id IN (
-        SELECT system_user_id
-        FROM system_user
-        WHERE user_identity_source_id = dedup.user_identity_source_id
-        AND user_identifier = dedup.user_identifier
-    )
-    AND pp.system_user_id NOT IN (
-        SELECT deduplicated_system_user_id
-        FROM DeduplicatedUsers
-    );
-
-    -- Deduplicate user_user_group records
-    WITH DeduplicatedUsers AS (
-        SELECT MIN(system_user_id) AS deduplicated_system_user_id,
-        user_identity_source_id,
-        user_identifier
-        FROM system_user
-        GROUP BY user_identity_source_id, user_identifier, record_end_date
-    )
-    UPDATE user_user_group AS pp
-    SET system_user_id = dedup.deduplicated_system_user_id
-    FROM DeduplicatedUsers AS dedup
-    WHERE pp.system_user_id IN (
-        SELECT system_user_id
-        FROM system_user
-        WHERE user_identity_source_id = dedup.user_identity_source_id
-        AND user_identifier = dedup.user_identifier
-    )
-    AND pp.system_user_id NOT IN (
-        SELECT deduplicated_system_user_id
-        FROM DeduplicatedUsers
-    );
-
-    -- Deduplicate grouping_participation records
-    WITH DeduplicatedUsers AS (
-        SELECT MIN(system_user_id) AS deduplicated_system_user_id,
-        user_identity_source_id,
-        user_identifier
-        FROM system_user
-        GROUP BY user_identity_source_id, user_identifier, record_end_date
-    )
-    UPDATE grouping_participation AS pp
-    SET system_user_id = dedup.deduplicated_system_user_id
-    FROM DeduplicatedUsers AS dedup
-    WHERE pp.system_user_id IN (
-        SELECT system_user_id
-        FROM system_user
-        WHERE user_identity_source_id = dedup.user_identity_source_id
-        AND user_identifier = dedup.user_identifier
-    )
-    AND pp.system_user_id NOT IN (
-        SELECT deduplicated_system_user_id
-        FROM DeduplicatedUsers
-    );
-
-    -- Deduplicate survey_participation records
-    WITH DeduplicatedUsers AS (
-        SELECT MIN(system_user_id) AS deduplicated_system_user_id,
-        user_identity_source_id,
-        user_identifier
-        FROM system_user
-        GROUP BY user_identity_source_id, user_identifier, record_end_date
-    )
-    UPDATE survey_participation AS pp
-    SET system_user_id = dedup.deduplicated_system_user_id
-    FROM DeduplicatedUsers AS dedup
-    WHERE pp.system_user_id IN (
-        SELECT system_user_id
-        FROM system_user
-        WHERE user_identity_source_id = dedup.user_identity_source_id
-        AND user_identifier = dedup.user_identifier
-    )
-    AND pp.system_user_id NOT IN (
-        SELECT deduplicated_system_user_id
-        FROM DeduplicatedUsers
-    );
-
-    ----------------------------------------------------------------------------------------
-    -- Delete duplicate records
-    ----------------------------------------------------------------------------------------
-
-    -- Remove any duplicate system user role records
-    DELETE FROM system_user_role
-    WHERE system_role_id NOT IN (
-        SELECT MIN(system_user_role_id)
-        FROM system_user_role
-        GROUP BY system_user_id, system_role_id
-    );
-
-    -- Remove any duplicate user records
-    DELETE FROM system_user
-    WHERE system_user_id NOT IN (
-        SELECT MIN(system_user_id)
-        FROM system_user
-        GROUP BY user_identity_source_id, user_identifier, record_end_date
-    );
-
-    -- Remove any duplicate access request records
     DELETE FROM administrative_activity
-    WHERE administrative_activity_id NOT IN (
-        SELECT MIN(administrative_activity_id)
-        FROM administrative_activity
-        GROUP BY administrative_activity_type_id, reported_system_user_id
-    );
+    WHERE
+      administrative_activity_id IN (
+        SELECT
+          administrative_activity_id
+        FROM
+          w_ranked_administrative_activity
+        WHERE
+          rank > 1
+      );
 
     ----------------------------------------------------------------------------------------
-    -- Add constraints and update views
+    -- Add updated constraints
     ----------------------------------------------------------------------------------------
 
-    -- Add constraints and update views
-    SET SEARCH_PATH='biohub,biohub_dapi_v1';
+    -- Don't allow more than 1 active record with the same user_guid.
+    CREATE UNIQUE INDEX system_user_nuk1 ON system_user (user_guid, (record_end_date is null)) WHERE record_end_date is null;
 
-    -- Drop views
-    DROP VIEW IF EXISTS biohub_dapi_v1.system_user;
-    DROP VIEW IF EXISTS biohub_dapi_v1.administrative_activity;
-
-    -- Add unique constraint to prevent duplicate users and access requests
-    ALTER TABLE biohub.system_user ADD CONSTRAINT system_user_uk2 UNIQUE (user_identifier, user_identity_source_id, record_end_date);
-    ALTER TABLE biohub.administrative_activity ADD CONSTRAINT administrative_activity_uk1 UNIQUE (reported_system_user_id, administrative_activity_type_id);
-
-    -- Recreate the view
-    CREATE OR REPLACE VIEW biohub_dapi_v1.system_user AS SELECT * FROM biohub.system_user;
-    CREATE OR REPLACE VIEW biohub_dapi_v1.administrative_activity AS SELECT * FROM biohub.administrative_activity;
-
-
+    -- Don't allow more than 1 active record with the same user_identifier (case-insensitive) AND user_identity_source_id.
+    CREATE UNIQUE INDEX system_user_nuk2 ON system_user(LOWER(user_identifier), user_identity_source_id, (record_end_date is null)) WHERE record_end_date is null;
   `);
 }
 

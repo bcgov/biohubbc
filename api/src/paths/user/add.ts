@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, getServiceClientDBConnection } from '../../database/db';
+import { HTTP409 } from '../../errors/http-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
 import { getKeycloakSource } from '../../utils/keycloak-utils';
@@ -104,6 +105,9 @@ POST.apiDoc = {
     403: {
       $ref: '#/components/responses/403'
     },
+    409: {
+      $ref: '#/components/responses/409'
+    },
     500: {
       $ref: '#/components/responses/500'
     },
@@ -145,9 +149,9 @@ export function addSystemRoleUser(): RequestHandler {
 
       // If user already exists, do nothing and return early
       const user = await userService.getUserByIdentifier(userIdentifier, identitySource);
+
       if (user) {
-        await connection.commit();
-        return res.status(400).send('That user has already been added.');
+        throw new HTTP409('Failed to add user. User with matching identifier already exists.');
       }
 
       // This function also verifies that the user exists, but we explicitly check above to return a useful error message.
@@ -173,7 +177,7 @@ export function addSystemRoleUser(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'getUser', message: 'error', error });
+      defaultLog.error({ label: 'addSystemRoleUser', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

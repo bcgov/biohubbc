@@ -304,10 +304,10 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
     } catch (error) {
       const apiError = error as APIError;
 
-      if (apiError.status === 400) {
+      if (apiError.status === 409) {
         dialogContext.setErrorDialog({
           open: true,
-          dialogTitle: 'User already exists',
+          dialogTitle: 'Failed to create users',
           dialogText: 'One of the users you added already exists.',
           onClose: () => {
             dialogContext.setErrorDialog({ open: false });

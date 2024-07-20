@@ -241,10 +241,7 @@ const AccessRequestList = (props: IAccessRequestListProps) => {
         onDeny={handleReviewDialogDeny}
         onApprove={handleReviewDialogApprove}
         component={{
-          initialValues: {
-            ...ReviewAccessRequestFormInitialValues,
-            system_role: ''
-          },
+          initialValues: ReviewAccessRequestFormInitialValues,
           validationSchema: ReviewAccessRequestFormYupSchema,
           element: activeReview ? (
             <ReviewAccessRequestForm

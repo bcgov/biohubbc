@@ -17,10 +17,10 @@ import { Knex } from 'knex';
  */
 export async function seed(knex: Knex): Promise<void> {
   await knex.raw(`--sql
-    set search_path=biohub;
+    set search_path = 'biohub';
 
     CREATE OR REPLACE FUNCTION
-      api_patch_system_user (
+      biohub.api_patch_system_user (
         p_system_user_guid character varying,
         p_user_identifier character varying,
         p_user_identity_source_name character varying,
@@ -34,16 +34,6 @@ export async function seed(knex: Knex): Promise<void> {
       LANGUAGE plpgsql
       SET client_min_messages TO 'warning'
       AS $$
-        -- *******************************************************************
-        -- Procedure: api_patch_system_user
-        -- Purpose: Updates a system_user record if any of the incoming values are not the same as the existing values.
-        --
-        -- MODIFICATION HISTORY
-        -- Person           Date        Comments
-        -- ---------------- ----------- --------------------------------------
-        -- nick.phura@quartech.com
-        --                  2023-08-01  initial release
-        -- *******************************************************************
         DECLARE
           _system_user system_user%rowtype;
           _user_identity_source_id user_identity_source.user_identity_source_id%type;

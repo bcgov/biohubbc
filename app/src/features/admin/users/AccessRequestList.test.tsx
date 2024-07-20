@@ -235,8 +235,8 @@ describe('AccessRequestList', () => {
       expect(mockUseApi.admin.approveAccessRequest).toHaveBeenCalledWith(1, {
         displayName: 'test user',
         email: 'email@email.com',
-        roleIds: [],
         identitySource: 'IDIR',
+        roleIds: [],
         userGuid: 'aaaa',
         userIdentifier: 'testusername'
       });
