@@ -107,7 +107,7 @@ export function updateSurveyParticipantRole(): RequestHandler {
     const surveyParticipationId = Number(req.params.surveyParticipationId);
     const { surveyJobName } = req.body;
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -212,7 +212,7 @@ export function deleteSurveyParticipant(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     const surveyParticipationId = Number(req.params.surveyParticipationId);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

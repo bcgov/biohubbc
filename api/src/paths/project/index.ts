@@ -12,6 +12,7 @@ import {
   makePaginationOptionsFromRequest,
   makePaginationResponse
 } from '../../utils/pagination';
+import { getSystemUserFromRequest } from '../../utils/request';
 
 const defaultLog = getLogger('paths/project/index');
 
@@ -183,16 +184,18 @@ export function findProjects(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'findProjects' });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
       const systemUserId = connection.systemUserId();
 
+      const systemUser = getSystemUserFromRequest(req);
+
       const isUserAdmin = userHasValidRole(
         [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
-        req['system_user']['role_names']
+        systemUser.role_names
       );
 
       const filterFields = parseQueryParams(req);

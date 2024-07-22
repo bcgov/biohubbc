@@ -96,7 +96,7 @@ export function deleteAttachment(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Delete attachment', message: 'params', req_params: req.params });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

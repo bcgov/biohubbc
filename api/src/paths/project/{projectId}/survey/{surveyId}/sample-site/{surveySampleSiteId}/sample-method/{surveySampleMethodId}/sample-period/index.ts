@@ -165,7 +165,7 @@ export function getSurveySamplePeriodRecords(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     const surveySampleMethodId = Number(req.params.surveySampleMethodId);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -304,7 +304,7 @@ export function createSurveySamplePeriodRecord(): RequestHandler {
       throw new HTTP400('Missing required body param `samplePeriod`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const samplePeriod: InsertSamplePeriodRecord = {
