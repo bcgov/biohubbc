@@ -122,7 +122,7 @@ export function uploadMedia(): RequestHandler {
       throw new HTTP400('Too many files uploaded, expected 1');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const rawMediaFile = rawMediaArray[0];
@@ -151,8 +151,8 @@ export function uploadMedia(): RequestHandler {
       // Upload file to S3
       const metadata = {
         filename: rawMediaFile.originalname,
-        username: req['auth_payload']?.preferred_username ?? '',
-        email: req['auth_payload']?.email ?? ''
+        username: req.keycloak_token?.preferred_username ?? '',
+        email: req.keycloak_token?.email ?? ''
       };
 
       const result = await uploadFileToS3(rawMediaFile, key, metadata);

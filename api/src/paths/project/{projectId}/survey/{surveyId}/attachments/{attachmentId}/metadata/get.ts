@@ -121,7 +121,7 @@ export function getSurveyReportDetails(): RequestHandler {
       req_query: req.query
     });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

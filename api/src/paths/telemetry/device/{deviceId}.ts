@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { BctwService, IBctwUser } from '../../../services/bctw-service';
+import { BctwService, getBctwUser } from '../../../services/bctw-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/telemetry/device/{deviceId}');
@@ -58,10 +58,8 @@ GET.apiDoc = {
 
 export function getDeviceDetails(): RequestHandler {
   return async (req, res) => {
-    const user: IBctwUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
+    const user = getBctwUser(req);
+
     const bctwService = new BctwService(user);
     const deviceId = Number(req.params.deviceId);
     const deviceMake = String(req.query.make);
