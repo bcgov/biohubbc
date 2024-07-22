@@ -6,7 +6,7 @@ import { URLSearchParams } from 'url';
 import { z } from 'zod';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
 import { HTTP500 } from '../errors/http-error';
-import { getSystemUserFromRequest } from '../express/request';
+import { getSystemUserFromRequest } from '../utils/request';
 import { KeycloakService } from './keycloak-service';
 
 export const IDeployDevice = z.object({

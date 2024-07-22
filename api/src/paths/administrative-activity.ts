@@ -2,10 +2,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../database/db';
 import { HTTP400, HTTP500 } from '../errors/http-error';
-import { getKeycloakTokenFromRequest } from '../express/request';
 import { AdministrativeActivityService } from '../services/administrative-activity-service';
 import { getUserGuid } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
+import { getKeycloakTokenFromRequest } from '../utils/request';
 
 const defaultLog = getLogger('paths/administrative-activity-request');
 

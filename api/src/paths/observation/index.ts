@@ -2,7 +2,6 @@ import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { getSystemUserFromRequest } from '../../express/request';
 import { IObservationAdvancedFilters } from '../../models/observation-view';
 import { observervationsWithSubcountDataSchema } from '../../openapi/schemas/observation';
 import { paginationRequestQueryParamSchema } from '../../openapi/schemas/pagination';
@@ -14,6 +13,7 @@ import {
   makePaginationOptionsFromRequest,
   makePaginationResponse
 } from '../../utils/pagination';
+import { getSystemUserFromRequest } from '../../utils/request';
 
 const defaultLog = getLogger('paths/observation/index');
 

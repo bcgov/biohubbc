@@ -3,11 +3,11 @@ import { Operation } from 'express-openapi';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, getServiceClientDBConnection } from '../../database/db';
-import { getKeycloakTokenFromRequest } from '../../express/request';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
 import { getKeycloakSource } from '../../utils/keycloak-utils';
 import { getLogger } from '../../utils/logger';
+import { getKeycloakTokenFromRequest } from '../../utils/request';
 
 const defaultLog = getLogger('paths/user/add');
 
