@@ -13,6 +13,17 @@ import { KeycloakUserInformation } from '../utils/keycloak-utils';
 declare module 'express-serve-static-core' {
   interface Request {
     /**
+     * Multer transformed files.
+     *
+     * Value is defined for endpoints that accept files.
+     *
+     * @see app.ts -> multerRequestHandler
+     * @see critters/imports.ts -> openAPI spec
+     *
+     */
+    files?: Express.Multer.File[];
+
+    /**
      * Keycloak user JWT token object.
      *
      * Value is defined for endpoints that specify `Bearer` security with correct JWT token.

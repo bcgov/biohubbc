@@ -17,16 +17,6 @@ import { getLogger } from './utils/logger';
 
 const defaultLog = getLogger('app');
 
-/**
- * Extending express request type.
- *
- */
-declare module 'express-serve-static-core' {
-  interface Request {
-    files?: Express.Multer.File[];
-  }
-}
-
 const HOST = process.env.API_HOST;
 const PORT = Number(process.env.API_PORT);
 
