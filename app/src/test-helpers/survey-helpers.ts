@@ -97,7 +97,6 @@ export const surveyObject: SurveyViewObject = {
       name: 'study area',
       description: 'study area description',
       geometry: [geoJsonFeature],
-      geography: null,
       geojson: [geoJsonFeature],
       revision_count: 0
     }

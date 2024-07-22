@@ -15,6 +15,14 @@ interface IDateTimeFieldsProps<FormikPropsType> {
     dateId: string;
     dateRequired: boolean;
     dateIcon: string;
+    /**
+     * Boolean flag to indicate if the date field is invalid, instead of the default formik value.
+     */
+    dateError?: boolean;
+    /**
+     * Helper text to display when the date field is invalid, instead of the default formik value.
+     */
+    dateHelperText?: string;
   };
   time: {
     timeLabel: string;
@@ -22,6 +30,14 @@ interface IDateTimeFieldsProps<FormikPropsType> {
     timeId: string;
     timeRequired: boolean;
     timeIcon: string;
+    /**
+     * Boolean flag to indicate if the time field is invalid, instead of the default formik value.
+     */
+    timeError?: boolean;
+    /**
+     * Helper text to display when the time field is invalid, instead of the default formik value.
+     */
+    timeHelperText?: string;
   };
   formikProps: FormikContextType<FormikPropsType>;
 }
@@ -29,8 +45,8 @@ interface IDateTimeFieldsProps<FormikPropsType> {
 export const DateTimeFields = <FormikPropsType,>(props: IDateTimeFieldsProps<FormikPropsType>) => {
   const {
     formikProps: { values, errors, touched, setFieldValue },
-    date: { dateLabel, dateName, dateId, dateRequired, dateIcon },
-    time: { timeLabel, timeName, timeId, timeRequired, timeIcon }
+    date: { dateLabel, dateName, dateId, dateRequired, dateIcon, dateError, dateHelperText },
+    time: { timeLabel, timeName, timeId, timeRequired, timeIcon, timeError, timeHelperText }
   } = props;
 
   const DateIcon = () => {
@@ -75,8 +91,8 @@ export const DateTimeFields = <FormikPropsType,>(props: IDateTimeFieldsProps<For
                 name: dateName,
                 required: dateRequired,
                 variant: 'outlined',
-                error: get(touched, dateName) && Boolean(get(errors, dateName)),
-                helperText: get(touched, dateName) && get(errors, dateName),
+                error: get(touched, dateName) && (dateError || Boolean(get(errors, dateName))),
+                helperText: get(touched, dateName) && (dateHelperText || get(errors, dateName)),
                 inputProps: {
                   'data-testid': dateName
                 },
@@ -120,8 +136,8 @@ export const DateTimeFields = <FormikPropsType,>(props: IDateTimeFieldsProps<For
                 name: timeName,
                 required: timeRequired,
                 variant: 'outlined',
-                error: get(touched, timeName) && Boolean(get(errors, timeName)),
-                helperText: get(touched, timeName) && get(errors, timeName),
+                error: get(touched, timeName) && (timeError || Boolean(get(errors, timeName))),
+                helperText: get(touched, timeName) && (timeHelperText || get(errors, timeName)),
                 inputProps: {
                   'data-testid': timeId,
                   'aria-label': 'Time (optional)'
