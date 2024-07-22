@@ -112,10 +112,14 @@ export function getSurveyObservationsBaseQuery(
           .select(
             'survey_sample_method.survey_sample_site_id',
             'survey_sample_method.survey_sample_method_id',
-            'method_lookup.name as survey_sample_method_name'
+            'method_technique.name as survey_sample_method_name'
           )
           .from('survey_sample_method')
-          .innerJoin('method_lookup', 'survey_sample_method.method_lookup_id', 'method_lookup.method_lookup_id')
+          .innerJoin(
+            'method_technique',
+            'survey_sample_method.method_technique_id',
+            'method_technique.method_technique_id'
+          )
           .innerJoin(
             'w_survey_sample_site',
             'survey_sample_method.survey_sample_site_id',

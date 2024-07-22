@@ -26,6 +26,8 @@ describe('user', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
+      mockReq.keycloak_token = {} as keycloakUtils.KeycloakUserInformation;
+
       mockReq.body = {
         userGuid: 'aaaa',
         userIdentifier: 'username',
@@ -69,6 +71,8 @@ describe('user', () => {
       sinon.stub(keycloakUtils, 'getKeycloakSource').resolves(true);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq.keycloak_token = {} as keycloakUtils.KeycloakUserInformation;
 
       mockReq.body = {
         identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,

@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { SystemUser } from '../../../repositories/user-repository';
 import { BctwService, IManualTelemetry } from '../../../services/bctw-service';
 import { getRequestHandlerMocks } from '../../../__mocks__/db';
 import { deleteManualTelemetry } from './delete';
@@ -21,6 +22,9 @@ describe('deleteManualTelemetry', () => {
     const mockGetTelemetry = sinon.stub(BctwService.prototype, 'deleteManualTelemetry').resolves(mockTelemetry);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
     const requestHandler = deleteManualTelemetry();
 
     await requestHandler(mockReq, mockRes, mockNext);
@@ -34,6 +38,9 @@ describe('deleteManualTelemetry', () => {
     const mockGetTelemetry = sinon.stub(BctwService.prototype, 'deleteManualTelemetry').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
     const requestHandler = deleteManualTelemetry();
 
     try {

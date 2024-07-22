@@ -144,7 +144,7 @@ export function uploadKeyxMedia(): RequestHandler {
       files: { ...rawMediaFile, buffer: 'Too big to print' }
     });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -162,9 +162,10 @@ export function uploadKeyxMedia(): RequestHandler {
       }
 
       const user: IBctwUser = {
-        keycloak_guid: req['system_user']?.user_guid,
-        username: req['system_user']?.user_identifier
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
       };
+
       const bctwService = new BctwService(user);
       const bctwUploadResult = await bctwService.uploadKeyX(rawMediaFile);
 
@@ -180,8 +181,8 @@ export function uploadKeyxMedia(): RequestHandler {
 
       const metadata = {
         filename: rawMediaFile.originalname,
-        username: req['auth_payload']?.preferred_username ?? '',
-        email: req['auth_payload']?.email ?? ''
+        username: req.keycloak_token?.preferred_username ?? '',
+        email: req.keycloak_token?.email ?? ''
       };
 
       const result = await uploadFileToS3(rawMediaFile, upsertResult.key, metadata);

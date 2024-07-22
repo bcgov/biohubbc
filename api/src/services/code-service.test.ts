@@ -29,6 +29,7 @@ describe('CodeService', () => {
         'management_action_type',
         'first_nations',
         'agency',
+        'attractants',
         'investment_action_category',
         'type',
         'proprietor_type',

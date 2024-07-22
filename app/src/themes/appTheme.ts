@@ -200,7 +200,10 @@ const appTheme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paperWidthXl: {
-          minWidth: '800px'
+          minWidth: '600px'
+        },
+        paperFullScreen: {
+          minWidth: '100%'
         }
       }
     },
@@ -280,6 +283,13 @@ const appTheme = createTheme({
           '&:last-of-type': {
             borderBottom: 'none'
           }
+        }
+      }
+    },
+    MuiListItemText: {
+      styleOverrides: {
+        root: {
+          borderRadius: '3px'
         }
       }
     },

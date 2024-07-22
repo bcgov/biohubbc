@@ -131,7 +131,7 @@ export function importCsv(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     const rawMediaFile = getFileFromRequest(req);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

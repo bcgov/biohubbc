@@ -36,14 +36,15 @@ const SurveySpatialData = () => {
 
   const biohubApi = useBiohubApi();
 
+  const [mapPointMetadata, setMapPointMetadata] = useState<Record<string, ISurveyMapPointMetadata[]>>({});
+
+  // Fetch observations spatial data
   const observationsGeometryDataLoader = useDataLoader(() =>
     biohubApi.observation.getObservationsGeometry(projectId, surveyId)
   );
-
   observationsGeometryDataLoader.load();
 
-  const [mapPointMetadata, setMapPointMetadata] = useState<Record<string, ISurveyMapPointMetadata[]>>({});
-
+  // Fetch study area data
   const studyAreaLocations = useMemo(
     () => surveyContext.surveyDataLoader.data?.surveyData.locations ?? [],
     [surveyContext.surveyDataLoader.data]
@@ -282,7 +283,11 @@ const SurveySpatialData = () => {
                   value: (sampleSite.sample_methods ?? [])
                     .map(
                       (method) =>
-                        getCodesName(codesContext.codesDataLoader.data, 'sample_methods', method.method_lookup_id) ?? ''
+                        getCodesName(
+                          codesContext.codesDataLoader.data,
+                          'sample_methods',
+                          method.technique.method_technique_id
+                        ) ?? ''
                     )
                     .filter(Boolean)
                     .join(', ')

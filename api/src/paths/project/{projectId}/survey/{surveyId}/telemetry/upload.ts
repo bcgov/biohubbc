@@ -8,6 +8,7 @@ import { authorizeRequestHandler } from '../../../../../../request-handlers/secu
 import { TelemetryService } from '../../../../../../services/telemetry-service';
 import { scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
+import { getFileFromRequest } from '../../../../../../utils/request';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/telemetry/upload');
 
@@ -112,13 +113,11 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
-    const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
+    const rawMediaFile = getFileFromRequest(req);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
-      const rawMediaFile = rawMediaArray[0];
-
       await connection.open();
 
       // Scan file for viruses using ClamAV
@@ -139,8 +138,8 @@ export function uploadMedia(): RequestHandler {
       // Upload file to S3
       const metadata = {
         filename: rawMediaFile.originalname,
-        username: req['auth_payload']?.preferred_username ?? '',
-        email: req['auth_payload']?.email ?? ''
+        username: req.keycloak_token?.preferred_username ?? '',
+        email: req.keycloak_token?.email ?? ''
       };
 
       const result = await uploadFileToS3(rawMediaFile, key, metadata);

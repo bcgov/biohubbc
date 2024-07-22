@@ -1,25 +1,28 @@
 import { grey } from '@mui/material/colors';
 import { DataGrid, DataGridProps, GridValidRowModel } from '@mui/x-data-grid';
-import { SkeletonList } from 'components/loading/SkeletonLoaders';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { useCallback } from 'react';
 import StyledDataGridOverlay from './StyledDataGridOverlay';
 
-const StyledLoadingOverlay = () => <SkeletonList numberOfLines={8} />;
 export type StyledDataGridProps = DataGridProps & {
   noRowsMessage?: string;
+  noRowsOverlay?: JSX.Element;
 };
 export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledDataGridProps) => {
+  const loadingOverlay = () => <SkeletonTable />;
+
   const noRowsOverlay = useCallback(
-    () => <StyledDataGridOverlay message={props.noRowsMessage} />,
-    [props.noRowsMessage]
+    () => props.noRowsOverlay ?? <StyledDataGridOverlay message={props.noRowsMessage} />,
+    [props.noRowsMessage, props.noRowsOverlay]
   );
 
   return (
     <DataGrid<R>
       autoHeight
       {...props}
+      disableColumnMenu
       slots={{
-        loadingOverlay: StyledLoadingOverlay,
+        loadingOverlay: loadingOverlay,
         noRowsOverlay: noRowsOverlay,
         ...props.slots
       }}
