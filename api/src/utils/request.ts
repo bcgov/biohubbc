@@ -43,10 +43,12 @@ export const getSystemUserFromRequest = (req: Request): SystemUser => {
 /**
  * Get file by index from request or throws error if missing. Defaults to first file.
  *
- * @param {Request} req
- * @param {number} [fileIndex] - Index of file defaults to 0
+ * @see schemas/file.ts
+ *
+ * @param {Request} req - Express Request
+ * @param {number} [fileIndex] - Index of file (defaults to 0)
  * @throws {Error} - If unable to retrieve file
- * @returns {Express.Multer.File} Multer file
+ * @returns {Express.Multer.File}
  */
 export const getFileFromRequest = (req: Request, fileIndex = 0): Express.Multer.File => {
   if (!req.files || !req.files[fileIndex]) {

@@ -18,7 +18,7 @@ declare module 'express-serve-static-core' {
      * Value is defined for endpoints that accept files.
      *
      * @see app.ts -> multerRequestHandler
-     * @see critters/imports.ts -> openAPI spec
+     * @see src/openapi/schemas/file.ts
      *
      */
     files?: Express.Multer.File[];
