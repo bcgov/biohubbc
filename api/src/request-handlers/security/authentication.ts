@@ -73,7 +73,7 @@ export const authenticateRequest = async function (req: Request): Promise<true> 
     const signingKey = key.getPublicKey();
 
     // Verify token using public signing key
-    const verifiedToken = verify(tokenString, signingKey, { issuer: [KEYCLOAK_ISSUER] });
+    const verifiedToken = verify(tokenString, signingKey, { issuer: [KEYCLOAK_ISSUER] }) as KeycloakUserInformation;
 
     if (!verifiedToken) {
       defaultLog.warn({ label: 'authenticate', message: 'verified token was null' });
@@ -81,7 +81,7 @@ export const authenticateRequest = async function (req: Request): Promise<true> 
     }
 
     // Add the verified token to the request for future use, if needed
-    req.keycloak_token = verifiedToken as KeycloakUserInformation;
+    req.keycloak_token = verifiedToken;
 
     return true;
   } catch (error) {
