@@ -104,7 +104,7 @@ export const getCritterbaseApiHostUrl = () => {
 export const authorizeAndAuthenticateMiddleware: RequestHandler = async (req, _, next) => {
   await authenticateRequest(req);
 
-  req['authorization_scheme'] = {
+  req.authorization_scheme = {
     and: [
       {
         discriminator: 'SystemUser'
