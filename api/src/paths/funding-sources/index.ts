@@ -2,12 +2,12 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { getSystemUserFromRequest } from '../../express/request';
 import { FundingSource, FundingSourceSupplementaryData } from '../../repositories/funding-source-repository';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { FundingSourceService, IFundingSourceSearchParams } from '../../services/funding-source-service';
 import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
-import { getSystemUserFromRequest } from '../../utils/request';
 
 const defaultLog = getLogger('paths/funding-sources/index');
 

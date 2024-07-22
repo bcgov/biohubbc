@@ -2,6 +2,7 @@ import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { getSystemUserFromRequest } from '../../express/request';
 import { ITelemetryAdvancedFilters } from '../../models/telemetry-view';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
@@ -12,7 +13,6 @@ import {
   makePaginationOptionsFromRequest,
   makePaginationResponse
 } from '../../utils/pagination';
-import { getSystemUserFromRequest } from '../../utils/request';
 
 const defaultLog = getLogger('paths/telemetry');
 

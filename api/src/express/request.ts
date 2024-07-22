@@ -3,7 +3,30 @@ import { SystemUser } from '../repositories/user-repository';
 import { KeycloakUserInformation } from '../utils/keycloak-utils';
 
 /**
+ * Extending express request type.
+ *
+ */
+declare module 'express-serve-static-core' {
+  interface Request {
+    /**
+     * Keycloak user JWT token.
+     *
+     */
+    keycloak_token?: KeycloakUserInformation;
+    /**
+     * SIMS system user details.
+     *
+     */
+    system_user?: SystemUser;
+  }
+}
+
+/**
  * Get keycloak token from request or throw error.
+ *
+ * Value is defined for endpoints that specify `Bearer` security with correct JWT token.
+ *
+ * @see authentication.ts -> authenticateRequest()
  *
  * @param {Request} req
  * @throws {Error} - Missing keycloak token
@@ -18,6 +41,8 @@ export const getKeycloakTokenFromRequest = (req: Request): KeycloakUserInformati
 
 /**
  * Get system user from request of throw error.
+ *
+ * @see authorization.ts -> authorizeRequest()
  *
  * @param {Request} req
  * @throws {Error} - Missing system user
