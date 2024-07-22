@@ -2,18 +2,19 @@ import Box from '@mui/material/Box';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import {
-    ISurveyMapPoint,
-    ISurveyMapPointMetadata,
-    ISurveyMapSupplementaryLayer
+  ISurveyMapPoint,
+  ISurveyMapPointMetadata,
+  ISurveyMapSupplementaryLayer
 } from 'features/surveys/view/SurveyMap';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import {
-    IGetSurveyObservationsGeometryObject,
-    IGetSurveyObservationsGeometryResponse
+  IGetSurveyObservationsGeometryObject,
+  IGetSurveyObservationsGeometryResponse
 } from 'interfaces/useObservationApi.interface';
 import { useCallback, useEffect, useMemo } from 'react';
+import { coloredCustomPointMarker } from 'utils/mapUtils';
 import { getFormattedDate } from 'utils/Utils';
 import SurveyDataLayer from '../map/SurveyDataMapContainer';
 import SurveyDataObservationTable from './table/SurveyDataObservationTable';
@@ -38,12 +39,8 @@ export const SurveyDataObservation = () => {
   const observations: IGetSurveyObservationsGeometryResponse | undefined = observationsGeometryDataLoader.data;
 
   const formatObservationMetadata = useCallback(
-    async (observation: any): Promise<ISurveyMapPointMetadata[]> => {
-      const response = await biohubApi.observation.getObservationRecord(
-        projectId,
-        surveyId,
-        observation.survey_observation_id
-      );
+    async (observation: ISurveyMapPoint): Promise<ISurveyMapPointMetadata[]> => {
+      const response = await biohubApi.observation.getObservationRecord(projectId, surveyId, Number(observation.key));
 
       return [
         { label: 'Taxon ID', value: String(response.itis_tsn) },
@@ -74,8 +71,9 @@ export const SurveyDataObservation = () => {
         properties: {},
         geometry: observation.geometry
       },
-      key: `observation-${observation.survey_observation_id}`,
-      onLoadMetadata: () => formatObservationMetadata(observation)
+      icon: coloredCustomPointMarker,
+      key: `Observation-${observation.survey_observation_id}`,
+      id: Number(observation.survey_observation_id)
     }),
     [formatObservationMetadata]
   );
@@ -90,19 +88,14 @@ export const SurveyDataObservation = () => {
       fillColor: SURVEY_MAP_LAYER_COLOURS.OBSERVATIONS_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
       color: SURVEY_MAP_LAYER_COLOURS.OBSERVATIONS_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
     },
-    popupRecordTitle: 'Species Observations',
+    onClick: (mapPoint: ISurveyMapPoint) => formatObservationMetadata(mapPoint),
+    popupRecordTitle: 'Species Observation',
     mapPoints: observationPoints
   };
 
   return (
     <>
-      <SurveyDataLayer
-        layerName={supplementaryLayer.layerName}
-        layerColors={supplementaryLayer.layerColors}
-        popupRecordTitle={supplementaryLayer.popupRecordTitle}
-        mapPoints={supplementaryLayer.mapPoints}
-        isLoading={observationsGeometryDataLoader.isLoading}
-      />
+      <SurveyDataLayer layers={[supplementaryLayer]} isLoading={observationsGeometryDataLoader.isLoading} />
       <Box p={2} position="relative">
         <SurveyDataObservationTable isLoading={observationsGeometryDataLoader.isLoading} />
       </Box>

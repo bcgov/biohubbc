@@ -5,11 +5,11 @@ import {
   ISurveyMapPointMetadata,
   ISurveyMapSupplementaryLayer
 } from 'features/surveys/view/SurveyMap';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo } from 'react';
+import { coloredCustomMortalityMarker, coloredCustomPointMarker } from 'utils/mapUtils';
 import { createGeoJSONFeature } from 'utils/spatial-utils';
 import SurveyDataLayer from '../map/SurveyDataMapContainer';
 import SurveyDataAnimalTable from './table/SurveyDataAnimalTable';
@@ -20,86 +20,111 @@ import SurveyDataAnimalTable from './table/SurveyDataAnimalTable';
  */
 export const SurveyDataAnimal = () => {
   const surveyContext = useSurveyContext();
-  const { surveyId, projectId } = surveyContext;
 
-  const biohubApi = useBiohubApi();
   const critterbaseApi = useCritterbaseApi();
+  const critterIds = surveyContext.critterDataLoader.data?.map((critter) => critter.critter_id) ?? [];
 
-  // Data loader for fetching animal capture data
-  const animalDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCrittersDetailed(projectId, surveyId));
+  // Data loader for fetching animal capture data for the map ONLY. Table data is fetched separately in `SurveyDataAnimalTable.tsx`
+  const geometryDataLoader = useDataLoader((critter_ids: string[]) =>
+    critterbaseApi.critters.getMultipleCrittersGeometryByIds(critter_ids)
+  );
 
   useEffect(() => {
-    animalDataLoader.load(); // Trigger data loading on component mount
-  }, [animalDataLoader]);
-
-  const animals = animalDataLoader.data;
-
-  // Memoized computation of capture points for map display
-  const capturePoints: ISurveyMapPoint[] = useMemo(() => {
-    const points: ISurveyMapPoint[] = [];
-
-    // Iterate over animals array to extract capture points
-    for (const animal of animals ?? []) {
-      // Iterate over captures array within each animal
-      for (const capture of animal.captures ?? []) {
-        if (capture.capture_location?.latitude && capture.capture_location?.longitude) {
-          const point: ISurveyMapPoint = {
-            feature: createGeoJSONFeature(capture.capture_location.latitude, capture.capture_location.longitude),
-            key: `capture-${capture.capture_id}`,
-            onLoadMetadata: async (): Promise<ISurveyMapPointMetadata[]> => {
-              const response = await critterbaseApi.capture.getCapture(capture.capture_id);
-
-              return [
-                { label: 'Capture ID', value: String(response.capture_id) },
-                { label: 'Date', value: String(response.capture_date) },
-                {
-                  label: 'Coords',
-                  value: [response.capture_location?.latitude ?? null, response.capture_location?.longitude ?? null]
-                    .filter((coord): coord is number => coord !== null)
-                    .map((coord) => coord.toFixed(6))
-                    .join(', ')
-                },
-                {
-                  label: 'Time',
-                  value: capture.capture_time ?? ''
-                }
-              ];
-            }
-          };
-
-          points.push(point);
-        }
-      }
+    if (critterIds.length) {
+      geometryDataLoader.load(critterIds);
     }
+  }, [geometryDataLoader]);
+
+  const geometry = geometryDataLoader.data ?? { captures: [], mortalities: [] };
+
+  const onClickMortalityPoint = async (mortalityId: string): Promise<ISurveyMapPointMetadata[]> => {
+    const response = await critterbaseApi.mortality.getMortality(mortalityId);
+
+    return [
+      { label: 'Mortality ID', value: String(response.mortality_id) },
+      { label: 'Date', value: String(response.mortality_timestamp) },
+      {
+        label: 'Coords',
+        value: [response.location?.latitude ?? null, response.location?.longitude ?? null]
+          .filter((coord): coord is number => coord !== null)
+          .map((coord) => coord.toFixed(6))
+          .join(', ')
+      }
+    ];
+  };
+
+  const onClickCapturePoint = async (captureId: string): Promise<ISurveyMapPointMetadata[]> => {
+    const response = await critterbaseApi.mortality.getMortality(captureId);
+
+    return [
+      { label: 'Capture ID', value: String(response.mortality_id) },
+      { label: 'Date', value: String(response.mortality_timestamp) },
+      {
+        label: 'Coords',
+        value: [response.location?.latitude ?? null, response.location?.longitude ?? null]
+          .filter((coord): coord is number => coord !== null)
+          .map((coord) => coord.toFixed(6))
+          .join(', ')
+      }
+    ];
+  };
+
+  const capturePoints: ISurveyMapPoint[] = useMemo(() => {
+    const points: ISurveyMapPoint[] = geometry.captures.map((capture) => ({
+      feature: createGeoJSONFeature(capture.coordinates[0], capture.coordinates[1]),
+      key: `capture-${capture.capture_id}`,
+      icon: coloredCustomPointMarker,
+      id: capture.capture_id
+    }));
 
     return points;
-  }, [animals, critterbaseApi.capture]);
+  }, [geometry, critterbaseApi.capture]);
 
-  // Define supplementary layer for map display
-  const supplementaryLayer: ISurveyMapSupplementaryLayer = {
+  const mortalityPoints: ISurveyMapPoint[] = useMemo(() => {
+    const points: ISurveyMapPoint[] = geometry.mortalities.map((mortality) => ({
+      feature: createGeoJSONFeature(mortality.coordinates[0], mortality.coordinates[1]),
+      key: `mortality-${mortality.mortality_id}`,
+      icon: coloredCustomMortalityMarker,
+      id: mortality.mortality_id
+    }));
+
+    return points;
+  }, [geometry, critterbaseApi.capture]);
+
+  const captureLayer: ISurveyMapSupplementaryLayer = {
     layerName: 'Animal Captures',
     layerColors: {
-      fillColor: SURVEY_MAP_LAYER_COLOURS.OBSERVATIONS_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
-      color: SURVEY_MAP_LAYER_COLOURS.OBSERVATIONS_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
+      fillColor: SURVEY_MAP_LAYER_COLOURS.CAPTURE_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
+      color: SURVEY_MAP_LAYER_COLOURS.CAPTURE_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
     },
-    popupRecordTitle: 'Animal Captures',
-    mapPoints: capturePoints
+    popupRecordTitle: 'Animal Capture',
+    mapPoints: capturePoints,
+    onClick: (mapPoint: ISurveyMapPoint) => {
+      if (mapPoint.id) {
+        onClickCapturePoint(mapPoint.id);
+      }
+    }
+  };
+
+  const mortalityLayer: ISurveyMapSupplementaryLayer = {
+    layerName: 'Animal Mortalities',
+    layerColors: {
+      fillColor: SURVEY_MAP_LAYER_COLOURS.MORTALITY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
+      color: SURVEY_MAP_LAYER_COLOURS.MORTALITY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
+    },
+    popupRecordTitle: 'Animal Mortality',
+    mapPoints: mortalityPoints,
+    onClick: (mapPoint: ISurveyMapPoint) => onClickMortalityPoint(mapPoint.id)
   };
 
   return (
     <>
       {/* Display map with animal capture points */}
-      <SurveyDataLayer
-        layerName={supplementaryLayer.layerName}
-        layerColors={supplementaryLayer.layerColors}
-        popupRecordTitle={supplementaryLayer.popupRecordTitle}
-        mapPoints={supplementaryLayer.mapPoints}
-        isLoading={animalDataLoader.isLoading}
-      />
+      <SurveyDataLayer layers={[captureLayer, mortalityLayer]} isLoading={geometryDataLoader.isLoading} />
 
       {/* Display data table with animal capture details */}
       <Box p={2} position="relative">
-        <SurveyDataAnimalTable isLoading={animalDataLoader.isLoading} />
+        <SurveyDataAnimalTable isLoading={geometryDataLoader.isLoading} />
       </Box>
     </>
   );

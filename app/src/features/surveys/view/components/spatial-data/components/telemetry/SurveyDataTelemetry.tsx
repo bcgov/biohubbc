@@ -8,6 +8,7 @@ import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
 import { ITelemetry } from 'hooks/useTelemetryApi';
 import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { useCallback, useEffect, useMemo } from 'react';
+import { coloredCustomPointMarker } from 'utils/mapUtils';
 import SurveyDataLayer from '../map/SurveyDataMapContainer';
 import SurveyDataTelemetryTable from './table/SurveyDataTelemetryTable';
 
@@ -99,6 +100,7 @@ export const SurveyDataTelemetry = () => {
                 }
               },
               key: `telemetry-${telemetry.telemetry_manual_id}`,
+              icon: coloredCustomPointMarker,
               onLoadMetadata: () => formatTelemetryMetadata(telemetry, deployment, critter)
             };
           }) ?? []
@@ -132,13 +134,7 @@ export const SurveyDataTelemetry = () => {
 
   return (
     <>
-      <SurveyDataLayer
-        layerName={supplementaryLayer.layerName}
-        layerColors={supplementaryLayer.layerColors}
-        popupRecordTitle={supplementaryLayer.popupRecordTitle}
-        mapPoints={supplementaryLayer.mapPoints}
-        isLoading={telemetryDataLoader.isLoading}
-      />
+      <SurveyDataLayer layers={[supplementaryLayer]} isLoading={telemetryDataLoader.isLoading} />
 
       <Box p={2} position="relative">
         <SurveyDataTelemetryTable isLoading={telemetryDataLoader.isLoading} />

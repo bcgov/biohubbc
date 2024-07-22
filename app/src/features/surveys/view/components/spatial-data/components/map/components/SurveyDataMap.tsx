@@ -4,6 +4,7 @@ import SurveyMap from 'features/surveys/view/SurveyMap';
 import SurveyMapPopup from 'features/surveys/view/SurveyMapPopup';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useSurveyContext } from 'hooks/useContext';
+import { useMemo } from 'react';
 
 /**
  * Props interface for SurveyDataMap component.
@@ -80,10 +81,13 @@ const SurveyDataMap = (props: ISurveyDataMapProps): JSX.Element => {
   };
 
   // Combine all map layers, including supplementary layers passed as props
-  const mapLayers = [samplingSiteMapLayer, studyAreaMapLayer, ...supplementaryLayers];
+  const mapLayers = useMemo(
+    () => [samplingSiteMapLayer, studyAreaMapLayer, ...supplementaryLayers],
+    [supplementaryLayers, samplingSiteMapLayer, studyAreaMapLayer]
+  );
 
   // Render SurveyMap component with static and supplementary layers
-  return <SurveyMap staticLayers={mapLayers} supplementaryLayers={[]} isLoading={isLoading} />;
+  return <SurveyMap staticLayers={mapLayers} isLoading={isLoading} />;
 };
 
 export default SurveyDataMap;

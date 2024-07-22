@@ -1,7 +1,11 @@
 import Box from '@mui/material/Box';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
-import { ISurveyMapPoint, ISurveyMapPointMetadata } from 'features/surveys/view/SurveyMap';
+import {
+  ISurveyMapPoint,
+  ISurveyMapPointMetadata,
+  ISurveyMapSupplementaryLayer
+} from 'features/surveys/view/SurveyMap';
 import SurveyMapPopup from 'features/surveys/view/SurveyMapPopup';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useState } from 'react';
@@ -12,15 +16,8 @@ import SurveyDataMap from './components/SurveyDataMap';
  * Props interface for SurveyDataLayer component.
  */
 interface ISurveyDataLayerProps {
-  layerName: string;
-  popupRecordTitle: string;
-  mapPoints: ISurveyMapPoint[];
+  layers: ISurveyMapSupplementaryLayer[];
   isLoading: boolean;
-  layerColors?: {
-    fillColor: string;
-    color: string;
-    opacity?: number;
-  };
 }
 
 /**
@@ -28,19 +25,38 @@ interface ISurveyDataLayerProps {
  * Manages loading of metadata for map points and renders map layers and related components.
  */
 const SurveyDataLayer = (props: ISurveyDataLayerProps) => {
-  const { layerName, layerColors, popupRecordTitle, mapPoints, isLoading } = props;
-
   const [mapPointMetadata, setMapPointMetadata] = useState<Record<string, ISurveyMapPointMetadata[]>>({});
+  // const critterbaseApi = useCritterbaseApi();
+
+  // const onLoadMetadata = async (): Promise<ISurveyMapPointMetadata[]> => {
+  //   const response = await critterbaseApi.mortality.getMortality('8fb82d9e-b46f-43b1-8d59-47e604162941');
+
+  //   return [
+  //     { label: 'Mortality ID', value: String(response.mortality_id) },
+  //     { label: 'Date', value: String(response.mortality_timestamp) },
+  //     {
+  //       label: 'Coords',
+  //       value: [response.location?.latitude ?? null, response.location?.longitude ?? null]
+  //         .filter((coord): coord is number => coord !== null)
+  //         .map((coord) => coord.toFixed(6))
+  //         .join(', ')
+  //     }
+  //   ];
+  // }
 
   const handlePopupOpen = async (mapPoint: ISurveyMapPoint) => {
     if (mapPointMetadata[mapPoint.key]) {
       return;
     }
-    const metadata = await mapPoint.onLoadMetadata();
-    setMapPointMetadata((prev) => ({ ...prev, [mapPoint.key]: metadata }));
+    // const metadata = await onLoadMetadata();
+    setMapPointMetadata((prev) => ({ ...prev, [mapPoint.key]: [{ label: 'Mortality ID', value: String(2) }] }));
   };
 
-  const createFeature = (mapPoint: ISurveyMapPoint): IStaticLayerFeature => {
+  const createFeature = (
+    mapPoint: ISurveyMapPoint,
+    fillColor: string,
+    popupRecordTitle: string
+  ): IStaticLayerFeature => {
     const isLoading = !mapPointMetadata[mapPoint.key];
 
     return {
@@ -52,7 +68,8 @@ const SurveyDataLayer = (props: ISurveyDataLayerProps) => {
             popupopen: () => handlePopupOpen(mapPoint)
           });
         },
-        pointToLayer: (_, latlng) => coloredCustomPointMarker({ latlng, fillColor: layerColors?.fillColor })
+        pointToLayer: (_, latlng) =>
+          mapPoint.icon ? mapPoint.icon({ latlng, fillColor }) : coloredCustomPointMarker({ latlng, fillColor })
       },
       popup: (
         <SurveyMapPopup isLoading={isLoading} title={popupRecordTitle} metadata={mapPointMetadata[mapPoint.key]} />
@@ -61,18 +78,28 @@ const SurveyDataLayer = (props: ISurveyDataLayerProps) => {
     };
   };
 
-  const layer: IStaticLayer = {
-    layerName,
-    layerColors: {
-      fillColor: layerColors?.fillColor ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
-      color: layerColors?.color ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
-    },
-    features: mapPoints.map(createFeature)
-  };
+  const layers: IStaticLayer[] = props.layers.map((layer) => {
+    const { layerName, layerColors, mapPoints, popupRecordTitle } = layer;
+    const DEFAULT_COLOUR = SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR;
+
+    const fillColor = layerColors?.fillColor ?? DEFAULT_COLOUR;
+    const color = layerColors?.color ?? DEFAULT_COLOUR;
+
+    const features = mapPoints.map((point) => createFeature(point, fillColor, popupRecordTitle));
+
+    return {
+      layerName,
+      layerColors: {
+        fillColor,
+        color
+      },
+      features
+    };
+  });
 
   return (
     <Box height={{ sm: 300, md: 500 }} position="relative">
-      <SurveyDataMap supplementaryLayers={[layer]} isLoading={isLoading} />
+      <SurveyDataMap supplementaryLayers={layers} isLoading={props.isLoading} />
     </Box>
   );
 };

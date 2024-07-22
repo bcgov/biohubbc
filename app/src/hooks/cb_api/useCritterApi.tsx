@@ -1,5 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { IBulkCreate, IBulkUpdate, ICreateCritter } from 'features/surveys/view/survey-animals/animal';
+import { IGetCaptureMortalityGeometryResponse } from 'interfaces/useAnimalApi.interface';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 
 const useCritterApi = (axios: AxiosInstance) => {
@@ -77,9 +78,25 @@ const useCritterApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get capture and mortality geometry for multiple critter Ids.
+   *
+   * @async
+   * @param {string[]} critter_ids - Critter identifiers.
+   * @returns {Promise<IGetCaptureMortalityGeometryResponse>}
+   */
+  // TODO: Fix critterbase bug. This endpoint returns an empty array when ?format=detailed.
+  const getMultipleCrittersGeometryByIds = async (
+    critter_ids: string[]
+  ): Promise<IGetCaptureMortalityGeometryResponse> => {
+    const { data } = await axios.post(`/api/critterbase/critters/spatial`, { critter_ids });
+    return data;
+  };
+
   return {
     getDetailedCritter,
     getMultipleCrittersByIds,
+    getMultipleCrittersGeometryByIds,
     createCritter,
     updateCritter,
     bulkCreate,

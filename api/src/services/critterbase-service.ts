@@ -34,14 +34,25 @@ export interface ICapture {
   capture_id?: string;
   critter_id: string;
   capture_method_id?: string | null;
-  capture_location_id: string;
-  release_location_id: string;
+  capture_location_id?: string;
+  release_location_id?: string;
   capture_date: string;
   capture_time?: string | null;
   release_date?: string | null;
   release_time?: string | null;
   capture_comment: string;
   release_comment: string;
+  markings: IMarking[];
+  quantitative_measurements: IQualMeasurement[];
+  qualitative_measurements: IQuantMeasurement[];
+  capture_location: {
+    latitude: number;
+    longitude: number;
+  };
+  release_location: {
+    latitude: number;
+    longitude: number;
+  }
 }
 
 export interface IMortality {
@@ -56,6 +67,10 @@ export interface IMortality {
   ultimate_cause_of_death_confidence: string;
   ultimate_predated_by_itis_tsn: string;
   mortality_comment: string;
+  mortality_location: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 export interface ILocation {
@@ -467,6 +482,17 @@ export class CritterbaseService {
    */
   async getMultipleCrittersByIdsDetailed(critter_ids: string[]): Promise<ICritterDetailed[]> {
     const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}?format=detailed`, { critter_ids });
+    return response.data;
+  }
+
+  /**
+   * Fetches detailed information about multiple critters by their IDs.
+   *
+   * @param {string[]} critter_ids - The IDs of the critters.
+   * @returns {Promise<ICritterDetailed[]>} - The response data containing detailed information about multiple critters.
+   */
+  async getMultipleCrittersGeometryByIds(critter_ids: string[]): Promise<ICritterDetailed[]> {
+    const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}/spatial`, { critter_ids });
     return response.data;
   }
 

@@ -10,6 +10,7 @@ import { LatLngBoundsExpression } from 'leaflet';
 import { useMemo } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import { MapPointProps } from 'utils/mapUtils';
 
 export interface ISurveyMapPointMetadata {
   label: string;
@@ -34,6 +35,11 @@ export interface ISurveyMapSupplementaryLayer {
    */
   mapPoints: ISurveyMapPoint[];
   /**
+   * Callback to fetch metadata, which is fired when the geometry's popup
+   * is opened
+   */
+  onClick: (mapPoint: ISurveyMapPoint) => void;
+  /**
    * The title of the feature type displayed in the popup
    */
   popupRecordTitle: string;
@@ -48,12 +54,14 @@ export interface ISurveyMapPoint {
    * The geometric feature to display
    */
   feature: Feature;
-
   /**
-   * Callback to fetch metadata, which is fired when the geometry's popup
-   * is opened
+   * The icon representing each point
    */
-  onLoadMetadata: () => Promise<ISurveyMapPointMetadata[]>;
+  icon?: (point: MapPointProps) => L.Marker<any>;
+  /**
+   * Unique Id of the point
+   */
+  id?: string | number;
   /**
    * Optional link that renders a button to view/manage/edit the data
    * that the geometry belongs to
@@ -63,25 +71,23 @@ export interface ISurveyMapPoint {
 
 interface ISurveyMapProps {
   staticLayers: IStaticLayer[];
-  supplementaryLayers: ISurveyMapSupplementaryLayer[];
   isLoading: boolean;
 }
 
 const SurveyMap = (props: ISurveyMapProps) => {
   const bounds: LatLngBoundsExpression | undefined = useMemo(() => {
-    const allMapFeatures: Feature[] = [
-      ...props.supplementaryLayers.flatMap((supplementaryLayer) =>
-        supplementaryLayer.mapPoints.map((mapPoint) => mapPoint.feature)
-      ),
-      ...props.staticLayers.flatMap((staticLayer) => staticLayer.features.map((feature) => feature.geoJSON))
-    ];
+    const allMapFeatures: Feature[] = props.staticLayers.flatMap((staticLayer) =>
+      staticLayer.features.map((feature) => feature.geoJSON)
+    );
 
     if (allMapFeatures.length > 0) {
       return calculateUpdatedMapBounds(allMapFeatures);
     } else {
       return calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]);
     }
-  }, [props.supplementaryLayers, props.staticLayers]);
+    // Adding supplementaryLayers and staticLayers as dependencies causes the zoom to change when a point is clicked on
+    // (when onLoadMetadata is called), which is undesired.
+  }, [props.staticLayers]);
 
   return (
     <>
