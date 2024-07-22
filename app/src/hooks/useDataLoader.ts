@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { AsyncFunction, useAsync } from './useAsync';
 import useIsMounted from './useIsMounted';
 
@@ -85,64 +85,89 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
 
   const getData = useAsync(fetchData);
 
-  const loadData = async (...args: AFArgs): Promise<AFResponse | undefined> => {
-    try {
-      setIsLoading(true);
+  const loadData = useCallback(
+    async (...args: AFArgs): Promise<AFResponse | undefined> => {
+      try {
+        setIsLoading(true);
 
-      const response = await getData(...args);
+        const response = await getData(...args);
 
-      if (!isMounted()) {
-        return;
+        if (!isMounted()) {
+          return;
+        }
+
+        setData(response);
+
+        return response;
+      } catch (error) {
+        if (!isMounted()) {
+          return;
+        }
+
+        setError(error);
+
+        onError?.(error);
+      } finally {
+        if (isMounted()) {
+          setIsLoading(false);
+          setIsReady(true);
+          setHasLoaded(true);
+        }
+      }
+    },
+    [getData, isMounted, onError]
+  );
+
+  const load = useCallback(
+    async (...args: AFArgs) => {
+      if (oneTimeLoad) {
+        return data;
       }
 
-      setData(response);
+      setOneTimeLoad(true);
+      return loadData(...args);
+    },
+    [data, loadData, oneTimeLoad]
+  );
 
-      return response;
-    } catch (error) {
-      if (!isMounted()) {
-        return;
-      }
+  const refresh = useCallback(
+    async (...args: AFArgs) => {
+      // Clear previous error/loading state
+      setError(undefined);
+      setIsLoading(false);
+      setIsReady(false);
 
-      setError(error);
+      // Call loadData to fetch new data
+      return loadData(...args);
+    },
+    [loadData]
+  );
 
-      onError?.(error);
-    } finally {
-      if (isMounted()) {
-        setIsLoading(false);
-        setIsReady(true);
-        setHasLoaded(true);
-      }
-    }
-  };
-
-  const load = async (...args: AFArgs) => {
-    if (oneTimeLoad) {
-      return data;
-    }
-
-    setOneTimeLoad(true);
-    return loadData(...args);
-  };
-
-  const refresh = async (...args: AFArgs) => {
+  const clearError = useCallback(() => {
     setError(undefined);
-    setIsLoading(false);
-    setIsReady(false);
-    return loadData(...args);
-  };
+  }, []);
 
-  const clearError = () => {
-    setError(undefined);
-  };
-
-  const clearData = () => {
+  const clearData = useCallback(() => {
     setData(undefined);
     setError(undefined);
     setIsLoading(false);
     setIsReady(false);
     setHasLoaded(false);
     setOneTimeLoad(false);
-  };
+  }, []);
 
-  return { data, error, isLoading, isReady, hasLoaded, load, refresh, clearError, clearData };
+  return useMemo(
+    () => ({
+      data,
+      error,
+      isLoading,
+      isReady,
+      hasLoaded,
+      load,
+      refresh,
+      clearError,
+      clearData
+    }),
+    [clearData, clearError, data, error, hasLoaded, isLoading, isReady, load, refresh]
+  );
 }

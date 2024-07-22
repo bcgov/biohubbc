@@ -2,8 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/http-error';
+import { HTTP400, HTTP409 } from '../../../../../../../errors/http-error';
 import { GeoJSONFeature } from '../../../../../../../openapi/schemas/geoJson';
+import { techniqueSimpleViewSchema } from '../../../../../../../openapi/schemas/technique';
 import { UpdateSampleLocationRecord } from '../../../../../../../repositories/sample-location-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../../services/observation-service';
@@ -17,7 +18,7 @@ export const PUT: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -99,20 +100,32 @@ PUT.apiDoc = {
                   items: {
                     type: 'object',
                     additionalProperties: false,
-                    required: ['method_lookup_id', 'description', 'sample_periods', 'method_response_metric_id'],
+                    required: [
+                      'survey_sample_method_id',
+                      'survey_sample_site_id',
+                      'method_technique_id',
+                      'method_response_metric_id',
+                      'description',
+                      'sample_periods'
+                    ],
                     properties: {
-                      survey_sample_site_id: {
-                        type: 'integer',
-                        nullable: true
-                      },
                       survey_sample_method_id: {
-                        type: 'integer',
-                        nullable: true
-                      },
-                      method_lookup_id: {
                         type: 'integer',
                         minimum: 1,
                         nullable: true
+                      },
+                      survey_sample_site_id: {
+                        type: 'integer',
+                        minimum: 1,
+                        nullable: true
+                      },
+                      method_technique_id: {
+                        type: 'integer',
+                        minimum: 1
+                      },
+                      method_response_metric_id: {
+                        type: 'integer',
+                        minimum: 1
                       },
                       description: {
                         type: 'string'
@@ -133,10 +146,6 @@ PUT.apiDoc = {
                               type: 'integer',
                               nullable: true
                             },
-                            method_lookup_id: {
-                              type: 'integer',
-                              nullable: true
-                            },
                             start_date: {
                               type: 'string'
                             },
@@ -153,10 +162,6 @@ PUT.apiDoc = {
                             }
                           }
                         }
-                      },
-                      method_response_metric_id: {
-                        type: 'integer',
-                        minimum: 1
                       }
                     }
                   }
@@ -222,18 +227,6 @@ PUT.apiDoc = {
 
 export function updateSurveySampleSite(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required path param `surveyId`');
-    }
-
-    if (!req.params.surveySampleSiteId) {
-      throw new HTTP400('Missing required path param `surveySampleSiteId`');
-    }
-
-    if (!req.body.sampleSite) {
-      throw new HTTP400('Missing required body param `sampleSite`');
-    }
-
     const surveyId = Number(req.params.surveyId);
     const connection = getDBConnection(req.keycloak_token);
 
@@ -268,7 +261,7 @@ export const DELETE: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -332,6 +325,9 @@ DELETE.apiDoc = {
     403: {
       $ref: '#/components/responses/403'
     },
+    409: {
+      $ref: '#/components/responses/409'
+    },
     500: {
       $ref: '#/components/responses/500'
     },
@@ -361,7 +357,7 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
       ]);
 
       if (samplingSiteObservationsCount > 0) {
-        throw new HTTP400('Cannot delete a sample site that is associated with an observation');
+        throw new HTTP409('Cannot delete a sample site that is associated with an observation');
       }
 
       const sampleLocationService = new SampleLocationService(connection);
@@ -440,7 +436,16 @@ GET.apiDoc = {
           schema: {
             type: 'object',
             additionalProperties: false,
-            required: ['survey_sample_site_id', 'survey_id', 'name', 'description', 'geojson'],
+            required: [
+              'survey_sample_site_id',
+              'survey_id',
+              'name',
+              'description',
+              'geojson',
+              'sample_methods',
+              'blocks',
+              'stratums'
+            ],
             properties: {
               survey_sample_site_id: {
                 type: 'integer',
@@ -466,13 +471,21 @@ GET.apiDoc = {
                 required: [
                   'survey_sample_method_id',
                   'survey_sample_site_id',
-                  'method_lookup_id',
+                  'technique',
                   'method_response_metric_id',
                   'sample_periods'
                 ],
                 items: {
                   type: 'object',
                   additionalProperties: false,
+                  required: [
+                    'survey_sample_method_id',
+                    'survey_sample_site_id',
+                    'method_response_metric_id',
+                    'description',
+                    'sample_periods',
+                    'technique'
+                  ],
                   properties: {
                     survey_sample_method_id: {
                       type: 'integer',
@@ -482,7 +495,7 @@ GET.apiDoc = {
                       type: 'integer',
                       minimum: 1
                     },
-                    method_lookup_id: {
+                    method_response_metric_id: {
                       type: 'integer',
                       minimum: 1
                     },
@@ -529,7 +542,7 @@ GET.apiDoc = {
                         }
                       }
                     },
-                    method_response_metric_id: { type: 'integer', minimum: 1 }
+                    technique: techniqueSimpleViewSchema
                   }
                 }
               },
@@ -538,7 +551,13 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: ['survey_sample_block_id', 'survey_sample_site_id', 'survey_block_id'],
+                  required: [
+                    'survey_sample_block_id',
+                    'survey_sample_site_id',
+                    'survey_block_id',
+                    'name',
+                    'description'
+                  ],
                   properties: {
                     survey_sample_block_id: {
                       type: 'number'
@@ -563,7 +582,13 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: ['survey_sample_stratum_id', 'survey_sample_site_id', 'survey_stratum_id'],
+                  required: [
+                    'survey_sample_stratum_id',
+                    'survey_sample_site_id',
+                    'survey_stratum_id',
+                    'name',
+                    'description'
+                  ],
                   properties: {
                     survey_sample_stratum_id: {
                       type: 'number'

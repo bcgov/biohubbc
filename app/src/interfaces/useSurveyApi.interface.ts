@@ -129,7 +129,6 @@ export interface IGetSurveyLocation {
   name: string;
   description: string;
   geometry: Feature[];
-  geography: string | null;
   geojson: Feature[];
   revision_count: number;
 }
