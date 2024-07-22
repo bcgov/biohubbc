@@ -419,6 +419,18 @@ export class ObservationService extends DBService {
   }
 
   /**
+   * Retrieves observation records count for the given survey and technique ids
+   *
+   * @param {number} surveyId
+   * @param {number[]} methodTechniqueIds
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationService
+   */
+  async getObservationsCountByTechniqueIds(surveyId: number, methodTechniqueIds: number[]): Promise<number> {
+    return this.observationRepository.getObservationsCountByTechniqueIds(surveyId, methodTechniqueIds);
+  }
+
+  /**
    * Processes an observation CSV file submission.
    *
    * This method:

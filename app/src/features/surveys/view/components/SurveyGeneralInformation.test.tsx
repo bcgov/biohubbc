@@ -23,6 +23,7 @@ describe('SurveyGeneralInformation', () => {
     const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, IGetSurveyForViewResponse, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
 
@@ -35,6 +36,7 @@ describe('SurveyGeneralInformation', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
+            techniqueDataLoader: mockTechniqueDataLoader,
             critterDataLoader: mockCritterDataLoader,
             deploymentDataLoader: mockDeploymentDataLoader,
             critterDeployments: []
@@ -62,6 +64,7 @@ describe('SurveyGeneralInformation', () => {
     } as DataLoader<any, IGetSurveyForViewResponse, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
 
@@ -75,6 +78,7 @@ describe('SurveyGeneralInformation', () => {
             artifactDataLoader: mockArtifactDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
             critterDataLoader: mockCritterDataLoader,
+            techniqueDataLoader: mockTechniqueDataLoader,
             deploymentDataLoader: mockDeploymentDataLoader,
             critterDeployments: []
           }}>
@@ -90,6 +94,7 @@ describe('SurveyGeneralInformation', () => {
     const mockSurveyDataLoader = { data: undefined } as DataLoader<any, IGetSurveyForViewResponse, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
+    const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
@@ -103,6 +108,7 @@ describe('SurveyGeneralInformation', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
+            techniqueDataLoader: mockTechniqueDataLoader,
             critterDataLoader: mockCritterDataLoader,
             deploymentDataLoader: mockDeploymentDataLoader,
             critterDeployments: []

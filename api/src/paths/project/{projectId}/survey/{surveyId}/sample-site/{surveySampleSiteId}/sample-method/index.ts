@@ -87,15 +87,34 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
+                  required: [
+                    'survey_sample_method_id',
+                    'survey_sample_site_id',
+                    'method_technique_id',
+                    'method_response_metric_id',
+                    'description',
+                    'create_date',
+                    'create_user',
+                    'update_date',
+                    'update_user',
+                    'revision_count'
+                  ],
                   properties: {
                     survey_sample_method_id: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
                     survey_sample_site_id: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
-                    method_lookup_id: {
-                      type: 'integer'
+                    method_technique_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    method_response_metric_id: {
+                      type: 'integer',
+                      minimum: 1
                     },
                     description: {
                       type: 'string'
@@ -104,7 +123,8 @@ GET.apiDoc = {
                       type: 'string'
                     },
                     create_user: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
                     update_date: {
                       type: 'string',
@@ -112,6 +132,7 @@ GET.apiDoc = {
                     },
                     update_user: {
                       type: 'integer',
+                      minimum: 1,
                       nullable: true
                     },
                     revision_count: {
@@ -184,7 +205,7 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
