@@ -53,7 +53,7 @@ export const AnimalCapturesMap = (props: IAnimalCapturesMapProps) => {
 
   return (
     <Box height={{ sm: 250, md: 400 }} position="relative">
-      <SurveyMap isLoading={isLoading} staticLayers={staticLayers} supplementaryLayers={[]} />
+      <SurveyMap isLoading={isLoading} staticLayers={staticLayers} />
     </Box>
   );
 };

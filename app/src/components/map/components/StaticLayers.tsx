@@ -5,12 +5,11 @@ import {
   GeoJSON,
   GeoJSONProps,
   LayersControl,
-  Popup,
   PopupProps,
   Tooltip,
   TooltipProps
 } from 'react-leaflet';
-import { coloredCustomPointMarker, coloredPoint } from 'utils/mapUtils';
+import { coloredPoint, MapPointProps } from 'utils/mapUtils';
 
 export interface IStaticLayerFeature {
   geoJSON: Feature;
@@ -20,6 +19,19 @@ export interface IStaticLayerFeature {
   PopupProps?: Partial<PopupProps>;
   tooltip?: ReactElement;
   TooltipProps?: Partial<TooltipProps>;
+  /**
+   * The icon representing each point
+   */
+  icon?: (point: MapPointProps) => L.Marker<any>;
+  /**
+   * Unique Id of the point
+   */
+  id?: string | number;
+  /**
+   * Optional link that renders a button to view/manage/edit the data
+   * that the geometry belongs to
+   */
+  link?: string; //
 }
 
 export interface IStaticLayer {
@@ -27,8 +39,10 @@ export interface IStaticLayer {
   layerColors?: {
     color: string;
     fillColor: string;
+    opacity?: number;
   };
   features: IStaticLayerFeature[];
+  popup?: ReactElement
 }
 
 export interface IStaticLayersProps {
@@ -61,11 +75,7 @@ const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
                     <GeoJSON
                       key={`static-feature-${id}`}
                       style={{ ...layerColors }}
-                      pointToLayer={(_, latlng) =>
-                        layer.layerName === 'Observations'
-                          ? coloredCustomPointMarker({ latlng, fillColor: layer.layerColors?.fillColor })
-                          : coloredPoint({ latlng, fillColor: layer.layerColors?.fillColor })
-                      }
+                      pointToLayer={(_, latlng) => coloredPoint({ latlng, fillColor: layer.layerColors?.fillColor })}
                       data={item.geoJSON}
                       {...item.GeoJSONProps}>
                       {item.tooltip && (
@@ -78,14 +88,7 @@ const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
                         </Tooltip>
                       )}
                       {item.popup && (
-                        <Popup
-                          key={`static-feature-popup-${id}`}
-                          keepInView={false}
-                          closeButton={true}
-                          autoPan={true}
-                          {...item.PopupProps}>
-                          {item.popup}
-                        </Popup>
+                        layer.popup
                       )}
                     </GeoJSON>
                   );

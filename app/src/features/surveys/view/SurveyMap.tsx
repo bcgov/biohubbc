@@ -10,40 +10,39 @@ import { LatLngBoundsExpression } from 'leaflet';
 import { useMemo } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
-import { MapPointProps } from 'utils/mapUtils';
 
 export interface ISurveyMapPointMetadata {
   label: string;
   value: string;
 }
 
-export interface ISurveyMapSupplementaryLayer {
-  /**
-   * The name of the layer
-   */
-  layerName: string;
-  /**
-   * The colour of the layer
-   */
-  layerColors?: {
-    color: string;
-    fillColor: string;
-    opacity?: number;
-  };
-  /**
-   * The array of map points
-   */
-  mapPoints: ISurveyMapPoint[];
-  /**
-   * Callback to fetch metadata, which is fired when the geometry's popup
-   * is opened
-   */
-  onClick: (mapPoint: ISurveyMapPoint) => void;
-  /**
-   * The title of the feature type displayed in the popup
-   */
-  popupRecordTitle: string;
-}
+// export interface ISurveyMapSupplementaryLayer {
+//   /**
+//    * The name of the layer
+//    */
+//   layerName: string;
+//   /**
+//    * The colour of the layer
+//    */
+//   layerColors?: {
+//     color: string;
+//     fillColor: string;
+//     opacity?: number;
+//   };
+//   /**
+//    * The array of map points
+//    */
+//   mapPoints: ISurveyMapPoint[];
+//   /**
+//    * Callback to fetch metadata, which is fired when the geometry's popup
+//    * is opened
+//    */
+//   onClick: (mapPoint: ISurveyMapPoint) => Promise<ISurveyMapPointMetadata[]>;
+//   /**
+//    * The title of the feature type displayed in the popup
+//    */
+//   popupRecordTitle: string;
+// }
 
 export interface ISurveyMapPoint {
   /**
@@ -54,19 +53,6 @@ export interface ISurveyMapPoint {
    * The geometric feature to display
    */
   feature: Feature;
-  /**
-   * The icon representing each point
-   */
-  icon?: (point: MapPointProps) => L.Marker<any>;
-  /**
-   * Unique Id of the point
-   */
-  id?: string | number;
-  /**
-   * Optional link that renders a button to view/manage/edit the data
-   * that the geometry belongs to
-   */
-  link?: string;
 }
 
 interface ISurveyMapProps {

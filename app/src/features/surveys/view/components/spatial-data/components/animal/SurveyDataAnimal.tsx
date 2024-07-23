@@ -1,17 +1,15 @@
 import Box from '@mui/material/Box';
+import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
-import {
-  ISurveyMapPoint,
-  ISurveyMapPointMetadata,
-  ISurveyMapSupplementaryLayer
-} from 'features/surveys/view/SurveyMap';
+import { ISurveyMapPointMetadata } from 'features/surveys/view/SurveyMap';
 import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { Popup } from 'leaflet';
 import { useEffect, useMemo } from 'react';
 import { coloredCustomMortalityMarker, coloredCustomPointMarker } from 'utils/mapUtils';
 import { createGeoJSONFeature } from 'utils/spatial-utils';
-import SurveyDataLayer from '../map/SurveyDataMapContainer';
+import SurveyDataMap from '../map/SurveyDataMap';
 import SurveyDataAnimalTable from './table/SurveyDataAnimalTable';
 
 /**
@@ -69,9 +67,9 @@ export const SurveyDataAnimal = () => {
     ];
   };
 
-  const capturePoints: ISurveyMapPoint[] = useMemo(() => {
-    const points: ISurveyMapPoint[] = geometry.captures.map((capture) => ({
-      feature: createGeoJSONFeature(capture.coordinates[0], capture.coordinates[1]),
+  const capturePoints: IStaticLayerFeature[] = useMemo(() => {
+    const points: IStaticLayerFeature[] = geometry.captures.map((capture) => ({
+      geoJSON: createGeoJSONFeature(capture.coordinates[0], capture.coordinates[1]),
       key: `capture-${capture.capture_id}`,
       icon: coloredCustomPointMarker,
       id: capture.capture_id
@@ -80,9 +78,9 @@ export const SurveyDataAnimal = () => {
     return points;
   }, [geometry, critterbaseApi.capture]);
 
-  const mortalityPoints: ISurveyMapPoint[] = useMemo(() => {
-    const points: ISurveyMapPoint[] = geometry.mortalities.map((mortality) => ({
-      feature: createGeoJSONFeature(mortality.coordinates[0], mortality.coordinates[1]),
+  const mortalityPoints: IStaticLayerFeature[] = useMemo(() => {
+    const points: IStaticLayerFeature[] = geometry.mortalities.map((mortality) => ({
+      geoJSON: createGeoJSONFeature(mortality.coordinates[0], mortality.coordinates[1]),
       key: `mortality-${mortality.mortality_id}`,
       icon: coloredCustomMortalityMarker,
       id: mortality.mortality_id
@@ -91,36 +89,42 @@ export const SurveyDataAnimal = () => {
     return points;
   }, [geometry, critterbaseApi.capture]);
 
-  const captureLayer: ISurveyMapSupplementaryLayer = {
+  const captureLayer: IStaticLayer = {
     layerName: 'Animal Captures',
     layerColors: {
       fillColor: SURVEY_MAP_LAYER_COLOURS.CAPTURE_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
       color: SURVEY_MAP_LAYER_COLOURS.CAPTURE_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
     },
-    popupRecordTitle: 'Animal Capture',
-    mapPoints: capturePoints,
-    onClick: (mapPoint: ISurveyMapPoint) => {
-      if (mapPoint.id) {
-        onClickCapturePoint(mapPoint.id);
-      }
-    }
+    features: capturePoints,
+    popup: <></> ?? null
   };
 
-  const mortalityLayer: ISurveyMapSupplementaryLayer = {
+  const mortalityLayer: IStaticLayer = {
     layerName: 'Animal Mortalities',
     layerColors: {
       fillColor: SURVEY_MAP_LAYER_COLOURS.MORTALITY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
       color: SURVEY_MAP_LAYER_COLOURS.MORTALITY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
     },
-    popupRecordTitle: 'Animal Mortality',
-    mapPoints: mortalityPoints,
-    onClick: (mapPoint: ISurveyMapPoint) => onClickMortalityPoint(mapPoint.id)
+    features: mortalityPoints,
+    popup:
+      (
+        <Popup key='key' closeButton autoPan>
+        <div>
+          <h3>title</h3>
+          {/* Add other popup content here */}
+        </div>
+      </Popup>
+      ) ?? null
   };
+
+  // Define popup?
 
   return (
     <>
       {/* Display map with animal capture points */}
-      <SurveyDataLayer layers={[captureLayer, mortalityLayer]} isLoading={geometryDataLoader.isLoading} />
+      <Box height={{ sm: 300, md: 500 }} position="relative">
+        <SurveyDataMap staticLayers={[captureLayer, mortalityLayer]} isLoading={geometryDataLoader.isLoading} />
+      </Box>
 
       {/* Display data table with animal capture details */}
       <Box p={2} position="relative">

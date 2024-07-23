@@ -13,7 +13,7 @@ interface ISurveyDataMapProps {
   /**
    * Array of supplementary static layers to be added to the map.
    */
-  supplementaryLayers: IStaticLayer[];
+  staticLayers: IStaticLayer[];
   /**
    * Loading indicator to control map skeleton loader.
    */
@@ -25,7 +25,7 @@ interface ISurveyDataMapProps {
  * Manages loading of survey data and renders map layers and related components.
  */
 const SurveyDataMap = (props: ISurveyDataMapProps): JSX.Element => {
-  const { supplementaryLayers, isLoading } = props;
+  const { staticLayers, isLoading } = props;
 
   // Access survey context to retrieve survey data loaders
   const surveyContext = useSurveyContext();
@@ -82,8 +82,8 @@ const SurveyDataMap = (props: ISurveyDataMapProps): JSX.Element => {
 
   // Combine all map layers, including supplementary layers passed as props
   const mapLayers = useMemo(
-    () => [samplingSiteMapLayer, studyAreaMapLayer, ...supplementaryLayers],
-    [supplementaryLayers, samplingSiteMapLayer, studyAreaMapLayer]
+    () => [samplingSiteMapLayer, studyAreaMapLayer, ...staticLayers],
+    [staticLayers, samplingSiteMapLayer, studyAreaMapLayer]
   );
 
   // Render SurveyMap component with static and supplementary layers
