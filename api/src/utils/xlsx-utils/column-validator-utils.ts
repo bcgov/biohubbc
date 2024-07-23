@@ -42,7 +42,7 @@ export const getColumnValidatorSpecification = (columnValidator: IXLSXCSVValidat
     return {
       columnName: columnName,
       columnType: columnSpec.type,
-      columnAliases: columnSpec.aliases
+      columnAliases: columnSpec?.aliases
     };
   });
 };

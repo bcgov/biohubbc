@@ -13,13 +13,13 @@ import { CSVImportService } from './csv-import-strategy.interface';
 /**
  * CSV Import Strategy - Used with `CSVImportService` classes.
  *
- * How to?: Inject a class that implements the CSVImportService and this service will execute
+ * How to?: Inject a class that implements the CSVImportService. This service will execute
  * the validation for columns / rows and import the data.
  *
  * Flow:
  *  1. Get the worksheet from the CSV MediaFile - _getWorksheet
  *  2. Validate the standard columns with the `importCsvService` column validator - _validate -> validateCsvFile
- *  3. Retrieve reference data and validate the row data - _validate -> importCsvService.validateRows
+ *  3. Validate row data with import service - _validate -> importCsvService.validateRows
  *  4. Insert the data into database or send to external system - import -> importCsvService.insert
  *
  *
@@ -67,6 +67,7 @@ export class CSVImportStrategy<ValidatedRow> {
     const validation = await this.importCsvService.validateRows(worksheetRows, worksheet);
 
     // Throw error is row validation failed and inject validation errors
+    // The validation errors can be either custom (Validation) or Zod (SafeParseReturn)
     if (!validation.success) {
       throw new ApiGeneralError(`Failed to import Critter CSV. Column data validator failed.`, [
         { csv_row_errors: validation.error.issues },
