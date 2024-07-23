@@ -29,7 +29,7 @@ describe('ImportCrittersService', () => {
 
       sinon.stub(service, '_getNonStandardColumns').returns(['COLLECTION']);
 
-      const parsedRow = service.getRowsToValidate(rows, {})[0];
+      const parsedRow = service._getRowsToValidate(rows, [])[0];
 
       expect(parsedRow.sex).to.be.eq('Male');
       expect(parsedRow.itis_tsn).to.be.eq(1);

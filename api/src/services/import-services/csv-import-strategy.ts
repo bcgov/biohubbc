@@ -13,25 +13,24 @@ import { CSVImportService } from './csv-import-strategy.interface';
 /**
  * CSV Import Strategy - Used with `CSVImportService` classes.
  *
- * Why does this exist? The import CSV classes (ie: ImportCrittersService) all follow a similar pattern.
- * This class reduces the need to duplicate code for all CSV import classes.
+ * How to?: Inject a class that implements the CSVImportService and this service will execute
+ * the validation for columns / rows and import the data.
  *
  * Flow:
  *  1. Get the worksheet from the CSV MediaFile - _getWorksheet
  *  2. Validate the standard columns with the `importCsvService` column validator - _validate -> validateCsvFile
- *  3. Get the rows to validate and format to a useable format - _validate -> importCsvService.getRowsToValidate
- *  4. Retrieve reference data and validate the row data - _validate -> importCsvService.validateRows
- *  5. Insert the data into database or send to external system - import -> importCsvService.insert
+ *  3. Retrieve reference data and validate the row data - _validate -> importCsvService.validateRows
+ *  4. Insert the data into database or send to external system - import -> importCsvService.insert
  *
  *
  * @class CSVImportStrategy
  * @template ValidatedRow - Validated row object
  * @template PartialRow - Invalidated row object - ie: partial (undefined properties) row object
  */
-export class CSVImportStrategy<ValidatedRow, PartialRow = Partial<ValidatedRow>> {
-  importCsvService: CSVImportService<ValidatedRow, PartialRow>;
+export class CSVImportStrategy<ValidatedRow> {
+  importCsvService: CSVImportService<ValidatedRow>;
 
-  constructor(importCsvService: CSVImportService<ValidatedRow, PartialRow>) {
+  constructor(importCsvService: CSVImportService<ValidatedRow>) {
     this.importCsvService = importCsvService;
   }
 
@@ -64,11 +63,8 @@ export class CSVImportStrategy<ValidatedRow, PartialRow = Partial<ValidatedRow>>
     // Convert the worksheet into an array of records
     const worksheetRows = getWorksheetRowObjects(worksheet);
 
-    // Pre parse the records into partial marking rows
-    const rowsToValidate = this.importCsvService.getRowsToValidate(worksheetRows, worksheet);
-
     // Validate the CSV rows with reference data
-    const validation = await this.importCsvService.validateRows(rowsToValidate, worksheet);
+    const validation = await this.importCsvService.validateRows(worksheetRows, worksheet);
 
     // Throw error is row validation failed and inject validation errors
     if (!validation.success) {

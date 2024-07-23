@@ -13,7 +13,7 @@ export type Row = Record<string, any>;
  *
  * @description All CSV import services should implement this interface to be used with `CSVImportStrategy`
  */
-export interface CSVImportService<ValidatedRow, PartialRow> {
+export interface CSVImportService<ValidatedRow> {
   /**
    * Standard column validator - used to validate the column headers and types.
    *
@@ -23,25 +23,16 @@ export interface CSVImportService<ValidatedRow, PartialRow> {
   columnValidator: IXLSXCSVValidator;
 
   /**
-   * Pre-parse rows for validateRows - return a list of structured row objects.
-   *
-   * @param {Row[]} rows - CSV rows to validate
-   * @param {WorkSheet} [worksheet] - Xlsx worksheet - useful for calculating non-standard columns
-   * @returns {PartialRow[]} Partial row objects
-   */
-  getRowsToValidate(rows: Row[], worksheet?: WorkSheet): PartialRow[];
-
-  /**
    * Validate the pre-parsed rows - return either custom Validation or Zod SafeParse.
    *
-   * @param {PartialRows[]} rows - Parsed CSV rows
+   * @param {Row[]} rows - Raw unparsed CSV rows
    * @param {WorkSheet} [worksheet] - Xlsx worksheet - useful for calculating non-standard columns
    * @returns {*} Validation
    */
   validateRows(
-    rows: PartialRow[],
+    rows: Row[],
     worksheet?: WorkSheet
-  ): Promise<z.SafeParseReturnType<PartialRow[], ValidatedRow[]> | Validation<ValidatedRow>>;
+  ): Promise<z.SafeParseReturnType<Row[], ValidatedRow[]> | Validation<ValidatedRow>>;
 
   /**
    * Insert the validated rows into database or send to external systems.

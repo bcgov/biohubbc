@@ -15,7 +15,7 @@ import { CsvCapture, CsvCaptureSchema, PartialCsvCapture } from './import-captur
  * @extends DBService
  *
  */
-export class ImportCapturesService extends DBService implements CSVImportService<CsvCapture, PartialCsvCapture> {
+export class ImportCapturesService extends DBService implements CSVImportService<CsvCapture> {
   critterbaseService: CritterbaseService;
 
   /**
@@ -81,16 +81,16 @@ export class ImportCapturesService extends DBService implements CSVImportService
   }
 
   /**
-   * Parse the CSV rows into the Critterbase Capture format for validation.
+   * Validate the CSV rows against zod schema.
    *
-   * @param {Row[]} rows - CSV rows
-   * @returns {PartialCsvCapture[]} CSV captures before validation
+   * @param {PartialCsvCapture[]} rows - CSV rows
+   * @returns {*}
    */
-  getRowsToValidate(rows: Row[]): PartialCsvCapture[] {
-    // Generate type-safe cell getter from validator spec
+  async validateRows(rows: PartialCsvCapture[]) {
+    // Generate type-safe cell getter from column validator
     const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
 
-    return rows.map((row) => {
+    const rowsToValidate = rows.map((row) => {
       return {
         critter_id: this.getCritterId(row),
         capture_location_id: uuid(),
@@ -106,16 +106,8 @@ export class ImportCapturesService extends DBService implements CSVImportService
         release_comment: getCellValue(row, 'RELEASE_COMMENT')
       };
     });
-  }
 
-  /**
-   * Validate the CSV rows against zod schema.
-   *
-   * @param {PartialCsvCapture[]} rows - CSV rows
-   * @returns {*}
-   */
-  async validateRows(rows: PartialCsvCapture[]) {
-    return z.array(CsvCaptureSchema).safeParse(rows);
+    return z.array(CsvCaptureSchema).safeParse(rowsToValidate);
   }
 
   /**

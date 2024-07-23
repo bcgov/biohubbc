@@ -13,7 +13,7 @@ const columnValidator = {
   BIRTH_DATE: { type: 'date' }
 } satisfies IXLSXCSVValidator;
 
-describe.only('column-validator-utils', () => {
+describe('column-validator-utils', () => {
   describe('getColumnNamesFromValidator', () => {
     it('should return all column names from validator', () => {
       expect(getColumnNamesFromValidator(columnValidator)).to.be.eql(['NAME', 'ID', 'AGE', 'BIRTH_DATE']);

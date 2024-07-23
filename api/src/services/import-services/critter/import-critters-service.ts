@@ -34,7 +34,7 @@ const CSV_CRITTER_SEX_OPTIONS = ['UNKNOWN', 'MALE', 'FEMALE'];
  * @extends DBService
  *
  */
-export class ImportCrittersService extends DBService implements CSVImportService<CsvCritter, PartialCsvCritter> {
+export class ImportCrittersService extends DBService implements CSVImportService<CsvCritter> {
   platformService: PlatformService;
   critterbaseService: CritterbaseService;
   surveyCritterService: SurveyCritterService;
@@ -177,11 +177,10 @@ export class ImportCrittersService extends DBService implements CSVImportService
    * Parse the CSV rows into the Critterbase critter format.
    *
    * @param {Row[]} rows - CSV rows
+   * @param {string[]} collectionUnitColumns - Non standard columns
    * @returns {PartialCsvCritter[]} CSV critters before validation
    */
-  getRowsToValidate(rows: Row[], worksheet: WorkSheet): PartialCsvCritter[] {
-    const collectionUnitColumns = this._getNonStandardColumns(worksheet);
-
+  _getRowsToValidate(rows: Row[], collectionUnitColumns: string[]): PartialCsvCritter[] {
     const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
 
     return rows.map((row) => {
@@ -208,28 +207,29 @@ export class ImportCrittersService extends DBService implements CSVImportService
    * Validate CSV worksheet rows against reference data.
    *
    * @async
-   * @param {PartialCsvCritter[]} rows - Invalidated CSV rows
+   * @param {Row[]} rows - Invalidated CSV rows
    * @param {WorkSheet} worksheet - Xlsx worksheet
    * @returns {Promise<Validation<CsvCritter>>} Conditional validation object
    */
-  async validateRows(rows: PartialCsvCritter[], worksheet: WorkSheet): Promise<Validation<CsvCritter>> {
+  async validateRows(rows: Row[], worksheet: WorkSheet): Promise<Validation<CsvCritter>> {
     const nonStandardColumns = this._getNonStandardColumns(worksheet);
+    const rowsToValidate = this._getRowsToValidate(rows, nonStandardColumns);
 
     // Retrieve the dynamic validation config
     const [validRowTsns, surveyCritterAliases] = await Promise.all([
-      this._getValidTsns(rows),
+      this._getValidTsns(rowsToValidate),
       this.surveyCritterService.getUniqueSurveyCritterAliases(this.surveyId)
     ]);
     const collectionUnitMap = await this._getCollectionUnitMap(worksheet, validRowTsns);
 
     // Parse reference data for validation
     const tsnSet = new Set(validRowTsns.map((tsn) => Number(tsn)));
-    const csvCritterAliases = rows.map((row) => row.animal_id);
+    const csvCritterAliases = rowsToValidate.map((row) => row.animal_id);
 
     // Track the row validation errors
     const errors: ValidationError[] = [];
 
-    const csvCritters = rows.map((row, index) => {
+    const csvCritters = rowsToValidate.map((row, index) => {
       /**
        * --------------------------------------------------------------------
        *                      STANDARD ROW VALIDATION
