@@ -5,6 +5,7 @@ import { HTTP400, HTTP500 } from '../errors/http-error';
 import { AdministrativeActivityService } from '../services/administrative-activity-service';
 import { getUserGuid } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
+import { getKeycloakTokenFromRequest } from '../utils/request';
 
 const defaultLog = getLogger('paths/administrative-activity-request');
 
@@ -182,7 +183,8 @@ export function getAdministrativeActivityStanding(): RequestHandler {
     const connection = getAPIUserDBConnection();
 
     try {
-      const userGUID = getUserGuid(req['keycloak_token']);
+      const keycloakToken = getKeycloakTokenFromRequest(req);
+      const userGUID = getUserGuid(keycloakToken);
 
       if (!userGUID) {
         throw new HTTP400('Failed to identify user');

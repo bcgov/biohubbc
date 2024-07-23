@@ -1,10 +1,10 @@
 import chai, { expect } from 'chai';
-import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../database/db';
 import { HTTPError } from '../errors/http-error';
 import { CodeService } from '../services/code-service';
+import { KeycloakUserInformation } from '../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../__mocks__/db';
 import * as codes from './codes';
 
@@ -24,7 +24,7 @@ describe('codes', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      mockReq.keycloak_token = {};
+      mockReq.keycloak_token = {} as KeycloakUserInformation;
 
       try {
         const requestHandler = codes.getAllCodes();
@@ -47,7 +47,7 @@ describe('codes', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      mockReq.keycloak_token = {};
+      mockReq.keycloak_token = {} as KeycloakUserInformation;
 
       const requestHandler = codes.getAllCodes();
 
@@ -66,7 +66,7 @@ describe('codes', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      mockReq.keycloak_token = {};
+      mockReq.keycloak_token = {} as KeycloakUserInformation;
 
       try {
         const requestHandler = codes.getAllCodes();
