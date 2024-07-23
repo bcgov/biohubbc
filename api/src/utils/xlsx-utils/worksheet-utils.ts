@@ -362,8 +362,6 @@ export function getNonStandardColumnNamesFromWorksheet(
   // Combine the column validator headers and all aliases
   const standardColumnNames = new Set([...columnValidatorHeaders, ...columnValidatorAliases]);
 
-  console.log({ columns });
-
   // Only return column names not in the validation CSV Column validator (ie: only return the non-standard columns)
   return columns.filter((column) => !standardColumnNames.has(column));
 }

@@ -5,14 +5,14 @@ import { WorkSheet } from 'xlsx';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { IBulkCreateResponse } from '../../critterbase-service';
 import { ImportCrittersService } from './import-critters-service';
-import { CsvCritter, PartialCsvCritter } from './import-critters-service.interface';
+import { CsvCritter } from './import-critters-service.interface';
 
 chai.use(sinonChai);
 
 const mockConnection = getMockDBConnection();
 
 describe('ImportCrittersService', () => {
-  describe('getRowsToValidate', () => {
+  describe('_getRowsToValidate', () => {
     it('it should correctly format rows', () => {
       const rows = [
         {
@@ -27,9 +27,7 @@ describe('ImportCrittersService', () => {
       ];
       const service = new ImportCrittersService(mockConnection, 1);
 
-      sinon.stub(service, '_getNonStandardColumns').returns(['COLLECTION']);
-
-      const parsedRow = service._getRowsToValidate(rows, [])[0];
+      const parsedRow = service._getRowsToValidate(rows, ['COLLECTION'])[0];
 
       expect(parsedRow.sex).to.be.eq('Male');
       expect(parsedRow.itis_tsn).to.be.eq(1);
@@ -317,6 +315,7 @@ describe('ImportCrittersService', () => {
 
     it('should return successful', async () => {
       const service = new ImportCrittersService(mockConnection, 1);
+
       const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
@@ -332,121 +331,230 @@ describe('ImportCrittersService', () => {
         ])
       );
 
-      const validRows: CsvCritter[] = [
+      const rows = [
         {
-          critter_id: 'A',
-          sex: 'Male',
-          itis_tsn: 1,
-          animal_id: 'Carl',
-          wlh_id: '10-1000',
-          critter_comment: 'comment',
+          ITIS_TSN: 1,
+          SEX: 'Male',
+          ALIAS: 'Carl',
+          WLH_ID: '10-1000',
+          DESCRIPTION: 'A',
           COLLECTION: 'UNIT_A'
         },
         {
-          critter_id: 'B',
-          sex: 'Male',
-          itis_tsn: 2,
-          animal_id: 'Test',
-          wlh_id: '10-1000',
-          critter_comment: 'comment',
+          ITIS_TSN: 2,
+          SEX: 'Female',
+          ALIAS: 'Carl2',
+          WLH_ID: '10-1000',
+          DESCRIPTION: 'B',
           HERD: 'UNIT_B'
         }
       ];
 
-      const validation = await service.validateRows(validRows, {} as WorkSheet);
-
-      expect(validation.success).to.be.true;
+      const validation = await service.validateRows(rows, {});
 
       if (validation.success) {
-        expect(validation.data).to.be.deep.equal([
-          {
-            critter_id: 'A',
-            sex: 'Male',
-            itis_tsn: 1,
-            animal_id: 'Carl',
-            wlh_id: '10-1000',
-            critter_comment: 'comment',
-            COLLECTION: '1'
-          },
-          {
-            critter_id: 'B',
-            sex: 'Male',
-            itis_tsn: 2,
-            animal_id: 'Test',
-            wlh_id: '10-1000',
-            critter_comment: 'comment',
-            HERD: '2'
-          }
-        ]);
-      }
-    });
-
-    it('should push error when sex is undefined or invalid', async () => {
-      const service = new ImportCrittersService(mockConnection, 1);
-      const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
-      const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
-      const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
-      const collectionMapStub = sinon.stub(service, '_getCollectionUnitMap');
-
-      getColumnsStub.returns(['COLLECTION', 'HERD']);
-      surveyAliasesStub.resolves(new Set(['Not Carl', 'Carlita']));
-      getValidTsnsStub.resolves(['1', '2']);
-      collectionMapStub.resolves(
-        new Map([
-          ['COLLECTION', { collectionUnits: collectionUnitsA, tsn: 1 }],
-          ['HERD', { collectionUnits: collectionUnitsB, tsn: 2 }]
-        ])
-      );
-
-      const invalidRows: PartialCsvCritter[] = [
-        {
-          critter_id: 'A',
-          sex: undefined,
+        // Unable to spoof UUID so using contain
+        expect(validation.data[0]).to.contain({
+          sex: 'Male',
           itis_tsn: 1,
           animal_id: 'Carl',
           wlh_id: '10-1000',
-          critter_comment: 'comment',
-          COLLECTION: 'UNIT_A'
-        },
-        {
-          critter_id: 'A',
-          sex: 'Whoops' as any,
-          itis_tsn: 1,
+          critter_comment: 'A',
+          COLLECTION: '1'
+        });
+
+        expect(validation.data[1]).to.contain({
+          sex: 'Female',
+          itis_tsn: 2,
           animal_id: 'Carl2',
           wlh_id: '10-1000',
-          critter_comment: 'comment',
-          COLLECTION: 'UNIT_A'
+          critter_comment: 'B',
+          HERD: '2'
+        });
+      } else {
+        expect.fail();
+      }
+    });
+
+    it('should return error when sex undefined', async () => {
+      const service = new ImportCrittersService(mockConnection, 1);
+
+      const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
+      const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
+
+      surveyAliasesStub.resolves(new Set([]));
+      getValidTsnsStub.resolves(['1']);
+
+      const rows = [
+        {
+          ITIS_TSN: 1,
+          SEX: undefined,
+          ALIAS: 'Carl',
+          WLH_ID: '10-1000',
+          DESCRIPTION: 'A'
+        },
+        {
+          ITIS_TSN: 1,
+          SEX: 'NO', // invalid value
+          ALIAS: 'Carl2',
+          WLH_ID: '10-1000',
+          DESCRIPTION: 'A'
         }
       ];
 
-      const validation = await service.validateRows(invalidRows, {} as WorkSheet);
+      const validation = await service.validateRows(rows, {});
 
-      expect(validation.success).to.be.false;
-      if (!validation.success) {
-        expect(validation.error.issues.length).to.be.eq(2);
-        expect(validation.error.issues).to.be.deep.equal([
-          {
-            message: 'Invalid SEX. Expecting: UNKNOWN, MALE, FEMALE.',
-            row: 0
-          },
-          {
-            message: 'Invalid SEX. Expecting: UNKNOWN, MALE, FEMALE.',
-            row: 1
-          }
+      if (validation.success) {
+        expect.fail();
+      } else {
+        expect(validation.error.issues).to.deep.equal([
+          { row: 0, message: 'Invalid SEX. Expecting: UNKNOWN, MALE, FEMALE, HERMAPHRODITIC.' },
+          { row: 1, message: 'Invalid SEX. Expecting: UNKNOWN, MALE, FEMALE, HERMAPHRODITIC.' }
         ]);
       }
     });
 
-    it('should push error when wlh_id is invalid regex / shape', async () => {
+    it('should return error when wlh_id invalid regex', async () => {
       const service = new ImportCrittersService(mockConnection, 1);
-      const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
+
+      const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
+      const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
+
+      surveyAliasesStub.resolves(new Set([]));
+      getValidTsnsStub.resolves(['1']);
+
+      const rows = [
+        {
+          ITIS_TSN: 1,
+          SEX: 'Male',
+          ALIAS: 'Carl',
+          WLH_ID: '1-1000',
+          DESCRIPTION: 'A'
+        },
+        {
+          ITIS_TSN: 1,
+          SEX: 'Male',
+          ALIAS: 'Carl2',
+          WLH_ID: '101000',
+          DESCRIPTION: 'A'
+        }
+      ];
+
+      const validation = await service.validateRows(rows, {});
+
+      if (validation.success) {
+        expect.fail();
+      } else {
+        expect(validation.error.issues).to.deep.equal([
+          { row: 0, message: `Invalid WLH_ID. Example format '10-1000R'.` },
+          { row: 1, message: `Invalid WLH_ID. Example format '10-1000R'.` }
+        ]);
+      }
+    });
+
+    it('should return error when itis_tsn invalid option or undefined', async () => {
+      const service = new ImportCrittersService(mockConnection, 1);
+
+      const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
+      const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
+
+      surveyAliasesStub.resolves(new Set([]));
+      getValidTsnsStub.resolves(['1']);
+
+      const rows = [
+        {
+          ITIS_TSN: undefined,
+          SEX: 'Male',
+          ALIAS: 'Carl',
+          WLH_ID: '10-1000',
+          DESCRIPTION: 'A'
+        },
+        {
+          ITIS_TSN: 3,
+          SEX: 'Male',
+          ALIAS: 'Carl2',
+          WLH_ID: '10-1000',
+          DESCRIPTION: 'A'
+        }
+      ];
+
+      const validation = await service.validateRows(rows, {});
+
+      if (validation.success) {
+        expect.fail();
+      } else {
+        expect(validation.error.issues).to.deep.equal([
+          { row: 0, message: `Invalid ITIS_TSN.` },
+          { row: 1, message: `Invalid ITIS_TSN.` }
+        ]);
+      }
+    });
+
+    it('should return error if alias undefined, duplicate or exists in surve', async () => {
+      const service = new ImportCrittersService(mockConnection, 1);
+
+      const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
+      const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
+
+      surveyAliasesStub.resolves(new Set(['Carl3']));
+      getValidTsnsStub.resolves(['1']);
+
+      const rows = [
+        {
+          ITIS_TSN: 1,
+          SEX: 'Male',
+          ALIAS: undefined,
+          WLH_ID: '10-1000',
+          DESCRIPTION: 'A'
+        },
+        {
+          ITIS_TSN: 1,
+          SEX: 'Male',
+          ALIAS: 'Carl2',
+          WLH_ID: '10-1000',
+          DESCRIPTION: 'A'
+        },
+        {
+          ITIS_TSN: 1,
+          SEX: 'Male',
+          ALIAS: 'Carl2',
+          WLH_ID: '10-1000',
+          DESCRIPTION: 'A'
+        },
+        {
+          ITIS_TSN: 1,
+          SEX: 'Male',
+          ALIAS: 'Carl3',
+          WLH_ID: '10-1000',
+          DESCRIPTION: 'A'
+        }
+      ];
+
+      const validation = await service.validateRows(rows, {});
+
+      if (validation.success) {
+        expect.fail();
+      } else {
+        expect(validation.error.issues).to.deep.equal([
+          { row: 0, message: `Invalid ALIAS. Must be unique in Survey and CSV.` },
+          { row: 1, message: `Invalid ALIAS. Must be unique in Survey and CSV.` },
+          { row: 2, message: `Invalid ALIAS. Must be unique in Survey and CSV.` },
+          { row: 3, message: `Invalid ALIAS. Must be unique in Survey and CSV.` }
+        ]);
+      }
+    });
+
+    it('should return error if collection unit invalid value', async () => {
+      const service = new ImportCrittersService(mockConnection, 1);
+
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
       const collectionMapStub = sinon.stub(service, '_getCollectionUnitMap');
+      const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
 
-      getColumnsStub.returns(['COLLECTION', 'HERD']);
-      surveyAliasesStub.resolves(new Set(['Not Carl', 'Carlita']));
+      surveyAliasesStub.resolves(new Set([]));
       getValidTsnsStub.resolves(['1', '2']);
+      getColumnsStub.returns(['COLLECTION', 'HERD']);
       collectionMapStub.resolves(
         new Map([
           ['COLLECTION', { collectionUnits: collectionUnitsA, tsn: 1 }],
@@ -454,311 +562,35 @@ describe('ImportCrittersService', () => {
         ])
       );
 
-      const invalidRows: PartialCsvCritter[] = [
+      const rows = [
         {
-          critter_id: 'A',
-          sex: 'Male',
-          itis_tsn: 1,
-          animal_id: 'Carl',
-          wlh_id: '101000',
-          critter_comment: 'comment',
-          COLLECTION: 'UNIT_A'
+          ITIS_TSN: 1,
+          SEX: 'Male',
+          ALIAS: 'Carl',
+          WLH_ID: '10-1000',
+          DESCRIPTION: 'A',
+          COLLECTION: 'UNIT_C'
         },
         {
-          critter_id: 'A',
-          sex: 'Male',
-          itis_tsn: 1,
-          animal_id: 'Carl2',
-          wlh_id: '1-1000',
-          critter_comment: 'comment',
+          ITIS_TSN: 2,
+          SEX: 'Male',
+          ALIAS: 'Carl2',
+          WLH_ID: '10-1000',
+          DESCRIPTION: 'A',
           COLLECTION: 'UNIT_A'
         }
       ];
 
-      const validation = await service.validateRows(invalidRows, {} as WorkSheet);
+      const validation = await service.validateRows(rows, {});
 
-      expect(validation.success).to.be.false;
-      if (!validation.success) {
-        expect(validation.error.issues.length).to.be.eq(2);
-        expect(validation.error.issues).to.be.deep.equal([
-          {
-            message: `Invalid WLH_ID. Example format '10-1000R'.`,
-            row: 0
-          },
-          {
-            message: `Invalid WLH_ID. Example format '10-1000R'.`,
-            row: 1
-          }
-        ]);
-      }
-    });
-
-    it('should push error when itis_tsn undefined or invalid option', async () => {
-      const service = new ImportCrittersService(mockConnection, 1);
-      const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
-      const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
-      const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
-      const collectionMapStub = sinon.stub(service, '_getCollectionUnitMap');
-
-      getColumnsStub.returns(['COLLECTION', 'HERD']);
-      surveyAliasesStub.resolves(new Set(['Not Carl', 'Carlita']));
-      getValidTsnsStub.resolves(['1', '2']);
-      collectionMapStub.resolves(
-        new Map([
-          ['COLLECTION', { collectionUnits: collectionUnitsA, tsn: 1 }],
-          ['HERD', { collectionUnits: collectionUnitsB, tsn: 2 }]
-        ])
-      );
-
-      const invalidRows: PartialCsvCritter[] = [
-        {
-          critter_id: 'A',
-          sex: 'Male',
-          itis_tsn: undefined,
-          animal_id: 'Carl',
-          wlh_id: '10-1000',
-          critter_comment: 'comment',
-          COLLECTION: 'UNIT_A'
-        },
-        {
-          critter_id: 'A',
-          sex: 'Male',
-          itis_tsn: 10,
-          animal_id: 'Carl2',
-          wlh_id: '10-1000',
-          critter_comment: 'comment',
-          COLLECTION: 'UNIT_A'
-        }
-      ];
-
-      const validation = await service.validateRows(invalidRows, {} as WorkSheet);
-
-      expect(validation.success).to.be.false;
-      if (!validation.success) {
-        expect(validation.error.issues.length).to.be.eq(4);
-        expect(validation.error.issues).to.be.deep.equal([
-          {
-            message: `Invalid ITIS_TSN.`,
-            row: 0
-          },
-          {
-            message: `Invalid COLLECTION. Cell value not allowed for TSN.`,
-            row: 0
-          },
-          {
-            message: `Invalid ITIS_TSN.`,
-            row: 1
-          },
-          {
-            message: `Invalid COLLECTION. Cell value not allowed for TSN.`,
-            row: 1
-          }
-        ]);
-      }
-    });
-
-    it('should push error when itis_tsn undefined or invalid option', async () => {
-      const service = new ImportCrittersService(mockConnection, 1);
-      const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
-      const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
-      const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
-      const collectionMapStub = sinon.stub(service, '_getCollectionUnitMap');
-
-      getColumnsStub.returns(['COLLECTION', 'HERD']);
-      surveyAliasesStub.resolves(new Set(['Not Carl', 'Carlita']));
-      getValidTsnsStub.resolves(['1', '2']);
-      collectionMapStub.resolves(
-        new Map([
-          ['COLLECTION', { collectionUnits: collectionUnitsA, tsn: 1 }],
-          ['HERD', { collectionUnits: collectionUnitsB, tsn: 2 }]
-        ])
-      );
-
-      const invalidRows: PartialCsvCritter[] = [
-        {
-          critter_id: 'A',
-          sex: 'Male',
-          itis_tsn: undefined,
-          animal_id: 'Carl',
-          wlh_id: '10-1000',
-          critter_comment: 'comment',
-          COLLECTION: 'UNIT_A'
-        },
-        {
-          critter_id: 'A',
-          sex: 'Male',
-          itis_tsn: 10,
-          animal_id: 'Carl2',
-          wlh_id: '10-1000',
-          critter_comment: 'comment',
-          COLLECTION: 'UNIT_A'
-        }
-      ];
-
-      const validation = await service.validateRows(invalidRows, {} as WorkSheet);
-
-      expect(validation.success).to.be.false;
-      if (!validation.success) {
-        expect(validation.error.issues.length).to.be.eq(4);
-        expect(validation.error.issues).to.be.deep.equal([
-          {
-            message: `Invalid ITIS_TSN.`,
-            row: 0
-          },
-          {
-            message: `Invalid COLLECTION. Cell value not allowed for TSN.`,
-            row: 0
-          },
-          {
-            message: `Invalid ITIS_TSN.`,
-            row: 1
-          },
-          {
-            message: `Invalid COLLECTION. Cell value not allowed for TSN.`,
-            row: 1
-          }
-        ]);
-      }
-    });
-
-    it('should push error if alias undefined, duplicate or exists in survey', async () => {
-      const service = new ImportCrittersService(mockConnection, 1);
-      const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
-      const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
-      const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
-      const collectionMapStub = sinon.stub(service, '_getCollectionUnitMap');
-
-      getColumnsStub.returns(['COLLECTION', 'HERD']);
-      surveyAliasesStub.resolves(new Set(['Not Carl', 'Carlita']));
-      getValidTsnsStub.resolves(['1', '2']);
-      collectionMapStub.resolves(
-        new Map([
-          ['COLLECTION', { collectionUnits: collectionUnitsA, tsn: 1 }],
-          ['HERD', { collectionUnits: collectionUnitsB, tsn: 2 }]
-        ])
-      );
-
-      const invalidRows: PartialCsvCritter[] = [
-        {
-          critter_id: 'A',
-          sex: 'Male',
-          itis_tsn: 1,
-          animal_id: 'Carl',
-          wlh_id: '10-1000',
-          critter_comment: 'comment',
-          COLLECTION: 'UNIT_A'
-        },
-        {
-          critter_id: 'A',
-          sex: 'Male',
-          itis_tsn: 1,
-          animal_id: 'Carlita',
-          wlh_id: '10-1000',
-          critter_comment: 'comment',
-          COLLECTION: 'UNIT_A'
-        }
-      ];
-
-      const validation = await service.validateRows(invalidRows, {} as WorkSheet);
-
-      expect(validation.success).to.be.false;
-      if (!validation.success) {
-        expect(validation.error.issues.length).to.be.eq(1);
-        expect(validation.error.issues).to.be.deep.equal([
-          {
-            message: `Invalid ALIAS. Must be unique in Survey and CSV.`,
-            row: 1
-          }
+      if (validation.success) {
+        expect.fail();
+      } else {
+        expect(validation.error.issues).to.deep.equal([
+          { row: 0, message: `Invalid COLLECTION. Cell value is not valid.` },
+          { row: 1, message: `Invalid COLLECTION. Cell value not allowed for TSN.` }
         ]);
       }
     });
   });
-
-  //TODO: Move these to the strategy test suite
-  //
-  //describe('_validate', () => {
-  //  afterEach(() => {
-  //    sinon.restore();
-  //  });
-  //
-  //  it('should throw error when csv validation fails', async () => {
-  //    const validateCsvStub = sinon.stub(xlsxUtils, 'validateCsvFile').returns(false);
-  //
-  //    const service = new ImportCrittersService(mockConnection, 1);
-  //
-  //    sinon.stub(service, 'validateRows');
-  //
-  //    try {
-  //      await service._validate(1, {} as WorkSheet);
-  //      expect.fail();
-  //    } catch (err: any) {
-  //      expect(err.message).to.contain('Column validator failed.');
-  //    }
-  //    expect(validateCsvStub).to.have.been.calledOnceWithExactly({}, critterStandardColumnValidator);
-  //  });
-  //
-  //  it('should call _validateRows if csv validation succeeds', async () => {
-  //    const validateCsvStub = sinon.stub(xlsxUtils, 'validateCsvFile');
-  //
-  //    const service = new ImportCrittersService(mockConnection);
-  //
-  //    const validateRowsStub = sinon.stub(service, '_validateRows');
-  //
-  //    validateCsvStub.returns(true);
-  //    validateRowsStub.resolves({ success: true, data: [] });
-  //
-  //    const data = await service._validate(1, {} as WorkSheet);
-  //    expect(validateRowsStub).to.have.been.calledOnceWithExactly(1, {});
-  //    expect(data).to.be.deep.equal([]);
-  //  });
-  //
-  //  it('should throw error if row validation fails', async () => {
-  //    const validateCsvStub = sinon.stub(xlsxUtils, 'validateCsvFile');
-  //
-  //    const service = new ImportCrittersService(mockConnection);
-  //
-  //    const validateRowsStub = sinon.stub(service, '_validateRows');
-  //
-  //    validateCsvStub.returns(true);
-  //    validateRowsStub.resolves({ success: false, errors: [] });
-  //
-  //    try {
-  //      await service._validate(1, {} as WorkSheet);
-  //
-  //      expect.fail();
-  //    } catch (err: any) {
-  //      expect(err.message).to.contain('Failed to import Critter CSV.');
-  //    }
-  //    expect(validateRowsStub).to.have.been.calledOnceWithExactly(1, {});
-  //  });
-  //});
-  //
-  //describe('import', () => {
-  //  it('should pass values to correct methods', async () => {
-  //    const service = new ImportCrittersService(mockConnection);
-  //    const csv = new MediaFile('file', 'mime', Buffer.alloc(1));
-  //
-  //    const critter: CsvCritter = {
-  //      critter_id: 'id',
-  //      sex: 'Male',
-  //      itis_tsn: 1,
-  //      animal_id: 'Carl',
-  //      wlh_id: '10-1000',
-  //      critter_comment: 'comment',
-  //      COLLECTION: 'Unit'
-  //    };
-  //
-  //    const getWorksheetStub = sinon.stub(service, '_getWorksheet').returns({} as unknown as WorkSheet);
-  //    const validateStub = sinon.stub(service, '_validate').resolves([critter]);
-  //    const insertStub = sinon.stub(service, '_insertCsvCrittersIntoSimsAndCritterbase').resolves([1]);
-  //
-  //    const data = await service.import(1, csv);
-  //
-  //    expect(getWorksheetStub).to.have.been.calledWithExactly(csv);
-  //    expect(validateStub).to.have.been.calledWithExactly(1, {});
-  //    expect(insertStub).to.have.been.calledWithExactly(1, [critter]);
-  //
-  //    expect(data).to.be.deep.equal([1]);
-  //  });
-  //});
 });

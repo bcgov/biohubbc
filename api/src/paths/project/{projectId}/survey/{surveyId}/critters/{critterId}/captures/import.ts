@@ -142,10 +142,10 @@ export function importCsv(): RequestHandler {
       }
 
       // Critter CSV import service - child of CSVImportStrategy
-      const importCsvCritters = new ImportCapturesService(connection, surveyCritter.critterbase_critter_id);
+      const importCsvCaptures = new ImportCapturesService(connection, surveyCritter.critterbase_critter_id);
 
       // CSV import strategy with injected import service - parent
-      const csvImportStrategry = new CSVImportStrategy(importCsvCritters);
+      const csvImportStrategry = new CSVImportStrategy(importCsvCaptures);
 
       // Import CSV data with strategy class
       await csvImportStrategry.import(parseMulterFile(rawFile));

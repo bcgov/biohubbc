@@ -4,19 +4,24 @@ import { z } from 'zod';
  * Zod Csv Capture schema
  *
  */
-export const CsvCaptureSchema = z.object({
-  critter_id: z.string().uuid(),
-  capture_date: z.string().date(),
-  capture_time: z.string().time().optional(),
-  capture_latitude: z.number(),
-  capture_longitude: z.number(),
-  release_date: z.string().date().optional(),
-  release_time: z.string().time().optional(),
-  release_latitude: z.number().optional(),
-  release_longitude: z.number().optional(),
-  capture_comment: z.string().optional(),
-  release_comment: z.string().optional()
-});
+export const CsvCaptureSchema = z
+  .object({
+    critter_id: z.string().uuid(),
+    capture_date: z.string().date(),
+    capture_time: z.string().time().optional(),
+    capture_latitude: z.number(),
+    capture_longitude: z.number(),
+    release_date: z.string().date().optional(),
+    release_time: z.string().time().optional(),
+    release_latitude: z.number().optional(),
+    release_longitude: z.number().optional(),
+    capture_comment: z.string().optional(),
+    release_comment: z.string().optional()
+  })
+  .refine((schema) => {
+    const hasReleaseLatLng = schema.release_latitude && schema.release_longitude;
+    return hasReleaseLatLng || !hasReleaseLatLng;
+  }, 'Both release latitude and longitude are required if one is provided.');
 
 /**
  * A validated CSV Capture object

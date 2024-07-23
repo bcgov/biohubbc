@@ -22,7 +22,7 @@ import { CsvCritter, PartialCsvCritter } from './import-critters-service.interfa
 
 const defaultLog = getLogger('services/import/import-critters-service');
 
-const CSV_CRITTER_SEX_OPTIONS = ['UNKNOWN', 'MALE', 'FEMALE'];
+const CSV_CRITTER_SEX_OPTIONS = ['UNKNOWN', 'MALE', 'FEMALE', 'HERMAPHRODITIC'];
 
 /**
  *
@@ -275,7 +275,9 @@ export class ImportCrittersService extends DBService implements CSVImportService
           return;
         }
         // Attempt to find the collection unit with the cell value from the mapping
-        const collectionUnitMatch = collectionUnitColumn.collectionUnits.find((unit) => unit.unit_name === row[column]);
+        const collectionUnitMatch = collectionUnitColumn.collectionUnits.find(
+          (unit) => unit.unit_name.toLowerCase() === String(row[column]).toLowerCase()
+        );
         // Collection unit must be a valid value
         if (!collectionUnitMatch) {
           errors.push({ row: index, message: `Invalid ${column}. Cell value is not valid.` });

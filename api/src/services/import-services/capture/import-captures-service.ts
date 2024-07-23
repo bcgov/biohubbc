@@ -65,19 +65,14 @@ export class ImportCapturesService extends DBService implements CSVImportService
   /**
    * Get the critter ID from row or dependency.
    *
-   * @param {Row} row - CSV row
-   * @returns {string} Critterbase critter Identifier
+   * Note: This eventually will be modified to retrieve the critter_id with alias and survey_id
+   * when importing captures for many critters.
+   *
+   * @param {Row} _row - CSV row
+   * @returns {string} Critterbase critter UUID
    */
-  getCritterId(row: Row): string {
-    if (this.critterbaseCritterId) {
-      return this.critterbaseCritterId;
-    }
-    /**
-     * Attempt to retrieve the critter id with the alias and survey ID.
-     * This block will eventually be used once many to many critter <--> captures
-     * import implemented.
-     */
-    return `TEMP PLACEHOLDER FOR CRITTER ID RETRIEVAL ${row}`;
+  getCritterId(_row: Row): string {
+    return this.critterbaseCritterId as string; // Temporarily casting
   }
 
   /**

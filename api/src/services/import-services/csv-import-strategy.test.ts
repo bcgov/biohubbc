@@ -9,7 +9,7 @@ import { CSVImportService } from './csv-import-strategy.interface';
 
 chai.use(sinonChai);
 
-describe.only('CSVImportStrategy', () => {
+describe('CSVImportStrategy', () => {
   beforeEach(() => {
     sinon.restore();
   });
