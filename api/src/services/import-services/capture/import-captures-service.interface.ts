@@ -14,7 +14,8 @@ export const CsvCaptureSchema = z.object({
   release_time: z.string().time().optional(),
   release_latitude: z.number().optional(),
   release_longitude: z.number().optional(),
-  capture_comment: z.string().optional()
+  capture_comment: z.string().optional(),
+  release_comment: z.string().optional()
 });
 
 /**

@@ -16,21 +16,19 @@ import { CsvCapture, CsvCaptureSchema, PartialCsvCapture } from './import-captur
  *
  */
 export class ImportCapturesService extends DBService implements CSVImportService<CsvCapture, PartialCsvCapture> {
-  /**
-   * Critterbase service
-   */
   critterbaseService: CritterbaseService;
+
   /**
-   * Critterbase critter id (uuid)
+   * Critterbase Critter ID - UUID
    *
-   * Provided if attempting to bulk import Captures for a known Critter.
+   * Note: Provided if attempting to bulk import Captures for a known Critter.
    */
   critterbaseCritterId?: string;
 
   /**
-   * An XLSX validation config for the standard columns of a Capture CSV.
+   * An XLSX validation config for the standard columns of a Critterbase Capture CSV.
    *
-   * Note: `satisfies` allows `keyof` to correctly infer key types, while also
+   * Note: `satisfies` allows `keyof` to correctly infer keyof type, while also
    * enforcing uppercase object keys.
    */
   columnValidator = {
@@ -70,26 +68,31 @@ export class ImportCapturesService extends DBService implements CSVImportService
    * @param {Row} row - CSV row
    * @returns {string} Critterbase critter Identifier
    */
-  getCritterIdFromRow(row: Row): string {
+  getCritterId(row: Row): string {
     if (this.critterbaseCritterId) {
       return this.critterbaseCritterId;
     }
-    // Attempt to retrieve the critter id with the alias and survey ID
+    /**
+     * Attempt to retrieve the critter id with the alias and survey ID.
+     * This block will eventually be used once many to many critter <--> captures
+     * import implemented.
+     */
     return `TEMP PLACEHOLDER FOR CRITTER ID RETRIEVAL ${row}`;
   }
 
   /**
-   * Parse the CSV rows into the Critterbase capture format for validation.
+   * Parse the CSV rows into the Critterbase Capture format for validation.
    *
    * @param {Row[]} rows - CSV rows
    * @returns {PartialCsvCapture[]} CSV captures before validation
    */
   getRowsToValidate(rows: Row[]): PartialCsvCapture[] {
+    // Generate type-safe cell getter from validator spec
     const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
 
     return rows.map((row) => {
       return {
-        critter_id: this.getCritterIdFromRow(row), // only property we know will be defined
+        critter_id: this.getCritterId(row),
         capture_location_id: uuid(),
         capture_date: getCellValue(row, 'CAPTURE_DATE'),
         capture_time: getCellValue(row, 'CAPTURE_TIME'),
@@ -106,7 +109,7 @@ export class ImportCapturesService extends DBService implements CSVImportService
   }
 
   /**
-   * Validate the CSV rows against zod schema
+   * Validate the CSV rows against zod schema.
    *
    * @param {PartialCsvCapture[]} rows - CSV rows
    * @returns {*}
@@ -140,7 +143,8 @@ export class ImportCapturesService extends DBService implements CSVImportService
         capture_time: row.capture_time,
         release_date: row.release_date,
         release_time: row.release_time,
-        capture_comment: row.capture_comment
+        capture_comment: row.capture_comment,
+        release_comment: row.release_comment
       });
 
       // Push the critter capture locations into payload
