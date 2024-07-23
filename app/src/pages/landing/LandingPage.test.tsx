@@ -139,7 +139,7 @@ describe('LandingPage', () => {
       // Should see the View Projects button
       const viewProjectsButton = getByTestId('landing_page_projects_button');
       expect(viewProjectsButton).toBeVisible();
-      expect(viewProjectsButton).toHaveAttribute('href', '/admin/projects');
+      expect(viewProjectsButton).toHaveAttribute('href', '/admin/summary');
     });
 
     it('Case 5: Signed in, has a viewer role on some project, but not a system role that allows project creation', () => {
@@ -173,7 +173,7 @@ describe('LandingPage', () => {
       // Should see the View Projects button
       const viewProjectsButton = getByTestId('landing_page_projects_button');
       expect(viewProjectsButton).toBeVisible();
-      expect(viewProjectsButton).toHaveAttribute('href', '/admin/projects');
+      expect(viewProjectsButton).toHaveAttribute('href', '/admin/summary');
     });
 
     it('Case 6: Signed in, has the ability to view and create projects', () => {
@@ -206,7 +206,7 @@ describe('LandingPage', () => {
       // Should see the View Projects button
       const viewProjectsButton = getByTestId('landing_page_projects_button');
       expect(viewProjectsButton).toBeVisible();
-      expect(viewProjectsButton).toHaveAttribute('href', '/admin/projects');
+      expect(viewProjectsButton).toHaveAttribute('href', '/admin/summary');
 
       // Should see the Create Project button
       const createProjectButton = getByTestId('landing_page_create_project_button');
@@ -236,7 +236,7 @@ describe('LandingPage', () => {
       // Should see the View Projects button
       const viewProjectsButton = getByTestId('landing_page_projects_button');
       expect(viewProjectsButton).toBeVisible();
-      expect(viewProjectsButton).toHaveAttribute('href', '/admin/projects');
+      expect(viewProjectsButton).toHaveAttribute('href', '/admin/summary');
     });
   });
 });

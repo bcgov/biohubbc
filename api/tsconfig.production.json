@@ -1,31 +1,7 @@
 {
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "commonjs",
-    "lib": ["es2020"],
-    "outDir": "dist",
-    "target": "es2018",
-    "sourceMap": false,
-    "allowJs": false,
-    "moduleResolution": "node",
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitThis": true,
-    "noImplicitAny": true,
-    "suppressImplicitAnyIndexErrors": true,
-    "allowSyntheticDefaultImports": true,
-    "noUnusedLocals": true,
-    "esModuleInterop": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noFallthroughCasesInSwitch": true,
-    "strict": true,
-    "typeRoots": ["node_modules/@types", "src/types"]
+    "sourceMap": false
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "src/**/*.test.ts"],
-  "ts-node": {
-    "files": true
-  }
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts", "src/**/__mocks__/*"]
 }

@@ -155,7 +155,7 @@ export function uploadMedia(): RequestHandler {
       file: { ...rawMediaFile, buffer: 'Too big to print' }
     });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -179,8 +179,8 @@ export function uploadMedia(): RequestHandler {
       // Upload file to S3
       const metadata = {
         filename: rawMediaFile.originalname,
-        username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
-        email: (req['auth_payload'] && req['auth_payload'].email) || ''
+        username: (req.keycloak_token && req.keycloak_token.preferred_username) || '',
+        email: (req.keycloak_token && req.keycloak_token.email) || ''
       };
 
       await uploadFileToS3(rawMediaFile, upsertResult.key, metadata);

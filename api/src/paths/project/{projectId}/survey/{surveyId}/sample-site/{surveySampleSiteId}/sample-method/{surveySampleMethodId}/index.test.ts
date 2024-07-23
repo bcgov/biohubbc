@@ -90,7 +90,7 @@ describe('updateSurveySampleMethod', () => {
 
     mockReq.body = {
       sampleMethod: {
-        method_lookup_id: 1,
+        method_technique_id: 1,
         method_response_metric_id: 1,
         description: 'description'
       }
@@ -122,7 +122,7 @@ describe('updateSurveySampleMethod', () => {
     };
 
     const sampleMethod = {
-      method_lookup_id: 1,
+      method_technique_id: 1,
       description: 'description',
       survey_sample_method_id: 6,
       survey_sample_site_id: 9

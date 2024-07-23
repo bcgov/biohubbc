@@ -1,3 +1,4 @@
+import { DatabaseError } from 'pg';
 import { z } from 'zod';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError } from '../errors/api-error';
@@ -59,6 +60,8 @@ export const syncErrorWrapper =
 /**
  * This function parses the passed in error and translates them into a human readable error
  *
+ * @see https://www.postgresql.org/docs/current/errcodes-appendix.html for postgres error codes
+ *
  * @param error error to be parsed
  * @returns an error to throw
  */
@@ -67,10 +70,17 @@ const parseError = (error: any) => {
     throw new ApiExecuteSQLError('SQL response failed schema check', [error]);
   }
 
-  if (error.message === 'CONCURRENCY_EXCEPTION') {
-    // error thrown by DB trigger based on revision_count
-    // will be thrown if two updates to the same record are made concurrently
-    throw new ApiExecuteSQLError('Failed to update stale data', [error]);
+  if (error instanceof DatabaseError) {
+    if (error.message === 'CONCURRENCY_EXCEPTION') {
+      // error thrown by DB trigger based on revision_count
+      // will be thrown if two updates to the same record are made concurrently
+      throw new ApiExecuteSQLError('Failed to update stale data', [error]);
+    }
+
+    if (error.code === '23503') {
+      // error thrown by DB when query fails due to foreign key constraint
+      throw new ApiExecuteSQLError('Failed to delete record due to foreign key constraint', [error]);
+    }
   }
 
   // Generic error thrown if not captured above

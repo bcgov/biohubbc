@@ -103,7 +103,7 @@ export function processFile(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     const submissionId = req.body.observation_submission_id;
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
     try {
       await connection.open();
 

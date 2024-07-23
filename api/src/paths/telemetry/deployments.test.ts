@@ -1,17 +1,30 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { BctwService, IManualTelemetry } from '../../services/bctw-service';
+import { SystemUser } from '../../repositories/user-repository';
+import { BctwService, IAllTelemetry } from '../../services/bctw-service';
 import { getRequestHandlerMocks } from '../../__mocks__/db';
 import { getAllTelemetryByDeploymentIds } from './deployments';
 
-const mockTelemetry = [
+const mockTelemetry: IAllTelemetry[] = [
   {
-    telemetry_manual_id: 1
+    telemetry_id: null,
+    telemetry_manual_id: '123-123-123',
+    deployment_id: '345-345-345',
+    latitude: 49.123,
+    longitude: -126.123,
+    acquisition_date: '2021-01-01',
+    telemetry_type: 'manual'
   },
   {
-    telemetry_manual_id: 2
+    telemetry_id: '567-567-567',
+    telemetry_manual_id: null,
+    deployment_id: '345-345-345',
+    latitude: 49.123,
+    longitude: -126.123,
+    acquisition_date: '2021-01-01',
+    telemetry_type: 'vendor'
   }
-] as unknown[] as IManualTelemetry[];
+];
 
 describe('getAllTelemetryByDeploymentIds', () => {
   afterEach(() => {
@@ -23,6 +36,9 @@ describe('getAllTelemetryByDeploymentIds', () => {
       .resolves(mockTelemetry);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
     const requestHandler = getAllTelemetryByDeploymentIds();
 
     await requestHandler(mockReq, mockRes, mockNext);
@@ -36,6 +52,9 @@ describe('getAllTelemetryByDeploymentIds', () => {
     const mockGetTelemetry = sinon.stub(BctwService.prototype, 'getAllTelemetryByDeploymentIds').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
     const requestHandler = getAllTelemetryByDeploymentIds();
 
     try {

@@ -1,6 +1,5 @@
 import { AxiosProgressEvent, CancelTokenSource } from 'axios';
-import { ConfigContext } from 'contexts/configContext';
-import { useContext } from 'react';
+import { useConfigContext } from 'hooks/useContext';
 import useAxios from './api/useAxios';
 import { useDeviceApi } from './telemetry/useDeviceApi';
 
@@ -48,8 +47,8 @@ export interface ITelemetry {
 }
 
 export const useTelemetryApi = () => {
-  const config = useContext(ConfigContext);
-  const axios = useAxios(config?.API_HOST);
+  const config = useConfigContext();
+  const axios = useAxios(config.API_HOST);
   const devices = useDeviceApi(axios);
 
   /**
@@ -178,7 +177,3 @@ export const useTelemetryApi = () => {
     processTelemetryCsvSubmission
   };
 };
-
-type TelemetryApiReturnType = ReturnType<typeof useTelemetryApi>;
-
-export type TelemetryApiLookupFunctions = keyof TelemetryApiReturnType['devices']; // Add more options as needed.

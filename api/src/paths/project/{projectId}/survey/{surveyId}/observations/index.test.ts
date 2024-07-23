@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
-import { ObservationRecordWithSamplingAndSubcountData } from '../../../../../../repositories/observation-repository';
+import { ObservationRecordWithSamplingAndSubcountData } from '../../../../../../repositories/observation-repository/observation-repository';
 import { CritterbaseService } from '../../../../../../services/critterbase-service';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
@@ -75,7 +75,7 @@ describe('insertUpdateManualSurveyObservations', () => {
       surveyObservations
     };
 
-    const requestHandler = observationRecords.insertUpdateManualSurveyObservations();
+    const requestHandler = observationRecords.putObservations();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -126,7 +126,7 @@ describe('insertUpdateManualSurveyObservations', () => {
     };
 
     try {
-      const requestHandler = observationRecords.insertUpdateManualSurveyObservations();
+      const requestHandler = observationRecords.putObservations();
 
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();

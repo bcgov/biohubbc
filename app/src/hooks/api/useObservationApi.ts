@@ -1,4 +1,5 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
+import { IObservationsAdvancedFilters } from 'features/summary/tabular-data/observation/ObservationsListFilterForm';
 import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition
@@ -11,6 +12,7 @@ import {
   SupplementaryObservationCountData
 } from 'interfaces/useObservationApi.interface';
 import { EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
+import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
 export interface SubcountToSave {
@@ -62,6 +64,30 @@ const useObservationApi = (axios: AxiosInstance) => {
     await axios.put(`/api/project/${projectId}/survey/${surveyId}/observations`, {
       surveyObservations
     });
+  };
+
+  /**
+   * Get observations for a system user id.
+   *
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @param {IObservationsAdvancedFilters} filterFieldData
+   * @return {*} {Promise<IFindProjectsResponse[]>}
+   */
+  const findObservations = async (
+    pagination?: ApiPaginationRequestOptions,
+    filterFieldData?: IObservationsAdvancedFilters
+  ): Promise<IGetSurveyObservationsResponse> => {
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
+
+    const { data } = await axios.get('/api/observation', {
+      params,
+      paramsSerializer: (params) => qs.stringify(params)
+    });
+
+    return data;
   };
 
   /**
@@ -295,6 +321,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     insertUpdateObservationRecords,
     getObservationRecords,
     getObservationRecord,
+    findObservations,
     getObservationsGeometry,
     getObservationMeasurementDefinitions,
     deleteObservationRecords,

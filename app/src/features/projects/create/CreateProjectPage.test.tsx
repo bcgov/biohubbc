@@ -127,7 +127,7 @@ describe('CreateProjectPage', () => {
 
       expect(history.location.pathname).toEqual('/admin/projects/create');
       fireEvent.click(AreYouSureYesButton);
-      expect(history.location.pathname).toEqual('/admin/projects');
+      expect(history.location.pathname).toEqual('/admin/summary');
     });
 
     it('does nothing if the user clicks `No`', async () => {

@@ -3,7 +3,8 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ObservationRecord } from '../repositories/observation-repository';
+import { ObservationRecord } from '../repositories/observation-repository/observation-repository';
+import * as featureFlagUtils from '../utils/feature-flag-utils';
 import { getMockDBConnection } from '../__mocks__/db';
 import { AttachmentService } from './attachment-service';
 import { HistoryPublishService } from './history-publish-service';
@@ -24,8 +25,8 @@ describe('PlatformService', () => {
       sinon.restore();
     });
 
-    it('throws an error if BioHub intake is not enabled', async () => {
-      process.env.BACKBONE_INTAKE_ENABLED = 'false';
+    it('throws an error if publishing to BioHub is not currently enabled.', async () => {
+      sinon.stub(featureFlagUtils, 'isFeatureFlagPresent').returns(true);
 
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
@@ -34,12 +35,11 @@ describe('PlatformService', () => {
         await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
         expect.fail();
       } catch (error) {
-        expect((error as Error).message).to.equal('BioHub intake is not enabled');
+        expect((error as Error).message).to.equal('Publishing to BioHub is not currently enabled.');
       }
     });
 
     it('throws error when axios request fails', async () => {
-      process.env.BACKBONE_INTAKE_ENABLED = 'true';
       process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
 
       const mockDBConnection = getMockDBConnection();
@@ -69,7 +69,6 @@ describe('PlatformService', () => {
     });
 
     it('should submit survey to BioHub successfully', async () => {
-      process.env.BACKBONE_INTAKE_ENABLED = 'true';
       process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
 
       const mockDBConnection = getMockDBConnection();

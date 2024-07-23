@@ -4,6 +4,7 @@ import { useConfigContext } from 'hooks/useContext';
 import { useMemo } from 'react';
 import useAdminApi from './api/useAdminApi';
 import useAnalyticsApi from './api/useAnalyticsApi';
+import useAnimalApi from './api/useAnimalApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import useExternalApi from './api/useExternalApi';
@@ -18,6 +19,8 @@ import useSpatialApi from './api/useSpatialApi';
 import useStandardsApi from './api/useStandardsApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
+import useTechniqueApi from './api/useTechniqueApi';
+import useTelemetryApi from './api/useTelemetryApi';
 import useUserApi from './api/useUserApi';
 
 /**
@@ -27,7 +30,7 @@ import useUserApi from './api/useUserApi';
  */
 export const useBiohubApi = () => {
   const config = useConfigContext();
-  const apiAxios = useAxios(config?.API_HOST);
+  const apiAxios = useAxios(config.API_HOST);
 
   const analytics = useAnalyticsApi(apiAxios);
 
@@ -59,9 +62,15 @@ export const useBiohubApi = () => {
 
   const samplingSite = useSamplingSiteApi(apiAxios);
 
+  const technique = useTechniqueApi(apiAxios);
+
   const standards = useStandardsApi(apiAxios);
 
   const reference = useReferenceApi(apiAxios);
+
+  const animal = useAnimalApi(apiAxios);
+
+  const telemetry = useTelemetryApi(apiAxios);
 
   return useMemo(
     () => ({
@@ -73,15 +82,18 @@ export const useBiohubApi = () => {
       observation,
       resources,
       codes,
+      animal,
       user,
       admin,
       external,
       publish,
       spatial,
+      technique,
       funding,
       samplingSite,
       standards,
-      reference
+      reference,
+      telemetry
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

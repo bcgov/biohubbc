@@ -2,18 +2,36 @@ import TextField from '@mui/material/TextField';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 export interface ICustomTextField {
+  /**
+   * Label for the text field
+   *
+   * @type {string}
+   * @memberof ICustomTextField
+   */
   label: string;
+  /**
+   * Name of the text field, typically this is used to identify the field in the formik context.
+   *
+   * @type {string}
+   * @memberof ICustomTextField
+   */
   name: string;
+  /**
+   * Optional maxLength for the text field.
+   *
+   * @type {number}
+   * @memberof ICustomTextField
+   */
   maxLength?: number;
   /*
-   * Needed fix: Add correct hardcoded type
+   * TODO: Needed fix: Add correct hardcoded type
    * Note: TextFieldProps causes build compile issue
    * https://github.com/mui/material-ui/issues/30038
    */
   other?: any;
 }
 
-const CustomTextField: React.FC<React.PropsWithChildren<ICustomTextField>> = (props) => {
+const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
   const { touched, errors, values, handleChange, handleBlur } = useFormikContext<any>();
 
   const { name, label, other } = props;

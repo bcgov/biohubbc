@@ -16,7 +16,7 @@ const useStyles = () => {
   return {
     docTitle: {
       display: '-webkit-box',
-      WebkitLineClamp: '2',
+      WebkitLineClamp: 2,
       WebkitBoxOrient: 'vertical',
       overflow: 'hidden'
     },
