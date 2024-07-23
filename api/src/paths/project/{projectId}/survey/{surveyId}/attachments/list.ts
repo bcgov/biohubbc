@@ -258,7 +258,7 @@ export function getSurveyAttachments(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Get attachments list', message: 'params', req_params: req.params });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
     const surveyId = Number(req.params.surveyId);
 
     try {

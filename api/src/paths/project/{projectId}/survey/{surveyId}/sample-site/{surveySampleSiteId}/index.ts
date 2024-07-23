@@ -228,8 +228,7 @@ PUT.apiDoc = {
 export function updateSurveySampleSite(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const sampleSite: UpdateSampleLocationRecord = {
@@ -347,7 +346,7 @@ export function deleteSurveySampleSiteRecord(): RequestHandler {
       throw new HTTP400('Missing required param `surveySampleSiteId`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -646,7 +645,7 @@ export function getSurveySampleLocationRecord(): RequestHandler {
       throw new HTTP400('Missing required param `surveySampleSiteId`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
