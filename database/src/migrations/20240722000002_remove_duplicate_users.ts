@@ -183,7 +183,7 @@ export async function up(knex: Knex): Promise<void> {
         notes = 'Duplicate user record; merged into system_user_id ' || wsu3.system_user_id || '.'
       FROM w_system_user_3 wsu3
       WHERE su.system_user_id = ANY(wsu3.duplicate_system_user_ids)
-    )
+    ),
     -- Update the user details for the canonical system user record
     w_update_system_user AS (
       UPDATE system_user su
@@ -195,7 +195,7 @@ export async function up(knex: Knex): Promise<void> {
         email = wsu3.email,
         agency = wsu3.agency
       FROM w_system_user_3 wsu3
-      WHERE su.system_user_id = wsu3.system_user_id)
+      WHERE su.system_user_id = wsu3.system_user_id
     )
     -- Return the combined results of the original CTEs (have to select something to run the query)
     SELECT * FROM w_system_user_3;
@@ -235,10 +235,10 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
 
     -- Don't allow more than 1 active record with the same user_guid.
-    CREATE UNIQUE INDEX system_user_nuk1 ON system_user (user_guid, (record_end_date is null)) WHERE record_end_date is null;
+    CREATE UNIQUE INDEX system_user_nuk1 ON system_user (user_guid, record_end_date is null) WHERE record_end_date is null;
 
     -- Don't allow more than 1 active record with the same user_identifier (case-insensitive) AND user_identity_source_id.
-    CREATE UNIQUE INDEX system_user_nuk2 ON system_user(LOWER(user_identifier), user_identity_source_id, (record_end_date is null)) WHERE record_end_date is null;
+    CREATE UNIQUE INDEX system_user_nuk2 ON system_user(LOWER(user_identifier), user_identity_source_id, record_end_date is null) WHERE record_end_date is null;
   `);
 }
 
