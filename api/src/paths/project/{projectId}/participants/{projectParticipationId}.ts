@@ -101,7 +101,7 @@ export function putProjectParticipantRole(): RequestHandler {
     const projectParticipationId = Number(req.params.projectParticipationId);
     const roleId = Number(req.body.roleId);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -234,7 +234,7 @@ export function deleteProjectParticipant(): RequestHandler {
     const projectId = Number(req.params.projectId);
     const projectParticipationId = Number(req.params.projectParticipationId);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

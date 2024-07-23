@@ -14,7 +14,7 @@ export const DELETE: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectPermission'
         },
@@ -75,7 +75,7 @@ export function deleteProject(): RequestHandler {
       throw new HTTP400('Missing required path param: `projectId`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
     const projectId = Number(req.params.projectId);
 
     try {

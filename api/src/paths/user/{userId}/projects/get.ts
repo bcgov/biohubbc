@@ -133,7 +133,7 @@ export function getAllUserProjects(): RequestHandler {
       throw new HTTP400('Missing required param: userId');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const userId = Number(req.params.userId);

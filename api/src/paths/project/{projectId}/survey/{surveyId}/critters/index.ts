@@ -203,19 +203,13 @@ POST.apiDoc = {
 
 export function getCrittersFromSurvey(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
-
     const surveyId = Number(req.params.surveyId);
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
       const surveyService = new SurveyCritterService(connection);
-      const critterbaseService = new CritterbaseService(user);
 
       const surveyCritters = await surveyService.getCrittersInSurvey(surveyId);
 
@@ -226,7 +220,7 @@ export function getCrittersFromSurvey(): RequestHandler {
 
       const critterIds = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
 
-      const result = await critterbaseService.getMultipleCrittersByIds(critterIds);
+      const result = await surveyService.critterbaseService.getMultipleCrittersByIds(critterIds);
 
       const critterMap = new Map();
       for (const item of result) {
@@ -251,18 +245,18 @@ export function getCrittersFromSurvey(): RequestHandler {
 
 export function addCritterToSurvey(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
-
     const surveyId = Number(req.params.surveyId);
     let critterId = req.body.critter_id;
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
+
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
 
       const critterbaseService = new CritterbaseService(user);
 
