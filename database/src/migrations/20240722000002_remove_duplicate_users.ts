@@ -48,9 +48,9 @@ export async function up(knex: Knex): Promise<void> {
           LOWER(user_identifier),
           user_identity_source_id
         )
-        system_user_id,
+        LOWER(user_identifier) AS user_identifier,
         user_identity_source_id,
-        LOWER(user_identifier) AS user_identifier
+        system_user_id
       FROM
         system_user
       ORDER BY
@@ -65,7 +65,15 @@ export async function up(knex: Knex): Promise<void> {
       SELECT
         LOWER(system_user.user_identifier) AS user_identifier,
         user_identity_source_id,
-        array_agg(system_user.system_user_id) duplicate_system_user_ids
+        array_remove(array_agg(system_user.system_user_id), null) duplicate_system_user_ids,
+        -- Get the first non-null value for each of the remaining user detail columns
+        (array_remove(array_agg(system_user.user_guid), null))[1] user_guid,
+        (array_remove(array_agg(system_user.display_name), null))[1] display_name,
+        (array_remove(array_agg(system_user.given_name), null))[1] given_name,
+        (array_remove(array_agg(system_user.family_name), null))[1] family_name,
+        (array_remove(array_agg(system_user.email), null))[1] email,
+        (array_remove(array_agg(system_user.agency), null))[1] agency,
+        (array_remove(array_agg(system_user.notes), null))[1] notes
       FROM
         system_user
       GROUP BY
@@ -78,7 +86,14 @@ export async function up(knex: Knex): Promise<void> {
       SELECT
         w_system_user_1.system_user_id,
         w_system_user_1.user_identity_source_id,
-        array_remove(w_system_user_2.duplicate_system_user_ids, w_system_user_1.system_user_id) AS duplicate_system_user_ids
+        array_remove(w_system_user_2.duplicate_system_user_ids, w_system_user_1.system_user_id) AS duplicate_system_user_ids,
+        w_system_user_2.user_guid,
+        w_system_user_2.display_name,
+        w_system_user_2.given_name,
+        w_system_user_2.family_name,
+        w_system_user_2.email,
+        w_system_user_2.agency,
+        w_system_user_2.notes
       FROM
         w_system_user_1
       left join
@@ -168,6 +183,19 @@ export async function up(knex: Knex): Promise<void> {
         notes = 'Duplicate user record; merged into system_user_id ' || wsu3.system_user_id || '.'
       FROM w_system_user_3 wsu3
       WHERE su.system_user_id = ANY(wsu3.duplicate_system_user_ids)
+    )
+    -- Update the user details for the canonical system user record
+    w_update_system_user AS (
+      UPDATE system_user su
+      SET
+        user_guid = wsu3.user_guid,
+        display_name = wsu3.display_name,
+        given_name = wsu3.given_name,
+        family_name = wsu3.family_name,
+        email = wsu3.email,
+        agency = wsu3.agency
+      FROM w_system_user_3 wsu3
+      WHERE su.system_user_id = wsu3.system_user_id)
     )
     -- Return the combined results of the original CTEs (have to select something to run the query)
     SELECT * FROM w_system_user_3;
