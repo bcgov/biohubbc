@@ -11,6 +11,8 @@ import { Knex } from 'knex';
  */
 export async function seed(knex: Knex): Promise<void> {
   await knex.raw(`--sql
+    SET search_path = 'biohub';
+
     -- Validate qualitative attributes
     CREATE OR REPLACE FUNCTION biohub.tr_technique_qual_attribute_check()
     RETURNS TRIGGER
