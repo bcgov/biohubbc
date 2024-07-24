@@ -35,6 +35,11 @@ export async function up(knex: Knex): Promise<void> {
     DROP INDEX IF EXISTS system_user_uk1;
     DROP INDEX IF EXISTS system_user_nuk1;
 
+    -- Drop old out-dated unique index
+    DROP INDEX IF EXISTS biohub.project_participation_uk1;
+    -- Drop constraint temporarily (added back at the end)
+    ALTER TABLE project_participation DROP CONSTRAINT IF EXISTS project_participation_uk2;
+
     ----------------------------------------------------------------------------------------
     -- Find AND migrate duplicate system_user_ids
     ----------------------------------------------------------------------------------------
@@ -101,65 +106,71 @@ export async function up(knex: Knex): Promise<void> {
       ON w_system_user_1.user_identifier = w_system_user_2.user_identifier
       AND w_system_user_1.user_identity_source_id = w_system_user_2.user_identity_source_id
     ),
-    -- Update duplicate system_user_ids in the project_participation table to the canonical system_user_id, ignoring
-    -- records where the canonical system_user_id is already in use.
-    w_update_project_participation AS (
+    -- Get all project_participation records for each project with a system_user_id that is a duplicate, unless there is 
+    -- already a record for that project with the canonical system_user_id.
+    w_project_participation_1 as (
+        SELECT 
+           array_agg(pp.project_participation_id) duplicate_project_participation_ids, 
+           wsu3.system_user_id
+        FROM project_participation AS pp
+        JOIN w_system_user_3 AS wsu3
+            ON pp.system_user_id = ANY(wsu3.duplicate_system_user_ids)
+        WHERE NOT EXISTS (
+            SELECT 1
+            FROM project_participation AS pp_check
+            WHERE pp_check.system_user_id = wsu3.system_user_id
+            AND pp_check.project_id = pp.project_id
+         )
+         GROUP BY 
+           wsu3.system_user_id,
+           pp.project_id
+     ),
+    -- For each project_participation record from the previous CTE, update the system_user_id to the canonical 
+    -- system_user_id.
+    w_project_participation_2 AS (
         UPDATE project_participation AS pp
-        SET system_user_id = wsu3.system_user_id
-        FROM w_system_user_3 AS wsu3
-        WHERE pp.system_user_id = ANY(wsu3.duplicate_system_user_ids)
-          AND NOT EXISTS (
-              SELECT 1
-              FROM project_participation AS pp_check
-              WHERE pp_check.system_user_id = wsu3.system_user_id
-                AND pp_check.project_id = pp.project_id
-          )
+        SET system_user_id = wpp1.system_user_id
+        FROM w_project_participation_1 AS wpp1
+        where wpp1.duplicate_project_participation_ids[1] = pp.project_participation_id
     ),
-    -- Delete all remaining references to duplicate system_user_ids in the project_participation table, as long as
-    -- there exists another record for the same project with the canonical system_user_id (which should be all of them
-    -- after the previous CTE ran).
-    w_delete_project_participation AS (
-        DELETE FROM project_participation
-        WHERE EXISTS (
+    -- Delete all remaining references to duplicate system_user_ids in the project_participation table.
+    w_project_participation_3 AS (
+        DELETE FROM project_participation AS pp 
+        USING w_system_user_3 
+        WHERE pp.system_user_id = ANY(w_system_user_3.duplicate_system_user_ids)
+    ),
+    -- Get all survey_participation records for each survey with a system_user_id that is a duplicate, unless there is 
+    -- already a record for that survey with the canonical system_user_id.
+    w_survey_participation_1 as (
+        SELECT 
+           array_agg(sp.survey_participation_id) duplicate_survey_participation_ids, 
+           wsu3.system_user_id
+        FROM survey_participation AS sp
+        JOIN w_system_user_3 AS wsu3
+            ON sp.system_user_id = ANY(wsu3.duplicate_system_user_ids)
+        WHERE NOT EXISTS (
             SELECT 1
-            FROM w_system_user_3 AS wsu3
-            WHERE project_participation.system_user_id = ANY(wsu3.duplicate_system_user_ids)
-              AND project_participation.project_id IN (
-                  SELECT project_id
-                  FROM project_participation AS pp_check
-                  WHERE pp_check.system_user_id = wsu3.system_user_id
-              )
-        )
-    ),
-    -- Update duplicate system_user_ids in the survey_participation table to the canonical system_user_id, ignoring
-    -- records where the canonical system_user_id is already in use.
-    w_update_survey_participation AS (
+            FROM survey_participation AS sp_check
+            WHERE sp_check.system_user_id = wsu3.system_user_id
+            AND sp_check.survey_id = sp.survey_id
+         )
+         GROUP BY 
+           wsu3.system_user_id,
+           sp.survey_id
+     ),
+    -- For each survey_participation record from the previous CTE, update the system_user_id to the canonical 
+    -- system_user_id.
+    w_survey_participation_2 AS (
         UPDATE survey_participation AS sp
-        SET system_user_id = wsu3.system_user_id
-        FROM w_system_user_3 AS wsu3
-        WHERE sp.system_user_id = ANY(wsu3.duplicate_system_user_ids)
-          AND NOT EXISTS (
-              SELECT 1
-              FROM survey_participation AS sp_check
-              WHERE sp_check.system_user_id = wsu3.system_user_id
-                AND sp_check.survey_id = sp.survey_id
-          )
+        SET system_user_id = wsp1.system_user_id
+        FROM w_survey_participation_1 AS wsp1
+        where wsp1.duplicate_survey_participation_ids[1] = sp.survey_participation_id
     ),
-    -- Delete all remaining references to duplicate system_user_ids in the survey_participation table, as long as
-    -- there exists another record for the same survey with the canonical system_user_id (which should be all of them
-    -- after the previous CTE ran).
-    w_delete_survey_participation AS (
-        DELETE FROM survey_participation
-        WHERE EXISTS (
-            SELECT 1
-            FROM w_system_user_3 AS wsu3
-            WHERE survey_participation.system_user_id = ANY(wsu3.duplicate_system_user_ids)
-              AND survey_participation.survey_id IN (
-                  SELECT survey_id
-                  FROM survey_participation AS sp_check
-                  WHERE sp_check.system_user_id = wsu3.system_user_id
-              )
-        )
+    -- Delete all remaining references to duplicate system_user_ids in the survey_participation table.
+    w_survey_participation_3 AS (
+        DELETE FROM survey_participation AS sp 
+        USING w_system_user_3 
+        WHERE sp.system_user_id = ANY(w_system_user_3.duplicate_system_user_ids)
     ),
     -- Update duplicate system_user_ids in the webform_draft table to the canonical system_user_id
     w_end_date_duplicate_webform_draft as (
@@ -235,10 +246,16 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
 
     -- Don't allow more than 1 active record with the same user_guid.
-    CREATE UNIQUE INDEX system_user_nuk1 ON system_user (user_guid, record_end_date is null) WHERE record_end_date is null;
+    CREATE UNIQUE INDEX system_user_nuk1 ON system_user (user_guid, (record_end_date is null)) WHERE record_end_date is null;
 
     -- Don't allow more than 1 active record with the same user_identifier (case-insensitive) AND user_identity_source_id.
-    CREATE UNIQUE INDEX system_user_nuk2 ON system_user(LOWER(user_identifier), user_identity_source_id, record_end_date is null) WHERE record_end_date is null;
+    CREATE UNIQUE INDEX system_user_nuk2 ON system_user(LOWER(user_identifier), user_identity_source_id, (record_end_date is null)) WHERE record_end_date is null;
+
+    -- Don't allow the same system user to have more than one project role within a project.
+    ALTER TABLE biohub.project_participation ADD CONSTRAINT project_participation_uk1 UNIQUE (system_user_id, project_id);
+
+    -- Don't allow the same system user to have more than one survey role within a survey.
+    ALTER TABLE biohub.survey_participation ADD CONSTRAINT survey_participation_uk1 UNIQUE (system_user_id, survey_id);
   `);
 }
 
