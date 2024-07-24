@@ -339,9 +339,14 @@ export class CritterbaseService {
         return response;
       },
       (error: AxiosError) => {
-        defaultLog.error({ label: 'CritterbaseService', message: error.message, error });
+        defaultLog.error({ label: 'CritterbaseService', message: error.message, error: error.response?.data });
+
         return Promise.reject(
-          new ApiError(ApiErrorType.GENERAL, `API request failed with status code ${error?.response?.status}`)
+          new ApiError(
+            ApiErrorType.GENERAL,
+            `Critterbase API request failed with status code ${error?.response?.status}`,
+            [error.response?.data as object]
+          )
         );
       }
     );

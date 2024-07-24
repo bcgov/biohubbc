@@ -54,6 +54,7 @@ POST.apiDoc = {
     },
     {
       in: 'path',
+      description: 'SIMS survey critter id.',
       name: 'critterId',
       required: true
     }
@@ -116,14 +117,6 @@ export function importCsv(): RequestHandler {
 
     try {
       await connection.open();
-
-      if (rawFiles.length !== 1) {
-        throw new HTTP400('Invalid number of files included. Expected 1 CSV file.');
-      }
-
-      if (!rawFile?.originalname.endsWith('.csv')) {
-        throw new HTTP400('Invalid file type. Expected a CSV file.');
-      }
 
       // Check for viruses / malware
       const virusScanResult = await scanFileForVirus(rawFile);

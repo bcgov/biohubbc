@@ -37,11 +37,18 @@ export const getColumnAliasesFromValidator = (columnValidator: IXLSXCSVValidator
  * @returns {*}
  */
 export const getColumnValidatorSpecification = (columnValidator: IXLSXCSVValidator) => {
+  // Expected formats of date/time columns
+  const columnFormatMap: Partial<Record<IXLSXCSVColumn['type'], string>> = {
+    date: 'DD/MM/YYYY',
+    time: 'HH:mm:ss'
+  };
+
   return Object.keys(columnValidator).map((columnName) => {
     const columnSpec: IXLSXCSVColumn = columnValidator[columnName];
     return {
       columnName: columnName,
       columnType: columnSpec.type,
+      columnFormat: columnFormatMap?.[columnSpec.type],
       columnAliases: columnSpec?.aliases
     };
   });

@@ -34,11 +34,11 @@ export class ImportCapturesService extends DBService implements CSVImportService
   columnValidator = {
     ALIAS: { type: 'string', aliases: CSV_COLUMN_ALIASES.ALIAS },
     CAPTURE_DATE: { type: 'date' },
-    CAPTURE_TIME: { type: 'string' },
+    CAPTURE_TIME: { type: 'time' },
     CAPTURE_LATITUDE: { type: 'number' },
     CAPTURE_LONGITUDE: { type: 'number' },
     RELEASE_DATE: { type: 'date' },
-    RELEASE_TIME: { type: 'string' },
+    RELEASE_TIME: { type: 'time' },
     RELEASE_LATITUDE: { type: 'number' },
     RELEASE_LONGITUDE: { type: 'number' },
     CAPTURE_COMMENT: { type: 'string' },

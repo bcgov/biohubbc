@@ -14,8 +14,9 @@ export interface IXLSXCSVColumn {
   /**
    * Supported column cell types
    *
+   * time: HH:mm:ss
    */
-  type: 'string' | 'number' | 'date';
+  type: 'string' | 'number' | 'date' | 'time';
   /**
    * Allowed aliases / mappings for column headers.
    *
@@ -232,15 +233,36 @@ export const validateWorksheetColumnTypes = (
       const type = typeof value;
       const columnSpec: IXLSXCSVColumn = columnValidator[columnName];
 
+      let validated = false;
+
+      // TODO: Handle optional CSV fields ie: ALIAS
+
       if (columnSpec.type === 'date') {
-        return dayjs(value).isValid();
+        validated = dayjs(value).isValid();
+      }
+
+      if (columnSpec.type === 'time') {
+        //TODO: Can this be modified to use dayjs? dayjs(value, 'HH:mm:ss', true).isValid() did not work...
+        validated = /^([01]?[0-9]|2[0-3]):([0-5]?[0-9]):([0-5]?[0-9])$/.test(value); // HH:mm:ss
       }
 
       if (columnSpec.type === type) {
-        return true;
+        validated = true;
       }
 
-      return false;
+      if (!validated) {
+        defaultLog.debug({
+          label: 'validateWorksheetColumnTypes',
+          details: {
+            columnName,
+            columnType: columnSpec.type,
+            cellValue: value,
+            rowIndex: index
+          }
+        });
+      }
+
+      return validated;
     });
   });
 };
