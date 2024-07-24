@@ -1,9 +1,10 @@
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
+import MeasurementStandardCard from '../components/MeasurementStandardCard';
+import { IMethodStandardResult } from './MethodStandards';
 
 interface ISpeciesStandardsResultsProps {
-  data?: any; // Change to IGetMethodStandardsResults or similar when it exists
-  isLoading: boolean;
+  data: IMethodStandardResult[]; // Change to IGetMethodStandardsResults or similar when it exists
+  isLoading?: boolean;
 }
 
 /**
@@ -12,14 +13,16 @@ interface ISpeciesStandardsResultsProps {
  * @return {*}
  */
 export const MethodStandardsResults = (props: ISpeciesStandardsResultsProps) => {
-  const { data, isLoading } = props;
+  const { data} = props;
 
   return (
     <>
-      <Box justifyContent="space-between" display="flex">
-        <Typography color="textSecondary">{data}</Typography>
-        <Typography>Loading: {isLoading}</Typography>
-      </Box>
+      <Stack gap={2}>
+        {/* Quantitative attributes */}
+        {data.map((method) => (
+          <MeasurementStandardCard label={method.label} description={method.description ?? ''} />
+        ))}
+      </Stack>
     </>
   );
 };

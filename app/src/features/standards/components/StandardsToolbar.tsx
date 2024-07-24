@@ -19,33 +19,35 @@ export const StandardsToolbar = (props: IStandardsToolbar) => {
   const { views, currentView, setCurrentView } = props;
 
   return (
-    <>
-      <ToggleButtonGroup
-        orientation="vertical"
-        value={currentView}
-        onChange={(_event: React.MouseEvent<HTMLElement>, view: StandardsPageView) => setCurrentView(view)}
-        exclusive
-        sx={{
-          minWidth: '200px',
-          display: 'flex',
-          gap: 1,
-          '& Button': {
-            py: 1.25,
-            px: 2.5,
-            border: 'none',
-            borderRadius: '4px !important',
-            fontSize: '0.875rem',
-            fontWeight: 700,
-            letterSpacing: '0.02rem',
-            textAlign: 'left'
-          }
-        }}>
-        {views.map((view) => (
-          <ToggleButton key={view.value} value={view.value} color="primary" sx={{ textAlign: 'left' }}>
-            {view.label}
-          </ToggleButton>
-        ))}
-      </ToggleButtonGroup>
-    </>
+    <ToggleButtonGroup
+      orientation="vertical"
+      value={currentView}
+      onChange={(_event: React.MouseEvent<HTMLElement>, view: StandardsPageView) => {
+        if (view) {
+          setCurrentView(view);
+        }
+      }}
+      exclusive
+      sx={{
+        minWidth: '200px',
+        display: 'flex',
+        gap: 1,
+        '& Button': {
+          py: 1.25,
+          px: 2.5,
+          border: 'none',
+          borderRadius: '4px !important',
+          fontSize: '0.875rem',
+          fontWeight: 700,
+          letterSpacing: '0.02rem',
+          textAlign: 'left'
+        }
+      }}>
+      {views.map((view) => (
+        <ToggleButton key={view.value} value={view.value} color="primary" sx={{ textAlign: 'left' }}>
+          {view.label}
+        </ToggleButton>
+      ))}
+    </ToggleButtonGroup>
   );
 };
