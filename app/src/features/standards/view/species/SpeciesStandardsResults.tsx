@@ -1,13 +1,14 @@
 import { mdiRuler, mdiTag } from '@mdi/js';
 import { Box, CircularProgress, Divider, Stack, Typography } from '@mui/material';
+import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { IGetSpeciesStandardsResponse } from 'interfaces/useStandardsApi.interface';
 import { useState } from 'react';
-import MarkingBodyLocationStandardCard from './components/MarkingBodyLocationStandardCard';
-import MeasurementStandardCard from './components/MeasurementStandardCard';
-import SpeciesStandardsToolbar, { SpeciesStandardsViewEnum } from './components/SpeciesStandardsToolbar';
+import MarkingBodyLocationStandardCard from '../components/MarkingBodyLocationStandardCard';
+import MeasurementStandardCard from '../components/MeasurementStandardCard';
+import SpeciesStandardsToolbar, { SpeciesStandardsViewEnum } from '../components/SpeciesStandardsToolbar';
 
 interface ISpeciesStandardsResultsProps {
-  data?: IGetSpeciesStandardsResponse;
+  data: IGetSpeciesStandardsResponse;
   isLoading: boolean;
 }
 
@@ -27,20 +28,12 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
     );
   }
 
-  if (!props.data) {
-    return <></>;
-  }
-
   return (
     <>
       <Box justifyContent="space-between" display="flex">
         <Typography color="textSecondary">
-          Showing results for{' '}
-          {props.data.scientificName.split(' ').length >= 2 ? (
-            <i>{props.data.scientificName}</i>
-          ) : (
-            props.data.scientificName
-          )}
+          Showing results for&nbsp;
+          <ScientificNameTypography name={props.data.scientificName} component="span" />
         </Typography>
       </Box>
       <Divider sx={{ my: 2 }} />
@@ -65,7 +58,7 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
         />
       </Box>
 
-      {activeView === 'MEASUREMENTS' && (
+      {activeView === SpeciesStandardsViewEnum.MEASUREMENTS && (
         <Stack gap={2}>
           {props.data.measurements.qualitative.map((measurement) => (
             <MeasurementStandardCard
@@ -82,7 +75,7 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
           ))}
         </Stack>
       )}
-      {activeView === 'MARKING BODY LOCATIONS' && (
+      {activeView === SpeciesStandardsViewEnum.MARKING_BODY_LOCATIONS && (
         <Stack gap={2}>
           {props.data.markingBodyLocations.map((location) => (
             <MarkingBodyLocationStandardCard label={location.value} />

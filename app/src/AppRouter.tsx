@@ -6,8 +6,7 @@ import AdminUsersRouter from 'features/admin/AdminUsersRouter';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
-import DoubleStandardsPage from 'features/standards/DoubleStandardsPage';
-import SpeciesStandardsPage from 'features/standards/SpeciesStandardsPage';
+import StandardsPage from 'features/standards/StandardsPage';
 import BaseLayout from 'layouts/BaseLayout';
 import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
@@ -102,13 +101,7 @@ const AppRouter: React.FC = () => {
 
       <RouteWithTitle path="/standards" title={getTitle('Standards')}>
         <BaseLayout>
-          <SpeciesStandardsPage />
-        </BaseLayout>
-      </RouteWithTitle>
-
-      <RouteWithTitle path="/doublestandards" title={getTitle('Double Standards')}>
-        <BaseLayout>
-          <DoubleStandardsPage />
+          <StandardsPage />
         </BaseLayout>
       </RouteWithTitle>
 

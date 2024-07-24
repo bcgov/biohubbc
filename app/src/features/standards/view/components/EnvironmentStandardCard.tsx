@@ -1,7 +1,12 @@
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Card, Collapse, Paper, Stack, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { EnvironmentQualitativeOption } from 'interfaces/useReferenceApi.interface';
 import { useState } from 'react';
 
@@ -23,11 +28,14 @@ const EnvironmentStandardCard = (props: IEnvironmentStandardCard) => {
   const { small } = props;
 
   return (
-    <Paper
-      sx={{ bgcolor: grey[100], px: 3, py: 2, cursor: 'pointer', flex: '1 1 auto' }}
-      elevation={0}
-      onClick={() => setIsCollapsed(!isCollapsed)}>
-      <Box display="flex" justifyContent="space-between" flex="1 1 auto" alignItems="center">
+    <Paper sx={{ bgcolor: grey[100], px: 3, py: 2, flex: '1 1 auto' }} elevation={0}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        flex="1 1 auto"
+        alignItems="center"
+        sx={{ cursor: 'pointer' }}
+        onClick={() => setIsCollapsed(!isCollapsed)}>
         <Typography
           variant="h5"
           sx={{

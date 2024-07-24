@@ -23,11 +23,14 @@ const MeasurementStandardCard = (props: IMeasurementStandardCard) => {
   const { small } = props;
 
   return (
-    <Paper
-      sx={{ bgcolor: grey[100], px: 3, py: 2, cursor: 'pointer', flex: '1 1 auto' }}
-      elevation={0}
-      onClick={() => setIsCollapsed(!isCollapsed)}>
-      <Box display="flex" justifyContent="space-between" flex="1 1 auto" alignItems="center">
+    <Paper sx={{ bgcolor: grey[100], px: 3, py: 2, flex: '1 1 auto' }} elevation={0}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        flex="1 1 auto"
+        alignItems="center"
+        sx={{ cursor: 'pointer' }}
+        onClick={() => setIsCollapsed(!isCollapsed)}>
         <Typography
           variant="h5"
           sx={{
