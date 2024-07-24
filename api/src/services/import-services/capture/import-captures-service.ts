@@ -56,22 +56,6 @@ export class ImportCapturesService extends DBService implements CSVImportService
   }
 
   /**
-   * Get Critterbase critter ID.
-   *
-   * Note: This method will be useful when we eventually extend this class
-   * to support many critters to many captures.
-   * ie: Fetch the critter id with critter alias and survey id.
-   *
-   *
-   * @async
-   * @param {Row} _row - CSV row
-   * @returns {Promise<string>} Critterbase critter id
-   */
-  async getCritterId(_row: Row) {
-    return this.critterbaseCritterId;
-  }
-
-  /**
    * Validate the CSV rows against zod schema.
    *
    * @param {Row[]} rows - CSV rows
@@ -83,7 +67,7 @@ export class ImportCapturesService extends DBService implements CSVImportService
 
     const rowsToValidate = rows.map((row) => {
       return {
-        critter_id: this.getCritterId(row),
+        critter_id: this.critterbaseCritterId,
         capture_location_id: uuid(),
         capture_date: getCellValue(row, 'CAPTURE_DATE'),
         capture_time: getCellValue(row, 'CAPTURE_TIME'),

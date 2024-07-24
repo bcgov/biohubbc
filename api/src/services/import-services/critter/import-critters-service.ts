@@ -1,4 +1,4 @@
-import { keys, omit, toUpper, uniq } from 'lodash';
+import { keys, omit, startCase, toUpper, uniq } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
@@ -260,6 +260,9 @@ export class ImportCrittersService extends DBService implements CSVImportService
       if (invalidAlias) {
         errors.push({ row: index, message: `Invalid ALIAS. Must be unique in Survey and CSV.` });
       }
+
+      // Covert `sex` to expected casing for Critterbase
+      row.sex = startCase(row.sex?.toLowerCase());
 
       /**
        * --------------------------------------------------------------------
