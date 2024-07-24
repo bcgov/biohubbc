@@ -1,4 +1,3 @@
-import { WorkSheet } from 'xlsx';
 import { ApiGeneralError } from '../../errors/api-error';
 import { MediaFile } from '../../utils/media/media-file';
 import { getColumnValidatorSpecification } from '../../utils/xlsx-utils/column-validator-utils';
@@ -11,10 +10,10 @@ import {
 import { CSVImportService } from './csv-import-strategy.interface';
 
 /**
- * CSV Import Strategy - Used with `CSVImportService` classes.
+ * Import CSV (Strategy) - Used with `CSVImportService` classes.
  *
- * How to?: Inject a class that implements the CSVImportService. This service will execute
- * the validation for columns / rows and import the data.
+ * How to?: Inject a media-file and import service that implements the CSVImportService.
+ * This function will handle
  *
  * Flow:
  *  1. Get the worksheet from the CSV MediaFile - _getWorksheet
@@ -22,78 +21,43 @@ import { CSVImportService } from './csv-import-strategy.interface';
  *  3. Validate row data with import service - _validate -> importCsvService.validateRows
  *  4. Insert the data into database or send to external system - import -> importCsvService.insert
  *
- *
- * @class CSVImportStrategy
+ * @async
  * @template ValidatedRow - Validated row object
- * @template PartialRow - Invalidated row object - ie: partial (undefined properties) row object
+ * @template InsertReturn - Return type of the importer insert method
+ * @param {MediaFile} csvMediaFile - CSV converted to MediaFile
+ * @param {CSVImportService<ValidatedRow, InsertReturn>} importer - Import service
+ * @throws {ApiGeneralError} - If validation fails
+ * @returns {Promise<ReturnType>} Generic return type
  */
-export class CSVImportStrategy<ValidatedRow> {
-  importCsvService: CSVImportService<ValidatedRow>;
+export const importCSV = async <ValidatedRow, InsertReturn>(
+  csvMediaFile: MediaFile,
+  importer: CSVImportService<ValidatedRow, InsertReturn>
+) => {
+  const worksheet = getDefaultWorksheet(constructXLSXWorkbook(csvMediaFile));
 
-  constructor(importCsvService: CSVImportService<ValidatedRow>) {
-    this.importCsvService = importCsvService;
+  // Validate the standard columns in the CSV file
+  if (!validateCsvFile(worksheet, importer.columnValidator)) {
+    throw new ApiGeneralError(`Column validator failed. Column headers or cell data types are incorrect.`, [
+      { csv_column_errors: getColumnValidatorSpecification(importer.columnValidator) },
+      'importCapturesService->_validate->validateCsvFile'
+    ]);
   }
 
-  /**
-   * Get the worksheet from the CSV file.
-   *
-   * @param {MediaFile} markingCsv - CSV MediaFile
-   * @returns {WorkSheet} Xlsx worksheet
-   */
-  _getWorksheet(markingCsv: MediaFile): WorkSheet {
-    return getDefaultWorksheet(constructXLSXWorkbook(markingCsv));
+  // Convert the worksheet into an array of records
+  const worksheetRows = getWorksheetRowObjects(worksheet);
+
+  // Validate the CSV rows with reference data
+  const validation = await importer.validateRows(worksheetRows, worksheet);
+
+  // Throw error is row validation failed and inject validation errors
+  // The validation errors can be either custom (Validation) or Zod (SafeParseReturn)
+  if (!validation.success) {
+    throw new ApiGeneralError(`Failed to import Critter CSV. Column data validator failed.`, [
+      { csv_row_errors: validation.error.issues },
+      'importCapturesService->_validate->_validateRows'
+    ]);
   }
 
-  /**
-   * Validate the worksheet contains no errors within the data or structure of CSV.
-   *
-   * @param {WorkSheet} worksheet - Xlsx worksheet
-   * @throws {ApiGeneralError} - If validation fails
-   * @returns {CsvCapture[]} Validated CSV rows
-   */
-  async _validate(worksheet: WorkSheet): Promise<ValidatedRow[]> {
-    // Validate the standard columns in the CSV file
-    if (!validateCsvFile(worksheet, this.importCsvService.columnValidator)) {
-      throw new ApiGeneralError(`Column validator failed. Column headers or cell data types are incorrect.`, [
-        { csv_column_errors: getColumnValidatorSpecification(this.importCsvService.columnValidator) },
-        'importCapturesService->_validate->validateCsvFile'
-      ]);
-    }
-
-    // Convert the worksheet into an array of records
-    const worksheetRows = getWorksheetRowObjects(worksheet);
-
-    // Validate the CSV rows with reference data
-    const validation = await this.importCsvService.validateRows(worksheetRows, worksheet);
-
-    // Throw error is row validation failed and inject validation errors
-    // The validation errors can be either custom (Validation) or Zod (SafeParseReturn)
-    if (!validation.success) {
-      throw new ApiGeneralError(`Failed to import Critter CSV. Column data validator failed.`, [
-        { csv_row_errors: validation.error.issues },
-        'importCapturesService->_validate->_validateRows'
-      ]);
-    }
-
-    return validation.data;
-  }
-
-  /**
-   * Import the CSV file with `importCsvService` child dependency
-   *
-   * @async
-   * @template T - Return type of insert method
-   * @param {MediaFile} csvFile - File to import
-   * @returns {Promise<T>} Insert return type
-   */
-  async import<T>(csvFile: MediaFile): Promise<T> {
-    // Get the worksheet from the CSV
-    const worksheet = this._getWorksheet(csvFile);
-
-    // Validate the standard columns and the data of the CSV
-    const parsedData = await this._validate(worksheet);
-
-    // Insert the data into database or send to external systems
-    return this.importCsvService.insert(parsedData) as Promise<T>;
-  }
-}
+  // Insert the data or send to external systems
+  return importer.insert(validation.data);
+};

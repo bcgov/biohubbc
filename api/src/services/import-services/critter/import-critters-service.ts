@@ -34,7 +34,7 @@ const CSV_CRITTER_SEX_OPTIONS = ['UNKNOWN', 'MALE', 'FEMALE', 'HERMAPHRODITIC'];
  * @extends DBService
  *
  */
-export class ImportCrittersService extends DBService implements CSVImportService<CsvCritter> {
+export class ImportCrittersService extends DBService implements CSVImportService {
   platformService: PlatformService;
   critterbaseService: CritterbaseService;
   surveyCritterService: SurveyCritterService;

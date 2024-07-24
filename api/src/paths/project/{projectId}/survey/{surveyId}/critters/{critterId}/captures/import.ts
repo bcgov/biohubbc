@@ -6,7 +6,7 @@ import { ApiGeneralError } from '../../../../../../../../errors/api-error';
 import { HTTP400 } from '../../../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { ImportCapturesService } from '../../../../../../../../services/import-services/capture/import-captures-service';
-import { CSVImportStrategy } from '../../../../../../../../services/import-services/csv-import-strategy';
+import { importCSV } from '../../../../../../../../services/import-services/csv-import-strategy';
 import { SurveyCritterService } from '../../../../../../../../services/survey-critter-service';
 import { scanFileForVirus } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
@@ -134,14 +134,9 @@ export function importCsv(): RequestHandler {
         throw new ApiGeneralError(`Unable to find critter in survey.`, [{ surveyId, critterId }]);
       }
 
-      // Critter CSV import service - child of CSVImportStrategy
       const importCsvCaptures = new ImportCapturesService(connection, surveyCritter.critterbase_critter_id);
 
-      // CSV import strategy with injected import service - parent
-      const csvImportStrategry = new CSVImportStrategy(importCsvCaptures);
-
-      // Import CSV data with strategy class
-      await csvImportStrategry.import(parseMulterFile(rawFile));
+      await importCSV(parseMulterFile(rawFile), importCsvCaptures);
 
       await connection.commit();
 

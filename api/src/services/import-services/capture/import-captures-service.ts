@@ -1,29 +1,23 @@
 import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
-import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
 import { generateCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
 import { CritterbaseService, IBulkCreate } from '../../critterbase-service';
 import { DBService } from '../../db-service';
-import { CSVImportService, Row } from '../csv-import-strategy.interface';
+import { CSVImportService } from '../csv-import-strategy.interface';
 import { CsvCapture, CsvCaptureSchema, PartialCsvCapture } from './import-captures-service.interface';
 
 /**
  *
  * @class ImportCapturesService
  * @extends DBService
+ * @see CSVImportStrategy
  *
  */
-export class ImportCapturesService extends DBService implements CSVImportService<CsvCapture> {
+export class ImportCapturesService extends DBService implements CSVImportService {
   critterbaseService: CritterbaseService;
-
-  /**
-   * Critterbase Critter ID - UUID
-   *
-   * Note: Provided if attempting to bulk import Captures for a known Critter.
-   */
-  critterbaseCritterId?: string;
+  critterbaseCritterId: string;
 
   /**
    * An XLSX validation config for the standard columns of a Critterbase Capture CSV.
@@ -32,7 +26,6 @@ export class ImportCapturesService extends DBService implements CSVImportService
    * enforcing uppercase object keys.
    */
   columnValidator = {
-    ALIAS: { type: 'string', aliases: CSV_COLUMN_ALIASES.ALIAS },
     CAPTURE_DATE: { type: 'date' },
     CAPTURE_TIME: { type: 'time' },
     CAPTURE_LATITUDE: { type: 'number' },
@@ -46,12 +39,12 @@ export class ImportCapturesService extends DBService implements CSVImportService
   } satisfies IXLSXCSVValidator;
 
   /**
-   * Construct an instance of ImportCapturesService
+   * Construct an instance of ImportCapturesService.
    *
    * @param {IDBConnection} connection - DB connection
-   * @param {string} [critterbaseCritterId] - Critterbse critter ID if importing Captures for specific Critter
+   * @param {string} critterbaseCritterId - Critterbase Critter UUID
    */
-  constructor(connection: IDBConnection, critterbaseCritterId?: string) {
+  constructor(connection: IDBConnection, critterbaseCritterId: string) {
     super(connection);
 
     this.critterbaseCritterId = critterbaseCritterId;
@@ -60,19 +53,6 @@ export class ImportCapturesService extends DBService implements CSVImportService
       keycloak_guid: connection.systemUserGUID(),
       username: connection.systemUserIdentifier()
     });
-  }
-
-  /**
-   * Get the critter ID from row or dependency.
-   *
-   * Note: This eventually will be modified to retrieve the critter_id with alias and survey_id
-   * when importing captures for many critters.
-   *
-   * @param {Row} _row - CSV row
-   * @returns {string} Critterbase critter UUID
-   */
-  getCritterId(_row: Row): string {
-    return this.critterbaseCritterId as string; // Temporarily casting
   }
 
   /**
@@ -87,7 +67,7 @@ export class ImportCapturesService extends DBService implements CSVImportService
 
     const rowsToValidate = rows.map((row) => {
       return {
-        critter_id: this.getCritterId(row),
+        critter_id: this.critterbaseCritterId,
         capture_location_id: uuid(),
         capture_date: getCellValue(row, 'CAPTURE_DATE'),
         capture_time: getCellValue(row, 'CAPTURE_TIME'),
@@ -152,6 +132,8 @@ export class ImportCapturesService extends DBService implements CSVImportService
       }
     }
 
-    return this.critterbaseService.bulkCreate(critterbasePayload);
+    const response = await this.critterbaseService.bulkCreate(critterbasePayload);
+
+    return response.created;
   }
 }

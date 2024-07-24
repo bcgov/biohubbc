@@ -13,7 +13,7 @@ export type Row = Record<string, any>;
  *
  * @description All CSV import services should implement this interface to be used with `CSVImportStrategy`
  */
-export interface CSVImportService<ValidatedRow> {
+export interface CSVImportService<ValidatedRow = Record<string, unknown>, InsertReturn = unknown> {
   /**
    * Standard column validator - used to validate the column headers and types.
    *
@@ -38,9 +38,9 @@ export interface CSVImportService<ValidatedRow> {
    * Insert the validated rows into database or send to external systems.
    *
    * @param {ValidatedRows[]} rows - Validated CSV rows
-   * @returns {Promise<unknown>}
+   * @returns {Promise<InsertReturn>}
    */
-  insert(rows: ValidatedRow[]): Promise<unknown>;
+  insert(rows: ValidatedRow[]): Promise<InsertReturn>;
 }
 
 /**
