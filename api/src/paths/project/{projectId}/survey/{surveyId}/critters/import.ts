@@ -3,11 +3,13 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
+import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ImportCrittersService } from '../../../../../../services/import-services/import-critters-service';
 import { scanFileForVirus } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
+import { getFileFromRequest } from '../../../../../../utils/request';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/critters/import');
 
@@ -68,9 +70,11 @@ POST.apiDoc = {
           required: ['media'],
           properties: {
             media: {
-              description: 'Survey Critters submission import file.',
-              type: 'string',
-              format: 'binary'
+              description: 'Critter CSV import file.',
+              type: 'array',
+              minItems: 1,
+              maxItems: 1,
+              items: csvFileSchema
             }
           }
         }
@@ -125,24 +129,15 @@ POST.apiDoc = {
 export function importCsv(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const rawFiles = req.files as Express.Multer.File[];
-    const rawFile = rawFiles[0];
+    const rawMediaFile = getFileFromRequest(req);
 
     const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
-      if (rawFiles.length !== 1) {
-        throw new HTTP400('Invalid number of files included. Expected 1 CSV file.');
-      }
-
-      if (!rawFile?.originalname.endsWith('.csv')) {
-        throw new HTTP400('Invalid file type. Expected a CSV file.');
-      }
-
       // Check for viruses / malware
-      const virusScanResult = await scanFileForVirus(rawFile);
+      const virusScanResult = await scanFileForVirus(rawMediaFile);
 
       if (!virusScanResult) {
         throw new HTTP400('Malicious content detected, import cancelled.');
@@ -151,7 +146,7 @@ export function importCsv(): RequestHandler {
       const csvImporter = new ImportCrittersService(connection);
 
       // Pass the survey id and the csv (MediaFile) to the importer
-      const surveyCritterIds = await csvImporter.import(surveyId, parseMulterFile(rawFile));
+      const surveyCritterIds = await csvImporter.import(surveyId, parseMulterFile(rawMediaFile));
 
       defaultLog.info({ label: 'importCritterCsv', message: 'result', survey_critter_ids: surveyCritterIds });
 
