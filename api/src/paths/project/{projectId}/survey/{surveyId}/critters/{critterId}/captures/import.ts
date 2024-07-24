@@ -4,6 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constan
 import { getDBConnection } from '../../../../../../../../database/db';
 import { ApiGeneralError } from '../../../../../../../../errors/api-error';
 import { HTTP400 } from '../../../../../../../../errors/http-error';
+import { csvFileSchema } from '../../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { ImportCapturesService } from '../../../../../../../../services/import-services/capture/import-captures-service';
 import { importCSV } from '../../../../../../../../services/import-services/csv-import-strategy';
@@ -11,6 +12,7 @@ import { SurveyCritterService } from '../../../../../../../../services/survey-cr
 import { scanFileForVirus } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../../../utils/media/media-utils';
+import { getFileFromRequest } from '../../../../../../../../utils/request';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/{critterId}/captures/import');
 
@@ -34,7 +36,7 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Upload Critterbase CSV captures file',
+  description: 'Upload Critterbase CSV Captures file',
   tags: ['observations'],
   security: [
     {
@@ -60,7 +62,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Critterbase CSV capture file to import',
+    description: 'Critterbase Captures CSV import file.',
     content: {
       'multipart/form-data': {
         schema: {
@@ -69,9 +71,11 @@ POST.apiDoc = {
           required: ['media'],
           properties: {
             media: {
-              description: 'Critterbase CSV Capture import file.',
-              type: 'string',
-              format: 'binary'
+              description: 'Critterbase Captures CSV import file.',
+              type: 'array',
+              minItems: 1,
+              maxItems: 1,
+              items: csvFileSchema
             }
           }
         }
@@ -109,11 +113,9 @@ export function importCsv(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
     const critterId = Number(req.params.critterId);
+    const rawFile = getFileFromRequest(req);
 
-    const rawFiles = req.files as Express.Multer.File[];
-    const rawFile = rawFiles[0];
-
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
