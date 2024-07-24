@@ -14,7 +14,7 @@ describe('importCSV', () => {
     sinon.restore();
   });
 
-  it.only('should pass correct values through chain', async () => {
+  it('should pass correct values through chain', async () => {
     const mockCsv = new MediaFile('file', 'file', Buffer.from(''));
     const mockWorksheet = {};
 
@@ -35,7 +35,7 @@ describe('importCSV', () => {
     expect(data).to.be.true;
   });
 
-  it.only('should throw error if column validator fails', async () => {
+  it('should throw error if column validator fails', async () => {
     const mockCsv = new MediaFile('file', 'file', Buffer.from(''));
 
     const importer: CSVImportService<any> = {
@@ -60,7 +60,7 @@ describe('importCSV', () => {
     }
   });
 
-  it.only('should throw error if import service validateRows fails', async () => {
+  it('should throw error if import service validateRows fails', async () => {
     const mockCsv = new MediaFile('file', 'file', Buffer.from(''));
     const mockWorksheet = {};
     const mockValidation = { success: false, error: { issues: [{ row: 1, message: 'invalidated' }] } };
