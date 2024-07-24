@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { AsyncFunction, useAsync } from './useAsync';
 import useIsMounted from './useIsMounted';
 
@@ -89,8 +89,6 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
     async (...args: AFArgs): Promise<AFResponse | undefined> => {
       try {
         setIsLoading(true);
-        setError(undefined);
-        setIsReady(false);
 
         const response = await getData(...args);
 
@@ -107,7 +105,6 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
         }
 
         setError(error);
-        setIsLoading(false);
 
         onError?.(error);
       } finally {
@@ -121,19 +118,21 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
     [getData, isMounted, onError]
   );
 
-  const load = async (...args: AFArgs) => {
-    if (oneTimeLoad) {
-      return data;
-    }
+  const load = useCallback(
+    async (...args: AFArgs) => {
+      if (oneTimeLoad) {
+        return data;
+      }
 
-    setOneTimeLoad(true);
-    return loadData(...args);
-  };
+      setOneTimeLoad(true);
+      return loadData(...args);
+    },
+    [data, loadData, oneTimeLoad]
+  );
 
   const refresh = useCallback(
     async (...args: AFArgs) => {
-      // Clear previous data and state
-      setData(undefined);
+      // Clear previous error/loading state
       setError(undefined);
       setIsLoading(false);
       setIsReady(false);
@@ -144,18 +143,31 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
     [loadData]
   );
 
-  const clearError = () => {
+  const clearError = useCallback(() => {
     setError(undefined);
-  };
+  }, []);
 
-  const clearData = () => {
+  const clearData = useCallback(() => {
     setData(undefined);
     setError(undefined);
     setIsLoading(false);
     setIsReady(false);
     setHasLoaded(false);
     setOneTimeLoad(false);
-  };
+  }, []);
 
-  return { data, error, isLoading, isReady, hasLoaded, load, refresh, clearError, clearData };
+  return useMemo(
+    () => ({
+      data,
+      error,
+      isLoading,
+      isReady,
+      hasLoaded,
+      load,
+      refresh,
+      clearError,
+      clearData
+    }),
+    [clearData, clearError, data, error, hasLoaded, isLoading, isReady, load, refresh]
+  );
 }

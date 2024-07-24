@@ -1,12 +1,35 @@
+/**
+ * A type used to capture boolean values in form controls (which don't support real boolean values).
+ */
 export type StringBoolean = 'true' | 'false';
 
 /**
- * Represents server-side pagination options passed as request parameters
+ * Defines the supported server-side pagination options.
  */
 export type ApiPaginationRequestOptions = {
+  /**
+   * The page number to retrieve. Starts at 1.
+   *
+   * @type {number}
+   */
   page: number;
+  /**
+   * The number of items to retrieve per page.
+   *
+   * @type {number}
+   */
   limit: number;
+  /**
+   * The field to sort by.
+   *
+   * @type {string}
+   */
   sort?: string;
+  /**
+   * The direction to sort by.
+   *
+   * @type {('asc' | 'desc')}
+   */
   order?: 'asc' | 'desc';
 };
 
@@ -21,3 +44,21 @@ export type ApiPaginationResponseParams = {
   sort?: string;
   order?: 'asc' | 'desc';
 };
+
+/**
+ * Converts all value types of an object to strings.
+ *
+ * @example
+ * type MyObject = {
+ *   a: number;
+ *   b: boolean;
+ * };
+ *
+ * type MyObjectStringValues = StringValues<MyObject>;
+ *
+ * // MyObjectStringValues = {
+ * //   a: string;
+ * //   b: string;
+ * // }
+ */
+export type StringValues<T extends Record<any, any>> = { [key in keyof T]: string };

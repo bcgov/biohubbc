@@ -24,10 +24,6 @@ export const ReleaseDetails = (props: IReleaseDetailsProps) => {
   const releaseLocation = capture.release_location;
   const releaseComment = capture.release_comment;
 
-  if (!releaseDate && !releaseLocation && !releaseComment) {
-    return null;
-  }
-
   return (
     <Stack gap={2}>
       <Stack direction="row" spacing={3}>

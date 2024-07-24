@@ -40,7 +40,7 @@ export const MarkingCard = (props: IMarkingCardProps) => {
   return (
     <Paper variant="outlined" sx={{ px: 3, py: 2, bgcolor: grey[100] }}>
       <Box position="relative" display="flex">
-        <Typography component="dd" fontWeight={700}>
+        <Typography component="dd" fontWeight={700} variant="body2">
           {startCase(marking_type_label)}
         </Typography>
         {editable && (

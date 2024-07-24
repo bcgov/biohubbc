@@ -129,7 +129,6 @@ export interface IGetSurveyLocation {
   name: string;
   description: string;
   geometry: Feature[];
-  geography: string | null;
   geojson: Feature[];
   revision_count: number;
 }
@@ -166,12 +165,15 @@ export interface SurveyViewObject {
 
 export interface SurveyBasicFieldsObject {
   survey_id: number;
+  project_id: number;
   name: string;
   start_date: string;
   end_date: string | null;
   progress_id: number;
   focal_species: number[];
   focal_species_names: string[];
+  regions: string[];
+  types: number[];
 }
 
 export type SurveyUpdateObject = ISurveyUpdateObject & ISurveySiteSelectionUpdateObject;
@@ -244,12 +246,12 @@ export interface ISurveySupplementaryData {
 }
 
 /**
- * Get survey basic fields response object.
+ * Find surveys basic fields response object.
  *
  * @export
- * @interface IGetSurveyListResponse
+ * @interface IFindSurveysResponse
  */
-export interface IGetSurveyListResponse {
+export interface IFindSurveysResponse {
   surveys: SurveyBasicFieldsObject[];
   pagination: ApiPaginationResponseParams;
 }
@@ -263,14 +265,6 @@ export interface IGetSurveyListResponse {
 export interface IGetSurveyForViewResponse {
   surveyData: SurveyViewObject;
   surveySupplementaryData: SurveySupplementaryData;
-}
-
-export interface IGetSurveyDetailsResponse {
-  id: number;
-  name: string;
-  start_date: string;
-  end_date: string;
-  completion_status: string;
 }
 
 export interface IGetSpecies {

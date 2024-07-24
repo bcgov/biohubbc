@@ -33,6 +33,14 @@ global.document.createElementNS = function (namespaceURI, qualifiedName) {
   return createElementNSOrig.apply(this, arguments);
 };
 
+global.console = {
+  ...console,
+  // Disable console.warning(...) messages from appearing in the console when running tests
+  warn: jest.fn(),
+  // Disable console.error(...) messages from appearing in the console when running tests
+  error: jest.fn()
+};
+
 /*
   Configure testing-library to modify the console output when a test fails.
 

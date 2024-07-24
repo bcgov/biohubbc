@@ -8,9 +8,9 @@ import {
  * Data standards for a taxon
  *
  * @export
- * @interface IGetSpeciesStandardsResponse
+ * @interface ISpeciesStandards
  */
-export interface IGetSpeciesStandardsResponse {
+export interface ISpeciesStandards {
   tsn: number;
   scientificName: string;
   measurements: {
@@ -22,5 +22,14 @@ export interface IGetSpeciesStandardsResponse {
     key: string;
     value: string;
   }[];
-  ecological_units: ICollectionUnit[];
+  ecologicalUnits: ICollectionUnit[];
+}
+
+export interface IEnvironmentStandards {
+  name: string;
+  description: string;
+  options: {
+    name: string;
+    description: string
+  }
 }

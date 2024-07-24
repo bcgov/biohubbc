@@ -1,5 +1,6 @@
 import { XMLParser } from 'fast-xml-parser';
 import { Feature } from 'geojson';
+import { flatten } from 'lodash';
 import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import { getLogger } from '../utils/logger';
@@ -497,5 +498,31 @@ export class BcgwLayerService {
     const regionNames = await this.getWildlifeManagementUnitRegionNames(geometryWktString);
 
     return regionNames.map((name) => ({ regionName: name, sourceLayer: BcgwWildlifeManagementUnitsLayer }));
+  }
+
+  /**
+   * Get intersecting NRM region names from a list of features
+   *
+   * @async
+   * @param {Feature[]} features - Array of geojson features
+   * @param {IDBConnection} connection - Database connection
+   * @returns {Promise<string[]>} Array of unique region names
+   */
+  async getIntersectingNrmRegionNamesFromFeatures(features: Feature[], connection: IDBConnection): Promise<string[]> {
+    const postgisService = new PostgisService(connection);
+
+    // Generate list of PostGIS geometry strings from features
+    const wktStringArr = await Promise.all(
+      features.map((feature) => postgisService.getGeoJsonGeometryAsWkt(feature.geometry, Srid3005))
+    );
+
+    // Get NRM region names from Postgis geometry strings
+    const nrmRegionNames = await Promise.all(wktStringArr.map((wkt) => this.getNrmRegionNames(wkt)));
+
+    // Flatten nested arrays and filter out undefined values
+    const flattenedRegionNames = flatten(nrmRegionNames).filter((item) => item);
+
+    // Return de-duped array
+    return Array.from(new Set(flattenedRegionNames));
   }
 }

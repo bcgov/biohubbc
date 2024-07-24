@@ -1,14 +1,14 @@
 import { mdiRuler, mdiTag } from '@mdi/js';
 import { Box, CircularProgress, Divider, Stack, Typography } from '@mui/material';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
-import { IGetSpeciesStandardsResponse } from 'interfaces/useStandardsApi.interface';
+import { ISpeciesStandards } from 'interfaces/useStandardsApi.interface';
 import { useState } from 'react';
 import MarkingBodyLocationStandardCard from '../components/MarkingBodyLocationStandardCard';
 import MeasurementStandardCard from '../components/MeasurementStandardCard';
 import SpeciesStandardsToolbar, { SpeciesStandardsViewEnum } from '../components/SpeciesStandardsToolbar';
 
 interface ISpeciesStandardsResultsProps {
-  data: IGetSpeciesStandardsResponse;
+  data: ISpeciesStandards;
   isLoading: boolean;
 }
 

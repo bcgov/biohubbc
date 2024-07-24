@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { isDefined } from 'utils/Utils';
 import SpeciesStandardsResults from './SpeciesStandardsResults';
 
@@ -15,7 +15,7 @@ import SpeciesStandardsResults from './SpeciesStandardsResults';
 export const SpeciesStandards = () => {
   const biohubApi = useBiohubApi();
 
-  const standardsDataLoader = useDataLoader((species: ITaxonomy) =>
+  const standardsDataLoader = useDataLoader((species: IPartialTaxonomy) =>
     biohubApi.standards.getSpeciesStandards(species.tsn)
   );
 

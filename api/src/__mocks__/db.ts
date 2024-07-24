@@ -65,7 +65,6 @@ export class MockReq {
   query = {};
   params = {};
   body = {};
-  files: any[] = [];
 }
 
 export type ExtendedMockRes = MockRes & Response;
