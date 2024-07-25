@@ -26,10 +26,13 @@ export interface ISpeciesStandards {
 }
 
 export interface IEnvironmentStandards {
-  name: string;
-  description: string;
-  options: {
+  qualitative: {
     name: string;
-    description: string
-  }
+    description: string;
+    options: {
+      name: string;
+      description: string;
+    };
+  }[];
+  quantitative: { name: string; description: string }[];
 }

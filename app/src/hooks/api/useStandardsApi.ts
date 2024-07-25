@@ -25,7 +25,7 @@ const useStandardsApi = (axios: AxiosInstance) => {
      *
      * @return {*}  {Promise<IGetEnvironmentStandardsResponse>}
      */
-    const getEnvironmentStandards = async (tsn: number): Promise<IEnvironmentStandards> => {
+    const getEnvironmentStandards = async (): Promise<IEnvironmentStandards> => {
       const { data } = await axios.get(`/api/standards/environment`);
   
       return data;

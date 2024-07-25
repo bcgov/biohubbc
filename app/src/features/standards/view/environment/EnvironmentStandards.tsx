@@ -1,11 +1,26 @@
 import Box from '@mui/material/Box';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
+import { useEffect } from 'react';
+import { EnvironmentStandardsResults } from './EnvironmentStandardsResults';
 
 /**
- * Returns species standards page for searching species and viewing lookup values available for selected species.
- * This component handles the data request, then passes the data to its children components.
+ * Returns environmental variable lookup values for the standards page
  *
  * @returns
  */
 export const EnvironmentStandards = () => {
-  return <Box flex="1 1 auto">Placeholder for environment standards</Box>;
+  const biohubApi = useBiohubApi();
+
+  const environmentDataLoader = useDataLoader(() => biohubApi.standards.getEnvironmentStandards());
+
+  useEffect(() => {
+    environmentDataLoader.load();
+  }, [environmentDataLoader]);
+
+  return (
+    <Box flex="1 1 auto">
+      {environmentDataLoader.data && <EnvironmentStandardsResults data={environmentDataLoader.data} />}
+    </Box>
+  );
 };

@@ -1,32 +1,21 @@
 import { IDBConnection } from '../database/db';
-import {
-  CBQualitativeMeasurementTypeDefinition,
-  CBQuantitativeMeasurementTypeDefinition,
-  CritterbaseService
-} from './critterbase-service';
+import { EnvironmentStandards, ISpeciesStandards } from '../models/standards-view';
+import { StandardsRepository } from '../repositories/standards-repository';
+import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
 import { PlatformService } from './platform-service';
 
-export interface ISpeciesStandardsResponse {
-  tsn: number;
-  scientificName: string;
-  measurements: {
-    quantitative: CBQuantitativeMeasurementTypeDefinition[];
-    qualitative: CBQualitativeMeasurementTypeDefinition[];
-  };
-  markingBodyLocations: { id: string; key: string; value: string }[];
-}
-
 /**
- * Sample Stratum Repository
+ * Standards Repository
  *
  * @export
- * @class SampleStratumService
+ * @class StandardsService
  * @extends {DBService}
  */
 export class StandardsService extends DBService {
   platformService: PlatformService;
   critterbaseService: CritterbaseService;
+  standardsRepository: StandardsRepository;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -35,16 +24,17 @@ export class StandardsService extends DBService {
       keycloak_guid: this.connection.systemUserGUID(),
       username: this.connection.systemUserIdentifier()
     });
+    this.standardsRepository = new StandardsRepository(connection);
   }
 
   /**
-   * Gets all survey Sample Stratums.
+   * Gets species standards
    *
-   * @param {number} surveySampleSiteId
-   * @return {*}  {Promise<standardsRecord[]>}
+   * @param {number} tsn
+   * @return {ISpeciesStandards}
    * @memberof standardsService
    */
-  async getSpeciesStandards(tsn: number): Promise<ISpeciesStandardsResponse> {
+  async getSpeciesStandards(tsn: number): Promise<ISpeciesStandards> {
     // Fetch all measurement type definitions from Critterbase for the unique taxon_measurement_ids
     const response = await Promise.all([
       this.platformService.getTaxonomyByTsns([tsn]),
@@ -58,5 +48,17 @@ export class StandardsService extends DBService {
       markingBodyLocations: response[1],
       measurements: response[2]
     };
+  }
+
+  /**
+   * Gets environment standards
+   *
+   * @return {EnvironmentStandard[]}
+   * @memberof standardsService
+   */
+  async getEnvironmentStandards(): Promise<EnvironmentStandards> {
+    const response = await this.standardsRepository.getEnvironmentStandards();
+
+    return response;
   }
 }
