@@ -200,15 +200,14 @@ const AsyncAutocompleteDataGridEditCell = <
         />
       )}
       renderOption={
-        renderOption
-          ? renderOption
-          : (renderProps, renderOption) => {
-              return (
-                <Box component="li" {...renderProps}>
-                  <ListItemText primary={renderOption.label} secondary={renderOption.subtext} />
-                </Box>
-              );
-            }
+        renderOption ??
+        ((renderProps, renderOption) => {
+          return (
+            <Box component="li" {...renderProps}>
+              <ListItemText primary={renderOption.label} secondary={renderOption.subtext} />
+            </Box>
+          );
+        })
       }
       data-testid={dataGridProps.id}
     />

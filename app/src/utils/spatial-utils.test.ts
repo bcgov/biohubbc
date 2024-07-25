@@ -1,10 +1,10 @@
 import { Feature, GeoJsonProperties, Point } from 'geojson';
 import {
-    createGeoJSONFeature,
-    createGeoJSONPoint,
-    getCoordinatesFromGeoJson,
-    isGeoJsonPointFeature,
-    isValidCoordinates
+  createGeoJSONFeature,
+  createGeoJSONPoint,
+  getCoordinatesFromGeoJson,
+  isGeoJsonPointFeature,
+  isValidCoordinates
 } from './spatial-utils';
 
 describe('createGeoJSONPoint', () => {
@@ -94,7 +94,7 @@ describe('getCoordinatesFromGeoJson', () => {
 
 describe('isGeoJsonPointFeature', () => {
   it('returns true for a GeoJSON feature with point geometry', () => {
-    const feature: Feature<Point, GeoJsonProperties>  = {
+    const feature: Feature<Point, GeoJsonProperties> = {
       type: 'Feature',
       geometry: {
         type: 'Point',
