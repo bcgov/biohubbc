@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
-import { getDBConnection } from '../../../../database/db';
+import { getAPIUserDBConnection } from '../../../../database/db';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { StandardsService } from '../../../../services/standards-service';
 import { getLogger } from '../../../../utils/logger';
@@ -199,8 +199,7 @@ GET.apiDoc = {
  */
 export function getSpeciesStandards(): RequestHandler {
   return async (req, res) => {
-    // TODO: const connection = getAPIUserDBConnection();
-    const connection = getDBConnection(req.keycloak_token);
+    const connection = getAPIUserDBConnection();
 
     try {
       const tsn = Number(req.params.tsn);
@@ -216,6 +215,7 @@ export function getSpeciesStandards(): RequestHandler {
       return res.status(200).json(getSpeciesStandardsResponse);
     } catch (error) {
       defaultLog.error({ label: 'getSpeciesStandards', message: 'error', error });
+      connection.rollback()
       throw error;
     } finally {
       connection.release();

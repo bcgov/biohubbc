@@ -12,13 +12,11 @@ export const GET: Operation = [getEnvironmentStandards()];
 GET.apiDoc = {
   description: 'Gets lookup values for environment variables',
   tags: ['standards'],
-  parameters: [
-    
-  ],
+  parameters: [],
   security: [{ Bearer: [] }],
   responses: {
     200: {
-      description: 'Species data standards response object.',
+      description: 'Environment data standards response object.',
       content: {
         'application/json': {
           schema: EnvironmentStandardsSchema
@@ -64,6 +62,7 @@ export function getEnvironmentStandards(): RequestHandler {
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getEnvironmentStandards', message: 'error', error });
+      connection.rollback();
       throw error;
     } finally {
       connection.release();

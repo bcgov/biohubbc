@@ -68,4 +68,26 @@ describe('StandardsService', () => {
       expect(response.measurements.qualitative[0].measurement_desc).to.eql('description');
     });
   });
+
+  describe('getEnvironmentStandards', async () => {
+    const mockData = {
+      qualitative: [{ name: 'name', description: 'name', options: [{ name: 'name', description: 'description' }] }],
+      quantitative: [
+        { name: 'name', description: 'description' },
+        { name: 'name', description: 'description' }
+      ]
+    };
+    const mockDbConnection = getMockDBConnection();
+
+    const standardsService = new StandardsService(mockDbConnection);
+
+    const getEnvironmentStandardsStub = sinon
+      .stub(standardsService.standardsRepository, 'getEnvironmentStandards')
+      .resolves(mockData);
+
+    const response = await standardsService.getEnvironmentStandards();
+
+    expect(getEnvironmentStandardsStub).to.be.calledOnce;
+    expect(response).to.eql(mockData);
+  });
 });
