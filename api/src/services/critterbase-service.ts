@@ -61,7 +61,7 @@ export interface ICapture {
   release_location: {
     latitude: number;
     longitude: number;
-  }
+  };
 }
 
 export interface IMortality {
@@ -505,6 +505,13 @@ export class CritterbaseService {
     return response.data;
   }
 
+  /**
+   * Creates critters in bulk with the provided data.
+   *
+   * @param {IBulkCreate} data
+   * @return {*}  {Promise<IBulkCreateResponse>}
+   * @memberof CritterbaseService
+   */
   async bulkCreate(data: IBulkCreate): Promise<IBulkCreateResponse> {
     const response = await this.axiosInstance.post(BULK_ENDPOINT, data);
     return response.data;

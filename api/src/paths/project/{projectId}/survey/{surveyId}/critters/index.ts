@@ -218,6 +218,11 @@ export function getCrittersFromSurvey(): RequestHandler {
 
       const critterIds = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
 
+      const critterbaseService = new CritterbaseService({
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      });
+
       // Fetch critters from the service based on critterIds
       const result =
         req.query.format === 'detailed'

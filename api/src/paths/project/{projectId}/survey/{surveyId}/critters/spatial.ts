@@ -145,12 +145,13 @@ export function getCritterGeometry(): RequestHandler {
       await connection.open();
 
       const surveyService = new SurveyCritterService(connection);
-      const critterbaseService = new CritterbaseService({
-        keycloak_guid: req['system_user']?.user_guid,
-        username: req['system_user']?.user_identifier
-      });
 
       const surveyCritters = await surveyService.getCrittersInSurvey(surveyId);
+
+      const critterbaseService = new CritterbaseService({
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      });
 
       const critters = await critterbaseService.getMultipleCrittersByIdsDetailed(
         surveyCritters.map((critter) => critter.critterbase_critter_id)
@@ -161,7 +162,7 @@ export function getCritterGeometry(): RequestHandler {
         return res.status(200).json({ captures: [], mortalities: [] });
       }
 
-      let captures: ICaptureGeometry[] = [];
+      const captures: ICaptureGeometry[] = [];
 
       // Map over all captures to extract geometry as points
       for (const critter of critters) {
@@ -178,9 +179,8 @@ export function getCritterGeometry(): RequestHandler {
         }
       }
 
-      let mortalities: IMortalityGeometry[] = [];
+      const mortalities: IMortalityGeometry[] = [];
 
-      
       // Map over all mortalities to extract geometry as points
       for (const critter of critters) {
         const mortality = critter.mortality;

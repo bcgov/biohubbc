@@ -1,8 +1,6 @@
 import { mdiArrowTopRight } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import grey from '@mui/material/colors/grey';
-import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridOverlay, GridSortModel } from '@mui/x-data-grid';
