@@ -20,7 +20,7 @@ export const createGeoJSONPoint = (latitude: number, longitude: number): Point =
  *
  * @param {number} latitude
  * @param {number} longitude
- * @param {GeoJsonProperties} properties
+ * @param {GeoJsonProperties} [properties={}]
  * @returns {Feature}
  */
 export const createGeoJSONFeature = (

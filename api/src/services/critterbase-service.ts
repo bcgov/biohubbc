@@ -486,10 +486,10 @@ export class CritterbaseService {
   /**
    * Creates a new critter with the provided data.
    *
-   * @param {ICritter} data - The data of the critter to be created.
+   * @param {ICreateCritter} data - The data of the critter to be created.
    * @returns {Promise<any>} - The response data from the create operation.
    */
-  async createCritter(data: ICritter): Promise<any> {
+  async createCritter(data: ICreateCritter): Promise<any> {
     const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}/create`, data);
     return response.data;
   }

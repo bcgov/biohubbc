@@ -10,7 +10,6 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo } from 'react';
 import { coloredCustomMortalityMarker } from 'utils/mapUtils';
-import { createGeoJSONFeature } from 'utils/spatial-utils';
 
 /**
  * Component for displaying animal capture points on a map and in a table.
@@ -40,40 +39,25 @@ export const SurveySpatialAnimal = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [critterIds]);
 
-  const geometry = useMemo(
-    () => geometryDataLoader.data ?? { captures: [], mortalities: [] },
-    [geometryDataLoader.data]
-  );
-
-  const capturePoints = useMemo(
-    () =>
-      geometry.captures.map((capture) => ({
-        id: capture.capture_id,
-        key: `capture-${capture.capture_id}`,
-        geoJSON: createGeoJSONFeature(capture.coordinates[0], capture.coordinates[1])
-        //   icon: coloredCustomPointMarker
-      })),
-    [geometry.captures]
-  );
-
-  const mortalityPoints = useMemo(
-    () =>
-      geometry.mortalities.map((mortality) => ({
-        id: mortality.mortality_id,
-        key: `mortality-${mortality.mortality_id}`,
-        geoJSON: createGeoJSONFeature(mortality.coordinates[0], mortality.coordinates[1])
-        //   icon: coloredCustomMortalityMarker,
-      })),
-    [geometry]
-  );
-
   const captureLayer: IStaticLayer = {
     layerName: 'Animal Captures',
     layerOptions: {
       fillColor: SURVEY_MAP_LAYER_COLOURS.CAPTURE_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
       color: SURVEY_MAP_LAYER_COLOURS.CAPTURE_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
     },
-    features: capturePoints,
+    features:
+      geometryDataLoader.data?.captures.map((capture) => ({
+        id: capture.capture_id,
+        key: `capture-${capture.capture_id}`,
+        geoJSON: {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [capture.coordinates[1], capture.coordinates[0]]
+          },
+          properties: {}
+        }
+      })) ?? [],
     popup: (feature) => <SurveySpatialAnimalCapturePopup feature={feature} />
   };
 
@@ -84,7 +68,19 @@ export const SurveySpatialAnimal = () => {
       color: SURVEY_MAP_LAYER_COLOURS.MORTALITY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
       marker: coloredCustomMortalityMarker
     },
-    features: mortalityPoints,
+    features:
+      geometryDataLoader.data?.mortalities.map((mortality) => ({
+        id: mortality.mortality_id,
+        key: `mortality-${mortality.mortality_id}`,
+        geoJSON: {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [mortality.coordinates[1], mortality.coordinates[0]]
+          },
+          properties: {}
+        }
+      })) ?? [],
     popup: (feature) => <SurveySpatialAnimalMortalityPopup feature={feature} />
   };
 
