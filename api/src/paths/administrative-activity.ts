@@ -28,7 +28,16 @@ POST.apiDoc = {
         schema: {
           title: 'Administrative Activity request object',
           type: 'object',
-          properties: {}
+          additionalProperties: false,
+          properties: {
+            reason: { type: 'string', description: 'Reason for the access request.' },
+            userGuid: { type: 'string', description: 'Unique keycloak GUID for the user.' },
+            name: { type: 'string' },
+            username: { type: 'string' },
+            email: { type: 'string' },
+            identitySource: { type: 'string', description: 'Whether the account is an IDIR or BCeID.' },
+            displayName: { type: 'string' }
+          }
         }
       }
     }

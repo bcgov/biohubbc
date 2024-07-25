@@ -15,9 +15,6 @@ jest.mock('../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
-  codes: {
-    getAllCodeSets: jest.fn<Promise<object>, []>()
-  },
   admin: {
     createAdministrativeActivity: jest.fn()
   }
@@ -42,7 +39,6 @@ const renderContainer = () => {
 describe('AccessRequestPage', () => {
   beforeEach(() => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
-    mockUseApi.codes.getAllCodeSets.mockClear();
     mockUseApi.admin.createAdministrativeActivity.mockClear();
   });
 
@@ -54,10 +50,6 @@ describe('AccessRequestPage', () => {
     const history = createMemoryHistory();
 
     it('should call the auth signoutRedirect function', async () => {
-      mockUseApi.codes.getAllCodeSets.mockResolvedValue({
-        system_roles: [{ id: 1, name: 'Creator' }]
-      });
-
       const signoutRedirectStub = jest.fn();
 
       const authState = getMockAuthState({
@@ -90,10 +82,6 @@ describe('AccessRequestPage', () => {
   });
 
   it.skip('processes a successful request submission', async () => {
-    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
-      system_roles: [{ id: 1, name: 'Creator' }]
-    });
-
     mockUseApi.admin.createAdministrativeActivity.mockResolvedValue({
       id: 1
     });
@@ -118,10 +106,6 @@ describe('AccessRequestPage', () => {
   });
 
   it.skip('takes the user to the request-submitted page immediately if they already have an access request', async () => {
-    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
-      system_roles: [{ id: 1, name: 'Creator' }]
-    });
-
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
     render(
@@ -140,10 +124,6 @@ describe('AccessRequestPage', () => {
   });
 
   it.skip('shows error dialog with api error message when submission fails', async () => {
-    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
-      system_roles: [{ id: 1, name: 'Creator' }]
-    });
-
     mockUseApi.admin.createAdministrativeActivity = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, getAllByRole, getByRole, queryByText } = renderContainer();
@@ -172,10 +152,6 @@ describe('AccessRequestPage', () => {
   });
 
   it.skip('shows error dialog with default error message when response from createAdministrativeActivity is invalid', async () => {
-    mockUseApi.codes.getAllCodeSets.mockResolvedValue({
-      system_roles: [{ id: 1, name: 'Creator' }]
-    });
-
     mockUseApi.admin.createAdministrativeActivity.mockResolvedValue({
       id: null
     });

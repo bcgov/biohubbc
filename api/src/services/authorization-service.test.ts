@@ -137,6 +137,23 @@ describe('AuthorizationService', () => {
       expect(isAuthorizedByServiceClient).to.equal(false);
     });
 
+    it('returns false if `record_end_date` is null', async function () {
+      const mockDBConnection = getMockDBConnection();
+
+      const mockGetSystemUsersObjectResponse = {
+        record_end_date: '2021-01-01',
+        role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+      } as unknown as SystemUser;
+
+      sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockGetSystemUsersObjectResponse);
+
+      const authorizationService = new AuthorizationService(mockDBConnection);
+
+      const isAuthorizedByServiceClient = await authorizationService.authorizeSystemAdministrator();
+
+      expect(isAuthorizedByServiceClient).to.equal(false);
+    });
+
     it('returns true if `systemUserObject` is not null and includes admin role', async function () {
       const mockDBConnection = getMockDBConnection();
 
@@ -194,7 +211,7 @@ describe('AuthorizationService', () => {
       };
       const mockDBConnection = getMockDBConnection();
 
-      const mockGetSystemUsersObjectResponse = { record_end_date: 'datetime' } as unknown as SystemUser;
+      const mockGetSystemUsersObjectResponse = { record_end_date: '2021-01-01' } as unknown as SystemUser;
       sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockGetSystemUsersObjectResponse);
 
       const authorizationService = new AuthorizationService(mockDBConnection);
@@ -415,7 +432,8 @@ describe('AuthorizationService', () => {
         };
         const mockDBConnection = getMockDBConnection();
 
-        const mockGetSystemUsersObjectResponse = { record_end_date: 'datetime' } as unknown as ProjectUser & SystemUser;
+        const mockGetSystemUsersObjectResponse = { record_end_date: '2021-01-01' } as unknown as ProjectUser &
+          SystemUser;
         sinon
           .stub(AuthorizationService.prototype, 'getProjectUserObjectByProjectId')
           .resolves(mockGetSystemUsersObjectResponse);
@@ -538,7 +556,8 @@ describe('AuthorizationService', () => {
         };
         const mockDBConnection = getMockDBConnection();
 
-        const mockGetSystemUsersObjectResponse = { record_end_date: 'datetime' } as unknown as ProjectUser & SystemUser;
+        const mockGetSystemUsersObjectResponse = { record_end_date: '2021-01-01' } as unknown as ProjectUser &
+          SystemUser;
         sinon
           .stub(AuthorizationService.prototype, 'getProjectUserObjectByProjectId')
           .resolves(mockGetSystemUsersObjectResponse);
