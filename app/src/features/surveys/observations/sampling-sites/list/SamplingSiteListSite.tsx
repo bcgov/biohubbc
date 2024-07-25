@@ -36,7 +36,7 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
   const staticLayers: IStaticLayer[] = [
     {
       layerName: 'Sample Sites',
-      layerColors: { color: blue[500], fillColor: blue[500] },
+      layerOptions: { color: blue[500], fillColor: blue[500] },
       features: [
         {
           id: sampleSite.survey_sample_site_id,

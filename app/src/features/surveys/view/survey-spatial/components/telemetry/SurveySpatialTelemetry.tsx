@@ -94,7 +94,7 @@ export const SurveySpatialTelemetry = () => {
 
   const telemetryLayer: IStaticLayer = {
     layerName: 'Telemetry',
-    layerColors: {
+    layerOptions: {
       fillColor: SURVEY_MAP_LAYER_COLOURS.TELEMETRY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
       color: SURVEY_MAP_LAYER_COLOURS.TELEMETRY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
       opacity: 0.75

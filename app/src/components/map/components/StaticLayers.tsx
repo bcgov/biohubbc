@@ -1,8 +1,9 @@
+import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import { Feature } from 'geojson';
 import { Marker } from 'leaflet';
 import { PropsWithChildren, ReactElement, useMemo } from 'react';
 import { FeatureGroup, GeoJSON, GeoJSONProps, LayersControl } from 'react-leaflet';
-import { coloredCustomPointMarker, coloredPoint } from 'utils/mapUtils';
+import { coloredCustomMarker, ColoredCustomMarkerProps } from 'utils/mapUtils';
 
 export type IStaticLayerFeature = {
   /**
@@ -11,6 +12,7 @@ export type IStaticLayerFeature = {
   id: string | number;
   /**
    * Unique key of the feature.
+   * Must be unique across all features in the map.
    *
    * @type {string}
    */
@@ -30,14 +32,54 @@ export type IStaticLayerFeature = {
 };
 
 export type IStaticLayer = {
+  /**
+   * The name of the layer.
+   * This will be displayed in the layer control.
+   */
   layerName: string;
-  layerColors?: {
-    color: string;
-    fillColor: string;
-    opacity?: number;
-  };
+  /**
+   * The features to be displayed in the layer.
+   */
   features: IStaticLayerFeature[];
+  /**
+   * Additional layer options.
+   */
+  layerOptions?: {
+    /**
+     * The color of the layer.
+     *
+     * @example
+     * '#1f7dff'
+     */
+    color?: string;
+    /**
+     * The fill color of the layer.
+     *
+     * @example
+     * '#1f7dff'
+     */
+    fillColor?: string;
+    /**
+     * The opacity of the layer.
+     *
+     * @example
+     * 0.5
+     */
+    opacity?: number;
+    /**
+     * A function that returns a custom marker to use for the layer for `Point` features.
+     */
+    marker?: (ColoredCustomMarkerProps: ColoredCustomMarkerProps) => L.Marker<any>;
+  };
+  /**
+   * A function that returns a custom popup to be displayed for the feature.
+   * Returned component must be wrapped in a `Popup` component from `react-leaflet`.
+   */
   popup?: (feature: IStaticLayerFeature) => ReactElement;
+  /**
+   * A function that returns a custom tooltip to be displayed for the feature.
+   * Returned component must be wrapped in a `Tooltip` component from `react-leaflet`.
+   */
   tooltip?: (feature: IStaticLayerFeature) => ReactElement;
 };
 
@@ -57,24 +99,24 @@ const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
       props.layers
         .filter((layer) => Boolean(layer.features?.length))
         .map((layer, index) => {
-          const layerColors = layer.layerColors || { color: '#1f7dff', fillColor: '#1f7dff' };
           return (
             <LayersControl.Overlay
               checked={true}
               name={layer.layerName}
               key={`static-layer-${layer.layerName}-${index}`}>
               <FeatureGroup key={`static-feature-group-${layer.layerName}-${index}`}>
-                {layer.features.map((feature, index) => {
-                  const id = feature.id || feature.geoJSON.id || index;
-
+                {layer.features.map((feature) => {
                   return (
                     <GeoJSON
-                      key={`static-feature-${id}`}
-                      style={{ ...layerColors }}
+                      key={feature.key}
+                      style={{
+                        color: layer.layerOptions?.color ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
+                        fillColor: layer.layerOptions?.fillColor ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
+                        opacity: layer.layerOptions?.opacity ?? 1
+                      }}
                       pointToLayer={(_, latlng) =>
-                        layer.layerName === 'Observations'
-                          ? coloredCustomPointMarker({ latlng, fillColor: layer.layerColors?.fillColor })
-                          : coloredPoint({ latlng, fillColor: layer.layerColors?.fillColor })
+                        layer.layerOptions?.marker?.({ latlng, fillColor: layer.layerOptions?.fillColor }) ??
+                        coloredCustomMarker({ latlng, fillColor: layer.layerOptions?.fillColor })
                       }
                       data={feature.geoJSON}
                       {...feature.GeoJSONProps}>

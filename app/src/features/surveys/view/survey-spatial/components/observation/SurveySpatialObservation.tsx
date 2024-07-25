@@ -9,6 +9,7 @@ import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IGetSurveyObservationsGeometryResponse } from 'interfaces/useObservationApi.interface';
 import { useEffect, useMemo } from 'react';
+import { coloredCustomObservationMarker } from 'utils/mapUtils';
 
 /**
  * Component to display survey observation data on a map and in a table.
@@ -45,9 +46,10 @@ export const SurveySpatialObservation = () => {
 
   const observationLayer: IStaticLayer = {
     layerName: 'Species Observations',
-    layerColors: {
+    layerOptions: {
       fillColor: SURVEY_MAP_LAYER_COLOURS.OBSERVATIONS_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
-      color: SURVEY_MAP_LAYER_COLOURS.OBSERVATIONS_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
+      color: SURVEY_MAP_LAYER_COLOURS.OBSERVATIONS_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
+      marker: coloredCustomObservationMarker
     },
     features: observationPoints,
     popup: (feature) => {

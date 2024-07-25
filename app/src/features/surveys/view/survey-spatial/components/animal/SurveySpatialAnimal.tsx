@@ -9,6 +9,7 @@ import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo } from 'react';
+import { coloredCustomMortalityMarker } from 'utils/mapUtils';
 import { createGeoJSONFeature } from 'utils/spatial-utils';
 
 /**
@@ -68,7 +69,7 @@ export const SurveySpatialAnimal = () => {
 
   const captureLayer: IStaticLayer = {
     layerName: 'Animal Captures',
-    layerColors: {
+    layerOptions: {
       fillColor: SURVEY_MAP_LAYER_COLOURS.CAPTURE_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
       color: SURVEY_MAP_LAYER_COLOURS.CAPTURE_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
     },
@@ -78,9 +79,10 @@ export const SurveySpatialAnimal = () => {
 
   const mortalityLayer: IStaticLayer = {
     layerName: 'Animal Mortalities',
-    layerColors: {
+    layerOptions: {
       fillColor: SURVEY_MAP_LAYER_COLOURS.MORTALITY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
-      color: SURVEY_MAP_LAYER_COLOURS.MORTALITY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR
+      color: SURVEY_MAP_LAYER_COLOURS.MORTALITY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
+      marker: coloredCustomMortalityMarker
     },
     features: mortalityPoints,
     popup: (feature) => <SurveySpatialAnimalMortalityPopup feature={feature} />

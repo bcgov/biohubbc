@@ -11,50 +11,6 @@ import { useMemo } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
-export interface ISurveyMapPointMetadata {
-  label: string;
-  value: string;
-}
-
-// export interface ISurveyMapSupplementaryLayer {
-//   /**
-//    * The name of the layer
-//    */
-//   layerName: string;
-//   /**
-//    * The colour of the layer
-//    */
-//   layerColors?: {
-//     color: string;
-//     fillColor: string;
-//     opacity?: number;
-//   };
-//   /**
-//    * The array of map points
-//    */
-//   mapPoints: ISurveyMapPoint[];
-//   /**
-//    * Callback to fetch metadata, which is fired when the geometry's popup
-//    * is opened
-//    */
-//   onClick: (mapPoint: ISurveyMapPoint) => Promise<ISurveyMapPointMetadata[]>;
-//   /**
-//    * The title of the feature type displayed in the popup
-//    */
-//   popupRecordTitle: string;
-// }
-
-export interface ISurveyMapPoint {
-  /**
-   * Unique key for the point
-   */
-  key: string;
-  /**
-   * The geometric feature to display
-   */
-  feature: Feature;
-}
-
 interface ISurveyMapProps {
   staticLayers: IStaticLayer[];
   isLoading: boolean;
@@ -71,8 +27,6 @@ const SurveyMap = (props: ISurveyMapProps) => {
     } else {
       return calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]);
     }
-    // Adding supplementaryLayers and staticLayers as dependencies causes the zoom to change when a point is clicked on
-    // (when onLoadMetadata is called), which is undesired.
   }, [props.staticLayers]);
 
   return (

@@ -15,7 +15,7 @@ export const useSamplingSiteStaticLayer = (): IStaticLayer => {
 
   const samplingSiteStaticLayer: IStaticLayer = {
     layerName: 'Sampling Sites',
-    layerColors: {
+    layerOptions: {
       color: SURVEY_MAP_LAYER_COLOURS.SAMPLING_SITE_COLOUR,
       fillColor: SURVEY_MAP_LAYER_COLOURS.SAMPLING_SITE_COLOUR
     },

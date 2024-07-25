@@ -15,7 +15,7 @@ export const useStudyAreaStaticLayer = (): IStaticLayer => {
 
   const studyAreaStaticLayer: IStaticLayer = {
     layerName: 'Study Areas',
-    layerColors: {
+    layerOptions: {
       color: SURVEY_MAP_LAYER_COLOURS.STUDY_AREA_COLOUR,
       fillColor: SURVEY_MAP_LAYER_COLOURS.STUDY_AREA_COLOUR
     },
