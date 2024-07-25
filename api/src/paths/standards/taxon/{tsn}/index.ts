@@ -200,7 +200,7 @@ GET.apiDoc = {
 export function getSpeciesStandards(): RequestHandler {
   return async (req, res) => {
     // TODO: const connection = getAPIUserDBConnection();
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const tsn = Number(req.params.tsn);

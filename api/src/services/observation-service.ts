@@ -46,14 +46,14 @@ import {
   getDateFromRow,
   getLatitudeFromRow,
   getLongitudeFromRow,
-  getNonStandardColumnNamesFromWorksheet,
   getTimeFromRow,
   getTsnFromRow,
   observationStandardColumnValidator
-} from '../utils/observation-xlsx-utils/standard-column-utils';
+} from '../utils/xlsx-utils/column-cell-utils';
 import {
   constructXLSXWorkbook,
   getDefaultWorksheet,
+  getNonStandardColumnNamesFromWorksheet,
   getWorksheetRowObjects,
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
@@ -419,6 +419,18 @@ export class ObservationService extends DBService {
   }
 
   /**
+   * Retrieves observation records count for the given survey and technique ids
+   *
+   * @param {number} surveyId
+   * @param {number[]} methodTechniqueIds
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationService
+   */
+  async getObservationsCountByTechniqueIds(surveyId: number, methodTechniqueIds: number[]): Promise<number> {
+    return this.observationRepository.getObservationsCountByTechniqueIds(surveyId, methodTechniqueIds);
+  }
+
+  /**
    * Processes an observation CSV file submission.
    *
    * This method:
@@ -466,7 +478,10 @@ export class ObservationService extends DBService {
     }
 
     // Filter out the standard columns from the worksheet
-    const nonStandardColumnNames = getNonStandardColumnNamesFromWorksheet(xlsxWorksheet);
+    const nonStandardColumnNames = getNonStandardColumnNamesFromWorksheet(
+      xlsxWorksheet,
+      observationStandardColumnValidator
+    );
 
     // Get the worksheet row objects
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheet);
@@ -729,7 +744,7 @@ export class ObservationService extends DBService {
    * name to match its ITIS TSN.
    *
    * @template RecordWithTaxonFields
-   * @param {RecordWithTaxonFields[]} records
+   * @param {RecordWithTaxonFields[]} recordsToPatch
    * @return {*}  {Promise<RecordWithTaxonFields[]>}
    * @memberof ObservationService
    */

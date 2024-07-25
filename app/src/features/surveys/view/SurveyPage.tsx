@@ -7,6 +7,8 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import React, { useContext, useEffect } from 'react';
+import { SurveySamplingContainer } from './components/sampling-data/SurveySamplingContainer';
+import SurveySpatialData from './components/spatial-data/SurveySpatialData';
 import SurveyStudyArea from './components/SurveyStudyArea';
 import { SurveySpatialContainer } from './survey-spatial/SurveySpatialContainer';
 import SurveyAttachments from './SurveyAttachments';
@@ -34,6 +36,10 @@ const SurveyPage: React.FC = () => {
       <SurveyHeader />
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Stack gap={3}>
+          <Paper>
+            <SurveySamplingContainer />
+          </Paper>
+
           <TaxonomyContextProvider>
             <SurveySpatialContainer />
           </TaxonomyContextProvider>
