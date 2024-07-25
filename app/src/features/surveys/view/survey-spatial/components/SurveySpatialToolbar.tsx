@@ -29,13 +29,15 @@ interface ISurveySpatialDatasetView {
   isLoading: boolean;
 }
 
-interface ISurveySptialToolbarProps {
-  updateDatasetView: (view: SurveySpatialDatasetViewEnum) => void;
-  views: ISurveySpatialDatasetView[];
+interface ISurveySpatialToolbarProps {
   activeView: SurveySpatialDatasetViewEnum;
+  setActiveView: (view: SurveySpatialDatasetViewEnum) => void;
+  views: ISurveySpatialDatasetView[];
 }
 
-const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
+export const SurveySpatialToolbar = (props: ISurveySpatialToolbarProps) => {
+  const { activeView, setActiveView, views } = props;
+
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   const updateDatasetView = (_event: React.MouseEvent<HTMLElement>, view: SurveySpatialDatasetViewEnum) => {
@@ -43,7 +45,7 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
       return;
     }
 
-    props.updateDatasetView(view);
+    setActiveView(view);
   };
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -132,7 +134,7 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
         <Divider flexItem></Divider>
         <Box p={2} display="flex" justifyContent="space-between">
           <ToggleButtonGroup
-            value={props.activeView}
+            value={activeView}
             onChange={updateDatasetView}
             exclusive
             sx={{
@@ -148,7 +150,7 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
                 letterSpacing: '0.02rem'
               }
             }}>
-            {props.views.map((view) => (
+            {views.map((view) => (
               <ToggleButton
                 key={view.value}
                 component={Button}
@@ -164,5 +166,3 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
     </>
   );
 };
-
-export default SurveySpatialToolbar;

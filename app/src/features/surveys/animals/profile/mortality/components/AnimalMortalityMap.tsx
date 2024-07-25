@@ -22,21 +22,23 @@ export const AnimalMortalityMap = (props: IAnimalMortalityMapProps) => {
   const mortalityMapFeatures = mortality
     .filter((mortality) => isDefined(mortality.location?.latitude) && isDefined(mortality.location?.longitude))
     .map((mortality) => ({
+      id: mortality.mortality_id,
       type: 'Feature',
       geometry: {
         type: 'Point',
         coordinates: [mortality.location?.longitude, mortality.location?.latitude]
       },
       properties: { mortalityId: mortality.mortality_id, date: mortality.mortality_timestamp }
-    })) as Feature[];
+    }));
 
   const staticLayers: IStaticLayer[] = mortalityMapFeatures.map((feature, index) => ({
     layerName: 'Mortality',
     popupRecordTitle: 'Capture Location',
     features: [
       {
-        key: `${feature.geometry}-${index}`,
-        geoJSON: feature
+        id: feature.id,
+        key: `mortality-location-${feature.geometry}-${index}`,
+        geoJSON: feature as Feature
       }
     ]
   }));

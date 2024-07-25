@@ -34,7 +34,7 @@ interface ISurveyDataTelemetryTableProps {
  * @param {boolean} props.isLoading - Indicates if the data is currently loading.
  * @returns {JSX.Element} The rendered component.
  */
-const SurveyDataTelemetryTable = (props: ISurveyDataTelemetryTableProps) => {
+export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProps) => {
   const surveyContext = useContext(SurveyContext);
 
   /**
@@ -43,7 +43,6 @@ const SurveyDataTelemetryTable = (props: ISurveyDataTelemetryTableProps) => {
    */
   const tableRows: ITelemetryData[] = useMemo(() => {
     return surveyContext.critterDeployments.map((item) => {
- 
       return {
         // Critters in this table may use multiple devices across multiple timespans
         id: item.deployment.deployment_id,
@@ -153,5 +152,3 @@ const SurveyDataTelemetryTable = (props: ISurveyDataTelemetryTableProps) => {
     </>
   );
 };
-
-export default SurveyDataTelemetryTable;

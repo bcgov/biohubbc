@@ -217,8 +217,12 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
                       {
                         layerName: 'Sampling Sites',
                         features: samplingSiteGeoJsonFeatures
-                          .filter((item) => item?.id) // Filter for only drawn features
-                          .map((feature, index) => ({ geoJSON: feature, key: index }))
+                          .filter((feature) => feature?.id) // Filter for only drawn features
+                          .map((feature, index) => ({
+                            id: feature.id || index,
+                            key: `sampling-site-${feature.id || index}`,
+                            geoJSON: feature
+                          }))
                       }
                     ]}
                   />

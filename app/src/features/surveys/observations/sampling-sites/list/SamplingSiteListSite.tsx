@@ -39,7 +39,8 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
       layerColors: { color: blue[500], fillColor: blue[500] },
       features: [
         {
-          key: sampleSite.survey_sample_site_id,
+          id: sampleSite.survey_sample_site_id,
+          key: `sampling-site-${sampleSite.survey_sample_site_id}`,
           geoJSON: sampleSite.geojson
         }
       ]

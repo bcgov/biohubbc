@@ -478,4 +478,3 @@ export const getRandomHexColor = (seed: number, min = 100, max = 170): string =>
  * @return {*}  {value is T}
  */
 export const isDefined = <T,>(value: T | undefined | null): value is T => value !== undefined && value !== null;
-

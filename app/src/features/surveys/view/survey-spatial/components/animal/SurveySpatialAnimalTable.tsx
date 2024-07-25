@@ -20,7 +20,7 @@ interface IAnimalData {
 }
 
 /**
- * Props interface for SurveyDataAnimalTable component.
+ * Props interface for SurveySpatialAnimalTable component.
  */
 interface ISurveyDataAnimalTableProps {
   isLoading: boolean;
@@ -30,7 +30,7 @@ interface ISurveyDataAnimalTableProps {
  * Component for displaying animal data in a table, fetching data via context and API hooks.
  * Renders a table with animal nicknames and scientific names, with loading skeleton when data is loading.
  */
-const SurveyDataAnimalTable = (props: ISurveyDataAnimalTableProps) => {
+export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => {
   const surveyContext = useSurveyContext();
   const critterbaseApi = useCritterbaseApi();
 
@@ -109,5 +109,3 @@ const SurveyDataAnimalTable = (props: ISurveyDataAnimalTableProps) => {
     </>
   );
 };
-
-export default SurveyDataAnimalTable;

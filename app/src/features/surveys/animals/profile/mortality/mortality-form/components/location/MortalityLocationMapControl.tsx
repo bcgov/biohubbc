@@ -274,7 +274,15 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
                   layers={[
                     {
                       layerName: 'Mortality Location',
-                      features: get(values, name) ? [{ geoJSON: get(values, name), key: Math.random() }] : []
+                      features: get(values, name)
+                        ? [
+                            {
+                              id: Math.random(),
+                              key: `mortality-location-${Math.random()}`,
+                              geoJSON: get(values, name)
+                            }
+                          ]
+                        : []
                     }
                   ]}
                 />

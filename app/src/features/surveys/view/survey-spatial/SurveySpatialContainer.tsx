@@ -1,12 +1,15 @@
 import { mdiEye, mdiPaw, mdiWifiMarker } from '@mdi/js';
 import Paper from '@mui/material/Paper';
+import { SurveySpatialAnimal } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimal';
+import { SurveySpatialObservation } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservation';
+import {
+  SurveySpatialDatasetViewEnum,
+  SurveySpatialToolbar
+} from 'features/surveys/view/survey-spatial/components/SurveySpatialToolbar';
+import { SurveySpatialTelemetry } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetry';
 import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
 import { isEqual } from 'lodash-es';
 import { useEffect, useState } from 'react';
-import { SurveyDataAnimal } from './components/animal/SurveyDataAnimal';
-import { SurveyDataObservation } from './components/observation/SurveyDataObservation';
-import SurveySpatialToolbar, { SurveySpatialDatasetViewEnum } from './components/SurveySpatialToolbar';
-import { SurveyDataTelemetry } from './components/telemetry/SurveyDataTelemetry';
 
 /**
  * Container component for displaying survey spatial data.
@@ -15,11 +18,11 @@ import { SurveyDataTelemetry } from './components/telemetry/SurveyDataTelemetry'
  *
  * @returns {JSX.Element} The rendered component.
  */
-export const SurveyDataContainer = (): JSX.Element => {
-  const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
-
+export const SurveySpatialContainer = (): JSX.Element => {
   const observationsContext = useObservationsContext();
   const taxonomyContext = useTaxonomyContext();
+
+  const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
 
   // Fetch and cache all taxonomic data required for the observations.
   useEffect(() => {
@@ -44,6 +47,7 @@ export const SurveyDataContainer = (): JSX.Element => {
       {/* Toolbar for switching between different dataset views */}
       <SurveySpatialToolbar
         activeView={activeView}
+        setActiveView={setActiveView}
         views={[
           {
             label: 'Observations',
@@ -64,13 +68,12 @@ export const SurveyDataContainer = (): JSX.Element => {
             isLoading: false
           }
         ]}
-        updateDatasetView={setActiveView}
       />
 
       {/* Display the corresponding dataset view based on the selected active view */}
-      {isEqual(SurveySpatialDatasetViewEnum.OBSERVATIONS, activeView) && <SurveyDataObservation />}
-      {isEqual(SurveySpatialDatasetViewEnum.TELEMETRY, activeView) && <SurveyDataTelemetry />}
-      {isEqual(SurveySpatialDatasetViewEnum.ANIMALS, activeView) && <SurveyDataAnimal />}
+      {isEqual(SurveySpatialDatasetViewEnum.OBSERVATIONS, activeView) && <SurveySpatialObservation />}
+      {isEqual(SurveySpatialDatasetViewEnum.TELEMETRY, activeView) && <SurveySpatialTelemetry />}
+      {isEqual(SurveySpatialDatasetViewEnum.ANIMALS, activeView) && <SurveySpatialAnimal />}
     </Paper>
   );
 };

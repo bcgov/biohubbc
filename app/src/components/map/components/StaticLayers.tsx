@@ -1,40 +1,35 @@
 import { Feature } from 'geojson';
+import { Marker } from 'leaflet';
 import { PropsWithChildren, ReactElement, useMemo } from 'react';
-import {
-  FeatureGroup,
-  GeoJSON,
-  GeoJSONProps,
-  LayersControl,
-  PopupProps,
-  Tooltip,
-  TooltipProps
-} from 'react-leaflet';
-import { coloredPoint, MapPointProps } from 'utils/mapUtils';
+import { FeatureGroup, GeoJSON, GeoJSONProps, LayersControl } from 'react-leaflet';
+import { coloredCustomPointMarker, coloredPoint } from 'utils/mapUtils';
 
-export interface IStaticLayerFeature {
+export type IStaticLayerFeature = {
+  /**
+   * Unique Id of the feature.
+   */
+  id: string | number;
+  /**
+   * Unique key of the feature.
+   *
+   * @type {string}
+   */
+  key: string;
+  /**
+   * The GeoJSON feature to be displayed.
+   */
   geoJSON: Feature;
-  key: string | number;
+  /**
+   * Additional props to be passed to the `GeoJSON` component.
+   */
   GeoJSONProps?: Partial<GeoJSONProps>;
-  popup?: ReactElement;
-  PopupProps?: Partial<PopupProps>;
-  tooltip?: ReactElement;
-  TooltipProps?: Partial<TooltipProps>;
   /**
-   * The icon representing each point
+   * A custom marker icon to use when displaying point features.
    */
-  icon?: (point: MapPointProps) => L.Marker<any>;
-  /**
-   * Unique Id of the point
-   */
-  id?: string | number;
-  /**
-   * Optional link that renders a button to view/manage/edit the data
-   * that the geometry belongs to
-   */
-  link?: string; //
-}
+  markerIcon?: Marker<any>;
+};
 
-export interface IStaticLayer {
+export type IStaticLayer = {
   layerName: string;
   layerColors?: {
     color: string;
@@ -42,12 +37,13 @@ export interface IStaticLayer {
     opacity?: number;
   };
   features: IStaticLayerFeature[];
-  popup?: ReactElement
-}
+  popup?: (feature: IStaticLayerFeature) => ReactElement;
+  tooltip?: (feature: IStaticLayerFeature) => ReactElement;
+};
 
-export interface IStaticLayersProps {
+export type IStaticLayersProps = {
   layers: IStaticLayer[];
-}
+};
 
 /**
  * Returns static map layers to be displayed in leaflet
@@ -68,28 +64,22 @@ const StaticLayers = (props: PropsWithChildren<IStaticLayersProps>) => {
               name={layer.layerName}
               key={`static-layer-${layer.layerName}-${index}`}>
               <FeatureGroup key={`static-feature-group-${layer.layerName}-${index}`}>
-                {layer.features.map((item, index) => {
-                  const id = item.key || item.geoJSON.id || index;
+                {layer.features.map((feature, index) => {
+                  const id = feature.id || feature.geoJSON.id || index;
 
                   return (
                     <GeoJSON
                       key={`static-feature-${id}`}
                       style={{ ...layerColors }}
-                      pointToLayer={(_, latlng) => coloredPoint({ latlng, fillColor: layer.layerColors?.fillColor })}
-                      data={item.geoJSON}
-                      {...item.GeoJSONProps}>
-                      {item.tooltip && (
-                        <Tooltip
-                          key={`static-feature-tooltip-${id}`}
-                          direction="top"
-                          sticky={true}
-                          {...item.TooltipProps}>
-                          {item.tooltip}
-                        </Tooltip>
-                      )}
-                      {item.popup && (
-                        layer.popup
-                      )}
+                      pointToLayer={(_, latlng) =>
+                        layer.layerName === 'Observations'
+                          ? coloredCustomPointMarker({ latlng, fillColor: layer.layerColors?.fillColor })
+                          : coloredPoint({ latlng, fillColor: layer.layerColors?.fillColor })
+                      }
+                      data={feature.geoJSON}
+                      {...feature.GeoJSONProps}>
+                      {layer.tooltip?.(feature) ?? null}
+                      {layer.popup?.(feature) ?? null}
                     </GeoJSON>
                   );
                 })}

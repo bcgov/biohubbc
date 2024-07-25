@@ -277,7 +277,15 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
                   layers={[
                     {
                       layerName: `${title}`,
-                      features: get(values, name) ? [{ geoJSON: get(values, name), key: Math.random() }] : []
+                      features: get(values, name)
+                        ? [
+                            {
+                              id: Math.random(),
+                              key: `capture-location-${Math.random()}`,
+                              geoJSON: get(values, name)
+                            }
+                          ]
+                        : []
                     }
                   ]}
                 />

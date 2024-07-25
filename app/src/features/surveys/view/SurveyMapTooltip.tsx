@@ -1,20 +1,23 @@
 import Typography from '@mui/material/Typography';
+import { Tooltip } from 'react-leaflet';
 
 interface ISurveyMapTooltipProps {
-  label: string;
+  title: string;
 }
 
 /**
  * Returns a popup component for displaying information about a leaflet map layer upon hover
  *
- * @param props {ISurveyMapPopupProps}
- * @returns
+ * @param {ISurveyMapTooltipProps} props
+ * @return {*}
  */
 const SurveyMapTooltip = (props: ISurveyMapTooltipProps) => {
   return (
-    <Typography component="dt" sx={{ fontSize: '0.8rem' }} color="textSecondary" fontWeight={700}>
-      {props.label}
-    </Typography>
+    <Tooltip direction="top" sticky={true}>
+      <Typography component="dt" sx={{ fontSize: '0.8rem' }} color="textSecondary" fontWeight={700}>
+        {props.title}
+      </Typography>
+    </Tooltip>
   );
 };
 

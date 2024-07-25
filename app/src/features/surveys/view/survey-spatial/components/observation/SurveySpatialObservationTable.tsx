@@ -36,7 +36,7 @@ interface ISurveyDataObservationTableProps {
  * @param {ISurveyDataObservationTableProps} props - Component properties.
  * @returns {JSX.Element} The rendered component.
  */
-const SurveyDataObservationTable = (props: ISurveyDataObservationTableProps) => {
+export const SurveySpatialObservationTable = (props: ISurveyDataObservationTableProps) => {
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
   const taxonomyContext = useTaxonomyContext();
@@ -196,5 +196,3 @@ const SurveyDataObservationTable = (props: ISurveyDataObservationTableProps) => 
     </>
   );
 };
-
-export default SurveyDataObservationTable;
