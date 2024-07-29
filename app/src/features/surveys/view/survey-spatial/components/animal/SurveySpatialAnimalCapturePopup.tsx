@@ -1,4 +1,6 @@
 import { IStaticLayerFeature } from 'components/map/components/StaticLayers';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import dayjs from 'dayjs';
 import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -19,7 +21,7 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
   const getCaptureMetadata = (capture: ICaptureResponse) => {
     return [
       { label: 'Capture ID', value: String(capture.capture_id) },
-      { label: 'Date', value: String(capture.capture_date) },
+      { label: 'Date', value: dayjs(capture.capture_date).format(DATE_FORMAT.LongDateTimeFormat) },
       { label: 'Time', value: String(capture.capture_time ?? '') },
       {
         label: 'Coordinates',
