@@ -39,7 +39,7 @@ export interface IAnimalFormProps {
 }
 
 const AnimalFormYupSchema = yup.object({
-  nickname: yup.string().min(3, 'Nickname must be at least 3 letters').required('Nickname is required'),
+  nickname: yup.string().trim().min(3, 'Nickname must be at least 3 letters').required('Nickname is required'),
   species: yup
     .object()
     .shape({

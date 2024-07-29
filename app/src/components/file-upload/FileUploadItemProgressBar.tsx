@@ -10,13 +10,13 @@ const useStyles = () => {
       marginTop: theme.spacing(0.5)
     },
     uploadingColor: {
-      color: theme.palette.primary.main
+      backgroundColor: theme.palette.primary.main
     },
     completeBgColor: {
-      color: theme.palette.success.main
+      backgroundColor: theme.palette.success.main
     },
     errorBgColor: {
-      color: theme.palette.error.main + '44'
+      backgroundColor: theme.palette.error.main + '44'
     }
   };
 };
@@ -41,12 +41,8 @@ const FileUploadItemProgressBar = (props: IProgressBarProps) => {
         variant="indeterminate"
         sx={{
           ...classes.uploadProgress,
-          '&.MuiLinearProgress-colorPrimary': {
-            backgroundColor: classes.uploadingColor.color
-          },
-          '& .MuiLinearProgress-barColorPrimary': {
-            backgroundColor: classes.uploadingColor.color
-          }
+          '&.MuiLinearProgress-colorPrimary': classes.uploadingColor,
+          '& .MuiLinearProgress-barColorPrimary': classes.uploadingColor
         }}
       />
     );
@@ -59,12 +55,8 @@ const FileUploadItemProgressBar = (props: IProgressBarProps) => {
         value={100}
         sx={{
           ...classes.uploadProgress,
-          '&.MuiLinearProgress-colorPrimary': {
-            backgroundColor: classes.completeBgColor.color
-          },
-          '& .MuiLinearProgress-barColorPrimary': {
-            backgroundColor: classes.completeBgColor.color
-          }
+          '&.MuiLinearProgress-colorPrimary': classes.completeBgColor,
+          '& .MuiLinearProgress-barColorPrimary': classes.completeBgColor
         }}
       />
     );
@@ -77,12 +69,8 @@ const FileUploadItemProgressBar = (props: IProgressBarProps) => {
         value={0}
         sx={{
           ...classes.uploadProgress,
-          '&.MuiLinearProgress-colorPrimary': {
-            backgroundColor: classes.errorBgColor.color
-          },
-          '& .MuiLinearProgress-barColorPrimary': {
-            backgroundColor: classes.errorBgColor.color
-          }
+          '&.MuiLinearProgress-colorPrimary': classes.errorBgColor,
+          '& .MuiLinearProgress-barColorPrimary': classes.errorBgColor
         }}
       />
     );
@@ -95,12 +83,7 @@ const FileUploadItemProgressBar = (props: IProgressBarProps) => {
       value={props.progress}
       sx={{
         ...classes.uploadProgress,
-        '&.MuiLinearProgress-colorPrimary': {
-          backgroundColor: classes.uploadingColor.color
-        },
-        '& .MuiLinearProgress-barColorPrimary': {
-          backgroundColor: classes.uploadingColor.color
-        }
+        '& .MuiLinearProgress-bar1Determinate': classes.uploadingColor
       }}
     />
   );

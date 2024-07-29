@@ -1,3 +1,5 @@
+import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
+
 /**
  * Defines a single option for a data grid autocomplete control.
  *
@@ -16,13 +18,10 @@ export interface IAutocompleteDataGridOption<ValueType extends string | number> 
  *
  * @export
  * @interface IAutocompleteDataGridTaxonomyOption
+ * @extends {ITaxonomy}
  * @template ValueType
  */
-export interface IAutocompleteDataGridTaxonomyOption<ValueType extends string | number> {
+export interface IAutocompleteDataGridTaxonomyOption<ValueType extends string | number> extends IPartialTaxonomy {
   value: ValueType;
   label: string;
-  commonNames: string[];
-  tsn: number;
-  rank: string;
-  kingdom: string;
 }

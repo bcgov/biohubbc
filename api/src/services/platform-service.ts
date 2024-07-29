@@ -8,6 +8,7 @@ import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
 import { PostSurveySubmissionToBioHubObject } from '../models/biohub-create';
 import { ISurveyAttachment, ISurveyReportAttachment } from '../repositories/attachment-repository';
+import { isFeatureFlagPresent } from '../utils/feature-flag-utils';
 import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
@@ -56,7 +57,6 @@ export interface ITaxonomy {
   kingdom: string;
 }
 
-const getBackboneIntakeEnabled = () => process.env.BACKBONE_INTAKE_ENABLED === 'true' || false;
 const getBackboneInternalApiHost = () => process.env.BACKBONE_INTERNAL_API_HOST || '';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '';
 const getBackboneSurveyIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '';
@@ -126,8 +126,8 @@ export class PlatformService extends DBService {
   ): Promise<{ submission_uuid: string }> {
     defaultLog.debug({ label: 'submitSurveyToBioHub', message: 'params', surveyId });
 
-    if (!getBackboneIntakeEnabled()) {
-      throw new ApiGeneralError('BioHub intake is not enabled');
+    if (isFeatureFlagPresent(['API_FF_SUBMIT_BIOHUB'])) {
+      throw new ApiGeneralError('Publishing to BioHub is not currently enabled.');
     }
 
     const keycloakService = new KeycloakService();
@@ -270,7 +270,10 @@ export class PlatformService extends DBService {
         const artifact = {
           submission_uuid: submissionUUID,
           artifact_upload_key: artifactUploadKey,
-          data: s3File.Body as Buffer,
+          // TODO: Cast to unknown required due to issue in aws-sdk v3 typings
+          // See https://stackoverflow.com/questions/76142043/getting-a-readable-from-getobject-in-aws-s3-sdk-v3
+          // See https://github.com/aws/aws-sdk-js-v3/issues/4720
+          data: s3File.Body as unknown as Buffer,
           fileName: attachment.file_name,
           mimeType: s3File.ContentType || mime.getType(attachment.file_name) || 'application/octet-stream'
         };
@@ -321,7 +324,10 @@ export class PlatformService extends DBService {
         const artifact = {
           submission_uuid: submissionUUID,
           artifact_upload_key: artifactUploadKey,
-          data: s3File.Body as Buffer,
+          // TODO: Cast to unknown required due to issue in aws-sdk v3 typings
+          // See https://stackoverflow.com/questions/76142043/getting-a-readable-from-getobject-in-aws-s3-sdk-v3
+          // See https://github.com/aws/aws-sdk-js-v3/issues/4720
+          data: s3File.Body as unknown as Buffer,
           fileName: attachment.file_name,
           mimeType: s3File.ContentType || mime.getType(attachment.file_name) || 'application/octet-stream'
         };

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { addCritterToSurvey, getCrittersFromSurvey } from '.';
 import * as db from '../../../../../../database/db';
-import { CritterbaseService } from '../../../../../../services/critterbase-service';
+import { CritterbaseService, ICritter } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 
@@ -15,7 +15,15 @@ describe('getCrittersFromSurvey', () => {
     const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
 
     const mockSurveyCritter = { critter_id: 123, survey_id: 123, critterbase_critter_id: 'critterbase1' };
-    const mockCBCritter = { critter_id: 'critterbase1' };
+    const mockCBCritter = {
+      critter_id: 'critterbase1',
+      wlh_id: 'wlh1',
+      animal_id: 'animal1',
+      sex: 'unknown',
+      itis_tsn: 12345,
+      itis_scientific_name: 'species1',
+      critter_comment: 'comment1'
+    };
 
     const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
     const mockGetCrittersInSurvey = sinon
@@ -23,7 +31,7 @@ describe('getCrittersFromSurvey', () => {
       .resolves([mockSurveyCritter]);
     const mockGetMultipleCrittersByIds = sinon
       .stub(CritterbaseService.prototype, 'getMultipleCrittersByIds')
-      .resolves([mockCBCritter]);
+      .resolves([mockCBCritter] as unknown as ICritter[]);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

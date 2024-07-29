@@ -51,6 +51,7 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
       label: response.scientificName,
       commonNames: response.commonNames,
       tsn: response.tsn,
+      scientificName: response.scientificName,
       rank: response.rank,
       kingdom: response.kingdom
     };
@@ -73,8 +74,9 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
           const options = response.map((item) => ({
             value: item.tsn as ValueType,
             label: item.scientificName,
-            commonNames: item.commonNames,
             tsn: item.tsn,
+            commonNames: item.commonNames,
+            scientificName: item.scientificName,
             rank: item.rank,
             kingdom: item.kingdom
           }));
