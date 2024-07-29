@@ -152,11 +152,11 @@ export function importCsv(): RequestHandler {
 
       const importCsvCaptures = new ImportCapturesService(connection, surveyCritter.critterbase_critter_id);
 
-      const response = await importCSV(parseMulterFile(rawFile), importCsvCaptures);
+      const capturesCreated = await importCSV(parseMulterFile(rawFile), importCsvCaptures);
 
       await connection.commit();
 
-      return res.status(201).json({ capturesCreated: response.captures });
+      return res.status(201).json({ capturesCreated });
     } catch (error) {
       defaultLog.error({ label: 'importCritterCsv', message: 'error', error });
       await connection.rollback();

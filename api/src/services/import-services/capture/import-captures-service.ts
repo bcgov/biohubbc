@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
 import { generateCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
-import { CritterbaseService, IBulkCreate } from '../../critterbase-service';
+import { CritterbaseService, ICapture, ILocation } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { CSVImportService, Row } from '../csv-import-strategy.interface';
 import { CsvCapture, CsvCaptureSchema } from './import-captures-service.interface';
@@ -66,6 +66,10 @@ export class ImportCapturesService extends DBService implements CSVImportService
     const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
 
     const rowsToValidate = rows.map((row) => {
+      const releaseLatitude = getCellValue(row, 'RELEASE_LATITUDE');
+      const releaseLongitude = getCellValue(row, 'RELEASE_LONGITUDE');
+      const releaseLocationId = releaseLatitude && releaseLongitude ? uuid() : undefined;
+
       return {
         critter_id: this.critterbaseCritterId,
         capture_location_id: uuid(),
@@ -73,10 +77,11 @@ export class ImportCapturesService extends DBService implements CSVImportService
         capture_time: getCellValue(row, 'CAPTURE_TIME'),
         capture_latitude: getCellValue(row, 'CAPTURE_LATITUDE'),
         capture_longitude: getCellValue(row, 'CAPTURE_LONGITUDE'),
+        release_location_id: releaseLocationId,
         release_date: getCellValue(row, 'RELEASE_DATE'),
         release_time: getCellValue(row, 'RELEASE_TIME'),
-        release_latitude: getCellValue(row, 'RELEASE_LATITUDE'),
-        release_longitude: getCellValue(row, 'RELEASE_LONGITUDE'),
+        release_latitude: releaseLatitude,
+        release_longitude: releaseLongitude,
         capture_comment: getCellValue(row, 'CAPTURE_COMMENT'),
         release_comment: getCellValue(row, 'RELEASE_COMMENT')
       };
@@ -90,50 +95,36 @@ export class ImportCapturesService extends DBService implements CSVImportService
    *
    * @async
    * @param {CsvCapture[]} captures - List of CSV captures to create
-   * @returns {Promise<ICapture[]>} List of created captures
+   * @returns {Promise<number>} Number of created captures
    */
-  async insert(captures: CsvCapture[]) {
-    const critterbasePayload: IBulkCreate = { captures: [], locations: [] };
+  async insert(captures: CsvCapture[]): Promise<number> {
+    const critterbasePayload: { captures: ICapture[]; locations: ILocation[] } = { captures: [], locations: [] };
 
     for (const row of captures) {
-      // Generate static uuids for bulk create
-      // Captures reference locations so we need to generate the uuid's before we create captures / locations
-      const captureLocationUUID = uuid();
-      const releaseLocationUUID = row.release_latitude && row.release_longitude ? uuid() : undefined;
+      const { capture_latitude, capture_longitude, release_latitude, release_longitude, ...capture } = row;
 
       // Push the critter captures into payload
-      critterbasePayload.captures?.push({
-        critter_id: row.critter_id,
-        capture_location_id: captureLocationUUID,
-        release_location_id: releaseLocationUUID,
-        capture_date: row.capture_date,
-        capture_time: row.capture_time,
-        release_date: row.release_date,
-        release_time: row.release_time,
-        capture_comment: row.capture_comment,
-        release_comment: row.release_comment
+      critterbasePayload.captures.push(capture);
+
+      // Push the capture location
+      critterbasePayload.locations.push({
+        location_id: row.capture_location_id,
+        latitude: capture_latitude,
+        longitude: capture_longitude
       });
 
-      // Push the critter capture locations into payload
-      critterbasePayload.locations?.push({
-        location_id: captureLocationUUID,
-        latitude: row.capture_latitude,
-        longitude: row.capture_longitude
-      });
-
-      // If release locatations included push into payload
-      if (releaseLocationUUID) {
+      // Push the capture release location if included
+      if (row.release_location_id && release_latitude && release_longitude) {
         critterbasePayload.locations?.push({
-          location_id: releaseLocationUUID,
-          // Lat / Lon are defined if releaseLocationUUID is defined
-          latitude: row.release_latitude as number,
-          longitude: row.release_longitude as number
+          location_id: row.release_location_id,
+          latitude: release_latitude,
+          longitude: release_longitude
         });
       }
     }
 
     const response = await this.critterbaseService.bulkCreate(critterbasePayload);
 
-    return response.created;
+    return response.created.captures;
   }
 }

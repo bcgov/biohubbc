@@ -7,10 +7,12 @@ import { z } from 'zod';
 export const CsvCaptureSchema = z
   .object({
     critter_id: z.string().uuid(),
+    capture_location_id: z.string().uuid(),
     capture_date: z.string().date(),
     capture_time: z.string().time().optional(),
     capture_latitude: z.number(),
     capture_longitude: z.number(),
+    release_location_id: z.string().uuid().optional(),
     release_date: z.string().date().optional(),
     release_time: z.string().time().optional(),
     release_latitude: z.number().optional(),
