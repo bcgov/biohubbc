@@ -1,4 +1,5 @@
 import { default as dayjs } from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { intersection } from 'lodash';
 import xlsx, { CellObject } from 'xlsx';
 import { getLogger } from '../logger';
@@ -7,6 +8,8 @@ import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
 import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
 import { getColumnAliasesFromValidator, getColumnNamesFromValidator } from './column-validator-utils';
+
+dayjs.extend(customParseFormat);
 
 const defaultLog = getLogger('src/utils/xlsx-utils/worksheet-utils');
 
@@ -235,15 +238,23 @@ export const validateWorksheetColumnTypes = (
 
       let validated = false;
 
-      // TODO: Handle optional CSV fields ie: ALIAS
-
       if (columnSpec.type === 'date') {
         validated = dayjs(value).isValid();
       }
 
+      /**
+       * CSV column format will need to be updated to 'HH:mm:ss'.
+       *
+       * Possible enhancement: Drop the `true` param to validate times without leading `0`.
+       * This will have downstream effects with zod schemas and database column type constraints expecting `09:10:10`.
+       *
+       * 09:10:10 -> true
+       * 9:10:10 -> false
+       *
+       * @see https://day.js.org/docs/en/plugin/custom-parse-format
+       */
       if (columnSpec.type === 'time') {
-        //TODO: Can this be modified to use dayjs? dayjs(value, 'HH:mm:ss', true).isValid() did not work...
-        validated = /^([01]?[0-9]|2[0-3]):([0-5]?[0-9]):([0-5]?[0-9])$/.test(value); // HH:mm:ss
+        validated = dayjs(value, 'HH:mm:ss', true).isValid();
       }
 
       if (columnSpec.type === type) {

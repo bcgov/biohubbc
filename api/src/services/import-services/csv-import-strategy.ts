@@ -13,7 +13,6 @@ import { CSVImportService } from './csv-import-strategy.interface';
  * Import CSV (Strategy) - Used with `CSVImportService` classes.
  *
  * How to?: Inject a media-file and import service that implements the CSVImportService.
- * This function will handle
  *
  * Flow:
  *  1. Get the worksheet from the CSV MediaFile - _getWorksheet

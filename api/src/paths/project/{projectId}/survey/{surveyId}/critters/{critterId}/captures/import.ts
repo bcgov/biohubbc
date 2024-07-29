@@ -83,8 +83,22 @@ POST.apiDoc = {
     }
   },
   responses: {
-    200: {
-      description: 'Import OK'
+    201: {
+      description: 'Capture import success.',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              capturesCreated: {
+                description: 'Number of Critterbase captures created.',
+                type: 'integer'
+              }
+            }
+          }
+        }
+      }
     },
     400: {
       $ref: '#/components/responses/400'
@@ -138,11 +152,11 @@ export function importCsv(): RequestHandler {
 
       const importCsvCaptures = new ImportCapturesService(connection, surveyCritter.critterbase_critter_id);
 
-      await importCSV(parseMulterFile(rawFile), importCsvCaptures);
+      const response = await importCSV(parseMulterFile(rawFile), importCsvCaptures);
 
       await connection.commit();
 
-      return res.status(200);
+      return res.status(201).json({ capturesCreated: response.captures });
     } catch (error) {
       defaultLog.error({ label: 'importCritterCsv', message: 'error', error });
       await connection.rollback();
