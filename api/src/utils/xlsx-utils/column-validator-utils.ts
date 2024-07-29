@@ -49,7 +49,8 @@ export const getColumnValidatorSpecification = (columnValidator: IXLSXCSVValidat
       columnName: columnName,
       columnType: columnSpec.type,
       columnFormat: columnFormatMap?.[columnSpec.type],
-      columnAliases: columnSpec?.aliases
+      columnAliases: columnSpec.aliases,
+      optional: columnSpec.optional
     };
   });
 };

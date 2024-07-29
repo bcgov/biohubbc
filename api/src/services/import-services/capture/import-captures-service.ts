@@ -27,15 +27,15 @@ export class ImportCapturesService extends DBService implements CSVImportService
    */
   columnValidator = {
     CAPTURE_DATE: { type: 'date' },
-    CAPTURE_TIME: { type: 'time' },
+    CAPTURE_TIME: { type: 'time', optional: true },
     CAPTURE_LATITUDE: { type: 'number' },
     CAPTURE_LONGITUDE: { type: 'number' },
-    RELEASE_DATE: { type: 'date' },
-    RELEASE_TIME: { type: 'time' },
-    RELEASE_LATITUDE: { type: 'number' },
-    RELEASE_LONGITUDE: { type: 'number' },
-    CAPTURE_COMMENT: { type: 'string' },
-    RELEASE_COMMENT: { type: 'string' }
+    RELEASE_DATE: { type: 'date', optional: true },
+    RELEASE_TIME: { type: 'time', optional: true },
+    RELEASE_LATITUDE: { type: 'number', optional: true },
+    RELEASE_LONGITUDE: { type: 'number', optional: true },
+    CAPTURE_COMMENT: { type: 'string', optional: true },
+    RELEASE_COMMENT: { type: 'string', optional: true }
   } satisfies IXLSXCSVValidator;
 
   /**

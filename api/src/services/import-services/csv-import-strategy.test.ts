@@ -54,7 +54,13 @@ describe('importCSV', () => {
       expect(err.message).to.be.eql(`Column validator failed. Column headers or cell data types are incorrect.`);
       expect(err.errors[0]).to.be.eql({
         csv_column_errors: [
-          { columnName: 'ID', columnType: 'string', columnFormat: undefined, columnAliases: undefined }
+          {
+            columnName: 'ID',
+            columnType: 'string',
+            columnFormat: undefined,
+            columnAliases: undefined,
+            optional: undefined
+          }
         ]
       });
     }
