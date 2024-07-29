@@ -245,11 +245,6 @@ export const validateWorksheetColumnTypes = (
 
       let validated = false;
 
-      // Undefined values only allowed if column spec is set to optional
-      if (isUndefined(value)) {
-        validated = Boolean(columnSpec.optional);
-      }
-
       if (columnSpec.type === 'date') {
         validated = dayjs(value).isValid();
       }
@@ -271,6 +266,11 @@ export const validateWorksheetColumnTypes = (
 
       if (columnSpec.type === type) {
         validated = true;
+      }
+
+      // Undefined values only allowed if column spec is set to optional
+      if (isUndefined(value)) {
+        validated = Boolean(columnSpec.optional);
       }
 
       if (!validated) {
