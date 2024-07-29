@@ -1,6 +1,6 @@
 import { default as dayjs } from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import { intersection } from 'lodash';
+import { intersection, isUndefined } from 'lodash';
 import xlsx, { CellObject } from 'xlsx';
 import { getLogger } from '../logger';
 import { MediaFile } from '../media/media-file';
@@ -25,6 +25,11 @@ export interface IXLSXCSVColumn {
    *
    */
   aliases?: Uppercase<string>[];
+  /**
+   * Column is optional.
+   *
+   */
+  optional?: true;
 }
 
 // Record with column name and column spec
@@ -207,11 +212,13 @@ export const validateWorksheetHeaders = (worksheet: xlsx.WorkSheet, columnValida
 
   // Check that every validator header has matching header or alias in worksheet
   return validatorHeaders.every((header) => {
-    const aliases: string[] = columnValidator[header]?.aliases ?? [];
+    const columnSpec = columnValidator[header as keyof typeof columnValidator];
+
+    const aliases = columnSpec?.aliases ?? [];
     const columnHeaderAndAliases = [header, ...aliases];
 
-    // Intersect the worksheet headers against the column header and aliases
-    return intersection(columnHeaderAndAliases, worksheetHeaders).length;
+    // All column headers exist or only missing optional headers
+    return intersection(columnHeaderAndAliases, worksheetHeaders).length || columnSpec.optional;
   });
 };
 
@@ -237,6 +244,11 @@ export const validateWorksheetColumnTypes = (
       const columnSpec: IXLSXCSVColumn = columnValidator[columnName];
 
       let validated = false;
+
+      // Undefined values only allowed if column spec is set to optional
+      if (isUndefined(value)) {
+        validated = Boolean(columnSpec.optional);
+      }
 
       if (columnSpec.type === 'date') {
         validated = dayjs(value).isValid();

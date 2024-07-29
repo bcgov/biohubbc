@@ -56,6 +56,20 @@ export class ImportCapturesService extends DBService implements CSVImportService
   }
 
   /**
+   * Get critter id.
+   *
+   * Note: When this component is extended this function can be overridden
+   * to fetch the critter_id with survey_id and critter alias.
+   *
+   * @async
+   * @param {Row} [_row] - CSV row
+   * @returns {Promise<string>} Critterbase critter id (UUID)
+   */
+  async getCritterId(_row?: Row) {
+    return this.critterbaseCritterId;
+  }
+
+  /**
    * Validate the CSV rows against zod schema.
    *
    * @param {Row[]} rows - CSV rows
@@ -65,13 +79,15 @@ export class ImportCapturesService extends DBService implements CSVImportService
     // Generate type-safe cell getter from column validator
     const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
 
-    const rowsToValidate = rows.map((row) => {
+    const rowsToValidate = [];
+
+    for (const row of rows) {
       const releaseLatitude = getCellValue(row, 'RELEASE_LATITUDE');
       const releaseLongitude = getCellValue(row, 'RELEASE_LONGITUDE');
       const releaseLocationId = releaseLatitude && releaseLongitude ? uuid() : undefined;
 
-      return {
-        critter_id: this.critterbaseCritterId,
+      rowsToValidate.push({
+        critter_id: await this.getCritterId(row),
         capture_location_id: uuid(),
         capture_date: getCellValue(row, 'CAPTURE_DATE'),
         capture_time: getCellValue(row, 'CAPTURE_TIME'),
@@ -80,14 +96,14 @@ export class ImportCapturesService extends DBService implements CSVImportService
         release_location_id: releaseLocationId,
         release_date: getCellValue(row, 'RELEASE_DATE'),
         release_time: getCellValue(row, 'RELEASE_TIME'),
-        release_latitude: releaseLatitude,
-        release_longitude: releaseLongitude,
+        release_latitude: getCellValue(row, 'RELEASE_LATITUDE'),
+        release_longitude: getCellValue(row, 'RELEASE_LONGITUDE'),
         capture_comment: getCellValue(row, 'CAPTURE_COMMENT'),
         release_comment: getCellValue(row, 'RELEASE_COMMENT')
-      };
-    });
+      });
+    }
 
-    return z.array(CsvCaptureSchema).safeParse(rowsToValidate);
+    return z.array(CsvCaptureSchema).safeParseAsync(rowsToValidate);
   }
 
   /**

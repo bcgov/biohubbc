@@ -39,7 +39,7 @@ export const getColumnAliasesFromValidator = (columnValidator: IXLSXCSVValidator
 export const getColumnValidatorSpecification = (columnValidator: IXLSXCSVValidator) => {
   // Expected formats of date/time columns
   const columnFormatMap: Partial<Record<IXLSXCSVColumn['type'], string>> = {
-    date: 'DD/MM/YYYY',
+    date: 'YYYY-MM-DD',
     time: 'HH:mm:ss'
   };
 
