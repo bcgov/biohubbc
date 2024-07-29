@@ -22,7 +22,7 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
       { label: 'Date', value: String(capture.capture_date) },
       { label: 'Time', value: String(capture.capture_time ?? '') },
       {
-        label: 'Coords',
+        label: 'Coordinates',
         value: [capture.release_location?.latitude ?? null, capture.release_location?.longitude ?? null]
           .filter((coord): coord is number => coord !== null)
           .map((coord) => coord.toFixed(6))
@@ -46,7 +46,7 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
       }}>
       <SurveyMapPopup
         isLoading={captureDataLoader.isLoading || !captureDataLoader.isReady}
-        title="Observation"
+        title="Capture"
         metadata={captureDataLoader.data ? getCaptureMetadata(captureDataLoader.data) : []}
         key={`capture-feature-popup-${feature.id}`}
       />

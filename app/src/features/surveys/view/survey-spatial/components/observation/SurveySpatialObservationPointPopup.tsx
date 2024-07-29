@@ -42,7 +42,7 @@ export const SurveySpatialObservationPointPopup = (props: ISurveySpatialObservat
       {
         label: 'Date',
         value: getFormattedDate(
-          observation.observation_time ? DATE_FORMAT.ShortMediumDateTimeFormat : DATE_FORMAT.ShortMediumDateFormat,
+          observation.observation_time ? DATE_FORMAT.LongDateTimeFormat : DATE_FORMAT.MediumDateFormat,
           `${observation.observation_date} ${observation.observation_time}`
         )
       }

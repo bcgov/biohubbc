@@ -1,4 +1,5 @@
 import { IStaticLayerFeature } from 'components/map/components/StaticLayers';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
@@ -82,7 +83,7 @@ export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupP
           .map((coord) => coord.toFixed(6))
           .join(', ')
       },
-      { label: 'Date', value: dayjs(telemetryRecord?.acquisition_date).toISOString() }
+      { label: 'Date', value: dayjs(telemetryRecord?.acquisition_date).format(DATE_FORMAT.LongDateTimeFormat) }
     ];
   };
 
@@ -90,7 +91,7 @@ export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupP
     <Popup keepInView={false} closeButton={true} autoPan={true}>
       <SurveyMapPopup
         isLoading={false}
-        title="Observation"
+        title="Telemetry Location"
         metadata={getTelemetryMetadata()}
         key={`telemetry-feature-popup-${feature.id}`}
       />
