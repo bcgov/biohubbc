@@ -1,74 +1,99 @@
 import { IStaticLayerFeature } from 'components/map/components/StaticLayers';
-// import dayjs from 'dayjs';
-// import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
-// import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
-// import { useSurveyContext } from 'hooks/useContext';
-// import useDataLoader from 'hooks/useDataLoader';
-// import { ITelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
-// import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
-// import { Popup } from 'react-leaflet';
+import dayjs from 'dayjs';
+import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
+import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
+import { Popup } from 'react-leaflet';
 
 export interface ISurveySpatialTelemetryPopupProps {
   feature: IStaticLayerFeature;
 }
 
+/**
+ * Renders a popup for telemetry data on the map.
+ *
+ * TODO: This currently relies on the telemetry, deployment, and critter data loaders to already be loaded. The
+ * improvement would be to fetch that data when the popup is opened, based on the provided feature ID.
+ *
+ * @param {ISurveySpatialTelemetryPopupProps} props
+ * @return {*}
+ */
 export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupProps) => {
-  if (!props.feature) {
-    return <></>;
-  }
+  const { feature } = props;
 
-  return <></>;
+  const surveyContext = useSurveyContext();
+  const telemetryContext = useTelemetryDataContext();
 
-  //   const { feature } = props;
-  //   const surveyContext = useSurveyContext();
-  //   const telemetryApi = useTelemetryApi();
-  //   const telemetryDataLoader = useDataLoader(telemetryApi.getAllTelemetryByDeploymentIds);
-  //   //   const critterbaseApi = useCritterbaseApi();
-  //   //   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
-  //   const telemetry = telemetryDataLoader.data?.find((telemetry) => telemetry.telemetry_id === telemetryId);
-  //   const deployment = surveyContext.deploymentDataLoader.data?.find(
-  //     (deployment) => deployment.deployment_id === telemetry?.deployment_id
-  //   );
-  //   const critter = surveyContext.critterDataLoader.data?.find(
-  //     (critter) => critter.critter_id === deployment?.critter_id
-  //   );
-  //   const getTelemetryMetadata = (
-  //     telemetry: ITelemetry[],
-  //     deployment: IAnimalDeployment,
-  //     critter: ISimpleCritterWithInternalId
-  //   ) => {
-  //     return [
-  //       { label: 'Device ID', value: String(deployment?.device_id) },
-  //       { label: 'Nickname', value: critter?.animal_id ?? '' },
-  //       {
-  //         label: 'Location',
-  //         value: [telemetry?.latitude, telemetry?.longitude]
-  //           .filter((coord): coord is number => coord !== null)
-  //           .map((coord) => coord.toFixed(6))
-  //           .join(', ')
-  //       },
-  //       { label: 'Date', value: dayjs(telemetry?.acquisition_date).toISOString() }
-  //     ];
-  //   };
-  //   return (
-  //     <Popup
-  //       keepInView={false}
-  //       closeButton={true}
-  //       autoPan={true}
-  //       eventHandlers={{
-  //         add: () => {
-  //           telemetryDataLoader.load([String(feature.id)]);
-  //         },
-  //         remove: () => {
-  //           telemetryDataLoader.clearData();
-  //         }
-  //       }}>
-  //       <SurveyMapPopup
-  //         isLoading={telemetryDataLoader.isLoading || !telemetryDataLoader.isReady}
-  //         title="Observation"
-  //         metadata={telemetryDataLoader.data ? getTelemetryMetadata(telemetryDataLoader.data, deployment, critter) : []}
-  //         key={`mortality-feature-popup-${feature.id}`}
-  //       />
-  //     </Popup>
-  //   );
+  const getTelemetryMetadata = () => {
+    const telemetryId = feature.id;
+
+    const telemetryRecord = telemetryContext.telemetryDataLoader.data?.find(
+      (telemetry) => telemetry.id === telemetryId
+    );
+
+    if (!telemetryRecord) {
+      return [{ label: 'Telemetry ID', value: telemetryId }];
+    }
+
+    const deploymentRecord = surveyContext.deploymentDataLoader.data?.find(
+      (deployment) => deployment.deployment_id === telemetryRecord.deployment_id
+    );
+    telemetryRecord;
+    if (!deploymentRecord) {
+      return [
+        { label: 'Telemetry ID', value: telemetryId },
+        {
+          label: 'Location',
+          value: [telemetryRecord.latitude, telemetryRecord.longitude]
+            .filter((coord): coord is number => coord !== null)
+            .map((coord) => coord.toFixed(6))
+            .join(', ')
+        },
+        { label: 'Date', value: dayjs(telemetryRecord?.acquisition_date).toISOString() }
+      ];
+    }
+
+    const critterRecord = surveyContext.critterDataLoader.data?.find(
+      (critter) => critter.critter_id === deploymentRecord.critter_id
+    );
+
+    if (!critterRecord) {
+      return [
+        { label: 'Telemetry ID', value: telemetryId },
+        { label: 'Device ID', value: String(deploymentRecord.device_id) },
+        {
+          label: 'Location',
+          value: [telemetryRecord.latitude, telemetryRecord.longitude]
+            .filter((coord): coord is number => coord !== null)
+            .map((coord) => coord.toFixed(6))
+            .join(', ')
+        },
+        { label: 'Date', value: dayjs(telemetryRecord?.acquisition_date).toISOString() }
+      ];
+    }
+
+    return [
+      { label: 'Telemetry ID', value: telemetryId },
+      { label: 'Device ID', value: String(deploymentRecord.device_id) },
+      { label: 'Nickname', value: critterRecord.animal_id ?? '' },
+      {
+        label: 'Location',
+        value: [telemetryRecord?.latitude, telemetryRecord?.longitude]
+          .filter((coord): coord is number => coord !== null)
+          .map((coord) => coord.toFixed(6))
+          .join(', ')
+      },
+      { label: 'Date', value: dayjs(telemetryRecord?.acquisition_date).toISOString() }
+    ];
+  };
+
+  return (
+    <Popup keepInView={false} closeButton={true} autoPan={true}>
+      <SurveyMapPopup
+        isLoading={false}
+        title="Observation"
+        metadata={getTelemetryMetadata()}
+        key={`telemetry-feature-popup-${feature.id}`}
+      />
+    </Popup>
+  );
 };

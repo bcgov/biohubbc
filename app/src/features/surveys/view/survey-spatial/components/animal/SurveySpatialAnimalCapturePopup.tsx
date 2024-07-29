@@ -20,7 +20,7 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
     return [
       { label: 'Capture ID', value: String(capture.capture_id) },
       { label: 'Date', value: String(capture.capture_date) },
-      { label: 'Time', value: String(capture.capture_time) },
+      { label: 'Time', value: String(capture.capture_time ?? '') },
       {
         label: 'Coords',
         value: [capture.release_location?.latitude ?? null, capture.release_location?.longitude ?? null]

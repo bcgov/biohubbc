@@ -13,7 +13,6 @@ import { coloredCustomObservationMarker } from 'utils/mapUtils';
 
 /**
  * Component to display survey observation data on a map and in a table.
- *
  */
 export const SurveySpatialObservation = () => {
   const surveyContext = useSurveyContext();

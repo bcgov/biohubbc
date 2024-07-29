@@ -37,12 +37,36 @@ export interface IVendorTelemetry extends ICreateManualTelemetry {
 
 export interface ITelemetry {
   id: string;
+  /**
+   * Either the telemetry_manual_id or telemetry_id (depending on the type of telemetry: manual vs vendor).
+   */
   deployment_id: string;
-  telemetry_manual_id: string;
+  /**
+   * The telemetry_manual_id if the telemetry was manually created.
+   * Will be null if the telemetry was retrieved from a vendor.
+   */
+  telemetry_manual_id: string | null;
+  /**
+   * The telemetry_id if the telemetry was retrieved from a vendor.
+   * Will be null if the telemetry was manually created.
+   */
   telemetry_id: number | null;
+  /**
+   * The latitude of the telemetry.
+   */
   latitude: number;
+  /**
+   * The longitude of the telemetry.
+   */
   longitude: number;
+  /**
+   * The acquisition date of the telemetry.
+   */
   acquisition_date: string;
+  /**
+   * The type of telemetry.
+   * Will either be 'MANUAL' (for manual telementry) or the name of the vendor (for vendor telemetry).
+   */
   telemetry_type: string;
 }
 

@@ -3,6 +3,7 @@ import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/Sta
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { SurveySpatialMap } from 'features/surveys/view/survey-spatial/components/map/SurveySpatialMap';
+import { SurveySpatialTelemetryPopup } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryPopup';
 import { SurveySpatialTelemetryTable } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryTable';
 import { Position } from 'geojson';
 import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
@@ -19,7 +20,19 @@ export const SurveySpatialTelemetry = () => {
   const surveyContext = useSurveyContext();
   const telemetryContext = useTelemetryDataContext();
 
+  // Load deployments data
   useEffect(() => {
+    surveyContext.deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [surveyContext.projectId, surveyContext.surveyId]);
+
+  // Load telemetry data for all deployments
+  useEffect(() => {
+    if (!surveyContext.deploymentDataLoader.data?.length) {
+      // No deployments data, therefore no telemetry data to load
+      return;
+    }
+
     telemetryContext.telemetryDataLoader.refresh(
       surveyContext.deploymentDataLoader.data?.map((deployment) => deployment.deployment_id) ?? []
     );
@@ -45,13 +58,19 @@ export const SurveySpatialTelemetry = () => {
           ?.filter((telemetry) => telemetry.latitude !== undefined && telemetry.longitude !== undefined)
           .reduce(
             (
-              acc: { deployment: IAnimalDeployment; critter: ISimpleCritterWithInternalId; telemetry: ITelemetry }[],
+              acc: {
+                deployment: IAnimalDeployment;
+                critter: ISimpleCritterWithInternalId;
+                telemetry: ITelemetry;
+              }[],
               telemetry: ITelemetry
             ) => {
               const deployment = deployments.find(
                 (animalDeployment) => animalDeployment.deployment_id === telemetry.deployment_id
               );
+
               const critter = critters.find((detailedCritter) => detailedCritter.critter_id === deployment?.critter_id);
+
               if (critter && deployment) {
                 acc.push({ deployment, critter, telemetry });
               }
@@ -62,8 +81,8 @@ export const SurveySpatialTelemetry = () => {
           )
           .map(({ telemetry }) => {
             return {
-              id: telemetry.telemetry_manual_id,
-              key: `telemetry-${telemetry.telemetry_manual_id}`,
+              id: telemetry.id,
+              key: `telemetry-id-${telemetry.id}`,
               geoJSON: {
                 type: 'Feature',
                 properties: {},
@@ -99,7 +118,8 @@ export const SurveySpatialTelemetry = () => {
       color: SURVEY_MAP_LAYER_COLOURS.TELEMETRY_COLOUR ?? SURVEY_MAP_LAYER_COLOURS.DEFAULT_COLOUR,
       opacity: 0.75
     },
-    features: telemetryPoints
+    features: telemetryPoints,
+    popup: (feature) => <SurveySpatialTelemetryPopup feature={feature} />
   };
 
   return (

@@ -98,14 +98,21 @@ export function getDeploymentsInSurvey(): RequestHandler {
       };
 
       const surveyCritterService = new SurveyCritterService(connection);
-      const bctwService = new BctwService(user);
-
-      const critter_ids = (await surveyCritterService.getCrittersInSurvey(surveyId)).map(
+      const critterbaseCritterIds = (await surveyCritterService.getCrittersInSurvey(surveyId)).map(
         (critter) => critter.critterbase_critter_id
       );
 
-      const results = critter_ids.length ? await bctwService.getDeploymentsByCritterId(critter_ids) : [];
-      return res.status(200).json(results);
+      if (!critterbaseCritterIds.length) {
+        // No SIMS critters found, return early
+        return res.status(200).json([]);
+      }
+
+      // TODO NICK: Should this be fetching deployments based on the critter? Or using the SIMS deployments table instead?
+      // Right now, it's fetching deployments based on the critter, which means deployments not created by this survey could be returned.
+      const bctwService = new BctwService(user);
+      const critterbaseCritters = await bctwService.getDeploymentsByCritterId(critterbaseCritterIds);
+
+      return res.status(200).json(critterbaseCritters);
     } catch (error) {
       defaultLog.error({ label: 'getDeploymentsInSurvey', message: 'error', error });
       await connection.rollback();

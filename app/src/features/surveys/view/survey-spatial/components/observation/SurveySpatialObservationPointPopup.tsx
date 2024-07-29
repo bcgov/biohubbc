@@ -12,6 +12,12 @@ interface ISurveySpatialObservationPointPopupProps {
   feature: IStaticLayerFeature;
 }
 
+/**
+ * Renders a popup for observation data on the map.
+ *
+ * @param {ISurveySpatialObservationPointPopupProps} props
+ * @return {*}
+ */
 export const SurveySpatialObservationPointPopup = (props: ISurveySpatialObservationPointPopupProps) => {
   const { feature } = props;
 

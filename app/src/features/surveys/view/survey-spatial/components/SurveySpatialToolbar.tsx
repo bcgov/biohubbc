@@ -35,6 +35,12 @@ interface ISurveySpatialToolbarProps {
   views: ISurveySpatialDatasetView[];
 }
 
+/**
+ * Toolbar that buttons (tabs) to switch between different views of the survey data (observations, animals, telemetry).
+ *
+ * @param {ISurveySpatialToolbarProps} props
+ * @return {*}
+ */
 export const SurveySpatialToolbar = (props: ISurveySpatialToolbarProps) => {
   const { activeView, setActiveView, views } = props;
 

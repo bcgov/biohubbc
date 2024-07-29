@@ -9,6 +9,12 @@ export interface ISurveySpatialAnimalMortalityPopupProps {
   feature: IStaticLayerFeature;
 }
 
+/**
+ * Renders a popup for animal mortality data on the map.
+ *
+ * @param {ISurveySpatialAnimalMortalityPopupProps} props
+ * @return {*}
+ */
 export const SurveySpatialAnimalMortalityPopup = (props: ISurveySpatialAnimalMortalityPopupProps) => {
   const { feature } = props;
 

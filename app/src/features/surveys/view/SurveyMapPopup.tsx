@@ -8,7 +8,7 @@ export interface ISurveyMapPopupProps {
   title: string;
   metadata: {
     label: string;
-    value: string;
+    value: string | number;
   }[];
 }
 
@@ -40,11 +40,11 @@ export const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
           </Typography>
           <Box mt={1} mb={0} width={200}>
             <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
-              <Skeleton width="80px" />
+              <Skeleton width="100px" />
               <Skeleton sx={{ flex: '1 1 auto' }} />
             </Stack>
             <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
-              <Skeleton width="80px" />
+              <Skeleton width="100px" />
               <Skeleton sx={{ flex: '1 1 auto' }} />
             </Stack>
           </Box>
@@ -72,7 +72,7 @@ export const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
                 alignItems="flex-start"
                 gap={1}
                 sx={{ typography: 'body2' }}>
-                <Box component="dt" width={80} flex="0 0 auto" sx={{ color: 'text.secondary' }}>
+                <Box component="dt" minWidth={100} flex="0 0 auto" sx={{ color: 'text.secondary' }}>
                   {metadata.label}:
                 </Box>
                 <Box component="dd" m={0} minWidth={100}>

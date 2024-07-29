@@ -2,9 +2,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { HTTP500 } from '../../../../../../errors/http-error';
 import { critterSchema } from '../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
+import { CritterbaseService, ICritter, ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../utils/logger';
 
@@ -83,7 +84,7 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            title: 'Array of critters in survey',
+            title: 'Array of critters in survey.',
             type: 'array',
             items: critterSchema
           }
@@ -200,6 +201,12 @@ POST.apiDoc = {
   }
 };
 
+/**
+ * Get all critters under this survey that have a corresponding Critterbase critter record.
+ *
+ * @export
+ * @return {*}  {RequestHandler}
+ */
 export function getCrittersFromSurvey(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
@@ -216,36 +223,39 @@ export function getCrittersFromSurvey(): RequestHandler {
         return res.status(200).json([]);
       }
 
-      const critterIds = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
+      const critterbaseCritterId = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
 
       const critterbaseService = new CritterbaseService({
         keycloak_guid: connection.systemUserGUID(),
         username: connection.systemUserIdentifier()
       });
 
-      // Fetch critters from the service based on critterIds
-      const result =
+      // Fetch critters from the service based on the Critterbase critter ids
+      const critterbaseCritters =
         req.query.format === 'detailed'
-          ? await critterbaseService.getMultipleCrittersByIdsDetailed(critterIds)
-          : await critterbaseService.getMultipleCrittersByIds(critterIds);
+          ? await critterbaseService.getMultipleCrittersByIdsDetailed(critterbaseCritterId)
+          : await critterbaseService.getMultipleCrittersByIds(critterbaseCritterId);
 
-      // Create a map to associate critter_id with critter object
-      const critterMap = new Map();
-      for (const critter of result) {
-        critterMap.set(critter.critter_id, critter);
-      }
+      // For each Critterbase critter record, find the corresponding survey critter record, and add the corresponding
+      // survey critter ID to the Critterbase critter record.
+      const mergedCritterbaseCritters: (ICritter & { survey_critter_id: number })[] = critterbaseCritters.map(
+        (critterbaseCritter) => {
+          const surveyCritter = surveyCritters.find(
+            (surveyCritter) => surveyCritter.critterbase_critter_id === critterbaseCritter.critter_id
+          );
 
-      // Update critter objects with survey_critter_id from surveyCritters
-      for (const surveyCritter of surveyCritters) {
-        const critterId = surveyCritter.critterbase_critter_id;
-        if (critterMap.has(critterId)) {
-          critterMap.get(critterId).survey_critter_id = surveyCritter.critter_id;
+          if (!surveyCritter) {
+            throw new HTTP500('Failed to find survey critters');
+          }
+
+          return {
+            ...critterbaseCritter,
+            survey_critter_id: surveyCritter.critter_id
+          };
         }
-      }
+      );
 
-      // Convert map values back to an array and send as JSON response
-      const updatedCritters = [...critterMap.values()];
-      return res.status(200).json(updatedCritters);
+      return res.status(200).json(mergedCritterbaseCritters);
     } catch (error) {
       defaultLog.error({ label: 'getCrittersFromSurvey', message: 'error', error });
       await connection.rollback();
