@@ -111,7 +111,7 @@ export const EditAnimalPage = () => {
         itis_tsn: values.species.tsn,
         wlh_id: values.wildlife_health_id,
         animal_id: values.nickname,
-        sex: AnimalSex.UNKNOWN,
+        sex: values.sex,
         critter_comment: values.critter_comment
       });
 
@@ -218,6 +218,7 @@ export const EditAnimalPage = () => {
             initialAnimalData={{
               critter_id: critter.critter_id,
               nickname: critter.animal_id || '',
+              sex: critter.sex as AnimalSex,
               species: {
                 commonNames: [],
                 rank: undefined,
