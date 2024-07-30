@@ -58,9 +58,12 @@ export const SurveySpatialObservation = () => {
 
   return (
     <>
+      {/* Display map with observation points */}
       <Box height={{ sm: 300, md: 500 }} position="relative">
         <SurveySpatialMap staticLayers={[observationLayer]} isLoading={observationsGeometryDataLoader.isLoading} />
       </Box>
+
+      {/* Display data table with observation details */}
       <Box p={2} position="relative">
         <SurveySpatialObservationTable isLoading={observationsGeometryDataLoader.isLoading} />
       </Box>

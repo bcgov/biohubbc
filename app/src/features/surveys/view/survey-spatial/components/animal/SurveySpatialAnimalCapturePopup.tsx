@@ -11,6 +11,12 @@ export interface ISurveySpatialAnimalCapturePopupProps {
   feature: IStaticLayerFeature;
 }
 
+/**
+ * Renders a popup for animal capture data on the map.
+ *
+ * @param {ISurveySpatialAnimalCapturePopupProps} props
+ * @return {*}
+ */
 export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCapturePopupProps) => {
   const { feature } = props;
 
@@ -41,9 +47,6 @@ export const SurveySpatialAnimalCapturePopup = (props: ISurveySpatialAnimalCaptu
       eventHandlers={{
         add: () => {
           captureDataLoader.load(String(feature.id));
-        },
-        remove: () => {
-          captureDataLoader.clearData();
         }
       }}>
       <SurveyMapPopup

@@ -46,9 +46,6 @@ export const SurveySpatialAnimalMortalityPopup = (props: ISurveySpatialAnimalMor
       eventHandlers={{
         add: () => {
           mortalityDataLoader.load(String(feature.id));
-        },
-        remove: () => {
-          mortalityDataLoader.clearData();
         }
       }}>
       <SurveyMapPopup

@@ -57,9 +57,6 @@ export const SurveySpatialObservationPointPopup = (props: ISurveySpatialObservat
       eventHandlers={{
         add: () => {
           observationDataLoader.load(Number(feature.id));
-        },
-        remove: () => {
-          observationDataLoader.clearData();
         }
       }}>
       <SurveyMapPopup

@@ -124,10 +124,12 @@ export const SurveySpatialTelemetry = () => {
 
   return (
     <>
+      {/* Display map with telemetry points */}
       <Box height={{ sm: 300, md: 500 }} position="relative">
         <SurveySpatialMap staticLayers={[telemetryLayer]} isLoading={telemetryContext.telemetryDataLoader.isLoading} />
       </Box>
 
+      {/* Display data table with telemetry details */}
       <Box p={2} position="relative">
         <SurveySpatialTelemetryTable isLoading={telemetryContext.telemetryDataLoader.isLoading} />
       </Box>
