@@ -130,6 +130,8 @@ GET.apiDoc = {
 /**
  * Fetch geometry of all captures and mortalities for critters in Survey
  *
+ * @TODO This endpoint is not currently used in the SIMS frontend. Remove?
+ *
  * @export
  * @return {*}  {RequestHandler}
  */
