@@ -4,6 +4,7 @@ import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import { SurveySpatialMap } from 'features/surveys/view/survey-spatial/components/map/SurveySpatialMap';
 import { SurveySpatialObservationPointPopup } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservationPointPopup';
 import { SurveySpatialObservationTable } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservationTable';
+import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
@@ -53,7 +54,8 @@ export const SurveySpatialObservation = () => {
     features: observationPoints,
     popup: (feature) => {
       return <SurveySpatialObservationPointPopup feature={feature} />;
-    }
+    },
+    tooltip: (feature) => <SurveyMapTooltip title="Observation" key={`observation-tooltip-${feature.id}`} />
   };
 
   return (

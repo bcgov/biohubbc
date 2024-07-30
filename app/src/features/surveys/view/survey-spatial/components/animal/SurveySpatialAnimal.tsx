@@ -5,6 +5,7 @@ import { SurveySpatialAnimalCapturePopup } from 'features/surveys/view/survey-sp
 import { SurveySpatialAnimalMortalityPopup } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalMortalityPopup';
 import { SurveySpatialAnimalTable } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalTable';
 import { SurveySpatialMap } from 'features/surveys/view/survey-spatial/components/map/SurveySpatialMap';
+import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -58,7 +59,8 @@ export const SurveySpatialAnimal = () => {
           properties: {}
         }
       })) ?? [],
-    popup: (feature) => <SurveySpatialAnimalCapturePopup feature={feature} />
+    popup: (feature) => <SurveySpatialAnimalCapturePopup feature={feature} />,
+    tooltip: (feature) => <SurveyMapTooltip title="Animal Capture" key={`mortality-tooltip-${feature.id}`} />
   };
 
   const mortalityLayer: IStaticLayer = {
@@ -81,7 +83,8 @@ export const SurveySpatialAnimal = () => {
           properties: {}
         }
       })) ?? [],
-    popup: (feature) => <SurveySpatialAnimalMortalityPopup feature={feature} />
+    popup: (feature) => <SurveySpatialAnimalMortalityPopup feature={feature} />,
+    tooltip: (feature) => <SurveyMapTooltip title="Animal Mortality" key={`capture-tooltip-${feature.id}`} />
   };
 
   return (

@@ -5,6 +5,7 @@ import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetr
 import { SurveySpatialMap } from 'features/surveys/view/survey-spatial/components/map/SurveySpatialMap';
 import { SurveySpatialTelemetryPopup } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryPopup';
 import { SurveySpatialTelemetryTable } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryTable';
+import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { Position } from 'geojson';
 import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
 import { ITelemetry } from 'hooks/useTelemetryApi';
@@ -119,7 +120,8 @@ export const SurveySpatialTelemetry = () => {
       opacity: 0.75
     },
     features: telemetryPoints,
-    popup: (feature) => <SurveySpatialTelemetryPopup feature={feature} />
+    popup: (feature) => <SurveySpatialTelemetryPopup feature={feature} />,
+    tooltip: (feature) => <SurveyMapTooltip title="Telemetry" key={`telemetry-tooltip-${feature.id}`} />
   };
 
   return (
