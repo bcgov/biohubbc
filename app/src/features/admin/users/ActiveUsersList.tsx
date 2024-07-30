@@ -303,19 +303,34 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
       });
     } catch (error) {
       const apiError = error as APIError;
-      dialogContext.setErrorDialog({
-        open: true,
-        dialogTitle: AddSystemUserI18N.addUserErrorTitle,
-        dialogText: AddSystemUserI18N.addUserErrorText,
-        dialogError: apiError.message,
-        dialogErrorDetails: apiError.errors,
-        onClose: () => {
-          dialogContext.setErrorDialog({ open: false });
-        },
-        onOk: () => {
-          dialogContext.setErrorDialog({ open: false });
-        }
-      });
+
+      if (apiError.status === 409) {
+        dialogContext.setErrorDialog({
+          open: true,
+          dialogTitle: 'Failed to create users',
+          dialogText: 'One of the users you added already exists.',
+          onClose: () => {
+            dialogContext.setErrorDialog({ open: false });
+          },
+          onOk: () => {
+            dialogContext.setErrorDialog({ open: false });
+          }
+        });
+      } else {
+        dialogContext.setErrorDialog({
+          open: true,
+          dialogTitle: AddSystemUserI18N.addUserErrorTitle,
+          dialogText: AddSystemUserI18N.addUserErrorText,
+          dialogError: apiError.message,
+          dialogErrorDetails: apiError.errors,
+          onClose: () => {
+            dialogContext.setErrorDialog({ open: false });
+          },
+          onOk: () => {
+            dialogContext.setErrorDialog({ open: false });
+          }
+        });
+      }
     }
   };
 

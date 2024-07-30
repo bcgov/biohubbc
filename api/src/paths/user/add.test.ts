@@ -8,7 +8,7 @@ import { SystemUser } from '../../repositories/user-repository';
 import { UserService } from '../../services/user-service';
 import * as keycloakUtils from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
-import * as user from './add';
+import { addSystemRoleUser } from './add';
 
 chai.use(sinonChai);
 
@@ -52,14 +52,17 @@ describe('user', () => {
         agency: null
       };
 
+      const getUserByIdentifierStub = sinon.stub(UserService.prototype, 'getUserByIdentifier').resolves();
+
       const ensureSystemUserStub = sinon.stub(UserService.prototype, 'ensureSystemUser').resolves(mockUserObject);
 
       const adduserSystemRolesStub = sinon.stub(UserService.prototype, 'addUserSystemRoles');
 
-      const requestHandler = user.addSystemRoleUser();
+      const requestHandler = addSystemRoleUser();
 
       await requestHandler(mockReq, mockRes, mockNext);
 
+      expect(getUserByIdentifierStub).to.have.been.calledOnce;
       expect(ensureSystemUserStub).to.have.been.calledOnce;
       expect(adduserSystemRolesStub).to.have.been.calledOnce;
     });
@@ -97,13 +100,16 @@ describe('user', () => {
         agency: null
       };
 
+      const getUserByIdentifierStub = sinon.stub(UserService.prototype, 'getUserByIdentifier').resolves();
+
       const ensureSystemUserStub = sinon.stub(UserService.prototype, 'ensureSystemUser').resolves(mockUserObject);
 
       const adduserSystemRolesStub = sinon.stub(UserService.prototype, 'addUserSystemRoles');
 
-      const requestHandler = user.addSystemRoleUser();
+      const requestHandler = addSystemRoleUser();
 
       await requestHandler(mockReq, mockRes, mockNext);
+      expect(getUserByIdentifierStub).to.have.been.calledOnce;
       expect(ensureSystemUserStub).to.have.been.calledOnce;
       expect(adduserSystemRolesStub).to.have.been.calledOnce;
     });
