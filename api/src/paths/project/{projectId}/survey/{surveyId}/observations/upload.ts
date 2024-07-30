@@ -3,10 +3,12 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
+import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
+import { getFileFromRequest } from '../../../../../../utils/request';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/upload');
 
@@ -60,8 +62,10 @@ POST.apiDoc = {
           properties: {
             media: {
               description: 'A survey observation submission file.',
-              type: 'string',
-              format: 'binary'
+              type: 'array',
+              minItems: 1,
+              maxItems: 1,
+              items: csvFileSchema
             }
           }
         }
@@ -110,27 +114,11 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
-    const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
-
-    if (!rawMediaArray?.length) {
-      // no media objects included, skipping media upload step
-      throw new HTTP400('Missing upload data');
-    }
-
-    if (rawMediaArray.length !== 1) {
-      // no media objects included
-      throw new HTTP400('Too many files uploaded, expected 1');
-    }
+    const rawMediaFile = getFileFromRequest(req);
 
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      const rawMediaFile = rawMediaArray[0];
-
-      if (!rawMediaFile?.originalname.endsWith('.csv')) {
-        throw new HTTP400('Invalid file type, expected a CSV file.');
-      }
-
       await connection.open();
 
       // Scan file for viruses using ClamAV
