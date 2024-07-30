@@ -98,6 +98,27 @@ export class SampleMethodRepository extends BaseRepository {
   }
 
   /**
+   * Gets count of sample methods associated with one or more method technique Ids
+   *
+   * @param {number[]} techniqueIds
+   * @return {*}  {Promise<number>}
+   * @memberof SampleMethodRepository
+   */
+  async getSampleMethodsCountForTechniqueIds(techniqueIds: number[]): Promise<number> {
+    const sql = SQL`
+      SELECT
+        COUNT(*) AS count
+      FROM
+        survey_sample_method
+      WHERE
+        method_technique_id = ANY (${techniqueIds});
+    `;
+    const response = await this.connection.sql(sql) //, z.object({ count: z.number() }));
+    console.log(response.rows)
+    return response.rows[0].count;
+  }
+
+  /**
    * updates a survey Sample method.
    *
    * @param {UpdateSampleMethodRecord} sampleMethod

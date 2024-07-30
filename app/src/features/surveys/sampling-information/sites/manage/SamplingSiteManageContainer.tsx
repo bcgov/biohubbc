@@ -2,35 +2,38 @@ import { mdiDotsVertical, mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
-import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { GridRowSelectionModel } from '@mui/x-data-grid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonMap, SkeletonTable } from 'components/loading/SkeletonLoaders';
-import { SamplingSiteCard } from 'features/surveys/sampling-information/sites/manage/SamplingSiteCard';
 import { SamplingSiteMapContainer } from 'features/surveys/sampling-information/sites/manage/SamplingSiteMapContainer';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { SamplingSiteManageMethodTable } from './table/method/SamplingSiteManageMethodTable';
+import { SamplingSiteManagePeriodTable } from './table/period/SamplingSiteManagePeriodTable';
+import {
+    ISamplingSiteCount,
+    SamplingSiteManageTableToolbar,
+    SamplingSiteManageTableView
+} from './table/SamplingSiteManageTableToolbar';
+import { SamplingSiteManageSiteTable } from './table/site/SamplingSiteManageSiteTable';
 
 /**
  * Renders a list of sampling sites.
  *
  * @return {*}
  */
-export const SamplingSiteManageSiteList = () => {
+export const SamplingSiteManageContainer = () => {
   const surveyContext = useSurveyContext();
   const codesContext = useCodesContext();
   const dialogContext = useDialogContext();
@@ -48,18 +51,18 @@ export const SamplingSiteManageSiteList = () => {
   const [sampleSiteAnchorEl, setSampleSiteAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [headerAnchorEl, setHeaderAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [selectedSampleSiteId, setSelectedSampleSiteId] = useState<number | undefined>();
-  const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
 
-  const sampleSites = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
+  const [siteSelection, setSiteSelection] = useState<GridRowSelectionModel>([]);
+  const [methodSelection, setMethodSelection] = useState<GridRowSelectionModel>([]);
+  const [periodSelection, setPeriodSelection] = useState<GridRowSelectionModel>([]);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleSampleSiteMenuClick = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    sample_site_id: number
-  ) => {
-    setSampleSiteAnchorEl(event.currentTarget);
-    setSelectedSampleSiteId(sample_site_id);
-  };
+  const [activeView, setActiveView] = useState<SamplingSiteManageTableView>(SamplingSiteManageTableView.SITES);
+
+  console.log(setSelectedSampleSiteId);
+
+  const sampleSites = surveyContext.sampleSiteDataLoader.data;
+  const sampleMethods = sampleSites?.sampleSites.flatMap((site) => site.sample_methods);
+  const samplePeriods = sampleMethods?.flatMap((method) => method.sample_periods);
 
   const handleHeaderMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setHeaderAnchorEl(event.currentTarget);
@@ -123,25 +126,57 @@ export const SamplingSiteManageSiteList = () => {
       }
     });
   };
-
-  const handleBulkDeleteSampleSites = async () => {
-    await biohubApi.samplingSite
-      .deleteSampleSites(surveyContext.projectId, surveyContext.surveyId, checkboxSelectedIds)
+  const handleBulkDelete = async () => {
+    let deleteApiCall: Promise<void>;
+    const selectedIds = activeView === SamplingSiteManageTableView.SITES
+      ? siteSelection
+      : activeView === SamplingSiteManageTableView.TECHNIQUES
+      ? methodSelection
+      : periodSelection;
+  
+    if (activeView === SamplingSiteManageTableView.SITES) {
+      deleteApiCall = biohubApi.samplingSite.deleteSampleSites(
+        surveyContext.projectId,
+        surveyContext.surveyId,
+        selectedIds as number[] // Cast to number[] for API call
+      );
+    } else if (activeView === SamplingSiteManageTableView.TECHNIQUES) {
+      deleteApiCall = biohubApi.samplingSite.deleteSampleMethods(
+        surveyContext.projectId,
+        surveyContext.surveyId,
+        selectedIds as number[]
+      );
+    } else if (activeView === SamplingSiteManageTableView.PERIODS) {
+      deleteApiCall = biohubApi.samplingSite.deleteSamplePeriods(
+        surveyContext.projectId,
+        surveyContext.surveyId,
+        selectedIds as number[]
+      );
+    } else {
+      // If no valid view is selected, return early
+      return;
+    }
+  
+    await deleteApiCall
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
-        setCheckboxSelectedIds([]);
+        setSiteSelection([]); // Clear selection based on the active view
+        setMethodSelection([]);
+        setPeriodSelection([]);
         setHeaderAnchorEl(null);
         surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
-        setCheckboxSelectedIds([]);
+        setSiteSelection([]);
+        setMethodSelection([]);
+        setPeriodSelection([]);
         setHeaderAnchorEl(null);
         dialogContext.setSnackbar({
           snackbarMessage: (
             <>
               <Typography variant="body2" component="div">
-                <strong>Error Deleting Sampling Sites</strong>
+                <strong>Error Deleting Items</strong>
               </Typography>
               <Typography variant="body2" component="div">
                 {String(error)}
@@ -152,7 +187,7 @@ export const SamplingSiteManageSiteList = () => {
         });
       });
   };
-
+  
   const handlePromptConfirmBulkDelete = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Delete Sampling Sites?',
@@ -177,17 +212,28 @@ export const SamplingSiteManageSiteList = () => {
     });
   };
 
-  const handleCheckboxChange = (sampleSiteId: number) => {
-    setCheckboxSelectedIds((prev) => {
-      if (prev.includes(sampleSiteId)) {
-        return prev.filter((item) => item !== sampleSiteId);
-      } else {
-        return [...prev, sampleSiteId];
-      }
-    });
+  const handleRowSelection = (selection: GridRowSelectionModel) => {
+    switch (activeView) {
+      case SamplingSiteManageTableView.SITES:
+        setSiteSelection(selection);
+        break;
+      case SamplingSiteManageTableView.TECHNIQUES:
+        setMethodSelection(selection);
+        break;
+      case SamplingSiteManageTableView.PERIODS:
+        setPeriodSelection(selection);
+        break;
+    }
   };
+  
 
-  const samplingSiteCount = sampleSites.length ?? 0;
+  const samplingSiteCount = sampleSites?.pagination.total ?? 0;
+
+  const counts: ISamplingSiteCount[] = [
+    { type: SamplingSiteManageTableView.SITES, value: samplingSiteCount },
+    { type: SamplingSiteManageTableView.TECHNIQUES, value: sampleMethods?.length ?? 0 },
+    { type: SamplingSiteManageTableView.PERIODS, value: samplePeriods?.length ?? 0 }
+  ];
 
   return (
     <>
@@ -253,16 +299,15 @@ export const SamplingSiteManageSiteList = () => {
         </MenuItem>
       </Menu>
 
-      <Paper component={Stack} flexDirection="column" height="100%">
+      <Paper>
         <Toolbar
-          disableGutters
           sx={{
             flex: '0 0 auto',
             pr: 3,
             pl: 2
           }}>
           <Typography variant="h3" component="h2" flexGrow={1}>
-            Sites &zwnj;
+            Sampling Sites &zwnj;
             <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
               ({samplingSiteCount})
             </Typography>
@@ -287,7 +332,9 @@ export const SamplingSiteManageSiteList = () => {
             <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
         </Toolbar>
+
         <Divider flexItem />
+
         <Box>
           <LoadingGuard
             isLoading={surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}
@@ -298,67 +345,38 @@ export const SamplingSiteManageSiteList = () => {
               </>
             }
             delay={200}>
-            <SamplingSiteMapContainer samplingSites={surveyContext.sampleSiteDataLoader.data?.sampleSites ?? []} />
-            <Stack height="100%" sx={{ overflowY: 'auto' }}>
-              <Box flex="0 0 auto" display="flex" alignItems="center" px={2} ml={1} height={55}>
-                <FormGroup>
-                  <FormControlLabel
-                    label={
-                      <Typography
-                        ml={-0.5}
-                        variant="body2"
-                        component="span"
-                        color="textSecondary"
-                        fontWeight={700}
-                        sx={{ textTransform: 'uppercase' }}>
-                        Select All
-                      </Typography>
-                    }
-                    control={
-                      <Checkbox
-                        sx={{
-                          mr: 0.75
-                        }}
-                        checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === samplingSiteCount}
-                        indeterminate={
-                          checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount
-                        }
-                        onClick={() => {
-                          if (checkboxSelectedIds.length === samplingSiteCount) {
-                            setCheckboxSelectedIds([]);
-                            return;
-                          }
+            {/* MAP */}
+            <SamplingSiteMapContainer samplingSites={sampleSites?.sampleSites ?? []} />
 
-                          const sampleSiteIds = sampleSites.map((sampleSite) => sampleSite.survey_sample_site_id);
-                          setCheckboxSelectedIds(sampleSiteIds);
-                        }}
-                        inputProps={{ 'aria-label': 'controlled' }}
-                      />
-                    }
-                  />
-                </FormGroup>
-              </Box>
-              <Divider flexItem></Divider>
-              <Stack
-                flex="1 1 auto"
-                sx={{
-                  background: grey[100]
-                }}>
-                {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
-                  return (
-                    <SamplingSiteCard
-                      sampleSite={sampleSite}
-                      handleCheckboxChange={handleCheckboxChange}
-                      handleMenuClick={(event) => {
-                        setSampleSiteAnchorEl(event.currentTarget);
-                        setSelectedSampleSiteId(sampleSite.survey_sample_site_id);
-                      }}
-                      key={sampleSite.survey_sample_site_id}
-                    />
-                  );
-                })}
-              </Stack>
-            </Stack>
+            {/* TABS FOR TABLE VIEWS */}
+            <SamplingSiteManageTableToolbar activeView={activeView} setActiveView={setActiveView} counts={counts} />
+
+            {/* SITES */}
+            {activeView === SamplingSiteManageTableView.SITES && sampleSites && (
+              <SamplingSiteManageSiteTable
+                sites={sampleSites}
+                handleRowSelection={handleRowSelection}
+                rowSelectionModel={siteSelection}
+              />
+            )}
+
+            {/* TECHNIQUES */}
+            {activeView === SamplingSiteManageTableView.TECHNIQUES && sampleSites && (
+              <SamplingSiteManageMethodTable
+                sites={sampleSites}
+                handleRowSelection={handleRowSelection}
+                rowSelectionModel={methodSelection}
+              />
+            )}
+
+            {/* PERIODS */}
+            {activeView === SamplingSiteManageTableView.PERIODS && sampleSites && (
+              <SamplingSiteManagePeriodTable
+                sites={sampleSites}
+                handleRowSelection={handleRowSelection}
+                rowSelectionModel={periodSelection}
+              />
+            )}
           </LoadingGuard>
         </Box>
       </Paper>

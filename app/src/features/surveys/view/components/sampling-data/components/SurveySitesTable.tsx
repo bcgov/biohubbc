@@ -1,9 +1,9 @@
 import { mdiArrowTopRight } from '@mdi/js';
-import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridOverlay } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { IGetSampleSiteResponse } from 'interfaces/useSamplingSiteApi.interface';
 import { IGetTechniqueResponse } from 'interfaces/useTechniqueApi.interface';
 
@@ -66,15 +66,11 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
       disableRowSelectionOnClick
       noRowsOverlay={
         <GridOverlay>
-          <Box justifyContent="center" display="flex" flexDirection="column">
-            <Typography mb={1} variant="h4" color="textSecondary" textAlign="center">
-              Start by adding sampling information&nbsp;
-              <Icon path={mdiArrowTopRight} size={1} />
-            </Typography>
-            <Typography color="textSecondary" textAlign="center">
-              Add <strong>Techniques</strong>, then apply your techniques to <strong>Sites</strong>
-            </Typography>
-          </Box>
+          <NoDataOverlay
+            title="Add Sampling Sites"
+            subtitle="Sampling Sites show where techniques were implemented"
+            icon={mdiArrowTopRight}
+          />
         </GridOverlay>
       }
       sx={{

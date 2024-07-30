@@ -48,7 +48,11 @@ export const AccordionCard = (props: IAccordionCardProps) => {
       disableGutters
       expanded={expanded}
       sx={{
-        borderRadius: 0,
+        borderRadius: '0 !important',
+        '&:last-of-type': {
+          borderBottomLeftRadius: '4px !important',
+          borderBottomRightRadius: '4px !important'
+        },
         boxShadow: 'none',
         px: 1,
         '&:before': {
@@ -86,7 +90,7 @@ export const AccordionCard = (props: IAccordionCardProps) => {
           </IconButton>
         )}
       </Box>
-      <AccordionDetails>{detailsContent}</AccordionDetails>
+      <AccordionDetails sx={{ pt: 0 }}>{detailsContent}</AccordionDetails>
     </Accordion>
   );
 };

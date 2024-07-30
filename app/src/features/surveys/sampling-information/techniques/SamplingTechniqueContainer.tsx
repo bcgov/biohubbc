@@ -18,7 +18,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { SamplingTechniqueCardContainer } from './components/SamplingTechniqueCardContainer';
+import { SamplingTechniqueTable } from './components/SamplingTechniqueTable';
 
 /**
  * Renders a list of techniques.
@@ -159,7 +159,7 @@ export const SamplingTechniqueContainer = () => {
         isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
         fallback={<SkeletonTable />}
         delay={200}>
-        <SamplingTechniqueCardContainer
+        <SamplingTechniqueTable
           techniques={techniques}
           bulkActionTechniques={bulkActionTechniques}
           setBulkActionTechniques={setBulkActionTechniques}

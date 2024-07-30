@@ -8,11 +8,11 @@ import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import { GridRowSelectionModel } from '@mui/x-data-grid';
-import { GridOverlay } from '@mui/x-data-grid/components/containers/GridOverlay';
+import { GridOverlay, GridRowSelectionModel } from '@mui/x-data-grid';
 import { GridColDef } from '@mui/x-data-grid/models/colDef/gridColDef';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DeleteTechniqueI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
@@ -28,7 +28,7 @@ interface ITechniqueRowData {
   description: string | null;
 }
 
-interface ISamplingTechniqueCardContainer {
+interface ISamplingTechniqueTable {
   techniques: IGetTechniqueResponse[];
   bulkActionTechniques: GridRowSelectionModel;
   setBulkActionTechniques: (selection: GridRowSelectionModel) => void;
@@ -39,7 +39,7 @@ interface ISamplingTechniqueCardContainer {
  *
  * @returns
  */
-export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(props: ISamplingTechniqueCardContainer) => {
+export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamplingTechniqueTable) => {
   const { techniques, bulkActionTechniques, setBulkActionTechniques } = props;
 
   // Individual row action menu
@@ -237,15 +237,11 @@ export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(prop
           onRowSelectionModelChange={setBulkActionTechniques}
           noRowsOverlay={
             <GridOverlay>
-              <Box justifyContent="center" display="flex" flexDirection="column">
-                <Typography mb={1} variant="h4" color="textSecondary" textAlign="center">
-                  Start by adding sampling information&nbsp;
-                  <Icon path={mdiArrowTopRight} size={1} />
-                </Typography>
-                <Typography color="textSecondary" textAlign="center">
-                  Add techniques, then apply your techniques to sampling sites
-                </Typography>
-              </Box>
+              <NoDataOverlay
+                title="Add a Technique"
+                subtitle="Techniques describe the details of how species observations were collected"
+                icon={mdiArrowTopRight}
+              />
             </GridOverlay>
           }
           sx={{

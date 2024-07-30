@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
-import { ObservationService } from '../../../../../../services/observation-service';
+import { SampleMethodService } from '../../../../../../services/sample-method-service';
 import { TechniqueService } from '../../../../../../services/technique-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import { deleteSurveyTechniqueRecords } from './delete';
@@ -20,8 +20,8 @@ describe('deleteSurveyTechniqueRecords', () => {
     const mockDBConnection = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const getObservationsCountByTechniqueIdsStub = sinon
-      .stub(ObservationService.prototype, 'getObservationsCountByTechniqueIds')
+    const getSampleMethodsCountForTechniqueIdsStub = sinon
+      .stub(SampleMethodService.prototype, 'getSampleMethodsCountForTechniqueIds')
       .resolves(0);
 
     const deleteTechniqueStub = sinon
@@ -45,7 +45,7 @@ describe('deleteSurveyTechniqueRecords', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(getObservationsCountByTechniqueIdsStub).to.have.been.calledOnce;
+      expect(getSampleMethodsCountForTechniqueIdsStub).to.have.been.calledOnce;
       expect(deleteTechniqueStub).to.have.been.calledOnce;
 
       expect(mockDBConnection.rollback).to.have.been.calledOnce;
@@ -59,8 +59,8 @@ describe('deleteSurveyTechniqueRecords', () => {
     const mockDBConnection = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const getObservationsCountByTechniqueIdsStub = sinon
-      .stub(ObservationService.prototype, 'getObservationsCountByTechniqueIds')
+    const getSampleMethodsCountForTechniqueIdsStub = sinon
+      .stub(SampleMethodService.prototype, 'getSampleMethodsCountForTechniqueIds')
       .resolves(10); // technique records are associated to 10 observation records
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -80,13 +80,13 @@ describe('deleteSurveyTechniqueRecords', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(getObservationsCountByTechniqueIdsStub).to.have.been.calledOnce;
+      expect(getSampleMethodsCountForTechniqueIdsStub).to.have.been.calledOnce;
 
       expect(mockDBConnection.rollback).to.have.been.calledOnce;
       expect(mockDBConnection.release).to.have.been.calledOnce;
 
       expect((actualError as HTTPError).message).to.equal(
-        'Cannot delete a technique that is associated with an observation'
+        'Cannot delete a technique that is associated with a sampling site'
       );
       expect((actualError as HTTPError).status).to.equal(409);
     }
@@ -96,8 +96,8 @@ describe('deleteSurveyTechniqueRecords', () => {
     const mockDBConnection = getMockDBConnection({ commit: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const getObservationsCountByTechniqueIdsStub = sinon
-      .stub(ObservationService.prototype, 'getObservationsCountByTechniqueIds')
+    const getSampleMethodsCountForTechniqueIdsStub = sinon
+      .stub(SampleMethodService.prototype, 'getSampleMethodsCountForTechniqueIds')
       .resolves(0);
 
     const deleteTechniqueStub = sinon.stub(TechniqueService.prototype, 'deleteTechnique').resolves();
@@ -117,7 +117,7 @@ describe('deleteSurveyTechniqueRecords', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(getObservationsCountByTechniqueIdsStub).to.have.been.calledOnce;
+    expect(getSampleMethodsCountForTechniqueIdsStub).to.have.been.calledOnce;
     expect(deleteTechniqueStub).to.have.been.calledThrice;
 
     expect(mockDBConnection.commit).to.have.been.calledOnce;

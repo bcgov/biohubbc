@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { AccordionCard } from 'components/accordion/AccordionCard';
 import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
@@ -12,43 +11,39 @@ interface ISamplingSiteCardProps {
   handleCheckboxChange?: (sampleSiteId: number) => void;
 }
 
-export const SamplingSiteCard = (props: ISamplingSiteCardProps) => {
-  const { sampleSite, handleMenuClick, handleCheckboxChange, isChecked } = props;
+const SamplingSiteCard = (props: ISamplingSiteCardProps) => {
+  const { sampleSite, handleMenuClick, isChecked, handleCheckboxChange } = props;
 
   return (
     <AccordionCard
       summaryContent={
-        <Stack gap={0.5} display="flex">
-          <Stack direction="row" alignItems="center">
-            {handleCheckboxChange && (
-              <Box flex="0 0 auto" display="flex" alignItems="center" zIndex={100} position="absolute">
-                <Checkbox
-                  edge="start"
-                  checked={isChecked}
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    handleCheckboxChange(sampleSite.survey_sample_site_id);
-                  }}
-                  inputProps={{ 'aria-label': 'controlled' }}
-                />
-              </Box>
-            )}
-            <Typography ml={4} variant="h5">
-              {sampleSite.name}
-            </Typography>
-          </Stack>
-          <Typography ml={4} color="textSecondary">
-            {sampleSite.description}
+        <Box display="flex" alignItems="center">
+          {handleCheckboxChange && (
+            <Checkbox
+              sx={{ position: 'absolute' }}
+              edge="start"
+              checked={isChecked}
+              onClick={(event) => {
+                event.stopPropagation();
+                handleCheckboxChange(sampleSite.survey_sample_site_id);
+              }}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          )}
+          <Typography ml={handleCheckboxChange ? 6 : 0} variant="h5">
+            {sampleSite.name}
           </Typography>
-        </Stack>
+        </Box>
       }
       detailsContent={
-        <Stack gap={0.5} display="flex" ml={4}>
+        <Box ml={handleCheckboxChange ? 6 : 0} display="flex" flexDirection="column">
           <Typography variant="h5">{sampleSite.description}</Typography>
           <Typography color="textSecondary">{sampleSite.name}</Typography>
-        </Stack>
+        </Box>
       }
       onMenuClick={handleMenuClick}
     />
   );
 };
+
+export default SamplingSiteCard;

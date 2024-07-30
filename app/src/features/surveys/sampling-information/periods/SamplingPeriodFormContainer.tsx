@@ -4,7 +4,6 @@ import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
@@ -13,6 +12,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { GridMoreVertIcon } from '@mui/x-data-grid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
@@ -197,15 +197,26 @@ export const SamplingPeriodFormContainer = (props: ISamplingPeriodFormContainerP
                 background: grey[100],
                 border: `1px solid ${grey[400]}`,
                 '& .MuiCardHeader-root': {
-                  pb: 1
+                  py: 1
                 }
               }}>
               <CardHeader
                 title={
-                  <>
-                    {dayjs(item.start_date).format(DATE_FORMAT.MediumDateFormat)}&nbsp;&ndash;&nbsp;
-                    {dayjs(item.end_date).format(DATE_FORMAT.MediumDateFormat)}
-                  </>
+                  <Stack direction="row" gap={1}>
+                    <Stack>
+                      {dayjs(item.start_date).format(DATE_FORMAT.MediumDateFormat)}&nbsp;
+                      <Typography component="span" color="textSecondary">
+                        {item.start_time}
+                      </Typography>
+                    </Stack>
+                    &ndash;
+                    <Stack>
+                      {dayjs(item.end_date).format(DATE_FORMAT.MediumDateFormat)}&nbsp;
+                      <Typography component="span" color="textSecondary">
+                        {item.end_time}
+                      </Typography>
+                    </Stack>
+                  </Stack>
                 }
                 action={
                   <IconButton
@@ -215,13 +226,6 @@ export const SamplingPeriodFormContainer = (props: ISamplingPeriodFormContainerP
                   </IconButton>
                 }
               />
-              <CardContent
-                sx={{
-                  pt: 0,
-                  pb: '6px !important'
-                }}>
-                {/* <Stack gap={2}><SamplingPeriodFormContainer /></Stack> */}
-              </CardContent>
             </Card>
           </Collapse>
         ))}

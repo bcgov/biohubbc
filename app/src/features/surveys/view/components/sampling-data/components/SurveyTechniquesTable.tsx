@@ -1,11 +1,11 @@
 import { mdiArrowTopRight } from '@mdi/js';
-import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import blueGrey from '@mui/material/colors/blueGrey';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridOverlay } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { useCodesContext } from 'hooks/useContext';
 import { IGetTechniqueResponse, IGetTechniquesResponse } from 'interfaces/useTechniqueApi.interface';
 import { getCodesName } from 'utils/Utils';
@@ -83,15 +83,11 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
       disableRowSelectionOnClick
       noRowsOverlay={
         <GridOverlay>
-          <Box justifyContent="center" display="flex" flexDirection="column">
-            <Typography mb={1} variant="h4" color="textSecondary" textAlign="center">
-              Start by adding sampling information&nbsp;
-              <Icon path={mdiArrowTopRight} size={1} />
-            </Typography>
-            <Typography color="textSecondary" textAlign="center">
-              Add <strong>Techniques</strong>, then apply your techniques to <strong>Sites</strong>
-            </Typography>
-          </Box>
+          <NoDataOverlay
+            title="Start by Adding a Technique"
+            subtitle="Add techniques, then apply your techniques to sampling sites"
+            icon={mdiArrowTopRight}
+          />
         </GridOverlay>
       }
       sx={{

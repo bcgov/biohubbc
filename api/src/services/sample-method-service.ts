@@ -41,6 +41,17 @@ export class SampleMethodService extends DBService {
   }
 
   /**
+   * Gets count of sample methods associated with one or more method technique Ids
+   *
+   * @param {number[]} techniqueIds
+   * @return {*}  {Promise<number>}
+   * @memberof SampleMethodService
+   */
+  async getSampleMethodsCountForTechniqueIds(techniqueIds: number[]): Promise<number> {
+    return this.sampleMethodRepository.getSampleMethodsCountForTechniqueIds(techniqueIds);
+  }
+
+  /**
    * Deletes a survey Sample Method.
    *
    * @param {number} surveyId

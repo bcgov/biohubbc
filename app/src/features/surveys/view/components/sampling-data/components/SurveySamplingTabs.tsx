@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react';
 
 export enum SurveySamplingView {
   TECHNIQUES = 'TECHNIQUES',
-  SITES = 'SITES'
+  SITES = 'SAMPLING SITES'
 }
 
 export const SurveySamplingTabs = () => {
@@ -82,7 +82,7 @@ export const SurveySamplingTabs = () => {
             color="primary"
             startIcon={<Icon path={mdiAutoFix} size={0.75} />}
             value={SurveySamplingView.TECHNIQUES}>
-            {`Techniques (${surveyContext.techniqueDataLoader.data?.count ?? 0})`}
+            {`${SurveySamplingView.TECHNIQUES} (${surveyContext.techniqueDataLoader.data?.count ?? 0})`}
           </ToggleButton>
           <ToggleButton
             key="sampling-sites-view"
@@ -90,7 +90,7 @@ export const SurveySamplingTabs = () => {
             color="primary"
             startIcon={<Icon path={mdiMapMarker} size={0.75} />}
             value={SurveySamplingView.SITES}>
-            {`Sites (${surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0})`}
+            {`${SurveySamplingView.SITES} (${surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0})`}
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
