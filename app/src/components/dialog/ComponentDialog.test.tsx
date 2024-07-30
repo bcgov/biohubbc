@@ -3,7 +3,7 @@ import Typography from '@mui/material/Typography';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 
-const handleOnClose = jest.fn();
+const handleOnClose = vi.fn();
 
 const TestComponent = () => {
   return (

@@ -3,18 +3,19 @@ import { createMemoryHistory } from 'history';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { Router } from 'react-router';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import UsersDetailHeader from './UsersDetailHeader';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
+vi.mock('../../../hooks/useBioHubApi');
 
-const mockBiohubApi = useBiohubApi as jest.Mock;
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   user: {
-    deleteSystemUser: jest.fn<Promise<number>, []>()
+    deleteSystemUser: vi.fn()
   }
 };
 

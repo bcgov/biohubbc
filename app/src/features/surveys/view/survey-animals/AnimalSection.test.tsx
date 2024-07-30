@@ -6,12 +6,13 @@ import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interfac
 import { AuthProvider, AuthProviderProps } from 'react-oidc-context';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import { ANIMAL_SECTION } from './animal';
 import { AnimalSection } from './AnimalSection';
-jest.mock('../../../../hooks/useCritterbaseApi');
-const mockCritterbaseApi = useCritterbaseApi as jest.Mock;
+vi.mock('../../../../hooks/useCritterbaseApi');
+const mockCritterbaseApi = useCritterbaseApi as Mock;
 
-const mockRefreshCritter = jest.fn();
+const mockRefreshCritter = vi.fn();
 
 const authState = getMockAuthState({ base: SystemAdminAuthState });
 
@@ -35,7 +36,7 @@ describe('AnimalSection', () => {
   beforeEach(() => {
     mockCritterbaseApi.mockImplementation(() => ({
       family: {
-        getAllFamilies: jest.fn()
+        getAllFamilies: vi.fn()
       }
     }));
   });

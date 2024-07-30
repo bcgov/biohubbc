@@ -1,29 +1,28 @@
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { Router } from 'react-router';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
-import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
 import UsersDetailProjects from './UsersDetailProjects';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
+vi.mock('../../../hooks/useBioHubApi');
 
-const mockBiohubApi = useBiohubApi as jest.Mock;
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   user: {
-    getProjectList: jest.fn<Promise<IGetUserProjectsListResponse[]>, []>()
+    getProjectList: vi.fn()
   },
   projectParticipants: {
-    removeProjectParticipant: jest.fn<Promise<boolean>, []>(),
-    updateProjectParticipantRole: jest.fn<Promise<boolean>, []>()
+    removeProjectParticipant: vi.fn(),
+    updateProjectParticipantRole: vi.fn()
   },
   codes: {
-    getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
+    getAllCodeSets: vi.fn()
   }
 };
 

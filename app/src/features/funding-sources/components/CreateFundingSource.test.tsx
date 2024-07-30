@@ -2,18 +2,18 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetFundingSourceResponse, IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import CreateFundingSource from './CreateFundingSource';
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockBioHubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../hooks/useBioHubApi');
+const mockBioHubApi = useBiohubApi as Mock;
 const mockUseApi = {
   funding: {
-    getFundingSources: jest.fn<Promise<IGetFundingSourcesResponse[]>, []>(),
-    postFundingSource: jest.fn<Promise<IGetFundingSourceResponse[]>, []>()
+    getFundingSources: vi.fn(),
+    postFundingSource: vi.fn()
   }
 };
 const history = createMemoryHistory();
@@ -33,7 +33,7 @@ describe('CreateFundingSource', () => {
 
     mockUseApi.funding.getFundingSources.mockResolvedValue([]);
 
-    const onClose = jest.fn();
+    const onClose = vi.fn();
 
     const { getByTestId } = render(
       <Router history={history}>
@@ -56,7 +56,7 @@ describe('CreateFundingSource', () => {
   it('renders form errors when submitting with no data', async () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
     mockUseApi.funding.getFundingSources.mockResolvedValue([]);
-    const onClose = jest.fn();
+    const onClose = vi.fn();
 
     const { findByTestId, getByText } = render(
       <Router history={history}>
@@ -94,7 +94,7 @@ describe('CreateFundingSource', () => {
         survey_reference_amount_total: 0
       }
     ]);
-    const onClose = jest.fn();
+    const onClose = vi.fn();
 
     const { findByTestId, getByText, getByTestId } = render(
       <Router history={history}>
@@ -127,7 +127,7 @@ describe('CreateFundingSource', () => {
   it('form submits properly', async () => {
     const authState = getMockAuthState({ base: SystemAdminAuthState });
     mockUseApi.funding.getFundingSources.mockResolvedValue([]);
-    const onClose = jest.fn();
+    const onClose = vi.fn();
 
     const { findByTestId, getByTestId } = render(
       <Router history={history}>

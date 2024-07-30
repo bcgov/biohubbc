@@ -5,20 +5,21 @@ import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import ActiveUsersList, { IActiveUsersListProps } from './ActiveUsersList';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   user: {
-    updateSystemUserRoles: jest.fn(),
-    deleteSystemUser: jest.fn()
+    updateSystemUserRoles: vi.fn(),
+    deleteSystemUser: vi.fn()
   },
   admin: {
-    addSystemUser: jest.fn()
+    addSystemUser: vi.fn()
   }
 };
 

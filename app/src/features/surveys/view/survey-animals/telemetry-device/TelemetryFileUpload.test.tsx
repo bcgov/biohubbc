@@ -8,7 +8,7 @@ describe('TelemetryFileUpload component', () => {
   it('should render with correct props', async () => {
     const { getByTestId } = render(
       <ConfigContext.Provider value={{} as IConfig}>
-        <Formik initialValues={{ formValues: [] }} onSubmit={jest.fn()}>
+        <Formik initialValues={{ formValues: [] }} onSubmit={vi.fn()}>
           <TelemetryFileUpload attachmentType={AttachmentType.KEYX} typeKey="key" fileKey="key" />
         </Formik>
       </ConfigContext.Provider>

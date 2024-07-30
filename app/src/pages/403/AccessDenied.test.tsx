@@ -77,7 +77,7 @@ describe('AccessDenied', () => {
   });
 
   it('redirects to `/access-request` when the `Request Access` button clicked', () => {
-    const signinRedirectStub = jest.fn();
+    const signinRedirectStub = vi.fn();
 
     const authState = getMockAuthState({
       base: SystemUserAuthState,

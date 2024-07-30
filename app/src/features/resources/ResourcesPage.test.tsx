@@ -1,14 +1,15 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IListResourcesResponse } from 'interfaces/useResourcesApi.interface';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import ResourcesPage from './ResourcesPage';
 
-jest.mock('../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   resources: {
-    listResources: jest.fn<Promise<IListResourcesResponse>, []>()
+    listResources: vi.fn()
   }
 };
 
@@ -21,7 +22,7 @@ describe('ResourcesPage', () => {
     mockBiohubApi.mockImplementation(() => mockUseApi);
     mockUseApi.resources.listResources.mockClear();
 
-    jest.spyOn(console, 'debug').mockImplementation(() => {});
+    vi.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {

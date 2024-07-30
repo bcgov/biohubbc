@@ -287,7 +287,7 @@ describe('RouteGuards', () => {
       });
 
       it('renders a spinner if the auth context is still loading', async () => {
-        const signinRedirectStub = jest.fn();
+        const signinRedirectStub = vi.fn();
 
         const authState = getMockAuthState({
           base: nullAuthState,
@@ -323,7 +323,7 @@ describe('RouteGuards', () => {
       });
 
       it('renders a spinner if the sims user is still loading', async () => {
-        const signinRedirectStub = jest.fn();
+        const signinRedirectStub = vi.fn();
 
         const authState = getMockAuthState({
           base: nullAuthState,
@@ -366,7 +366,7 @@ describe('RouteGuards', () => {
       });
 
       it('renders a spinner and calls `signinRedirect` if the user is not authenticated', async () => {
-        const signinRedirectStub = jest.fn();
+        const signinRedirectStub = vi.fn();
 
         const authState = getMockAuthState({
           base: nullAuthState,
@@ -409,7 +409,7 @@ describe('RouteGuards', () => {
       });
 
       it('redirects to the request submitted page if the user is not registered and has a pending access request', async () => {
-        const signinRedirectStub = jest.fn();
+        const signinRedirectStub = vi.fn();
 
         const authState = getMockAuthState({
           base: nullAuthState,
@@ -450,7 +450,7 @@ describe('RouteGuards', () => {
       });
 
       it('redirects to the forbidden page if the user is not registered, has no pending access request, and attempted to access a protected page', async () => {
-        const signinRedirectStub = jest.fn();
+        const signinRedirectStub = vi.fn();
 
         const authState = getMockAuthState({
           base: nullAuthState,
@@ -490,7 +490,7 @@ describe('RouteGuards', () => {
       });
 
       it('renders the route if the user is not registered, has no pending access request, and attempted to access the landing page', async () => {
-        const signinRedirectStub = jest.fn();
+        const signinRedirectStub = vi.fn();
 
         const authState = getMockAuthState({
           base: nullAuthState,
@@ -529,7 +529,7 @@ describe('RouteGuards', () => {
       });
 
       it('renders the route if the user is not registered, has no pending access request, and attempted to access the access request page', async () => {
-        const signinRedirectStub = jest.fn();
+        const signinRedirectStub = vi.fn();
 
         const authState = getMockAuthState({
           base: nullAuthState,
@@ -568,7 +568,7 @@ describe('RouteGuards', () => {
       });
 
       it('renders the route if the user is a registered user', async () => {
-        const signinRedirectStub = jest.fn();
+        const signinRedirectStub = vi.fn();
 
         const authState = getMockAuthState({
           base: nullAuthState,

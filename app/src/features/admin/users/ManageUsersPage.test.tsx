@@ -4,6 +4,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import ManageUsersPage from './ManageUsersPage';
 
 const history = createMemoryHistory();
@@ -20,18 +21,18 @@ const renderContainer = () => {
   );
 };
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   admin: {
-    getAdministrativeActivities: jest.fn()
+    getAdministrativeActivities: vi.fn()
   },
   user: {
-    getUsersList: jest.fn()
+    getUsersList: vi.fn()
   },
   codes: {
-    getAllCodeSets: jest.fn()
+    getAllCodeSets: vi.fn()
   }
 };
 

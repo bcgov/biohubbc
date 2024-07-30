@@ -11,16 +11,17 @@ import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import SurveysListPage from './SurveysListPage';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   survey: {
-    getSurveysBasicFieldsByProjectId: jest.fn()
+    getSurveysBasicFieldsByProjectId: vi.fn()
   }
 };
 
@@ -44,7 +45,7 @@ describe('SurveysListPage', () => {
       projectDataLoader: {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
-      surveysListDataLoader: { data: [], refresh: jest.fn() } as unknown as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: [], refresh: vi.fn() } as unknown as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
     };
@@ -103,7 +104,7 @@ describe('SurveysListPage', () => {
       projectDataLoader: {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
-      surveysListDataLoader: { data: getSurveyForListResponse, refresh: jest.fn() } as unknown as DataLoader<
+      surveysListDataLoader: { data: getSurveyForListResponse, refresh: vi.fn() } as unknown as DataLoader<
         any,
         any,
         any

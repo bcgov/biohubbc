@@ -12,7 +12,7 @@ const renderContainer = (props: IFileUploadProps) => {
 
 describe('FileUpload', () => {
   it('renders the dropZone component', async () => {
-    const mockUploadHandler = jest.fn();
+    const mockUploadHandler = vi.fn();
 
     const { getByText } = renderContainer({ uploadHandler: mockUploadHandler });
 
@@ -20,7 +20,7 @@ describe('FileUpload', () => {
   });
 
   it('renders an item in the list for each file added for survey list', async () => {
-    const mockUploadHandler = jest.fn().mockResolvedValue(null);
+    const mockUploadHandler = vi.fn().mockResolvedValue(null);
 
     const { getByTestId, getByText } = renderContainer({ uploadHandler: mockUploadHandler });
 
@@ -48,7 +48,7 @@ describe('FileUpload', () => {
   });
 
   it('removes an item from the list when the onCancel callback is triggered', async () => {
-    const mockUploadHandler = jest.fn().mockResolvedValue(new Promise(() => {})); // return promise that doesn't resolve, giving time for the cancel button to be clicked
+    const mockUploadHandler = vi.fn().mockResolvedValue(new Promise(() => {})); // return promise that doesn't resolve, giving time for the cancel button to be clicked
 
     const { getByTestId, getByText, getByTitle, queryByText } = renderContainer({ uploadHandler: mockUploadHandler });
 

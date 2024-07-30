@@ -6,7 +6,7 @@ export interface IConfig {
   API_HOST: string;
   CHANGE_VERSION: string;
   NODE_ENV: string;
-  REACT_APP_NODE_ENV: string;
+  VITE_APP_NODE_ENV: string;
   VERSION: string;
   KEYCLOAK_CONFIG: {
     authority: string;
@@ -56,44 +56,44 @@ const parseFeatureFlagsString = (featureFlagsString: string): string[] => {
  * @return {*}  {IConfig}
  */
 const getLocalConfig = (): IConfig => {
-  const API_HOST = process.env.REACT_APP_API_HOST;
-  const API_PORT = process.env.REACT_APP_API_PORT;
+  const API_HOST = import.meta.env.VITE_APP_API_HOST;
+  const API_PORT = import.meta.env.VITE_APP_API_PORT;
 
   const API_URL = (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || 'localhost';
 
-  const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
-  const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || 'gblhvt';
+  const OBJECT_STORE_URL = import.meta.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
+  const OBJECT_STORE_BUCKET_NAME = import.meta.env.OBJECT_STORE_BUCKET_NAME || 'gblhvt';
   return {
     API_HOST: ensureProtocol(API_URL, 'http://'),
-    CHANGE_VERSION: process.env.CHANGE_VERSION || 'NA',
-    NODE_ENV: process.env.NODE_ENV,
-    REACT_APP_NODE_ENV: process.env.REACT_APP_NODE_ENV || 'dev',
-    VERSION: `${process.env.VERSION || 'NA'}(build #${process.env.CHANGE_VERSION || 'NA'})`,
+    CHANGE_VERSION: import.meta.env.CHANGE_VERSION || 'NA',
+    NODE_ENV: import.meta.env.NODE_ENV,
+    VITE_APP_NODE_ENV: import.meta.env.VITE_APP_NODE_ENV || 'dev',
+    VERSION: `${import.meta.env.VERSION || 'NA'}(build #${import.meta.env.CHANGE_VERSION || 'NA'})`,
     KEYCLOAK_CONFIG: {
-      authority: process.env.REACT_APP_KEYCLOAK_HOST || '',
-      realm: process.env.REACT_APP_KEYCLOAK_REALM || '',
-      clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID || ''
+      authority: import.meta.env.VITE_APP_KEYCLOAK_HOST || '',
+      realm: import.meta.env.VITE_APP_KEYCLOAK_REALM || '',
+      clientId: import.meta.env.VITE_APP_KEYCLOAK_CLIENT_ID || ''
     },
-    SITEMINDER_LOGOUT_URL: process.env.REACT_APP_SITEMINDER_LOGOUT_URL || '',
+    SITEMINDER_LOGOUT_URL: import.meta.env.VITE_APP_SITEMINDER_LOGOUT_URL || '',
     /**
      * File upload settings
      */
-    MAX_UPLOAD_NUM_FILES: Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES) || 10,
-    MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800,
+    MAX_UPLOAD_NUM_FILES: Number(import.meta.env.VITE_APP_MAX_UPLOAD_NUM_FILES) || 10,
+    MAX_UPLOAD_FILE_SIZE: Number(import.meta.env.VITE_APP_MAX_UPLOAD_FILE_SIZE) || 52428800,
     S3_PUBLIC_HOST_URL: ensureProtocol(`${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`, 'https://'),
     /**
      * BioHub settings
      */
-    BACKBONE_PUBLIC_API_HOST: process.env.REACT_APP_BACKBONE_PUBLIC_API_HOST || '',
-    BIOHUB_TAXON_PATH: process.env.REACT_APP_BIOHUB_TAXON_PATH || '',
-    BIOHUB_TAXON_TSN_PATH: process.env.REACT_APP_BIOHUB_TAXON_TSN_PATH || '',
+    BACKBONE_PUBLIC_API_HOST: import.meta.env.VITE_APP_BACKBONE_PUBLIC_API_HOST || '',
+    BIOHUB_TAXON_PATH: import.meta.env.VITE_APP_BIOHUB_TAXON_PATH || '',
+    BIOHUB_TAXON_TSN_PATH: import.meta.env.VITE_APP_BIOHUB_TAXON_TSN_PATH || '',
     /**
      * Feature flags
      *
      * Note: Recommend conforming to a consistent pattern when defining feature flags, to make feature flags easy to
      * identify (ie: `[APP/API]_FF_<string>`)
      */
-    FEATURE_FLAGS: parseFeatureFlagsString(process.env.REACT_APP_FEATURE_FLAGS || '')
+    FEATURE_FLAGS: parseFeatureFlagsString(import.meta.env.VITE_APP_FEATURE_FLAGS || '')
   };
 };
 
@@ -114,7 +114,7 @@ const getDeployedConfig = async (): Promise<IConfig> => {
  * @return {*}  {boolean}
  */
 const isDevelopment = (): boolean => {
-  if (process.env.NODE_ENV === 'development') {
+  if (import.meta.env.NODE_ENV === 'development') {
     return true;
   }
 

@@ -1,35 +1,33 @@
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
-import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import ProjectPage from './ProjectPage';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1'] });
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   project: {
-    getProjectForView: jest.fn<Promise<IGetProjectForViewResponse>, [number]>(),
-    deleteProject: jest.fn(),
-    publishProject: jest.fn()
+    getProjectForView: vi.fn(),
+    deleteProject: vi.fn(),
+    publishProject: vi.fn()
   },
   survey: {
-    getSurveysBasicFieldsByProjectId: jest.fn().mockResolvedValue([])
+    getSurveysBasicFieldsByProjectId: vi.fn().mockResolvedValue([])
   },
   codes: {
-    getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
+    getAllCodeSets: vi.fn()
   },
   spatial: {
-    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
+    getRegions: vi.fn()
   }
 };
 
@@ -47,7 +45,7 @@ describe.skip('ProjectPage', () => {
       regions: []
     });
 
-    jest.spyOn(console, 'debug').mockImplementation(() => {});
+    vi.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -141,7 +139,7 @@ describe.skip('ProjectPage', () => {
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
     mockUseApi.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-    mockUseApi.project.deleteProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockUseApi.project.deleteProject = vi.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 

@@ -3,17 +3,17 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetFundingSourceResponse } from 'interfaces/useFundingSourceApi.interface';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { render } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import DeleteFundingSource from './DeleteFundingSource';
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockBioHubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../hooks/useBioHubApi');
+const mockBioHubApi = useBiohubApi as Mock;
 const mockUseApi = {
   funding: {
-    getFundingSource: jest.fn<Promise<IGetFundingSourceResponse>, []>()
+    getFundingSource: vi.fn()
   }
 };
 const history = createMemoryHistory();
@@ -43,8 +43,8 @@ describe('DeleteFundingSource', () => {
       funding_source_survey_references: []
     });
 
-    const onClose = jest.fn();
-    const openViewModal = jest.fn();
+    const onClose = vi.fn();
+    const openViewModal = vi.fn();
 
     const { findByText } = render(
       <Router history={history}>
@@ -88,8 +88,8 @@ describe('DeleteFundingSource', () => {
       ]
     });
 
-    const onClose = jest.fn();
-    const openViewModal = jest.fn();
+    const onClose = vi.fn();
+    const openViewModal = vi.fn();
 
     const { findByText } = render(
       <Router history={history}>

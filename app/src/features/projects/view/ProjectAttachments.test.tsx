@@ -17,16 +17,17 @@ import {
   render,
   waitFor
 } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import ProjectAttachments from './ProjectAttachments';
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   project: {
-    getProjectForView: jest.fn(),
-    getProjectAttachments: jest.fn(),
-    deleteProjectAttachment: jest.fn()
+    getProjectForView: vi.fn(),
+    getProjectAttachments: vi.fn(),
+    deleteProjectAttachment: vi.fn()
   }
 };
 
@@ -47,12 +48,12 @@ describe('ProjectAttachments', () => {
     const mockProjectContext: IProjectContext = {
       artifactDataLoader: {
         data: null,
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -100,12 +101,12 @@ describe('ProjectAttachments', () => {
     const mockProjectContext: IProjectContext = {
       artifactDataLoader: {
         data: null,
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -150,12 +151,12 @@ describe('ProjectAttachments', () => {
             }
           ]
         },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -210,13 +211,13 @@ describe('ProjectAttachments', () => {
             }
           ]
         },
-        load: jest.fn(),
-        refresh: jest.fn()
+        load: vi.fn(),
+        refresh: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -285,12 +286,12 @@ describe('ProjectAttachments', () => {
             }
           ]
         },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -361,12 +362,12 @@ describe('ProjectAttachments', () => {
             }
           ]
         },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 

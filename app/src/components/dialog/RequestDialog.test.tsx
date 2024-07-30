@@ -11,9 +11,9 @@ const TestComponent: React.FC = () => {
 
 describe('RequestDialog', () => {
   it('Renders correctly and calls the onApprove, onDeny, and onCancel prop', async () => {
-    const approve = jest.fn();
-    const onClose = jest.fn();
-    const onDeny = jest.fn();
+    const approve = vi.fn();
+    const onClose = vi.fn();
+    const onDeny = vi.fn();
 
     const { getByText } = render(
       <div id="root">

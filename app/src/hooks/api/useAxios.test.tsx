@@ -4,6 +4,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { User } from 'oidc-client-ts';
 import { PropsWithChildren } from 'react';
 import { AuthContextProps, AuthProvider, AuthProviderProps, useAuth } from 'react-oidc-context';
+import { Mock } from 'vitest';
 import useAxios, { APIError } from './useAxios';
 
 describe('APIError', () => {
@@ -30,7 +31,7 @@ describe('APIError', () => {
   });
 });
 
-jest.mock('react-oidc-context');
+vi.mock('react-oidc-context');
 
 describe('useAxios', () => {
   /// Mock `axios` instance
@@ -42,19 +43,16 @@ describe('useAxios', () => {
     redirect_uri: 'redirect'
   };
 
-  const mockAuthProvider = AuthProvider as jest.Mock;
-  const mockUseAuth = useAuth as jest.Mock<Partial<AuthContextProps>>;
+  const mockAuthProvider = AuthProvider as Mock;
+  const mockUseAuth = useAuth as Mock<() => Partial<AuthContextProps>>;
 
-  const mockSigninSilent = jest.fn<
-    ReturnType<AuthContextProps['signinSilent']>,
-    Parameters<AuthContextProps['signinSilent']>
-  >();
+  const mockSigninSilent = vi.fn();
 
   beforeEach(() => {
     axiosMock = new MockAdapter(axios);
 
     // Assign the real implementation of `AuthProvider`
-    const { AuthProvider } = jest.requireActual('react-oidc-context');
+    const { AuthProvider } = vi.importActual('react-oidc-context') as any;
     mockAuthProvider.mockImplementation(AuthProvider);
 
     // Assign a mock implementation of `useAuth`

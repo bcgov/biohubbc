@@ -4,17 +4,17 @@ import { render, waitFor } from 'test-helpers/test-utils';
 import { ANIMAL_FORM_MODE } from '../animal';
 import FamilyAnimalForm from './FamilyAnimalForm';
 
-jest.mock('hooks/useCritterbaseApi');
+vi.mock('hooks/useCritterbaseApi');
 
-const mockUseCritterbaseApi = useCritterbaseApi as jest.Mock;
-const mockHandleClose = jest.fn();
+const mockUseCritterbaseApi = useCritterbaseApi as Mock;
+const mockHandleClose = vi.fn();
 
 const mockUseCritterbase = {
   lookup: {
-    getSelectOptions: jest.fn()
+    getSelectOptions: vi.fn()
   },
   family: {
-    getAllFamilies: jest.fn()
+    getAllFamilies: vi.fn()
   }
 };
 

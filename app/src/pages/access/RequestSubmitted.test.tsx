@@ -46,7 +46,7 @@ describe('RequestSubmitted', () => {
     const history = createMemoryHistory();
 
     it('should call the auth signoutRedirect function', async () => {
-      const signoutRedirectStub = jest.fn();
+      const signoutRedirectStub = vi.fn();
 
       const authState = getMockAuthState({
         base: SystemUserAuthState,

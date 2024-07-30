@@ -106,7 +106,7 @@ describe('getFormattedAmount', () => {
 describe('getFormattedDate', () => {
   beforeAll(() => {
     // ignore warning about invalid date string being passed to dayjs
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   it('returns empty string if invalid date is provided', async () => {
@@ -125,7 +125,7 @@ describe('getFormattedDate', () => {
 describe('getFormattedDateRangeString', () => {
   beforeAll(() => {
     // ignore warning about invalid date string being passed to dayjs
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
   it('returns empty string if invalid startDate is provided', async () => {

@@ -223,7 +223,7 @@ describe('TypedURLSearchParams', () => {
       const stringValue2 = typedURLSearchParams.toString();
       expect(stringValue2).toBe('key1=value1&key2=value2');
 
-      const callback = jest.fn();
+      const callback = vi.fn();
       typedURLSearchParams.forEach(callback);
       expect(callback).toHaveBeenCalledTimes(2);
       expect(callback).toHaveBeenCalledWith('value1', 'key1', typedURLSearchParams);

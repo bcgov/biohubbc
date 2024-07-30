@@ -24,20 +24,20 @@ const appDeploy = async (settings) => {
         VERSION: phases[phase].tag,
         HOST: phases[phase].host,
         CHANGE_ID: phases.build.changeId || changeId,
-        REACT_APP_API_HOST: phases[phase].apiHost,
-        REACT_APP_SITEMINDER_LOGOUT_URL: phases[phase].siteminderLogoutURL,
+        VITE_APP_API_HOST: phases[phase].apiHost,
+        VITE_APP_SITEMINDER_LOGOUT_URL: phases[phase].siteminderLogoutURL,
         // File Upload Settings
-        REACT_APP_MAX_UPLOAD_NUM_FILES: phases[phase].maxUploadNumFiles,
-        REACT_APP_MAX_UPLOAD_FILE_SIZE: phases[phase].maxUploadFileSize,
+        VITE_APP_MAX_UPLOAD_NUM_FILES: phases[phase].maxUploadNumFiles,
+        VITE_APP_MAX_UPLOAD_FILE_SIZE: phases[phase].maxUploadFileSize,
         // Node
         NODE_ENV: phases[phase].nodeEnv,
-        REACT_APP_NODE_ENV: phases[phase].nodeEnv,
+        VITE_APP_NODE_ENV: phases[phase].nodeEnv,
         // Keycloak
-        REACT_APP_KEYCLOAK_HOST: phases[phase].sso.host,
-        REACT_APP_KEYCLOAK_REALM: phases[phase].sso.realm,
-        REACT_APP_KEYCLOAK_CLIENT_ID: phases[phase].sso.clientId,
+        VITE_APP_KEYCLOAK_HOST: phases[phase].sso.host,
+        VITE_APP_KEYCLOAK_REALM: phases[phase].sso.realm,
+        VITE_APP_KEYCLOAK_CLIENT_ID: phases[phase].sso.clientId,
         // Feature Flags
-        REACT_APP_FEATURE_FLAGS: phases[phase].featureFlags,
+        VITE_APP_FEATURE_FLAGS: phases[phase].featureFlags,
         // Openshift Resources
         CPU_REQUEST: phases[phase].cpuRequest,
         CPU_LIMIT: phases[phase].cpuLimit,
@@ -45,9 +45,9 @@ const appDeploy = async (settings) => {
         MEMORY_LIMIT: phases[phase].memoryLimit,
         REPLICAS: phases[phase].replicas,
         REPLICAS_MAX: phases[phase].replicasMax,
-        REACT_APP_BACKBONE_PUBLIC_API_HOST: phases[phase].backbonePublicApiHost,
-        REACT_APP_BIOHUB_TAXON_PATH: phases[phase].biohubTaxonPath,
-        REACT_APP_BIOHUB_TAXON_TSN_PATH: phases[phase].biohubTaxonTsnPath
+        VITE_APP_BACKBONE_PUBLIC_API_HOST: phases[phase].backbonePublicApiHost,
+        VITE_APP_BIOHUB_TAXON_PATH: phases[phase].biohubTaxonPath,
+        VITE_APP_BIOHUB_TAXON_TSN_PATH: phases[phase].biohubTaxonTsnPath
       }
     })
   );

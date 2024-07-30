@@ -8,7 +8,7 @@ describe('AuthStateContext', () => {
   });
 
   it('renders with default value', async () => {
-    const captureAuthStateValue = jest.fn();
+    const captureAuthStateValue = vi.fn();
 
     const authState = getMockAuthState({ base: UnauthenticatedUserAuthState });
 
@@ -29,7 +29,7 @@ describe('AuthStateContext', () => {
   });
 
   it('renders with provided value', () => {
-    const captureAuthStateValue = jest.fn();
+    const captureAuthStateValue = vi.fn();
 
     const authState = getMockAuthState({ base: SystemUserAuthState });
 

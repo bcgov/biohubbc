@@ -6,20 +6,21 @@ import { IAccessRequestDataObject, IGetAccessRequestsListResponse } from 'interf
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { codes } from 'test-helpers/code-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   admin: {
-    approveAccessRequest: jest.fn(),
-    denyAccessRequest: jest.fn()
+    approveAccessRequest: vi.fn(),
+    denyAccessRequest: vi.fn()
   }
 };
 
 // Mock the DataGrid component to disable virtualization
-jest.mock('@mui/x-data-grid', () => {
-  const OriginalModule = jest.requireActual('@mui/x-data-grid');
+vi.mock('@mui/x-data-grid', async () => {
+  const OriginalModule = (await vi.importActual('@mui/x-data-grid')) as any;
 
   // Wrap the DataGrid component to add disableVirtualization prop
   const MockedDataGrid = (props: any) => <OriginalModule.DataGrid {...props} disableVirtualization={true} />;
@@ -191,7 +192,7 @@ describe('AccessRequestList', () => {
   });
 
   it('opens the review dialog and calls approveAccessRequest on approval', async () => {
-    const refresh = jest.fn();
+    const refresh = vi.fn();
 
     const { getByText, getByTestId } = renderContainer(
       [
@@ -244,7 +245,7 @@ describe('AccessRequestList', () => {
   });
 
   it('opens the review dialog and calls denyAccessRequest on denial', async () => {
-    const refresh = jest.fn();
+    const refresh = vi.fn();
 
     const { getByText, getByTestId } = renderContainer(
       [

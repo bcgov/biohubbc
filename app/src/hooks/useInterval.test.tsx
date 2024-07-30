@@ -16,86 +16,86 @@ const TestComponent: React.FC<ITestComponentProps> = (props) => {
 
 describe('useInterval', () => {
   beforeAll(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers();
   });
 
   afterAll(() => {
-    jest.useRealTimers();
+    vi.useRealTimers();
   });
 
   it('calls the callback 5 times: once every 50 milliseconds for 250 milliseconds', async () => {
-    const callbackMock = jest.fn();
+    const callbackMock = vi.fn();
 
     render(<TestComponent callback={callbackMock} period={50} timeout={250} />);
 
     expect(callbackMock.mock.calls.length).toEqual(0); // 0 milliseconds
 
-    jest.advanceTimersByTime(49);
+    vi.advanceTimersByTime(49);
     expect(callbackMock.mock.calls.length).toEqual(0); // 49 milliseconds
 
-    jest.advanceTimersByTime(1);
+    vi.advanceTimersByTime(1);
     expect(callbackMock.mock.calls.length).toEqual(1); // 50 milliseconds
 
-    jest.advanceTimersByTime(49);
+    vi.advanceTimersByTime(49);
     expect(callbackMock.mock.calls.length).toEqual(1); // 99 milliseconds
 
-    jest.advanceTimersByTime(1);
+    vi.advanceTimersByTime(1);
     expect(callbackMock.mock.calls.length).toEqual(2); // 100 milliseconds
 
-    jest.advanceTimersByTime(50);
+    vi.advanceTimersByTime(50);
     expect(callbackMock.mock.calls.length).toEqual(3); // 150 milliseconds
 
-    jest.advanceTimersByTime(850);
+    vi.advanceTimersByTime(850);
     expect(callbackMock.mock.calls.length).toEqual(5); // 1000 milliseconds
   });
 
   it('stops calling the callback if the callback is updated to be falsy', async () => {
-    const callbackMock = jest.fn();
+    const callbackMock = vi.fn();
 
     const { rerender } = render(<TestComponent callback={callbackMock} period={50} timeout={250} />);
 
     expect(callbackMock.mock.calls.length).toEqual(0); // 0 milliseconds
 
-    jest.advanceTimersByTime(49);
+    vi.advanceTimersByTime(49);
     expect(callbackMock.mock.calls.length).toEqual(0); // 49 milliseconds
 
-    jest.advanceTimersByTime(1);
+    vi.advanceTimersByTime(1);
     expect(callbackMock.mock.calls.length).toEqual(1); // 50 milliseconds
 
-    jest.advanceTimersByTime(49);
+    vi.advanceTimersByTime(49);
     expect(callbackMock.mock.calls.length).toEqual(1); // 99 milliseconds
 
-    jest.advanceTimersByTime(1);
+    vi.advanceTimersByTime(1);
     expect(callbackMock.mock.calls.length).toEqual(2); // 100 milliseconds
 
     rerender(<TestComponent callback={null} period={50} timeout={250} />);
 
-    jest.advanceTimersByTime(900);
+    vi.advanceTimersByTime(900);
     expect(callbackMock.mock.calls.length).toEqual(2); // 1000 milliseconds
   });
 
   it('stops calling the callback if the period is updated to be falsy', async () => {
-    const callbackMock = jest.fn();
+    const callbackMock = vi.fn();
 
     const { rerender } = render(<TestComponent callback={callbackMock} period={50} timeout={250} />);
 
     expect(callbackMock.mock.calls.length).toEqual(0); // 0 milliseconds
 
-    jest.advanceTimersByTime(49);
+    vi.advanceTimersByTime(49);
     expect(callbackMock.mock.calls.length).toEqual(0); // 49 milliseconds
 
-    jest.advanceTimersByTime(1);
+    vi.advanceTimersByTime(1);
     expect(callbackMock.mock.calls.length).toEqual(1); // 50 milliseconds
 
-    jest.advanceTimersByTime(49);
+    vi.advanceTimersByTime(49);
     expect(callbackMock.mock.calls.length).toEqual(1); // 99 milliseconds
 
-    jest.advanceTimersByTime(1);
+    vi.advanceTimersByTime(1);
     expect(callbackMock.mock.calls.length).toEqual(2); // 100 milliseconds
 
     rerender(<TestComponent callback={callbackMock} period={null} timeout={250} />);
 
-    jest.advanceTimersByTime(900);
+    vi.advanceTimersByTime(900);
     expect(callbackMock.mock.calls.length).toEqual(2); // 1000 milliseconds
   });
 });

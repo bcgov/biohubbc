@@ -26,7 +26,7 @@ type LogIfDevelopmentParams = {
  * @return {*}
  */
 export const logIfDevelopment = (params: LogIfDevelopmentParams) => {
-  if (process.env.NODE_ENV !== 'development') {
+  if (import.meta.env.NODE_ENV !== 'development') {
     return;
   }
 

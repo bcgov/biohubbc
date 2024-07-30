@@ -10,7 +10,7 @@ import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { AttachmentType } from '../../../constants/attachments';
 import AttachmentsList from './AttachmentsList';
 
-jest.mock('../../../hooks/useBioHubApi');
+vi.mock('../../../hooks/useBioHubApi');
 
 describe('AttachmentsList', () => {
   afterEach(() => {
@@ -53,7 +53,7 @@ describe('AttachmentsList', () => {
       projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
@@ -61,7 +61,7 @@ describe('AttachmentsList', () => {
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -74,9 +74,9 @@ describe('AttachmentsList', () => {
             <SurveyContext.Provider value={mockSurveyContext}>
               <AttachmentsList
                 attachments={[]}
-                handleDownload={jest.fn()}
-                handleDelete={jest.fn()}
-                handleViewDetails={jest.fn()}
+                handleDownload={vi.fn()}
+                handleDelete={vi.fn()}
+                handleViewDetails={vi.fn()}
               />
             </SurveyContext.Provider>
           </ProjectContext.Provider>
@@ -92,7 +92,7 @@ describe('AttachmentsList', () => {
       projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
@@ -100,7 +100,7 @@ describe('AttachmentsList', () => {
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -113,9 +113,9 @@ describe('AttachmentsList', () => {
             <SurveyContext.Provider value={mockSurveyContext}>
               <AttachmentsList
                 attachments={[]}
-                handleDownload={jest.fn()}
-                handleDelete={jest.fn()}
-                handleViewDetails={jest.fn()}
+                handleDownload={vi.fn()}
+                handleDelete={vi.fn()}
+                handleViewDetails={vi.fn()}
                 emptyStateText="No shared files found"
               />
             </SurveyContext.Provider>
@@ -132,7 +132,7 @@ describe('AttachmentsList', () => {
       projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
@@ -140,7 +140,7 @@ describe('AttachmentsList', () => {
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -153,9 +153,9 @@ describe('AttachmentsList', () => {
             <SurveyContext.Provider value={mockSurveyContext}>
               <AttachmentsList
                 attachments={attachmentsList}
-                handleDownload={jest.fn()}
-                handleDelete={jest.fn()}
-                handleViewDetails={jest.fn()}
+                handleDownload={vi.fn()}
+                handleDelete={vi.fn()}
+                handleViewDetails={vi.fn()}
               />
             </SurveyContext.Provider>
           </ProjectContext.Provider>
@@ -169,13 +169,13 @@ describe('AttachmentsList', () => {
   });
 
   it('viewing file contents in new tab works as expected for project attachments', async () => {
-    window.open = jest.fn();
+    window.open = vi.fn();
 
     const mockSurveyContext: ISurveyContext = {
       projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
@@ -183,11 +183,11 @@ describe('AttachmentsList', () => {
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
-    const handleDownload = jest.fn();
+    const handleDownload = vi.fn();
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
@@ -199,8 +199,8 @@ describe('AttachmentsList', () => {
               <AttachmentsList
                 attachments={attachmentsList}
                 handleDownload={handleDownload}
-                handleDelete={jest.fn()}
-                handleViewDetails={jest.fn()}
+                handleDelete={vi.fn()}
+                handleViewDetails={vi.fn()}
               />
             </SurveyContext.Provider>
           </ProjectContext.Provider>
@@ -222,7 +222,7 @@ describe('AttachmentsList', () => {
       projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
@@ -230,13 +230,13 @@ describe('AttachmentsList', () => {
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: vi.fn()
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
-    window.open = jest.fn();
+    window.open = vi.fn();
 
-    const handleDownload = jest.fn();
+    const handleDownload = vi.fn();
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
@@ -248,8 +248,8 @@ describe('AttachmentsList', () => {
               <AttachmentsList
                 attachments={attachmentsList}
                 handleDownload={handleDownload}
-                handleDelete={jest.fn()}
-                handleViewDetails={jest.fn()}
+                handleDelete={vi.fn()}
+                handleViewDetails={vi.fn()}
               />
             </SurveyContext.Provider>
           </ProjectContext.Provider>

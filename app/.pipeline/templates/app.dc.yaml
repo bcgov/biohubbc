@@ -14,22 +14,22 @@ parameters:
   - name: HOST
   - name: CHANGE_ID
     value: '0'
-  - name: REACT_APP_API_HOST
+  - name: VITE_APP_API_HOST
     description: API host for application backend
     value: ''
-  - name: REACT_APP_SITEMINDER_LOGOUT_URL
+  - name: VITE_APP_SITEMINDER_LOGOUT_URL
     description: Siteminder URL to log out and clear the session for the logged in user
     value: ''
-  - name: REACT_APP_MAX_UPLOAD_NUM_FILES
+  - name: VITE_APP_MAX_UPLOAD_NUM_FILES
     description: Default maximum number of files that can be uploaded at a time vai the upload component UI.
     value: '10'
-  - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
+  - name: VITE_APP_MAX_UPLOAD_FILE_SIZE
     description: Default maximum size of a single file that can be uploaded by the upload component UI.
     value: '52428800'
   - name: NODE_ENV
     description: NODE_ENV specification variable
     value: 'development'
-  - name: REACT_APP_NODE_ENV
+  - name: VITE_APP_NODE_ENV
     description: NODE_ENV specification variable for React app
     value: 'development'
   - name: OBJECT_STORE_SECRETS
@@ -41,22 +41,22 @@ parameters:
   - name: APP_PORT_DEFAULT_NAME
     description: Default port resource name
     value: '7100-tcp'
-  - name: REACT_APP_KEYCLOAK_HOST
+  - name: VITE_APP_KEYCLOAK_HOST
     description: Key clock login url
     required: true
-  - name: REACT_APP_KEYCLOAK_REALM
+  - name: VITE_APP_KEYCLOAK_REALM
     description: Realm identifier or name
     required: true
-  - name: REACT_APP_KEYCLOAK_CLIENT_ID
+  - name: VITE_APP_KEYCLOAK_CLIENT_ID
     description: Client Id for application
     required: true
-  - name: REACT_APP_BACKBONE_PUBLIC_API_HOST
+  - name: VITE_APP_BACKBONE_PUBLIC_API_HOST
     description: Backbone API host for application frontend
-  - name: REACT_APP_BIOHUB_TAXON_PATH
+  - name: VITE_APP_BIOHUB_TAXON_PATH
     description: Taxon path for biohub
-  - name: REACT_APP_BIOHUB_TAXON_TSN_PATH
+  - name: VITE_APP_BIOHUB_TAXON_TSN_PATH
     description: Taxon TSN path for biohub
-  - name: REACT_APP_FEATURE_FLAGS
+  - name: VITE_APP_FEATURE_FLAGS
     description: Used to identify features that should be temporarily disabled/hidden. Must be a comma delimited list of keywords.
     value: ''
   - name: CPU_REQUEST
@@ -125,16 +125,16 @@ objects:
               env:
                 - name: CHANGE_VERSION
                   value: ${CHANGE_ID}
-                - name: REACT_APP_PORT
+                - name: VITE_APP_PORT
                   value: ${APP_PORT_DEFAULT}
-                - name: REACT_APP_API_HOST
-                  value: ${REACT_APP_API_HOST}
-                - name: REACT_APP_SITEMINDER_LOGOUT_URL
-                  value: ${REACT_APP_SITEMINDER_LOGOUT_URL}
-                - name: REACT_APP_MAX_UPLOAD_NUM_FILES
-                  value: ${REACT_APP_MAX_UPLOAD_NUM_FILES}
-                - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
-                  value: ${REACT_APP_MAX_UPLOAD_FILE_SIZE}
+                - name: VITE_APP_API_HOST
+                  value: ${VITE_APP_API_HOST}
+                - name: VITE_APP_SITEMINDER_LOGOUT_URL
+                  value: ${VITE_APP_SITEMINDER_LOGOUT_URL}
+                - name: VITE_APP_MAX_UPLOAD_NUM_FILES
+                  value: ${VITE_APP_MAX_UPLOAD_NUM_FILES}
+                - name: VITE_APP_MAX_UPLOAD_FILE_SIZE
+                  value: ${VITE_APP_MAX_UPLOAD_FILE_SIZE}
                 - name: OBJECT_STORE_URL
                   valueFrom:
                     secretKeyRef:
@@ -147,24 +147,24 @@ objects:
                       name: ${OBJECT_STORE_SECRETS}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
-                - name: REACT_APP_NODE_ENV
-                  value: ${REACT_APP_NODE_ENV}
+                - name: VITE_APP_NODE_ENV
+                  value: ${VITE_APP_NODE_ENV}
                 - name: VERSION
                   value: ${VERSION}
-                - name: REACT_APP_KEYCLOAK_HOST
-                  value: ${REACT_APP_KEYCLOAK_HOST}
-                - name: REACT_APP_KEYCLOAK_REALM
-                  value: ${REACT_APP_KEYCLOAK_REALM}
-                - name: REACT_APP_KEYCLOAK_CLIENT_ID
-                  value: ${REACT_APP_KEYCLOAK_CLIENT_ID}
-                - name: REACT_APP_BACKBONE_PUBLIC_API_HOST
-                  value: ${REACT_APP_BACKBONE_PUBLIC_API_HOST}
-                - name: REACT_APP_BIOHUB_TAXON_PATH
-                  value: ${REACT_APP_BIOHUB_TAXON_PATH}
-                - name: REACT_APP_BIOHUB_TAXON_TSN_PATH
-                  value: ${REACT_APP_BIOHUB_TAXON_TSN_PATH}
-                - name: REACT_APP_FEATURE_FLAGS
-                  value: ${REACT_APP_FEATURE_FLAGS}
+                - name: VITE_APP_KEYCLOAK_HOST
+                  value: ${VITE_APP_KEYCLOAK_HOST}
+                - name: VITE_APP_KEYCLOAK_REALM
+                  value: ${VITE_APP_KEYCLOAK_REALM}
+                - name: VITE_APP_KEYCLOAK_CLIENT_ID
+                  value: ${VITE_APP_KEYCLOAK_CLIENT_ID}
+                - name: VITE_APP_BACKBONE_PUBLIC_API_HOST
+                  value: ${VITE_APP_BACKBONE_PUBLIC_API_HOST}
+                - name: VITE_APP_BIOHUB_TAXON_PATH
+                  value: ${VITE_APP_BIOHUB_TAXON_PATH}
+                - name: VITE_APP_BIOHUB_TAXON_TSN_PATH
+                  value: ${VITE_APP_BIOHUB_TAXON_TSN_PATH}
+                - name: VITE_APP_FEATURE_FLAGS
+                  value: ${VITE_APP_FEATURE_FLAGS}
               image: ' '
               imagePullPolicy: Always
               ports:

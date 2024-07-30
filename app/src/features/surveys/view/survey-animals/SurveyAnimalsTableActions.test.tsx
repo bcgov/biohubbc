@@ -2,9 +2,9 @@ import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import SurveyAnimalsTableActions from './SurveyAnimalsTableActions';
 
 describe('SurveyAnimalsTableActions', () => {
-  const onAddDevice = jest.fn();
-  const onRemoveCritter = jest.fn();
-  const onEditCritter = jest.fn();
+  const onAddDevice = vi.fn();
+  const onRemoveCritter = vi.fn();
+  const onEditCritter = vi.fn();
 
   it('all buttons should be clickable', async () => {
     const { getByTestId } = render(

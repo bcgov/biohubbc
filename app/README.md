@@ -89,7 +89,7 @@ The snapshot files produced should be saved in the repo.
 
 ## Environment Variables
 
-- With the exception of `NODE_ENV`, any environment variable that needs to be accessible by the react app (via `process.env.<var>`) must be prefixed with `REACT_APP_`. If it is not prefixed, react will not read it, and it will be `undefined` when you try to access it.
+- With the exception of `NODE_ENV`, any environment variable that needs to be accessible by the react app (via `import.meta.env.<var>`) must be prefixed with `VITE_APP_`. If it is not prefixed, react will not read it, and it will be `undefined` when you try to access it.
 
   - See: https://create-react-app.dev/docs/adding-custom-environment-variables
 
@@ -100,7 +100,7 @@ The snapshot files produced should be saved in the repo.
 
 ## .env
 
-- React will read a `.env` or similar file by default, and will read any variables prefixed with `REACT_APP_`.
+- React will read a `.env` or similar file by default, and will read any variables prefixed with `VITE_APP_`.
   - See: https://create-react-app.dev/docs/adding-custom-environment-variables/#what-other-env-files-can-be-used
 
 # Troubleshooting and Known Issues

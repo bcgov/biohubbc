@@ -1,30 +1,28 @@
 import { createMemoryHistory } from 'history';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { Router } from 'react-router';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
-import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
-import { ISystemUser } from '../../../interfaces/useUserApi.interface';
 import UsersDetailPage from './UsersDetailPage';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
+vi.mock('../../../hooks/useBioHubApi');
 
-const mockBiohubApi = useBiohubApi as jest.Mock;
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   user: {
-    deleteSystemUser: jest.fn<Promise<number>, []>(),
-    getUserById: jest.fn<Promise<ISystemUser>, []>(),
-    getProjectList: jest.fn<Promise<IGetUserProjectsListResponse>, []>()
+    deleteSystemUser: vi.fn(),
+    getUserById: vi.fn(),
+    getProjectList: vi.fn()
   },
   codes: {
-    getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
+    getAllCodeSets: vi.fn()
   },
   projectParticipants: {
-    updateProjectParticipantRole: jest.fn<Promise<boolean>, []>(),
-    removeProjectParticipant: jest.fn<Promise<boolean>, []>()
+    updateProjectParticipantRole: vi.fn(),
+    removeProjectParticipant: vi.fn()
   }
 };
 

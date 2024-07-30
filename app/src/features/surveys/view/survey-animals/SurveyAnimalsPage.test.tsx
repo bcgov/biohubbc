@@ -9,53 +9,54 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { BrowserRouter } from 'react-router-dom';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import { SurveyAnimalsPage } from './SurveyAnimalsPage';
 
-jest.mock('hooks/useQuery', () => ({ useQuery: () => ({ critter_id: 0 }) }));
-jest.mock('../../../../hooks/useBioHubApi.ts');
-jest.mock('../../../../hooks/useTelemetryApi');
-jest.mock('../../../../hooks/useCritterbaseApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
-const mockTelemetryApi = useTelemetryApi as jest.Mock;
-const mockCritterbaseApi = useCritterbaseApi as jest.Mock;
+vi.mock('hooks/useQuery', () => ({ useQuery: () => ({ critter_id: 0 }) }));
+vi.mock('../../../../hooks/useBioHubApi.ts');
+vi.mock('../../../../hooks/useTelemetryApi');
+vi.mock('../../../../hooks/useCritterbaseApi');
+const mockBiohubApi = useBiohubApi as Mock;
+const mockTelemetryApi = useTelemetryApi as Mock;
+const mockCritterbaseApi = useCritterbaseApi as Mock;
 
 const mockUseBiohub = {
   survey: {
-    getSurveyCritters: jest.fn(),
-    getDeploymentsInSurvey: jest.fn()
+    getSurveyCritters: vi.fn(),
+    getDeploymentsInSurvey: vi.fn()
   },
   taxonomy: {
-    getSpeciesFromIds: jest.fn()
+    getSpeciesFromIds: vi.fn()
   }
 };
 
 const mockUseTelemetry = {
   devices: {
-    getDeviceDetails: jest.fn()
+    getDeviceDetails: vi.fn()
   }
 };
 
 const mockUseCritterbase = {
   critters: {
-    getDetailedCritter: jest.fn()
+    getDetailedCritter: vi.fn()
   },
   family: {
-    getAllFamilies: jest.fn()
+    getAllFamilies: vi.fn()
   },
   lookup: {
-    getTaxonMeasurements: jest.fn()
+    getTaxonMeasurements: vi.fn()
   }
 };
 const mockSurveyContext: ISurveyContext = {
   artifactDataLoader: {
     data: null,
-    load: jest.fn()
+    load: vi.fn()
   } as unknown as DataLoader<any, any, any>,
   surveyId: 1,
   projectId: 1,
   surveyDataLoader: {
     data: { surveyData: { survey_details: { survey_name: 'name' } } },
-    load: jest.fn()
+    load: vi.fn()
   } as unknown as DataLoader<any, any, any>
 } as unknown as ISurveyContext;
 
@@ -71,12 +72,12 @@ const mockProjectAuthStateContext: IProjectAuthStateContext = {
 const mockProjectContext: IProjectContext = {
   artifactDataLoader: {
     data: null,
-    load: jest.fn()
+    load: vi.fn()
   } as unknown as DataLoader<any, any, any>,
   projectId: 1,
   projectDataLoader: {
     data: { projectData: { project: { project_name: 'name' } } },
-    load: jest.fn()
+    load: vi.fn()
   } as unknown as DataLoader<any, any, any>
 } as unknown as IProjectContext;
 

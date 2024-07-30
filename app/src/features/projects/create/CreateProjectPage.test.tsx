@@ -3,34 +3,31 @@ import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import { createMemoryHistory } from 'history';
-import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { ICreateProjectResponse } from 'interfaces/useProjectApi.interface';
-import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
 import { cleanup, findByText as rawFindByText, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   spatial: {
-    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
+    getRegions: vi.fn()
   },
   codes: {
-    getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
+    getAllCodeSets: vi.fn()
   },
   project: {
-    createProject: jest.fn<Promise<ICreateProjectResponse>, []>()
+    createProject: vi.fn()
   },
   user: {
-    searchSystemUser: jest.fn<Promise<ISystemUser[]>, []>()
+    searchSystemUser: vi.fn()
   }
 };
 
@@ -71,7 +68,7 @@ describe('CreateProjectPage', () => {
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue(codes);
 
-    jest.spyOn(console, 'debug').mockImplementation(() => {});
+    vi.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {

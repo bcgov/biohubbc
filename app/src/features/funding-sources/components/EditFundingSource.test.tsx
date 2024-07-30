@@ -2,19 +2,19 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetFundingSourceResponse, IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import EditFundingSource from './EditFundingSource';
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockBioHubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../hooks/useBioHubApi');
+const mockBioHubApi = useBiohubApi as Mock;
 const mockUseApi = {
   funding: {
-    getFundingSources: jest.fn<Promise<IGetFundingSourcesResponse[]>, []>(),
-    getFundingSource: jest.fn<Promise<IGetFundingSourceResponse>, []>(),
-    putFundingSource: jest.fn<Promise<{ funding_source_id: number }>, []>()
+    getFundingSources: vi.fn(),
+    getFundingSource: vi.fn(),
+    putFundingSource: vi.fn()
   }
 };
 
@@ -50,7 +50,7 @@ describe('EditFundingSource', () => {
       funding_source_survey_references: []
     });
 
-    const onClose = jest.fn();
+    const onClose = vi.fn();
 
     const { getByDisplayValue } = render(
       <Router history={history}>
@@ -85,7 +85,7 @@ describe('EditFundingSource', () => {
       funding_source_survey_references: []
     });
 
-    const onClose = jest.fn();
+    const onClose = vi.fn();
 
     const { findByTestId } = render(
       <Router history={history}>

@@ -38,7 +38,7 @@ const request = require('request');
   // Express APP
   const app = express();
   // Getting Port
-  const port = process.env.REACT_APP_PORT;
+  const port = import.meta.env.VITE_APP_PORT;
   // Resource path
   const resourcePath = path.resolve(__dirname, '../build');
   // Setting express static
@@ -60,40 +60,40 @@ const request = require('request');
 
   // App config
   app.use('/config', (_, resp) => {
-    const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL;
-    const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME;
+    const OBJECT_STORE_URL = import.meta.env.OBJECT_STORE_URL;
+    const OBJECT_STORE_BUCKET_NAME = import.meta.env.OBJECT_STORE_BUCKET_NAME;
 
     const config = {
-      API_HOST: process.env.REACT_APP_API_HOST,
-      CHANGE_VERSION: process.env.CHANGE_VERSION,
-      NODE_ENV: process.env.NODE_ENV,
-      REACT_APP_NODE_ENV: process.env.REACT_APP_NODE_ENV,
-      VERSION: `${process.env.VERSION}(build #${process.env.CHANGE_VERSION})`,
+      API_HOST: import.meta.env.VITE_APP_API_HOST,
+      CHANGE_VERSION: import.meta.env.CHANGE_VERSION,
+      NODE_ENV: import.meta.env.NODE_ENV,
+      VITE_APP_NODE_ENV: import.meta.env.VITE_APP_NODE_ENV,
+      VERSION: `${import.meta.env.VERSION}(build #${import.meta.env.CHANGE_VERSION})`,
       KEYCLOAK_CONFIG: {
-        authority: process.env.REACT_APP_KEYCLOAK_HOST,
-        realm: process.env.REACT_APP_KEYCLOAK_REALM,
-        clientId: process.env.REACT_APP_KEYCLOAK_CLIENT_ID
+        authority: import.meta.env.VITE_APP_KEYCLOAK_HOST,
+        realm: import.meta.env.VITE_APP_KEYCLOAK_REALM,
+        clientId: import.meta.env.VITE_APP_KEYCLOAK_CLIENT_ID
       },
-      SITEMINDER_LOGOUT_URL: process.env.REACT_APP_SITEMINDER_LOGOUT_URL,
+      SITEMINDER_LOGOUT_URL: import.meta.env.VITE_APP_SITEMINDER_LOGOUT_URL,
       /**
        * File upload settings
        */
-      MAX_UPLOAD_NUM_FILES: Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES),
-      MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE),
+      MAX_UPLOAD_NUM_FILES: Number(import.meta.env.VITE_APP_MAX_UPLOAD_NUM_FILES),
+      MAX_UPLOAD_FILE_SIZE: Number(import.meta.env.VITE_APP_MAX_UPLOAD_FILE_SIZE),
       S3_PUBLIC_HOST_URL: `https://${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`,
       /**
        * BioHub settings
        */
-      BACKBONE_PUBLIC_API_HOST: process.env.REACT_APP_BACKBONE_PUBLIC_API_HOST,
-      BIOHUB_TAXON_PATH: process.env.REACT_APP_BIOHUB_TAXON_PATH,
-      BIOHUB_TAXON_TSN_PATH: process.env.REACT_APP_BIOHUB_TAXON_TSN_PATH,
+      BACKBONE_PUBLIC_API_HOST: import.meta.env.VITE_APP_BACKBONE_PUBLIC_API_HOST,
+      BIOHUB_TAXON_PATH: import.meta.env.VITE_APP_BIOHUB_TAXON_PATH,
+      BIOHUB_TAXON_TSN_PATH: import.meta.env.VITE_APP_BIOHUB_TAXON_TSN_PATH,
       /**
        * Feature flags
        *
        * Note: Recommend conforming to a consistent pattern when defining feature flags, to make feature flags easy to
        * identify (ie: `[APP/API]_FF_<string>`)
        */
-      FEATURE_FLAGS: parseFeatureFlagsString(process.env.REACT_APP_FEATURE_FLAGS)
+      FEATURE_FLAGS: parseFeatureFlagsString(import.meta.env.VITE_APP_FEATURE_FLAGS)
     };
 
     resp.status(200).json(config);
@@ -102,7 +102,7 @@ const request = require('request');
   // Health check
   app.use('/healthcheck', (_, resp) => {
     // Request server api
-    const host = process.env.REACT_APP_API_HOST;
+    const host = import.meta.env.VITE_APP_API_HOST;
     request(`https://${host}/`, (err, res) => {
       if (err) {
         console.log(`Error: ${err}, host: ${host}`);

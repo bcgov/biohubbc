@@ -2,9 +2,9 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { ICode } from 'interfaces/useCodesApi.interface';
-import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import SurveyUserForm, { SurveyUserJobYupSchema } from './SurveyUserForm';
 
 const mockJobs: ICode[] = [
@@ -18,12 +18,12 @@ const mockJobs: ICode[] = [
   }
 ];
 
-jest.mock('../../../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   user: {
-    searchSystemUser: jest.fn<Promise<ISystemUser[]>, []>()
+    searchSystemUser: vi.fn()
   }
 };
 

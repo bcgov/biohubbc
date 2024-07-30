@@ -8,25 +8,26 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { BrowserRouter } from 'react-router-dom';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import SurveyAnimals from './SurveyAnimals';
 
-jest.mock('../../../hooks/useBioHubApi');
-jest.mock('../../../hooks/useTelemetryApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
-const mockTelemetryApi = useTelemetryApi as jest.Mock;
+vi.mock('../../../hooks/useBioHubApi');
+vi.mock('../../../hooks/useTelemetryApi');
+const mockBiohubApi = useBiohubApi as Mock;
+const mockTelemetryApi = useTelemetryApi as Mock;
 
 const mockUseBiohub = {
   survey: {
-    getSurveyCritters: jest.fn(),
-    getDeploymentsInSurvey: jest.fn(),
-    createCritterAndAddToSurvey: jest.fn(),
-    addDeployment: jest.fn()
+    getSurveyCritters: vi.fn(),
+    getDeploymentsInSurvey: vi.fn(),
+    createCritterAndAddToSurvey: vi.fn(),
+    addDeployment: vi.fn()
   }
 };
 
 const mockUseTelemetry = {
   devices: {
-    getDeviceDetails: jest.fn()
+    getDeviceDetails: vi.fn()
   }
 };
 
@@ -34,13 +35,13 @@ describe('SurveyAnimals', () => {
   const mockSurveyContext: ISurveyContext = {
     artifactDataLoader: {
       data: null,
-      load: jest.fn()
+      load: vi.fn()
     } as unknown as DataLoader<any, any, any>,
     surveyId: 1,
     projectId: 1,
     surveyDataLoader: {
       data: { surveyData: { survey_details: { survey_name: 'name' } } },
-      load: jest.fn()
+      load: vi.fn()
     } as unknown as DataLoader<any, any, any>
   } as unknown as ISurveyContext;
 
@@ -56,12 +57,12 @@ describe('SurveyAnimals', () => {
   const mockProjectContext: IProjectContext = {
     artifactDataLoader: {
       data: null,
-      load: jest.fn()
+      load: vi.fn()
     } as unknown as DataLoader<any, any, any>,
     projectId: 1,
     projectDataLoader: {
       data: { projectData: { project: { project_name: 'name' } } },
-      load: jest.fn()
+      load: vi.fn()
     } as unknown as DataLoader<any, any, any>
   } as unknown as IProjectContext;
 

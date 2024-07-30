@@ -1,23 +1,22 @@
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { GetRegionsResponse } from 'hooks/api/useSpatialApi';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { DataLoader } from 'hooks/useDataLoader';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { getSurveyForViewResponse, surveyObject, surveySupplementaryData } from 'test-helpers/survey-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import SurveyStudyArea from './SurveyStudyArea';
 
-jest.mock('../../../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
   survey: {
-    getSurveyForView: jest.fn<Promise<IGetSurveyForViewResponse>, []>(),
-    updateSurvey: jest.fn()
+    getSurveyForView: vi.fn(),
+    updateSurvey: vi.fn()
   },
   spatial: {
-    getRegions: jest.fn<Promise<GetRegionsResponse>, []>()
+    getRegions: vi.fn()
   }
 };
 
@@ -32,7 +31,7 @@ describe.skip('SurveyStudyArea', () => {
       regions: []
     });
 
-    jest.spyOn(console, 'debug').mockImplementation(() => {});
+    vi.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -144,7 +143,7 @@ describe.skip('SurveyStudyArea', () => {
   it('does not display the zoom to initial extent button if there are not geometries', async () => {
     const mockSurveyDataLoader = {
       data: getSurveyForViewResponse,
-      refresh: jest.fn() as unknown as any
+      refresh: vi.fn() as unknown as any
     } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
@@ -263,7 +262,7 @@ describe.skip('SurveyStudyArea', () => {
       },
       surveySupplementaryData: surveySupplementaryData
     });
-    mockUseApi.survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockUseApi.survey.updateSurvey = vi.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
       getProjectParticipant: () => null,

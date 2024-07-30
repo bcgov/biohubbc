@@ -5,14 +5,13 @@
     "baseUrl": "src",
     "outDir": "dist",
     "jsx": "react-jsx",
-    "target": "es2018",
+    "target": "ESNext",
     "sourceMap": true,
     "allowJs": false,
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "noImplicitThis": true,
     "noImplicitAny": true,
-    "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true,
     "noUnusedLocals": false,
     "esModuleInterop": true,
@@ -24,10 +23,8 @@
     "noFallthroughCasesInSwitch": true,
     "noEmit": true,
     "strict": true,
-    "typeRoots": ["node_modules/@types", "src/types"]
+    "types": ["vitest/globals", "vite/client", "vite-plugin-svgr/client"],
+    "typeRoots": ["node_modules", "src/types"]
   },
-  "include": ["src"],
-  "ts-node": {
-    "swc": true
-  }
+  "include": ["src"]
 }

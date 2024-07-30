@@ -1,26 +1,27 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetFundingSourcesResponse } from 'interfaces/useFundingSourceApi.interface';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
+import { Mock } from 'vitest';
 import CreateFundingSource from '../components/CreateFundingSource';
 import DeleteFundingSource from '../components/DeleteFundingSource';
 import EditFundingSource from '../components/EditFundingSource';
 import FundingSourcePage from '../details/FundingSourcePage';
 import FundingSourcesListPage from './FundingSourcesListPage';
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockBiohubApi = useBiohubApi as jest.Mock;
+vi.mock('../../../hooks/useBioHubApi');
+const mockBiohubApi = useBiohubApi as Mock;
 
-jest.mock('../components/CreateFundingSource');
-const mockCreateFundingSource = CreateFundingSource as jest.Mock;
+vi.mock('../components/CreateFundingSource');
+const mockCreateFundingSource = CreateFundingSource as Mock;
 
-jest.mock('../components/EditFundingSource');
-const mockEditFundingSource = EditFundingSource as jest.Mock;
+vi.mock('../components/EditFundingSource');
+const mockEditFundingSource = EditFundingSource as Mock;
 
-jest.mock('../components/DeleteFundingSource');
-const mockDeleteFundingSource = DeleteFundingSource as jest.Mock;
+vi.mock('../components/DeleteFundingSource');
+const mockDeleteFundingSource = DeleteFundingSource as Mock;
 
-jest.mock('../details/FundingSourcePage');
-const mockFundingSourcePage = FundingSourcePage as jest.Mock;
+vi.mock('../details/FundingSourcePage');
+const mockFundingSourcePage = FundingSourcePage as Mock;
 
 describe('FundingSourcesListPage', () => {
   beforeEach(() => {
@@ -36,7 +37,7 @@ describe('FundingSourcesListPage', () => {
 
   it('renders with no funding sources', async () => {
     // Setup mock api response
-    const getAllFundingSourcesStub = jest.fn();
+    const getAllFundingSourcesStub = vi.fn();
     const mockUseApi = { funding: { getAllFundingSources: getAllFundingSourcesStub } };
     mockBiohubApi.mockImplementation(() => mockUseApi);
 
@@ -54,7 +55,7 @@ describe('FundingSourcesListPage', () => {
 
   it('renders with funding sources', async () => {
     // Setup mock api response
-    const getAllFundingSourcesStub = jest.fn();
+    const getAllFundingSourcesStub = vi.fn();
     const mockUseApi = { funding: { getAllFundingSources: getAllFundingSourcesStub } };
     mockBiohubApi.mockImplementation(() => mockUseApi);
 
@@ -96,7 +97,7 @@ describe('FundingSourcesListPage', () => {
   // Skipped pending some viable resolution to https://github.com/mui/mui-x/issues/1151
   it.skip('renders the create funding source component on create button click', async () => {
     // Setup mock api response
-    const getAllFundingSourcesStub = jest.fn();
+    const getAllFundingSourcesStub = vi.fn();
     const mockUseApi = { funding: { getAllFundingSources: getAllFundingSourcesStub } };
     mockBiohubApi.mockImplementation(() => mockUseApi);
 
@@ -126,7 +127,7 @@ describe('FundingSourcesListPage', () => {
   // Skipped pending some viable resolution to https://github.com/mui/mui-x/issues/1151
   it.skip('renders the create funding source component on edit button click', async () => {
     // Setup mock api response
-    const getAllFundingSourcesStub = jest.fn();
+    const getAllFundingSourcesStub = vi.fn();
     const mockUseApi = { funding: { getAllFundingSources: getAllFundingSourcesStub } };
     mockBiohubApi.mockImplementation(() => mockUseApi);
 
@@ -175,7 +176,7 @@ describe('FundingSourcesListPage', () => {
   // Skipped pending some viable resolution to https://github.com/mui/mui-x/issues/1151
   it.skip('renders the create funding source component on delete button click', async () => {
     // Setup mock api response
-    const getAllFundingSourcesStub = jest.fn();
+    const getAllFundingSourcesStub = vi.fn();
     const mockUseApi = { funding: { getAllFundingSources: getAllFundingSourcesStub } };
     mockBiohubApi.mockImplementation(() => mockUseApi);
 
@@ -223,7 +224,7 @@ describe('FundingSourcesListPage', () => {
   // Skipped pending some viable resolution to https://github.com/mui/mui-x/issues/1151
   it.skip('renders the create funding source component on view details button click', async () => {
     // Setup mock api response
-    const getAllFundingSourcesStub = jest.fn();
+    const getAllFundingSourcesStub = vi.fn();
     const mockUseApi = { funding: { getAllFundingSources: getAllFundingSourcesStub } };
     mockBiohubApi.mockImplementation(() => mockUseApi);
 
