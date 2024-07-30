@@ -139,7 +139,7 @@ export function getCritterGeometry(): RequestHandler {
 
     defaultLog.debug({ label: 'getCritterGeometry', surveyId });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
