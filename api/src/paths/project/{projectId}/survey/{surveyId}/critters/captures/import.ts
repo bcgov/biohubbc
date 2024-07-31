@@ -1,18 +1,16 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../../../database/db';
-import { ApiGeneralError } from '../../../../../../../../errors/api-error';
-import { HTTP400 } from '../../../../../../../../errors/http-error';
-import { csvFileSchema } from '../../../../../../../../openapi/schemas/file';
-import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
-import { ImportCapturesService } from '../../../../../../../../services/import-services/capture/import-captures-service';
-import { importCSV } from '../../../../../../../../services/import-services/csv-import-strategy';
-import { SurveyCritterService } from '../../../../../../../../services/survey-critter-service';
-import { scanFileForVirus } from '../../../../../../../../utils/file-utils';
-import { getLogger } from '../../../../../../../../utils/logger';
-import { parseMulterFile } from '../../../../../../../../utils/media/media-utils';
-import { getFileFromRequest } from '../../../../../../../../utils/request';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../errors/http-error';
+import { csvFileSchema } from '../../../../../../../openapi/schemas/file';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { ImportCapturesService } from '../../../../../../../services/import-services/capture/import-captures-service';
+import { importCSV } from '../../../../../../../services/import-services/csv-import-strategy';
+import { scanFileForVirus } from '../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../utils/logger';
+import { parseMulterFile } from '../../../../../../../utils/media/media-utils';
+import { getFileFromRequest } from '../../../../../../../utils/request';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/{critterId}/captures/import');
 
@@ -46,19 +44,23 @@ POST.apiDoc = {
   parameters: [
     {
       in: 'path',
+      description: 'SIMS survey id',
       name: 'projectId',
-      required: true
+      required: true,
+      schema: {
+        type: 'integer',
+        minimum: 1
+      }
     },
     {
       in: 'path',
+      description: 'SIMS survey id',
       name: 'surveyId',
-      required: true
-    },
-    {
-      in: 'path',
-      description: 'SIMS survey critter id.',
-      name: 'critterId',
-      required: true
+      required: true,
+      schema: {
+        type: 'integer',
+        minimum: 1
+      }
     }
   ],
   requestBody: {
@@ -126,7 +128,6 @@ POST.apiDoc = {
 export function importCsv(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const critterId = Number(req.params.critterId);
     const rawFile = getFileFromRequest(req);
 
     const connection = getDBConnection(req.keycloak_token);
@@ -141,17 +142,9 @@ export function importCsv(): RequestHandler {
         throw new HTTP400('Malicious content detected, import cancelled.');
       }
 
-      const surveyCritterService = new SurveyCritterService(connection);
+      const importCsvCaptures = new ImportCapturesService(connection, surveyId);
 
-      // Fetch the survey critter
-      const surveyCritter = await surveyCritterService.getCritterInSurvey(surveyId, critterId);
-
-      if (!surveyCritter) {
-        throw new ApiGeneralError(`Unable to find critter in survey.`, [{ surveyId, critterId }]);
-      }
-
-      const importCsvCaptures = new ImportCapturesService(connection, surveyCritter.critterbase_critter_id);
-
+      // Pass CSV file and importer as dependencies
       const capturesCreated = await importCSV(parseMulterFile(rawFile), importCsvCaptures);
 
       await connection.commit();

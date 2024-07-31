@@ -19,7 +19,7 @@ export interface IXLSXCSVColumn {
    *
    * time: HH:mm:ss
    */
-  type: 'string' | 'number' | 'date' | 'time';
+  type: 'string' | 'number' | 'date';
   /**
    * Allowed aliases / mappings for column headers.
    *
@@ -38,7 +38,7 @@ export interface IXLSXCSVValidator {
 }
 
 /**
- * Returns true if the given cell is a date type cell.
+ * Construct the XLSX workbook.
  *
  * @export
  * @param {MediaFile} file
@@ -249,21 +249,6 @@ export const validateWorksheetColumnTypes = (
         validated = dayjs(value).isValid();
       }
 
-      /**
-       * CSV column format will need to be updated to 'HH:mm:ss'.
-       *
-       * Possible enhancement: Drop the `true` param to validate times without leading `0`.
-       * This will have downstream effects with zod schemas and database column type constraints expecting `09:10:10`.
-       *
-       * 09:10:10 -> true
-       * 9:10:10 -> false
-       *
-       * @see https://day.js.org/docs/en/plugin/custom-parse-format
-       */
-      if (columnSpec.type === 'time') {
-        validated = dayjs(value, 'HH:mm:ss', true).isValid();
-      }
-
       if (columnSpec.type === type) {
         validated = true;
       }
@@ -331,13 +316,16 @@ export const getWorksheetRange = (worksheet: xlsx.WorkSheet): xlsx.Range | undef
 
   return xlsx.utils.decode_range(ref);
 };
+
 /**
  * Iterates over the cells in the worksheet and:
  * - Trims whitespace from cell values.
  * - Converts `Date` objects to ISO strings.
  *
  * https://stackoverflow.com/questions/61789174/how-can-i-remove-all-the-spaces-in-the-cells-of-excelsheet-using-nodejs-code
- * @param worksheet
+ *
+ * @param {xlsx.WorkSheet} worksheet
+ * @returns {xlsx.WorkSheet}
  */
 export const prepareWorksheetCells = (worksheet: xlsx.WorkSheet) => {
   const range = getWorksheetRange(worksheet);
@@ -356,11 +344,14 @@ export const prepareWorksheetCells = (worksheet: xlsx.WorkSheet) => {
         continue;
       }
 
+      // Replace date and time cells
       cell = replaceCellDates(cell);
 
       cell = trimCellWhitespace(cell);
     }
   }
+
+  return worksheet;
 };
 
 /**

@@ -11,7 +11,11 @@ export type Row = Record<string, any>;
 /**
  * Implementation for CSV Import Services.
  *
- * @description All CSV import services should implement this interface to be used with `CSVImportStrategy`
+ * All CSV import services should implement this interface to be used with `CSVImportStrategy`
+ * Note: When implementing a service using this interface the generics will be inferred.
+ *
+ * @template ValidatedRow
+ * @template InsertReturn
  */
 export interface CSVImportService<ValidatedRow = Record<string, unknown>, InsertReturn = unknown> {
   /**
@@ -23,11 +27,20 @@ export interface CSVImportService<ValidatedRow = Record<string, unknown>, Insert
   columnValidator: IXLSXCSVValidator;
 
   /**
+   * Pre parse the XLSX Worksheet before passing to `validateRows`.
+   * Optional method to implement if extra parsing needed for worksheet.
+   *
+   * @param {WorkSheet} worksheet - XLSX worksheet
+   * @returns {WorkSheet | Promise<WorkSheet>}
+   */
+  preParseWorksheet?: (worksheet: WorkSheet) => WorkSheet | Promise<WorkSheet>;
+
+  /**
    * Validate the pre-parsed rows - return either custom Validation or Zod SafeParse.
    *
    * @param {Row[]} rows - Raw unparsed CSV rows
    * @param {WorkSheet} [worksheet] - Xlsx worksheet - useful for calculating non-standard columns
-   * @returns {*} Validation
+   * @returns {Promise<z.SafeParseReturnType<Row[], ValidatedRow[]> | Validation<ValidatedRow>>} Validation
    */
   validateRows(
     rows: Row[],

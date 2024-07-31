@@ -57,7 +57,6 @@ describe('importCSV', () => {
           {
             columnName: 'ID',
             columnType: 'string',
-            columnFormat: undefined,
             columnAliases: undefined,
             optional: undefined
           }

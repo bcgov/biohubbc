@@ -1,16 +1,20 @@
 import { expect } from 'chai';
+import sinon from 'sinon';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { ImportCapturesService } from './import-captures-service';
 
 describe('import-captures-service', () => {
-  const critterId = 'baee642d-fc83-4c7b-8928-764bc886536e';
   describe('validateRows', () => {
     it('should format and validate the rows successfully', async () => {
       const mockConnection = getMockDBConnection();
-      const importCaptures = new ImportCapturesService(mockConnection, critterId);
+      const importCaptures = new ImportCapturesService(mockConnection, 1);
+      const aliasMapStub = sinon.stub(importCaptures.surveyCritterService, 'getSurveyCritterIdAliasMap');
+
+      aliasMapStub.resolves(new Map([['Carl', '3647cdc9-6fe9-4c32-acfa-6096fe123c4a']]));
 
       const validate = await importCaptures.validateRows([
         {
+          ALIAS: 'Carl',
           CAPTURE_DATE: '2024-01-01',
           CAPTURE_TIME: '10:10:10',
           CAPTURE_LATITUDE: 90,
@@ -26,7 +30,7 @@ describe('import-captures-service', () => {
 
       if (validate.success) {
         expect(validate.data[0]).to.contain({
-          critter_id: critterId,
+          critter_id: '3647cdc9-6fe9-4c32-acfa-6096fe123c4a',
           capture_date: '2024-01-01',
           capture_time: '10:10:10',
           capture_latitude: 90,
@@ -47,10 +51,14 @@ describe('import-captures-service', () => {
 
     it('should format and validate the rows with optional values successfully', async () => {
       const mockConnection = getMockDBConnection();
-      const importCaptures = new ImportCapturesService(mockConnection, critterId);
+      const importCaptures = new ImportCapturesService(mockConnection, 1);
+      const aliasMapStub = sinon.stub(importCaptures.surveyCritterService, 'getSurveyCritterIdAliasMap');
+
+      aliasMapStub.resolves(new Map([['Carl', '3647cdc9-6fe9-4c32-acfa-6096fe123c4a']]));
 
       const validate = await importCaptures.validateRows([
         {
+          ALIAS: 'Carl',
           CAPTURE_DATE: '2024-01-01',
           CAPTURE_LATITUDE: 90,
           CAPTURE_LONGITUDE: 90
@@ -59,7 +67,7 @@ describe('import-captures-service', () => {
 
       if (validate.success) {
         expect(validate.data[0]).to.contain({
-          critter_id: critterId,
+          critter_id: '3647cdc9-6fe9-4c32-acfa-6096fe123c4a',
           capture_date: '2024-01-01',
           capture_latitude: 90,
           capture_longitude: 90,
@@ -79,10 +87,14 @@ describe('import-captures-service', () => {
 
     it('should return error if invalid', async () => {
       const mockConnection = getMockDBConnection();
-      const importCaptures = new ImportCapturesService(mockConnection, critterId);
+      const importCaptures = new ImportCapturesService(mockConnection, 1);
+      const aliasMapStub = sinon.stub(importCaptures.surveyCritterService, 'getSurveyCritterIdAliasMap');
+
+      aliasMapStub.resolves(new Map([['Carl', '3647cdc9-6fe9-4c32-acfa-6096fe123c4a']]));
 
       const validate = await importCaptures.validateRows([
         {
+          ALIAS: 'Carl',
           CAPTURE_DATE: '2024-01-01',
           CAPTURE_LATITUDE: 90
         }

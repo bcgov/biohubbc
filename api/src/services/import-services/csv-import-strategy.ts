@@ -32,7 +32,11 @@ export const importCSV = async <ValidatedRow, InsertReturn>(
   csvMediaFile: MediaFile,
   importer: CSVImportService<ValidatedRow, InsertReturn>
 ) => {
-  const worksheet = getDefaultWorksheet(constructXLSXWorkbook(csvMediaFile));
+  const _worksheet = getDefaultWorksheet(constructXLSXWorkbook(csvMediaFile));
+
+  // Optionally pre-parse the worksheet before passing to validator
+  // Usefull if needing to mutate incomming worksheet data before validation ie: time columns
+  const worksheet = importer.preParseWorksheet ? importer.preParseWorksheet(_worksheet) : _worksheet;
 
   // Validate the standard columns in the CSV file
   if (!validateCsvFile(worksheet, importer.columnValidator)) {

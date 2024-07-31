@@ -6,7 +6,7 @@ import { z } from 'zod';
  */
 export const CsvCaptureSchema = z
   .object({
-    critter_id: z.string().uuid(),
+    critter_id: z.string({ required_error: 'Unable to map alias to Critter ID.' }).uuid(),
     capture_location_id: z.string().uuid(),
     capture_date: z.string().date(),
     capture_time: z.string().time().optional(),

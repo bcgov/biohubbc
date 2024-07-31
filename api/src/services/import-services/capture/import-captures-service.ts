@@ -3,9 +3,11 @@ import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
 import { generateCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
-import { CritterbaseService, ICapture, ILocation } from '../../critterbase-service';
+import { ICapture, ILocation } from '../../critterbase-service';
 import { DBService } from '../../db-service';
+import { SurveyCritterService } from '../../survey-critter-service';
 import { CSVImportService, Row } from '../csv-import-strategy.interface';
+import { formatTimeString } from '../utils/datetime';
 import { CsvCapture, CsvCaptureSchema } from './import-captures-service.interface';
 
 /**
@@ -16,8 +18,8 @@ import { CsvCapture, CsvCaptureSchema } from './import-captures-service.interfac
  *
  */
 export class ImportCapturesService extends DBService implements CSVImportService {
-  critterbaseService: CritterbaseService;
-  critterbaseCritterId: string;
+  surveyCritterService: SurveyCritterService;
+  surveyId: number;
 
   /**
    * An XLSX validation config for the standard columns of a Critterbase Capture CSV.
@@ -26,12 +28,13 @@ export class ImportCapturesService extends DBService implements CSVImportService
    * enforcing uppercase object keys.
    */
   columnValidator = {
+    ALIAS: { type: 'string' },
     CAPTURE_DATE: { type: 'date' },
-    CAPTURE_TIME: { type: 'time', optional: true },
+    CAPTURE_TIME: { type: 'string', optional: true },
     CAPTURE_LATITUDE: { type: 'number' },
     CAPTURE_LONGITUDE: { type: 'number' },
     RELEASE_DATE: { type: 'date', optional: true },
-    RELEASE_TIME: { type: 'time', optional: true },
+    RELEASE_TIME: { type: 'string', optional: true },
     RELEASE_LATITUDE: { type: 'number', optional: true },
     RELEASE_LONGITUDE: { type: 'number', optional: true },
     CAPTURE_COMMENT: { type: 'string', optional: true },
@@ -42,31 +45,14 @@ export class ImportCapturesService extends DBService implements CSVImportService
    * Construct an instance of ImportCapturesService.
    *
    * @param {IDBConnection} connection - DB connection
-   * @param {string} critterbaseCritterId - Critterbase Critter UUID
+   * @param {string} surveyId
    */
-  constructor(connection: IDBConnection, critterbaseCritterId: string) {
+  constructor(connection: IDBConnection, surveyId: number) {
     super(connection);
 
-    this.critterbaseCritterId = critterbaseCritterId;
+    this.surveyId = surveyId;
 
-    this.critterbaseService = new CritterbaseService({
-      keycloak_guid: connection.systemUserGUID(),
-      username: connection.systemUserIdentifier()
-    });
-  }
-
-  /**
-   * Get critter id.
-   *
-   * Note: When this component is extended this function can be overridden
-   * to fetch the critter_id with survey_id and critter alias.
-   *
-   * @async
-   * @param {Row} [_row] - CSV row
-   * @returns {Promise<string>} Critterbase critter id (UUID)
-   */
-  async getCritterId(_row?: Row) {
-    return this.critterbaseCritterId;
+    this.surveyCritterService = new SurveyCritterService(connection);
   }
 
   /**
@@ -78,24 +64,32 @@ export class ImportCapturesService extends DBService implements CSVImportService
   async validateRows(rows: Row[]) {
     // Generate type-safe cell getter from column validator
     const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
+    const critterAliasMap = await this.surveyCritterService.getSurveyCritterIdAliasMap(this.surveyId);
 
     const rowsToValidate = [];
 
     for (const row of rows) {
+      const alias = getCellValue(row, 'ALIAS');
+      const critterId = alias && critterAliasMap.get(alias);
       const releaseLatitude = getCellValue(row, 'RELEASE_LATITUDE');
       const releaseLongitude = getCellValue(row, 'RELEASE_LONGITUDE');
+      const captureTime = getCellValue(row, 'CAPTURE_TIME');
+      const releaseTime = getCellValue(row, 'RELEASE_TIME');
+
       const releaseLocationId = releaseLatitude && releaseLongitude ? uuid() : undefined;
+      const formattedCaptureTime = formatTimeString(captureTime);
+      const formattedReleaseTime = formatTimeString(releaseTime);
 
       rowsToValidate.push({
-        critter_id: await this.getCritterId(row),
+        critter_id: critterId,
         capture_location_id: uuid(),
         capture_date: getCellValue(row, 'CAPTURE_DATE'),
-        capture_time: getCellValue(row, 'CAPTURE_TIME'),
+        capture_time: formattedCaptureTime,
         capture_latitude: getCellValue(row, 'CAPTURE_LATITUDE'),
         capture_longitude: getCellValue(row, 'CAPTURE_LONGITUDE'),
         release_location_id: releaseLocationId,
         release_date: getCellValue(row, 'RELEASE_DATE'),
-        release_time: getCellValue(row, 'RELEASE_TIME'),
+        release_time: formattedReleaseTime,
         release_latitude: getCellValue(row, 'RELEASE_LATITUDE'),
         release_longitude: getCellValue(row, 'RELEASE_LONGITUDE'),
         capture_comment: getCellValue(row, 'CAPTURE_COMMENT'),
@@ -139,7 +133,7 @@ export class ImportCapturesService extends DBService implements CSVImportService
       }
     }
 
-    const response = await this.critterbaseService.bulkCreate(critterbasePayload);
+    const response = await this.surveyCritterService.critterbaseService.bulkCreate(critterbasePayload);
 
     return response.created.captures;
   }

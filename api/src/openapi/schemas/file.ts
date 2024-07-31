@@ -58,7 +58,17 @@ export const csvFileSchema: OpenAPIV3.SchemaObject = {
     mimetype: {
       description: 'CSV File type.',
       type: 'string',
-      enum: ['text/csv']
+      // https://christianwood.net/posts/csv-file-upload-validation/
+      enum: [
+        'text/csv',
+        'text/x-csv',
+        'application/vnd.ms-excel',
+        'application/csv',
+        'application/x-csv',
+        'text/comma-seperated-values',
+        'text/x-comma-seperated-values',
+        'text/tab-seperated-values'
+      ]
     }
   }
 };
