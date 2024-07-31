@@ -1,37 +1,24 @@
-import { capitalize, keys, omit, toUpper, uniq } from 'lodash';
+import { keys, omit, startCase, toUpper, uniq } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { WorkSheet } from 'xlsx';
-import { IDBConnection } from '../../database/db';
-import { ApiGeneralError } from '../../errors/api-error';
-import { getLogger } from '../../utils/logger';
-import { MediaFile } from '../../utils/media/media-file';
-import {
-  critterStandardColumnValidator,
-  getAliasFromRow,
-  getColumnValidatorSpecification,
-  getDescriptionFromRow,
-  getSexFromRow,
-  getTsnFromRow,
-  getWlhIdFromRow
-} from '../../utils/xlsx-utils/column-cell-utils';
-import {
-  constructXLSXWorkbook,
-  getDefaultWorksheet,
-  getNonStandardColumnNamesFromWorksheet,
-  getWorksheetRowObjects,
-  validateCsvFile
-} from '../../utils/xlsx-utils/worksheet-utils';
+import { IDBConnection } from '../../../database/db';
+import { ApiGeneralError } from '../../../errors/api-error';
+import { getLogger } from '../../../utils/logger';
+import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
+import { generateCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
+import { getNonStandardColumnNamesFromWorksheet, IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
 import {
   CritterbaseService,
   IBulkCreate,
   ICollection,
   ICollectionUnitWithCategory,
   ICreateCritter
-} from '../critterbase-service';
-import { DBService } from '../db-service';
-import { PlatformService } from '../platform-service';
-import { SurveyCritterService } from '../survey-critter-service';
-import { CsvCritter, PartialCsvCritter, Row, Validation, ValidationError } from './import-critters-service.interface';
+} from '../../critterbase-service';
+import { DBService } from '../../db-service';
+import { PlatformService } from '../../platform-service';
+import { SurveyCritterService } from '../../survey-critter-service';
+import { CSVImportService, Row, Validation, ValidationError } from '../csv-import-strategy.interface';
+import { CsvCritter, PartialCsvCritter } from './import-critters-service.interface';
 
 const defaultLog = getLogger('services/import/import-critters-service');
 
@@ -39,19 +26,45 @@ const CSV_CRITTER_SEX_OPTIONS = ['UNKNOWN', 'MALE', 'FEMALE', 'HERMAPHRODITIC'];
 
 /**
  *
+ * ImportCrittersService - Injected into CSVImportStrategy as the CSV import dependency
+ *
+ * @example new CSVImportStrategy(new ImportCrittersService(connection, surveyId)).import(file);
+ *
  * @class ImportCrittersService
  * @extends DBService
  *
  */
-export class ImportCrittersService extends DBService {
+export class ImportCrittersService extends DBService implements CSVImportService {
   platformService: PlatformService;
   critterbaseService: CritterbaseService;
   surveyCritterService: SurveyCritterService;
 
-  _rows?: PartialCsvCritter[];
+  surveyId: number;
 
-  constructor(connection: IDBConnection) {
+  /**
+   * An XLSX validation config for the standard columns of a Critter CSV.
+   *
+   * Note: `satisfies` allows `keyof` to correctly infer key types, while also
+   * enforcing uppercase object keys.
+   */
+  columnValidator = {
+    ITIS_TSN: { type: 'number', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
+    SEX: { type: 'string' },
+    ALIAS: { type: 'string', aliases: CSV_COLUMN_ALIASES.ALIAS },
+    WLH_ID: { type: 'string' },
+    DESCRIPTION: { type: 'string', aliases: CSV_COLUMN_ALIASES.DESCRIPTION }
+  } satisfies IXLSXCSVValidator;
+
+  /**
+   * Instantiates an instance of ImportCrittersService
+   *
+   * @param {IDBConnection} connection - Database connection
+   * @param {number} surveyId - Survey identifier
+   */
+  constructor(connection: IDBConnection, surveyId: number) {
     super(connection);
+
+    this.surveyId = surveyId;
 
     this.platformService = new PlatformService(connection);
     this.surveyCritterService = new SurveyCritterService(connection);
@@ -62,73 +75,13 @@ export class ImportCrittersService extends DBService {
   }
 
   /**
-   * Get the worksheet from the CSV file.
-   *
-   * @param {MediaFile} critterCsv - CSV MediaFile
-   * @returns {WorkSheet} Xlsx worksheet
-   */
-  _getWorksheet(critterCsv: MediaFile) {
-    return getDefaultWorksheet(constructXLSXWorkbook(critterCsv));
-  }
-
-  /**
    * Get non-standard columns (collection unit columns) from worksheet.
    *
    * @param {WorkSheet} worksheet - Xlsx worksheet
    * @returns {string[]} Array of non-standard headers from CSV (worksheet)
    */
   _getNonStandardColumns(worksheet: WorkSheet) {
-    return uniq(getNonStandardColumnNamesFromWorksheet(worksheet, critterStandardColumnValidator));
-  }
-  /**
-   * Parse the CSV rows into the Critterbase critter format.
-   *
-   * @param {Row[]} rows - CSV rows
-   * @returns {PartialCsvCritter[]} CSV critters before validation
-   */
-  _getCritterRowsToValidate(rows: Row[], collectionUnitColumns: string[]): PartialCsvCritter[] {
-    return rows.map((row) => {
-      // Standard critter properties from CSV
-      const standardCritterRow: PartialCsvCritter = {
-        critter_id: uuid(), // Generate a uuid for each critter for convienence
-        sex: getSexFromRow(row),
-        itis_tsn: getTsnFromRow(row),
-        wlh_id: getWlhIdFromRow(row),
-        animal_id: getAliasFromRow(row),
-        critter_comment: getDescriptionFromRow(row)
-      };
-
-      // All other properties must be collection units ie: `population unit` or `herd unit` etc...
-      collectionUnitColumns.forEach((categoryHeader) => {
-        standardCritterRow[categoryHeader] = row[categoryHeader];
-      });
-
-      return standardCritterRow;
-    });
-  }
-
-  /**
-   * Get the critter rows from the xlsx worksheet.
-   *
-   * @param {WorkSheet} worksheet
-   * @returns {PartialCsvCritter[]} List of partial CSV Critters
-   */
-  _getRows(worksheet: WorkSheet) {
-    // Attempt to retrieve from rows property to prevent unnecessary parsing
-    if (this._rows) {
-      return this._rows;
-    }
-
-    // Convert the worksheet into an array of records
-    const worksheetRows = getWorksheetRowObjects(worksheet);
-
-    // Get the collection unit columns (all non standard columns)
-    const collectionUnitColumns = this._getNonStandardColumns(worksheet);
-
-    // Pre parse the records into partial critter rows
-    this._rows = this._getCritterRowsToValidate(worksheetRows, collectionUnitColumns);
-
-    return this._rows;
+    return uniq(getNonStandardColumnNamesFromWorksheet(worksheet, this.columnValidator));
   }
 
   /**
@@ -140,7 +93,7 @@ export class ImportCrittersService extends DBService {
   _getCritterFromRow(row: CsvCritter): ICreateCritter {
     return {
       critter_id: row.critter_id,
-      sex: capitalize(row.sex),
+      sex: row.sex,
       itis_tsn: row.itis_tsn,
       animal_id: row.animal_id,
       wlh_id: row.wlh_id,
@@ -170,15 +123,12 @@ export class ImportCrittersService extends DBService {
   }
 
   /**
-   * Get a Set of valid ITIS TSNS from xlsx worksheet.
+   * Get a Set of valid ITIS TSNS from xlsx worksheet rows.
    *
    * @async
-   * @param {WorkSheet} worksheet - Xlsx Worksheet
    * @returns {Promise<string[]>} Unique Set of valid TSNS from worksheet.
    */
-  async _getValidTsns(worksheet: WorkSheet): Promise<string[]> {
-    const rows = this._getRows(worksheet);
-
+  async _getValidTsns(rows: PartialCsvCritter[]): Promise<string[]> {
     // Get a unique list of tsns from worksheet
     const critterTsns = uniq(rows.map((row) => String(row.itis_tsn)));
 
@@ -224,32 +174,62 @@ export class ImportCrittersService extends DBService {
   }
 
   /**
+   * Parse the CSV rows into the Critterbase critter format.
+   *
+   * @param {Row[]} rows - CSV rows
+   * @param {string[]} collectionUnitColumns - Non standard columns
+   * @returns {PartialCsvCritter[]} CSV critters before validation
+   */
+  _getRowsToValidate(rows: Row[], collectionUnitColumns: string[]): PartialCsvCritter[] {
+    const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
+
+    return rows.map((row) => {
+      // Standard critter properties from CSV
+      const standardCritterRow = {
+        critter_id: uuid(), // Generate a uuid for each critter for convienence
+        sex: getCellValue(row, 'SEX'),
+        itis_tsn: getCellValue(row, 'ITIS_TSN'),
+        wlh_id: getCellValue(row, 'WLH_ID'),
+        animal_id: getCellValue(row, 'ALIAS'),
+        critter_comment: getCellValue(row, 'DESCRIPTION')
+      };
+
+      // All other properties must be collection units ie: `population unit` or `herd unit` etc...
+      collectionUnitColumns.forEach((categoryHeader) => {
+        standardCritterRow[categoryHeader] = row[categoryHeader];
+      });
+
+      return standardCritterRow;
+    });
+  }
+
+  /**
    * Validate CSV worksheet rows against reference data.
    *
    * @async
-   * @param {number} surveyId - Survey identifier
+   * @param {Row[]} rows - Invalidated CSV rows
    * @param {WorkSheet} worksheet - Xlsx worksheet
-   * @returns {Promise<Validation>} Conditional validation object
+   * @returns {Promise<Validation<CsvCritter>>} Conditional validation object
    */
-  async _validateRows(surveyId: number, worksheet: WorkSheet): Promise<Validation> {
-    const rows = this._getRows(worksheet);
+  async validateRows(rows: Row[], worksheet: WorkSheet): Promise<Validation<CsvCritter>> {
     const nonStandardColumns = this._getNonStandardColumns(worksheet);
+    const rowsToValidate = this._getRowsToValidate(rows, nonStandardColumns);
 
     // Retrieve the dynamic validation config
     const [validRowTsns, surveyCritterAliases] = await Promise.all([
-      this._getValidTsns(worksheet),
-      this.surveyCritterService.getUniqueSurveyCritterAliases(surveyId)
+      this._getValidTsns(rowsToValidate),
+      this.surveyCritterService.getUniqueSurveyCritterAliases(this.surveyId)
     ]);
     const collectionUnitMap = await this._getCollectionUnitMap(worksheet, validRowTsns);
 
     // Parse reference data for validation
     const tsnSet = new Set(validRowTsns.map((tsn) => Number(tsn)));
-    const csvCritterAliases = rows.map((row) => row.animal_id);
+    const csvCritterAliases = rowsToValidate.map((row) => row.animal_id);
 
     // Track the row validation errors
     const errors: ValidationError[] = [];
 
-    const csvCritters = rows.map((row, index) => {
+    const csvCritters = rowsToValidate.map((row, index) => {
       /**
        * --------------------------------------------------------------------
        *                      STANDARD ROW VALIDATION
@@ -281,6 +261,9 @@ export class ImportCrittersService extends DBService {
         errors.push({ row: index, message: `Invalid ALIAS. Must be unique in Survey and CSV.` });
       }
 
+      // Covert `sex` to expected casing for Critterbase
+      row.sex = startCase(row.sex?.toLowerCase());
+
       /**
        * --------------------------------------------------------------------
        *                      NON-STANDARD ROW VALIDATION
@@ -294,7 +277,6 @@ export class ImportCrittersService extends DBService {
           delete row[column];
           return;
         }
-
         // Attempt to find the collection unit with the cell value from the mapping
         const collectionUnitMatch = collectionUnitColumn.collectionUnits.find(
           (unit) => unit.unit_name.toLowerCase() === String(row[column]).toLowerCase()
@@ -320,51 +302,18 @@ export class ImportCrittersService extends DBService {
       return { success: true, data: csvCritters as CsvCritter[] };
     }
 
-    return { success: false, errors };
-  }
-
-  /**
-   * Validate the worksheet contains no errors within the data or structure of CSV.
-   *
-   * @async
-   * @param {number} surveyId - Survey identifier
-   * @param {WorkSheet} worksheet - Xlsx worksheet
-   * @throws {ApiGeneralError} - If validation fails
-   * @returns {Promise<CsvCritter[]>} Validated CSV rows
-   */
-  async _validate(surveyId: number, worksheet: WorkSheet): Promise<CsvCritter[]> {
-    // Validate the standard columns in the CSV file
-    if (!validateCsvFile(worksheet, critterStandardColumnValidator)) {
-      throw new ApiGeneralError(`Column validator failed. Column headers or cell data types are incorrect.`, [
-        { column_specification: getColumnValidatorSpecification(critterStandardColumnValidator) },
-        'importCrittersService->_validate->validateCsvFile'
-      ]);
-    }
-
-    // Validate the CSV rows with reference data
-    const validation = await this._validateRows(surveyId, worksheet);
-
-    // Throw error is row validation failed and inject validation errors
-    if (!validation.success) {
-      throw new ApiGeneralError(`Failed to import Critter CSV. Column data validator failed.`, [
-        { column_validation: validation.errors },
-        'importCrittersService->_validate->_validateRows'
-      ]);
-    }
-
-    return validation.data;
+    return { success: false, error: { issues: errors } };
   }
 
   /**
    * Insert CSV critters into Critterbase and SIMS.
    *
    * @async
-   * @param {number} surveyId - Survey identifier
    * @param {CsvCritter[]} critterRows - CSV row critters
    * @throws {ApiGeneralError} - If unable to fully insert records into Critterbase
    * @returns {Promise<number[]>} List of inserted survey critter ids
    */
-  async _insertCsvCrittersIntoSimsAndCritterbase(surveyId: number, critterRows: CsvCritter[]): Promise<number[]> {
+  async insert(critterRows: CsvCritter[]): Promise<number[]> {
     const simsPayload: string[] = [];
     const critterbasePayload: IBulkCreate = { critters: [], collections: [] };
 
@@ -390,25 +339,6 @@ export class ImportCrittersService extends DBService {
     }
 
     // Add Critters to SIMS survey
-    return this.surveyCritterService.addCrittersToSurvey(surveyId, simsPayload);
-  }
-
-  /**
-   * Import the CSV into SIMS and Critterbase.
-   *
-   * @async
-   * @param {number} surveyId - Survey identifier
-   * @param {MediaFile} critterCsv - CSV MediaFile
-   * @returns {Promise<number[]>} List of survey critter identifiers
-   */
-  async import(surveyId: number, critterCsv: MediaFile): Promise<number[]> {
-    // Get the worksheet from the CSV
-    const worksheet = this._getWorksheet(critterCsv);
-
-    // Validate the standard columns and the data of the CSV
-    const critters = await this._validate(surveyId, worksheet);
-
-    // Insert the data into SIMS and Critterbase
-    return this._insertCsvCrittersIntoSimsAndCritterbase(surveyId, critters);
+    return this.surveyCritterService.addCrittersToSurvey(this.surveyId, simsPayload);
   }
 }
