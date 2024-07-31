@@ -1,18 +1,18 @@
 import SQL from 'sql-template-strings';
-import { IDBConnection } from '../database/db';
-import { generateS3SurveyExportKey, getS3SignedURLs } from '../utils/file-utils';
-import { getLogger } from '../utils/logger';
-import { DBService } from './db-service';
+import { IDBConnection } from '../../database/db';
+import { generateS3SurveyExportKey, getS3SignedURLs } from '../../utils/file-utils';
+import { getLogger } from '../../utils/logger';
+import { DBService } from '../db-service';
+import { ObservationService } from '../observation-service';
+import { SampleLocationService } from '../sample-location-service';
+import { SurveyCritterService } from '../survey-critter-service';
+import { SurveyService } from '../survey-service';
+import { TelemetryService } from '../telemetry-service';
 import { ExportService } from './export-service';
-import { ObservationService } from './observation-service';
-import { SampleLocationService } from './sample-location-service';
-import { SurveyCritterService } from './survey-critter-service';
-import { SurveyService } from './survey-service';
-import { TelemetryService } from './telemetry-service';
 
 const defaultLog = getLogger('api/src/services/export-service.ts');
 
-export type SurveyExportConfig = {
+export type ExportSurveyConfig = {
   metadata: boolean;
   sampling_data: boolean;
   observation_data: boolean;
@@ -33,7 +33,7 @@ type ExportDataBundle = {
  * @class ExportService
  * @extends {DBService}
  */
-export class SurveyExportService extends DBService {
+export class ExportSurveyService extends DBService {
   exportService: ExportService;
 
   surveyService: SurveyService;
@@ -56,7 +56,7 @@ export class SurveyExportService extends DBService {
     // this.critterbaseService = new CritterbaseService({});
   }
 
-  async exportSurvey(surveyId: number, _config: SurveyExportConfig): Promise<string[]> {
+  async exportSurvey(surveyId: number, _config: ExportSurveyConfig): Promise<string[]> {
     try {
       const sqlStatement = SQL`
         SELECT region_lookup.* FROM region_lookup CROSS JOIN generate_series(1, 2) AS series;
@@ -70,10 +70,12 @@ export class SurveyExportService extends DBService {
 
       const result = await this.exportService.exportSQLResultsToS3({
         connection: this.connection,
-        queries: {
-          sql: sqlStatement,
-          fileName: 'region_lookup.json'
-        },
+        queries: [
+          {
+            sql: sqlStatement,
+            fileName: 'region_lookup.json'
+          }
+        ],
         s3Key
       });
 
@@ -109,11 +111,11 @@ export class SurveyExportService extends DBService {
    * Fetch all data required for the export, based on the provided export configuration.
    *
    * @param {number} surveyId
-   * @param {SurveyExportConfig} config
+   * @param {ExportSurveyConfig} config
    * @return {*}  {Promise<ExportDataBundle[]>}
    * @memberof ExportService
    */
-  async _getAllDataForExport(surveyId: number, config: SurveyExportConfig): Promise<ExportDataBundle[]> {
+  async _getAllDataForExport(surveyId: number, config: ExportSurveyConfig): Promise<ExportDataBundle[]> {
     defaultLog.debug({ label: '_getAllDataForExport', message: 'Getting data for export.' });
 
     const dataForExport: Promise<ExportDataBundle | ExportDataBundle[]>[] = [];

@@ -1,15 +1,17 @@
-import { ManagedUpload } from 'aws-sdk/clients/s3';
 import { Knex } from 'knex';
 import QueryStream from 'pg-query-stream';
 import { SQLStatement } from 'sql-template-strings';
 import { PassThrough, Transform } from 'stream';
-import { IDBConnection } from '../database/db';
-import { uploadStreamToS3 } from '../utils/file-utils';
+import { IDBConnection } from '../../database/db';
+import { uploadStreamToS3 } from '../../utils/file-utils';
 // import { getLogger } from '../utils/logger';
+import { PutObjectCommandOutput } from '@aws-sdk/client-s3';
 import archiver from 'archiver';
-import { DBService } from './db-service';
+import { DBService } from '../db-service';
 
 // const defaultLog = getLogger('api/src/services/export-service.ts');
+
+const EXPORT_ARCHIVE_MIME_TYPE = 'application/zip';
 
 export type ExportSQLResultsToS3QueryConfig = {
   sql: SQLStatement | Knex.QueryBuilder;
@@ -49,10 +51,17 @@ export class ExportService extends DBService {
     super(connection);
   }
 
-  async exportSQLResultsToS3(config: ExportSQLResultsToS3Config): Promise<ManagedUpload.SendData> {
+  /**
+   * Export the results of a set of SQL queries to S3.
+   *
+   * @param {ExportSQLResultsToS3Config} config
+   * @return {*}  {Promise<PutObjectCommandOutput>}
+   * @memberof ExportService
+   */
+  async exportSQLResultsToS3(config: ExportSQLResultsToS3Config): Promise<PutObjectCommandOutput> {
     const dbClient = await config.connection.getClient();
 
-    // Array to hold all streams to destroy in case of an error
+    // Array to hold all streams
     const allStreams = [];
 
     const archiveStream = this._getArchiveStream();
@@ -89,9 +98,9 @@ export class ExportService extends DBService {
 
       archiveStream.finalize();
 
-      return uploadStreamToS3(archiveStreamPasthrough, 'application/zip', config.s3Key);
+      return uploadStreamToS3(archiveStreamPasthrough, EXPORT_ARCHIVE_MIME_TYPE, config.s3Key);
     } catch (error) {
-      console.error('Error exporting db to s3.', error);
+      console.error('Error exporting data to s3.', error);
 
       // Destroy all streams
       allStreams.forEach((stream) => stream.destroy());

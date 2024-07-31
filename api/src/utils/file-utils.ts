@@ -175,18 +175,33 @@ export async function uploadBufferToS3(
   );
 }
 
-export async function uploadStreamToS3(transform: Transform, mimetype: string, key: string, metadata: Metadata = {}) {
+/**
+ * Upload a stream to S3.
+ *
+ * @export
+ * @param {Transform} transform
+ * @param {string} mimetype
+ * @param {string} key
+ * @param {Record<string, string>} [metadata={}]
+ * @return {*}
+ */
+export async function uploadStreamToS3(
+  transform: Transform,
+  mimetype: string,
+  key: string,
+  metadata: Record<string, string> = {}
+) {
   const s3Client = _getS3Client();
 
-  return s3Client
-    .upload({
+  return s3Client.send(
+    new PutObjectCommand({
       Bucket: _getObjectStoreBucketName(),
       Body: transform,
       ContentType: mimetype,
       Key: key,
       Metadata: metadata
     })
-    .promise();
+  );
 }
 
 /**
