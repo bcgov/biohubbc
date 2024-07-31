@@ -1,9 +1,70 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { MediaFile } from '../../../utils/media/media-file';
+import * as worksheetUtils from '../../../utils/xlsx-utils/worksheet-utils';
 import { getMockDBConnection } from '../../../__mocks__/db';
+import { IBulkCreateResponse } from '../../critterbase-service';
+import { importCSV } from '../csv-import-strategy';
 import { ImportCapturesService } from './import-captures-service';
 
 describe('import-captures-service', () => {
+  describe('importCSV capture worksheet', () => {
+    it('should validate successfully', async () => {
+      const worksheet = {
+        A1: { t: 's', v: 'ALIAS' },
+        B1: { t: 's', v: 'CAPTURE_DATE' },
+        C1: { t: 's', v: 'CAPTURE_TIME' },
+        D1: { t: 's', v: 'CAPTURE_LATITUDE' },
+        E1: { t: 's', v: 'CAPTURE_LONGITUDE' },
+        F1: { t: 's', v: 'RELEASE_DATE' },
+        G1: { t: 's', v: 'RELEASE_TIME' },
+        H1: { t: 's', v: 'RELEASE_LATITUDE' },
+        I1: { t: 's', v: 'RELEASE_LONGITUDE' },
+        J1: { t: 's', v: 'RELEASE_COMMENT' },
+        K1: { t: 's', v: 'CAPTURE_COMMENT' },
+        A2: { t: 's', v: 'Carl' },
+        B2: { z: 'm/d/yy', t: 'd', v: '2024-10-10T07:00:00.000Z', w: '10/10/24' },
+        C2: { t: 's', v: '10:10:10' },
+        D2: { t: 'n', w: '90', v: 90 },
+        E2: { t: 'n', w: '100', v: 100 },
+        F2: { z: 'm/d/yy', t: 'd', v: '2024-10-10T07:00:00.000Z', w: '10/10/24' },
+        G2: { t: 's', v: '9:09' },
+        H2: { t: 'n', w: '90', v: 90 },
+        I2: { t: 'n', w: '90', v: 90 },
+        J2: { t: 's', v: 'release' },
+        K2: { t: 's', v: 'capture' },
+        A3: { t: 's', v: 'Carlita' },
+        B3: { z: 'm/d/yy', t: 'd', v: '2024-10-10T07:00:00.000Z', w: '10/10/24' },
+        D3: { t: 'n', w: '90', v: 90 },
+        E3: { t: 'n', w: '100', v: 100 },
+        '!ref': 'A1:K3'
+      };
+
+      const mockDBConnection = getMockDBConnection();
+
+      const importCapturesService = new ImportCapturesService(mockDBConnection, 1);
+
+      const getDefaultWorksheetStub = sinon.stub(worksheetUtils, 'getDefaultWorksheet');
+      const getAliasMapStub = sinon.stub(importCapturesService.surveyCritterService, 'getSurveyCritterIdAliasMap');
+      const critterbaseInsertStub = sinon.stub(
+        importCapturesService.surveyCritterService.critterbaseService,
+        'bulkCreate'
+      );
+
+      getDefaultWorksheetStub.returns(worksheet);
+      getAliasMapStub.resolves(
+        new Map([
+          ['Carl', '66d43f10-bbd8-4047-894e-f7c072fce246'],
+          ['Carlita', '66d43f10-bbd8-4047-894e-f7c072fce246']
+        ])
+      );
+      critterbaseInsertStub.resolves({ created: { captures: 2 } } as IBulkCreateResponse);
+
+      const data = await importCSV(new MediaFile('test', 'test', 'test' as unknown as Buffer), importCapturesService);
+
+      expect(data).to.deep.equal(2);
+    });
+  });
   describe('validateRows', () => {
     it('should format and validate the rows successfully', async () => {
       const mockConnection = getMockDBConnection();
