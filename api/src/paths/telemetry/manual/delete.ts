@@ -2,9 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { manual_telemetry_responses } from '.';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { getLogger } from '../../../utils/logger';
-import { IBctwUser } from '../../../models/bctw';
+import { getBctwUser } from '../../../services/bctw-service';
 import { BctwTelemetryService } from '../../../services/bctw-service/bctw-telemetry-service';
+import { getLogger } from '../../../utils/logger';
 const defaultLog = getLogger('paths/telemetry/manual/delete');
 
 export const POST: Operation = [
@@ -51,10 +51,8 @@ POST.apiDoc = {
 
 export function deleteManualTelemetry(): RequestHandler {
   return async (req, res) => {
-    const user: IBctwUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
+    const user = getBctwUser(req);
+
     const bctwTelemetryService = new BctwTelemetryService(user);
     try {
       const result = await bctwTelemetryService.deleteManualTelemetry(req.body);

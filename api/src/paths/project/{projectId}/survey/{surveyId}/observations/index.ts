@@ -5,7 +5,7 @@ import { getDBConnection } from '../../../../../../database/db';
 import { observervationsWithSubcountDataSchema } from '../../../../../../openapi/schemas/observation';
 import { paginationRequestQueryParamSchema } from '../../../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { CritterbaseService } from '../../../../../../services/critterbase-service';
+import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { InsertUpdateObservations, ObservationService } from '../../../../../../services/observation-service';
 import { getLogger } from '../../../../../../utils/logger';
 import { ensureCompletePaginationOptions, makePaginationResponse } from '../../../../../../utils/pagination';
@@ -52,7 +52,7 @@ export const PUT: Operation = [
       ]
     };
   }),
-  insertUpdateManualSurveyObservations()
+  putObservations()
 ];
 
 GET.apiDoc = {
@@ -168,7 +168,8 @@ PUT.apiDoc = {
                         type: 'integer',
                         minimum: 1,
                         nullable: true,
-                        description: 'The survey observation ID. If provided observation, the record will be updated.'
+                        description:
+                          'The survey observation ID. If provided, the matching existing observation record will be updated. If not provided, a new observation record will be inserted.'
                       },
                       itis_tsn: {
                         type: 'integer'
@@ -229,9 +230,11 @@ PUT.apiDoc = {
                       ],
                       properties: {
                         observation_subcount_id: {
-                          type: 'number',
+                          type: 'integer',
+                          minimum: 1,
                           nullable: true,
-                          description: 'The observation subcount ID. If provided, the subcount record will be updated.'
+                          description:
+                            'The observation subcount ID. If provided, the mataching existing subcount record will be updated. If not provided, a new subcount record will be inserted.'
                         },
                         subcount: {
                           type: 'number',
@@ -370,7 +373,7 @@ export function getSurveyObservations(): RequestHandler {
 
     const paginationOptions: Partial<ApiPaginationOptions> = { page, limit, order, sort };
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -407,13 +410,13 @@ export function getSurveyObservations(): RequestHandler {
  * @export
  * @return {*}  {RequestHandler}
  */
-export function insertUpdateManualSurveyObservations(): RequestHandler {
+export function putObservations(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
 
     defaultLog.debug({ label: 'insertUpdateSurveyObservations', surveyId });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -422,10 +425,12 @@ export function insertUpdateManualSurveyObservations(): RequestHandler {
 
       const observationRows: InsertUpdateObservations[] = req.body.surveyObservations;
 
-      const critterBaseService = new CritterbaseService({
-        keycloak_guid: req['system_user']?.user_guid,
-        username: req['system_user']?.user_identifier
-      });
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
+
+      const critterBaseService = new CritterbaseService(user);
 
       // Validate measurement data against fetched measurement definition
       const isValid = await observationService.validateSurveyObservations(observationRows, critterBaseService);

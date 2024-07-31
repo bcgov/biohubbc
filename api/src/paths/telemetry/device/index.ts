@@ -1,8 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { IBctwUser } from '../../../models/bctw';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { BctwDeviceService } from '../../../services/bctw-service/bctw-device-service';
+import { BctwService, getBctwUser } from '../../../services/bctw-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/telemetry/device/{deviceId}');
@@ -93,13 +92,9 @@ POST.apiDoc = {
 
 export function upsertDevice(): RequestHandler {
   return async (req, res) => {
-    const user: IBctwUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
+    const user = getBctwUser(req);
 
-    const bctwService = new BctwDeviceService(user);
-
+    const bctwService = new BctwService(user);
     try {
       const results = await bctwService.updateDevice(req.body);
       return res.status(200).json(results);

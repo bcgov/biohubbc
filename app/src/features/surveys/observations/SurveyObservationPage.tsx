@@ -9,7 +9,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { useContext } from 'react';
 import ObservationsTableContainer from './observations-table/ObservationsTableContainer';
-import SamplingSiteList from './sampling-sites/list/SamplingSiteList';
+import { SamplingSiteListContainer } from './sampling-sites/SamplingSiteListContainer';
 import SurveyObservationHeader from './SurveyObservationHeader';
 
 export const SurveyObservationPage = () => {
@@ -48,7 +48,7 @@ export const SurveyObservationPage = () => {
           {/* Sampling Site List */}
           <Box flex="0 0 auto" width="400px">
             <DialogContextProvider>
-              <SamplingSiteList />
+              <SamplingSiteListContainer />
             </DialogContextProvider>
           </Box>
 

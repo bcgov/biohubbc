@@ -1,10 +1,11 @@
 import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { getRequestHandlerMocks } from '../../../__mocks__/db';
+import { SystemUser } from '../../../repositories/user-repository';
 import { BctwDeploymentService } from '../../../services/bctw-service/bctw-deployment-service';
 import { BctwDeviceService } from '../../../services/bctw-service/bctw-device-service';
 import { BctwKeyxService } from '../../../services/bctw-service/bctw-keyx-service';
-import { getRequestHandlerMocks } from '../../../__mocks__/db';
 import { GET, getDeviceDetails } from './{deviceId}';
 
 describe('getDeviceDetails', () => {
@@ -26,6 +27,9 @@ describe('getDeviceDetails', () => {
     const mockGetKeyXDetails = sinon.stub(BctwKeyxService.prototype, 'getKeyXDetails').resolves([]);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
     const requestHandler = getDeviceDetails();
 
     await requestHandler(mockReq, mockRes, mockNext);
@@ -41,6 +45,9 @@ describe('getDeviceDetails', () => {
     const mockGetDeviceDetails = sinon.stub(BctwDeviceService.prototype, 'getDeviceDetails').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
     const requestHandler = getDeviceDetails();
 
     try {

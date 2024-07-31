@@ -16,13 +16,22 @@ export interface QueryParam {
 }
 
 export interface ICritter {
-  critter_id?: string;
+  critter_id: string;
   wlh_id: string | null;
-  animal_id: string;
+  animal_id: string | null;
   sex: string;
   itis_tsn: number;
   itis_scientific_name: string;
-  critter_comment: string;
+  critter_comment: string | null;
+}
+
+export interface ICreateCritter {
+  critter_id?: string;
+  wlh_id?: string | null;
+  animal_id: string; // NOTE: In critterbase this is optional. For SIMS it should be required.
+  sex: string;
+  itis_tsn: number;
+  critter_comment?: string | null;
 }
 
 export interface ICapture {
@@ -113,15 +122,48 @@ export interface ICollection {
 }
 
 export interface IBulkCreate {
-  critters: ICritter[];
-  captures: ICapture[];
-  collections: ICollection[];
-  mortalities: IMortality[];
-  locations: ILocation[];
-  markings: IMarking[];
-  quantitative_measurements: IQuantMeasurement[];
-  qualitative_measurements: IQualMeasurement[];
-  families: IFamilyPayload[];
+  critters?: ICreateCritter[];
+  captures?: ICapture[];
+  collections?: ICollection[];
+  mortalities?: IMortality[];
+  locations?: ILocation[];
+  markings?: IMarking[];
+  quantitative_measurements?: IQuantMeasurement[];
+  qualitative_measurements?: IQualMeasurement[];
+  families?: IFamilyPayload[];
+}
+
+interface IBulkResponse {
+  critters: number;
+  captures: number;
+  collections: number;
+  mortalities: number;
+  locations: number;
+  markings: number;
+  quantitative_measurements: number;
+  qualitative_measurements: number;
+  families: number;
+  family_parents: number;
+  family_chidren: number;
+}
+
+export interface IBulkCreateResponse {
+  created: IBulkResponse;
+}
+
+export interface ICollectionUnitWithCategory {
+  collection_unit_id: string;
+  collection_category_id: string;
+  category_name: string;
+  unit_name: string;
+  description: string | null;
+}
+
+export interface ICollectionCategory {
+  collection_category_id: string;
+  category_name: string;
+  description: string | null;
+  itis_tsn: number;
 }
 
 /**
@@ -374,13 +416,18 @@ export class CritterbaseService {
     return this._makeGetRequest(`${CAPTURE_ENDPOINT}/${capture_id}`, [{ key: 'format', value: 'detailed' }]);
   }
 
-  async createCritter(data: ICritter) {
+  async createCritter(data: ICreateCritter) {
     const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}/create`, data);
     return response.data;
   }
 
   async updateCritter(data: IBulkCreate) {
     const response = await this.axiosInstance.patch(BULK_ENDPOINT, data);
+    return response.data;
+  }
+
+  async bulkCreate(data: IBulkCreate): Promise<IBulkCreateResponse> {
+    const response = await this.axiosInstance.post(BULK_ENDPOINT, data);
     return response.data;
   }
 
@@ -426,5 +473,31 @@ export class CritterbaseService {
     });
 
     return data;
+  }
+
+  /**
+   * Find collection categories by tsn. Includes hierarchies.
+   *
+   * @async
+   * @param {string} tsn - ITIS TSN
+   * @returns {Promise<ICollectionCategory[]>} Collection categories
+   */
+  async findTaxonCollectionCategories(tsn: string): Promise<ICollectionCategory[]> {
+    const response = await this.axiosInstance.get(`/xref/taxon-collection-categories?tsn=${tsn}`);
+
+    return response.data;
+  }
+
+  /**
+   * Find collection units by tsn. Includes hierarchies.
+   *
+   * @async
+   * @param {string} tsn - ITIS TSN
+   * @returns {Promise<ICollectionUnitWithCategory[]>} Collection units
+   */
+  async findTaxonCollectionUnits(tsn: string): Promise<ICollectionUnitWithCategory[]> {
+    const response = await this.axiosInstance.get(`/xref/taxon-collection-units?tsn=${tsn}`);
+
+    return response.data;
   }
 }

@@ -3,7 +3,8 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { createManualTelemetry, GET, getManualTelemetry, PATCH, POST, updateManualTelemetry } from '.';
 import { getRequestHandlerMocks } from '../../../__mocks__/db';
-import { IManualTelemetry } from '../../../models/bctw';
+import { SystemUser } from '../../../repositories/user-repository';
+import { IManualTelemetry } from '../../../services/bctw-service';
 import { BctwTelemetryService } from '../../../services/bctw-service/bctw-telemetry-service';
 
 const mockTelemetry = [
@@ -31,6 +32,9 @@ describe('manual telemetry endpoints', () => {
       const mockGetTelemetry = sinon.stub(BctwTelemetryService.prototype, 'getManualTelemetry').resolves(mockTelemetry);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
       const requestHandler = getManualTelemetry();
 
       await requestHandler(mockReq, mockRes, mockNext);
@@ -45,6 +49,9 @@ describe('manual telemetry endpoints', () => {
       const mockGetTelemetry = sinon.stub(BctwTelemetryService.prototype, 'getManualTelemetry').rejects(mockError);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
       const requestHandler = getManualTelemetry();
 
       try {
@@ -67,6 +74,9 @@ describe('manual telemetry endpoints', () => {
       const mockCreateTelemetry = sinon.stub(BctwTelemetryService.prototype, 'createManualTelemetry').resolves(mockTelemetry);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
       const requestHandler = createManualTelemetry();
 
       await requestHandler(mockReq, mockRes, mockNext);
@@ -80,6 +90,9 @@ describe('manual telemetry endpoints', () => {
       const mockGetTelemetry = sinon.stub(BctwTelemetryService.prototype, 'createManualTelemetry').rejects(mockError);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
       const requestHandler = createManualTelemetry();
 
       try {
@@ -102,6 +115,9 @@ describe('manual telemetry endpoints', () => {
       const mockCreateTelemetry = sinon.stub(BctwTelemetryService.prototype, 'updateManualTelemetry').resolves(mockTelemetry);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
       const requestHandler = updateManualTelemetry();
 
       await requestHandler(mockReq, mockRes, mockNext);
@@ -115,6 +131,9 @@ describe('manual telemetry endpoints', () => {
       const mockGetTelemetry = sinon.stub(BctwTelemetryService.prototype, 'updateManualTelemetry').rejects(mockError);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
       const requestHandler = updateManualTelemetry();
 
       try {

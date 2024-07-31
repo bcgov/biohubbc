@@ -1,5 +1,6 @@
 import { AxiosInstance } from 'axios';
-import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
+import { EnvironmentType, IGetTechniqueAttributes } from 'interfaces/useReferenceApi.interface';
+import qs from 'qs';
 
 /**
  * Returns a set of supported api methods for working with reference data.
@@ -20,8 +21,26 @@ const useReferenceApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get attributes available for a method_lookup_id
+   *
+   * @param {number[]} methodLookupIds
+   * @return {*}  {Promise<IGetTechniqueAttributes[]>}
+   */
+  const getTechniqueAttributes = async (methodLookupIds: number[]): Promise<IGetTechniqueAttributes[]> => {
+    const { data } = await axios.get('/api/reference/get/technique-attribute', {
+      params: { methodLookupId: methodLookupIds },
+      paramsSerializer: (params: any) => {
+        return qs.stringify(params);
+      }
+    });
+
+    return data;
+  };
+
   return {
-    findSubcountEnvironments
+    findSubcountEnvironments,
+    getTechniqueAttributes
   };
 };
 

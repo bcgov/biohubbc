@@ -41,20 +41,6 @@ describe('uploadMedia', () => {
 
   const mockBctwResponse = { totalKeyxFiles: 2, newRecords: 1, existingRecords: 1 };
 
-  it('should throw an error when files are missing', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = upload.uploadKeyxMedia();
-
-      await result({ ...mockReq, files: [] }, null as unknown as any, null as unknown as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing upload data');
-    }
-  });
-
   it('should throw an error when file has malicious content', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,

@@ -167,7 +167,7 @@ export class SampleLocationService extends DBService {
       sampleLocations.sample_methods.map((item) => {
         const sampleMethod = {
           survey_sample_site_id: sampleSiteRecord.survey_sample_site_id,
-          method_lookup_id: item.method_lookup_id,
+          method_technique_id: item.method_technique_id,
           description: item.description,
           sample_periods: item.sample_periods,
           method_response_metric_id: item.method_response_metric_id
@@ -211,6 +211,9 @@ export class SampleLocationService extends DBService {
 
   /**
    * Updates a survey entire Sample Site Record, with Location and associated methods and periods.
+   *
+   * TODO: This function awaits every db request, could parallelize similar requests (Promise.all) to improve
+   * performance.
    *
    * @param {number} surveyId
    * @param {UpdateSampleLocationRecord} sampleSite
@@ -273,19 +276,20 @@ export class SampleLocationService extends DBService {
     // If it does not exist, create it
     for (const item of sampleSite.methods) {
       if (item.survey_sample_method_id) {
+        // A defined survey_sample_method_id indicates an existing record
         const sampleMethod = {
-          survey_sample_site_id: sampleSite.survey_sample_site_id,
           survey_sample_method_id: item.survey_sample_method_id,
-          method_lookup_id: item.method_lookup_id,
+          survey_sample_site_id: sampleSite.survey_sample_site_id,
           method_response_metric_id: item.method_response_metric_id,
           description: item.description,
-          sample_periods: item.sample_periods
+          sample_periods: item.sample_periods,
+          method_technique_id: item.method_technique_id
         };
         await methodService.updateSampleMethod(surveyId, sampleMethod);
       } else {
         const sampleMethod = {
           survey_sample_site_id: sampleSite.survey_sample_site_id,
-          method_lookup_id: item.method_lookup_id,
+          method_technique_id: item.method_technique_id,
           method_response_metric_id: item.method_response_metric_id,
           description: item.description,
           sample_periods: item.sample_periods

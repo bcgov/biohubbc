@@ -1,4 +1,4 @@
-import { ICreateCritterCollectionUnit } from 'features/surveys/view/survey-animals/animal';
+import { AnimalSex, ICreateCritterCollectionUnit } from 'features/surveys/view/survey-animals/animal';
 import { Feature } from 'geojson';
 import { IPartialTaxonomy } from './useTaxonomyApi.interface';
 
@@ -6,7 +6,7 @@ export interface ICritterCreate {
   critter_id?: string;
   wlh_id?: string | null;
   animal_id?: string | null;
-  sex: string;
+  sex: AnimalSex;
   itis_tsn: number;
   responsible_region_nr_id?: string | null;
   critter_comment?: string | null;
@@ -16,6 +16,7 @@ export interface ICreateEditAnimalRequest {
   critter_id?: string;
   nickname: string;
   species: IPartialTaxonomy | null;
+  sex: AnimalSex;
   ecological_units: ICreateCritterCollectionUnit[];
   wildlife_health_id: string | null;
   critter_comment: string | null;

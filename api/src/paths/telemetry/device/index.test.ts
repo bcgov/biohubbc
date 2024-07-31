@@ -1,9 +1,10 @@
 import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { HTTPError } from '../../../errors/http-error';
-import { BctwDeviceService } from '../../../services/bctw-service/bctw-device-service';
 import { getRequestHandlerMocks } from '../../../__mocks__/db';
+import { HTTPError } from '../../../errors/http-error';
+import { SystemUser } from '../../../repositories/user-repository';
+import { BctwDeviceService } from '../../../services/bctw-service/bctw-device-service';
 import { POST, upsertDevice } from './index';
 
 describe('upsertDevice', () => {
@@ -23,6 +24,9 @@ describe('upsertDevice', () => {
     const mockUpsertDevice = sinon.stub(BctwDeviceService.prototype, 'updateDevice');
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
     const requestHandler = upsertDevice();
 
     await requestHandler(mockReq, mockRes, mockNext);
@@ -36,6 +40,8 @@ describe('upsertDevice', () => {
     const mockBctwService = sinon.stub(BctwDeviceService.prototype, 'updateDevice').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
 
     const requestHandler = upsertDevice();
     try {

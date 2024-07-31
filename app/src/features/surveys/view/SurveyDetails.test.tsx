@@ -54,6 +54,7 @@ describe('SurveyDetails', () => {
   const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
   const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
   const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
+  const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
   it('renders correctly', async () => {
     const { getByText } = render(
@@ -66,6 +67,7 @@ describe('SurveyDetails', () => {
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
+            techniqueDataLoader: mockTechniqueDataLoader,
             critterDataLoader: mockCritterDataLoader,
             deploymentDataLoader: mockDeploymentDataLoader
           }}>

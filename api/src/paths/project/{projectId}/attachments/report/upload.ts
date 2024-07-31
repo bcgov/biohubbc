@@ -3,10 +3,12 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/http-error';
+import { fileSchema } from '../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../services/attachment-service';
 import { scanFileForVirus, uploadFileToS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
+import { getFileFromRequest } from '../../../../../utils/request';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/report/upload');
 
@@ -57,8 +59,11 @@ POST.apiDoc = {
           required: ['media', 'attachmentMeta'],
           properties: {
             media: {
-              type: 'string',
-              format: 'binary'
+              description: 'Attachment report upload file.',
+              type: 'array',
+              minItems: 1,
+              maxItems: 1,
+              items: fileSchema
             },
             attachmentMeta: {
               type: 'object',
@@ -140,14 +145,7 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
-    const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
-
-    if (!rawMediaArray || !rawMediaArray.length) {
-      // no media objects included, skipping media upload step
-      throw new HTTP400('Missing upload data');
-    }
-
-    const rawMediaFile: Express.Multer.File = rawMediaArray[0];
+    const rawMediaFile = getFileFromRequest(req);
 
     defaultLog.debug({
       label: 'uploadMedia',
@@ -155,7 +153,7 @@ export function uploadMedia(): RequestHandler {
       file: { ...rawMediaFile, buffer: 'Too big to print' }
     });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -179,8 +177,8 @@ export function uploadMedia(): RequestHandler {
       // Upload file to S3
       const metadata = {
         filename: rawMediaFile.originalname,
-        username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
-        email: (req['auth_payload'] && req['auth_payload'].email) || ''
+        username: (req.keycloak_token && req.keycloak_token.preferred_username) || '',
+        email: (req.keycloak_token && req.keycloak_token.email) || ''
       };
 
       await uploadFileToS3(rawMediaFile, upsertResult.key, metadata);

@@ -1,5 +1,4 @@
 export type IIDIRAccessRequestDataObject = {
-  role: number;
   reason: string;
 };
 

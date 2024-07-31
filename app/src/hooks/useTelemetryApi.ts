@@ -1,19 +1,12 @@
 import { AxiosProgressEvent, CancelTokenSource } from 'axios';
-import { ConfigContext } from 'contexts/configContext';
-import {
-  IAllTelemetry,
-  ICreateManualTelemetry,
-  IManualTelemetry,
-  IUpdateManualTelemetry,
-  IVendorTelemetry
-} from 'interfaces/useTelemetryApi.interface';
-import { useContext } from 'react';
+import { useConfigContext } from 'hooks/useContext';
+import { IAllTelemetry, ICreateManualTelemetry, IManualTelemetry, IUpdateManualTelemetry, IVendorTelemetry } from 'interfaces/useTelemetryApi.interface';
 import useAxios from './api/useAxios';
 import { useDeviceApi } from './telemetry/useDeviceApi';
 
 export const useTelemetryApi = () => {
-  const config = useContext(ConfigContext);
-  const axios = useAxios(config?.API_HOST);
+  const config = useConfigContext();
+  const axios = useAxios(config.API_HOST);
   const devices = useDeviceApi(axios);
 
   /**

@@ -174,7 +174,7 @@ GET.apiDoc = {
  */
 export function viewProject(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

@@ -66,7 +66,7 @@ GET.apiDoc = {
  */
 export function getUser(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
