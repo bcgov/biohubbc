@@ -11,10 +11,10 @@ import ProjectDetailsForm, { ProjectDetailsFormYupSchema } from '../components/P
 import ProjectObjectivesForm, { ProjectObjectivesFormYupSchema } from '../components/ProjectObjectivesForm';
 import ProjectUserForm, { ProjectUserRoleYupSchema } from '../components/ProjectUserForm';
 
-export interface IEditProjectForm {
-  initialProjectData: IUpdateProjectRequest | ICreateProjectRequest;
-  handleSubmit: (formikData: IUpdateProjectRequest) => void;
-  formikRef: React.RefObject<FormikProps<IUpdateProjectRequest>>;
+export interface IEditProjectForm<InitialValuesType extends IUpdateProjectRequest | ICreateProjectRequest> {
+  initialProjectData: InitialValuesType;
+  handleSubmit: (formikData: InitialValuesType) => void;
+  formikRef: React.RefObject<FormikProps<InitialValuesType>>;
 }
 
 export const validationProjectYupSchema =
@@ -25,20 +25,22 @@ export const validationProjectYupSchema =
  *
  * @return {*}
  */
-const EditProjectForm = (props: IEditProjectForm) => {
+const EditProjectForm = <InitialValuesType extends IUpdateProjectRequest | ICreateProjectRequest>(
+  props: IEditProjectForm<InitialValuesType>
+) => {
   const { formikRef } = props;
 
   const codesContext = useContext(CodesContext);
   const codes = codesContext.codesDataLoader.data;
 
-  const handleSubmit = async (formikData: IUpdateProjectRequest) => {
+  const handleSubmit = async (formikData: InitialValuesType) => {
     props.handleSubmit(formikData);
   };
 
   return (
     <Formik
       innerRef={formikRef}
-      initialValues={props.initialProjectData as unknown as IUpdateProjectRequest}
+      initialValues={props.initialProjectData}
       validationSchema={validationProjectYupSchema}
       validateOnBlur={false}
       validateOnChange={false}
@@ -51,13 +53,7 @@ const EditProjectForm = (props: IEditProjectForm) => {
           summary="Enter general information, objectives and timelines for the project."
           component={
             <>
-              <ProjectDetailsForm
-                program={
-                  codes?.program?.map((item) => {
-                    return { value: item.id, label: item.name };
-                  }) || []
-                }
-              />
+              <ProjectDetailsForm />
               <Box mt={3}>
                 <ProjectObjectivesForm />
               </Box>

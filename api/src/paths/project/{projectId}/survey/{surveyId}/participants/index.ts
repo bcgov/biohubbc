@@ -124,7 +124,7 @@ export function getSurveyParticipants(): RequestHandler {
       throw new HTTP400('Missing required param `surveyId`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const surveyId = Number(req.params.surveyId);
@@ -258,7 +258,7 @@ export function createSurveyParticipants(): RequestHandler {
       throw new HTTP400('Missing required body param `participants`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const participants: ISurveyParticipationPostData[] = req.body.participants;

@@ -6,7 +6,7 @@ import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
   IDetailedCritterWithInternalId,
-  IGetSurveyListResponse,
+  IFindSurveysResponse,
   SurveyBasicFieldsObject
 } from 'interfaces/useSurveyApi.interface';
 import { ApiPaginationResponseParams } from 'types/misc';
@@ -14,7 +14,7 @@ import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
 
 describe('useSurveyApi', () => {
-  let mock: any;
+  let mock: MockAdapter;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
@@ -49,7 +49,7 @@ describe('useSurveyApi', () => {
     it('fetches an array of surveys', async () => {
       const projectId = 1;
 
-      const res: IGetSurveyListResponse = {
+      const res: IFindSurveysResponse = {
         surveys: [{ survey_id: 1 }, { survey_id: 2 }] as SurveyBasicFieldsObject[],
         pagination: null as unknown as ApiPaginationResponseParams
       };
@@ -67,11 +67,12 @@ describe('useSurveyApi', () => {
   describe('createCritterAndAddToSurvey', () => {
     it('creates a critter successfully', async () => {
       const critter: ICreateCritter = {
-        itis_tsn: 1,
         critter_id: 'blah-blah',
+        itis_tsn: 1,
         wlh_id: '123-45',
         animal_id: 'carl',
-        sex: AnimalSex.MALE
+        sex: AnimalSex.MALE,
+        critter_comment: 'comment'
       };
 
       mock.onPost(`/api/project/${projectId}/survey/${surveyId}/critters`).reply(201, { create: { critters: 1 } });
@@ -82,11 +83,11 @@ describe('useSurveyApi', () => {
     });
   });
 
-  describe('removeCritterFromSurvey', () => {
+  describe('removeCrittersFromSurvey', () => {
     it('should remove a critter from survey', async () => {
-      mock.onDelete(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`).reply(200, 1);
+      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/critters/delete`).reply(200, 1);
 
-      const result = await useSurveyApi(axios).removeCritterFromSurvey(projectId, surveyId, critterId);
+      const result = await useSurveyApi(axios).removeCrittersFromSurvey(projectId, surveyId, [critterId]);
 
       expect(result).toBe(1);
     });

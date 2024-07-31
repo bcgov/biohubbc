@@ -4,8 +4,9 @@ import FormData from 'form-data';
 import { GeometryCollection } from 'geojson';
 import { URLSearchParams } from 'url';
 import { z } from 'zod';
-import { ApiError, ApiErrorType } from '../errors/api-error';
+import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
 import { HTTP500 } from '../errors/http-error';
+import { getSystemUserFromRequest } from '../utils/request';
 import { KeycloakService } from './keycloak-service';
 
 export const IDeployDevice = z.object({
@@ -86,12 +87,51 @@ export const IKeyXDetails = z.object({
 
 export type IKeyXDetails = z.infer<typeof IKeyXDetails>;
 
+export const IAllTelemetry = z
+  .object({
+    deployment_id: z.string().uuid(),
+    latitude: z.number(),
+    longitude: z.number(),
+    acquisition_date: z.string(),
+    telemetry_type: z.string()
+  })
+  .and(
+    // One of telemetry_id or telemetry_manual_id is expected to be non-null
+    z.union([
+      z.object({
+        telemetry_id: z.string().uuid(),
+        telemetry_manual_id: z.null()
+      }),
+      z.object({
+        telemetry_id: z.null(),
+        telemetry_manual_id: z.string().uuid()
+      })
+    ])
+  );
+
+export type IAllTelemetry = z.infer<typeof IAllTelemetry>;
+
+export const IVendorTelemetry = z.object({
+  telemetry_id: z.string(),
+  deployment_id: z.string().uuid(),
+  collar_transaction_id: z.string().uuid(),
+  critter_id: z.string().uuid(),
+  deviceid: z.number(),
+  latitude: z.number(),
+  longitude: z.number(),
+  elevation: z.number(),
+  vendor: z.string(),
+  acquisition_date: z.string()
+});
+
+export type IVendorTelemetry = z.infer<typeof IVendorTelemetry>;
+
 export const IManualTelemetry = z.object({
   telemetry_manual_id: z.string().uuid(),
   deployment_id: z.string().uuid(),
   latitude: z.number(),
   longitude: z.number(),
-  date: z.string()
+  acquisition_date: z.string()
 });
 
 export type IManualTelemetry = z.infer<typeof IManualTelemetry>;
@@ -140,10 +180,25 @@ export const VENDOR_TELEMETRY = '/vendor-telemetry';
 export const DELETE_MANUAL_TELEMETRY = '/manual-telemetry/delete';
 export const MANUAL_AND_VENDOR_TELEMETRY = '/all-telemetry';
 
-export const getBctwUser = (req: Request): IBctwUser => ({
-  keycloak_guid: req['system_user']?.user_guid,
-  username: req['system_user']?.user_identifier
-});
+/**
+ * Safely attempt to retrieve system user fields for BCTW user dependency.
+ *
+ * @param {Request} req
+ * @throws {ApiGeneralError} - Missing required fields
+ * @returns {IBctwUser}
+ */
+export const getBctwUser = (req: Request): IBctwUser => {
+  const systemUser = getSystemUserFromRequest(req);
+
+  if (!systemUser.user_guid || !systemUser.user_identifier) {
+    throw new ApiGeneralError('System user missing required fields', ['bctw-service->getBctwUser']);
+  }
+
+  return {
+    keycloak_guid: systemUser.user_guid,
+    username: systemUser.user_identifier
+  };
+};
 
 export class BctwService {
   user: IBctwUser;
@@ -238,6 +293,7 @@ export class BctwService {
       const params = new URLSearchParams(queryParams);
       url += `?${params.toString()}`;
     }
+
     const response = await this.axiosInstance.get(url);
     return response.data;
   }
@@ -475,7 +531,7 @@ export class BctwService {
    * @param {string[]} deployment_ids - bctw deployments
    * @returns {*} IManualTelemetry[]
    */
-  async getVendorTelemetryByDeploymentIds(deployment_ids: string[]): Promise<IManualTelemetry[]> {
+  async getVendorTelemetryByDeploymentIds(deployment_ids: string[]): Promise<IVendorTelemetry[]> {
     const res = await this.axiosInstance.post(`${VENDOR_TELEMETRY}/deployments`, deployment_ids);
     return res.data;
   }
@@ -487,7 +543,7 @@ export class BctwService {
    * @param {string[]} deployment_ids - bctw deployments
    * @returns {*} IManualTelemetry[]
    */
-  async getAllTelemetryByDeploymentIds(deployment_ids: string[]): Promise<IManualTelemetry[]> {
+  async getAllTelemetryByDeploymentIds(deployment_ids: string[]): Promise<IAllTelemetry[]> {
     const res = await this.axiosInstance.post(`${MANUAL_AND_VENDOR_TELEMETRY}/deployments`, deployment_ids);
     return res.data;
   }

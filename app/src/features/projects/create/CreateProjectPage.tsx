@@ -14,11 +14,7 @@ import { FormikProps } from 'formik';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import {
-  ICreateProjectRequest,
-  IGetProjectParticipant,
-  IUpdateProjectRequest
-} from 'interfaces/useProjectApi.interface';
+import { ICreateProjectRequest, IGetProjectParticipant } from 'interfaces/useProjectApi.interface';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { ProjectDetailsFormInitialValues } from '../components/ProjectDetailsForm';
@@ -99,7 +95,7 @@ const CreateProjectPage = () => {
   };
 
   const handleCancel = () => {
-    history.push('/admin/projects');
+    history.push('/admin/summary');
   };
 
   /**
@@ -158,8 +154,8 @@ const CreateProjectPage = () => {
         <Paper sx={{ p: 5 }}>
           <EditProjectForm
             initialProjectData={initialProjectData}
-            handleSubmit={(formikData) => createProject(formikData as ICreateProjectRequest)}
-            formikRef={formikRef as unknown as React.RefObject<FormikProps<IUpdateProjectRequest>>}
+            handleSubmit={(formikData) => createProject(formikData)}
+            formikRef={formikRef}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
             <LoadingButton

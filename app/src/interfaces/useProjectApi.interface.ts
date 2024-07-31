@@ -69,6 +69,22 @@ export interface IGetUserProjectsListResponse {
 }
 
 /**
+ * Get surveys list response object.
+ *
+ * @export
+ * @interface IGetUserSurveysListResponse
+ */
+export interface IGetUserSurveysListResponse {
+  project_participation_id: number;
+  project_id: number;
+  project_name: string;
+  system_user_id: number;
+  project_role_ids: number[];
+  project_role_names: string[];
+  project_role_permissions: string[];
+}
+
+/**
  * An interface that describes project supplementary data
  * @export
  * @interface IProjectSupplementaryData
@@ -78,24 +94,42 @@ export interface IProjectSupplementaryData {
 }
 
 /**
- * Get projects list response object.
+ * Find projects response object.
  *
  * @export
- * @interface IGetProjectsListResponse
+ * @interface IFindProjectsResponse
  */
-export interface IGetProjectsListResponse {
+export interface IFindProjectsResponse {
   projects: IProjectsListItemData[];
   pagination: ApiPaginationResponseParams;
 }
 
 export interface IProjectsListItemData {
   project_id: number;
+  /**
+   * The name of the project.
+   */
   name: string;
-  start_date: string;
-  end_date?: string;
-  completion_status: string;
+  /**
+   * The earliest start date of the surveys in the project.
+   */
+  start_date: string | null;
+  /**
+   * The latest end date of the surveys in the project.
+   */
+  end_date: string | null;
+  /**
+   * The regions of the surveys in the project.
+   */
   regions: string[];
-  project_programs: number[];
+  /**
+   * The focal species of the surveys in the project.
+   */
+  focal_species: number[];
+  /**
+   * The types of the surveys in the project.
+   */
+  types: number[];
 }
 
 export interface IProjectUserRoles {
@@ -143,9 +177,6 @@ export interface IGetProjectForUpdateResponse {
 
 export interface IGetProjectForUpdateResponseDetails {
   project_name: string;
-  project_programs: number[];
-  start_date: string;
-  end_date: string;
   revision_count: number;
 }
 export interface IGetProjectForUpdateResponseObjectives {
@@ -199,10 +230,6 @@ export interface ProjectViewObject {
 export interface IGetProjectForViewResponseDetails {
   project_id: number;
   project_name: string;
-  project_programs: number[];
-  start_date: string;
-  end_date: string;
-  completion_status: string;
 }
 export interface IGetProjectForViewResponseObjectives {
   objectives: string;

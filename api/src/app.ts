@@ -80,23 +80,37 @@ const openAPIFramework = initialize({
         limits: { fileSize: MAX_UPLOAD_FILE_SIZE }
       }).array('media', MAX_UPLOAD_NUM_FILES);
 
-      return multerRequestHandler(req, res, async function (error?: any) {
+      /**
+       * Multer transforms and moves the incoming files from `req.body.media` --> `req.files`.
+       *
+       * OpenAPI only allows validation on specific parts of the request object (requestBody / parameters...) this excludes the contents of `req.files`.
+       * To get around this we re-assign `req.body.media` to the Multer transformed files stored in `req.files`.
+       *
+       * Files can be accessed via `req.body.media` OR `req.files`.
+       *
+       * @see https://www.npmjs.com/package/express-openapi#argsconsumesmiddleware
+       */
+      multerRequestHandler(req, res, async (error?: any) => {
         if (error) {
           return next(error);
         }
 
-        const promises = (req.files as Express.Multer.File[]).map(async function (file) {
-          // Set original request file field to empty string to satisfy OpenAPI validation
-          // See: https://www.npmjs.com/package/express-openapi#argsconsumesmiddleware
-          req.body[file.fieldname] = '';
+        // Scan files for malicious content, if enabled
+        const virusScanPromises = (req.files as Express.Multer.File[]).map(async function (file) {
+          const isSafe = await scanFileForVirus(file);
 
-          // Scan file for malicious content, if enabled
-          if (!(await scanFileForVirus(file))) {
+          if (!isSafe) {
             throw new HTTP400('Malicious file content detected.', [{ file_name: file.originalname }]);
           }
         });
 
-        await Promise.all(promises);
+        await Promise.all(virusScanPromises);
+
+        // Ensure `req.files` or `req.body.media` is always set to an array
+        const multerFiles = req.files ?? [];
+
+        req.files = multerFiles;
+        req.body.media = multerFiles;
 
         return next();
       });

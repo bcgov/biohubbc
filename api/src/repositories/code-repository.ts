@@ -20,6 +20,7 @@ const IntendedOutcomeCode = ICode.extend({ description: z.string() });
 const SampleMethodsCode = ICode.extend({ description: z.string() });
 const SurveyProgressCode = ICode.extend({ description: z.string() });
 const MethodResponseMetricsCode = ICode.extend({ description: z.string() });
+const AttractantCode = ICode.extend({ description: z.string() });
 
 export const IAllCodeSets = z.object({
   management_action_type: CodeSet(),
@@ -27,7 +28,6 @@ export const IAllCodeSets = z.object({
   agency: CodeSet(),
   investment_action_category: CodeSet(InvestmentActionCategoryCode.shape),
   type: CodeSet(),
-  program: CodeSet(),
   proprietor_type: CodeSet(ProprietorTypeCode.shape),
   iucn_conservation_action_level_1_classification: CodeSet(),
   iucn_conservation_action_level_2_subclassification: CodeSet(IucnConservationActionLevel2SubclassificationCode.shape),
@@ -41,7 +41,8 @@ export const IAllCodeSets = z.object({
   site_selection_strategies: CodeSet(),
   sample_methods: CodeSet(SampleMethodsCode.shape),
   survey_progress: CodeSet(SurveyProgressCode.shape),
-  method_response_metrics: CodeSet(MethodResponseMetricsCode.shape)
+  method_response_metrics: CodeSet(MethodResponseMetricsCode.shape),
+  attractants: CodeSet(AttractantCode.shape)
 });
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
 
@@ -213,26 +214,6 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
-   * Fetch project type codes.
-   *
-   * @return {*}
-   * @memberof CodeRepository
-   */
-  async getProgram() {
-    const sqlStatement = SQL`
-      SELECT
-        program_id as id,
-        name
-      FROM program
-      WHERE record_end_date is null;
-    `;
-
-    const response = await this.connection.sql(sqlStatement, ICode);
-
-    return response.rows;
-  }
-
-  /**
    * Fetch investment action category codes.
    *
    * @return {*}
@@ -348,7 +329,9 @@ export class CodeRepository extends BaseRepository {
         project_role_id as id,
         name
       FROM project_role
-      WHERE record_end_date is null;
+      WHERE record_end_date is null
+      ORDER BY 
+        CASE WHEN name = 'Coordinator' THEN 0 ELSE 1 END;
     `;
 
     const response = await this.connection.sql(sqlStatement, ICode);
@@ -438,7 +421,7 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
-   * Fetch method response metrics
+   * Fetch method response metrics codes.
    *
    * @return {*}
    * @memberof CodeRepository
@@ -454,6 +437,27 @@ export class CodeRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement, MethodResponseMetricsCode);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetch attractants codes.
+   *
+   * @return {*}
+   * @memberof CodeRepository
+   */
+  async getAttractants() {
+    const sqlStatement = SQL`
+      SELECT
+        attractant_lookup_id AS id,
+        name,
+        description
+      FROM attractant_lookup
+      WHERE record_end_date IS null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, AttractantCode);
 
     return response.rows;
   }

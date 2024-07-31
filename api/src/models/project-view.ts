@@ -3,12 +3,11 @@ import { ProjectUser } from '../repositories/project-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
 
 export interface IProjectAdvancedFilters {
-  project_programs?: number[];
-  start_date?: string;
-  end_date?: string;
   keyword?: string;
-  project_name?: string;
+  itis_tsn?: number;
   itis_tsns?: number[];
+  system_user_id?: number;
+  project_name?: string;
 }
 
 export interface IGetProject {
@@ -22,25 +21,23 @@ export const ProjectData = z.object({
   project_id: z.number(),
   uuid: z.string().uuid(),
   project_name: z.string(),
-  project_programs: z.array(z.number()),
-  start_date: z.string(),
-  end_date: z.string().nullable(),
   comments: z.string().nullable(),
   revision_count: z.number()
 });
 
 export type ProjectData = z.infer<typeof ProjectData>;
 
-export const ProjectListData = z.object({
+export const FindProjectsResponse = z.object({
   project_id: z.number(),
   name: z.string(),
-  project_programs: z.array(z.number()),
+  start_date: z.string().nullable(),
+  end_date: z.string().nullable(),
   regions: z.array(z.string()),
-  start_date: z.string(),
-  end_date: z.string().nullable().optional()
+  focal_species: z.array(z.number()),
+  types: z.array(z.number())
 });
 
-export type ProjectListData = z.infer<typeof ProjectListData>;
+export type FindProjectsResponse = z.infer<typeof FindProjectsResponse>;
 
 /**
  * Pre-processes GET /projects/{id} objectives data

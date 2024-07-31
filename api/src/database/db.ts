@@ -207,7 +207,7 @@ export interface IDBConnection {
  *
  * const sqlStatement = SQL\`select * from table where id = ${id};\`;
  *
- * const connection = await getDBConnection(req['keycloak_token']);
+ * const connection = await getDBConnection(req.keycloak_token);
  *
  * try {
  *   await connection.open();
@@ -223,7 +223,7 @@ export interface IDBConnection {
  * @param {object} keycloakToken
  * @return {*} {IDBConnection}
  */
-export const getDBConnection = function (keycloakToken: KeycloakUserInformation): IDBConnection {
+export const getDBConnection = function (keycloakToken?: KeycloakUserInformation): IDBConnection {
   if (!keycloakToken) {
     throw Error('Keycloak token is undefined');
   }

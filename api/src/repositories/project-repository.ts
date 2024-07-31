@@ -6,19 +6,16 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProjectObject } from '../models/project-create';
 import { PutObjectivesData, PutProjectData } from '../models/project-update';
 import {
+  FindProjectsResponse,
   GetAttachmentsData,
   GetIUCNClassificationData,
   GetObjectivesData,
   GetReportAttachmentsData,
   IProjectAdvancedFilters,
-  ProjectData,
-  ProjectListData
+  ProjectData
 } from '../models/project-view';
-import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
-
-const defaultLog = getLogger('repositories/project-repository');
 
 /**
  * A repository class for accessing project data.
@@ -29,15 +26,15 @@ const defaultLog = getLogger('repositories/project-repository');
  */
 export class ProjectRepository extends BaseRepository {
   /**
-   * Constructs a non-paginated query used to get a project list for users.
+   * Constructs a non-paginated query used to get a list of projects based on the user's permissions and filter criteria.
    *
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId
+   * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {IProjectAdvancedFilters} filterFields
-   * @return {*}  Promise<Knex.QueryBuilder>
+   * @return {*}  {Knex.QueryBuilder}
    * @memberof ProjectRepository
    */
-  _makeProjectListQuery(
+  _makeFindProjectsQuery(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters
@@ -48,50 +45,49 @@ export class ProjectRepository extends BaseRepository {
       .select([
         'p.project_id',
         'p.name',
-        'p.start_date',
-        'p.end_date',
+        knex.raw(`MIN(s.start_date) as start_date`),
+        knex.raw('MAX(s.end_date) as end_date'),
         knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
-        knex.raw('array_agg(distinct prog.program_id) as project_programs')
+        knex.raw('array_remove(array_agg(distinct sp.itis_tsn), null) as focal_species'),
+        knex.raw('array_remove(array_agg(distinct st.type_id), null) as types')
       ])
       .from('project as p')
-
-      .leftJoin('project_program as pp', 'p.project_id', 'pp.project_id')
       .leftJoin('survey as s', 's.project_id', 'p.project_id')
       .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
-      .leftJoin('program as prog', 'prog.program_id', 'pp.program_id')
+      .leftJoin('survey_type as st', 'sp.survey_id', 'st.survey_id')
       .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
       .leftJoin('region_lookup as rl', 'sr.region_id', 'rl.region_id')
+      .leftJoin('project_participation as ppa', 'p.project_id', 'ppa.project_id')
+      .groupBy(['p.project_id', 'p.name', 'p.objectives']);
 
-      .groupBy(['p.project_id', 'p.name', 'p.objectives', 'p.start_date', 'p.end_date']);
-
-    /*
-     * Ensure that users can only see project that they are participating in, unless
-     * they are an administrator.
-     */
+    // Ensure that users can only see projects that they are participating in, unless they are an administrator.
     if (!isUserAdmin) {
       query.whereIn('p.project_id', (subQueryBuilder) => {
         subQueryBuilder.select('project_id').from('project_participation').where('system_user_id', systemUserId);
       });
     }
 
-    // Start Date filter
-    if (filterFields.start_date) {
-      query.andWhere('p.start_date', '>=', filterFields.start_date);
+    if (filterFields.system_user_id) {
+      query.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
+      });
     }
 
-    // End Date filter
-    if (filterFields.end_date) {
-      query.andWhere('p.end_date', '<=', filterFields.end_date);
-    }
-
-    // Project Name filter (exact match)
+    // Project Name filter (like match)
     if (filterFields.project_name) {
-      query.andWhere('p.name', filterFields.project_name);
+      query.andWhere('p.name', 'ilike', `%${filterFields.project_name}%`);
     }
 
     // Focal Species filter
     if (filterFields.itis_tsns?.length) {
+      // multiple
       query.whereIn('sp.itis_tsn', filterFields.itis_tsns);
+    } else if (filterFields.itis_tsn) {
+      // single
+      query.where('sp.itis_tsn', filterFields.itis_tsn);
     }
 
     // Keyword Search filter
@@ -102,12 +98,12 @@ export class ProjectRepository extends BaseRepository {
           .where('p.name', 'ilike', keywordMatch)
           .orWhere('p.objectives', 'ilike', keywordMatch)
           .orWhere('s.name', 'ilike', keywordMatch);
-      });
-    }
 
-    // Programs filter
-    if (filterFields.project_programs?.length) {
-      query.where('prog.program_id', 'IN', filterFields.project_programs);
+        // If the keyword is a number, also match on project Id
+        if (!isNaN(Number(filterFields.keyword))) {
+          subQueryBuilder.orWhere('p.project_id', Number(filterFields.keyword));
+        }
+      });
     }
 
     return query;
@@ -120,20 +116,17 @@ export class ProjectRepository extends BaseRepository {
    * @param {(number | null)} systemUserId
    * @param {IProjectAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<ProjectListData[]>}
+   * @return {*}  {Promise<FindProjectsResponse[]>}
    * @memberof ProjectRepository
    */
-  async getProjectList(
+  async findProjects(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<ProjectListData[]> {
-    defaultLog.debug({ label: 'getProjectList', pagination });
+  ): Promise<FindProjectsResponse[]> {
+    const query = this._makeFindProjectsQuery(isUserAdmin, systemUserId, filterFields);
 
-    const query = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields);
-
-    // Pagination
     if (pagination) {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
@@ -142,7 +135,7 @@ export class ProjectRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(query, ProjectListData);
+    const response = await this.connection.knex(query, FindProjectsResponse);
 
     return response.rows;
   }
@@ -150,18 +143,18 @@ export class ProjectRepository extends BaseRepository {
   /**
    * Returns the total count of projects that are visible to the given user.
    *
-   * @param {IProjectAdvancedFilters} filterFields
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IProjectAdvancedFilters} filterFields
    * @return {*}  {Promise<number>}
    * @memberof ProjectRepository
    */
-  async getProjectCount(
-    filterFields: IProjectAdvancedFilters,
+  async findProjectsCount(
     isUserAdmin: boolean,
-    systemUserId: number | null
+    systemUserId: number | null,
+    filterFields: IProjectAdvancedFilters
   ): Promise<number> {
-    const projectsListQuery = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields);
+    const projectsListQuery = this._makeFindProjectsQuery(isUserAdmin, systemUserId, filterFields);
 
     const knex = getKnex();
 
@@ -172,7 +165,7 @@ export class ProjectRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get project count', [
-        'ProjectRepository->getProjectCount',
+        'ProjectRepository->findProjectsCount',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -186,19 +179,10 @@ export class ProjectRepository extends BaseRepository {
         p.project_id,
         p.uuid,
         p.name as project_name,
-        p.start_date,
-        p.end_date,
         p.comments,
-        p.revision_count,
-        pp.project_programs
+        p.revision_count
       FROM
         project p
-      LEFT JOIN (
-        SELECT array_remove(array_agg(p.program_id), NULL) as project_programs, pp.project_id
-        FROM program p, project_program pp
-        WHERE p.program_id = pp.program_id
-        GROUP BY pp.project_id
-      ) as pp on pp.project_id = p.project_id
       WHERE
         p.project_id = ${projectId};
     `;
@@ -327,14 +311,10 @@ export class ProjectRepository extends BaseRepository {
       INSERT INTO project (
         name,
         objectives,
-        start_date,
-        end_date,
         comments
       ) VALUES (
         ${postProjectData.project.name},
         ${postProjectData.objectives.objectives},
-        ${postProjectData.project.start_date},
-        ${postProjectData.project.end_date},
         ${postProjectData.project.comments}
       )
       RETURNING project_id as id;`;
@@ -379,61 +359,6 @@ export class ProjectRepository extends BaseRepository {
     return result.id;
   }
 
-  /**
-   * Links a given project with a list of given programs.
-   * This insert assumes previous records for a project have been removed first
-   *
-   * @param {number} projectId Project to add programs to
-   * @param {number[]} programs Programs to be added to a project
-   * @returns {*} {Promise<void>}
-   */
-  async insertProgram(projectId: number, programs: number[]): Promise<void> {
-    if (programs.length < 1) {
-      return;
-    }
-
-    const sql = SQL`
-      INSERT INTO project_program (project_id, program_id)
-      VALUES `;
-
-    programs.forEach((programId, index) => {
-      sql.append(`(${projectId}, ${programId})`);
-
-      if (index !== programs.length - 1) {
-        sql.append(',');
-      }
-    });
-
-    sql.append(';');
-
-    try {
-      await this.connection.sql(sql);
-    } catch (error) {
-      throw new ApiExecuteSQLError('Failed to execute insert SQL for project_program', [
-        'ProjectRepository->insertProgram'
-      ]);
-    }
-  }
-
-  /**
-   * Removes program links for a given project.
-   *
-   * @param {number} projectId Project id to remove programs from
-   * @returns {*} {Promise<void>}
-   */
-  async deletePrograms(projectId: number): Promise<void> {
-    const sql = SQL`
-      DELETE FROM project_program WHERE project_id = ${projectId};
-    `;
-    try {
-      await this.connection.sql(sql);
-    } catch (error) {
-      throw new ApiExecuteSQLError('Failed to execute delete SQL for project_program', [
-        'ProjectRepository->deletePrograms'
-      ]);
-    }
-  }
-
   async deleteIUCNData(projectId: number): Promise<void> {
     const sqlDeleteStatement = SQL`
       DELETE
@@ -465,8 +390,6 @@ export class ProjectRepository extends BaseRepository {
 
     if (project) {
       sqlSetStatements.push(SQL`name = ${project.name}`);
-      sqlSetStatements.push(SQL`start_date = ${project.start_date}`);
-      sqlSetStatements.push(SQL`end_date = ${project.end_date}`);
     }
 
     if (objectives) {

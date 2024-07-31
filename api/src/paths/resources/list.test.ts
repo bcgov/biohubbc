@@ -21,6 +21,7 @@ describe('listResources', () => {
 
   it('returns an empty array if no resources are found', async () => {
     const listFilesStub = sinon.stub(fileUtils, 'listFilesFromS3').resolves({
+      $metadata: {},
       Contents: []
     });
 
@@ -35,7 +36,7 @@ describe('listResources', () => {
   });
 
   it('returns an array of resources', async () => {
-    const mockMetadata = {
+    const mockMetadata: Record<string, Record<string, string>> = {
       ['key1']: {
         'template-name': 'name1',
         'template-type': 'type1',
@@ -55,11 +56,14 @@ describe('listResources', () => {
 
     sinon.stub(fileUtils, 'getObjectMeta').callsFake((key: string) => {
       return Promise.resolve({
+        $metadata: {},
+        Conents: [],
         Metadata: mockMetadata[key]
       });
     });
 
     const listFilesStub = sinon.stub(fileUtils, 'listFilesFromS3').resolves({
+      $metadata: {},
       Contents: [
         {
           Key: 'key1',
@@ -89,7 +93,7 @@ describe('listResources', () => {
       files: [
         {
           fileName: 'key1',
-          url: 's3.host.example.com/test-bucket/key1',
+          url: 'https://s3.host.example.com/test-bucket/key1',
           lastModified: new Date('2023-01-01').toISOString(),
           fileSize: 5,
           metadata: {
@@ -100,7 +104,7 @@ describe('listResources', () => {
         },
         {
           fileName: 'key2',
-          url: 's3.host.example.com/test-bucket/key2',
+          url: 'https://s3.host.example.com/test-bucket/key2',
           lastModified: new Date('2023-01-02').toISOString(),
           fileSize: 10,
           metadata: {
@@ -111,7 +115,7 @@ describe('listResources', () => {
         },
         {
           fileName: 'key3',
-          url: 's3.host.example.com/test-bucket/key3',
+          url: 'https://s3.host.example.com/test-bucket/key3',
           lastModified: new Date('2023-01-03').toISOString(),
           fileSize: 15,
           metadata: {
@@ -126,14 +130,13 @@ describe('listResources', () => {
   });
 
   it('should filter out directories from the s3 list respones', async () => {
-    sinon.stub(fileUtils, 'getObjectMeta').resolves({});
+    sinon.stub(fileUtils, 'getObjectMeta').resolves({
+      $metadata: {}
+    });
 
     const listFilesStub = sinon.stub(fileUtils, 'listFilesFromS3').resolves({
-      Contents: [
-        {
-          Key: 'templates/Current/'
-        }
-      ]
+      $metadata: {},
+      Contents: [{ Key: 'templates/Current/' }]
     });
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();

@@ -89,12 +89,10 @@ GET.apiDoc = {
                   },
                   start_date: {
                     type: 'string',
-                    format: 'date',
                     nullable: true
                   },
                   end_date: {
                     type: 'string',
-                    format: 'date',
                     nullable: true
                   }
                 }
@@ -174,7 +172,7 @@ GET.apiDoc = {
  */
 export function getFundingSource(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     const fundingSourceId = Number(req.params.fundingSourceId);
 
@@ -252,12 +250,10 @@ PUT.apiDoc = {
             },
             start_date: {
               type: 'string',
-              format: 'date',
               nullable: true
             },
             end_date: {
               type: 'string',
-              format: 'date',
               nullable: true
             },
             revision_count: {
@@ -313,7 +309,7 @@ PUT.apiDoc = {
  */
 export function putFundingSource(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -412,7 +408,7 @@ DELETE.apiDoc = {
  */
 export function deleteFundingSource(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     const fundingSourceId = Number(req.params.fundingSourceId);
 

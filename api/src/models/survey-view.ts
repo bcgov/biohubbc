@@ -1,4 +1,5 @@
 import { Feature } from 'geojson';
+import { z } from 'zod';
 import { SurveyMetadataPublish } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
 import { SiteSelectionData } from '../repositories/site-selection-strategy-repository';
@@ -7,6 +8,30 @@ import { SurveyLocationRecord } from '../repositories/survey-location-repository
 import { SurveyUser } from '../repositories/survey-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
 import { ITaxonomy } from '../services/platform-service';
+
+export interface ISurveyAdvancedFilters {
+  keyword?: string;
+  itis_tsn?: number;
+  itis_tsns?: number[];
+  start_date?: string;
+  end_date?: string;
+  survey_name?: string;
+  system_user_id?: number;
+}
+
+export const FindSurveysResponse = z.object({
+  project_id: z.number(),
+  survey_id: z.number(),
+  name: z.string(),
+  progress_id: z.number(),
+  regions: z.array(z.string()),
+  start_date: z.string().nullable(),
+  end_date: z.string().nullable().optional().nullable(),
+  focal_species: z.array(z.number().nullable()),
+  types: z.array(z.number().nullable())
+});
+
+export type FindSurveysResponse = z.infer<typeof FindSurveysResponse>;
 
 export type SurveyObject = {
   survey_details: GetSurveyData;

@@ -85,13 +85,11 @@ GET.apiDoc = {
                     },
                     start_date: {
                       type: 'string',
-                      format: 'date',
                       description: 'ISO 8601 date string'
                     },
                     end_date: {
                       type: 'string',
-                      format: 'date',
-                      description: 'ISO 8601 date string',
+                      description: 'ISO 8601 datetime string',
                       nullable: true
                     },
                     progress_id: {
@@ -142,7 +140,7 @@ GET.apiDoc = {
  */
 export function getSurveys(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -166,7 +164,7 @@ export function getSurveys(): RequestHandler {
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getSurveyList', message: 'error', error });
+      defaultLog.error({ label: 'getSurveys', message: 'error', error });
       throw error;
     } finally {
       connection.release();

@@ -13,7 +13,7 @@ export async function seed(knex: Knex): Promise<void> {
     SET search_path = 'biohub';
 
     CREATE OR REPLACE PROCEDURE
-      api_delete_project(p_project_id integer)
+      biohub.api_delete_project(p_project_id integer)
     LANGUAGE plpgsql
     SECURITY DEFINER
     AS $procedure$
@@ -36,8 +36,6 @@ export async function seed(knex: Knex): Promise<void> {
       delete from project_report_attachment where project_id = p_project_id;
       delete from project_participation where project_id = p_project_id;
       delete from project_metadata_publish where project_id = p_project_id;
-      delete from project_region where project_id = p_project_id;
-      delete from project_program where project_id = p_project_id;
       delete from grouping_project where project_id = p_project_id;
       delete from project where project_id = p_project_id;
 

@@ -93,7 +93,7 @@ export function getParticipants(): RequestHandler {
       throw new HTTP400('Missing required param `projectId`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const projectId = Number(req.params.projectId);
@@ -235,7 +235,7 @@ export function postProjectParticipants(): RequestHandler {
       throw new HTTP400('Missing required body param `participants`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const participants: IParticipant[] = req.body.participants;

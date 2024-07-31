@@ -34,7 +34,6 @@ export class CodeService extends DBService {
       iucn_conservation_action_level_2_subclassification,
       iucn_conservation_action_level_3_subclassification,
       proprietor_type,
-      program,
       system_roles,
       project_roles,
       administrative_activity_status_type,
@@ -44,7 +43,8 @@ export class CodeService extends DBService {
       site_selection_strategies,
       sample_methods,
       survey_progress,
-      method_response_metrics
+      method_response_metrics,
+      attractants
     ] = await Promise.all([
       await this.codeRepository.getManagementActionType(),
       await this.codeRepository.getFirstNations(),
@@ -55,7 +55,6 @@ export class CodeService extends DBService {
       await this.codeRepository.getIUCNConservationActionLevel2Subclassification(),
       await this.codeRepository.getIUCNConservationActionLevel3Subclassification(),
       await this.codeRepository.getProprietorType(),
-      await this.codeRepository.getProgram(),
       await this.codeRepository.getSystemRoles(),
       await this.codeRepository.getProjectRoles(),
       await this.codeRepository.getAdministrativeActivityStatusType(),
@@ -65,7 +64,8 @@ export class CodeService extends DBService {
       await this.codeRepository.getSiteSelectionStrategies(),
       await this.codeRepository.getSampleMethods(),
       await this.codeRepository.getSurveyProgress(),
-      await this.codeRepository.getMethodResponseMetrics()
+      await this.codeRepository.getMethodResponseMetrics(),
+      await this.codeRepository.getAttractants()
     ]);
 
     return {
@@ -77,7 +77,6 @@ export class CodeService extends DBService {
       iucn_conservation_action_level_1_classification,
       iucn_conservation_action_level_2_subclassification,
       iucn_conservation_action_level_3_subclassification,
-      program,
       proprietor_type,
       system_roles,
       project_roles,
@@ -88,7 +87,8 @@ export class CodeService extends DBService {
       site_selection_strategies,
       sample_methods,
       survey_progress,
-      method_response_metrics
+      method_response_metrics,
+      attractants
     };
   }
 

@@ -57,19 +57,18 @@ export async function seed(knex: Knex): Promise<void> {
   if (!checkProjectsResponse.rows.length) {
     for (let i = 0; i < NUM_SEED_PROJECTS; i++) {
       // Insert project data
-      const createProjectResponse = await knex.raw(insertProjectData(`Seed Project ${i + 1}`));
+      const createProjectResponse = await knex.raw(insertProjectData(faker.lorem.words(8)));
       const projectId = createProjectResponse.rows[0].project_id;
 
-      // Insert project IUCN, participant and program data
+      // Insert project IUCN and participants
       await knex.raw(`
         ${insertProjectIUCNData(projectId)}
         ${insertProjectParticipationData(projectId)}
-        ${insertProjectProgramData(projectId)}
       `);
 
       // Insert survey data
       for (let j = 0; j < NUM_SEED_SURVEYS_PER_PROJECT; j++) {
-        const createSurveyResponse = await knex.raw(insertSurveyData(projectId, `Seed Survey ${j + 1}`));
+        const createSurveyResponse = await knex.raw(insertSurveyData(projectId, faker.lorem.words(8)));
         const surveyId = createSurveyResponse.rows[0].survey_id;
 
         await knex.raw(`
@@ -87,6 +86,7 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveySiteStrategy(surveyId)}
           ${insertSurveyIntendedOutcome(surveyId)}
           ${insertSurveySamplingSiteData(surveyId)}
+          ${insertMethodTechnique(surveyId)}
           ${insertSurveySamplingMethodData(surveyId)}
           ${insertSurveySamplePeriodData(surveyId)}
         `);
@@ -155,22 +155,6 @@ const insertSurveySiteStrategy = (surveyId: number) => `
   VALUES (
     ${surveyId},
     (select site_strategy_id  from site_strategy ss order by random() limit 1)
-  );
-`;
-
-/**
- * SQL to insert Project Program data
- *
- */
-const insertProjectProgramData = (projectId: number) => `
-  INSERT into project_program
-    (
-      project_id,
-      program_id
-    )
-  VALUES (
-    ${projectId},
-    (select program_id from program order by random() limit 1)
   );
 `;
 
@@ -271,21 +255,16 @@ const insertSurveyFundingData = (surveyId: number) => `
  */
 const insertSurveyFocalSpeciesData = (surveyId: number) => {
   const focalSpecies = focalTaxonIdOptions[Math.floor(Math.random() * focalTaxonIdOptions.length)];
-  const testValue = [
-    2012, 2013, 828, 2019, 1594, 1718, 2037, 2062, 2068, 2065, 2070, 2069, 23918, 23922, 23920, 35369, 35370, 28516
-  ][Math.floor(Math.random() * 18)];
 
   return `
     INSERT into study_species
       (
         survey_id,
-        wldtaxonomic_units_id,
         itis_tsn,
         is_focal
       )
     VALUES (
       ${surveyId},
-      ${testValue},
       ${focalSpecies.itis_tsn},
       'Y'
     );
@@ -582,6 +561,30 @@ const insertSurveySamplingSiteData = (surveyId: number) =>
   );`;
 
 /**
+ * SQL to insert method_technique. Requires method lookup.
+ *
+ */
+const insertMethodTechnique = (surveyId: number) =>
+  `
+ INSERT INTO method_technique
+ (
+  survey_id,
+  method_lookup_id,
+  name,
+  description,
+  distance_threshold
+ )
+ VALUES
+ (
+    ${surveyId},
+    (SELECT method_lookup_id FROM method_lookup ORDER BY random() LIMIT 1),
+    $$${faker.lorem.word(10)}$$,
+    $$${faker.lorem.sentences(2)}$$,
+    $$${faker.number.int({ min: 1, max: 50 })}$$
+ );
+`;
+
+/**
  * SQL to insert survey sampling method data. Requires sampling site.
  *
  */
@@ -590,16 +593,16 @@ const insertSurveySamplingMethodData = (surveyId: number) =>
  INSERT INTO survey_sample_method
  (
   survey_sample_site_id,
-  method_lookup_id,
   description,
-  method_response_metric_id
+  method_response_metric_id,
+  method_technique_id
  )
  VALUES
  (
     (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
-    (SELECT method_lookup_id FROM method_lookup ORDER BY random() LIMIT 1),
     $$${faker.lorem.sentences(2)}$$,
-    $$${faker.number.int({ min: 1, max: 4 })}$$
+    $$${faker.number.int({ min: 1, max: 4 })}$$,
+    (SELECT method_technique_id FROM method_technique WHERE survey_id = ${surveyId} LIMIT 1)
  );
 `;
 
@@ -649,15 +652,10 @@ const insertObservationSubCount = (surveyObservationId: number) => `
  *
  */
 const insertSurveyObservationData = (surveyId: number, count: number) => {
-  const testValue = [
-    2012, 2013, 828, 2019, 1594, 1718, 2037, 2062, 2068, 2065, 2070, 2069, 23918, 23922, 23920, 35369, 35370, 28516
-  ][Math.floor(Math.random() * 18)];
-
   return `
   INSERT INTO survey_observation
   (
     survey_id,
-    wldtaxonomic_units_id,
     itis_tsn,
     itis_scientific_name,
     latitude,
@@ -672,7 +670,6 @@ const insertSurveyObservationData = (surveyId: number, count: number) => {
   VALUES
   (
     ${surveyId},
-    ${testValue},
     $$${focalTaxonIdOptions[0].itis_tsn}$$,
     $$${focalTaxonIdOptions[0].itis_scientific_name}$$,
     $$${faker.number.int({ min: 48, max: 60 })}$$,
@@ -711,8 +708,6 @@ const insertProjectData = (projectName?: string) => `
       name,
       objectives,
       location_description,
-      start_date,
-      end_date,
       geography,
       geojson
     )
@@ -720,8 +715,6 @@ const insertProjectData = (projectName?: string) => `
     '${projectName ?? 'Seed Project'}',
     $$${faker.lorem.sentences(2)}$$,
     $$${faker.lorem.sentences(2)}$$,
-    $$${faker.date.between({ from: '2000-01-01T00:00:00-08:00', to: '2005-01-01T00:00:00-08:00' }).toISOString()}$$,
-    $$${faker.date.between({ from: '2025-01-01T00:00:00-08:00', to: '2030-01-01T00:00:00-08:00' }).toISOString()}$$,
     'POLYGON ((-121.904297 50.930738, -121.904297 51.971346, -120.19043 51.971346, -120.19043 50.930738, -121.904297 50.930738))',
     '[
       {

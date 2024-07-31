@@ -5,39 +5,48 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DATE_FORMAT, DATE_LIMIT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
-import { ISurveySampleMethodData } from 'features/surveys/observations/sampling-sites/create/form/MethodForm';
 import { FormikContextType } from 'formik';
 import get from 'lodash-es/get';
-import React from 'react';
 
-interface IDateTimeFieldsProps {
+interface IDateTimeFieldsProps<FormikPropsType> {
   date: {
     dateLabel: string;
     dateName: string;
     dateId: string;
     dateRequired: boolean;
-    dateHelperText?: string;
     dateIcon: string;
+    /**
+     * Boolean flag to indicate if the date field is invalid, instead of the default formik value.
+     */
+    dateError?: boolean;
+    /**
+     * Helper text to display when the date field is invalid, instead of the default formik value.
+     */
+    dateHelperText?: string;
   };
   time: {
     timeLabel: string;
     timeName: string;
     timeId: string;
     timeRequired: boolean;
-    timeErrorHelper?: string;
-    timeHelperText?: string;
     timeIcon: string;
+    /**
+     * Boolean flag to indicate if the time field is invalid, instead of the default formik value.
+     */
+    timeError?: boolean;
+    /**
+     * Helper text to display when the time field is invalid, instead of the default formik value.
+     */
+    timeHelperText?: string;
   };
-  parentName: string;
-  formikProps: FormikContextType<ISurveySampleMethodData>;
+  formikProps: FormikContextType<FormikPropsType>;
 }
 
-export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
+export const DateTimeFields = <FormikPropsType,>(props: IDateTimeFieldsProps<FormikPropsType>) => {
   const {
     formikProps: { values, errors, touched, setFieldValue },
-    date: { dateLabel, dateName, dateId, dateRequired, dateHelperText, dateIcon },
-    time: { timeLabel, timeName, timeId, timeRequired, timeHelperText, timeIcon },
-    parentName
+    date: { dateLabel, dateName, dateId, dateRequired, dateIcon, dateError, dateHelperText },
+    time: { timeLabel, timeName, timeId, timeRequired, timeIcon, timeError, timeHelperText }
   } = props;
 
   const DateIcon = () => {
@@ -82,10 +91,8 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
                 name: dateName,
                 required: dateRequired,
                 variant: 'outlined',
-                error:
-                  (get(touched, dateName) && Boolean(get(errors, dateName))) ||
-                  typeof get(errors, parentName) === 'string',
-                helperText: (get(touched, dateName) && get(errors, dateName)) || dateHelperText,
+                error: get(touched, dateName) && (dateError || Boolean(get(errors, dateName))),
+                helperText: get(touched, dateName) && (dateHelperText || get(errors, dateName)),
                 inputProps: {
                   'data-testid': dateName
                 },
@@ -129,10 +136,8 @@ export const DateTimeFields: React.FC<IDateTimeFieldsProps> = (props) => {
                 name: timeName,
                 required: timeRequired,
                 variant: 'outlined',
-                error:
-                  (get(touched, timeName) && Boolean(get(errors, timeName))) ||
-                  typeof get(errors, parentName) === 'string',
-                helperText: (get(touched, timeName) && get(errors, timeName)) || timeHelperText,
+                error: get(touched, timeName) && (timeError || Boolean(get(errors, timeName))),
+                helperText: get(touched, timeName) && (timeHelperText || get(errors, timeName)),
                 inputProps: {
                   'data-testid': timeId,
                   'aria-label': 'Time (optional)'

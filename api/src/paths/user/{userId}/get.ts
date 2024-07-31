@@ -85,7 +85,7 @@ GET.apiDoc = {
                 nullable: true
               },
               record_end_date: {
-                oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                type: 'string',
                 nullable: true,
                 description: 'Determines if the user record has expired'
               },
@@ -157,7 +157,7 @@ GET.apiDoc = {
  */
 export function getUserById(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const userId = Number(req.params.userId);

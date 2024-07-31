@@ -137,16 +137,16 @@ GET.apiDoc = {
                 nullable: true
               },
               create_date: {
-                oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                description: 'ISO 8601 date string for the project start date'
+                type: 'string',
+                description: 'ISO 8601 date string'
               },
               create_user: {
                 type: 'integer',
                 minimum: 1
               },
               update_date: {
-                oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                description: 'ISO 8601 date string for the project start date',
+                type: 'string',
+                description: 'ISO 8601 date string',
                 nullable: true
               },
               update_user: {
@@ -194,7 +194,7 @@ export function getSurveyObservation(): RequestHandler {
 
     defaultLog.debug({ label: 'getSurveyObservation', surveyObservationId });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

@@ -19,7 +19,7 @@ import { useMortalityApi } from './cb_api/useMortalityApi';
  */
 export const useCritterbaseApi = () => {
   const config = useConfigContext();
-  const apiAxios = useAxios(config?.API_HOST);
+  const apiAxios = useAxios(config.API_HOST);
 
   const critters = useCritterApi(apiAxios);
 

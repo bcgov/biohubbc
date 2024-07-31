@@ -106,8 +106,8 @@ GET.apiDoc = {
                   nullable: true
                 },
                 create_date: {
-                  oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                  description: 'ISO 8601 date string for the project start date'
+                  type: 'string',
+                  description: 'ISO 8601 date string'
                 }
               }
             }
@@ -140,7 +140,7 @@ GET.apiDoc = {
  */
 export function getAdministrativeActivities(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       // Only search for specified types if provided, otherwise search all types

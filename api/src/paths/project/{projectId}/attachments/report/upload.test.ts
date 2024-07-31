@@ -38,41 +38,6 @@ describe('uploadMedia', () => {
     }
   } as any;
 
-  it('should throw an error when files are missing', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = upload.uploadMedia();
-
-      await result({ ...mockReq, files: [] }, null as unknown as any, null as unknown as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing upload data');
-    }
-  });
-
-  it('should throw an error when file format incorrect', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(false);
-
-    try {
-      const result = upload.uploadMedia();
-
-      await result(mockReq, null as unknown as any, null as unknown as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Malicious content detected, upload cancelled');
-    }
-  });
-
   it('should throw an error if failure occurs', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,

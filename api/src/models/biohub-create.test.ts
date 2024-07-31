@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { FeatureCollection } from 'geojson';
 import { describe } from 'mocha';
-import { ObservationRecord } from '../repositories/observation-repository';
+import { ObservationRecord } from '../repositories/observation-repository/observation-repository';
 import {
   PostSurveyObservationToBiohubObject,
   PostSurveySubmissionToBioHubObject,
@@ -16,7 +16,6 @@ describe('PostSurveyObservationToBiohubObject', () => {
     const obj = {
       survey_observation_id: 1,
       survey_id: 1,
-      wldtaxonomic_units_id: 1,
       survey_sample_site_id: 1,
       survey_sample_method_id: 1,
       survey_sample_period_id: 1,
@@ -159,7 +158,6 @@ describe('PostSurveySubmissionToBioHubObject', () => {
       {
         survey_observation_id: 1,
         survey_id: 1,
-        wldtaxonomic_units_id: 1,
         survey_sample_site_id: 1,
         survey_sample_method_id: 1,
         survey_sample_period_id: 1,

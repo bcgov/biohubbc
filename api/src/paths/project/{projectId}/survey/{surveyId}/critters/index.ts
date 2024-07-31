@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { critterCreateRequestObject, critterSchema } from '../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
@@ -133,7 +132,32 @@ POST.apiDoc = {
     description: 'Critterbase create critter request object',
     content: {
       'application/json': {
-        schema: critterCreateRequestObject
+        schema: {
+          title: 'Create critter request object',
+          type: 'object',
+          properties: {
+            critter_id: {
+              type: 'string',
+              format: 'uuid'
+            },
+            animal_id: {
+              type: 'string'
+            },
+            wlh_id: {
+              type: 'string'
+            },
+            itis_tsn: {
+              type: 'integer'
+            },
+            sex: {
+              type: 'string'
+            },
+            critter_comment: {
+              type: 'string'
+            }
+          },
+          additionalProperties: false
+        }
       }
     }
   },
@@ -142,7 +166,20 @@ POST.apiDoc = {
       description: 'Responds with created critter.',
       content: {
         'application/json': {
-          schema: critterSchema
+          schema: {
+            title: 'Response object for adding critter to survey',
+            type: 'object',
+            properties: {
+              survey_critter_id: {
+                type: 'number',
+                description: 'SIMS internal ID of the critter within the survey'
+              },
+              critter_id: {
+                type: 'string',
+                description: 'Critterbase ID of the critter'
+              }
+            }
+          }
         }
       }
     },
@@ -166,17 +203,13 @@ POST.apiDoc = {
 
 export function getCrittersFromSurvey(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
     const surveyId = Number(req.params.surveyId);
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
-    const surveyService = new SurveyCritterService(connection);
-    const critterbaseService = new CritterbaseService(user);
     try {
       await connection.open();
+
+      const surveyService = new SurveyCritterService(connection);
       const surveyCritters = await surveyService.getCrittersInSurvey(surveyId);
 
       // Exit early if surveyCritters list is empty
@@ -185,7 +218,8 @@ export function getCrittersFromSurvey(): RequestHandler {
       }
 
       const critterIds = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
-      const result = await critterbaseService.getMultipleCrittersByIds(critterIds);
+
+      const result = await surveyService.critterbaseService.getMultipleCrittersByIds(critterIds);
 
       const critterMap = new Map();
       for (const item of result) {
@@ -210,21 +244,33 @@ export function getCrittersFromSurvey(): RequestHandler {
 
 export function addCritterToSurvey(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
     const surveyId = Number(req.params.surveyId);
-    const critterId = req.body.critter_id;
-    const connection = getDBConnection(req['keycloak_token']);
-    const surveyService = new SurveyCritterService(connection);
-    const cb = new CritterbaseService(user);
+    let critterId = req.body.critter_id;
+
+    const connection = getDBConnection(req.keycloak_token);
+
     try {
       await connection.open();
-      await surveyService.addCritterToSurvey(surveyId, critterId);
-      const result = await cb.createCritter(req.body);
+
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
+
+      const critterbaseService = new CritterbaseService(user);
+
+      // If request does not include critter ID, create a new critter and use its critter ID
+      let result = null;
+      if (!critterId) {
+        result = await critterbaseService.createCritter(req.body);
+        critterId = result.critter_id;
+      }
+
+      const surveyService = new SurveyCritterService(connection);
+      const response = await surveyService.addCritterToSurvey(surveyId, critterId);
+
       await connection.commit();
-      return res.status(201).json(result);
+      return res.status(201).json({ critterbase_critter_id: critterId, survey_critter_id: response });
     } catch (error) {
       defaultLog.error({ label: 'addCritterToSurvey', message: 'error', error });
       await connection.rollback();

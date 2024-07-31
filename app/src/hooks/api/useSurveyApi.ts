@@ -1,6 +1,8 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import { ISurveyCritter } from 'contexts/animalPageContext';
+import { ISurveyAdvancedFilters } from 'features/summary/list-data/survey/SurveysListFilterForm';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import {
   IAnimalDeployment,
@@ -9,15 +11,14 @@ import {
   ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { SurveyExportConfig } from 'features/surveys/view/survey-export/SurveyExportForm';
-import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
+  IFindSurveysResponse,
   IGetSurveyAttachmentsResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
-  IGetSurveyListResponse,
   ISimpleCritterWithInternalId,
   SurveyUpdateObject
 } from 'interfaces/useSurveyApi.interface';
@@ -70,16 +71,37 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get surveys for a system user id.
+   *
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @param {ISurveyAdvancedFilters} filterFieldData
+   * @return {*} {Promise<IFindProjectsResponse[]>}
+   */
+  const findSurveys = async (
+    pagination?: ApiPaginationRequestOptions,
+    filterFieldData?: ISurveyAdvancedFilters
+  ): Promise<IFindSurveysResponse> => {
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
+
+    const { data } = await axios.get('/api/survey', { params, paramsSerializer: (params) => qs.stringify(params) });
+
+    return data;
+  };
+
+  /**
    * Fetches a subset of survey fields for all surveys under a project.
    *
    * @param {number} projectId
    * @param {ApiPaginationRequestOptions} [pagination]
-   * @return {*}  {Promise<IGetSurveysListResponse[]>}
+   * @return {*}  {Promise<IFindSurveysResponse>}
    */
   const getSurveysBasicFieldsByProjectId = async (
     projectId: number,
     pagination?: ApiPaginationRequestOptions
-  ): Promise<IGetSurveyListResponse> => {
+  ): Promise<IFindSurveysResponse> => {
     let urlParamsString = '';
 
     if (pagination) {
@@ -390,21 +412,27 @@ const useSurveyApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     critter: ICreateCritter
-  ): Promise<ICritterSimpleResponse> => {
+  ): Promise<ISurveyCritter> => {
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters`, critter);
     return data;
   };
 
   /**
-   * Remove a critter from the survey. Will not delete critter in critterbase.
+   * Remove critters from the survey. Will not delete critters in critterbase.
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} critterId
    * @returns {*}
    */
-  const removeCritterFromSurvey = async (projectId: number, surveyId: number, critterId: number): Promise<number> => {
-    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}`);
+  const removeCrittersFromSurvey = async (
+    projectId: number,
+    surveyId: number,
+    critterIds: number[]
+  ): Promise<number> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/delete`, {
+      critterIds: critterIds
+    });
     return data;
   };
 
@@ -508,6 +536,29 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Bulk upload Critters from CSV.
+   *
+   * @async
+   * @param {File} file - Critters CSV.
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {Promise<number[]>}
+   */
+  const importCrittersFromCsv = async (
+    file: File,
+    projectId: number,
+    surveyId: number
+  ): Promise<{ survey_critter_ids: number[] }> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/import`, formData);
+
+    return data;
+  };
+
+  /**
    * Initiates a data export for a survey.
    *
    * @param {number} projectId
@@ -530,6 +581,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForView,
     getSurveysBasicFieldsByProjectId,
     getSurveyForUpdate,
+    findSurveys,
     updateSurvey,
     uploadSurveyAttachments,
     uploadSurveyKeyx,
@@ -542,12 +594,13 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurvey,
     getSurveyCritters,
     createCritterAndAddToSurvey,
-    removeCritterFromSurvey,
+    removeCrittersFromSurvey,
     addDeployment,
     getDeploymentsInSurvey,
     updateDeployment,
     getCritterTelemetry,
     removeDeployment,
+    importCrittersFromCsv,
     exportData
   };
 };

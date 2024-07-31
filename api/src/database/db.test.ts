@@ -141,10 +141,7 @@ describe('db', () => {
 
             expect(expectedError.errors?.length).to.be.greaterThan(0);
             expectedError.errors?.forEach((item) => {
-              expect(item).to.be.instanceOf(Error);
-              if (item instanceof Error) {
-                expect(item.message).to.be.eql('DBPool is not initialized');
-              }
+              expect(item).to.be.eql({ name: 'Error', message: 'DBPool is not initialized' });
             });
             expect(getDBPoolStub).to.have.been.calledOnce;
 
@@ -227,10 +224,7 @@ describe('db', () => {
 
             expect(expectedError.errors?.length).to.be.greaterThan(0);
             expectedError.errors?.forEach((item) => {
-              expect(item).to.be.instanceOf(Error);
-              if (item instanceof Error) {
-                expect(item.message).to.be.eql('DBConnection is not open');
-              }
+              expect(item).to.be.eql({ name: 'Error', message: 'DBConnection is not open' });
             });
           });
         });
@@ -266,10 +260,7 @@ describe('db', () => {
 
             expect(expectedError.errors?.length).to.be.greaterThan(0);
             expectedError.errors?.forEach((item) => {
-              expect(item).to.be.instanceOf(Error);
-              if (item instanceof Error) {
-                expect(item.message).to.be.eql('DBConnection is not open');
-              }
+              expect(item).to.be.eql({ name: 'Error', message: 'DBConnection is not open' });
             });
           });
         });
@@ -308,10 +299,7 @@ describe('db', () => {
 
             expect(expectedError.errors?.length).to.be.greaterThan(0);
             expectedError.errors?.forEach((item) => {
-              expect(item).to.be.instanceOf(Error);
-              if (item instanceof Error) {
-                expect(item.message).to.be.eql('DBConnection is not open');
-              }
+              expect(item).to.be.eql({ name: 'Error', message: 'DBConnection is not open' });
             });
           });
         });

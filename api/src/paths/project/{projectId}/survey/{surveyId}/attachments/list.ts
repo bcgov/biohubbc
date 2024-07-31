@@ -117,23 +117,23 @@ GET.apiDoc = {
                           type: 'number'
                         },
                         event_timestamp: {
-                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                          description: 'ISO 8601 date string for the project start date'
+                          type: 'string',
+                          description: 'ISO 8601 date string'
                         },
                         artifact_revision_id: {
                           type: 'string'
                         },
                         create_date: {
-                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                          description: 'ISO 8601 date string for the project start date'
+                          type: 'string',
+                          description: 'ISO 8601 date string'
                         },
                         create_user: {
                           type: 'integer',
                           minimum: 1
                         },
                         update_date: {
-                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                          description: 'ISO 8601 date string for the project start date',
+                          type: 'string',
+                          description: 'ISO 8601 date string',
                           nullable: true
                         },
                         update_user: {
@@ -198,23 +198,23 @@ GET.apiDoc = {
                           type: 'number'
                         },
                         event_timestamp: {
-                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                          description: 'ISO 8601 date string for the project start date'
+                          type: 'string',
+                          description: 'ISO 8601 date string'
                         },
                         artifact_revision_id: {
                           type: 'string'
                         },
                         create_date: {
-                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                          description: 'ISO 8601 date string for the project start date'
+                          type: 'string',
+                          description: 'ISO 8601 date string'
                         },
                         create_user: {
                           type: 'integer',
                           minimum: 1
                         },
                         update_date: {
-                          oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                          description: 'ISO 8601 date string for the project start date',
+                          type: 'string',
+                          description: 'ISO 8601 date string',
                           nullable: true
                         },
                         update_user: {
@@ -258,7 +258,7 @@ export function getSurveyAttachments(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Get attachments list', message: 'params', req_params: req.params });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
     const surveyId = Number(req.params.surveyId);
 
     try {

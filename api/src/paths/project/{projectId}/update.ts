@@ -83,7 +83,7 @@ GET.apiDoc = {
                 description: 'Basic project metadata',
                 type: 'object',
                 additionalProperties: false,
-                required: ['project_name', 'project_programs', 'start_date', 'end_date', 'revision_count'],
+                required: ['project_name', 'revision_count'],
                 nullable: true,
                 properties: {
                   project_id: {
@@ -99,23 +99,6 @@ GET.apiDoc = {
                   },
                   project_name: {
                     type: 'string'
-                  },
-                  project_programs: {
-                    type: 'array',
-                    items: {
-                      type: 'number'
-                    }
-                  },
-                  start_date: {
-                    type: 'string',
-                    format: 'date',
-                    description: 'ISO 8601 date string for the project start date'
-                  },
-                  end_date: {
-                    type: 'string',
-                    format: 'date',
-                    description: 'ISO 8601 date string for the project end date',
-                    nullable: true
                   },
                   revision_count: {
                     type: 'number'
@@ -202,7 +185,7 @@ GET.apiDoc = {
  */
 export function getProjectForUpdate(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const projectId = Number(req.params?.projectId);
@@ -318,7 +301,7 @@ export interface IUpdateProject {
  */
 export function updateProject(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const projectId = Number(req.params?.projectId);

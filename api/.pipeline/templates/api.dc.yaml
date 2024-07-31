@@ -49,9 +49,6 @@ parameters:
   - name: BACKBONE_ARTIFACT_INTAKE_PATH
     required: true
     description: The publishing intake endpoint path for BioHub Platform artifact submissions. Example "/api/path/to/artifact/intake".
-  - name: BACKBONE_INTAKE_ENABLED
-    required: true
-    description: Controls whether or not SIMS will submit DwCA datasets to the BioHub Platform Backbone. Set to "true" to enable it, will be disabled by default otherwise.
   - name: BIOHUB_TAXON_TSN_PATH
     required: true
     description: API path for BioHub Platform Backbone taxon TSN endpoint. Example "/api/path/to/taxon/tsn".
@@ -125,6 +122,10 @@ parameters:
     value: 'false'
   - name: DATABASE_RESPONSE_VALIDATION_ENABLED
     value: 'false'
+  # Feature Flags
+  - name: FEATURE_FLAGS
+    description: Used to identify features that should be temporarily disabled/hidden. Must be a comma delimited list of keywords.
+    value: ''
   # GCNotify
   - name: GCNOTIFY_API_SECRET
     description: Secret for gcnotify api key
@@ -231,8 +232,6 @@ objects:
                   value: ${BACKBONE_INTAKE_PATH}
                 - name: BACKBONE_ARTIFACT_INTAKE_PATH
                   value: ${BACKBONE_ARTIFACT_INTAKE_PATH}
-                - name: BACKBONE_INTAKE_ENABLED
-                  value: ${BACKBONE_INTAKE_ENABLED}
                 - name: BIOHUB_TAXON_TSN_PATH
                   value: ${BIOHUB_TAXON_TSN_PATH}
                 - name: BIOHUB_TAXON_PATH
@@ -344,6 +343,8 @@ objects:
                   value: ${GCNOTIFY_EMAIL_URL}
                 - name: GCNOTIFY_SMS_URL
                   value: ${GCNOTIFY_SMS_URL}
+                - name: FEATURE_FLAGS
+                  value: ${FEATURE_FLAGS}
               image: ' '
               imagePullPolicy: Always
               ports:
@@ -464,23 +465,24 @@ objects:
     status:
       ingress: null
 
-  - kind: HorizontalPodAutoscaler
-    apiVersion: autoscaling/v2
-    metadata:
-      annotations: {}
-      labels: {}
-      name: ${NAME}${SUFFIX}
-    spec:
-      minReplicas: ${{REPLICAS}}
-      maxReplicas: ${{REPLICAS_MAX}}
-      scaleTargetRef:
-        apiVersion: apps.openshift.io/v1
-        kind: DeploymentConfig
-        name: ${NAME}${SUFFIX}
-      metrics:
-        - type: Resource
-          resource:
-            name: cpu
-            target:
-              type: Utilization
-              averageUtilization: 80
+  # Disable the HPA for now, as it is preferrable to run an exact number of pods (e.g. min:2, max:2)
+  # - kind: HorizontalPodAutoscaler
+  #   apiVersion: autoscaling/v2
+  #   metadata:
+  #     annotations: {}
+  #     labels: {}
+  #     name: ${NAME}${SUFFIX}
+  #   spec:
+  #     minReplicas: ${{REPLICAS}}
+  #     maxReplicas: ${{REPLICAS_MAX}}
+  #     scaleTargetRef:
+  #       apiVersion: apps.openshift.io/v1
+  #       kind: DeploymentConfig
+  #       name: ${NAME}${SUFFIX}
+  #     metrics:
+  #       - type: Resource
+  #         resource:
+  #           name: cpu
+  #           target:
+  #             type: Utilization
+  #             averageUtilization: 80

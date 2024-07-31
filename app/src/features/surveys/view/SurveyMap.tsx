@@ -5,10 +5,9 @@ import FullScreenScrollingEventHandler from 'components/map/components/FullScree
 import StaticLayers, { IStaticLayer } from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER } from 'constants/spatial';
-import { SurveyContext } from 'contexts/surveyContext';
 import { Feature } from 'geojson';
 import { LatLngBoundsExpression } from 'leaflet';
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import { LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
@@ -69,25 +68,12 @@ interface ISurveyMapProps {
 }
 
 const SurveyMap = (props: ISurveyMapProps) => {
-  const surveyContext = useContext(SurveyContext);
-
-  const studyAreaLocations = useMemo(
-    () => surveyContext.surveyDataLoader.data?.surveyData.locations ?? [],
-    [surveyContext.surveyDataLoader.data]
-  );
-
-  const sampleSites = useMemo(
-    () => surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [],
-    [surveyContext.sampleSiteDataLoader.data]
-  );
-
   const bounds: LatLngBoundsExpression | undefined = useMemo(() => {
     const allMapFeatures: Feature[] = [
       ...props.supplementaryLayers.flatMap((supplementaryLayer) =>
         supplementaryLayer.mapPoints.map((mapPoint) => mapPoint.feature)
       ),
-      ...studyAreaLocations.flatMap((location) => location.geojson),
-      ...sampleSites.map((sampleSite) => sampleSite.geojson)
+      ...props.staticLayers.flatMap((staticLayer) => staticLayer.features.map((feature) => feature.geoJSON))
     ];
 
     if (allMapFeatures.length > 0) {
@@ -95,7 +81,7 @@ const SurveyMap = (props: ISurveyMapProps) => {
     } else {
       return calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]);
     }
-  }, [props.supplementaryLayers, studyAreaLocations, sampleSites]);
+  }, [props.supplementaryLayers, props.staticLayers]);
 
   return (
     <>
