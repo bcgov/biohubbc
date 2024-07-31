@@ -12,7 +12,7 @@ import { getLogger } from '../../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../../utils/request';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/{critterId}/captures/import');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/captures/import');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
