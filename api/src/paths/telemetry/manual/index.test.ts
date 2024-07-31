@@ -4,15 +4,22 @@ import sinon from 'sinon';
 import { createManualTelemetry, GET, getManualTelemetry, PATCH, POST, updateManualTelemetry } from '.';
 import { getRequestHandlerMocks } from '../../../__mocks__/db';
 import { SystemUser } from '../../../repositories/user-repository';
-import { IManualTelemetry } from '../../../services/bctw-service';
-import { BctwTelemetryService } from '../../../services/bctw-service/bctw-telemetry-service';
+import { BctwTelemetryService, IManualTelemetry } from '../../../services/bctw-service/bctw-telemetry-service';
 
 const mockTelemetry = [
   {
-    telemetry_manual_id: 1
+    telemetry_manual_id: 1,
+    date: '2020-01-01',
+    deployment_id: '123',
+    latitude: 50,
+    longitude: -100
   },
   {
-    telemetry_manual_id: 2
+    telemetry_manual_id: 2,
+    date: '2020-01-01',
+    deployment_id: '123',
+    latitude: 50,
+    longitude: -100
   }
 ] as unknown[] as IManualTelemetry[];
 
@@ -71,7 +78,9 @@ describe('manual telemetry endpoints', () => {
       });
     });
     it('should bulk create manual telemetry', async () => {
-      const mockCreateTelemetry = sinon.stub(BctwTelemetryService.prototype, 'createManualTelemetry').resolves(mockTelemetry);
+      const mockCreateTelemetry = sinon
+        .stub(BctwTelemetryService.prototype, 'createManualTelemetry')
+        .resolves(mockTelemetry);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -112,7 +121,9 @@ describe('manual telemetry endpoints', () => {
       });
     });
     it('should bulk update manual telemetry', async () => {
-      const mockCreateTelemetry = sinon.stub(BctwTelemetryService.prototype, 'updateManualTelemetry').resolves(mockTelemetry);
+      const mockCreateTelemetry = sinon
+        .stub(BctwTelemetryService.prototype, 'updateManualTelemetry')
+        .resolves(mockTelemetry);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

@@ -109,7 +109,7 @@ export function deleteSurveyTechniqueRecords(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     const methodTechniqueIds = req.body.methodTechniqueIds as number[];
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

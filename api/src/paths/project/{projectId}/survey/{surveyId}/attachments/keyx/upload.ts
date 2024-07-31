@@ -8,7 +8,7 @@ import { IBctwUser } from '../../../../../../../models/bctw';
 import { fileSchema } from '../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
-import { BctwService } from '../../../../../../../services/bctw-service';
+import { BctwKeyxService } from '../../../../../../../services/bctw-service/bctw-keyx-service';
 import { scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { checkFileForKeyx } from '../../../../../../../utils/media/media-utils';
@@ -167,8 +167,8 @@ export function uploadKeyxMedia(): RequestHandler {
         username: connection.systemUserIdentifier()
       };
 
-      const bctwService = new BctwService(user);
-      const bctwUploadResult = await bctwService.uploadKeyX(rawMediaFile);
+      const bctwKeyxService = new BctwKeyxService(user);
+      const bctwUploadResult = await bctwKeyxService.uploadKeyX(rawMediaFile);
 
       // Upsert attachment
       const attachmentService = new AttachmentService(connection);

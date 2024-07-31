@@ -85,17 +85,19 @@ PATCH.apiDoc = {
 
 export function updateSurveyCritter(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
     const critterbaseCritterId = req.body.update.critter_id;
 
     const critterId = Number(req.params.critterId);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
+
     try {
       await connection.open();
+      
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
 
       if (!critterbaseCritterId) {
         throw new HTTPError(HTTPErrorType.BAD_REQUEST, 400, 'No external critter ID was found.');
@@ -207,21 +209,22 @@ GET.apiDoc = {
 
 export function getCrittersFromSurvey(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
-
     const surveyId = Number(req.params.surveyId);
     const critterId = Number(req.params.critterId);
 
-    const connection = getDBConnection(req['keycloak_token']);
-
-    const surveyService = new SurveyCritterService(connection);
-    const critterbaseService = new CritterbaseService(user);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
+
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
+
+      const surveyService = new SurveyCritterService(connection);
+      const critterbaseService = new CritterbaseService(user);
+
       const surveyCritter = await surveyService.getCritterById(surveyId, critterId);
 
       if (!surveyCritter) {
@@ -229,8 +232,6 @@ export function getCrittersFromSurvey(): RequestHandler {
       }
 
       const critterbaseCritter = await critterbaseService.getCritter(surveyCritter.critterbase_critter_id);
-
-      console.log(critterbaseCritter)
 
       if (!critterbaseCritter || critterbaseCritter.length === 0) {
         return res.status(404).json({ error: `Critter ${surveyCritter.critterbase_critter_id} not found.` });

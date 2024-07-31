@@ -103,7 +103,7 @@ DELETE.apiDoc = {
  */
 export function deleteTechnique(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -239,7 +239,7 @@ PUT.apiDoc = {
  */
 export function updateTechnique(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -383,7 +383,7 @@ GET.apiDoc = {
  */
 export function getTechniqueById(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

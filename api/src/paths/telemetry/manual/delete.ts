@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { manual_telemetry_responses } from '.';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { getBctwUser } from '../../../services/bctw-service';
+import { getBctwUser } from '../../../services/bctw-service/bctw-service';
 import { BctwTelemetryService } from '../../../services/bctw-service/bctw-telemetry-service';
 import { getLogger } from '../../../utils/logger';
 const defaultLog = getLogger('paths/telemetry/manual/delete');

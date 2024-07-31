@@ -189,4 +189,23 @@ export class SurveyCritterService extends DBService {
   async removeCrittersFromSurvey(surveyId: number, critterIds: number[]): Promise<void> {
     return this.critterRepository.removeCrittersFromSurvey(surveyId, critterIds);
   }
+
+    /**
+   * Get unique Set of critter aliases (animal id / nickname) of a survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ICritter[]>}
+   * @memberof SurveyCritterService
+   */
+  async getUniqueSurveyCritterAliases(surveyId: number): Promise<Set<string>> {
+    const surveyCritters = await this.getCrittersInSurvey(surveyId);
+
+    const critterbaseCritterIds = surveyCritters.map((critter) => critter.critterbase_critter_id);
+
+    const critters = await this.critterbaseService.getMultipleCrittersByIds(critterbaseCritterIds);
+
+    // Return a unique Set of non-null critterbase aliases of a Survey
+    // Note: The type from filtered critters should be Set<string> not Set<string | null>
+    return new Set(critters.filter(Boolean).map((critter) => critter.animal_id)) as Set<string>;
+  }
 }

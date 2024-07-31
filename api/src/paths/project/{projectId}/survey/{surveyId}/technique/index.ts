@@ -4,17 +4,17 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
 import {
-  paginationRequestQueryParamSchema,
-  paginationResponseSchema
+    paginationRequestQueryParamSchema,
+    paginationResponseSchema
 } from '../../../../../../openapi/schemas/pagination';
 import { techniqueCreateSchema, techniqueViewSchema } from '../../../../../../openapi/schemas/technique';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { TechniqueService } from '../../../../../../services/technique-service';
 import { getLogger } from '../../../../../../utils/logger';
 import {
-  ensureCompletePaginationOptions,
-  makePaginationOptionsFromRequest,
-  makePaginationResponse
+    ensureCompletePaginationOptions,
+    makePaginationOptionsFromRequest,
+    makePaginationResponse
 } from '../../../../../../utils/pagination';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/technique/index');
@@ -112,7 +112,7 @@ POST.apiDoc = {
  */
 export function createTechniques(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -240,7 +240,7 @@ export function getTechniques(): RequestHandler {
       throw new HTTP400('Missing required param `surveyId`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

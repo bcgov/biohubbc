@@ -73,10 +73,7 @@ GET.apiDoc = {
 
 export function getManualTelemetry(): RequestHandler {
   return async (req, res) => {
-    const user: IBctwUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
+    const user: IBctwUser = getBctwUser(req);
 
     const bctwService = new BctwTelemetryService(user);
     try {

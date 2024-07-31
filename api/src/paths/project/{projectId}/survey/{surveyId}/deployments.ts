@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
-import { BctwService } from '../../../../../services/bctw-service';
+import { BctwDeploymentService } from '../../../../../services/bctw-service/bctw-deployment-service';
 import { ICritterbaseUser } from '../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../utils/logger';
@@ -98,13 +98,13 @@ export function getDeploymentsInSurvey(): RequestHandler {
       };
 
       const surveyCritterService = new SurveyCritterService(connection);
-      const bctwService = new BctwService(user);
+      const bctwDeploymentService = new BctwDeploymentService(user);
 
       const critter_ids = (await surveyCritterService.getCrittersInSurvey(surveyId)).map(
         (critter) => critter.critterbase_critter_id
       );
 
-      const results = critter_ids.length ? await bctwService.getDeploymentsByCritterId(critter_ids) : [];
+      const results = critter_ids.length ? await bctwDeploymentService.getDeploymentsByCritterId(critter_ids) : [];
       return res.status(200).json(results);
     } catch (error) {
       defaultLog.error({ label: 'getDeploymentsInSurvey', message: 'error', error });

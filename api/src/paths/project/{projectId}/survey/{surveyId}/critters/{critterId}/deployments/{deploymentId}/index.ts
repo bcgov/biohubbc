@@ -154,19 +154,10 @@ PATCH.apiDoc = {
 
 export function updateDeployment(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
-
     const critterId = Number(req.params.critterId);
     const deploymentId = Number(req.params.deploymentId);
 
-    const connection = getDBConnection(req['keycloak_token']);
-
-    const bctwDeploymentService = new BctwDeploymentService(user);
-    const deploymentService = new DeploymentService(connection);
-    const critterbaseService = new CritterbaseService(user);
+    const connection = getDBConnection(req.keycloak_token);
 
     const {
       critterbase_start_capture_id,
@@ -179,6 +170,15 @@ export function updateDeployment(): RequestHandler {
 
     try {
       await connection.open();
+
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
+
+      const bctwDeploymentService = new BctwDeploymentService(user);
+      const deploymentService = new DeploymentService(connection);
+      const critterbaseService = new CritterbaseService(user);
 
       // Update the deployment in SIMS
       await deploymentService.updateDeployment(deploymentId, {

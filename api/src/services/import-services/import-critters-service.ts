@@ -158,7 +158,7 @@ export class ImportCrittersService extends DBService {
     const critterId = row.critter_id;
 
     // Get portion of row object that is not a critter
-    const partialRow = omit(row, keys(this._getCritterFromRow(row)));
+    const partialRow: { [key: string]: any } = omit(row, keys(this._getCritterFromRow(row)));
 
     // Keys of collection units
     const collectionUnitKeys = keys(partialRow);

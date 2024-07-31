@@ -1,10 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { getBctwUser } from '../../../services/bctw-service';
 import { BctwDeploymentService } from '../../../services/bctw-service/bctw-deployment-service';
 import { BctwDeviceService } from '../../../services/bctw-service/bctw-device-service';
 import { BctwKeyxService } from '../../../services/bctw-service/bctw-keyx-service';
+import { getBctwUser } from '../../../services/bctw-service/bctw-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/telemetry/device/{deviceId}');
