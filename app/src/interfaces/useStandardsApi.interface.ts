@@ -34,5 +34,29 @@ export interface IEnvironmentStandards {
       description: string;
     };
   }[];
-  quantitative: { name: string; description: string }[];
+  quantitative: { name: string; description: string; units: string }[];
 }
+
+export interface IMethodStandard {
+  method_lookup_id: number;
+  name: string;
+  description: string;
+  attributes: {
+    qualitative: {
+      name: string;
+      description: string;
+      options: {
+        name: string;
+        description: string;
+      }[];
+    }[];
+    quantitative: { name: string; description: string }[];
+  };
+}
+
+// export interface IMethodStandards {
+//   methods: Array<{
+//     name: string;
+//     description: string;
+//   }>;
+// }

@@ -1,12 +1,8 @@
 import Box from '@mui/material/Box';
 import { MethodStandardsResults } from './MethodStandardsResults';
-
-export interface IMethodStandardResult {
-  method_type_id: number;
-  label: string;
-  description: string;
-  attributes: { attribute_id: number; label: string; description: string }[];
-}
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
+import { useEffect } from 'react';
 
 /**
  *
@@ -14,42 +10,20 @@ export interface IMethodStandardResult {
  *
  * @returns
  */
+
+
 export const MethodStandards = () => {
-  // TODO: Fetch information about methods, like below
-  //
-  // const biohubApi = useBiohubApi()
-  // const methodsDataLoader = useDataLoader(() => ...)
-  // useEffect(() => {methodsDataLoader.load()})
-  const data: IMethodStandardResult[] = [
-    {
-      method_type_id: 1,
-      label: 'camera trap',
-      description: 'camera trap is a camera',
-      attributes: [
-        {
-          attribute_id: 1,
-          label: 'height above ground',
-          description: 'The distance the camera is placed above the ground'
-        }
-      ]
-    },
-    {
-      method_type_id: 2,
-      label: 'dip net',
-      description: 'dip net is a net',
-      attributes: [
-        {
-          attribute_id: 2,
-          label: 'mesh size',
-          description: 'size of the mesh'
-        }
-      ]
-    }
-  ];
+  const biohubApi = useBiohubApi();
+
+  const methodDataLoader = useDataLoader(() => biohubApi.standards.getMethodStandards());
+
+  useEffect(() => {
+    methodDataLoader.load();
+  }, [methodDataLoader]);
 
   return (
     <Box sx={{ mt: 2 }} flex="1 1 auto">
-      <MethodStandardsResults data={data} />
+      {methodDataLoader.data && <MethodStandardsResults data={methodDataLoader.data} />}
     </Box>
   );
 };

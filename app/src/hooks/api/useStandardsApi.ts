@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IEnvironmentStandards, ISpeciesStandards } from 'interfaces/useStandardsApi.interface';
+import { IEnvironmentStandards, ISpeciesStandards, IMethodStandard } from 'interfaces/useStandardsApi.interface';
 
 /**
  * Returns information about what data can be uploaded for a given species,
@@ -21,20 +21,32 @@ const useStandardsApi = (axios: AxiosInstance) => {
   };
 
     /**
-     * Fetch environment standards
+     * Fetch method standards
      *
-     * @return {*}  {Promise<IGetEnvironmentStandardsResponse>}
+     * @return {*}  {Promise<IGetMethodsStandardsResponse>}
      */
-    const getEnvironmentStandards = async (): Promise<IEnvironmentStandards> => {
-      const { data } = await axios.get(`/api/standards/environment`);
+    const getMethodStandards = async (): Promise<IMethodStandard[]> => {
+      const { data } = await axios.get(`/api/standards/methods`);
   
       return data;
     };
   
+        /**
+     * Fetch environment standards
+     *
+     * @return {*}  {Promise<IGetEnvironmentStandardsResponse>}
+     */
+        const getEnvironmentStandards = async (): Promise<IEnvironmentStandards> => {
+          const { data } = await axios.get(`/api/standards/environment`);
+      
+          return data;
+        };
+      
 
   return {
     getSpeciesStandards,
-    getEnvironmentStandards
+    getEnvironmentStandards,
+    getMethodStandards
   };
 };
 

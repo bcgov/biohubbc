@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { EnvironmentStandards, ISpeciesStandards } from '../models/standards-view';
+import { EnvironmentStandards, ISpeciesStandards, MethodStandard } from '../models/standards-view';
 import { StandardsRepository } from '../repositories/standards-repository';
 import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
@@ -61,4 +61,17 @@ export class StandardsService extends DBService {
 
     return response;
   }
-}
+
+
+// THE BELOW IS NOT IMPORTING MethodStandards correctly. STANDARDS VIEW INTERFACE FOR METHODS IS PROBABLY WRONG
+
+  /**
+   * Gets METHOD standards
+   * @return {MethodStandards}
+   * @memberof standardsService
+   */
+  async getMethodStandards(): Promise<MethodStandard[]> {
+    const response = await this.standardsRepository.getMethodStandards();
+    return response;
+
+}}
