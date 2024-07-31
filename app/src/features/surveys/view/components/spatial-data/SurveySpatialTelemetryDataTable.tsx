@@ -1,8 +1,10 @@
+import { mdiArrowTopRight } from '@mdi/js';
 import grey from '@mui/material/colors/grey';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef, GridOverlay } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
 import { useContext, useMemo } from 'react';
@@ -113,6 +115,15 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
               paginationModel: { page: 1, pageSize: 5 }
             }
           }}
+          noRowsOverlay={
+            <GridOverlay sx={{ position: 'relative' }}>
+              <NoDataOverlay
+                title="Add Telemetry Deployments"
+                subtitle="Add deployments after animals to manage animal movement data"
+                icon={mdiArrowTopRight}
+              />
+            </GridOverlay>
+          }
           pageSizeOptions={[5]}
           rowSelection={false}
           checkboxSelection={false}
@@ -123,6 +134,18 @@ const SurveySpatialTelemetryDataTable = (props: ISurveySpatialTelemetryDataTable
           disableVirtualization
           sortingOrder={['asc', 'desc']}
           data-testid="survey-spatial-telemetry-data-table"
+          sx={{
+            '& .MuiDataGrid-virtualScroller': {
+              height: '250px',
+              overflowY: 'auto !important'
+            },
+            '& .MuiDataGrid-overlay': {
+              height: '250px',
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center'
+            }
+          }}
         />
       )}
     </>

@@ -113,8 +113,8 @@ export class SampleMethodRepository extends BaseRepository {
       WHERE
         method_technique_id = ANY (${techniqueIds});
     `;
-    const response = await this.connection.sql(sql) //, z.object({ count: z.number() }));
-    console.log(response.rows)
+    const response = await this.connection.sql(sql, z.object({ count: z.number() }));
+   
     return response.rows[0].count;
   }
 

@@ -1,11 +1,13 @@
 import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import { blueGrey } from '@mui/material/colors';
 import { GridColDef, GridOverlay } from '@mui/x-data-grid';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import { ISamplingSiteRowData } from 'features/surveys/sampling-information/sites/manage/table/site/SamplingSiteManageSiteTable';
 import { IGetSampleSiteResponse } from 'interfaces/useSamplingSiteApi.interface';
-import { IGetTechniqueResponse } from 'interfaces/useTechniqueApi.interface';
+import { getSamplingSiteType } from 'utils/spatial-utils';
 
 export interface ISurveySitesTableProps {
   sites?: IGetSampleSiteResponse;
@@ -14,43 +16,64 @@ export interface ISurveySitesTableProps {
 export const SurveySitesTable = (props: ISurveySitesTableProps) => {
   const { sites } = props;
 
-  const rows =
+  const rows: ISamplingSiteRowData[] =
     sites?.sampleSites.map((site) => ({
       id: site.survey_sample_site_id,
       name: site.name,
-      description: site.description
+      description: site.description,
+      geojson: site.geojson,
+      blocks: site.blocks.map((block) => block.name),
+      stratums: site.stratums.map((stratum) => stratum.name)
     })) || [];
 
-  const columns: GridColDef<IGetTechniqueResponse>[] = [
+  const columns: GridColDef<ISamplingSiteRowData>[] = [
     {
       field: 'name',
       headerName: 'Name',
-      flex: 0.3
+      flex: 1
+    },
+    {
+      field: 'geometry_type',
+      headerName: 'Geometry',
+      flex: 1,
+      renderCell: (params) => (
+        <Box>
+          <ColouredRectangleChip label={getSamplingSiteType(params.row.geojson) ?? 'Unknown'} colour={blueGrey} />
+        </Box>
+      )
     },
     {
       field: 'description',
       headerName: 'Description',
+      flex: 1
+    },
+    {
+      field: 'blocks',
+      headerName: 'Blocks',
       flex: 1,
-      renderCell: (params) => {
-        return (
-          <Box alignItems="flex-start">
-            <Typography
-              color="textSecondary"
-              variant="body2"
-              flex="0.4"
-              sx={{
-                whiteSpace: 'normal',
-                wordBreak: 'break-word',
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}>
-              {params.row.description}
-            </Typography>
-          </Box>
-        );
-      }
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+          {params.row.blocks.map((block, index) => (
+            <Box key={index} mr={1} mb={1}>
+              <ColouredRectangleChip label={block} colour={blueGrey} />
+            </Box>
+          ))}
+        </Box>
+      )
+    },
+    {
+      field: 'stratums',
+      headerName: 'Strata',
+      flex: 1,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+          {params.row.stratums.map((stratum, index) => (
+            <Box key={index} mr={1} mb={1}>
+              <ColouredRectangleChip label={stratum} colour={blueGrey} />
+            </Box>
+          ))}
+        </Box>
+      )
     }
   ];
 
@@ -68,7 +91,7 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
         <GridOverlay>
           <NoDataOverlay
             title="Add Sampling Sites"
-            subtitle="Sampling Sites show where techniques were implemented"
+            subtitle="Add sampling sites to show where you implemented a technique"
             icon={mdiArrowTopRight}
           />
         </GridOverlay>

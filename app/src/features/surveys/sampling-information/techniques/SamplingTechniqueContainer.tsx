@@ -1,5 +1,6 @@
 import { mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -124,7 +125,7 @@ export const SamplingTechniqueContainer = () => {
         sx={{
           flex: '0 0 auto',
           pr: 3,
-          pl: 2
+          pl: 3
         }}>
         <Typography variant="h3" component="h2" flexGrow={1}>
           Techniques &zwnj;
@@ -159,11 +160,13 @@ export const SamplingTechniqueContainer = () => {
         isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
         fallback={<SkeletonTable />}
         delay={200}>
-        <SamplingTechniqueTable
-          techniques={techniques}
-          bulkActionTechniques={bulkActionTechniques}
-          setBulkActionTechniques={setBulkActionTechniques}
-        />
+        <Box p={2}>
+          <SamplingTechniqueTable
+            techniques={techniques}
+            bulkActionTechniques={bulkActionTechniques}
+            setBulkActionTechniques={setBulkActionTechniques}
+          />
+        </Box>
       </LoadingGuard>
     </Stack>
   );

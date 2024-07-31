@@ -1,3 +1,5 @@
+import { mdiCalendarRange, mdiMapMarker } from '@mdi/js';
+import { Icon } from '@mdi/react';
 import Button from '@mui/material/Button';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -6,13 +8,12 @@ import { SetStateAction } from 'react';
 
 export enum SamplingSiteManageTableView {
   SITES = 'SITES',
-  TECHNIQUES = 'TECHNIQUES',
   PERIODS = 'PERIODS'
 }
 
 interface ISamplingSiteManageTableView {
   value: SamplingSiteManageTableView;
-  label: string;
+  icon: React.ReactNode;
 }
 
 export interface ISamplingSiteCount {
@@ -30,9 +31,8 @@ export const SamplingSiteManageTableToolbar = (props: ISamplingSiteManageTableTo
   const { activeView, setActiveView, counts } = props;
 
   const views: ISamplingSiteManageTableView[] = [
-    { value: SamplingSiteManageTableView.SITES, label: 'Sites' },
-    { value: SamplingSiteManageTableView.TECHNIQUES, label: 'Techniques' },
-    { value: SamplingSiteManageTableView.PERIODS, label: 'Periods' }
+    { value: SamplingSiteManageTableView.SITES, icon: <Icon path={mdiMapMarker} size={0.75} /> },
+    { value: SamplingSiteManageTableView.PERIODS, icon: <Icon path={mdiCalendarRange} size={0.75} /> }
   ];
 
   const updateDatasetView = (_: React.MouseEvent<HTMLElement>, view: SamplingSiteManageTableView) => {
@@ -61,8 +61,8 @@ export const SamplingSiteManageTableToolbar = (props: ISamplingSiteManageTableTo
           }
         }}>
         {views.map((view) => (
-          <ToggleButton key={view.value} component={Button} color="primary" value={view.value}>
-            {view.label}&nbsp;({counts.find((count) => count.type === view.value)?.value ?? 0})
+          <ToggleButton key={view.value} component={Button} color="primary" value={view.value} startIcon={view.icon}>
+            {view.value}&nbsp;({counts.find((count) => count.type === view.value)?.value ?? 0})
           </ToggleButton>
         ))}
       </ToggleButtonGroup>

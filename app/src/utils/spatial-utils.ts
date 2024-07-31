@@ -1,6 +1,12 @@
 import { Feature, Point } from 'geojson';
 import { isDefined } from 'utils/Utils';
 
+enum GEOMETRY_TYPE {
+  POINT = 'POINT',
+  TRANSECT = 'TRANSECT',
+  AREA = 'AREA'
+}
+
 /**
  * Get a point feature from the given latitude and longitude.
  *
@@ -66,4 +72,22 @@ export const getCoordinatesFromGeoJson = (feature: Feature<Point>): { latitude: 
  */
 export const isGeoJsonPointFeature = (feature?: Feature | any): feature is Feature<Point> => {
   return (feature as Feature)?.geometry.type === 'Point';
+};
+
+export const getSamplingSiteType = (feature: Feature): GEOMETRY_TYPE | null => {
+  const geometry = feature.geometry.type;
+
+  if (['MultiLineString', 'LineString'].includes(geometry)) {
+    return 'Transect' as GEOMETRY_TYPE;
+  }
+
+  if (['Point', 'MultiPoint'].includes(geometry)) {
+    return 'Point' as GEOMETRY_TYPE;
+  }
+
+  if (['Polygon', 'MultiPolygon'].includes(geometry)) {
+    return 'Area' as GEOMETRY_TYPE;
+  }
+
+  return null;
 };

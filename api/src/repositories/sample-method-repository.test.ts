@@ -46,8 +46,9 @@ describe('SampleMethodRepository', () => {
 
   describe('getSampleMethodsCountForTechniqueId', () => {
     it('should return a non-zero count', async () => {
-      const mockRows: any[] = [{}, {}];
-      const mockResponse = { rows: mockRows, rowCount: 2 } as any as Promise<QueryResult<any>>;
+      const count = 2;
+      const mockRows: any[] = [{ count }];
+      const mockResponse = { rows: mockRows, rowCount: 1 } as any as Promise<QueryResult<any>>;
       const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
       const techniqueIds = [1, 2];
@@ -55,20 +56,7 @@ describe('SampleMethodRepository', () => {
       const response = await repo.getSampleMethodsCountForTechniqueIds(techniqueIds);
 
       expect(dbConnectionObj.sql).to.have.been.calledOnce;
-      expect(response).to.eql(mockRows);
-    });
-
-    it('should return empty rows', async () => {
-      const mockRows: any[] = [];
-      const mockResponse = { rows: mockRows, rowCount: 0 } as any as Promise<QueryResult<any>>;
-      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
-
-      const techniqueIds = [3, 4];
-      const repo = new SampleMethodRepository(dbConnectionObj);
-      const response = await repo.getSampleMethodsCountForTechniqueIds(techniqueIds);
-
-      expect(dbConnectionObj.sql).to.have.been.calledOnce;
-      expect(response).to.eql(mockRows);
+      expect(response).to.eql(count);
     });
   });
 

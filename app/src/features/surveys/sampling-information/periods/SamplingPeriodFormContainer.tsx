@@ -197,20 +197,20 @@ export const SamplingPeriodFormContainer = (props: ISamplingPeriodFormContainerP
                 background: grey[100],
                 border: `1px solid ${grey[400]}`,
                 '& .MuiCardHeader-root': {
-                  py: 1
+                  py: 2
                 }
               }}>
               <CardHeader
                 title={
                   <Stack direction="row" gap={1}>
-                    <Stack>
+                    <Stack gap={0.5}>
                       {dayjs(item.start_date).format(DATE_FORMAT.MediumDateFormat)}&nbsp;
                       <Typography component="span" color="textSecondary">
                         {item.start_time}
                       </Typography>
                     </Stack>
                     &ndash;
-                    <Stack>
+                    <Stack gap={0.5}>
                       {dayjs(item.end_date).format(DATE_FORMAT.MediumDateFormat)}&nbsp;
                       <Typography component="span" color="textSecondary">
                         {item.end_time}

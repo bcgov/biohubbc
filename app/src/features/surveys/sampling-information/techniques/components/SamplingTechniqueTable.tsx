@@ -16,16 +16,18 @@ import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DeleteTechniqueI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { IGetTechniqueResponse } from 'interfaces/useTechniqueApi.interface';
+import { IGetTechniqueResponse, TechniqueAttractant } from 'interfaces/useTechniqueApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getCodesName } from 'utils/Utils';
 
-interface ITechniqueRowData {
+export interface ITechniqueRowData {
   id: number;
-  method_lookup: string;
+  method_lookup_id: number;
   name: string;
   description: string | null;
+  attractants: TechniqueAttractant[];
+  distance_threshold: number | null;
 }
 
 interface ISamplingTechniqueTable {
@@ -109,10 +111,11 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
   const rows: ITechniqueRowData[] =
     techniques.map((technique) => ({
       id: technique.method_technique_id,
-      method_lookup:
-        getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id) ?? '',
+      method_lookup_id: technique.method_lookup_id,
       name: technique.name,
-      description: technique.description
+      description: technique.description,
+      attractants: technique.attractants,
+      distance_threshold: technique.distance_threshold
     })) || [];
 
   const columns: GridColDef<T>[] = [
@@ -123,7 +126,10 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
       headerName: 'Method',
       renderCell: (params) => (
         <Box>
-          <ColouredRectangleChip label={params.row.method_lookup} colour={blueGrey} />
+          <ColouredRectangleChip
+            label={getCodesName(codesContext.codesDataLoader.data, 'sample_methods', params.row.method_lookup_id) ?? ''}
+            colour={blueGrey}
+          />
         </Box>
       )
     },
@@ -153,10 +159,35 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
       }
     },
     {
+      field: 'attractants',
+      flex: 0.5,
+      headerName: 'Attractants',
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+          {params.row.attractants.map((attractant, index) => (
+            <Box key={index} mr={1} mb={1}>
+              <ColouredRectangleChip
+                label={
+                  getCodesName(codesContext.codesDataLoader.data, 'attractants', attractant.attractant_lookup_id) ?? ''
+                }
+                colour={blueGrey}
+              />
+            </Box>
+          ))}
+        </Box>
+      )
+    },
+    {
+      field: 'distance_threshold',
+      headerName: 'Distance threshold',
+      flex: 0.3,
+      renderCell: (params) => (params.row.distance_threshold ? <>{params.row.distance_threshold}&nbsp;m</> : <></>)
+    },
+    {
       field: 'actions',
       type: 'actions',
       sortable: false,
-      flex: 1,
+      flex: 0.3,
       align: 'right',
       renderCell: (params) => {
         return (
@@ -258,10 +289,6 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
             },
             '& .MuiDataGrid-columnHeaderDraggableContainer': {
               minWidth: '50px'
-            },
-            // '& .MuiDataGrid-cell--textLeft': { justifyContent: 'flex-end' }
-            '& .MuiDataGrid-cell--textLeft:last-child': {
-              // justifyContent: 'flex-end !important'
             }
           }}
         />

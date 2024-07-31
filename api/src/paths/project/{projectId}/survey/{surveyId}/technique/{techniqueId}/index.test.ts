@@ -44,14 +44,14 @@ describe('deleteTechnique', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(getSampleMethodsCountForTechniqueIdsStub).to.have.been.calledOnceWith(2, [3]);
+      expect(getSampleMethodsCountForTechniqueIdsStub).to.have.been.calledOnceWith([3]);
       expect(deleteTechniqueStub).to.have.been.calledOnceWith(2, 3);
 
       expect((actualError as HTTPError).message).to.equal('a test error');
     }
   });
 
-  it('throws an error if any technique records are associated to an observation record', async () => {
+  it('throws an error if any technique records are associated to a sampling site', async () => {
     const mockDBConnection = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
@@ -107,7 +107,7 @@ describe('deleteTechnique', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(getSampleMethodsCountForTechniqueIdsStub).to.have.been.calledOnceWith(2, [3]);
+    expect(getSampleMethodsCountForTechniqueIdsStub).to.have.been.calledOnceWith([3]);
     expect(deleteTechniqueStub).to.have.been.calledOnceWith(2, 3);
 
     expect(mockRes.statusValue).to.eql(200);

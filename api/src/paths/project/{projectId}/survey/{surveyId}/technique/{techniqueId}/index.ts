@@ -113,8 +113,6 @@ export function deleteTechnique(): RequestHandler {
 
       const sampleMethodService = new SampleMethodService(connection);
 
-      console.log(methodTechniqueId)
-
       const samplingMethodsCount = await sampleMethodService.getSampleMethodsCountForTechniqueIds([methodTechniqueId]);
 
       if (samplingMethodsCount > 0) {

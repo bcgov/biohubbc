@@ -105,47 +105,13 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-site/delete`, { surveySampleSiteIds });
   };
 
-  /**
-   * Delete Sample Methods by Ids
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number[]} surveySampleMethodIds
-   * @return {*}  {Promise<void>}
-   */
-  const deleteSampleMethods = async (
-    projectId: number,
-    surveyId: number,
-    surveySampleMethodIds: number[]
-  ): Promise<void> => {
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-site/${surveySampleSiteId}/delete`, { surveySampleMethodIds });
-  };
-
-  /**
-   * Delete Sample Periods by Ids
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number[]} surveySamplePeriodIds
-   * @return {*}  {Promise<void>}
-   */
-  const deleteSamplePeriods = async (
-    projectId: number,
-    surveyId: number,
-    surveySamplePeriodIds: number[]
-  ): Promise<void> => {
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-site/${surveySampleSiteId}/sample-periods/delete`, { surveySamplePeriodIds });
-  };
-
   return {
     createSamplingSites,
     getSampleSites,
     getSampleSiteById,
     editSampleSite,
     deleteSampleSite,
-    deleteSampleSites,
-    deleteSampleMethods,
-    deleteSamplePeriods
+    deleteSampleSites
   };
 };
 
