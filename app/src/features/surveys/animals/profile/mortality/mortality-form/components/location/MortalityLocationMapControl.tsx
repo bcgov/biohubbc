@@ -29,6 +29,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { getCoordinatesFromGeoJson, isGeoJsonPointFeature, isValidCoordinates } from 'utils/spatial-utils';
+import { v4 as uuid } from 'uuid';
 
 export interface IMortalityLocationMapControlProps {
   name: string;
@@ -277,8 +278,8 @@ export const MortalityLocationMapControl = <FormikValuesType extends ICreateMort
                       features: get(values, name)
                         ? [
                             {
-                              id: Math.random(),
-                              key: `mortality-location-${Math.random()}`,
+                              id: uuid(),
+                              key: `mortality-location-${uuid()}`,
                               geoJSON: get(values, name)
                             }
                           ]

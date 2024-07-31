@@ -29,6 +29,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { getCoordinatesFromGeoJson, isGeoJsonPointFeature, isValidCoordinates } from 'utils/spatial-utils';
+import { v4 as uuid } from 'uuid';
 
 export interface ICaptureLocationMapControlProps {
   name: string;
@@ -280,8 +281,8 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
                       features: get(values, name)
                         ? [
                             {
-                              id: Math.random(),
-                              key: `capture-location-${Math.random()}`,
+                              id: uuid(),
+                              key: `capture-location-${uuid()}`,
                               geoJSON: get(values, name)
                             }
                           ]
