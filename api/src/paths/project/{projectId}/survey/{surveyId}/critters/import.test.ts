@@ -51,7 +51,6 @@ describe('importCsv', () => {
       rollback: sinon.stub()
     });
     const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-    //const mockImportCsv = sinon.stub(ImportCrittersService.prototype, 'import').resolves([1, 2]);
 
     const mockFileScan = sinon.stub(fileUtils, 'scanFileForVirus').resolves(false);
 
@@ -80,7 +79,6 @@ describe('importCsv', () => {
     expect(mockFileScan).to.have.been.calledOnceWithExactly(mockFile);
 
     expect(mockGetDBConnection.calledOnce).to.be.true;
-    //expect(mockImportCsv).to.not.have.been.called;
     expect(mockRes.json).to.not.have.been.called;
 
     expect(mockDBConnection.rollback).to.have.been.called;
