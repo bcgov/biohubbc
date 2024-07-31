@@ -1,6 +1,7 @@
 import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
+import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
 import { generateCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
 import { ICapture, ILocation } from '../../critterbase-service';
@@ -28,7 +29,7 @@ export class ImportCapturesService extends DBService implements CSVImportService
    * enforcing uppercase object keys.
    */
   columnValidator = {
-    ALIAS: { type: 'string' },
+    ALIAS: { type: 'string', aliases: CSV_COLUMN_ALIASES.ALIAS },
     CAPTURE_DATE: { type: 'date' },
     CAPTURE_TIME: { type: 'string', optional: true },
     CAPTURE_LATITUDE: { type: 'number' },
