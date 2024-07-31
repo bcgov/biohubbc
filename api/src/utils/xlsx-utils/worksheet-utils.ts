@@ -7,7 +7,11 @@ import { MediaFile } from '../media/media-file';
 import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
 import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
-import { getColumnAliasesFromValidator, getColumnNamesFromValidator } from './column-validator-utils';
+import {
+  generateCellGetterFromColumnValidator,
+  getColumnAliasesFromValidator,
+  getColumnNamesFromValidator
+} from './column-validator-utils';
 
 dayjs.extend(customParseFormat);
 
@@ -234,12 +238,13 @@ export const validateWorksheetColumnTypes = (
   worksheet: xlsx.WorkSheet,
   columnValidator: IXLSXCSVValidator
 ): boolean => {
-  const worksheetRows = getWorksheetRows(worksheet);
+  const worksheetRows = getWorksheetRowObjects(worksheet);
   const columnNames = getColumnNamesFromValidator(columnValidator);
+  const getCellValue = generateCellGetterFromColumnValidator(columnValidator);
 
   return worksheetRows.every((row) => {
     return columnNames.every((columnName, index) => {
-      const value = row[index];
+      const value = getCellValue(row, columnName.toUpperCase() as Uppercase<string>);
       const type = typeof value;
       const columnSpec: IXLSXCSVColumn = columnValidator[columnName];
 

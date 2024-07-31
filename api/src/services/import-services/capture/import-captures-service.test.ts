@@ -11,8 +11,8 @@ describe('import-captures-service', () => {
   describe('importCSV capture worksheet', () => {
     it('should validate successfully', async () => {
       const worksheet = {
-        A1: { t: 's', v: 'ALIAS' },
-        B1: { t: 's', v: 'CAPTURE_DATE' },
+        A1: { t: 's', v: 'CAPTURE_DATE' },
+        B1: { t: 's', v: 'NICKNAME' },
         C1: { t: 's', v: 'CAPTURE_TIME' },
         D1: { t: 's', v: 'CAPTURE_LATITUDE' },
         E1: { t: 's', v: 'CAPTURE_LONGITUDE' },
@@ -22,8 +22,8 @@ describe('import-captures-service', () => {
         I1: { t: 's', v: 'RELEASE_LONGITUDE' },
         J1: { t: 's', v: 'RELEASE_COMMENT' },
         K1: { t: 's', v: 'CAPTURE_COMMENT' },
-        A2: { t: 's', v: 'Carl' },
-        B2: { z: 'm/d/yy', t: 'd', v: '2024-10-10T07:00:00.000Z', w: '10/10/24' },
+        A2: { z: 'm/d/yy', t: 'd', v: '2024-10-10T07:00:00.000Z', w: '10/10/24' },
+        B2: { t: 's', v: 'Carl' },
         C2: { t: 's', v: '10:10:10' },
         D2: { t: 'n', w: '90', v: 90 },
         E2: { t: 'n', w: '100', v: 100 },
@@ -33,8 +33,8 @@ describe('import-captures-service', () => {
         I2: { t: 'n', w: '90', v: 90 },
         J2: { t: 's', v: 'release' },
         K2: { t: 's', v: 'capture' },
-        A3: { t: 's', v: 'Carlita' },
-        B3: { z: 'm/d/yy', t: 'd', v: '2024-10-10T07:00:00.000Z', w: '10/10/24' },
+        A3: { z: 'm/d/yy', t: 'd', v: '2024-10-10T07:00:00.000Z', w: '10/10/24' },
+        B3: { t: 's', v: 'Carlita' },
         D3: { t: 'n', w: '90', v: 90 },
         E3: { t: 'n', w: '100', v: 100 },
         '!ref': 'A1:K3'
