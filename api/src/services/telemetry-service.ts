@@ -6,6 +6,7 @@ import { SurveyCritterRecord } from '../repositories/survey-critter-repository';
 import { Deployment, TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { parseS3File } from '../utils/media/media-utils';
+import { CSV_COLUMN_ALIASES } from '../utils/xlsx-utils/column-aliases';
 import {
   constructXLSXWorkbook,
   getDefaultWorksheet,
@@ -29,12 +30,11 @@ export type FindTelemetryResponse = { telemetry_id: string } & Pick<
   Pick<ICritter, 'animal_id'>;
 
 const telemetryCSVColumnValidator: IXLSXCSVValidator = {
-  columnNames: ['DEVICE_ID', 'DATE', 'TIME', 'LATITUDE', 'LONGITUDE'],
-  columnTypes: ['number', 'date', 'string', 'number', 'number'],
-  columnAliases: {
-    LATITUDE: ['LAT'],
-    LONGITUDE: ['LON', 'LONG', 'LNG']
-  }
+  DEVICE_ID: { type: 'number' },
+  DATE: { type: 'date' },
+  TIME: { type: 'string' },
+  LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE },
+  LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE }
 };
 
 export class TelemetryService extends DBService {

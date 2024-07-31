@@ -43,14 +43,14 @@ export interface ICapture {
   capture_id?: string;
   critter_id: string;
   capture_method_id?: string | null;
-  capture_location_id?: string;
-  release_location_id?: string;
+  capture_location_id: string;
+  release_location_id?: string | null;
   capture_date: string;
   capture_time?: string | null;
   release_date?: string | null;
   release_time?: string | null;
-  capture_comment: string;
-  release_comment: string;
+  capture_comment?: string | null;
+  release_comment?: string | null;
   markings: IMarking[];
   quantitative_measurements: IQualMeasurement[];
   qualitative_measurements: IQuantMeasurement[];
@@ -62,6 +62,19 @@ export interface ICapture {
     latitude: number;
     longitude: number;
   };
+}
+
+export interface ICreateCapture {
+  critter_id: string;
+  capture_method_id?: string;
+  capture_location: ILocation;
+  release_location?: ILocation;
+  capture_date: string;
+  capture_time?: string | null;
+  release_date?: string | null;
+  release_time?: string | null;
+  capture_comment?: string | null;
+  release_comment?: string | null;
 }
 
 export interface IMortality {
@@ -347,9 +360,14 @@ export class CritterbaseService {
         return response;
       },
       (error: AxiosError) => {
-        defaultLog.error({ label: 'CritterbaseService', message: error.message, error });
+        defaultLog.error({ label: 'CritterbaseService', message: error.message, error: error.response?.data });
+
         return Promise.reject(
-          new ApiError(ApiErrorType.GENERAL, `API request failed with status code ${error?.response?.status}`)
+          new ApiError(
+            ApiErrorType.GENERAL,
+            `Critterbase API request failed with status code ${error?.response?.status}`,
+            [error.response?.data as object]
+          )
         );
       }
     );
@@ -616,6 +634,18 @@ export class CritterbaseService {
    */
   async findTaxonCollectionUnits(tsn: string): Promise<ICollectionUnitWithCategory[]> {
     const response = await this.axiosInstance.get(`/xref/taxon-collection-units?tsn=${tsn}`);
+
+    return response.data;
+  }
+
+  /**
+   * Find collection units by tsn. Includes hierarchies.
+   *
+   * @async
+   * @returns {Promise<ICapture>} Capture
+   */
+  async createCapture(capture: ICreateCapture): Promise<ICapture> {
+    const response = await this.axiosInstance.post(`/captures/create`, { capture });
 
     return response.data;
   }
