@@ -103,13 +103,12 @@ DELETE.apiDoc = {
  */
 export function deleteTechnique(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const methodTechniqueId = Number(req.params.techniqueId);
+    const surveyId = Number(req.params.surveyId);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
-
-      const methodTechniqueId = Number(req.params.techniqueId);
-      const surveyId = Number(req.params.surveyId);
 
       const observationService = new ObservationService(connection);
 
@@ -239,15 +238,13 @@ PUT.apiDoc = {
  */
 export function updateTechnique(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const surveyId = Number(req.params.surveyId);
+    const methodTechniqueId = Number(req.params.techniqueId);
+    const technique: ITechniquePutData = req.body.technique;
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
-
-      const surveyId = Number(req.params.surveyId);
-      const methodTechniqueId = Number(req.params.techniqueId);
-
-      const technique: ITechniquePutData = req.body.technique;
 
       const { attributes, attractants, ...techniqueRow } = technique;
 
@@ -383,13 +380,12 @@ GET.apiDoc = {
  */
 export function getTechniqueById(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const surveyId = Number(req.params.surveyId);
+    const methodTechniqueId = Number(req.params.techniqueId);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
-
-      const surveyId = Number(req.params.surveyId);
-      const methodTechniqueId = Number(req.params.techniqueId);
 
       const techniqueService = new TechniqueService(connection);
       const sampleSite = await techniqueService.getTechniqueById(surveyId, methodTechniqueId);

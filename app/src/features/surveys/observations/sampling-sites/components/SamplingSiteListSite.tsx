@@ -36,10 +36,11 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
   const staticLayers: IStaticLayer[] = [
     {
       layerName: 'Sample Sites',
-      layerColors: { color: blue[500], fillColor: blue[500] },
+      layerOptions: { color: blue[500], fillColor: blue[500] },
       features: [
         {
-          key: sampleSite.survey_sample_site_id,
+          id: sampleSite.survey_sample_site_id,
+          key: `sampling-site-${sampleSite.survey_sample_site_id}`,
           geoJSON: sampleSite.geojson
         }
       ]
@@ -161,7 +162,7 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
           })}
         </List>
         <Box height="300px" flex="1 1 auto" mx={1} my={2}>
-          <SurveyMap staticLayers={staticLayers} supplementaryLayers={[]} isLoading={false} />
+          <SurveyMap staticLayers={staticLayers} isLoading={false} />
         </Box>
       </AccordionDetails>
     </Accordion>
