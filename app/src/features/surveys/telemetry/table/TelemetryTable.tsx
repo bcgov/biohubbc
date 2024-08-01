@@ -1,7 +1,6 @@
 import { cyan, grey } from '@mui/material/colors';
-import { DataGrid, GridColDef, GridRowParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import {
-  GenericActionsColDef,
   GenericDateColDef,
   GenericLatitudeColDef,
   GenericLongitudeColDef,
@@ -11,7 +10,7 @@ import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
 import { useTelemetryTableContext } from 'hooks/useContext';
-import { useCallback, useContext } from 'react';
+import { useContext } from 'react';
 import { DeploymentColDef, DeviceColDef, TelemetryTypeColDef } from './utils/GridColumnDefinitions';
 
 const MANUAL_TELEMETRY_TYPE = 'MANUAL';
@@ -26,23 +25,15 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
 
   const { critterDeployments } = surveyContext;
 
-  // Disable the delete action when record is 'Manual' telemetry or saving
-  const actionsDisabled = useCallback(
-    (params: GridRowParams<IManualTelemetryTableRow>) => {
-      return telemetryTableContext.isSaving || params.row.telemetry_type !== MANUAL_TELEMETRY_TYPE;
-    },
-    [telemetryTableContext.isSaving]
-  );
-
   const columns: GridColDef<IManualTelemetryTableRow>[] = [
     DeploymentColDef({ critterDeployments, hasError: telemetryTableContext.hasError }),
+    // TODO: Show animal nickname as a column
     DeviceColDef({ critterDeployments }),
-    TelemetryTypeColDef(),
     GenericDateColDef({ field: 'date', headerName: 'Date', hasError: telemetryTableContext.hasError }),
     GenericTimeColDef({ field: 'time', headerName: 'Time', hasError: telemetryTableContext.hasError }),
     GenericLatitudeColDef({ field: 'latitude', headerName: 'Latitude', hasError: telemetryTableContext.hasError }),
     GenericLongitudeColDef({ field: 'longitude', headerName: 'Longitude', hasError: telemetryTableContext.hasError }),
-    GenericActionsColDef({ disabled: actionsDisabled, onDelete: telemetryTableContext.deleteRecords })
+    TelemetryTypeColDef()
   ];
 
   return (

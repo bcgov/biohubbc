@@ -1,9 +1,6 @@
-import { GeometryCollection } from 'geojson';
 import { z } from 'zod';
 import {
   DELETE_MANUAL_TELEMETRY,
-  GET_TELEMETRY_POINTS_ENDPOINT,
-  GET_TELEMETRY_TRACKS_ENDPOINT,
   MANUAL_AND_VENDOR_TELEMETRY,
   MANUAL_TELEMETRY,
   VENDOR_TELEMETRY
@@ -152,42 +149,6 @@ export interface ICreateManualTelemetry {
 }
 
 export class BctwTelemetryService extends BctwService {
-  /**
-   * Get all telemetry points for an animal.
-   * The geometry will be points, and the properties will include the critter id and deployment id.
-   * @param critterId uuid
-   * @param startDate
-   * @param endDate
-   * @return {*}  {Promise<GeometryCollection>}
-   * @memberof BctwService
-   */
-  async getCritterTelemetryPoints(critterId: string, startDate: Date, endDate: Date): Promise<GeometryCollection> {
-    return this._makeGetRequest(GET_TELEMETRY_POINTS_ENDPOINT, {
-      critter_id: critterId,
-      start: startDate.toISOString(),
-      end: endDate.toISOString()
-    });
-  }
-
-  /**
-   * Get all telemetry tracks for an animal.
-   * The geometry will be lines, and the properties will include the critter id and deployment id.
-   * The lines are actually just generated on the fly by the the db using the same points as getCritterTelemetryPoints.
-   *
-   * @param critterId uuid
-   * @param startDate
-   * @param endDate
-   * @return {*}  {Promise<GeometryCollection>}
-   * @memberof BctwService
-   */
-  async getCritterTelemetryTracks(critterId: string, startDate: Date, endDate: Date): Promise<GeometryCollection> {
-    return this._makeGetRequest(GET_TELEMETRY_TRACKS_ENDPOINT, {
-      critter_id: critterId,
-      start: startDate.toISOString(),
-      end: endDate.toISOString()
-    });
-  }
-
   /**
    * Get all manual telemetry records
    * This set of telemetry is mostly useful for testing purposes.

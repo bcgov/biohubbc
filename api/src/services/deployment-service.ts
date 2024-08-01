@@ -42,6 +42,18 @@ export class DeploymentService extends DBService {
   }
 
   /**
+   * Get a specific deployment by its integer ID
+   *
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @return {*}  {Promise<void>}
+   * @memberof DeploymentService
+   */
+  async getDeploymentForCritterId(surveyId: number, critterId: number): Promise<SurveyDeployment> {
+    return this.deploymentRepository.getDeploymentForCritterId(surveyId, critterId);
+  }
+
+  /**
    * Create a new deployment
    *
    * @param {IPostSurveyDeployment} deployment
