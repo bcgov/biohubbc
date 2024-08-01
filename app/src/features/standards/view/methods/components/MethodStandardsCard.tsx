@@ -37,7 +37,7 @@ const MethodStandardCard = (props: IMethodStandardCard) => {
   const [isCollapsed, setIsCollapsed] = useState(true);
 
   return (
-    <Paper sx={{ bgcolor: grey[100], px: 3, py: 2, flex: '1 1 auto' }} elevation={0}>
+    <Paper sx={{ bgcolor: grey[200], px: 3, py: 2, flex: '1 1 auto' }} elevation={0}>
       {/* METHOD */}
       <Box
         display="flex"
@@ -45,9 +45,7 @@ const MethodStandardCard = (props: IMethodStandardCard) => {
         flex="1 1 auto"
         alignItems="center"
         sx={{ cursor: 'pointer' }}
-        onClick={() => {
-          setIsCollapsed(!isCollapsed);
-        }}>
+        onClick={() => setIsCollapsed(!isCollapsed)}>
         <Typography
           variant="h5"
           sx={{
@@ -75,6 +73,7 @@ const MethodStandardCard = (props: IMethodStandardCard) => {
               key={attribute.name}
               name={attribute.name}
               description={attribute.description}
+              unit={attribute.unit} // Pass unit prop
             />
           ))}
           {props.qualitativeAttributes?.map((attribute) => (

@@ -65,8 +65,7 @@ export class StandardsRepository extends BaseRepository {
   // FROM HERE DOWN
 
   async getMethodStandards(): Promise<MethodStandard[]> {
-    const sql = SQL`
-    WITH 
+    const sql = SQL`WITH 
     quan AS (
       SELECT 
         mlaq.method_lookup_id,
