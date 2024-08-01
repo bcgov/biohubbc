@@ -51,13 +51,13 @@ export class ProjectRepository extends BaseRepository {
         knex.raw('array_remove(array_agg(DISTINCT sp.itis_tsn), null) as focal_species'),
         knex.raw('array_remove(array_agg(DISTINCT st.type_id), null) as types'),
         knex.raw(`
-      array_agg(
-        DISTINCT jsonb_build_object(
-          'system_user_id', su.system_user_id,
-          'display_name', su.display_name
-        )
-      ) as members
-    `)
+          array_agg(
+            DISTINCT jsonb_build_object(
+              'system_user_id', su.system_user_id,
+              'display_name', su.display_name
+            )
+          ) as members
+        `)
       ])
       .from('project as p')
       .leftJoin('survey as s', 's.project_id', 'p.project_id')

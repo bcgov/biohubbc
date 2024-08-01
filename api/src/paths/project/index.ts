@@ -150,7 +150,7 @@ GET.apiDoc = {
                     },
                     members: {
                       type: 'array',
-                      description: 'Display name of project participants',
+                      description: 'Members of the Project',
                       items: {
                         type: 'object',
                         additionalProperties: false,

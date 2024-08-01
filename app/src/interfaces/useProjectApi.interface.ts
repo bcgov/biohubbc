@@ -131,7 +131,7 @@ export interface IProjectsListItemData {
    */
   types: number[];
   /**
-   * Display names of project members
+   * Members of the project
    */
   members: { system_user_id: number; display_name: string }[];
 }

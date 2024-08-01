@@ -53,7 +53,6 @@ export const TabularDataTableContainer = () => {
   const { searchParams, setSearchParams } = useSearchParams<TabularDataTableURLParams>();
 
   const [activeView, setActiveView] = useState(searchParams.get(ACTIVE_VIEW_KEY) ?? ACTIVE_VIEW_VALUE.observations);
-  // const [showSearch, setShowSearch] = useState<boolean>(true) //searchParams.get(SHOW_SEARCH_KEY) === SHOW_SEARCH_VALUE.true);
   const showSearch = true;
 
   const views = [
@@ -100,19 +99,6 @@ export const TabularDataTableContainer = () => {
       </ToggleButtonGroup>
       <Divider flexItem orientation="vertical" />
       <Box flex="1 1 auto">
-        {/* <Button
-          color="primary"
-          sx={buttonSx}
-          onClick={() => {
-            setSearchParams(
-              searchParams.set(SHOW_SEARCH_KEY, showSearch ? SHOW_SEARCH_VALUE.false : SHOW_SEARCH_VALUE.true)
-            );
-            setShowSearch(!showSearch);
-          }}
-          component={Button}
-          startIcon={<Icon path={mdiMagnify} size={1} />}>
-          Search
-        </Button> */}
         {activeView === ACTIVE_VIEW_VALUE.observations && <ObservationsListContainer showSearch={showSearch} />}
         {activeView === ACTIVE_VIEW_VALUE.animals && <AnimalsListContainer showSearch={showSearch} />}
         {activeView === ACTIVE_VIEW_VALUE.telemetry && <TelemetryListContainer showSearch={showSearch} />}
