@@ -210,6 +210,7 @@ export function getCrittersFromSurvey(): RequestHandler {
       await connection.open();
 
       const surveyService = new SurveyCritterService(connection);
+
       const surveyCritters = await surveyService.getCrittersInSurvey(surveyId);
 
       // Exit early if surveyCritters list is empty

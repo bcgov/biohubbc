@@ -43,6 +43,27 @@ export class SurveyCritterRepository extends BaseRepository {
   }
 
   /**
+   * Get critter in survey
+   *
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @return {*}  {Promise<SurveyCritterRecord>}
+   * @memberof SurveyCritterRepository
+   */
+  async getCritterInSurvey(surveyId: number, critterId: number): Promise<SurveyCritterRecord | undefined> {
+    defaultLog.debug({ label: 'getCritter', critterId });
+
+    const queryBuilder = getKnex().table('critter').select().where({
+      survey_id: surveyId,
+      critter_id: critterId
+    });
+
+    const response = await this.connection.knex(queryBuilder);
+
+    return response.rows[0];
+  }
+
+  /**
    * Constructs a non-paginated query to retrieve critters that are available to the user based on the user's
    * permissions and filter criteria.
    *
