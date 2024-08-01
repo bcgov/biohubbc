@@ -11,6 +11,7 @@ import {
   ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { SurveyExportConfig } from 'features/surveys/view/survey-export/SurveyExportForm';
+import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
   ICreateSurveyRequest,
@@ -401,6 +402,22 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Retrieve a list of critters associated with the given survey with details from critterbase, including
+   * additional information such as captures and mortality
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {ICritterDetailedResponse[]}
+   */
+  const getSurveyCrittersDetailed = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<ICritterDetailedResponse[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/critters?format=detailed`);
+    return data;
+  };
+
+  /**
    * Create a critter and add it to the list of critters associated with this survey. This will create a new critter in Critterbase.
    *
    * @param {number} projectId
@@ -595,6 +612,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyCritters,
     createCritterAndAddToSurvey,
     removeCrittersFromSurvey,
+    getSurveyCrittersDetailed,
     addDeployment,
     getDeploymentsInSurvey,
     updateDeployment,

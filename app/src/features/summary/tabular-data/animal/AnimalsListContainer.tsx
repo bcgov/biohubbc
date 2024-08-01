@@ -152,7 +152,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="500px">
+      <Box height="70vh">
         <StyledDataGrid
           noRowsMessage="No animals found"
           loading={!animalsDataLoader.isReady && !animalsDataLoader.data}

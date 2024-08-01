@@ -110,7 +110,7 @@ const openAPIFramework = initialize({
         const multerFiles = req.files ?? [];
 
         req.files = multerFiles;
-        req.body.media = multerFiles;
+        req.body = { ...req.body, media: multerFiles };
 
         return next();
       });

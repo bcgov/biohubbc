@@ -113,6 +113,8 @@ const SkeletonMap = () => (
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
+      width: '100%',
+      height: '100%',
       background: '#fff',
       '& svg': {
         color: grey[300]
@@ -121,7 +123,7 @@ const SkeletonMap = () => (
     <Box sx={{ position: 'absolute', margin: 'auto' }}>
       <Icon path={mdiMapSearchOutline} size={2} />
     </Box>
-    <Skeleton variant="rectangular" sx={{ width: '100%', height: '200px' }} />
+    <Skeleton variant="rectangular" sx={{ width: '100%', height: '100%' }} />
   </Box>
 );
 
