@@ -135,22 +135,6 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params) => {
-        // const dates = [params.row.start_date?.split('-')[0], params.row.end_date?.split('-')[0]]
-        //   .filter(Boolean)
-        //   .join(' \u2013 '); // n-dash with spaces
-
-        // const focalSpecies = params.row.focal_species
-        //   .map((species) => taxonomyContext.getCachedSpeciesTaxonomyById(species)?.commonNames)
-        //   .filter(Boolean)
-        //   .join(' \u2013 '); // n-dash with spaces
-
-        // const types = params.row.types
-        //   .map((type) => getCodesName(codesContext.codesDataLoader.data, 'type', type || 0))
-        //   .filter(Boolean)
-        //   .join(' \u2013 '); // n-dash with spaces
-
-        // const detailsArray = [dates, focalSpecies, types].filter(Boolean).join(' \u2013 ');
-
         return (
           <Stack mb={0.25}>
             <Link
@@ -162,12 +146,6 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
               to={`/admin/projects/${params.row.project_id}/surveys/${params.row.survey_id}`}
               children={params.row.name}
             />
-            {/* Only administrators see the second title to help them find Projects with a standard naming convention */}
-            {/* <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <Typography variant="body2" color="textSecondary">
-                {detailsArray}
-              </Typography>
-            </SystemRoleGuard> */}
           </Stack>
         );
       }
