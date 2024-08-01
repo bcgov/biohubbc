@@ -58,17 +58,17 @@ export const SurveyPeriodsTable = (props: ISurveyPeriodsTableProps) => {
     {
       field: 'sample_site',
       headerName: 'Site',
-      flex: 0.3
+      flex: 1
     },
     {
       field: 'sample_method',
       headerName: 'Technique',
-      flex: 0.3
+      flex: 1
     },
     {
       field: 'method_response_metric_id',
       headerName: 'Response Metric',
-      flex: 0.3,
+      flex: 1,
       renderCell: (params) => (
         <>
           {getCodesName(
@@ -82,7 +82,7 @@ export const SurveyPeriodsTable = (props: ISurveyPeriodsTableProps) => {
     {
       field: 'start_date',
       headerName: 'Start date',
-      flex: 0.3,
+      flex: 1,
       renderCell: (params) => (
         <Typography variant="body2">{dayjs(params.row.start_date).format(DATE_FORMAT.MediumDateFormat)}</Typography>
       )
@@ -90,12 +90,12 @@ export const SurveyPeriodsTable = (props: ISurveyPeriodsTableProps) => {
     {
       field: 'start_time',
       headerName: 'Start time',
-      flex: 0.3
+      flex: 1
     },
     {
       field: 'end_date',
       headerName: 'End date',
-      flex: 0.3,
+      flex: 1,
       renderCell: (params) => (
         <Typography variant="body2">{dayjs(params.row.end_date).format(DATE_FORMAT.MediumDateFormat)}</Typography>
       )
@@ -103,7 +103,7 @@ export const SurveyPeriodsTable = (props: ISurveyPeriodsTableProps) => {
     {
       field: 'end_time',
       headerName: 'End time',
-      flex: 0.3
+      flex: 1
     }
   ];
 

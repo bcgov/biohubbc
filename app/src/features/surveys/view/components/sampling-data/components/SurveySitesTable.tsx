@@ -1,6 +1,6 @@
 import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
-import { blueGrey } from '@mui/material/colors';
+import blueGrey from '@mui/material/colors/blueGrey';
 import { GridColDef, GridOverlay } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';

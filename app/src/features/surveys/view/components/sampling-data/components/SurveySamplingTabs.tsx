@@ -107,25 +107,21 @@ export const SurveySamplingTabs = () => {
 
       <Divider />
 
-      <Box p={2}>
-        <Box>
-          <Box position="relative">
-            <LoadingGuard
-              isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
-              fallback={<SkeletonTable />}
-              delay={200}>
-              {activeView === SurveySamplingView.TECHNIQUES && (
-                <SurveyTechniquesTable techniques={surveyContext.techniqueDataLoader.data} />
-              )}
-              {activeView === SurveySamplingView.SITES && (
-                <SurveySitesTable sites={surveyContext.sampleSiteDataLoader.data} />
-              )}
-              {activeView === SurveySamplingView.PERIODS && (
-                <SurveyPeriodsTable sites={surveyContext.sampleSiteDataLoader.data?.sampleSites ?? []} />
-              )}
-            </LoadingGuard>
-          </Box>
-        </Box>
+      <Box p={2} position="relative">
+        <LoadingGuard
+          isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
+          fallback={<SkeletonTable />}
+          delay={200}>
+          {activeView === SurveySamplingView.TECHNIQUES && (
+            <SurveyTechniquesTable techniques={surveyContext.techniqueDataLoader.data} />
+          )}
+          {activeView === SurveySamplingView.SITES && (
+            <SurveySitesTable sites={surveyContext.sampleSiteDataLoader.data} />
+          )}
+          {activeView === SurveySamplingView.PERIODS && (
+            <SurveyPeriodsTable sites={surveyContext.sampleSiteDataLoader.data?.sampleSites ?? []} />
+          )}
+        </LoadingGuard>
       </Box>
     </>
   );

@@ -34,11 +34,11 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
     {
       field: 'name',
       headerName: 'Name',
-      flex: 0.3
+      flex: 1
     },
     {
       field: 'method_lookup_id',
-      flex: 0.3,
+      flex: 1,
       headerName: 'Method',
       renderCell: (params) => (
         <ColouredRectangleChip
@@ -74,7 +74,7 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
     },
     {
       field: 'attractants',
-      flex: 0.5,
+      flex: 1,
       headerName: 'Attractants',
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -94,7 +94,7 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
     {
       field: 'distance_threshold',
       headerName: 'Distance threshold',
-      flex: 0.3,
+      flex: 1,
       renderCell: (params) => (params.row.distance_threshold ? <>{params.row.distance_threshold}&nbsp;m</> : <></>)
     }
   ];
