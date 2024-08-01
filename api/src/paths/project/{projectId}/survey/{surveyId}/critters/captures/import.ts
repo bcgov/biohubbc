@@ -1,18 +1,18 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/http-error';
-import { csvFileSchema } from '../../../../../../openapi/schemas/file';
-import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ImportCrittersService } from '../../../../../../services/import-services/critter/import-critters-service';
-import { importCSV } from '../../../../../../services/import-services/csv-import-strategy';
-import { scanFileForVirus } from '../../../../../../utils/file-utils';
-import { getLogger } from '../../../../../../utils/logger';
-import { parseMulterFile } from '../../../../../../utils/media/media-utils';
-import { getFileFromRequest } from '../../../../../../utils/request';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../errors/http-error';
+import { csvFileSchema } from '../../../../../../../openapi/schemas/file';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { ImportCapturesService } from '../../../../../../../services/import-services/capture/import-captures-service';
+import { importCSV } from '../../../../../../../services/import-services/csv-import-strategy';
+import { scanFileForVirus } from '../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../utils/logger';
+import { parseMulterFile } from '../../../../../../../utils/media/media-utils';
+import { getFileFromRequest } from '../../../../../../../utils/request';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/critters/import');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/captures/import');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -34,8 +34,8 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Upload survey critters submission file',
-  tags: ['critterbase', 'survey'],
+  description: 'Upload Critterbase CSV Captures file',
+  tags: ['observations'],
   security: [
     {
       Bearer: []
@@ -44,6 +44,7 @@ POST.apiDoc = {
   parameters: [
     {
       in: 'path',
+      description: 'SIMS survey id',
       name: 'projectId',
       required: true,
       schema: {
@@ -53,6 +54,7 @@ POST.apiDoc = {
     },
     {
       in: 'path',
+      description: 'SIMS survey id',
       name: 'surveyId',
       required: true,
       schema: {
@@ -62,7 +64,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Survey critters csv file to import',
+    description: 'Critterbase Captures CSV import file.',
     content: {
       'multipart/form-data': {
         schema: {
@@ -71,7 +73,7 @@ POST.apiDoc = {
           required: ['media'],
           properties: {
             media: {
-              description: 'Critter CSV import file.',
+              description: 'Critterbase Captures CSV import file.',
               type: 'array',
               minItems: 1,
               maxItems: 1,
@@ -83,21 +85,17 @@ POST.apiDoc = {
     }
   },
   responses: {
-    200: {
-      description: 'Import OK',
+    201: {
+      description: 'Capture import success.',
       content: {
         'application/json': {
           schema: {
             type: 'object',
             additionalProperties: false,
-            required: ['survey_critter_ids'],
             properties: {
-              survey_critter_ids: {
-                type: 'array',
-                items: {
-                  type: 'integer',
-                  minimum: 1
-                }
+              capturesCreated: {
+                description: 'Number of Critterbase captures created.',
+                type: 'integer'
               }
             }
           }
@@ -123,9 +121,9 @@ POST.apiDoc = {
 };
 
 /**
- * Imports a `Critter CSV` which adds critters to `survey_critter` table and creates critters in Critterbase.
+ * Imports a `Critterbase Capture CSV` which bulk adds captures to Critterbase.
  *
- * @return {*}  {RequestHandler}
+ * @return {*} {RequestHandler}
  */
 export function importCsv(): RequestHandler {
   return async (req, res) => {
@@ -144,16 +142,14 @@ export function importCsv(): RequestHandler {
         throw new HTTP400('Malicious content detected, import cancelled.');
       }
 
-      // Critter CSV import service - child of CSVImportStrategy
-      const importCsvCritters = new ImportCrittersService(connection, surveyId);
+      const importCsvCaptures = new ImportCapturesService(connection, surveyId);
 
-      const surveyCritterIds = await importCSV(parseMulterFile(rawFile), importCsvCritters);
-
-      defaultLog.info({ label: 'importCritterCsv', message: 'result', survey_critter_ids: surveyCritterIds });
+      // Pass CSV file and importer as dependencies
+      const capturesCreated = await importCSV(parseMulterFile(rawFile), importCsvCaptures);
 
       await connection.commit();
 
-      return res.status(200).json({ survey_critter_ids: surveyCritterIds });
+      return res.status(201).json({ capturesCreated });
     } catch (error) {
       defaultLog.error({ label: 'importCritterCsv', message: 'error', error });
       await connection.rollback();
