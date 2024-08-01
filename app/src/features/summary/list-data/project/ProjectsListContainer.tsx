@@ -156,7 +156,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     {
       field: 'members',
       headerName: 'Members',
-      flex: 0.5,
+      flex: 0.4,
       renderCell: (params) => (
         <Stack direction="row" gap={0.5} flexWrap="wrap">
           {params.row.members.map((member) => (
@@ -177,7 +177,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
       field: 'regions',
       headerName: 'Region',
       type: 'string',
-      flex: 0.75,
+      flex: 0.5,
       renderCell: (params) => (
         <Stack direction="row" gap={1} flexWrap="wrap">
           {params.row.regions.map((region) => {
