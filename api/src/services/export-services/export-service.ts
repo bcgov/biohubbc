@@ -1,46 +1,20 @@
+import archiver from 'archiver';
 import { Knex } from 'knex';
 import QueryStream from 'pg-query-stream';
 import { SQLStatement } from 'sql-template-strings';
-import { PassThrough, Transform } from 'stream';
+import { PassThrough } from 'stream';
 import { IDBConnection } from '../../database/db';
-import { uploadStreamToS3 } from '../../utils/file-utils';
-// import { getLogger } from '../utils/logger';
-import { PutObjectCommandOutput } from '@aws-sdk/client-s3';
-import archiver from 'archiver';
+import { getS3SignedURLs, uploadStreamToS3 } from '../../utils/file-utils';
+import { getLogger } from '../../utils/logger';
 import { DBService } from '../db-service';
+import { ExportConfig } from './export-strategy';
 
-// const defaultLog = getLogger('api/src/services/export-service.ts');
+const defaultLog = getLogger('/api/src/services/export-services/export-service.ts');
 
 const EXPORT_ARCHIVE_MIME_TYPE = 'application/zip';
 
-export type ExportSQLResultsToS3QueryConfig = {
-  sql: SQLStatement | Knex.QueryBuilder;
-  fileName: string;
-};
-
-export type ExportSQLResultsToS3Config = {
-  /**
-   * The database connection to use for the export.
-   *
-   * @type {IDBConnection}
-   */
-  connection: IDBConnection;
-  /**
-   * The queries to execute and export the results to S3.
-   *
-   * @type {ExportSQLResultsToS3QueryConfig[]}
-   */
-  queries: ExportSQLResultsToS3QueryConfig[];
-  /**
-   * The S3 key for the archive (zip) file to upload the exported data to.
-   *
-   * @type {string}
-   */
-  s3Key: string;
-};
-
 /**
- * Provides functionality for exporting survey data.
+ * Provides functionality for exporting data.
  *
  * @export
  * @class ExportService
@@ -54,51 +28,79 @@ export class ExportService extends DBService {
   /**
    * Export the results of a set of SQL queries to S3.
    *
-   * @param {ExportSQLResultsToS3Config} config
-   * @return {*}  {Promise<PutObjectCommandOutput>}
+   * @param {ExportDataConfig} config
+   * @return {*}  {Promise<string[]>}
    * @memberof ExportService
    */
-  async exportSQLResultsToS3(config: ExportSQLResultsToS3Config): Promise<PutObjectCommandOutput> {
-    const dbClient = await config.connection.getClient();
+  async export(exportConfig: ExportConfig): Promise<string[]> {
+    defaultLog.debug({ label: 'export', message: 'exportConfig', exportConfig });
 
-    // Array to hold all streams
+    if (exportConfig.exportStrategies.length === 0) {
+      throw new Error('No export strategies have been defined.');
+    }
+
+    const dbClient = await this.connection.getClient();
+
+    // Array to hold all streams, so they can be destroyed in case of an error
     const allStreams = [];
 
-    const archiveStream = this._getArchiveStream();
+    const archiveStream = archiver('zip', {
+      zlib: {
+        level: 9 // Compression level
+      }
+    });
 
-    const archiveStreamPasthrough = new PassThrough();
+    const archiveStreamPassthrough = new PassThrough();
 
-    allStreams.push(archiveStream, archiveStreamPasthrough);
+    // Add all streams to the array to destroy in case of an error
+    allStreams.push(archiveStream, archiveStreamPassthrough);
 
     try {
-      archiveStream.pipe(archiveStreamPasthrough);
+      archiveStream.pipe(archiveStreamPassthrough);
 
-      for (const queryConfig of config.queries) {
-        const { text, values } = this._getQueryParams(queryConfig.sql);
+      // Start the S3 upload
+      const uploadPromise = uploadStreamToS3(archiveStreamPassthrough, EXPORT_ARCHIVE_MIME_TYPE, exportConfig.s3Key);
 
-        // Create a query stream for the sql query
-        const queryStream = new QueryStream(text, values);
+      await Promise.all(
+        exportConfig.exportStrategies.map(async (exportStrategy) => {
+          const exportStrategyConfig = await exportStrategy.getExportStrategyConfig(this.connection);
 
-        const queryStreamPassThrough = new PassThrough();
+          defaultLog.silly({ label: 'export', message: 'exportStrategyConfig', exportStrategyConfig });
 
-        const jsonStringifyTransformStream = this._getJsonStringifyTransformStream();
+          for (const queryConfig of exportStrategyConfig.queries) {
+            const { text, values } = this._getQueryParams(queryConfig.sql);
 
-        // Pipe the query stream passthrough to the transform stream
-        const fileStream = queryStreamPassThrough.pipe(jsonStringifyTransformStream);
+            // Create a query stream for the sql query
+            const queryStream = new QueryStream(text, values);
 
-        // Add all streams to the array to destroy in case of an error
-        allStreams.push(queryStream, queryStreamPassThrough, jsonStringifyTransformStream, fileStream);
+            // Create a pass through stream to ensure the query stream is stringified
+            const queryStreamPassThrough = new PassThrough({
+              objectMode: true,
+              transform(chunk, _encoding, callback) {
+                // Ensure chunk is a stringified JSON
+                callback(null, JSON.stringify(chunk));
+              }
+            });
 
-        // Append the file stream to the archive stream
-        archiveStream.append(fileStream, { name: queryConfig.fileName });
+            // Add all streams to the array to destroy in case of an error
+            allStreams.push(queryStream, queryStreamPassThrough);
 
-        // Execute the query and pipe the results to the file stream
-        dbClient.query(queryStream).pipe(queryStreamPassThrough);
-      }
+            // Append the file stream to the archive stream
+            archiveStream.append(queryStream.pipe(queryStreamPassThrough), { name: queryConfig.fileName });
+
+            // Execute the query and pipe the results to the file stream
+            dbClient.query(queryStream);
+          }
+        })
+      );
 
       archiveStream.finalize();
 
-      return uploadStreamToS3(archiveStreamPasthrough, EXPORT_ARCHIVE_MIME_TYPE, config.s3Key);
+      // Wait for the upload to complete
+      await uploadPromise;
+
+      // Generate signed URLs for the export files
+      return this._getAllSignedURLs([exportConfig.s3Key]);
     } catch (error) {
       console.error('Error exporting data to s3.', error);
 
@@ -110,6 +112,25 @@ export class ExportService extends DBService {
       // Release the client back to the pool
       dbClient.release();
     }
+  }
+
+  /**
+   * Generate a signed URL for each s3Key.
+   *
+   * @param {string[]} s3Keys
+   * @return {*}  {Promise<string[]>}
+   * @memberof ExportService
+   */
+  async _getAllSignedURLs(s3Keys: string[]): Promise<string[]> {
+    defaultLog.debug({ label: '_getAllSignedURLs', message: 'Generating signed URLs for export file(s).' });
+
+    const signedURLs = await getS3SignedURLs(s3Keys);
+
+    if (signedURLs.some((item) => item === null)) {
+      throw new Error('Failed to generate signed URLs for all export files.');
+    }
+
+    return signedURLs as string[];
   }
 
   /**
@@ -132,34 +153,5 @@ export class ExportService extends DBService {
     }
 
     return { text: queryText, values: queryValues };
-  }
-
-  /**
-   * Get an archive stream for exporting data.
-   *
-   * @return {*}  {archiver.Archiver}
-   * @memberof ExportService
-   */
-  _getArchiveStream(): archiver.Archiver {
-    return archiver('zip', {
-      zlib: { level: 9 } // Compression level
-    });
-  }
-
-  /**
-   * Get a JSON stringify transform stream for exporting data.
-   *
-   * @return {*}  {Transform}
-   * @memberof ExportService
-   */
-  _getJsonStringifyTransformStream(): Transform {
-    return new Transform({
-      objectMode: true,
-      transform(chunk, _encoding, callback) {
-        const data = JSON.stringify(chunk);
-        this.push(data);
-        callback();
-      }
-    });
   }
 }

@@ -3,10 +3,12 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+import { ExportService } from '../../../../../../services/export-services/export-service';
 import {
   ExportSurveyConfig,
-  ExportSurveyService
-} from '../../../../../../services/export-services/export-survey-service';
+  ExportSurveyStrategy
+} from '../../../../../../services/export-services/survey/export-survey-strategy';
+import { generateS3ExportKey } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/export/index.ts');
@@ -152,8 +154,14 @@ export function exportData(): RequestHandler {
     try {
       await connection.open();
 
-      const exportSurveyService = new ExportSurveyService(connection);
-      const response = await exportSurveyService.exportSurvey(surveyId, config);
+      const exportSurveyStrategy = new ExportSurveyStrategy(surveyId, config, connection);
+
+      const exportService = new ExportService(connection);
+
+      const response = await exportService.export({
+        exportStrategies: [exportSurveyStrategy],
+        s3Key: generateS3ExportKey()
+      });
 
       await connection.commit();
 
