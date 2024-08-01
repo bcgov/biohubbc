@@ -2,7 +2,6 @@ import { mdiAutoFix, mdiMapMarker } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -95,32 +94,28 @@ export const SurveySamplingTabs = () => {
         </ToggleButtonGroup>
       </Box>
 
-      <Divider />
+      <Box px={2} py={0.5}>
+        {activeView === SurveySamplingView.TECHNIQUES && (
+          <Box position="relative">
+            <LoadingGuard
+              isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
+              fallback={<SkeletonTable />}
+              delay={200}>
+              <SurveyTechniquesTable techniques={surveyContext.techniqueDataLoader.data} />
+            </LoadingGuard>
+          </Box>
+        )}
 
-      <Box p={2}>
-        <Box>
-          {activeView === SurveySamplingView.TECHNIQUES && (
-            <Box position="relative">
-              <LoadingGuard
-                isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
-                fallback={<SkeletonTable />}
-                delay={200}>
-                <SurveyTechniquesTable techniques={surveyContext.techniqueDataLoader.data} />
-              </LoadingGuard>
-            </Box>
-          )}
-
-          {activeView === SurveySamplingView.SITES && (
-            <Box position="relative">
-              <LoadingGuard
-                isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}
-                fallback={<SkeletonTable />}
-                delay={200}>
-                <SurveySitesTable sites={surveyContext.sampleSiteDataLoader.data} />
-              </LoadingGuard>
-            </Box>
-          )}
-        </Box>
+        {activeView === SurveySamplingView.SITES && (
+          <Box position="relative">
+            <LoadingGuard
+              isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}
+              fallback={<SkeletonTable />}
+              delay={200}>
+              <SurveySitesTable sites={surveyContext.sampleSiteDataLoader.data} />
+            </LoadingGuard>
+          </Box>
+        )}
       </Box>
     </>
   );

@@ -8,12 +8,10 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { SystemRoleGuard } from 'components/security/Guards';
 import { getNrmRegionColour, NrmRegionKeys } from 'constants/colours';
 import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
-import { SYSTEM_ROLE } from 'constants/roles';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
+import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
@@ -21,7 +19,7 @@ import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
 import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
-import { firstOrNull, getCodesName } from 'utils/Utils';
+import { firstOrNull } from 'utils/Utils';
 import ProjectsListFilterForm, {
   IProjectAdvancedFilters,
   ProjectAdvancedFiltersInitialValues
@@ -65,7 +63,6 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
 
   const biohubApi = useBiohubApi();
   const codesContext = useCodesContext();
-  const taxonomyContext = useTaxonomyContext();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<ProjectDataTableURLParams>>();
 
@@ -140,17 +137,17 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params) => {
-        const focalSpecies = params.row.focal_species
-          .map((species) => taxonomyContext.getCachedSpeciesTaxonomyById(species)?.commonNames)
-          .filter(Boolean)
-          .join(' \u2013 '); // n-dash with spaces
+        // const focalSpecies = params.row.focal_species
+        //   .map((species) => taxonomyContext.getCachedSpeciesTaxonomyById(species)?.commonNames)
+        //   .filter(Boolean)
+        //   .join(' \u2013 '); // n-dash with spaces
 
-        const types = params.row.types
-          .map((type) => getCodesName(codesContext.codesDataLoader.data, 'type', type || 0))
-          .filter(Boolean)
-          .join(' \u2013 '); // n-dash with spaces
+        // const types = params.row.types
+        //   .map((type) => getCodesName(codesContext.codesDataLoader.data, 'type', type || 0))
+        //   .filter(Boolean)
+        //   .join(' \u2013 '); // n-dash with spaces
 
-        const detailsArray = [focalSpecies, types].filter(Boolean).join(' \u2013 ');
+        // const detailsArray = [focalSpecies, types].filter(Boolean).join(' \u2013 ');
 
         return (
           <Stack mb={0.25}>
@@ -164,7 +161,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
               children={params.row.name}
             />
             {/* Only administrators see the second title to help them find Projects with a standard naming convention */}
-            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            {/* <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               {detailsArray.length > 0 ? (
                 <Typography variant="body2" color="textSecondary">
                   {detailsArray}
@@ -174,7 +171,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
                   There are no Surveys in this Project
                 </Typography>
               )}
-            </SystemRoleGuard>
+            </SystemRoleGuard> */}
           </Stack>
         );
       }
@@ -200,7 +197,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
   return (
     <>
       <Collapse in={showSearch}>
-        <Box py={2} px={3} bgcolor={grey[50]}>
+        <Box py={2} px={2}>
           <ProjectsListFilterForm
             initialValues={advancedFiltersModel}
             handleSubmit={(values) => {
@@ -216,7 +213,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="500px">
+      <Box height="500px" p={2}>
         <StyledDataGrid
           noRowsMessage="No projects found"
           loading={!isReady && !data}
