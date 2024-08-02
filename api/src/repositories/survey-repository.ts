@@ -387,15 +387,9 @@ export class SurveyRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         s.additional_details,
-        array_remove(array_agg(DISTINCT io.intended_outcome_id), NULL) as intended_outcome_ids,
-        array_remove(array_agg(DISTINCT sv.vantage_id), NULL) as vantage_ids
-
+        array_remove(array_agg(DISTINCT io.intended_outcome_id), NULL) as intended_outcome_ids
       FROM
         survey s
-      LEFT OUTER JOIN
-        survey_vantage sv
-      ON
-        sv.survey_id = s.survey_id
       LEFT OUTER JOIN
         survey_intended_outcome io
       ON
@@ -802,37 +796,6 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Inserts a new vantage code record and returns the new ID
-   *
-   * @param {number} vantage_code_id
-   * @param {number} surveyId
-   * @returns {*} Promise<number>
-   * @memberof SurveyRepository
-   */
-  async insertVantageCodes(vantage_code_id: number, surveyId: number): Promise<number> {
-    const sqlStatement = SQL`
-      INSERT INTO survey_vantage (
-        vantage_id,
-        survey_id
-      ) VALUES (
-        ${vantage_code_id},
-        ${surveyId}
-      ) RETURNING survey_vantage_id as id;
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-    const result = response.rows?.[0];
-
-    if (!result?.id) {
-      throw new ApiExecuteSQLError('Failed to insert vantage codes', [
-        'SurveyRepository->insertVantageCodes',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
-    return result.id;
-  }
-
-  /**
    * Insert many rows associating a survey id to various intended outcome ids.
    *
    * @param {number} surveyId
@@ -1106,24 +1069,6 @@ export class SurveyRepository extends BaseRepository {
     const sqlStatement = SQL`
       DELETE
         from survey_proprietor
-      WHERE
-        survey_id = ${surveyId};
-    `;
-
-    await this.connection.sql(sqlStatement);
-  }
-
-  /**
-   * Deletes Survey vantage codes for a given survey ID
-   *
-   * @param {number} surveyId
-   * @returns {*} Promise<void>
-   * @memberof SurveyRepository
-   */
-  async deleteSurveyVantageCodes(surveyId: number) {
-    const sqlStatement = SQL`
-      DELETE
-        from survey_vantage
       WHERE
         survey_id = ${surveyId};
     `;

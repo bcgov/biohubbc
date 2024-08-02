@@ -282,7 +282,7 @@ export const surveyPurposeAndMethodologySchema: OpenAPIV3.SchemaObject = {
   title: 'survey purpose and methodology response object',
   type: 'object',
   additionalProperties: false,
-  required: ['intended_outcome_ids', 'additional_details', 'vantage_code_ids'],
+  required: ['intended_outcome_ids', 'additional_details'],
   properties: {
     intended_outcome_ids: {
       description: 'Intended outcome ids',
@@ -301,14 +301,6 @@ export const surveyPurposeAndMethodologySchema: OpenAPIV3.SchemaObject = {
       description: 'The integer of times the record has been revised.',
       type: 'integer',
       minimum: 0
-    },
-    vantage_code_ids: {
-      description: 'Vantage code ids',
-      type: 'array',
-      items: {
-        type: 'integer',
-        minimum: 1
-      }
     }
   }
 };

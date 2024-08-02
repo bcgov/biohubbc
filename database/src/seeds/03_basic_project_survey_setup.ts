@@ -80,7 +80,6 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveyProprietorData(surveyId)}
           ${insertSurveyFirstNationData(surveyId)}
           ${insertSurveyStakeholderData(surveyId)}
-          ${insertSurveyVantageData(surveyId)}
           ${insertSurveyParticipationData(surveyId)}
           ${insertSurveyLocationData(surveyId)}
           ${insertSurveySiteStrategy(surveyId)}
@@ -177,22 +176,6 @@ const insertSurveyParticipationData = (surveyId: number) => `
       1
     )
   ;
-`;
-
-/**
- * SQL to insert Survey Vantage data
- *
- */
-const insertSurveyVantageData = (surveyId: number) => `
-  INSERT into survey_vantage
-    (
-      survey_id,
-      vantage_id
-    )
-  VALUES (
-    ${surveyId},
-    (select vantage_id from vantage order by random() limit 1)
-  );
 `;
 
 /**

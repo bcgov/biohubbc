@@ -21,7 +21,6 @@ export const surveyObject: SurveyViewObject = {
   purpose_and_methodology: {
     intended_outcome_ids: [1],
     additional_details: 'details',
-    vantage_code_ids: [1, 2]
   },
   proprietor: {
     proprietary_data_category_name: 'proprietor type',

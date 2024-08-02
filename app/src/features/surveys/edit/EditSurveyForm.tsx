@@ -98,11 +98,6 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
                   return { value: item.id, label: item.name, subText: item.description };
                 }) || []
               }
-              vantage_codes={
-                codes.vantage_codes.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
             />
           }></HorizontalSplitFormComponent>
 

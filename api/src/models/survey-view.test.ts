@@ -325,10 +325,6 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
     it('sets additional_details', () => {
       expect(data.additional_details).to.equal('');
     });
-
-    it('sets vantage_code_ids', () => {
-      expect(data.vantage_code_ids).to.eql([]);
-    });
   });
 
   describe('All values provided with first nations id', () => {
@@ -337,7 +333,6 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
     const obj = {
       intended_outcome_ids: [1],
       additional_details: 'additional_detail',
-      vantage_ids: [4, 5],
       revision_count: 'count'
     };
 
@@ -352,11 +347,7 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
     it('sets additional_details', () => {
       expect(data.additional_details).to.eql(obj.additional_details);
     });
-
-    it('sets vantage_code_ids', () => {
-      expect(data.vantage_code_ids).to.eql(obj.vantage_ids);
-    });
-
+    
     it('sets revision_count', function () {
       expect(data.revision_count).to.equal('count');
     });

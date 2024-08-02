@@ -111,7 +111,6 @@ const EditSurveyPage = () => {
         partnerships: values.partnerships,
         permit: values.permit,
         proprietor: values.proprietor,
-        purpose_and_methodology: values.purpose_and_methodology,
         site_selection: {
           stratums: values.site_selection.stratums.map((stratum) => ({
             survey_stratum_id: stratum.survey_stratum_id,

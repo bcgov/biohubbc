@@ -143,9 +143,6 @@ describe('SurveyService', () => {
       const dbConnectionObj = getMockDBConnection();
 
       const updateSurveyDetailsDataStub = sinon.stub(SurveyService.prototype, 'updateSurveyDetailsData').resolves();
-      const updateSurveyVantageCodesDataStub = sinon
-        .stub(SurveyService.prototype, 'updateSurveyVantageCodesData')
-        .resolves();
       const updateSurveySpeciesDataStub = sinon.stub(SurveyService.prototype, 'updateSurveySpeciesData').resolves();
       const updateSurveyPermitDataStub = sinon.stub(SurveyService.prototype, 'updateSurveyPermitData').resolves();
       const upsertSurveyFundingSourceDataStub = sinon
@@ -173,7 +170,6 @@ describe('SurveyService', () => {
       await surveyService.updateSurvey(surveyId, putSurveyData);
 
       expect(updateSurveyDetailsDataStub).not.to.have.been.called;
-      expect(updateSurveyVantageCodesDataStub).not.to.have.been.called;
       expect(updateSurveySpeciesDataStub).not.to.have.been.called;
       expect(updateSurveyPermitDataStub).not.to.have.been.called;
       expect(upsertSurveyFundingSourceDataStub).to.have.been.calledOnce;
@@ -188,9 +184,6 @@ describe('SurveyService', () => {
 
       const updateSurveyDetailsDataStub = sinon.stub(SurveyService.prototype, 'updateSurveyDetailsData').resolves();
       const updateSurveyTypesDataStub = sinon.stub(SurveyService.prototype, 'updateSurveyTypesData').resolves();
-      const updateSurveyVantageCodesDataStub = sinon
-        .stub(SurveyService.prototype, 'updateSurveyVantageCodesData')
-        .resolves();
       const updateSurveyIntendedOutcomesStub = sinon
         .stub(SurveyService.prototype, 'updateSurveyIntendedOutcomes')
         .resolves();
@@ -236,7 +229,6 @@ describe('SurveyService', () => {
 
       expect(updateSurveyDetailsDataStub).to.have.been.calledOnce;
       expect(updateSurveyTypesDataStub).to.have.been.calledOnce;
-      expect(updateSurveyVantageCodesDataStub).to.have.been.calledOnce;
       expect(updateSurveySpeciesDataStub).to.have.been.calledOnce;
       expect(updateSurveyPermitDataStub).to.have.been.calledOnce;
       expect(upsertSurveyFundingSourceDataStub).to.have.been.calledOnce;
@@ -601,22 +593,6 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('insertVantageCodes', () => {
-    it('returns the first row on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const data = 1;
-
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'insertVantageCodes').resolves(data);
-
-      const response = await service.insertVantageCodes(1, 1);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(data);
-    });
-  });
-
   describe('insertSurveyProprietor', () => {
     it('returns the first row on success', async () => {
       const dbConnection = getMockDBConnection();
@@ -906,60 +882,6 @@ describe('SurveyService', () => {
       const repoStub = sinon.stub(SurveyRepository.prototype, 'deleteSurveyProprietorData').resolves();
 
       const response = await service.deleteSurveyProprietorData(1);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(undefined);
-    });
-  });
-
-  describe('updateSurveyVantageCodesData', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('returns [] if not vantage_code_ids is given', async () => {
-      sinon.stub(SurveyService.prototype, 'deleteSurveyVantageCodes').resolves();
-
-      const mockQueryResponse = undefined as unknown as QueryResult<any>;
-
-      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
-      const surveyService = new SurveyService(mockDBConnection);
-
-      const response = await surveyService.updateSurveyVantageCodesData(1, {
-        permit: { permit_number: '1', permit_type: 'type' },
-        purpose_and_methodology: { vantage_code_ids: undefined }
-      } as unknown as PutSurveyObject);
-
-      expect(response).to.eql([]);
-    });
-
-    it('returns data if response is not null', async () => {
-      sinon.stub(SurveyService.prototype, 'deleteSurveyVantageCodes').resolves();
-      sinon.stub(SurveyService.prototype, 'insertVantageCodes').resolves(1);
-
-      const mockQueryResponse = undefined as unknown as QueryResult<any>;
-
-      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
-      const surveyService = new SurveyService(mockDBConnection);
-
-      const response = await surveyService.updateSurveyVantageCodesData(1, {
-        permit: { permit_number: '1', permit_type: 'type' },
-        proprietor: { survey_data_proprietary: 'asd' },
-        purpose_and_methodology: { vantage_code_ids: [1] }
-      } as unknown as PutSurveyObject);
-
-      expect(response).to.eql([1]);
-    });
-  });
-
-  describe('deleteSurveyVantageCodes', () => {
-    it('returns the first row on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'deleteSurveyVantageCodes').resolves();
-
-      const response = await service.deleteSurveyVantageCodes(1);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(undefined);

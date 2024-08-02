@@ -340,10 +340,6 @@ describe('PutPurposeAndMethodologyData', () => {
       expect(data.additional_details).to.equal(null);
     });
 
-    it('sets vantage_code_ids', () => {
-      expect(data.vantage_code_ids).to.eql([]);
-    });
-
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(null);
     });
@@ -355,7 +351,6 @@ describe('PutPurposeAndMethodologyData', () => {
     const obj = {
       intended_outcome_ids: [1],
       additional_details: 'additional_detail',
-      vantage_code_ids: [4, 5],
       revision_count: 0
     };
 
@@ -369,10 +364,6 @@ describe('PutPurposeAndMethodologyData', () => {
 
     it('sets additional_details', () => {
       expect(data.additional_details).to.equal(obj.additional_details);
-    });
-
-    it('sets vantage_code_ids', () => {
-      expect(data.vantage_code_ids).to.eql(obj.vantage_code_ids);
     });
 
     it('sets revision_count', () => {

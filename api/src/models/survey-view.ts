@@ -146,12 +146,10 @@ export class GetSurveyPurposeAndMethodologyData {
   intended_outcome_ids: number[];
   additional_details: string;
   revision_count: number;
-  vantage_code_ids: number[];
-
+  
   constructor(obj?: any) {
     this.intended_outcome_ids = (obj?.intended_outcome_ids?.length && obj?.intended_outcome_ids) || [];
     this.additional_details = obj?.additional_details || '';
-    this.vantage_code_ids = (obj?.vantage_ids?.length && obj.vantage_ids) || [];
     this.revision_count = obj?.revision_count ?? 0;
   }
 }

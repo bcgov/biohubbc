@@ -91,7 +91,6 @@ export interface IGetSurveyForViewResponseDetails {
 export interface IGetSurveyForViewResponsePurposeAndMethodology {
   intended_outcome_ids: number[];
   additional_details: string;
-  vantage_code_ids: number[];
 }
 
 export interface IGetSurveyForViewResponseProprietor {
@@ -206,7 +205,6 @@ interface ISurveyUpdateObject extends ISurveyLocationForm {
   purpose_and_methodology?: {
     intended_outcome_ids: number[];
     additional_details: string;
-    vantage_code_ids: number[];
     revision_count: number;
   };
   proprietor?: {

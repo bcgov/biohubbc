@@ -454,15 +454,6 @@ export class SurveyService extends DBService {
     // Handle survey proprietor data
     postSurveyData.proprietor && promises.push(this.insertSurveyProprietor(postSurveyData.proprietor, surveyId));
 
-    //Handle vantage codes associated to this survey
-    promises.push(
-      Promise.all(
-        postSurveyData.purpose_and_methodology.vantage_code_ids.map((vantageCode: number) =>
-          this.insertVantageCodes(vantageCode, surveyId)
-        )
-      )
-    );
-
     if (postSurveyData.locations) {
       // Insert survey locations
       promises.push(Promise.all(postSurveyData.locations.map((item) => this.insertSurveyLocations(surveyId, item))));
@@ -596,18 +587,6 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Inserts new record and associated a vantage code to a survey
-   *
-   * @param {number} vantage_code_id
-   * @param {number} surveyId
-   * @returns {*} {Promise<number>}
-   * @memberof SurveyService
-   */
-  async insertVantageCodes(vantage_code_id: number, surveyId: number): Promise<number> {
-    return this.surveyRepository.insertVantageCodes(vantage_code_id, surveyId);
-  }
-
-  /**
    * Inserts proprietor data for a survey
    *
    * @param {PostProprietorData} survey_proprietor
@@ -673,7 +652,6 @@ export class SurveyService extends DBService {
     }
 
     if (putSurveyData?.purpose_and_methodology) {
-      promises.push(this.updateSurveyVantageCodesData(surveyId, putSurveyData));
       promises.push(this.updateSurveyIntendedOutcomes(surveyId, putSurveyData));
     }
 
@@ -1146,39 +1124,6 @@ export class SurveyService extends DBService {
     surveyId: number
   ): Promise<{ survey_stakeholder_partnership_id: number }[]> {
     return this.surveyRepository.insertStakeholderPartnerships(stakeholderPartners, surveyId);
-  }
-
-  /**
-   * Updates vantage codes associated to a survey
-   *
-   * @param {number} surveyId
-   * @param {PutSurveyObject} surveyData
-   * @returns {*} {Promise<void>}
-   * @memberof SurveyService
-   */
-  async updateSurveyVantageCodesData(surveyId: number, surveyData: PutSurveyObject) {
-    await this.deleteSurveyVantageCodes(surveyId);
-
-    const promises: Promise<number>[] = [];
-
-    if (surveyData.purpose_and_methodology.vantage_code_ids) {
-      surveyData.purpose_and_methodology.vantage_code_ids.forEach((vantageCodeId: number) =>
-        promises.push(this.insertVantageCodes(vantageCodeId, surveyId))
-      );
-    }
-
-    return Promise.all(promises);
-  }
-
-  /**
-   * Breaks link between vantage codes and a survey fora  given survey Id
-   *
-   * @param {number} surveyId
-   * @returns {*} {Promise<void>}
-   * @memberof SurveyService
-   */
-  async deleteSurveyVantageCodes(surveyId: number): Promise<void> {
-    return this.surveyRepository.deleteSurveyVantageCodes(surveyId);
   }
 
   /**

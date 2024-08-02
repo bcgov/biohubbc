@@ -46,10 +46,6 @@ describe('SurveyPurposeAndMethodologyData', () => {
     );
 
     expect(getByTestId('intended_outcome_codes').textContent).toEqual('Intended Outcome 1');
-    expect(getAllByTestId('survey_vantage_code').map((item) => item.textContent)).toEqual([
-      'Vantage Code 1',
-      'Vantage Code 2'
-    ]);
     expect(getByTestId('survey_additional_details').textContent).toEqual('details');
   });
 
@@ -98,10 +94,6 @@ describe('SurveyPurposeAndMethodologyData', () => {
     );
 
     expect(getByTestId('intended_outcome_codes').textContent).toEqual('Intended Outcome 1');
-    expect(getAllByTestId('survey_vantage_code').map((item) => item.textContent)).toEqual([
-      'Vantage Code 1',
-      'Vantage Code 2'
-    ]);
     expect(queryByTestId('survey_additional_details')).toBeNull();
   });
 });

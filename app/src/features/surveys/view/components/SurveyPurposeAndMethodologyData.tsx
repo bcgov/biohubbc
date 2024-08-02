@@ -60,33 +60,6 @@ const SurveyPurposeAndMethodologyData = () => {
           </Box>
         </>
       )}
-
-      <Box className="row">
-        <Typography component="dt">Vantage Code(s)</Typography>
-        {surveyData.purpose_and_methodology.vantage_code_ids?.map((vc_id: number) => {
-          return (
-            <Typography
-              component="dd"
-              key={`key-${vc_id}`}
-              sx={{
-                position: 'relative',
-                display: 'inline-block',
-                mr: 1.25,
-                '&::after': {
-                  content: `','`,
-                  position: 'absolute',
-                  top: 0
-                },
-                '&:last-child::after': {
-                  display: 'none'
-                }
-              }}
-              data-testid="survey_vantage_code">
-              {codes?.vantage_codes?.find((item: any) => item.id === vc_id)?.name}
-            </Typography>
-          );
-        })}
-      </Box>
     </Box>
   );
 };

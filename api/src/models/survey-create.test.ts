@@ -376,10 +376,6 @@ describe('PostPurposeAndMethodologyData', () => {
     it('sets additional_details', () => {
       expect(data.additional_details).to.equal(null);
     });
-
-    it('sets vantage_code_ids', () => {
-      expect(data.vantage_code_ids).to.eql([]);
-    });
   });
 
   describe('All values provided with first nations id', () => {
@@ -387,8 +383,7 @@ describe('PostPurposeAndMethodologyData', () => {
 
     const obj = {
       intended_outcome_ids: [1],
-      additional_details: 'additional_detail',
-      vantage_code_ids: [4, 5]
+      additional_details: 'additional_detail'
     };
 
     before(() => {
@@ -401,10 +396,6 @@ describe('PostPurposeAndMethodologyData', () => {
 
     it('sets additional_details', () => {
       expect(data.additional_details).to.eql(obj.additional_details);
-    });
-
-    it('sets vantage_code_ids', () => {
-      expect(data.vantage_code_ids).to.eql(obj.vantage_code_ids);
     });
   });
 });

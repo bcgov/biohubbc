@@ -35,10 +35,6 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 2, name: 'Actioned' },
     { id: 3, name: 'Rejected' }
   ],
-  vantage_codes: [
-    { id: 1, name: 'Vantage Code 1' },
-    { id: 2, name: 'Vantage Code 2' }
-  ],
   intended_outcomes: [
     { id: 1, name: 'Intended Outcome 1', description: 'Description 1' },
     { id: 2, name: 'Intended Outcome 2', description: 'Description 2' }
