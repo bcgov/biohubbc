@@ -1,11 +1,7 @@
 import { SAMPLING_SITE_SPATIAL_TYPE } from 'constants/spatial';
 import { Feature, Point } from 'geojson';
-import {
-  getCoordinatesFromGeoJson,
-  getSamplingSiteSpatialType,
-  isGeoJsonPointFeature,
-  isValidCoordinates
-} from 'utils/spatial-utils';
+import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
+import { getCoordinatesFromGeoJson, isGeoJsonPointFeature, isValidCoordinates } from './spatial-utils';
 
 describe('isValidCoordinates', () => {
   it('returns true when the latitude and longitude values are valid', () => {

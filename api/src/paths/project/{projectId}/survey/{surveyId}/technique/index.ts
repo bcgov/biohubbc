@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/http-error';
 import {
   paginationRequestQueryParamSchema,
   paginationResponseSchema
@@ -112,12 +111,11 @@ POST.apiDoc = {
  */
 export function createTechniques(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const surveyId = Number(req.params.surveyId);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
-
-      const surveyId = Number(req.params.surveyId);
 
       const techniqueService = new TechniqueService(connection);
       await techniqueService.insertTechniquesForSurvey(surveyId, req.body.techniques);
@@ -236,16 +234,12 @@ GET.apiDoc = {
  */
 export function getTechniques(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required param `surveyId`');
-    }
-
-    const connection = getDBConnection(req['keycloak_token']);
+    const surveyId = Number(req.params.surveyId);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
-      const surveyId = Number(req.params.surveyId);
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
       const techniqueService = new TechniqueService(connection);

@@ -2,44 +2,49 @@ import Box from '@mui/material/Box';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { ISurveyMapPointMetadata } from './SurveyMap';
 
-interface ISurveyMapPopupProps {
+export interface ISurveyMapPopupProps {
   isLoading: boolean;
   title: string;
-  metadata: ISurveyMapPointMetadata[];
+  metadata: {
+    label: string;
+    value: string | number;
+  }[];
 }
 
 /**
  * Returns a popup component for displaying information about a leaflet map layer upon being clicked
  *
- * @param props {ISurveyMapPopupProps}
- * @returns
+ * @param {ISurveyMapPopupProps} props
+ * @return {*}
  */
-const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
+export const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
+  const { isLoading, title, metadata } = props;
+
   return (
     <Box>
-      {props.isLoading ? (
-        <Box position="absolute" top="0" left="0" right="0" sx={{ opacity: 1 }}>
+      {isLoading ? (
+        <Box>
           <Typography
             component="div"
             variant="body2"
             fontWeight={700}
             sx={{
-              pr: 3,
+              pr: 4,
               whiteSpace: 'nowrap',
               overflow: 'hidden',
-              textOverflow: 'ellipsis'
+              textOverflow: 'ellipsis',
+              textTransform: 'uppercase'
             }}>
             <Skeleton />
           </Typography>
-          <Box mt={1} mb={0}>
+          <Box mt={1} mb={0} width={200}>
             <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
-              <Skeleton width="80px" />
+              <Skeleton width="100px" />
               <Skeleton sx={{ flex: '1 1 auto' }} />
             </Stack>
             <Stack flexDirection="row" alignItems="flex-start" gap={1} sx={{ typography: 'body2' }}>
-              <Skeleton width="80px" />
+              <Skeleton width="100px" />
               <Skeleton sx={{ flex: '1 1 auto' }} />
             </Stack>
           </Box>
@@ -57,17 +62,17 @@ const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
               textOverflow: 'ellipsis',
               textTransform: 'uppercase'
             }}>
-            {props.title}
+            {title}
           </Typography>
           <Box component="dl" mt={1} mb={0}>
-            {props.metadata.map((metadata) => (
+            {metadata.map((metadata) => (
               <Stack
                 key={`${metadata.label}-${metadata.value}`}
                 flexDirection="row"
                 alignItems="flex-start"
                 gap={1}
                 sx={{ typography: 'body2' }}>
-                <Box component="dt" width={80} flex="0 0 auto" sx={{ color: 'text.secondary' }}>
+                <Box component="dt" minWidth={100} flex="0 0 auto" sx={{ color: 'text.secondary' }}>
                   {metadata.label}:
                 </Box>
                 <Box component="dd" m={0} minWidth={100}>
@@ -81,5 +86,3 @@ const SurveyMapPopup = (props: ISurveyMapPopupProps) => {
     </Box>
   );
 };
-
-export default SurveyMapPopup;

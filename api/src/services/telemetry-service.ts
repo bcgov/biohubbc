@@ -183,6 +183,20 @@ export class TelemetryService extends DBService {
   }
 
   /**
+   * Get deployments for the provided survey id.
+   *
+   * Note: SIMS does not store deployment information, beyond an ID. Deployment details must be fetched from the
+   * external BCTW API.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<Deployment[]>}
+   * @memberof TelemetryService
+   */
+  async getDeploymentsBySurveyId(surveyId: number): Promise<Deployment[]> {
+    return this.telemetryRepository.getDeploymentsBySurveyId(surveyId);
+  }
+
+  /**
    * Retrieves the paginated list of all telemetry records that are available to the user, based on their permissions
    * and provided filter criteria.
    *

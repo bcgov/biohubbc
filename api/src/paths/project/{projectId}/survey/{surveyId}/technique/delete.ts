@@ -109,7 +109,7 @@ export function deleteSurveyTechniqueRecords(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     const methodTechniqueIds = req.body.methodTechniqueIds as number[];
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -124,10 +124,10 @@ export function deleteSurveyTechniqueRecords(): RequestHandler {
 
       const techniqueService = new TechniqueService(connection);
 
-      // TODO Update to handle all deletes in one request rather than one at a time
-      for (const methodTechniqueId of methodTechniqueIds) {
-        await techniqueService.deleteTechnique(surveyId, methodTechniqueId);
-      }
+      // TODO: Update to handle all deletes in one request rather than one at a time
+      await Promise.all(
+        methodTechniqueIds.map((methodTechniqueId) => techniqueService.deleteTechnique(surveyId, methodTechniqueId))
+      );
 
       await connection.commit();
 

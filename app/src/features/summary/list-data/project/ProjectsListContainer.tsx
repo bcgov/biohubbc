@@ -216,7 +216,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="500px">
+      <Box height="70vh">
         <StyledDataGrid
           noRowsMessage="No projects found"
           loading={!isReady && !data}

@@ -6,6 +6,7 @@ import { authorizeRequestHandler } from '../../../../../request-handlers/securit
 import { BctwService } from '../../../../../services/bctw-service';
 import { ICritterbaseUser } from '../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../services/survey-critter-service';
+import { TelemetryService } from '../../../../../services/telemetry-service';
 import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters');
@@ -44,16 +45,26 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'path',
+      name: 'projectId',
+      schema: {
+        type: 'number',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'number',
+        minimum: 1
       },
       required: true
     }
   ],
   responses: {
     200: {
-      description: 'Responds with all deployments under this survey, determined by critters under the survey.',
+      description: 'A list of deployments belonging to critters associated with this survey.',
       content: {
         'application/json': {
           schema: {
@@ -84,28 +95,66 @@ GET.apiDoc = {
   }
 };
 
+/**
+ * Get all deployments under a survey.
+ *
+ * TODO: Currently this fetches deployment records based on the critters in the survey. This is a stop-gap solution
+ * until the BCTW API is updated to support fetching deployment records by deployment ID. SIMS already tracks deployment
+ * IDs in the 'deployment' table, which should be used to fetch deployment records when the BCTW API is updated. See
+ * 'Workaround' in the implementation below.
+ *
+ * @export
+ * @return {*}  {RequestHandler}
+ */
 export function getDeploymentsInSurvey(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
+
     const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
+
+      const telemetryService = new TelemetryService(connection);
+      const simsDeploymentRecords = await telemetryService.getDeploymentsBySurveyId(surveyId);
+
+      if (!simsDeploymentRecords.length) {
+        // No deployments recorded by the survey, return early
+        return res.status(200).json([]);
+      }
+
+      const surveyCritterService = new SurveyCritterService(connection);
+      const simsCritterRecords = await surveyCritterService.getCrittersInSurvey(surveyId);
+
+      if (!simsCritterRecords.length) {
+        // No critters recorded by the survey, return early
+        return res.status(200).json([]);
+      }
+
+      const critterbaseCritterIds = simsCritterRecords.map((critter) => critter.critterbase_critter_id);
 
       const user: ICritterbaseUser = {
         keycloak_guid: connection.systemUserGUID(),
         username: connection.systemUserIdentifier()
       };
 
-      const surveyCritterService = new SurveyCritterService(connection);
       const bctwService = new BctwService(user);
+      // All bctw deployment records for all critters in the survey, which may include deployments not recorded by the
+      // survey
+      const allBCTWDeploymentRecordsForCritterIds = await bctwService.getDeploymentsByCritterId(critterbaseCritterIds);
 
-      const critter_ids = (await surveyCritterService.getCrittersInSurvey(surveyId)).map(
-        (critter) => critter.critterbase_critter_id
+      // All bctw deployment ids that were recorded by the survey in SIMS
+      const simsBCTWDeploymentIds = simsDeploymentRecords.map(
+        (deploymentRecord) => deploymentRecord.bctw_deployment_id
       );
 
-      const results = critter_ids.length ? await bctwService.getDeploymentsByCritterId(critter_ids) : [];
-      return res.status(200).json(results);
+      // Workaround (see TODO in JSDoc): Filter all bctw deployments to only include deployments that were recorded by
+      // the survey in SIMS.
+      const deploymentRecordsForSurvey = allBCTWDeploymentRecordsForCritterIds.filter((bctwDeploymentRecord) =>
+        simsBCTWDeploymentIds.includes(bctwDeploymentRecord.deployment_id)
+      );
+
+      return res.status(200).json(deploymentRecordsForSurvey);
     } catch (error) {
       defaultLog.error({ label: 'getDeploymentsInSurvey', message: 'error', error });
       await connection.rollback();

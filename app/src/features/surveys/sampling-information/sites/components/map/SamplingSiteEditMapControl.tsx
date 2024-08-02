@@ -107,7 +107,11 @@ const SamplingSiteEditMapControl = (props: ISamplingSiteEditMapControlProps) => 
         const staticLayers: IStaticLayer[] = [
           {
             layerName: 'Sampling Sites',
-            features: samplingSiteGeoJsonFeatures.map((feature: Feature, index) => ({ geoJSON: feature, key: index }))
+            features: samplingSiteGeoJsonFeatures.map((feature: Feature, index) => ({
+              id: feature.id || index,
+              key: `sampling-site-${feature.id || index}`,
+              geoJSON: feature
+            }))
           }
         ];
 

@@ -36,10 +36,10 @@ export const getCoordinatesFromGeoJson = (feature: Feature<Point>): { latitude: 
 /**
  * Checks if the given feature is a GeoJson Feature containing a Point.
  *
- * @param {(Feature | any)} [feature]
+ * @param {(unknown)} [feature]
  * @return {*}  {feature is Feature<Point>}
  */
-export const isGeoJsonPointFeature = (feature?: Feature | any): feature is Feature<Point> => {
+export const isGeoJsonPointFeature = (feature?: unknown): feature is Feature<Point> => {
   return (feature as Feature)?.geometry?.type === 'Point';
 };
 

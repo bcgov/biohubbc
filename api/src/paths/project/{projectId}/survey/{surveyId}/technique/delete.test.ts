@@ -46,7 +46,7 @@ describe('deleteSurveyTechniqueRecords', () => {
       expect.fail();
     } catch (actualError) {
       expect(getSampleMethodsCountForTechniqueIdsStub).to.have.been.calledOnce;
-      expect(deleteTechniqueStub).to.have.been.calledOnce;
+      expect(deleteTechniqueStub).to.have.been.calledThrice;
 
       expect(mockDBConnection.rollback).to.have.been.calledOnce;
       expect(mockDBConnection.release).to.have.been.calledOnce;
