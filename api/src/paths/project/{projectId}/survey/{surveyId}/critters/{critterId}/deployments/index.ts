@@ -7,7 +7,7 @@ import { postDeploymentSchema } from '../../../../../../../../openapi/schemas/de
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { BctwDeploymentService } from '../../../../../../../../services/bctw-service/bctw-deployment-service';
 import { getBctwUser } from '../../../../../../../../services/bctw-service/bctw-service';
-import { CritterbaseService } from '../../../../../../../../services/critterbase-service';
+import { CritterbaseService, ICritterbaseUser } from '../../../../../../../../services/critterbase-service';
 import { DeploymentService } from '../../../../../../../../services/deployment-service';
 import { getLogger } from '../../../../../../../../utils/logger';
 
@@ -155,12 +155,43 @@ export function createDeployment(): RequestHandler {
       });
 
       await connection.commit();
-      
+
       return res.status(201).json({ deploymentId: deployment.deployment_id });
     } catch (error) {
       defaultLog.error({ label: 'createDeployment', message: 'error', error });
       await connection.rollback();
 
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
+export function updateDeployment(): RequestHandler {
+  return async (req, res) => {
+    const critterId = Number(req.params.critterId);
+
+    const connection = getDBConnection(req.keycloak_token);
+
+    try {
+      await connection.open();
+
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
+
+      const deploymentService = new DeploymentService(connection);
+      const bctwDeploymentService = new BctwDeploymentService(user);
+
+      await deploymentService.updateDeployment(critterId, req.body.deployment_id);
+      await bctwDeploymentService.updateDeployment(req.body);
+      await connection.commit();
+      return res.status(200).json({ message: 'Deployment updated.' });
+    } catch (error) {
+      defaultLog.error({ label: 'updateDeployment', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

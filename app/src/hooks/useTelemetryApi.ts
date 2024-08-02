@@ -1,19 +1,79 @@
 import { AxiosProgressEvent, CancelTokenSource } from 'axios';
-import { ConfigContext } from 'contexts/configContext';
-import {
-  IAllTelemetry,
-  ICreateManualTelemetry,
-  IManualTelemetry,
-  IUpdateManualTelemetry,
-  IVendorTelemetry
-} from 'interfaces/useTelemetryApi.interface';
-import { useContext } from 'react';
+import { useConfigContext } from 'hooks/useContext';
 import useAxios from './api/useAxios';
 import { useDeviceApi } from './telemetry/useDeviceApi';
+import { IAllTelemetry } from 'interfaces/useTelemetryApi.interface';
+
+export interface ICritterDeploymentResponse {
+  critter_id: string;
+  device_id: number;
+  deployment_id: string;
+  survey_critter_id: string;
+  alias: string;
+  attachment_start: string;
+  attachment_end?: string;
+  taxon: string;
+}
+
+export interface IUpdateManualTelemetry {
+  telemetry_manual_id: string;
+  latitude: number;
+  longitude: number;
+  acquisition_date: string;
+}
+export interface ICreateManualTelemetry {
+  deployment_id: string;
+  latitude: number;
+  longitude: number;
+  acquisition_date: string;
+}
+
+export interface IManualTelemetry extends ICreateManualTelemetry {
+  telemetry_manual_id: string;
+}
+
+export interface IVendorTelemetry extends ICreateManualTelemetry {
+  telemetry_id: string;
+}
+
+export interface ITelemetry {
+  id: string;
+  /**
+   * Either the telemetry_manual_id or telemetry_id (depending on the type of telemetry: manual vs vendor).
+   */
+  deployment_id: string;
+  /**
+   * The telemetry_manual_id if the telemetry was manually created.
+   * Will be null if the telemetry was retrieved from a vendor.
+   */
+  telemetry_manual_id: string | null;
+  /**
+   * The telemetry_id if the telemetry was retrieved from a vendor.
+   * Will be null if the telemetry was manually created.
+   */
+  telemetry_id: number | null;
+  /**
+   * The latitude of the telemetry.
+   */
+  latitude: number;
+  /**
+   * The longitude of the telemetry.
+   */
+  longitude: number;
+  /**
+   * The acquisition date of the telemetry.
+   */
+  acquisition_date: string;
+  /**
+   * The type of telemetry.
+   * Will either be 'MANUAL' (for manual telementry) or the name of the vendor (for vendor telemetry).
+   */
+  telemetry_type: string;
+}
 
 export const useTelemetryApi = () => {
-  const config = useContext(ConfigContext);
-  const axios = useAxios(config?.API_HOST);
+  const config = useConfigContext();
+  const axios = useAxios(config.API_HOST);
   const devices = useDeviceApi(axios);
 
   /**

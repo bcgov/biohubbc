@@ -1,8 +1,13 @@
+import { ConfigContext, IConfig } from 'contexts/configContext';
 import { fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import FileUpload, { IFileUploadProps } from './FileUpload';
 
 const renderContainer = (props: IFileUploadProps) => {
-  return render(<FileUpload {...props} />);
+  return render(
+    <ConfigContext.Provider value={{} as IConfig}>
+      <FileUpload {...props} />
+    </ConfigContext.Provider>
+  );
 };
 
 describe('FileUpload', () => {

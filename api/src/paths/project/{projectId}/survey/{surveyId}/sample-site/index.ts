@@ -8,6 +8,7 @@ import {
   paginationRequestQueryParamSchema,
   paginationResponseSchema
 } from '../../../../../../openapi/schemas/pagination';
+import { techniqueSimpleViewSchema } from '../../../../../../openapi/schemas/technique';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { PostSampleLocations, SampleLocationService } from '../../../../../../services/sample-location-service';
 import { getLogger } from '../../../../../../utils/logger';
@@ -111,7 +112,7 @@ GET.apiDoc = {
                       required: [
                         'survey_sample_method_id',
                         'survey_sample_site_id',
-                        'method_lookup_id',
+                        'technique',
                         'method_response_metric_id',
                         'sample_periods'
                       ],
@@ -127,10 +128,7 @@ GET.apiDoc = {
                             type: 'integer',
                             minimum: 1
                           },
-                          method_lookup_id: {
-                            type: 'integer',
-                            minimum: 1
-                          },
+                          technique: techniqueSimpleViewSchema,
                           method_response_metric_id: {
                             type: 'integer',
                             minimum: 1
@@ -269,7 +267,7 @@ export function getSurveySampleLocationRecord(): RequestHandler {
       throw new HTTP400('Missing required param `surveyId`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -306,7 +304,7 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -371,7 +369,7 @@ POST.apiDoc = {
               items: {
                 type: 'object',
                 additionalProperties: false,
-                required: ['method_lookup_id', 'description', 'sample_periods', 'method_response_metric_id'],
+                required: ['method_technique_id', 'description', 'sample_periods', 'method_response_metric_id'],
                 properties: {
                   survey_sample_site_id: {
                     type: 'integer',
@@ -381,12 +379,11 @@ POST.apiDoc = {
                     type: 'integer',
                     nullable: true
                   },
-                  method_lookup_id: {
-                    type: 'integer',
-                    nullable: true
-                  },
                   description: {
                     type: 'string'
+                  },
+                  method_technique_id: {
+                    type: 'integer'
                   },
                   sample_periods: {
                     type: 'array',
@@ -401,10 +398,6 @@ POST.apiDoc = {
                           nullable: true
                         },
                         survey_sample_method_id: {
-                          type: 'integer',
-                          nullable: true
-                        },
-                        method_lookup_id: {
                           type: 'integer',
                           nullable: true
                         },
@@ -570,7 +563,7 @@ export function createSurveySampleSiteRecord(): RequestHandler {
       throw new HTTP400('Missing required path param `surveyId`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const sampleSite: PostSampleLocations = {

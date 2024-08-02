@@ -140,7 +140,7 @@ GET.apiDoc = {
  */
 export function getAdministrativeActivities(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       // Only search for specified types if provided, otherwise search all types

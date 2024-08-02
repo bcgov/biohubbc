@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { IBctwUser } from '../../../models/bctw';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { getBctwUser } from '../../../services/bctw-service';
 import { BctwDeploymentService } from '../../../services/bctw-service/bctw-deployment-service';
 import { BctwDeviceService } from '../../../services/bctw-service/bctw-device-service';
 import { BctwKeyxService } from '../../../services/bctw-service/bctw-keyx-service';
@@ -61,15 +61,11 @@ GET.apiDoc = {
 
 export function getDeviceDetails(): RequestHandler {
   return async (req, res) => {
-    const user: IBctwUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
+    const user = getBctwUser(req);
 
     const bctwDeviceService = new BctwDeviceService(user);
-    const bctwKeyxService = new BctwKeyxService(user);
     const bctwDeploymentService = new BctwDeploymentService(user);
-
+    const bctwKeyxService = new BctwKeyxService(user);
     const deviceId = Number(req.params.deviceId);
 
     const deviceMake = String(req.query.make);
@@ -82,7 +78,7 @@ export function getDeviceDetails(): RequestHandler {
       const keyXResult = await bctwKeyxService.getKeyXDetails([deviceId]);
 
       const keyXStatus = keyXResult?.[0]?.keyx?.idcollar === deviceId;
-      
+
       const retObj = {
         device: results?.[0],
         keyXStatus: keyXStatus,

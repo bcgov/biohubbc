@@ -51,7 +51,7 @@ export function replaceCellDates(cell: CellObject) {
   }
 
   if (isTimeFormatCell(cell)) {
-    const TimeFormat = 'HH:mm';
+    const TimeFormat = 'HH:mm:ss';
     cell.v = cellDate.format(TimeFormat);
     return cell;
   }

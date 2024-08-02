@@ -1,8 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { IBctwUser } from '../../models/bctw';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
-import { BctwService } from '../../services/bctw-service/bctw-service';
+import { BctwService, getBctwUser } from '../../services/bctw-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/telemetry/code');
@@ -71,10 +70,7 @@ GET.apiDoc = {
 
 export function getCodeValues(): RequestHandler {
   return async (req, res) => {
-    const user: IBctwUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
+    const user = getBctwUser(req);
 
     const bctwService = new BctwService(user);
 

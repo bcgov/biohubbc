@@ -21,12 +21,18 @@ export type FindCrittersResponse = Pick<
  */
 export class SurveyCritterService extends DBService {
   critterRepository: SurveyCritterRepository;
+  critterbaseService: CritterbaseService;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
     this.critterRepository = new SurveyCritterRepository(connection);
+    this.critterbaseService = new CritterbaseService({
+      keycloak_guid: connection.systemUserGUID(),
+      username: connection.systemUserIdentifier()
+    });
   }
+
   /**
    * Get all critter associations for the given survey. This only gets you critter ids, which can be used to fetch
    * details from the external system.
@@ -143,7 +149,21 @@ export class SurveyCritterService extends DBService {
    * @memberof SurveyCritterService
    */
   async addCritterToSurvey(surveyId: number, critterBaseCritterId: string): Promise<number> {
-    return this.critterRepository.addCritterToSurvey(surveyId, critterBaseCritterId);
+    const response = await this.critterRepository.addCrittersToSurvey(surveyId, [critterBaseCritterId]);
+
+    return response[0];
+  }
+
+  /**
+   * Add multiple critters to a survey. Does not create anything in the external system.
+   *
+   * @param {number} surveyId
+   * @param {string} critterBaseCritterIds
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyCritterService
+   */
+  async addCrittersToSurvey(surveyId: number, critterBaseCritterIds: string[]): Promise<number[]> {
+    return this.critterRepository.addCrittersToSurvey(surveyId, critterBaseCritterIds);
   }
 
   /**

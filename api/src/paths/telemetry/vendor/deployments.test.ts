@@ -1,7 +1,9 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { SystemUser } from '../../../repositories/user-repository';
+import { IVendorTelemetry } from '../../../services/bctw-service';
+import { BctwTelemetryService } from '../../../services/bctw-service/bctw-telemetry-service';
 import { getRequestHandlerMocks } from '../../../__mocks__/db';
-import { BctwTelemetryService, IVendorTelemetry } from '../../../services/bctw-service/bctw-telemetry-service';
 import { getVendorTelemetryByDeploymentIds } from './deployments';
 
 const mockTelemetry: IVendorTelemetry[] = [
@@ -41,6 +43,9 @@ describe('getVendorTelemetryByDeploymentIds', () => {
       .resolves(mockTelemetry);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
     const requestHandler = getVendorTelemetryByDeploymentIds();
 
     await requestHandler(mockReq, mockRes, mockNext);
@@ -56,6 +61,9 @@ describe('getVendorTelemetryByDeploymentIds', () => {
       .rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
     const requestHandler = getVendorTelemetryByDeploymentIds();
 
     try {

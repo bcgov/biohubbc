@@ -176,7 +176,7 @@ export function createSurvey(): RequestHandler {
 
     const sanitizedPostSurveyData = new PostSurveyObject(req.body);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

@@ -130,7 +130,7 @@ export function deleteSurveyObservations(): RequestHandler {
 
     defaultLog.debug({ label: 'deleteSurveyObservations', surveyId });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

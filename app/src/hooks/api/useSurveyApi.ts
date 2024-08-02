@@ -568,15 +568,25 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Deletes a deployment. Will trigger deletion in SIMS and invalidates the deployment in BCTW.
+   * Bulk upload Critters from CSV.
    *
+   * @async
+   * @param {File} file - Critters CSV.
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {number} deploymentId
-   * @returns {*}
+   * @returns {Promise<number[]>}
    */
-  const deleteDeployment = async (projectId: number, surveyId: number, deploymentId: number): Promise<string> => {
-    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
+  const importCrittersFromCsv = async (
+    file: File,
+    projectId: number,
+    surveyId: number
+  ): Promise<{ survey_critter_ids: number[] }> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/import`, formData);
+
     return data;
   };
 
@@ -600,13 +610,11 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyCritters,
     createCritterAndAddToSurvey,
     removeCrittersFromSurvey,
-    createDeployment,
     getDeploymentsInSurvey,
     getCritterById,
     updateDeployment,
     getCritterTelemetry,
-    endDeployment,
-    deleteDeployment
+    importCrittersFromCsv
   };
 };
 

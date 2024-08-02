@@ -247,7 +247,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="500px">
+      <Box height="70vh">
         <StyledDataGrid
           noRowsMessage="No observations found"
           loading={!observationsDataLoader.isReady && !observationsDataLoader.data}

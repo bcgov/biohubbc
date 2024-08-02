@@ -16,13 +16,27 @@ export interface QueryParam {
 }
 
 export interface ICritter {
-  critter_id?: string;
+  critter_id: string;
   wlh_id: string | null;
-  animal_id: string;
+  animal_id: string | null;
   sex: string;
   itis_tsn: number;
   itis_scientific_name: string;
-  critter_comment: string;
+  critter_comment: string | null;
+}
+
+export interface ICritterDetailed extends ICritter {
+  captures: ICaptureDetailed[];
+  mortality: IMortality;
+}
+
+export interface ICreateCritter {
+  critter_id?: string;
+  wlh_id?: string | null;
+  animal_id: string; // NOTE: In critterbase this is optional. For SIMS it should be required.
+  sex: string;
+  itis_tsn: number;
+  critter_comment?: string | null;
 }
 
 export interface ICapture {
@@ -30,13 +44,51 @@ export interface ICapture {
   critter_id: string;
   capture_method_id?: string | null;
   capture_location_id: string;
-  release_location_id: string;
+  release_location_id?: string | null;
   capture_date: string;
   capture_time?: string | null;
   release_date?: string | null;
   release_time?: string | null;
-  capture_comment: string;
-  release_comment: string;
+  capture_comment?: string | null;
+  release_comment?: string | null;
+}
+
+export interface ICaptureDetailed {
+  capture_id?: string;
+  critter_id: string;
+  capture_method_id?: string | null;
+  capture_location_id?: string | null;
+  release_location_id?: string | null;
+  capture_date: string;
+  capture_time?: string | null;
+  release_date?: string | null;
+  release_time?: string | null;
+  capture_comment?: string | null;
+  release_comment?: string | null;
+  markings: IMarking[];
+  quantitative_measurements: IQualMeasurement[];
+  qualitative_measurements: IQuantMeasurement[];
+  capture_location: {
+    latitude: number;
+    longitude: number;
+  };
+  release_location: {
+    latitude: number;
+    longitude: number;
+  };
+}
+
+export interface ICreateCapture {
+  critter_id: string;
+  capture_method_id?: string;
+  capture_location: ILocation;
+  release_location?: ILocation;
+  capture_date: string;
+  capture_time?: string | null;
+  release_date?: string | null;
+  release_time?: string | null;
+  capture_comment?: string | null;
+  release_comment?: string | null;
 }
 
 export interface IMortality {
@@ -51,6 +103,10 @@ export interface IMortality {
   ultimate_cause_of_death_confidence: string;
   ultimate_predated_by_itis_tsn: string;
   mortality_comment: string;
+  mortality_location: {
+    latitude: number;
+    longitude: number;
+  };
 }
 
 export interface ILocation {
@@ -113,15 +169,48 @@ export interface ICollection {
 }
 
 export interface IBulkCreate {
-  critters: ICritter[];
-  captures: ICapture[];
-  collections: ICollection[];
-  mortalities: IMortality[];
-  locations: ILocation[];
-  markings: IMarking[];
-  quantitative_measurements: IQuantMeasurement[];
-  qualitative_measurements: IQualMeasurement[];
-  families: IFamilyPayload[];
+  critters?: ICreateCritter[];
+  captures?: ICapture[];
+  collections?: ICollection[];
+  mortalities?: IMortality[];
+  locations?: ILocation[];
+  markings?: IMarking[];
+  quantitative_measurements?: IQuantMeasurement[];
+  qualitative_measurements?: IQualMeasurement[];
+  families?: IFamilyPayload[];
+}
+
+interface IBulkResponse {
+  critters: number;
+  captures: number;
+  collections: number;
+  mortalities: number;
+  locations: number;
+  markings: number;
+  quantitative_measurements: number;
+  qualitative_measurements: number;
+  families: number;
+  family_parents: number;
+  family_chidren: number;
+}
+
+export interface IBulkCreateResponse {
+  created: IBulkResponse;
+}
+
+export interface ICollectionUnitWithCategory {
+  collection_unit_id: string;
+  collection_category_id: string;
+  category_name: string;
+  unit_name: string;
+  description: string | null;
+}
+
+export interface ICollectionCategory {
+  collection_category_id: string;
+  category_name: string;
+  description: string | null;
+  itis_tsn: number;
 }
 
 /**
@@ -261,6 +350,7 @@ const BULK_ENDPOINT = '/bulk';
 const SIGNUP_ENDPOINT = '/signup';
 const FAMILY_ENDPOINT = '/family';
 const CAPTURE_ENDPOINT = '/captures';
+const XREF_ENDPOINT = '/xref';
 
 const defaultLog = getLogger('CritterbaseServiceLogger');
 
@@ -285,9 +375,14 @@ export class CritterbaseService {
         return response;
       },
       (error: AxiosError) => {
-        defaultLog.error({ label: 'CritterbaseService', message: error.message, error });
+        defaultLog.error({ label: 'CritterbaseService', message: error.message, error: error.response?.data });
+
         return Promise.reject(
-          new ApiError(ApiErrorType.GENERAL, `API request failed with status code ${error?.response?.status}`)
+          new ApiError(
+            ApiErrorType.GENERAL,
+            `Critterbase API request failed with status code ${error?.response?.status}`,
+            [error.response?.data as object]
+          )
         );
       }
     );
@@ -321,7 +416,15 @@ export class CritterbaseService {
     return JSON.stringify(this.user);
   }
 
-  async _makeGetRequest(endpoint: string, params: QueryParam[]) {
+  /**
+   * Makes a GET request to the specified endpoint with the provided query parameters.
+   *
+   * @param {string} endpoint - The endpoint to send the GET request to.
+   * @param {QueryParam[]} params - The query parameters to append to the URL.
+   * @returns {Promise<any>} - The response data from the GET request.
+   * @private
+   */
+  async _makeGetRequest(endpoint: string, params: QueryParam[]): Promise<any> {
     const appendParams = new URLSearchParams();
     for (const p of params) {
       appendParams.append(p.key, p.value);
@@ -332,10 +435,23 @@ export class CritterbaseService {
     return response.data;
   }
 
-  async getLookupValues(route: CbRouteKey, params: QueryParam[]) {
+  /**
+   * Fetches lookup values from the specified route with the provided query parameters.
+   *
+   * @param {CbRouteKey} route - The route key to fetch lookup values from.
+   * @param {QueryParam[]} params - The query parameters to append to the URL.
+   * @returns {Promise<any>} - The response data containing lookup values.
+   */
+  async getLookupValues(route: CbRouteKey, params: QueryParam[]): Promise<any> {
     return this._makeGetRequest(CbRoutes[route], params);
   }
 
+  /**
+   * Fetches qualitative and quantitative measurements for the specified taxon.
+   *
+   * @param {string} tsn - The taxon serial number (TSN).
+   * @returns {Promise<{ qualitative: CBQualitativeMeasurementTypeDefinition[], quantitative: CBQuantitativeMeasurementTypeDefinition[] }>} - The response data containing qualitative and quantitative measurements.
+   */
   async getTaxonMeasurements(tsn: string): Promise<{
     qualitative: CBQualitativeMeasurementTypeDefinition[];
     quantitative: CBQuantitativeMeasurementTypeDefinition[];
@@ -344,25 +460,49 @@ export class CritterbaseService {
     return response;
   }
 
-  async getTaxonBodyLocations(tsn: string) {
+  /**
+   * Fetches body location information for the specified taxon.
+   *
+   * @param {string} tsn - The taxon serial number (TSN).
+   * @returns {Promise<any>} - The response data containing body location information.
+   */
+  async getTaxonBodyLocations(tsn: string): Promise<any> {
     return this._makeGetRequest(CbRoutes['taxon-marking-body-locations'], [
       { key: 'tsn', value: tsn },
       { key: 'format', value: 'asSelect' }
     ]);
   }
 
-  async getQualitativeOptions(taxon_measurement_id: string, format = 'asSelect') {
+  /**
+   * Fetches qualitative options for the specified taxon measurement.
+   *
+   * @param {string} taxon_measurement_id - The taxon measurement ID.
+   * @param {string} [format='asSelect'] - The format of the response data.
+   * @returns {Promise<any>} - The response data containing qualitative options.
+   */
+  async getQualitativeOptions(taxon_measurement_id: string, format = 'asSelect'): Promise<any> {
     return this._makeGetRequest(CbRoutes['taxon-qualitative-measurement-options'], [
       { key: 'taxon_measurement_id', value: taxon_measurement_id },
       { key: 'format', value: format }
     ]);
   }
 
-  async getFamilies() {
+  /**
+   * Fetches a list of all families.
+   *
+   * @returns {Promise<any>} - The response data containing a list of families.
+   */
+  async getFamilies(): Promise<any> {
     return this._makeGetRequest(FAMILY_ENDPOINT, []);
   }
 
-  async getFamilyById(family_id: string) {
+  /**
+   * Fetches information about a family by its ID.
+   *
+   * @param {string} family_id - The ID of the family.
+   * @returns {Promise<any>} - The response data containing family information.
+   */
+  async getFamilyById(family_id: string): Promise<any> {
     return this._makeGetRequest(`${FAMILY_ENDPOINT}/${family_id}`, []);
   }
 
@@ -374,22 +514,79 @@ export class CritterbaseService {
     return this._makeGetRequest(`${CAPTURE_ENDPOINT}/${capture_id}`, [{ key: 'format', value: 'detailed' }]);
   }
 
-  async createCritter(data: ICritter) {
+  /**
+   * Creates a new critter with the provided data.
+   *
+   * @param {ICreateCritter} data - The data of the critter to be created.
+   * @returns {Promise<any>} - The response data from the create operation.
+   */
+  async createCritter(data: ICreateCritter): Promise<any> {
     const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}/create`, data);
     return response.data;
   }
 
-  async updateCritter(data: IBulkCreate) {
+  /**
+   * Updates critters in bulk with the provided data.
+   *
+   * @param {IBulkCreate} data - The data for the bulk update.
+   * @returns {Promise<any>} - The response data from the update operation.
+   */
+  async updateCritter(data: IBulkCreate): Promise<any> {
     const response = await this.axiosInstance.patch(BULK_ENDPOINT, data);
     return response.data;
   }
 
+  /**
+   * Creates critters in bulk with the provided data.
+   *
+   * @param {IBulkCreate} data
+   * @return {*}  {Promise<IBulkCreateResponse>}
+   * @memberof CritterbaseService
+   */
+  async bulkCreate(data: IBulkCreate): Promise<IBulkCreateResponse> {
+    const response = await this.axiosInstance.post(BULK_ENDPOINT, data);
+    return response.data;
+  }
+
+  /**
+   * Fetches multiple critters by their IDs.
+   *
+   * @param {string[]} critter_ids - The IDs of the critters.
+   * @returns {Promise<ICritter[]>} - The response data containing multiple critters.
+   */
   async getMultipleCrittersByIds(critter_ids: string[]): Promise<ICritter[]> {
     const response = await this.axiosInstance.post(CRITTER_ENDPOINT, { critter_ids });
     return response.data;
   }
 
-  async signUp() {
+  /**
+   * Fetches detailed information about multiple critters by their IDs.
+   *
+   * @param {string[]} critter_ids - The IDs of the critters.
+   * @returns {Promise<ICritterDetailed[]>} - The response data containing detailed information about multiple critters.
+   */
+  async getMultipleCrittersByIdsDetailed(critter_ids: string[]): Promise<ICritterDetailed[]> {
+    const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}?format=detailed`, { critter_ids });
+    return response.data;
+  }
+
+  /**
+   * Fetches detailed information about multiple critters by their IDs.
+   *
+   * @param {string[]} critter_ids - The IDs of the critters.
+   * @returns {Promise<ICritterDetailed[]>} - The response data containing detailed information about multiple critters.
+   */
+  async getMultipleCrittersGeometryByIds(critter_ids: string[]): Promise<ICritterDetailed[]> {
+    const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}/spatial`, { critter_ids });
+    return response.data;
+  }
+
+  /**
+   * Signs up a user.
+   *
+   * @returns {Promise<any>} - The response data from the sign-up operation.
+   */
+  async signUp(): Promise<any> {
     const response = await this.axiosInstance.post(SIGNUP_ENDPOINT);
     return response.data;
   }
@@ -404,7 +601,7 @@ export class CritterbaseService {
   async getQualitativeMeasurementTypeDefinition(
     taxon_measurement_ids: string[]
   ): Promise<CBQualitativeMeasurementTypeDefinition[]> {
-    const { data } = await this.axiosInstance.post(`/xref/taxon-qualitative-measurements`, {
+    const { data } = await this.axiosInstance.post(`${XREF_ENDPOINT}/taxon-qualitative-measurements`, {
       taxon_measurement_ids: taxon_measurement_ids
     });
 
@@ -421,10 +618,36 @@ export class CritterbaseService {
   async getQuantitativeMeasurementTypeDefinition(
     taxon_measurement_ids: string[]
   ): Promise<CBQuantitativeMeasurementTypeDefinition[]> {
-    const { data } = await this.axiosInstance.post(`/xref/taxon-quantitative-measurements`, {
+    const { data } = await this.axiosInstance.post(`${XREF_ENDPOINT}/taxon-quantitative-measurements`, {
       taxon_measurement_ids: taxon_measurement_ids
     });
 
     return data;
+  }
+
+  /**
+   * Find collection categories by tsn. Includes hierarchies.
+   *
+   * @async
+   * @param {string} tsn - ITIS TSN
+   * @returns {Promise<ICollectionCategory[]>} Collection categories
+   */
+  async findTaxonCollectionCategories(tsn: string): Promise<ICollectionCategory[]> {
+    const response = await this.axiosInstance.get(`/xref/taxon-collection-categories?tsn=${tsn}`);
+
+    return response.data;
+  }
+
+  /**
+   * Find collection units by tsn. Includes hierarchies.
+   *
+   * @async
+   * @param {string} tsn - ITIS TSN
+   * @returns {Promise<ICollectionUnitWithCategory[]>} Collection units
+   */
+  async findTaxonCollectionUnits(tsn: string): Promise<ICollectionUnitWithCategory[]> {
+    const response = await this.axiosInstance.get(`/xref/taxon-collection-units?tsn=${tsn}`);
+
+    return response.data;
   }
 }

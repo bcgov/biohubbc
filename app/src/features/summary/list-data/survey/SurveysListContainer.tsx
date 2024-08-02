@@ -243,7 +243,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="500px">
+      <Box height="70vh">
         <StyledDataGrid
           noRowsMessage="No surveys found"
           loading={!surveysDataLoader.isReady && !surveysDataLoader.data}
@@ -251,7 +251,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
           columns={columns}
           // Rows
           rows={rows}
-          rowCount={surveysDataLoader.data?.surveys.length ?? 0}
+          rowCount={surveysDataLoader.data?.pagination.total ?? 0}
           getRowId={(row) => row.survey_id}
           // Pagination
           paginationMode="server"

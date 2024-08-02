@@ -1,5 +1,6 @@
 import { useConfigContext } from 'hooks/useContext';
 import { IPartialTaxonomy, ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { startCase } from 'lodash-es';
 import qs from 'qs';
 import useAxios from './useAxios';
 
@@ -28,7 +29,7 @@ const useTaxonomyApi = () => {
       }
     });
 
-    return data.searchResponse;
+    return parseSearchResponse(data.searchResponse);
   };
 
   /**
@@ -50,7 +51,7 @@ const useTaxonomyApi = () => {
         return [];
       }
 
-      return data.searchResponse;
+      return parseSearchResponse(data.searchResponse);
     } catch (error) {
       throw new Error('Failed to fetch Taxon records.');
     }
@@ -60,6 +61,21 @@ const useTaxonomyApi = () => {
     getSpeciesFromIds,
     searchSpeciesByTerms
   };
+};
+
+/**
+ * Parses the taxon search response into start case.
+ *
+ * @template T
+ * @param {T[]} searchResponse - Array of Taxonomy objects
+ * @returns {T[]} Correctly cased Taxonomy
+ */
+const parseSearchResponse = <T extends IPartialTaxonomy>(searchResponse: T[]): T[] => {
+  return searchResponse.map((taxon) => ({
+    ...taxon,
+    commonNames: taxon.commonNames.map((commonName) => startCase(commonName)),
+    scientificName: startCase(taxon.scientificName)
+  }));
 };
 
 export default useTaxonomyApi;

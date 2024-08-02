@@ -156,7 +156,7 @@ const TelemetryListContainer = (props: IAllTelemetryListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="500px">
+      <Box height="70vh">
         <StyledDataGrid
           noRowsMessage="No telemetry found"
           loading={!telemetryDataLoader.isReady && !telemetryDataLoader.data}

@@ -1,8 +1,9 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { SystemUser } from '../../repositories/user-repository';
+import { BctwDeviceService } from '../../services/bctw-service/bctw-device-service';
 import { getRequestHandlerMocks } from '../../__mocks__/db';
 import { getCollarVendors } from './vendors';
-import { BctwDeviceService } from '../../services/bctw-service/bctw-device-service';
 
 describe('getCollarVendors', () => {
   afterEach(() => {
@@ -14,6 +15,9 @@ describe('getCollarVendors', () => {
     const mockGetCollarVendors = sinon.stub(BctwDeviceService.prototype, 'getCollarVendors').resolves(mockVendors);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
     const requestHandler = getCollarVendors();
 
     await requestHandler(mockReq, mockRes, mockNext);
@@ -29,6 +33,9 @@ describe('getCollarVendors', () => {
     const mockGetCollarVendors = sinon.stub(BctwDeviceService.prototype, 'getCollarVendors').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
     const requestHandler = getCollarVendors();
 
     try {

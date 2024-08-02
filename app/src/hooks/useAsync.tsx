@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 
 export type AsyncFunction<AFArgs extends any[], AFResponse> = (...args: AFArgs) => Promise<AFResponse>;
 
@@ -33,28 +33,31 @@ export const useAsync = <AFArgs extends any[], AFResponse>(
 
   const isPending = useRef(false);
 
-  const wrappedAsyncFunction: AsyncFunction<AFArgs, AFResponse> = async (...args) => {
-    if (ref.current && isPending.current) {
-      return ref.current;
-    }
-
-    isPending.current = true;
-
-    ref.current = asyncFunction(...args).then(
-      (response: AFResponse) => {
-        isPending.current = false;
-
-        return response;
-      },
-      (error) => {
-        isPending.current = false;
-
-        throw error;
+  const wrappedAsyncFunction: AsyncFunction<AFArgs, AFResponse> = useCallback(
+    async (...args) => {
+      if (ref.current && isPending.current) {
+        return ref.current;
       }
-    );
 
-    return ref.current;
-  };
+      isPending.current = true;
+
+      ref.current = asyncFunction(...args).then(
+        (response: AFResponse) => {
+          isPending.current = false;
+
+          return response;
+        },
+        (error) => {
+          isPending.current = false;
+
+          throw error;
+        }
+      );
+
+      return ref.current;
+    },
+    [asyncFunction]
+  );
 
   return wrappedAsyncFunction;
 };

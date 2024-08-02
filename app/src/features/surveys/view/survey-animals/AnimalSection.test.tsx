@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { ConfigContext, IConfig } from 'contexts/configContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { AuthProvider, AuthProviderProps } from 'react-oidc-context';
@@ -22,9 +23,11 @@ const authConfig: AuthProviderProps = {
 
 const animalSection = (section: ANIMAL_SECTION, critter?: IDetailedCritterWithInternalId) => (
   <AuthProvider {...authConfig}>
-    <AuthStateContext.Provider value={authState}>
-      <AnimalSection section={section} refreshCritter={mockRefreshCritter} critter={critter} />
-    </AuthStateContext.Provider>
+    <ConfigContext.Provider value={{} as IConfig}>
+      <AuthStateContext.Provider value={authState}>
+        <AnimalSection section={section} refreshCritter={mockRefreshCritter} critter={critter} />
+      </AuthStateContext.Provider>
+    </ConfigContext.Provider>
   </AuthProvider>
 );
 
