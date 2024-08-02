@@ -146,7 +146,7 @@ export class GetSurveyPurposeAndMethodologyData {
   intended_outcome_ids: number[];
   additional_details: string;
   revision_count: number;
-  
+
   constructor(obj?: any) {
     this.intended_outcome_ids = (obj?.intended_outcome_ids?.length && obj?.intended_outcome_ids) || [];
     this.additional_details = obj?.additional_details || '';

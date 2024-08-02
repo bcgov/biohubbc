@@ -347,7 +347,7 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
     it('sets additional_details', () => {
       expect(data.additional_details).to.eql(obj.additional_details);
     });
-    
+
     it('sets revision_count', function () {
       expect(data.revision_count).to.equal('count');
     });

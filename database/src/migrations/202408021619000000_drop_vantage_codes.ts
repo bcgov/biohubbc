@@ -16,6 +16,7 @@ export async function up(knex: Knex): Promise<void> {
 
     DROP VIEW IF EXISTS survey;
     DROP VIEW IF EXISTS vantage;
+    DROP VIEW IF EXISTS survey_vantage;
 
     ----------------------------------------------------------------------------------------
     -- Alter tables/data
@@ -30,7 +31,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     SET SEARCH_PATH=biohub_dapi_v1;
 
-    CREATE OR REPLACE VIEW survey;
+    CREATE OR REPLACE VIEW survey as SELECT * FROM biohub.survey;
   `);
 }
 

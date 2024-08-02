@@ -20,7 +20,7 @@ export const surveyObject: SurveyViewObject = {
   blocks: [],
   purpose_and_methodology: {
     intended_outcome_ids: [1],
-    additional_details: 'details',
+    additional_details: 'details'
   },
   proprietor: {
     proprietary_data_category_name: 'proprietor type',

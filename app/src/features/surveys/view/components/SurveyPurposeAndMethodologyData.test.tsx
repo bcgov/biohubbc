@@ -26,7 +26,7 @@ describe('SurveyPurposeAndMethodologyData', () => {
     const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
-    const { getByTestId, getAllByTestId } = render(
+    const { getByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <SurveyContext.Provider
           value={{
@@ -74,7 +74,7 @@ describe('SurveyPurposeAndMethodologyData', () => {
     const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
-    const { getByTestId, getAllByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <SurveyContext.Provider
           value={{
