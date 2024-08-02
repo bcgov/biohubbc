@@ -89,7 +89,7 @@ const useCritterApi = (axios: AxiosInstance) => {
   const getMultipleCrittersGeometryByIds = async (
     critter_ids: string[]
   ): Promise<IGetCaptureMortalityGeometryResponse> => {
-    console.log(critter_ids)
+    console.log(critter_ids);
     const { data } = await axios.post(`/api/critterbase/critters/spatial`, { critter_ids });
     return data;
   };

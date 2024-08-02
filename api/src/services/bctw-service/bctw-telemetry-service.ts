@@ -176,7 +176,7 @@ export class BctwTelemetryService extends BctwService {
    *
    * @async
    * @param {string[]} deployment_ids - bctw deployments
-   * @returns {*} IManualTelemetry[]
+   * @returns {*} IVendorTelemetry[]
    */
   async getVendorTelemetryByDeploymentIds(deployment_ids: string[]): Promise<IVendorTelemetry[]> {
     const res = await this.axiosInstance.post(`${VENDOR_TELEMETRY}/deployments`, deployment_ids);
@@ -188,7 +188,7 @@ export class BctwTelemetryService extends BctwService {
    *
    * @async
    * @param {string[]} deploymentIds - bctw deployments
-   * @returns {*} IManualTelemetry[]
+   * @returns {*} IAllTelemetry[]
    */
   async getAllTelemetryByDeploymentIds(deploymentIds: string[]): Promise<IAllTelemetry[]> {
     const res = await this.axiosInstance.post(`${MANUAL_AND_VENDOR_TELEMETRY}/deployments`, deploymentIds);
@@ -198,7 +198,7 @@ export class BctwTelemetryService extends BctwService {
   /**
    * Delete manual telemetry records by telemetry_manual_id
    * Note: This is a post request that accepts an array of ids
-   * @param {uuid[]} telemetry_manaual_ids
+   * @param {string[]} telemetry_manual_ids
    *
    * @returns {*} IManualTelemetry[]
    **/

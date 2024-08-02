@@ -14,8 +14,8 @@ import { IMortalityResponse } from 'interfaces/useCritterApi.interface';
 import { mapValues } from 'lodash-es';
 import { useState } from 'react';
 import {
-  ANIMAL_FORM_MODE,
   AnimalFormProps,
+  ANIMAL_FORM_MODE,
   CreateCritterMortalitySchema,
   ICreateCritterMortality,
   isRequiredInSchema

@@ -11,7 +11,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import { v4 } from 'uuid';
-import { ANIMAL_FORM_MODE, AnimalSex, CreateCritterSchema, ICreateCritter, isRequiredInSchema } from '../animal';
+import { AnimalSex, ANIMAL_FORM_MODE, CreateCritterSchema, ICreateCritter, isRequiredInSchema } from '../animal';
 
 export type GeneralAnimalFormProps<T> =
   | {

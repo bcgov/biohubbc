@@ -1,8 +1,8 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { getMockDBConnection } from '../__mocks__/db';
 import { SurveyCritterRepository } from '../repositories/survey-critter-repository';
+import { getMockDBConnection } from '../__mocks__/db';
 import { SurveyCritterService } from './survey-critter-service';
 
 chai.use(sinonChai);
@@ -62,20 +62,6 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('createDeployment', () => {
-    it('returns the first row on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyCritterService(dbConnection);
-
-      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'upsertDeployment').resolves();
-
-      const response = await service.upsertDeployment(1, 'deployment_id');
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.be.undefined;
-    });
-  });
-
   describe('updateCritter', () => {
     it('updates critter, returns nothing', async () => {
       const dbConnection = getMockDBConnection();
@@ -85,17 +71,6 @@ describe('SurveyService', () => {
 
       const response = await service.updateCritter(1, 'asdf');
 
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.be.undefined;
-    });
-  });
-
-  describe('endDeployment', () => {
-    it('removes deployment and returns void', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyCritterService(dbConnection);
-      const repoStub = sinon.stub(SurveyCritterRepository.prototype, 'endDeployment').resolves();
-      const response = await service.endDeployment(1, 'deployment_id');
       expect(repoStub).to.be.calledOnce;
       expect(response).to.be.undefined;
     });

@@ -281,10 +281,10 @@ export function addCritterToSurvey(): RequestHandler {
       }
 
       const surveyService = new SurveyCritterService(connection);
-      const response = await surveyService.addCritterToSurvey(surveyId, critterId);
+      const surveyCritterId = await surveyService.addCritterToSurvey(surveyId, critterId);
 
       await connection.commit();
-      return res.status(201).json({ critterbase_critter_id: critterId, critter_id: response });
+      return res.status(201).json({ critterbase_critter_id: critterId, critter_id: surveyCritterId });
     } catch (error) {
       defaultLog.error({ label: 'addCritterToSurvey', message: 'error', error });
       await connection.rollback();

@@ -5,17 +5,17 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
+import green from '@mui/material/colors/green';
+import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import green from '@mui/material/colors/green';
-import grey from '@mui/material/colors/grey';
 import dayjs from 'dayjs';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
-import { SurveyDeploymentListItemDetails } from './SurveyDeploymentListItemDetails';
 import { PulsatingDot } from './components/PulsatingDot';
+import { SurveyDeploymentListItemDetails } from './SurveyDeploymentListItemDetails';
 
 export interface ISurveyDeploymentListItemProps {
   animal: ICritterSimpleResponse;

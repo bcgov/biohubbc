@@ -1,8 +1,8 @@
 import { AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { useConfigContext } from 'hooks/useContext';
+import { IAllTelemetry } from 'interfaces/useTelemetryApi.interface';
 import useAxios from './api/useAxios';
 import { useDeviceApi } from './telemetry/useDeviceApi';
-import { IAllTelemetry } from 'interfaces/useTelemetryApi.interface';
 
 export interface ICritterDeploymentResponse {
   critter_id: string;

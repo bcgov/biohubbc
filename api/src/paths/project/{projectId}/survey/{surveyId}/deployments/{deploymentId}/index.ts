@@ -1,4 +1,5 @@
 import { AxiosError } from 'axios';
+import dayjs from 'dayjs';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
@@ -243,7 +244,6 @@ export function updateDeployment(): RequestHandler {
     const connection = getDBConnection(req.keycloak_token);
 
     const {
-      deployment_id,
       critter_id,
       critterbase_start_capture_id,
       critterbase_end_capture_id,
@@ -274,8 +274,6 @@ export function updateDeployment(): RequestHandler {
         critterbase_end_mortality_id
       });
 
-      console.log(bctw_deployment_id);
-
       // TODO: Decide whether to explicitly record attachment start date, or just reference the capture. Might remove this line.
       const capture = await critterbaseService.getCaptureById(critterbase_start_capture_id);
 
@@ -283,8 +281,7 @@ export function updateDeployment(): RequestHandler {
       await bctwDeploymentService.updateDeployment({
         ...bctwRequestObject,
         attachment_start: capture.capture_date,
-        attachment_end: attachment_end_date, // TODO: ADD SEPARATE DATE AND TIME TO BCTW
-        // Include the critter guid, taken from the capture for convenience
+        attachment_end: dayjs(`${attachment_end_date} ${attachment_end_time}`), // TODO: ADD SEPARATE DATE AND TIME TO BCTW
         critter_id: capture.critter_id,
         deployment_id: bctw_deployment_id
       });
@@ -402,7 +399,7 @@ export function deleteDeployment(): RequestHandler {
       const bctwDeploymentService = new BctwDeploymentService(user);
       const deploymentService = new DeploymentService(connection);
 
-      const { bctw_deployment_id } = await deploymentService.endDeployment(surveyId, deploymentId);
+      const { bctw_deployment_id } = await deploymentService.deleteDeployment(surveyId, deploymentId);
 
       await bctwDeploymentService.deleteDeployment(bctw_deployment_id);
 

@@ -96,8 +96,9 @@ const AnimalMortalityContainer = () => {
     await critterbaseApi.mortality.deleteMortality(selectedMortality);
 
     // Refresh mortality container
-    if (critterId){
-    animalPageContext.critterDataLoader.refresh(projectId, surveyId, critterId)};
+    if (critterId) {
+      animalPageContext.critterDataLoader.refresh(projectId, surveyId, critterId);
+    }
   };
 
   return (

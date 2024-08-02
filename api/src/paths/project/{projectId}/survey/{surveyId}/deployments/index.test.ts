@@ -2,8 +2,10 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { getDeploymentsInSurvey } from '.';
 import * as db from '../../../../../../database/db';
-import { IBctwDeploymentRecord } from '../../../../../../models/bctw';
+import { SurveyCritterRecord } from '../../../../../../repositories/survey-critter-repository';
+import { Deployment } from '../../../../../../repositories/telemetry-repository';
 import { BctwDeploymentService } from '../../../../../../services/bctw-service/bctw-deployment-service';
+import { IDeploymentRecord } from '../../../../../../services/bctw-service/bctw-telemetry-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { TelemetryService } from '../../../../../../services/telemetry-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
@@ -13,24 +15,6 @@ describe('getDeploymentsInSurvey', () => {
     sinon.restore();
   });
 
-  const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
-  const mockDeployments: IBctwDeploymentRecord[] = [
-    {
-      critter_id: 'critterbase1',
-      assignment_id: 'assignment1',
-      collar_id: 'collar1',
-      attachment_start: '2020-01-01',
-      attachment_end: '2020-01-02',
-      deployment_id: 'deployment1',
-      device_id: 123,
-      created_at: '2020-01-01',
-      created_by_user_id: 'user1',
-      updated_at: '2020-01-01',
-      updated_by_user_id: 'user1',
-      valid_from: '2020-01-01',
-      valid_to: '2020-01-02'
-    }
-  ];
   const mockCritters = [{ critter_id: 123, survey_id: 123, critterbase_critter_id: 'critterbase1' }];
 
   it('gets deployments in survey', async () => {
@@ -44,13 +28,7 @@ describe('getDeploymentsInSurvey', () => {
         bctw_deployment_id: 'deployment1'
       }
     ];
-    const mockSIMSCritters = [
-      {
-        critter_id: 22,
-        survey_id: 33,
-        critterbase_critter_id: 'critterbase1'
-      }
-    ];
+
     const mockBCTWDeployments: IDeploymentRecord[] = [
       {
         critter_id: 'critterbase1',
@@ -76,9 +54,6 @@ describe('getDeploymentsInSurvey', () => {
     const getCrittersInSurveyStub = sinon
       .stub(SurveyCritterService.prototype, 'getCrittersInSurvey')
       .resolves(mockCritters);
-    const getDeploymentsByCritterId = sinon
-      .stub(BctwDeploymentService.prototype, 'getDeploymentsByCritterId')
-      .resolves(mockDeployments);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -93,7 +68,6 @@ describe('getDeploymentsInSurvey', () => {
 
     expect(getDeploymentsBySurveyIdStub).calledOnceWith(66);
     expect(getCrittersInSurveyStub).calledOnceWith(66);
-    expect(getDeploymentsByCritterIdStub).calledOnceWith(['critterbase1']);
 
     expect(mockRes.json).calledOnceWith(mockBCTWDeployments);
     expect(mockRes.status).calledOnceWith(200);
@@ -139,7 +113,7 @@ describe('getDeploymentsInSurvey', () => {
       .resolves(mockSIMSCritters);
 
     const getDeploymentsByCritterIdStub = sinon
-      .stub(BctwService.prototype, 'getDeploymentsByCritterId')
+      .stub(BctwDeploymentService.prototype, 'getDeploymentsByCritterId')
       .resolves(mockBCTWDeployments);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -201,7 +175,7 @@ describe('getDeploymentsInSurvey', () => {
       .resolves(mockSIMSCritters);
 
     const getDeploymentsByCritterIdStub = sinon
-      .stub(BctwService.prototype, 'getDeploymentsByCritterId')
+      .stub(BctwDeploymentService.prototype, 'getDeploymentsByCritterId')
       .resolves(mockBCTWDeployments);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();

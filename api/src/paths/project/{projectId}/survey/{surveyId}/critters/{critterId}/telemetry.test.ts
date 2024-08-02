@@ -2,10 +2,10 @@ import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import * as db from '../../../../../../../database/db';
+import { BctwTelemetryService } from '../../../../../../../services/bctw-service/bctw-telemetry-service';
 import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import { GET, getCritterTelemetry } from './telemetry';
-import { BctwTelemetryService } from '../../../../../../../services/bctw-service/bctw-telemetry-service';
 
 describe('critter telemetry', () => {
   afterEach(() => {

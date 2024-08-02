@@ -5,9 +5,9 @@ import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
-import TelemetryPage from './TelemetryPage';
 import CreateDeploymentPage from './deployments/create/CreateDeploymentPage';
 import EditDeploymentPage from './deployments/edit/EditDeploymentPage';
+import TelemetryPage from './TelemetryPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/telemetry/*` pages.

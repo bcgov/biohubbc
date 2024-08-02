@@ -5,7 +5,7 @@ import { useFormikContext } from 'formik';
 import React from 'react';
 import { IAnimalTelemetryDeviceFile } from './device';
 
-export const TelemetryFileUpload: React.FC<{ attachmentType: AttachmentType; fileKey: string; typeKey: string}> = (
+export const TelemetryFileUpload: React.FC<{ attachmentType: AttachmentType; fileKey: string; typeKey: string }> = (
   props
 ) => {
   const { setFieldValue } = useFormikContext<{ formValues: IAnimalTelemetryDeviceFile[] }>();

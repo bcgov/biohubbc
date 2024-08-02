@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { v4 } from 'uuid';
@@ -7,7 +8,7 @@ import { postDeploymentSchema } from '../../../../../../../../openapi/schemas/de
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { BctwDeploymentService } from '../../../../../../../../services/bctw-service/bctw-deployment-service';
 import { getBctwUser } from '../../../../../../../../services/bctw-service/bctw-service';
-import { CritterbaseService, ICritterbaseUser } from '../../../../../../../../services/critterbase-service';
+import { CritterbaseService } from '../../../../../../../../services/critterbase-service';
 import { DeploymentService } from '../../../../../../../../services/deployment-service';
 import { getLogger } from '../../../../../../../../utils/logger';
 
@@ -60,7 +61,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Object with a critter, device information, and associated captures to create a deployment',
+    description: 'Object with device information and associated captures to create a deployment',
     content: {
       'application/json': {
         schema: postDeploymentSchema
@@ -69,20 +70,20 @@ POST.apiDoc = {
   },
   responses: {
     201: {
-      description: 'Responds with count of rows created in SIMS DB Deployments.',
+      description: 'Responds with the created BCTW deployment uuid.',
       content: {
         'application/json': {
           schema: {
             title: 'Deployment response object',
-            type: 'object'
-            // additionalProperties: false,
-            // properties: {
-            //   deploymentId: {
-            //     type: 'string',
-            //     format: 'uuid',
-            //     description: 'The generated deployment Id, indicating that the deployment was succesfully created.'
-            //   }
-            // }
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              deploymentId: {
+                type: 'string',
+                format: 'uuid',
+                description: 'The generated deployment Id, indicating that the deployment was succesfully created.'
+              }
+            }
           }
         }
       }
@@ -107,15 +108,12 @@ POST.apiDoc = {
 
 export function createDeployment(): RequestHandler {
   return async (req, res) => {
-    const user = getBctwUser(req);
-
     const surveyCritterId = Number(req.params.critterId);
 
     // Create deployment Id for joining SIMS and BCTW deployment information
     const newDeploymentId = v4();
 
     const {
-      critter_id,
       critterbase_start_capture_id,
       critterbase_end_capture_id,
       critterbase_end_mortality_id,
@@ -125,14 +123,16 @@ export function createDeployment(): RequestHandler {
     } = req.body;
 
     const connection = getDBConnection(req.keycloak_token);
-    const bctwService = new BctwDeploymentService(user);
-    const deploymentService = new DeploymentService(connection);
-    const critterbaseService = new CritterbaseService(user);
 
     try {
       await connection.open();
 
-      // Inset new deployment into SIMS
+      const user = getBctwUser(req);
+
+      const bctwService = new BctwDeploymentService(user);
+      const deploymentService = new DeploymentService(connection);
+      const critterbaseService = new CritterbaseService(user);
+
       await deploymentService.insertDeployment({
         critter_id: surveyCritterId,
         bctw_deployment_id: newDeploymentId,
@@ -141,16 +141,14 @@ export function createDeployment(): RequestHandler {
         critterbase_end_mortality_id
       });
 
-      // TODO: Decide whether to explicitly record attachment start date, or just reference the capture. Might remove this line.
+      // Retrieve the capture to get the capture date for BCTW
       const capture = await critterbaseService.getCaptureById(critterbase_start_capture_id);
 
-      // Update the deployment in BCTW, which works by soft deleting and inserting a new deployment record (hence createDeployment)
       const deployment = await bctwService.createDeployment({
         ...bctwRequestObject,
         attachment_start: capture.capture_date,
-        attachment_end: attachment_end_date, // TODO: ADD SEPARATE DATE AND TIME TO BCTW
+        attachment_end: dayjs(`${attachment_end_date} ${attachment_end_time}`), // TODO: ADD SEPARATE DATE AND TIME TO BCTW
         deployment_id: newDeploymentId,
-        // Include the critter guid, taken from the capture for convenience
         critter_id: capture.critter_id
       });
 

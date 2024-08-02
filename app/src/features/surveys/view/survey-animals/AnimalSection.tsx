@@ -3,8 +3,8 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
-import Typography from '@mui/material/Typography';
 import grey from '@mui/material/colors/grey';
+import Typography from '@mui/material/Typography';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
@@ -14,9 +14,8 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICritterDetailedResponse, IFamilyChildResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
+import { AnimalRelationship, ANIMAL_FORM_MODE, ANIMAL_SECTION } from './animal';
 import { AnimalSectionWrapper } from './AnimalSectionWrapper';
-import GeneralAnimalSummary from './GeneralAnimalSummary';
-import { ANIMAL_FORM_MODE, ANIMAL_SECTION, AnimalRelationship } from './animal';
 import CaptureAnimalForm from './form-sections/CaptureAnimalForm';
 import CollectionUnitAnimalForm from './form-sections/CollectionUnitAnimalForm';
 import { FamilyAnimalForm } from './form-sections/FamilyAnimalForm';
@@ -24,6 +23,7 @@ import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 import { MarkingAnimalForm } from './form-sections/MarkingAnimalForm';
 import MeasurementAnimalForm from './form-sections/MeasurementAnimalForm';
 import MortalityAnimalForm from './form-sections/MortalityAnimalForm';
+import GeneralAnimalSummary from './GeneralAnimalSummary';
 
 dayjs.extend(utc);
 

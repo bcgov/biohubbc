@@ -33,7 +33,8 @@ export const DeploymentHeader: React.FC<IDeploymentHeaderProps> = (props) => {
   const history = useHistory();
   const formikProps = useFormikContext<ICreateAnimalDeployment>();
 
-  const { project_id, survey_id, survey_name, project_name, deployment_label, is_submitting, title, breadcrumb } = props;
+  const { project_id, survey_id, survey_name, project_name, deployment_label, is_submitting, title, breadcrumb } =
+    props;
 
   return (
     <>

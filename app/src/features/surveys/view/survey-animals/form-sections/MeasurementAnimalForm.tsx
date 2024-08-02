@@ -18,8 +18,8 @@ import {
 import { has, startCase } from 'lodash-es';
 import { useEffect, useMemo, useState } from 'react';
 import {
-  ANIMAL_FORM_MODE,
   AnimalFormProps,
+  ANIMAL_FORM_MODE,
   CreateCritterMeasurementSchema,
   ICreateCritterMeasurement,
   isRequiredInSchema

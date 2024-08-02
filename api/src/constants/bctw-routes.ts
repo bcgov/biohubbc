@@ -1,4 +1,3 @@
-
 export const BCTW_API_HOST = process.env.BCTW_API_HOST || '';
 export const DEPLOY_DEVICE_ENDPOINT = '/deploy-device';
 export const UPSERT_DEVICE_ENDPOINT = '/upsert-collar';

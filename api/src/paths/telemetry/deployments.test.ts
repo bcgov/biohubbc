@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { getRequestHandlerMocks } from '../../__mocks__/db';
 import { SystemUser } from '../../repositories/user-repository';
 import { BctwTelemetryService, IAllTelemetry } from '../../services/bctw-service/bctw-telemetry-service';
+import { getRequestHandlerMocks } from '../../__mocks__/db';
 import { getAllTelemetryByDeploymentIds } from './deployments';
 
 const mockTelemetry: IAllTelemetry[] = [

@@ -1,10 +1,10 @@
 import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../../__mocks__/db';
 import * as db from '../../../../../../../../../database/db';
 import { BctwDeploymentService } from '../../../../../../../../../services/bctw-service/bctw-deployment-service';
 import { DeploymentService } from '../../../../../../../../../services/deployment-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../../__mocks__/db';
 import { DELETE, deleteDeployment } from '../{bctwDeploymentId}';
 
 describe('critter deployments', () => {

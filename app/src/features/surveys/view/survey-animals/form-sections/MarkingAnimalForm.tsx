@@ -8,8 +8,8 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { IMarkingResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import {
-  ANIMAL_FORM_MODE,
   AnimalFormProps,
+  ANIMAL_FORM_MODE,
   CreateCritterMarkingSchema,
   ICreateCritterMarking,
   isRequiredInSchema

@@ -7,7 +7,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { DataLoader } from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { BrowserRouter } from 'react-router-dom';
-import { SystemAdminAuthState, getMockAuthState } from 'test-helpers/auth-helpers';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
 import { SurveyAnimalsPage } from './SurveyAnimalsPage';
 

@@ -21,7 +21,11 @@ export interface ISurveyCritter {
 export type IAnimalPageContext = {
   selectedAnimal: ISurveyCritter | undefined;
   setSelectedAnimal: (selectedAnimal?: ISurveyCritter) => void;
-  critterDataLoader: DataLoader<[projectId: number, surveyId: number, critter_id: number], ICritterDetailedResponse, unknown>;
+  critterDataLoader: DataLoader<
+    [projectId: number, surveyId: number, critterId: number],
+    ICritterDetailedResponse,
+    unknown
+  >;
   setSelectedAnimalFromSurveyCritterId: (selectedAnimalFromSurveyCritterId: number) => void;
 };
 

@@ -5,9 +5,9 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
 import { useContext, useEffect, useState } from 'react';
+import { ANIMAL_FORM_MODE, ANIMAL_SECTION } from './animal';
 import AnimalList from './AnimalList';
 import { AnimalSection } from './AnimalSection';
-import { ANIMAL_FORM_MODE, ANIMAL_SECTION } from './animal';
 import GeneralAnimalForm from './form-sections/GeneralAnimalForm';
 
 export const SurveyAnimalsPage = () => {

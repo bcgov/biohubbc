@@ -1,8 +1,8 @@
 import FormData from 'form-data';
+import { GET_KEYX_STATUS_ENDPOINT, UPLOAD_KEYX_ENDPOINT } from '../../constants/bctw-routes';
 import { ApiError, ApiErrorType } from '../../errors/api-error';
 import { IKeyXDetails, IUploadKeyxResponse } from '../../models/bctw';
 import { BctwService } from './bctw-service';
-import { GET_KEYX_STATUS_ENDPOINT, UPLOAD_KEYX_ENDPOINT } from '../../constants/bctw-routes';
 
 export class BctwKeyxService extends BctwService {
   /**

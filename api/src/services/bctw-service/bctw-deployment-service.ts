@@ -2,7 +2,6 @@ import {
   DELETE_DEPLOYMENT_ENDPOINT,
   DEPLOY_DEVICE_ENDPOINT,
   GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT,
-  GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT,
   GET_DEPLOYMENTS_ENDPOINT,
   UPDATE_DEPLOYMENT_ENDPOINT
 } from '../../constants/bctw-routes';
@@ -19,21 +18,6 @@ export class BctwDeploymentService extends BctwService {
    */
   async createDeployment(device: IDeployDevice): Promise<IBctwDeploymentRecord> {
     return this.axiosInstance.post(DEPLOY_DEVICE_ENDPOINT, device);
-  }
-
-  /**
-   * Get deployments by device id and device make, may return results for multiple critters.
-   *
-   * @param {number} deviceId
-   * @param {string} deviceMake
-   * @returns {*} {Promise<IBctwDeploymentRecord[]>}
-   * @memberof BctwDeploymentService
-   */
-  async getDeploymentsByDeviceId(deviceId: number, deviceMake: string): Promise<IBctwDeploymentRecord[]> {
-    return this._makeGetRequest(GET_DEPLOYMENTS_BY_DEVICE_ENDPOINT, {
-      device_id: String(deviceId),
-      make: deviceMake
-    });
   }
 
   /**

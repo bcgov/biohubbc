@@ -1,9 +1,9 @@
 import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
+import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import grey from '@mui/material/colors/grey';
 import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { useEffect } from 'react';

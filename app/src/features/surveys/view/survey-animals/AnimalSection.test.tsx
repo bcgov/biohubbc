@@ -4,10 +4,10 @@ import { ConfigContext, IConfig } from 'contexts/configContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { IDetailedCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
 import { AuthProvider, AuthProviderProps } from 'react-oidc-context';
-import { SystemAdminAuthState, getMockAuthState } from 'test-helpers/auth-helpers';
+import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { cleanup, waitFor } from 'test-helpers/test-utils';
-import { AnimalSection } from './AnimalSection';
 import { ANIMAL_SECTION } from './animal';
+import { AnimalSection } from './AnimalSection';
 jest.mock('../../../../hooks/useCritterbaseApi');
 const mockCritterbaseApi = useCritterbaseApi as jest.Mock;
 

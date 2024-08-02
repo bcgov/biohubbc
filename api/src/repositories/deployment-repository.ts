@@ -17,7 +17,7 @@ export class DeploymentRepository extends BaseRepository {
    * Returns deployments in a survey
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<SurveyDeployment>}
    * @memberof DeploymentRepository
    */
   async getDeploymentsForSurveyId(surveyId: number): Promise<SurveyDeployment[]> {
@@ -46,7 +46,7 @@ export class DeploymentRepository extends BaseRepository {
    * Returns a specific deployment
    *
    * @param {number} deploymentId
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<SurveyDeployment>}
    * @memberof DeploymentRepository
    */
   async getDeploymentById(deploymentId: number): Promise<SurveyDeployment> {
@@ -76,7 +76,7 @@ export class DeploymentRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} critterId
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<SurveyDeployment>}
    * @memberof DeploymentRepository
    */
   async getDeploymentForCritterId(surveyId: number, critterId: number): Promise<SurveyDeployment> {
@@ -153,7 +153,7 @@ export class DeploymentRepository extends BaseRepository {
    * @return {*}
    * @memberof DeploymentRepository
    */
-  async endDeployment(surveyId: number, deploymentId: number): Promise<{ bctw_deployment_id: string }> {
+  async deleteDeployment(surveyId: number, deploymentId: number): Promise<{ bctw_deployment_id: string }> {
     defaultLog.debug({ label: 'endDeployment', deploymentId });
 
     const queryBuilder = getKnex()

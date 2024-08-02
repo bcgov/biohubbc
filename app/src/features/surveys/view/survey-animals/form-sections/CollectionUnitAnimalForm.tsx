@@ -8,8 +8,8 @@ import { ICritterCollectionUnitResponse } from 'interfaces/useCritterApi.interfa
 import { get } from 'lodash-es';
 import { useState } from 'react';
 import {
-  ANIMAL_FORM_MODE,
   AnimalFormProps,
+  ANIMAL_FORM_MODE,
   CreateCritterCollectionUnitSchema,
   ICreateCritterCollectionUnit,
   isRequiredInSchema

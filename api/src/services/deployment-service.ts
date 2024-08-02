@@ -77,14 +77,14 @@ export class DeploymentService extends DBService {
   }
 
   /**
-   * Removes the deployment in SIMS.
+   * Deletes the deployment in SIMS.
    *
    * @param {number} surveyId
    * @param {number} deploymentId
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<{ bctw_deployment_id: string }>}
    * @memberof DeploymentService
    */
-  async endDeployment(surveyId: number, deploymentId: number): Promise<{ bctw_deployment_id: string }> {
-    return this.deploymentRepository.endDeployment(surveyId, deploymentId);
+  async deleteDeployment(surveyId: number, deploymentId: number): Promise<{ bctw_deployment_id: string }> {
+    return this.deploymentRepository.deleteDeployment(surveyId, deploymentId);
   }
 }

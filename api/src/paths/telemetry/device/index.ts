@@ -2,8 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { BctwDeviceService } from '../../../services/bctw-service/bctw-device-service';
-import { getLogger } from '../../../utils/logger';
 import { getBctwUser } from '../../../services/bctw-service/bctw-service';
+import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/telemetry/device/{deviceId}');
 

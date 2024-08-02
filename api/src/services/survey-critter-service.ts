@@ -193,7 +193,6 @@ export class SurveyCritterService extends DBService {
     return this.critterRepository.removeCrittersFromSurvey(surveyId, critterIds);
   }
 
-  
   /**
    * Get survey Critterbase critters.
    *
@@ -260,5 +259,4 @@ export class SurveyCritterService extends DBService {
 
     return critterAliasMap;
   }
-
 }

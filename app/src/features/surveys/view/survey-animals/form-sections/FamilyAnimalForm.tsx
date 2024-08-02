@@ -1,12 +1,12 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
+import { grey } from '@mui/material/colors';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Grid from '@mui/material/Grid';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { grey } from '@mui/material/colors';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import EditDialog from 'components/dialog/EditDialog';
 import { CbSelectWrapper } from 'components/fields/CbSelectFieldWrapper';
@@ -17,9 +17,9 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IFamilyChildResponse, IFamilyParentResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import {
-  ANIMAL_FORM_MODE,
   AnimalFormProps,
   AnimalRelationship,
+  ANIMAL_FORM_MODE,
   CreateCritterFamilySchema,
   ICreateCritterFamily,
   isRequiredInSchema

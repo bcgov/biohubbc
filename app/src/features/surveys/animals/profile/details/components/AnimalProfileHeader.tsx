@@ -1,13 +1,13 @@
 import { mdiCheckboxMultipleBlankOutline, mdiInformationOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
+import green from '@mui/material/colors/green';
+import grey from '@mui/material/colors/grey';
+import red from '@mui/material/colors/red';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import green from '@mui/material/colors/green';
-import grey from '@mui/material/colors/grey';
-import red from '@mui/material/colors/red';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { useDialogContext } from 'hooks/useContext';
 import { useCopyToClipboard } from 'hooks/useCopyToClipboard';

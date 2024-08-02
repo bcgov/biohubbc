@@ -14,10 +14,10 @@ import { useDialogContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { ICaptureResponse } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
-import { PROJECTION_MODE, getLatLngAsUtm, getUtmAsLatLng } from 'utils/mapProjectionHelpers';
+import { getLatLngAsUtm, getUtmAsLatLng, PROJECTION_MODE } from 'utils/mapProjectionHelpers';
 import {
-  ANIMAL_FORM_MODE,
   AnimalFormProps,
+  ANIMAL_FORM_MODE,
   CreateCritterCaptureSchema,
   ICreateCritterCapture,
   isRequiredInSchema

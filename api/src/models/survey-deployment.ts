@@ -13,4 +13,3 @@ export const SurveyDeployment = z.object({
 export type SurveyDeployment = z.infer<typeof SurveyDeployment>;
 
 export interface IPostSurveyDeployment extends Omit<SurveyDeployment, 'deployment_id' | 'critterbase_critter_id'> {}
-

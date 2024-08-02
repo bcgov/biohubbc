@@ -11,8 +11,8 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useEffect } from 'react';
 import { ANIMAL_FORM_MODE } from '../animal';
 import { DeploymentForm } from './DeploymentForm';
-import TelemetryFileUpload from './TelemetryFileUpload';
 import { IAnimalTelemetryDevice } from './device';
+import TelemetryFileUpload from './TelemetryFileUpload';
 
 export interface IAllTelemetryDeviceFormProps {
   mode: ANIMAL_FORM_MODE;

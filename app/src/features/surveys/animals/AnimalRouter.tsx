@@ -10,9 +10,9 @@ import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
-import { SurveyAnimalPage } from './AnimalPage';
 import { CreateAnimalPage } from './animal-form/create/CreateAnimalPage';
 import { EditAnimalPage } from './animal-form/edit/EditAnimalPage';
+import { SurveyAnimalPage } from './AnimalPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/animals/*` pages.

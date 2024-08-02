@@ -5,11 +5,11 @@ import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
+import { BctwKeyxService } from '../../../../../../../services/bctw-service/bctw-keyx-service';
 import * as file_utils from '../../../../../../../utils/file-utils';
 import * as media_utils from '../../../../../../../utils/media/media-utils';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
 import * as upload from './upload';
-import { BctwKeyxService } from '../../../../../../../services/bctw-service/bctw-keyx-service';
 
 chai.use(sinonChai);
 

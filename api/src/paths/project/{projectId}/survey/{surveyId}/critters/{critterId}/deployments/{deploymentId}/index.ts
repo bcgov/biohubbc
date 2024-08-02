@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../../constants/roles';
@@ -175,13 +176,11 @@ export function updateDeployment(): RequestHandler {
         keycloak_guid: connection.systemUserGUID(),
         username: connection.systemUserIdentifier()
       };
-      
-    const bctwDeploymentService = new BctwDeploymentService(user);
-    const deploymentService = new DeploymentService(connection);
-    const critterbaseService = new CritterbaseService(user);
 
+      const bctwDeploymentService = new BctwDeploymentService(user);
+      const deploymentService = new DeploymentService(connection);
+      const critterbaseService = new CritterbaseService(user);
 
-      // Update the deployment in SIMS
       await deploymentService.updateDeployment(deploymentId, {
         critter_id: critterId,
         bctw_deployment_id: bctwRequestObject.bctw_deployment_id,
@@ -190,15 +189,13 @@ export function updateDeployment(): RequestHandler {
         critterbase_end_mortality_id
       });
 
-      // TODO: Decide whether to explicitly record attachment start date, or just reference the capture. Might remove this line.
       const capture = await critterbaseService.getCaptureById(critterbase_start_capture_id);
 
       // Update the deployment in BCTW, which works by soft deleting and inserting a new deployment record (hence createDeployment)
       await bctwDeploymentService.updateDeployment({
         ...bctwRequestObject,
         attachment_start: capture.capture_date,
-        attachment_end: attachment_end_date, // TODO: ADD SEPARATE DATE AND TIME TO BCTW
-        // Include the critter guid, taken from the capture for convenience
+        attachment_end: dayjs(`${attachment_end_date} ${attachment_end_time}`), // TODO: ADD SEPARATE DATE AND TIME TO BCTW
         critter_id: capture.critter_id
       });
 

@@ -6,9 +6,9 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import { TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
 import { useContext } from 'react';
-import ManualTelemetryHeader from './TelemetryHeader';
 import SurveyDeploymentsList from './list/SurveyDeploymentList';
 import ManualTelemetryTableContainer from './table/TelemetryTableContainer';
+import ManualTelemetryHeader from './TelemetryHeader';
 
 const TelemetryPage = () => {
   const surveyContext = useContext(SurveyContext);

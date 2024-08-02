@@ -1,6 +1,6 @@
+import { GET_COLLAR_VENDORS_ENDPOINT, GET_DEVICE_DETAILS, UPSERT_DEVICE_ENDPOINT } from '../../constants/bctw-routes';
 import { IDevice } from '../../models/bctw';
 import { BctwService } from './bctw-service';
-import { GET_COLLAR_VENDORS_ENDPOINT, GET_DEVICE_DETAILS, UPSERT_DEVICE_ENDPOINT } from '../../constants/bctw-routes';
 
 export class BctwDeviceService extends BctwService {
   /**
