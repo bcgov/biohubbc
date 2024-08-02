@@ -45,18 +45,16 @@ const MethodStandardCard = (props: IMethodStandardCard) => {
         flex="1 1 auto"
         alignItems="center"
         sx={{ cursor: 'pointer' }}
-        onClick={() => setIsCollapsed(!isCollapsed)}>
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
         <Typography
           variant="h5"
           sx={{
             '&::first-letter': {
               textTransform: 'capitalize'
-            },
-            textDecoration: !isCollapsed ? 'underline' : 'none',
-            '&:hover': {
-              textDecoration: 'underline'
             }
-          }}>
+          }}
+        >
           {props.name}
         </Typography>
         <Icon path={isCollapsed ? mdiChevronDown : mdiChevronUp} size={1} />

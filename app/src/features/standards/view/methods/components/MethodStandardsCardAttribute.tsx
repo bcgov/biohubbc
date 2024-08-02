@@ -1,9 +1,9 @@
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import Chip from '@mui/material/Chip'; // Import Chip component
+import Chip from '@mui/material/Chip';
 import Collapse from '@mui/material/Collapse';
-import { green, grey } from '@mui/material/colors'; // Import green color
+import { green, grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
@@ -11,7 +11,7 @@ import { useState } from 'react';
 interface IMethodStandardsCardAttributeProps {
   name: string;
   description: string;
-  unit?: string; // Add unit prop
+  unit?: string;
   options?: { name: string; description: string }[];
 }
 
@@ -41,7 +41,7 @@ export const MethodStandardsCardAttribute = (props: IMethodStandardsCardAttribut
         </Typography>
         {unit && (
           <Chip
-            label={unit.toUpperCase()} // Capitalize the text
+            label={unit.toUpperCase()}
             sx={{
               bgcolor: green[800], // Forest green background
               color: 'white', // White text
@@ -57,6 +57,7 @@ export const MethodStandardsCardAttribute = (props: IMethodStandardsCardAttribut
             size="small"
           />
         )}
+        <Icon path={isCollapsed ? mdiChevronDown : mdiChevronUp} size={0.75} /> {/* Smaller chevron */}
       </Box>
       <Collapse in={!isCollapsed}>
         <Typography variant="caption" color="textSecondary">
@@ -75,7 +76,7 @@ export const MethodStandardsCardAttribute = (props: IMethodStandardsCardAttribut
               </Typography>
               <Icon
                 path={collapsedOptions[option.name] ? mdiChevronUp : mdiChevronDown}
-                size={0.5}
+                size={0.5} // Smaller chevron
                 style={{ marginLeft: 8 }}
               />
             </Box>
