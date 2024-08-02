@@ -18,7 +18,7 @@ import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { getSamplingSiteType } from 'utils/spatial-utils';
+import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
 
 export interface ISamplingSiteRowData {
   id: number;
@@ -127,7 +127,10 @@ export const SamplingSiteManageSiteTable = (props: ISamplingSiteManageSiteTableP
       flex: 1,
       renderCell: (params) => (
         <Box>
-          <ColouredRectangleChip label={getSamplingSiteType(params.row.geojson) ?? 'Unknown'} colour={blueGrey} />
+          <ColouredRectangleChip
+            label={getSamplingSiteSpatialType(params.row.geojson) ?? 'Unknown'}
+            colour={blueGrey}
+          />
         </Box>
       )
     },

@@ -27,3 +27,15 @@ export const SURVEY_MAP_LAYER_COLOURS = {
   TELEMETRY_COLOUR: '#ff5454',
   DEFAULT_COLOUR: '#a7bfd1'
 };
+
+/**
+ * The spatial type (business definition) of a sampling site.
+ *
+ * @export
+ * @enum {number}
+ */
+export enum SAMPLING_SITE_SPATIAL_TYPE {
+  POINT = 'POINT',
+  TRANSECT = 'TRANSECT',
+  AREA = 'AREA'
+}

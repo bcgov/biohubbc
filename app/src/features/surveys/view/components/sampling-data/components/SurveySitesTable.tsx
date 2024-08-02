@@ -7,7 +7,7 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { ISamplingSiteRowData } from 'features/surveys/sampling-information/sites/manage/table/site/SamplingSiteManageSiteTable';
 import { IGetSampleSiteResponse } from 'interfaces/useSamplingSiteApi.interface';
-import { getSamplingSiteType } from 'utils/spatial-utils';
+import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
 
 export interface ISurveySitesTableProps {
   sites?: IGetSampleSiteResponse;
@@ -38,7 +38,10 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
       flex: 1,
       renderCell: (params) => (
         <Box>
-          <ColouredRectangleChip label={getSamplingSiteType(params.row.geojson) ?? 'Unknown'} colour={blueGrey} />
+          <ColouredRectangleChip
+            label={getSamplingSiteSpatialType(params.row.geojson) ?? 'Unknown'}
+            colour={blueGrey}
+          />
         </Box>
       )
     },
