@@ -72,7 +72,7 @@ export const AnimalCaptureContainer = () => {
       }
     })) || [];
 
-  const handleDelete = async (selectedCapture: string, critterbase_critter_id: string) => {
+  const handleDelete = async (selectedCapture: string, critter_id: number) => {
     // Delete markings and measurements associated with the capture to avoid foreign key constraint error
     await critterbaseApi.critters.bulkUpdate({
       markings: data?.markings
@@ -102,7 +102,7 @@ export const AnimalCaptureContainer = () => {
     await critterbaseApi.capture.deleteCapture(selectedCapture);
 
     // Refresh capture container
-    animalPageContext.critterDataLoader.refresh(critterbase_critter_id);
+    animalPageContext.critterDataLoader.refresh(projectId, surveyId, critter_id);
   };
 
   const capturesWithLocation = captures.filter((capture) => capture.capture_location);
@@ -113,7 +113,7 @@ export const AnimalCaptureContainer = () => {
         capturesCount={captures.length}
         onAddAnimalCapture={() => {
           history.push(
-            `/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.critterbase_critter_id}/capture/create`
+            `/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.critter_id}/capture/create`
           );
         }}
       />

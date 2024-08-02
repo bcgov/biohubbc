@@ -13,12 +13,12 @@ import { useContext, useMemo } from 'react';
 const rowHeight = 52;
 
 interface ITelemetryData {
-  id: string;
-  critter_id: string | null;
+  id: number;
+  critter_id: number | null;
   device_id: number;
   frequency: number | null;
   frequency_unit: string | null;
-  start: string;
+  // start: string;
   end: string;
   itis_scientific_name: string;
 }
@@ -49,9 +49,9 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
         critter_id: item.critter.critter_id,
         animal_id: item.critter.animal_id,
         device_id: item.deployment.device_id,
-        start: dayjs(item.deployment.attachment_start).format(DATE_FORMAT.MediumDateFormat),
-        end: item.deployment.attachment_end
-          ? dayjs(item.deployment.attachment_end).format(DATE_FORMAT.MediumDateFormat)
+        // start: dayjs(item.deployment.attachment_start).format(DATE_FORMAT.MediumDateFormat),
+        end: item.deployment.attachment_end_date
+          ? dayjs(item.deployment.attachment_end_date).format(DATE_FORMAT.MediumDateFormat)
           : '',
         frequency: item.deployment.frequency ?? null,
         frequency_unit: item.deployment.frequency_unit ?? null,

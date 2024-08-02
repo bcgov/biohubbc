@@ -150,8 +150,8 @@ export const EditAnimalPage = () => {
       }
 
       // Refresh the context, so the next page loads with the latest data
-      surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-      animalPageContext.critterDataLoader.refresh(critter.critterbase_critter_id);
+      surveyContext.critterDataLoader.refresh(projectId, surveyId);
+      animalPageContext.critterDataLoader.refresh(projectId, surveyId, critter.critter_id);
 
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`, SKIP_CONFIRMATION_DIALOG);
     } catch (error) {

@@ -418,6 +418,22 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Retrieve a list of critters associated with the given survey with details from critterbase, including
+   * additional information such as captures and mortality
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {ICritterDetailedResponse[]}
+   */
+  const getSurveyCrittersDetailed = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<ICritterDetailedResponse[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/critters?format=detailed`);
+    return data;
+  };
+
+  /**
    * Create a critter and add it to the list of critters associated with this survey. This will create a new critter in Critterbase.
    *
    * @param {number} projectId
@@ -568,6 +584,18 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Deletes a deployment. Will trigger deletion in SIMS and invalidates the deployment in BCTW.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} deploymentId
+   * @returns {*}
+   */
+  const deleteDeployment = async (projectId: number, surveyId: number, deploymentId: number): Promise<void> => {
+    await axios.delete(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
+  };
+
+  /**
    * Bulk upload Critters from CSV.
    *
    * @async
@@ -610,10 +638,14 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyCritters,
     createCritterAndAddToSurvey,
     removeCrittersFromSurvey,
+    createDeployment,
+    getSurveyCrittersDetailed,
     getDeploymentsInSurvey,
     getCritterById,
     updateDeployment,
     getCritterTelemetry,
+    endDeployment,
+    deleteDeployment,
     importCrittersFromCsv
   };
 };

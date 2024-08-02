@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { IBctwUser } from '../../../models/bctw';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getBctwUser } from '../../../services/bctw-service/bctw-service';
 import { BctwTelemetryService } from '../../../services/bctw-service/bctw-telemetry-service';
@@ -73,10 +72,7 @@ GET.apiDoc = {
 
 export function getManualTelemetry(): RequestHandler {
   return async (req, res) => {
-    const user: IBctwUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
+    const user = getBctwUser(req);
 
     const bctwService = new BctwTelemetryService(user);
     try {

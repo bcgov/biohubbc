@@ -26,7 +26,7 @@ import { getFormattedDate } from 'utils/Utils';
 interface IAnimalMortalityCardContainer {
   mortality: IMortalityWithSupplementaryData[];
   selectedAnimal: ISurveyCritter;
-  handleDelete: (selectedMortality: string, critterbase_critter_id: string) => Promise<void>;
+  handleDelete: (selectedMortality: string, critterId: number) => Promise<void>;
 }
 /**
  * Returns accordion cards for displaying animal mortality details on the animal profile page
@@ -108,7 +108,7 @@ export const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContaine
           open={Boolean(mortalityForDelete)}
           onYes={() => {
             setMortalityForDelete(false);
-            handleDelete(selectedMortality, selectedAnimal.critterbase_critter_id);
+            handleDelete(selectedMortality, selectedAnimal.critter_id);
           }}
           onClose={() => setMortalityForDelete(false)}
           onNo={() => setMortalityForDelete(false)}

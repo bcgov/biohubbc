@@ -182,7 +182,7 @@ export const CreateMortalityPage = () => {
       }
 
       // Refresh page
-      animalPageContext.critterDataLoader.refresh(critterbaseCritterId);
+      animalPageContext.critterDataLoader.refresh(projectId, surveyId, surveyCritterId);
 
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`, SKIP_CONFIRMATION_DIALOG);
     } catch (error) {

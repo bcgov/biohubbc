@@ -7,8 +7,8 @@ import { IBctwUser, ICodeResponse } from '../../models/bctw';
 import { KeycloakService } from '../keycloak-service';
 
 export const getBctwUser = (req: Request): IBctwUser => ({
-  keycloak_guid: req['system_user']?.user_guid,
-  username: req['system_user']?.user_identifier
+  keycloak_guid: req.system_user?.user_guid ?? '',
+  username: req.system_user?.user_identifier ?? ''
 });
 
 export class BctwService {
@@ -102,7 +102,7 @@ export class BctwService {
     let url = endpoint;
     if (queryParams) {
       const params = new URLSearchParams(queryParams);
-      console.log(params)
+      console.log(params);
       url += `?${params.toString()}`;
     }
 

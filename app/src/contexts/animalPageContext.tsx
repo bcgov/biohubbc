@@ -1,6 +1,5 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
-import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import isEqual from 'lodash-es/isEqual';
@@ -22,7 +21,7 @@ export interface ISurveyCritter {
 export type IAnimalPageContext = {
   selectedAnimal: ISurveyCritter | undefined;
   setSelectedAnimal: (selectedAnimal?: ISurveyCritter) => void;
-  critterDataLoader: DataLoader<[critterbase_critter_id: string], ICritterDetailedResponse, unknown>;
+  critterDataLoader: DataLoader<[projectId: number, surveyId: number, critter_id: number], ICritterDetailedResponse, unknown>;
   setSelectedAnimalFromSurveyCritterId: (selectedAnimalFromSurveyCritterId: number) => void;
 };
 
@@ -40,18 +39,18 @@ export const AnimalPageContext = createContext<IAnimalPageContext | undefined>(u
 export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const biohubApi = useBiohubApi();
 
-  const critterbaseApi = useCritterbaseApi();
-
   const { surveyId, projectId } = useSurveyContext();
 
   const surveyCrittersDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCritters(projectId, surveyId));
-
-  const critterDataLoader = useDataLoader((critterId: string) => critterbaseApi.critters.getDetailedCritter(critterId));
 
   if (!surveyCrittersDataLoader.data) {
     // Load basic data for all critters in the survey
     surveyCrittersDataLoader.load();
   }
+
+  const critterDataLoader = useDataLoader((projectId: number, surveyId: number, critterId: number) =>
+    biohubApi.survey.getCritterById(projectId, surveyId, critterId)
+  );
 
   // The currently selected animal
   const [selectedAnimal, setSelectedAnimal] = useState<ISurveyCritter | undefined>();
@@ -68,7 +67,7 @@ export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never,
 
       if (animal) {
         // Load the critter data for the new animal
-        critterDataLoader.refresh(animal.critterbase_critter_id);
+        critterDataLoader.refresh(projectId, surveyId, animal.critter_id);
       }
     },
     [selectedAnimal, critterDataLoader]

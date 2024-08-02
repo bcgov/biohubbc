@@ -9,7 +9,7 @@ import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { Position } from 'geojson';
 import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
 import { ITelemetry } from 'hooks/useTelemetryApi';
-import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { useCallback, useEffect, useMemo } from 'react';
 
 /**
@@ -35,7 +35,7 @@ export const SurveySpatialTelemetry = () => {
     }
 
     telemetryContext.telemetryDataLoader.refresh(
-      surveyContext.deploymentDataLoader.data?.map((deployment) => deployment.deployment_id) ?? []
+      surveyContext.deploymentDataLoader.data?.map((deployment) => deployment.bctw_deployment_id) ?? []
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surveyContext.deploymentDataLoader.data]);
@@ -45,14 +45,14 @@ export const SurveySpatialTelemetry = () => {
    *
    * @param {ITelemetry[]} telemetry The telemetry data.
    * @param {IAnimalDeployment[]} deployments The deployment data.
-   * @param {ISimpleCritterWithInternalId[]} critters The critter data.
+   * @param {ICritterSimpleResponse[]} critters The critter data.
    * @returns {IStaticLayerFeature[]} The combined list of telemetry points.
    */
   const combineTelemetryData = useCallback(
     (
       telemetry: ITelemetry[],
       deployments: IAnimalDeployment[],
-      critters: ISimpleCritterWithInternalId[]
+      critters: ICritterSimpleResponse[]
     ): IStaticLayerFeature[] => {
       return (
         telemetry
@@ -61,13 +61,13 @@ export const SurveySpatialTelemetry = () => {
             (
               acc: {
                 deployment: IAnimalDeployment;
-                critter: ISimpleCritterWithInternalId;
+                critter: ICritterSimpleResponse;
                 telemetry: ITelemetry;
               }[],
               telemetry: ITelemetry
             ) => {
               const deployment = deployments.find(
-                (animalDeployment) => animalDeployment.deployment_id === telemetry.deployment_id
+                (animalDeployment) => animalDeployment.bctw_deployment_id === telemetry.deployment_id
               );
 
               const critter = critters.find((detailedCritter) => detailedCritter.critter_id === deployment?.critter_id);

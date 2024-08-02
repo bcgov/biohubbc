@@ -124,7 +124,7 @@ export function createDeployment(): RequestHandler {
       ...bctwRequestObject
     } = req.body;
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
     const bctwService = new BctwDeploymentService(user);
     const deploymentService = new DeploymentService(connection);
     const critterbaseService = new CritterbaseService(user);

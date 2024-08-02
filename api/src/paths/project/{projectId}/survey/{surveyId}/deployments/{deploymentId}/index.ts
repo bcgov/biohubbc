@@ -90,20 +90,19 @@ GET.apiDoc = {
 
 export function getDeploymentById(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
-
     const deploymentId = Number(req.params.deploymentId);
 
-    const connection = getDBConnection(req['keycloak_token']);
-
-    const deploymentService = new DeploymentService(connection);
-    const bctwDeploymentService = new BctwDeploymentService(user);
-
+    const connection = getDBConnection(req.keycloak_token);
     try {
       await connection.open();
+
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
+
+      const deploymentService = new DeploymentService(connection);
+      const bctwDeploymentService = new BctwDeploymentService(user);
 
       // Fetch deployments from the deployment service for the given surveyId
       const surveyDeployment = await deploymentService.getDeploymentById(deploymentId);
@@ -239,19 +238,11 @@ PUT.apiDoc = {
 
 export function updateDeployment(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
-
     const deploymentId = Number(req.params.deploymentId);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
-    const bctwDeploymentService = new BctwDeploymentService(user);
     const deploymentService = new DeploymentService(connection);
-    const critterbaseService = new CritterbaseService(user);
-
     const {
       deployment_id,
       critter_id,
@@ -265,6 +256,14 @@ export function updateDeployment(): RequestHandler {
 
     try {
       await connection.open();
+
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
+
+      const bctwDeploymentService = new BctwDeploymentService(user);
+      const critterbaseService = new CritterbaseService(user);
 
       // Update the deployment in SIMS
       const bctw_deployment_id = await deploymentService.updateDeployment(deploymentId, {
@@ -387,21 +386,21 @@ DELETE.apiDoc = {
 
 export function deleteDeployment(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
-
     const deploymentId = Number(req.params.deploymentId);
     const surveyId = Number(req.params.surveyId);
 
-    const connection = getDBConnection(req['keycloak_token']);
-
-    const bctwDeploymentService = new BctwDeploymentService(user);
-    const deploymentService = new DeploymentService(connection);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
+
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
+
+      const bctwDeploymentService = new BctwDeploymentService(user);
+      const deploymentService = new DeploymentService(connection);
 
       const { bctw_deployment_id } = await deploymentService.endDeployment(surveyId, deploymentId);
 

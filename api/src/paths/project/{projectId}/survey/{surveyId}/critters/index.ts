@@ -2,10 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { HTTP500 } from '../../../../../../errors/http-error';
 import { critterSchema } from '../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { CritterbaseService, ICritter, ICritterbaseUser } from '../../../../../../services/critterbase-service';
+import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../utils/logger';
 
@@ -175,7 +174,7 @@ POST.apiDoc = {
                 type: 'number',
                 description: 'SIMS internal ID of the critter within the survey'
               },
-              critterbase_crittter_id: {
+              critterbase_critter_id: {
                 type: 'string',
                 description: 'Critterbase ID of the critter'
               }
@@ -217,7 +216,6 @@ export function getCrittersFromSurvey(): RequestHandler {
       await connection.open();
 
       const surveyService = new SurveyCritterService(connection);
-
       const surveyCritters = await surveyService.getCrittersInSurvey(surveyId);
 
       // Exit early if surveyCritters list is empty
@@ -225,41 +223,31 @@ export function getCrittersFromSurvey(): RequestHandler {
         return res.status(200).json([]);
       }
 
-      const critterbaseCritterId = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
+      const critterIds = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
 
-      const critterbaseService = new CritterbaseService({
-        keycloak_guid: connection.systemUserGUID(),
-        username: connection.systemUserIdentifier()
-      });
+      const result = await surveyService.critterbaseService.getMultipleCrittersByIds(critterIds);
 
-      // Fetch critters from the service based on the Critterbase critter ids
-      const critterbaseCritters =
-        req.query.format === 'detailed'
-          ? await critterbaseService.getMultipleCrittersByIdsDetailed(critterbaseCritterId)
-          : await critterbaseService.getMultipleCrittersByIds(critterbaseCritterId);
+      const critterMap = new Map();
+      for (const item of result) {
+        critterMap.set(item.critter_id, {
+          ...item,
+          // Rename `critter_id` from Critterbase to critterbase_critter_id to distinguish it from
+          // the integer `critter_id` in SIMS
+          critterbase_critter_id: item.critter_id
+        });
+      }
 
-      // For each Critterbase critter record, find the corresponding survey critter record, and add the corresponding
-      // survey critter ID to the Critterbase critter record.
-      const mergedCritterbaseCritters: (ICritter & { survey_critter_id: number })[] = critterbaseCritters.map(
-        (critterbaseCritter) => {
-          const surveyCritter = surveyCritters.find(
-            (surveyCritter) => surveyCritter.critterbase_critter_id === critterbaseCritter.critter_id
-          );
-
-          if (!surveyCritter) {
-            throw new HTTP500('Failed to find survey critters');
-          }
-
-          return {
-            ...critterbaseCritter,
-            survey_critter_id: surveyCritter.critter_id
-          };
+      // Update the critterMap with critter_id
+      for (const surveyCritter of surveyCritters) {
+        const key = String(surveyCritter.critterbase_critter_id);
+        if (critterMap.has(key)) {
+          critterMap.get(key).critter_id = surveyCritter.critter_id;
         }
-      );
+      }
 
-      return res.status(200).json(mergedCritterbaseCritters);
+      return res.status(200).json([...critterMap.values()]);
     } catch (error) {
-      defaultLog.error({ label: 'getCrittersFromSurvey', message: 'error', error });
+      defaultLog.error({ label: 'createCritter', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

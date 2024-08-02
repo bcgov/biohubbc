@@ -4,6 +4,7 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
+import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -12,22 +13,21 @@ import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import grey from '@mui/material/colors/grey';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ISurveyCritter } from 'contexts/animalPageContext';
 import { useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { getFormattedDate } from 'utils/Utils';
 import { combineDateTime } from 'utils/datetime';
+import { getFormattedDate } from 'utils/Utils';
 import { ICaptureWithSupplementaryData } from '../AnimalCaptureContainer';
 import { AnimalCaptureCardDetailsContainer } from './capture-card-details/AnimalCaptureCardDetailsContainer';
 
 interface IAnimalCaptureCardContainer {
   captures: ICaptureWithSupplementaryData[];
   selectedAnimal: ISurveyCritter;
-  handleDelete: (selectedCapture: string, critterbase_critter_id: string) => Promise<void>;
+  handleDelete: (selectedCapture: string, critter_id: number) => Promise<void>;
 }
 /**
  * Returns accordion cards for displaying animal capture details on the animal profile page
@@ -111,7 +111,7 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
           open={Boolean(captureForDelete)}
           onYes={() => {
             setCaptureForDelete(false);
-            handleDelete(selectedCapture, selectedAnimal.critterbase_critter_id);
+            handleDelete(selectedCapture, selectedAnimal.critter_id);
           }}
           onClose={() => setCaptureForDelete(false)}
           onNo={() => setCaptureForDelete(false)}

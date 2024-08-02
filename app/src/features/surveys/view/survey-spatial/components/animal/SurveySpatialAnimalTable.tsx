@@ -14,7 +14,7 @@ const rowHeight = 52;
  * Interface defining the structure of animal data used in the table.
  */
 interface IAnimalData {
-  id: string;
+  id: number;
   animal_id: string;
   scientificName: string;
 }
@@ -39,7 +39,7 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
 
   // DataLoader to fetch detailed critter data based on IDs from context
   const animalsDataLoader = useDataLoader(() =>
-    critterbaseApi.critters.getMultipleCrittersByIds(animals.map((animal) => animal.critter_id))
+    critterbaseApi.critters.getMultipleCrittersByIds(animals.map((animal) => animal.critterbase_critter_id))
   );
 
   // Load data if animals data is available
