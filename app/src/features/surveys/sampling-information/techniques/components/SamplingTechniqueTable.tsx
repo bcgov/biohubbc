@@ -164,8 +164,8 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
       headerName: 'Attractants',
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-          {params.row.attractants.map((attractant, index) => (
-            <Box key={index} mr={1} mb={1}>
+          {params.row.attractants.map((attractant) => (
+            <Box key={attractant.attractant_lookup_id} mr={1} mb={1}>
               <ColouredRectangleChip
                 label={
                   getCodesName(codesContext.codesDataLoader.data, 'attractants', attractant.attractant_lookup_id) ?? ''
@@ -280,12 +280,6 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
               height: rows.length === 0 ? '250px' : 'unset',
               overflowY: 'auto !important',
               overflowX: 'hidden'
-            },
-            '& .MuiDataGrid-overlay': {
-              height: '250px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
             },
             '& .MuiDataGrid-columnHeaderDraggableContainer': {
               minWidth: '50px'

@@ -146,8 +146,8 @@ export const SamplingSiteManageSiteTable = (props: ISamplingSiteManageSiteTableP
       flex: 1,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-          {params.row.blocks.map((block, index) => (
-            <Box key={index} mr={1} mb={1}>
+          {params.row.blocks.map((block) => (
+            <Box key={block} mr={1} mb={1}>
               <ColouredRectangleChip label={block} colour={blueGrey} />
             </Box>
           ))}
@@ -160,8 +160,8 @@ export const SamplingSiteManageSiteTable = (props: ISamplingSiteManageSiteTableP
       flex: 1,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-          {params.row.stratums.map((stratum, index) => (
-            <Box key={index} mr={1} mb={1}>
+          {params.row.stratums.map((stratum) => (
+            <Box key={stratum} mr={1} mb={1}>
               <ColouredRectangleChip label={stratum} colour={blueGrey} />
             </Box>
           ))}
@@ -259,12 +259,6 @@ export const SamplingSiteManageSiteTable = (props: ISamplingSiteManageSiteTableP
             height: rows.length === 0 ? '250px' : 'unset',
             overflowY: 'auto !important',
             overflowX: 'hidden'
-          },
-          '& .MuiDataGrid-overlay': {
-            minHeight: '250px',
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
           }
         }}
       />

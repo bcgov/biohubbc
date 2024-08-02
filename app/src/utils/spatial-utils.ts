@@ -10,14 +10,14 @@ import { isDefined } from 'utils/Utils';
  * @return {*}  {boolean}
  */
 export const isValidCoordinates = (latitude: number | undefined, longitude: number | undefined): boolean => {
-  return isDefined(latitude) &&
+  return (
+    isDefined(latitude) &&
     isDefined(longitude) &&
     latitude > -90 &&
     latitude < 90 &&
     longitude > -180 &&
     longitude < 180
-    ? true
-    : false;
+  );
 };
 
 /**
