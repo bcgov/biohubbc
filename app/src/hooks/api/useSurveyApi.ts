@@ -591,8 +591,9 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} deploymentId
    * @returns {*}
    */
-  const deleteDeployment = async (projectId: number, surveyId: number, deploymentId: number): Promise<void> => {
-    await axios.delete(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
+  const deleteDeployment = async (projectId: number, surveyId: number, deploymentId: number): Promise<string> => {
+    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
+    return data;
   };
 
   /**

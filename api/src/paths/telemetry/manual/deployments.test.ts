@@ -1,8 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { SystemUser } from '../../../repositories/user-repository';
-import { IManualTelemetry } from '../../../services/bctw-service';
-import { BctwTelemetryService } from '../../../services/bctw-service/bctw-telemetry-service';
+import { BctwTelemetryService, IManualTelemetry } from '../../../services/bctw-service/bctw-telemetry-service';
 import { getRequestHandlerMocks } from '../../../__mocks__/db';
 import { getManualTelemetryByDeploymentIds } from './deployments';
 

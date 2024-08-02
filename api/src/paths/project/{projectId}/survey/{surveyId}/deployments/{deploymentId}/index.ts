@@ -242,7 +242,6 @@ export function updateDeployment(): RequestHandler {
 
     const connection = getDBConnection(req.keycloak_token);
 
-    const deploymentService = new DeploymentService(connection);
     const {
       deployment_id,
       critter_id,
@@ -262,6 +261,7 @@ export function updateDeployment(): RequestHandler {
         username: connection.systemUserIdentifier()
       };
 
+      const deploymentService = new DeploymentService(connection);
       const bctwDeploymentService = new BctwDeploymentService(user);
       const critterbaseService = new CritterbaseService(user);
 

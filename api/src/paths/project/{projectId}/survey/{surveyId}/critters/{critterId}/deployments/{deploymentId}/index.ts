@@ -154,7 +154,6 @@ PATCH.apiDoc = {
 
 export function updateDeployment(): RequestHandler {
   return async (req, res) => {
-
     const critterId = Number(req.params.critterId);
     const deploymentId = Number(req.params.deploymentId);
 

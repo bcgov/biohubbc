@@ -1,10 +1,10 @@
 import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { getRequestHandlerMocks } from '../../../__mocks__/db';
 import { BctwDeploymentService } from '../../../services/bctw-service/bctw-deployment-service';
 import { BctwDeviceService } from '../../../services/bctw-service/bctw-device-service';
 import { BctwKeyxService } from '../../../services/bctw-service/bctw-keyx-service';
-import { getRequestHandlerMocks } from '../../../__mocks__/db';
 import { GET, getDeviceDetails } from './{deviceId}';
 import { SystemUser } from '../../../repositories/user-repository';
 

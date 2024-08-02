@@ -72,6 +72,37 @@ export class DeploymentRepository extends BaseRepository {
   }
 
   /**
+   * Returns a specific deployment for a given critter Id
+   *
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @return {*}  {Promise<void>}
+   * @memberof DeploymentRepository
+   */
+  async getDeploymentForCritterId(surveyId: number, critterId: number): Promise<SurveyDeployment> {
+    defaultLog.debug({ label: 'getDeploymentById', critterId });
+
+    const queryBuilder = getKnex()
+      .select(
+        'deployment_id',
+        'd.critter_id as critter_id',
+        'c.critterbase_critter_id',
+        'bctw_deployment_id',
+        'critterbase_start_capture_id',
+        'critterbase_end_capture_id',
+        'critterbase_end_mortality_id'
+      )
+      .from('deployment as d')
+      .leftJoin('critter as c', 'c.critter_id', 'd.critter_id')
+      .where('d.critter_id', critterId)
+      .andWhere('c.survey_id', surveyId);
+
+    const response = await this.connection.knex(queryBuilder, SurveyDeployment);
+
+    return response.rows[0];
+  }
+
+  /**
    * Insert a new deployment record.
    *
    * @param {IPostSurveyDeployment} deployment

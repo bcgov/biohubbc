@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { getRequestHandlerMocks } from '../../__mocks__/db';
-import { getCodeValues } from './code';
-import { BctwService } from '../../services/bctw-service/bctw-service';
 import { SystemUser } from '../../repositories/user-repository';
+import { BctwService } from '../../services/bctw-service/bctw-service';
+import { getCodeValues } from './code';
 
 describe('getCodeValues', () => {
   afterEach(() => {

@@ -167,34 +167,3 @@ export function createDeployment(): RequestHandler {
     }
   };
 }
-
-export function updateDeployment(): RequestHandler {
-  return async (req, res) => {
-    const critterId = Number(req.params.critterId);
-
-    const connection = getDBConnection(req.keycloak_token);
-
-    try {
-      await connection.open();
-
-      const user: ICritterbaseUser = {
-        keycloak_guid: connection.systemUserGUID(),
-        username: connection.systemUserIdentifier()
-      };
-
-      const deploymentService = new DeploymentService(connection);
-      const bctwDeploymentService = new BctwDeploymentService(user);
-
-      await deploymentService.updateDeployment(critterId, req.body.deployment_id);
-      await bctwDeploymentService.updateDeployment(req.body);
-      await connection.commit();
-      return res.status(200).json({ message: 'Deployment updated.' });
-    } catch (error) {
-      defaultLog.error({ label: 'updateDeployment', message: 'error', error });
-      await connection.rollback();
-      throw error;
-    } finally {
-      connection.release();
-    }
-  };
-}
