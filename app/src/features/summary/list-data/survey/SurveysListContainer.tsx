@@ -226,7 +226,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
           columns={columns}
           // Rows
           rows={rows}
-          rowCount={surveysDataLoader.data?.surveys.length ?? 0}
+          rowCount={surveysDataLoader.data?.pagination.total ?? 0}
           getRowId={(row) => row.survey_id}
           // Pagination
           paginationMode="server"

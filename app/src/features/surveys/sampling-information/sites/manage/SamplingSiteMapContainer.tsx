@@ -11,10 +11,11 @@ interface ISamplingSitesMapContainerProps {
 export const SamplingSiteMapContainer = (props: ISamplingSitesMapContainerProps) => {
   const staticLayers: IStaticLayer[] = props.samplingSites.map((sampleSite) => ({
     layerName: 'Sample Sites',
-    layerColors: { color: blue[500], fillColor: blue[500] },
+    layerOptions: { color: blue[500], fillColor: blue[500] },
     features: [
       {
-        key: sampleSite.survey_sample_site_id,
+        id: sampleSite.survey_sample_site_id,
+        key: `sample-site-${sampleSite.survey_sample_site_id}`,
         geoJSON: sampleSite.geojson
       }
     ]
@@ -22,7 +23,7 @@ export const SamplingSiteMapContainer = (props: ISamplingSitesMapContainerProps)
 
   return (
     <Box height="400px" flex="1 1 auto">
-      <SurveyMap staticLayers={staticLayers} supplementaryLayers={[]} isLoading={false} />
+      <SurveyMap staticLayers={staticLayers} isLoading={false} />
     </Box>
   );
 };
