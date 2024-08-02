@@ -261,7 +261,7 @@ export const SamplingSiteManageSiteTable = (props: ISamplingSiteManageSiteTableP
             overflowX: 'hidden'
           },
           '& .MuiDataGrid-overlay': {
-            height: '250px',
+            minHeight: '250px',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center'
