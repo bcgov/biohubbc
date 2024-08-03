@@ -27,6 +27,7 @@ import PurposeAndMethodologyForm, {
 } from '../components/methodology/PurposeAndMethodologyForm';
 import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/participants/SurveyUserForm';
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
+import SpeciesForm from '../components/species/SpeciesForm';
 
 export interface IEditSurveyForm {
   initialSurveyData: SurveyUpdateObject | ICreateSurveyRequest;
@@ -72,13 +73,9 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
           title="General Information"
+          summary="Enter a descriptive name for your Survey, indicate your progress, and select start and end dates"
           component={
             <GeneralInformationForm
-              type={
-                codes?.type?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
               progress={
                 codes?.survey_progress?.map((item) => {
                   return { value: item.id, label: item.name, subText: item.description };
@@ -90,12 +87,25 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
         <Divider />
 
         <HorizontalSplitFormComponent
+          title="Species of Interest"
+          summary="Enter focal species for the survey"
+          component={<SpeciesForm />}></HorizontalSplitFormComponent>
+
+        <Divider />
+
+        <HorizontalSplitFormComponent
           title="Purpose and Methodology"
+          summary="Select the types of data collected in the survey and provide a written description of the survey objectives"
           component={
             <PurposeAndMethodologyForm
               intended_outcomes={
                 codes.intended_outcomes.map((item) => {
                   return { value: item.id, label: item.name, subText: item.description };
+                }) || []
+              }
+              type={
+                codes?.type?.map((item) => {
+                  return { value: item.id, label: item.name };
                 }) || []
               }
             />

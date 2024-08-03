@@ -1,8 +1,10 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteField from 'components/fields/MultiAutocompleteField';
+import MultiAutocompleteFieldVariableSize, {
+  IMultiAutocompleteFieldOption
+} from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -27,11 +29,16 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
   purpose_and_methodology: yup.object().shape({
     additional_details: yup.string(),
     intended_outcome_ids: yup.array().min(1, 'One or more Ecological Variables are Required').required('Required')
-  })
+  }),
+  survey_types: yup
+    .array(yup.number())
+    .min(1, 'One or more Types are required')
+    .required('One or more Types are required')
 });
 
 export interface IPurposeAndMethodologyFormProps {
   intended_outcomes: ISelectWithSubtextFieldOption[];
+  type: IMultiAutocompleteFieldOption[];
 }
 
 /**
@@ -43,14 +50,19 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
   return (
     <form>
       <Box component="fieldset">
-        <Typography component="legend" variant="h5">
-          Purpose of Survey
-        </Typography>
         <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <MultiAutocompleteFieldVariableSize
+              id={'survey_details.survey_types'}
+              label={'Collected data'}
+              options={props.type}
+              required={true}
+            />
+          </Grid>
           <Grid item xs={12}>
             <MultiAutocompleteField
               id="purpose_and_methodology.intended_outcome_ids"
-              label="Ecological Variables"
+              label="Ecological concepts of interest"
               options={props.intended_outcomes}
               required={true}
             />
@@ -58,8 +70,8 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
           <Grid item xs={12}>
             <CustomTextField
               name="purpose_and_methodology.additional_details"
-              label="Additional Details"
-              other={{ multiline: true, rows: 2 }}
+              label="Objectives"
+              other={{ multiline: true, rows: 5, required: true }}
             />
           </Grid>
         </Grid>

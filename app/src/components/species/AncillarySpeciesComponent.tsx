@@ -28,7 +28,7 @@ const AncillarySpeciesComponent = () => {
     <>
       <SpeciesAutocompleteField
         formikFieldName={'species.ancillary_species'}
-        label={'Ancillary Species'}
+        label={'Secondary species (optional)'}
         required={false}
         handleSpecies={handleAddSpecies}
         clearOnSelect={true}

@@ -1,0 +1,51 @@
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import AncillarySpeciesComponent from 'components/species/AncillarySpeciesComponent';
+import FocalSpeciesComponent from 'components/species/FocalSpeciesComponent';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import yup from 'utils/YupSchema';
+
+export interface ISpeciesForm {
+  species: {
+    focal_species: ITaxonomy[];
+    ancillary_species: ITaxonomy[];
+  };
+}
+
+export const SpeciesInitialValues: ISpeciesForm = {
+  species: {
+    focal_species: [],
+    ancillary_species: []
+  }
+};
+
+export const SpeciesYupSchema = () => {
+  return yup.object().shape({
+    species: yup.object().shape({
+      focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
+      ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique')
+    })
+  });
+};
+
+/**
+ * Create survey - general information fields
+ *
+ * @return {*}
+ */
+const SpeciesForm = () => {
+  return (
+    <Box component="fieldset">
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <FocalSpeciesComponent />
+        </Grid>
+        <Grid item xs={12}>
+          <AncillarySpeciesComponent />
+        </Grid>
+      </Grid>
+    </Box>
+  );
+};
+
+export default SpeciesForm;
