@@ -5,12 +5,12 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PostSurveyLocationData, PutSurveyObject, PutSurveyPermitData } from '../models/survey-update';
 import {
-  GetAncillarySpeciesData,
   GetAttachmentsData,
   GetFocalSpeciesData,
   GetSurveyData,
@@ -28,7 +28,6 @@ import {
   SurveyRepository,
   SurveyTypeRecord
 } from '../repositories/survey-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
@@ -373,8 +372,7 @@ describe('SurveyService', () => {
       expect(repoStub).to.be.calledOnce;
       expect(getTaxonomyByTsnsStub).to.be.calledTwice;
       expect(response).to.eql({
-        ...new GetFocalSpeciesData([]),
-        ...new GetAncillarySpeciesData([])
+        ...new GetFocalSpeciesData([])
       });
     });
   });
@@ -577,22 +575,6 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('insertAncillarySpecies', () => {
-    it('returns the first row on success', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const data = 1;
-
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'insertAncillarySpecies').resolves(data);
-
-      const response = await service.insertAncillarySpecies(1, 1);
-
-      expect(repoStub).to.be.calledOnce;
-      expect(response).to.eql(data);
-    });
-  });
-
   describe('insertSurveyProprietor', () => {
     it('returns the first row on success', async () => {
       const dbConnection = getMockDBConnection();
@@ -704,7 +686,6 @@ describe('SurveyService', () => {
     it('returns data if response is not null', async () => {
       sinon.stub(SurveyService.prototype, 'deleteSurveySpeciesData').resolves();
       sinon.stub(SurveyService.prototype, 'insertFocalSpecies').resolves(1);
-      sinon.stub(SurveyService.prototype, 'insertAncillarySpecies').resolves(1);
 
       const mockQueryResponse = { response: 'something', rowCount: 1 } as unknown as QueryResult<any>;
 
@@ -713,7 +694,7 @@ describe('SurveyService', () => {
 
       const response = await surveyService.updateSurveySpeciesData(1, {
         survey_details: 'details',
-        species: { focal_species: [1], ancillary_species: [1] }
+        species: { focal_species: [1] }
       } as unknown as PutSurveyObject);
 
       expect(response).to.eql([1, 1]);

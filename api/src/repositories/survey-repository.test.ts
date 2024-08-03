@@ -3,12 +3,12 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import { GetAttachmentsData, GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../models/survey-view';
-import { getMockDBConnection } from '../__mocks__/db';
 import { SurveyRecord, SurveyRepository, SurveyTypeRecord } from './survey-repository';
 
 chai.use(sinonChai);
@@ -535,33 +535,6 @@ describe('SurveyRepository', () => {
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to insert focal species data');
-      }
-    });
-  });
-
-  describe('insertAncillarySpecies', () => {
-    it('should return result', async () => {
-      const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.insertAncillarySpecies(1, 1);
-
-      expect(response).to.eql(1);
-    });
-
-    it('should throw an error', async () => {
-      const mockResponse = { rows: undefined, rowCount: 0 } as any as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      try {
-        await repository.insertAncillarySpecies(1, 1);
-        expect.fail();
-      } catch (error) {
-        expect((error as Error).message).to.equal('Failed to insert ancillary species data');
       }
     });
   });

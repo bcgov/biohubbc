@@ -141,50 +141,12 @@ export const focalSpeciesSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
-export const ancillarySpeciesSchema: OpenAPIV3.SchemaObject = {
-  title: 'ancillary species response object',
-  type: 'object',
-  additionalProperties: false,
-  required: ['tsn', 'commonNames', 'scientificName'],
-  properties: {
-    tsn: {
-      description: 'Taxonomy tsn',
-      type: 'number'
-    },
-    commonNames: {
-      description: 'Taxonomy common names',
-      type: 'array',
-      items: {
-        type: 'string'
-      },
-      nullable: true
-    },
-    scientificName: {
-      description: 'Taxonomy scientific name',
-      type: 'string'
-    },
-    rank: {
-      description: 'Taxonomy rank name',
-      type: 'string'
-    },
-    kingdom: {
-      description: 'Taxonomy kingdom name',
-      type: 'string'
-    }
-  }
-};
-
 export const surveySpeciesSchema: OpenAPIV3.SchemaObject = {
   description: 'Survey Species',
   type: 'object',
   additionalProperties: false,
-  required: ['focal_species', 'ancillary_species'],
+  required: ['focal_species'],
   properties: {
-    ancillary_species: {
-      nullable: true,
-      type: 'array',
-      items: ancillarySpeciesSchema
-    },
     focal_species: {
       type: 'array',
       items: focalSpeciesSchema

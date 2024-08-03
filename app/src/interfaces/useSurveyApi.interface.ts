@@ -188,7 +188,6 @@ interface ISurveyUpdateObject extends ISurveyLocationForm {
   };
   species?: {
     focal_species: ITaxonomy[];
-    ancillary_species: ITaxonomy[];
   };
   permit?: {
     permits: {
@@ -268,7 +267,6 @@ export interface IGetSurveyForViewResponse {
 
 export interface IGetSpecies {
   focal_species: ITaxonomy[];
-  ancillary_species: ITaxonomy[];
 }
 
 export interface IGetSurveyAttachment {
@@ -345,7 +343,8 @@ export interface IDetailedCritterWithInternalId extends ICritterDetailedResponse
   survey_critter_id: number; //The internal critter_id in the SIMS DB. Called this to distinguish against the critterbase UUID of the same name.
 }
 
-export type IEditSurveyRequest = IGeneralInformationForm & ISpeciesForm &
+export type IEditSurveyRequest = IGeneralInformationForm &
+  ISpeciesForm &
   IPurposeAndMethodologyForm &
   ISurveyFundingSourceForm &
   ISurveyLocationForm &

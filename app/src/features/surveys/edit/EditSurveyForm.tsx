@@ -73,7 +73,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
           title="General Information"
-          summary="Enter a descriptive name for your Survey, indicate your progress, and select start and end dates"
+          summary="Enter information about the survey"
           component={
             <GeneralInformationForm
               progress={
@@ -87,15 +87,15 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
         <Divider />
 
         <HorizontalSplitFormComponent
-          title="Species of Interest"
-          summary="Enter focal species for the survey"
+          title="Focal species"
+          summary="Enter focal species that were targetted in the survey"
           component={<SpeciesForm />}></HorizontalSplitFormComponent>
 
         <Divider />
 
         <HorizontalSplitFormComponent
           title="Purpose and Methodology"
-          summary="Select the types of data collected in the survey and provide a written description of the survey objectives"
+          summary="Select the types of data collected and describe the survey objectives"
           component={
             <PurposeAndMethodologyForm
               intended_outcomes={
@@ -131,7 +131,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
                 <SurveyFundingSourceForm />
               </Box>
               <Box component="fieldset" mt={5}>
-                <Typography component="legend">Additional Partnerships</Typography>
+                <Typography component="legend">Partnerships (optional)</Typography>
                 <SurveyPartnershipsForm />
               </Box>
             </Box>

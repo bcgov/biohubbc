@@ -36,7 +36,7 @@ const FocalSpeciesComponent = () => {
       )}
       <SpeciesAutocompleteField
         formikFieldName={'species.focal_species'}
-        label={'Primary species'}
+        label={'Species'}
         required={true}
         handleSpecies={handleAddSpecies}
         clearOnSelect={true}

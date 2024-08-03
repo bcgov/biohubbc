@@ -90,11 +90,9 @@ export class PostSurveyDetailsData {
 
 export class PostSpeciesData {
   focal_species: ITaxonomy[];
-  ancillary_species: ITaxonomy[];
 
   constructor(obj?: any) {
     this.focal_species = (obj?.focal_species?.length && obj.focal_species) || [];
-    this.ancillary_species = (obj?.ancillary_species?.length && obj.ancillary_species) || [];
   }
 }
 

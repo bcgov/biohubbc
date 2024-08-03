@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import { IPermitModel } from '../repositories/permit-repository';
 import {
-  GetAncillarySpeciesData,
   GetAttachmentsData,
   GetFocalSpeciesData,
   GetPermitData,
@@ -94,40 +93,6 @@ describe('GetFocalSpeciesData', () => {
 
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([
-        { tsn: 1, commonNames: ['species1'] },
-        { tsn: 2, commonNames: ['species2'] }
-      ]);
-    });
-  });
-});
-
-describe('GetAncillarySpeciesData', () => {
-  describe('No values provided', () => {
-    let data: GetAncillarySpeciesData;
-
-    before(() => {
-      data = new GetAncillarySpeciesData();
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let data: GetAncillarySpeciesData;
-
-    const obj = [
-      { tsn: 1, commonNames: ['species1'] },
-      { tsn: 2, commonNames: ['species2'] }
-    ];
-
-    before(() => {
-      data = new GetAncillarySpeciesData(obj);
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([
         { tsn: 1, commonNames: ['species1'] },
         { tsn: 2, commonNames: ['species2'] }
       ]);

@@ -87,37 +87,6 @@ const SurveyGeneralInformation = () => {
           })}
         </Typography>
       </Box>
-
-      <Box className="row">
-        <Typography component="dt">Secondary Species</Typography>
-        <Typography component="dd">
-          {species.ancillary_species?.map((ancillarySpecies: ITaxonomy) => {
-            return (
-              <Typography
-                component="span"
-                key={ancillarySpecies.tsn}
-                sx={{
-                  position: 'relative',
-                  display: 'inline-block',
-                  mr: 1.25,
-                  '&::after': {
-                    content: `','`,
-                    position: 'absolute',
-                    top: 0
-                  },
-                  '&:last-child::after': {
-                    display: 'none'
-                  }
-                }}>
-                {[...ancillarySpecies.commonNames, `(${ancillarySpecies.scientificName})`].filter(Boolean).join(' ')}
-              </Typography>
-            );
-          })}
-          {species.ancillary_species?.length <= 0 && (
-            <Typography component="span">No secondary species of interest</Typography>
-          )}
-        </Typography>
-      </Box>
     </Box>
   );
 };

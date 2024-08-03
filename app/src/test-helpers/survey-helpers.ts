@@ -64,15 +64,6 @@ export const surveyObject: SurveyViewObject = {
         rank: 'species',
         kingdom: 'animalia'
       }
-    ],
-    ancillary_species: [
-      {
-        tsn: 2,
-        commonNames: ['focal species 2'],
-        scientificName: 'scientific name 2',
-        rank: 'species',
-        kingdom: 'animalia'
-      }
     ]
   },
   site_selection: {

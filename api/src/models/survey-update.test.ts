@@ -150,18 +150,13 @@ describe('PutSpeciesData', () => {
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([]);
     });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([]);
-    });
   });
 
   describe('All values provided', () => {
     let data: PutSurveySpeciesData;
 
     const obj = {
-      focal_species: [1, 2],
-      ancillary_species: [3]
+      focal_species: [1, 2]
     };
 
     before(() => {
@@ -170,10 +165,6 @@ describe('PutSpeciesData', () => {
 
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([1, 2]);
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([3]);
     });
   });
 });

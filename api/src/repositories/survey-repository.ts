@@ -18,7 +18,6 @@ import { BaseRepository } from './base-repository';
 
 export interface IGetSpeciesData {
   itis_tsn: number;
-  is_focal: boolean;
 }
 
 export interface IObservationSubmissionInsertDetails {
@@ -364,8 +363,7 @@ export class SurveyRepository extends BaseRepository {
   async getSpeciesData(surveyId: number): Promise<IGetSpeciesData[]> {
     const sqlStatement = SQL`
       SELECT
-        itis_tsn,
-        is_focal
+        itis_tsn
       FROM
         study_species
       WHERE
@@ -762,40 +760,6 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Inserts a new Ancillary species record and returns the new ID
-   *
-   * @param {number} ancillary_species_id
-   * @param {number} surveyId
-   * @returns {*} Promise<number>
-   * @memberof SurveyRepository
-   */
-  async insertAncillarySpecies(ancillary_species_id: number, surveyId: number): Promise<number> {
-    const sqlStatement = SQL`
-      INSERT INTO study_species (
-        itis_tsn,
-        is_focal,
-        survey_id
-      ) VALUES (
-        ${ancillary_species_id},
-        FALSE,
-        ${surveyId}
-      ) RETURNING study_species_id as id;
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-    const result = response.rows?.[0];
-
-    if (!result?.id) {
-      throw new ApiExecuteSQLError('Failed to insert ancillary species data', [
-        'SurveyRepository->insertSurveyData',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
-
-    return result.id;
-  }
-
-  /**
    * Insert many rows associating a survey id to various intended outcome ids.
    *
    * @param {number} surveyId
@@ -832,7 +796,6 @@ export class SurveyRepository extends BaseRepository {
   /**
    * Inserts a new Survey Proprietor record and returns the new ID
    *
-   * @param {number} ancillary_species_id
    * @param {number} surveyId
    * @returns {*} Promise<number>
    * @memberof SurveyRepository

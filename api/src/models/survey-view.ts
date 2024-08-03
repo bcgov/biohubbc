@@ -35,7 +35,7 @@ export type FindSurveysResponse = z.infer<typeof FindSurveysResponse>;
 
 export type SurveyObject = {
   survey_details: GetSurveyData;
-  species: GetFocalSpeciesData & GetAncillarySpeciesData;
+  species: GetFocalSpeciesData;
   permit: GetPermitData;
   funding_sources: GetSurveyFundingSourceData[];
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
@@ -113,18 +113,6 @@ export class GetFocalSpeciesData {
   }
 }
 
-export class GetAncillarySpeciesData {
-  ancillary_species: ITaxonomy[];
-
-  constructor(obj?: any[]) {
-    this.ancillary_species = [];
-
-    obj?.length &&
-      obj.forEach((item: any) => {
-        this.ancillary_species.push(item);
-      });
-  }
-}
 export class GetPermitData {
   permits: {
     permit_id: IPermitModel['permit_id'];
