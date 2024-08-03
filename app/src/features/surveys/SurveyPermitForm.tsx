@@ -20,12 +20,12 @@ import AlertBar from 'components/alert/AlertBar';
 import CustomTextField from 'components/fields/CustomTextField';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { get } from 'lodash-es';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 
 export interface ISurveyPermitFormArrayItem {
-  permit_id: number;
+  permit_id?: number;
   permit_number: string;
   permit_type: string;
 }
@@ -88,6 +88,20 @@ const SurveyPermitForm: React.FC = () => {
   const { values, handleChange, getFieldMeta, errors, setFieldValue, submitCount } =
     useFormikContext<ISurveyPermitForm>();
 
+  useEffect(() => {
+    setFieldValue('permit.used', values.permit.used);
+  }, [values.permit]);
+
+  const getPermitUsedValue = () => {
+    if (values.permit.used === true) {
+      return 'true';
+    }
+    if (values.permit.used === false) {
+      return 'false';
+    }
+    return null;
+  };
+
   return (
     <FieldArray
       name="permit.permits"
@@ -104,6 +118,7 @@ const SurveyPermitForm: React.FC = () => {
           <RadioGroup
             aria-label="permit"
             name="permit.used"
+            value={getPermitUsedValue()}
             onChange={(event) => {
               const value = event.target.value === 'true' ? true : false;
               setFieldValue('permit.used', value);

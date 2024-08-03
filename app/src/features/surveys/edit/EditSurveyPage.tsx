@@ -109,7 +109,7 @@ const EditSurveyPage = () => {
         })),
         participants: values.participants,
         partnerships: values.partnerships,
-        permit: values.permit,
+        permit: { permits: values.permit.permits },
         proprietor: values.proprietor,
         purpose_and_methodology: values.purpose_and_methodology,
         site_selection: {
@@ -194,7 +194,17 @@ const EditSurveyPage = () => {
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
-          <EditSurveyForm initialSurveyData={surveyData} handleSubmit={handleSubmit} formikRef={formikRef} />
+          <EditSurveyForm
+            initialSurveyData={{
+              ...surveyData,
+              permit: {
+                permits: surveyData.permit?.permits ?? [],
+                used: Boolean(surveyData.permit?.permits.length)
+              }
+            }}
+            handleSubmit={handleSubmit}
+            formikRef={formikRef}
+          />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
             <LoadingButton
               loading={isSaving}

@@ -174,7 +174,13 @@ const CreateSurveyPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <EditSurveyForm
-            initialSurveyData={defaultSurveyDataFormValues}
+            initialSurveyData={{
+              ...defaultSurveyDataFormValues,
+              permit: {
+                permits: defaultSurveyDataFormValues.permit.permits,
+                used: Boolean(defaultSurveyDataFormValues.permit.permits)
+              }
+            }}
             handleSubmit={(formikData) => handleSubmit(formikData as unknown as ICreateSurveyRequest)}
             formikRef={formikRef}
           />
