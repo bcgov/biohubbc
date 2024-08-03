@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { surveyTelemetrySchema } from '../../openapi/schemas/telemetry';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { BctwService, getBctwUser } from '../../services/bctw-service';
 import { getLogger } from '../../utils/logger';
@@ -34,20 +35,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'array',
-            items: {
-              type: 'object',
-              additionalProperties: false,
-              properties: {
-                id: { type: 'string' },
-                deployment_id: { type: 'string', format: 'uuid' },
-                telemetry_manual_id: { type: 'string', nullable: true },
-                telemetry_id: { type: 'number', nullable: true },
-                latitude: { type: 'number' },
-                longitude: { type: 'number' },
-                acquisition_date: { type: 'string' },
-                telemetry_type: { type: 'string' }
-              }
-            }
+            items: surveyTelemetrySchema
           }
         }
       }

@@ -1,36 +1,39 @@
-import { Feature, Point } from 'geojson';
-import { isDefined } from 'utils/Utils';
+import { Feature, GeoJsonProperties, Point, Position } from 'geojson';
 
 /**
- * Get a point feature from the given latitude and longitude.
+ * Creates a GeoJSON point from a set of coordinates and associated properties.
  *
- * @template Return00PointType
- * @param {{
- *   latitude?: number; // Latitude of the point
- *   longitude?: number; // Longitude of the point
- *   properties?: Record<string, any>; // Properties of the point feature
- *   return00Point?: Return00PointType; // By default, if latitude or longitude is not defined, return null. If this is
- *   set to true, the default value for latitude and longitude will be 0, and a non-null point feature will be returned.
- * }} params
- * @return {*}  {(Return00PointType extends true ? Feature : Feature | null)}
+ * @param {number} latitude
+ * @param {number} longitude
+ * @returns {Point} A GeoJSON point
  */
-export const getPointFeature = <Return00PointType extends boolean = false>(params: {
-  latitude?: number;
-  longitude?: number;
-  properties?: Record<string, any>;
-  return00Point?: Return00PointType;
-}): Return00PointType extends true ? Feature : Feature | null => {
-  if (!params.return00Point && (!isDefined(params.latitude) || !isDefined(params.longitude))) {
-    return null as Return00PointType extends true ? Feature : Feature | null;
-  }
+export const createGeoJSONPoint = (latitude: number, longitude: number): Point => {
+  const coordinates: Position = [longitude, latitude];
+  return {
+    type: 'Point',
+    coordinates
+  };
+};
+
+/**
+ * Creates a GeoJSON feature with a point geometry from a set of coordinates and associated properties.
+ *
+ * @param {number} latitude
+ * @param {number} longitude
+ * @param {GeoJsonProperties} [properties={}]
+ * @returns {Feature}
+ */
+export const createGeoJSONFeature = (
+  latitude: number,
+  longitude: number,
+  properties: GeoJsonProperties = {}
+): Feature => {
+  const point = createGeoJSONPoint(latitude, longitude);
 
   return {
     type: 'Feature',
-    geometry: {
-      type: 'Point',
-      coordinates: [params.longitude ?? 0, params.latitude ?? 0]
-    },
-    properties: { ...params.properties }
+    geometry: point,
+    properties
   };
 };
 
@@ -61,9 +64,9 @@ export const getCoordinatesFromGeoJson = (feature: Feature<Point>): { latitude: 
 /**
  * Checks if the given feature is a GeoJson Feature containing a Point.
  *
- * @param {(Feature | any)} [feature]
+ * @param {(unknown)} [feature]
  * @return {*}  {feature is Feature<Point>}
  */
-export const isGeoJsonPointFeature = (feature?: Feature | any): feature is Feature<Point> => {
-  return (feature as Feature)?.geometry.type === 'Point';
+export const isGeoJsonPointFeature = (feature?: unknown): feature is Feature<Point> => {
+  return (feature as Feature)?.geometry?.type === 'Point';
 };
