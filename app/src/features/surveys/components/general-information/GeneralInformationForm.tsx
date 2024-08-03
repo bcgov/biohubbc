@@ -1,11 +1,13 @@
+import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
-import { SurveyPermitFormYupSchema } from '../../SurveyPermitForm';
+import SurveyPermitForm, { SurveyPermitFormYupSchema } from '../../SurveyPermitForm';
 
 export const AddPermitFormInitialValues = {
   permits: [
@@ -69,7 +71,11 @@ export const GeneralInformationYupSchema = () => {
           .number()
           .min(1, 'Survey Progress is Required')
           .required('Survey Progress is Required')
-          .nullable()
+          .nullable(),
+        survey_types: yup
+          .array(yup.number())
+          .min(1, 'One or more data types are required')
+          .required('One or more data types are required')
       })
     })
     .concat(SurveyPermitFormYupSchema);
@@ -88,36 +94,46 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
   const formikProps = useFormikContext<IGeneralInformationForm>();
 
   return (
-    <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <CustomTextField
-          name="survey_details.survey_name"
-          label="Survey Name"
-          maxLength={200}
-          other={{
-            required: true
-          }}
-        />
+    <>
+      <Grid container spacing={3}>
+        <Grid item xs={12}>
+          <CustomTextField
+            name="survey_details.survey_name"
+            label="Survey Name"
+            maxLength={200}
+            other={{
+              required: true
+            }}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <SelectWithSubtextField
+            id={'survey_details.progress_id'}
+            name={'survey_details.progress_id'}
+            label={'Progress'}
+            options={props.progress}
+            required={true}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <StartEndDateFields
+            formikProps={formikProps}
+            startName="survey_details.start_date"
+            endName="survey_details.end_date"
+            startRequired={true}
+            endRequired={false}
+          />
+        </Grid>
       </Grid>
-      <Grid item xs={12}>
-        <SelectWithSubtextField
-          id={'survey_details.progress_id'}
-          name={'survey_details.progress_id'}
-          label={'Progress'}
-          options={props.progress}
-          required={true}
-        />
-      </Grid>
-      <Grid item xs={12}>
-        <StartEndDateFields
-          formikProps={formikProps}
-          startName="survey_details.start_date"
-          endName="survey_details.end_date"
-          startRequired={true}
-          endRequired={false}
-        />
-      </Grid>
-    </Grid>
+      <Box component="fieldset" mt={5}>
+        <Typography component="legend" variant="h5">
+          Permits
+        </Typography>
+        <Box>
+          <SurveyPermitForm />
+        </Box>
+      </Box>
+    </>
   );
 };
 

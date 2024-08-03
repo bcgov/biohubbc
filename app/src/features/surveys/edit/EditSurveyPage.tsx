@@ -120,7 +120,8 @@ const EditSurveyPage = () => {
           strategies: values.site_selection.strategies
         },
         species: values.species,
-        survey_details: values.survey_details
+        survey_details: values.survey_details,
+        purpose_and_methodology: values.purpose_and_methodology
       });
 
       if (!response?.id) {

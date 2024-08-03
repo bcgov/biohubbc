@@ -5,7 +5,6 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { getMockDBConnection } from '../__mocks__/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
@@ -28,6 +27,7 @@ import {
   SurveyRepository,
   SurveyTypeRecord
 } from '../repositories/survey-repository';
+import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
 import { PlatformService } from './platform-service';
@@ -370,7 +370,7 @@ describe('SurveyService', () => {
       const response = await service.getSpeciesData(1);
 
       expect(repoStub).to.be.calledOnce;
-      expect(getTaxonomyByTsnsStub).to.be.calledTwice;
+      expect(getTaxonomyByTsnsStub).to.be.calledOnce;
       expect(response).to.eql({
         ...new GetFocalSpeciesData([])
       });
@@ -697,7 +697,7 @@ describe('SurveyService', () => {
         species: { focal_species: [1] }
       } as unknown as PutSurveyObject);
 
-      expect(response).to.eql([1, 1]);
+      expect(response).to.eql([1]);
     });
   });
 

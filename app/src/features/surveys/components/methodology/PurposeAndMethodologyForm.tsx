@@ -29,11 +29,7 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
   purpose_and_methodology: yup.object().shape({
     additional_details: yup.string(),
     intended_outcome_ids: yup.array().min(1, 'One or more Ecological Variables are Required').required('Required')
-  }),
-  survey_types: yup
-    .array(yup.number())
-    .min(1, 'One or more Types are required')
-    .required('One or more Types are required')
+  })
 });
 
 export interface IPurposeAndMethodologyFormProps {

@@ -114,9 +114,6 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Box component="fieldset">
-        <Typography component="legend">Add Participants (optional)</Typography>
-      </Box>
       {errors?.['participants'] && values.participants.length > 0 && (
         <Box mt={3}>
           <AlertBar severity="error" variant="outlined" title={alertBarText().title} text={alertBarText().text} />

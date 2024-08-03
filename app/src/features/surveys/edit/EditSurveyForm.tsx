@@ -125,17 +125,19 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
           title="Funding Sources"
           summary="Specify funding sources for this survey."
           component={
-            <Box>
-              <Box component="fieldset">
-                <Typography component="legend">Add Funding Sources</Typography>
-                <SurveyFundingSourceForm />
-              </Box>
-              <Box component="fieldset" mt={5}>
-                <Typography component="legend">Partnerships (optional)</Typography>
-                <SurveyPartnershipsForm />
-              </Box>
+            <Box component="fieldset">
+              <Typography component="legend">Does a funding agency require this survey to be submitted?</Typography>
+              <SurveyFundingSourceForm />
             </Box>
           }
+        />
+
+        <Divider />
+
+        <HorizontalSplitFormComponent
+          title="Partnerships"
+          summary="Enter any partners involved in the survey"
+          component={<SurveyPartnershipsForm />}
         />
 
         <Divider />

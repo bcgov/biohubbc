@@ -54,7 +54,7 @@ export async function up(knex: Knex): Promise<void> {
     VALUES 
       ('Survival or mortality', 'The survival or mortality of individuals in a population, including causes of death.', now()),
       ('Birth or recruitment', 'The number of individuals born into a population.', now()),
-      ('Distribution or dispersal', 'The geographic distribution of one or more populations, including movement and dispersals patterns.', now()),
+      ('Geographic distribution or dispersal', 'The geographic distribution of one or more populations, including movement and dispersals patterns.', now()),
       ('Population size', 'The abundance or density of one or more populations.', now()),
       ('Population structure', 'The structure or composition of a population.', now()),
       ('Community structure', 'The structure or composition of a community, which includes multiple populations.', now()),
