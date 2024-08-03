@@ -194,7 +194,11 @@ const EditSurveyPage = () => {
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
-          <EditSurveyForm initialSurveyData={surveyData} handleSubmit={handleSubmit} formikRef={formikRef} />
+          <EditSurveyForm
+            initialSurveyData={{ ...surveyData, funding_used: Boolean(surveyData.funding_sources?.length) }}
+            handleSubmit={handleSubmit}
+            formikRef={formikRef}
+          />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
             <LoadingButton
               loading={isSaving}

@@ -96,18 +96,31 @@ const SurveyFundingSourceForm = () => {
   const formikProps = useFormikContext<IEditSurveyRequest>();
   const { values, handleChange, handleSubmit, errors, setFieldValue, submitCount, setFieldError } = formikProps;
 
+  // Determine value of funding_used based on whether funding_sources exist
   useEffect(() => {
-    console.log(values.funding_used);
-    if (!values.funding_used && values.funding_sources.length) {
-      setFieldValue('funding_used', true);
+    if (values.funding_sources.length > 0) {
+      setFieldValue('funding_used', values.funding_used);
+    } else if (!values.funding_sources.length) {
+      setFieldValue('funding_used', values.funding_used);
     }
-  }, [values.funding_sources, values.funding_used]);
+  }, [values.funding_sources]);
 
   const biohubApi = useBiohubApi();
   const fundingSourcesDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
   fundingSourcesDataLoader.load();
 
   const fundingSources = fundingSourcesDataLoader.data ?? [];
+
+  // Determine the radio button value
+  const getFundingUsedValue = () => {
+    if (values.funding_used === true) {
+      return 'true';
+    }
+    if (values.funding_used === false) {
+      return 'false';
+    }
+    return null;
+  };
 
   return (
     <form onSubmit={handleSubmit}>
@@ -129,14 +142,13 @@ const SurveyFundingSourceForm = () => {
             <RadioGroup
               aria-label="funding_used"
               name="funding_used"
-              value={values.funding_used ? 'true' : 'false'}
+              value={getFundingUsedValue()}
               onChange={(event) => {
                 const value = event.target.value === 'true' ? true : false;
                 setFieldValue('funding_used', value);
                 if (value) {
                   arrayHelpers.push(SurveyFundingSourceInitialValues);
-                }
-                if (!value) {
+                } else {
                   setFieldValue('funding_sources', []);
                 }
                 setFieldError('funding_used', undefined);

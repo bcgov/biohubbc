@@ -31,6 +31,7 @@ import { PurposeAndMethodologyInitialValues } from './components/methodology/Pur
 import { SurveyUserJobFormInitialValues } from './components/participants/SurveyUserForm';
 import { SurveyBlockInitialValues } from './components/sampling-strategy/blocks/SurveyBlockForm';
 import { SurveySiteSelectionInitialValues } from './components/sampling-strategy/SurveySiteSelectionForm';
+import { SpeciesInitialValues } from './components/species/SpeciesForm';
 import EditSurveyForm from './edit/EditSurveyForm';
 
 export const defaultSurveyDataFormValues: ICreateSurveyRequest = {
@@ -43,7 +44,8 @@ export const defaultSurveyDataFormValues: ICreateSurveyRequest = {
   ...SurveyLocationInitialValues,
   ...SurveySiteSelectionInitialValues,
   ...SurveyUserJobFormInitialValues,
-  ...SurveyBlockInitialValues
+  ...SurveyBlockInitialValues,
+  ...SpeciesInitialValues
 };
 
 /**
@@ -104,7 +106,29 @@ const CreateSurveyPage = () => {
   const handleSubmit = async (values: ICreateSurveyRequest) => {
     setIsSaving(true);
     try {
-      const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), values);
+      const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), {
+        blocks: values.blocks,
+        funding_sources: values.funding_sources,
+        locations: values.locations.map((location) => ({
+          survey_location_id: location.survey_location_id,
+          geojson: location.geojson,
+          name: location.name,
+          description: location.description,
+          revision_count: location.revision_count
+        })),
+        participants: values.participants,
+        partnerships: values.partnerships,
+        permit: values.permit,
+        proprietor: values.proprietor,
+        site_selection: {
+          stratums: values.site_selection.stratums,
+          strategies: values.site_selection.strategies
+        },
+        species: values.species,
+        survey_details: values.survey_details,
+        purpose_and_methodology: values.purpose_and_methodology,
+        agreements: values.agreements
+      });
 
       if (!response?.id) {
         showCreateErrorDialog({

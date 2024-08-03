@@ -10,6 +10,7 @@ import { ISurveyLocationForm } from 'features/surveys/components/locations/Study
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/methodology/PurposeAndMethodologyForm';
 import { IBlockData } from 'features/surveys/components/sampling-strategy/blocks/BlockForm';
 import { ISpeciesForm } from 'features/surveys/components/species/SpeciesForm';
+import { ISurveyPartnershipsForm } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Feature } from 'geojson';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { ApiPaginationResponseParams, StringBoolean } from 'types/misc';
@@ -28,7 +29,12 @@ export interface ICreateSurveyRequest
     IAgreementsForm,
     IParticipantsJobForm,
     ISurveyLocationForm,
-    ISurveyBlockForm {}
+    ISurveyBlockForm,
+    ISurveyPartnershipsForm,
+    ISurveySiteSelectionForm,
+    ISpeciesForm {
+  funding_sources: ISurveyFundingSource[];
+}
 
 /**
  * Create survey response object.

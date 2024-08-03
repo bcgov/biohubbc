@@ -30,7 +30,7 @@ import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/Su
 import SpeciesForm from '../components/species/SpeciesForm';
 
 export interface IEditSurveyForm {
-  initialSurveyData: SurveyUpdateObject | ICreateSurveyRequest;
+  initialSurveyData: SurveyUpdateObject | (ICreateSurveyRequest & { funding_used: boolean | null });
   handleSubmit: (formikData: IEditSurveyRequest) => void;
   formikRef: React.RefObject<FormikProps<IEditSurveyRequest>>;
 }
@@ -115,7 +115,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
 
         <HorizontalSplitFormComponent
           title="Survey Participants"
-          summary="Specify the people who participated in this survey."
+          summary="Specify people who participated in this survey. Only people who have signed up for SIMS can be selected."
           component={<SurveyUserForm jobs={codes.survey_jobs} />}
         />
 
@@ -123,7 +123,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
 
         <HorizontalSplitFormComponent
           title="Funding Sources"
-          summary="Specify funding sources for this survey."
+          summary="Specify funding sources for this survey"
           component={
             <Box component="fieldset">
               <Typography component="legend">Does a funding agency require this survey to be submitted?</Typography>
@@ -144,7 +144,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
 
         <HorizontalSplitFormComponent
           title="Sampling Strategy"
-          summary="Specify site selection methods, stratums and optional sampling blocks for this survey."
+          summary="Specify site selection methods, stratums and optional sampling blocks for this survey"
           component={<SamplingStrategyForm />}
         />
 
@@ -152,41 +152,39 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
 
         <HorizontalSplitFormComponent
           title="Study Area"
-          component={
-            <Box component="fieldset">
-              <Typography component="legend">Define Survey Study Area</Typography>
-              <Stack gap={3}>
-                <Typography variant="body1" color="textSecondary">
-                  Import, draw or select a feature from an existing layer to define the study areas for this survey.
-                </Typography>
-                <StudyAreaForm />
-              </Stack>
-            </Box>
-          }
+          summary="Import, draw or select a feature from an existing layer to define the study areas for this survey"
+          component={<StudyAreaForm />}
         />
 
         <Divider />
 
         <HorizontalSplitFormComponent
           title="Proprietary Data"
+          summary="Indicate whether any data is proprietary"
           component={
-            <ProprietaryDataForm
-              proprietary_data_category={
-                codes.proprietor_type?.map((item) => {
-                  return { value: item.id, label: item.name, is_first_nation: item.is_first_nation };
-                }) || []
-              }
-              first_nations={
-                codes.first_nations?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-            />
+            <Box component="fieldset">
+              <Typography component="legend">Is any data in this survey proprietary?</Typography>
+              <ProprietaryDataForm
+                proprietary_data_category={
+                  codes.proprietor_type?.map((item) => {
+                    return { value: item.id, label: item.name, is_first_nation: item.is_first_nation };
+                  }) || []
+                }
+                first_nations={
+                  codes.first_nations?.map((item) => {
+                    return { value: item.id, label: item.name };
+                  }) || []
+                }
+              />
+            </Box>
           }></HorizontalSplitFormComponent>
 
         <Divider />
 
-        <HorizontalSplitFormComponent title="Agreements" component={<AgreementsForm />}></HorizontalSplitFormComponent>
+        <HorizontalSplitFormComponent
+          title="Agreements"
+          summary="Confirm that you understand the SEDIS procedures and how they relate to data in the survey"
+          component={<AgreementsForm />}></HorizontalSplitFormComponent>
 
         <Divider />
       </Stack>
