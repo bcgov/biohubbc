@@ -2,7 +2,6 @@ import { Operation } from 'express-openapi';
 import { RequestHandler } from 'http-proxy-middleware';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/http-error';
 import { getObservationAnalyticsSchema } from '../../openapi/schemas/analytics';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { AnalyticsService } from '../../services/analytics-service';
@@ -131,14 +130,6 @@ export function getObservationCountByGroup(): RequestHandler {
   return async (req, res) => {
     const { surveyIds, groupByColumns, groupByQuantitativeMeasurements, groupByQualitativeMeasurements } = req.query;
 
-    if (!surveyIds || !Array.isArray(surveyIds) || surveyIds?.length === 0) {
-      throw new HTTP400('Invalid or missing surveyIds');
-    }
-
-    if (!groupByColumns || !Array.isArray(groupByColumns) || groupByColumns?.length === 0) {
-      throw new HTTP400('Invalid or missing groupByColumns');
-    }
-
     const connection = getDBConnection(req.keycloak_token);
 
     try {
@@ -147,7 +138,7 @@ export function getObservationCountByGroup(): RequestHandler {
       const analyticsService = new AnalyticsService(connection);
 
       const count = await analyticsService.getObservationCountByGroup(
-        surveyIds.map(Number),
+        (surveyIds as string[]).map(Number),
         groupByColumns as string[],
         (groupByQuantitativeMeasurements as string[]) || [],
         (groupByQualitativeMeasurements as string[]) || []
