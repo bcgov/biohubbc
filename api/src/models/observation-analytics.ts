@@ -36,7 +36,7 @@ export type ObservationCountByGroupWithNamedMeasurements = z.infer<
   typeof ObservationCountByGroupWithNamedMeasurementsSchema
 >;
 
-export const ObservationCountByGroupWithMeasurementsSchema = ObservationCountByGroupSchema.extend({
+export const ObservationCountByGroupWithMeasurementsSchema = z.object({
   quant_measurements: z.array(
     z.object({
       value: z.number().nullable(),
@@ -52,3 +52,16 @@ export const ObservationCountByGroupWithMeasurementsSchema = ObservationCountByG
 });
 
 export type ObservationCountByGroupWithMeasurements = z.infer<typeof ObservationCountByGroupWithMeasurementsSchema>;
+
+export type ObservationCountByGroupSQLResponse = {
+  row_count: number;
+  individual_count: number;
+  individual_percentage: number;
+  [key: string]: any; // To accommodate dynamic columns
+  quant_measurements: { [measurementId: string]: number | null };
+  qual_measurements: { [measurementId: string]: string };
+};
+
+export interface ObservationAnalyticsResponse
+  extends ObservationCountByGroupWithNamedMeasurements,
+    ObservationCountByGroup {}

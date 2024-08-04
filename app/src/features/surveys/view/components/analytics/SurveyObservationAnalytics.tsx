@@ -1,19 +1,19 @@
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
+import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
-import grey from '@mui/material/colors/grey';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useState } from 'react';
-import ObservationAnalyticsDataTable from './ObservationAnalyticsDataTable';
 import { SurveyObservationAnalyticsOverlay } from './components/SurveyObservationAnalyticsOverlay';
+import ObservationAnalyticsDataTable from './ObservationAnalyticsDataTable';
 type GroupByColumnType = 'column' | 'quantitative_measurement' | 'qualitative_measurement';
 
 interface IGroupByOption {
@@ -46,14 +46,11 @@ const SurveyObservationAnalytics = () => {
 
   const groupByOptions: IGroupByOption[] = [
     ...groupByColumnOptions,
-    ...(measurementDefinitionsDataLoader.data?.qualitative_measurements.map(
-      (measurement) =>
-        ({
-          label: measurement.measurement_name,
-          value: measurement.taxon_measurement_id,
-          type: 'qualitative_measurement' as GroupByColumnType
-        } ?? [])
-    ) ?? []),
+    ...(measurementDefinitionsDataLoader.data?.qualitative_measurements.map((measurement) => ({
+      label: measurement.measurement_name,
+      value: measurement.taxon_measurement_id,
+      type: 'qualitative_measurement' as GroupByColumnType
+    })) ?? []),
     ...(measurementDefinitionsDataLoader.data?.quantitative_measurements.map((measurement) => ({
       label: measurement.measurement_name,
       value: measurement.taxon_measurement_id,

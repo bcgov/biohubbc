@@ -113,7 +113,7 @@ export function getSurveyObservationMeasurements(): RequestHandler {
 
     defaultLog.debug({ label: 'getSurveyObservationMeasurement', surveyId });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

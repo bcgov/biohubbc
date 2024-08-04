@@ -139,7 +139,7 @@ export function getObservationCountByGroup(): RequestHandler {
       throw new HTTP400('Invalid or missing groupByColumns');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

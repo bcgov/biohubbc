@@ -1,22 +1,22 @@
-import Typography from '@mui/material/Typography';
 import grey from '@mui/material/colors/grey';
+import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import {
   IGetSampleLocationDetails,
-  IGetSampleMethodRecord,
+  IGetSampleMethodDetails,
   IGetSamplePeriodRecord
 } from 'interfaces/useSamplingSiteApi.interface';
-import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { IObservationAnalyticsRow } from '../../ObservationAnalyticsDataTable';
 
 export const getRowCountColDef = (): GridColDef<IObservationAnalyticsRow> => ({
   headerAlign: 'left',
   align: 'left',
   field: 'row_count',
-  headerName: 'Number of rows',
+  headerName: 'Number of observations',
   type: 'number',
   flex: 1,
   minWidth: 180
@@ -51,7 +51,7 @@ export const getIndividualPercentageColDef = (): GridColDef<IObservationAnalytic
 });
 
 export const getSpeciesColDef = (
-  getFunction: (id: number) => ITaxonomy | null
+  getFunction: (id: number) => IPartialTaxonomy | null
 ): GridColDef<IObservationAnalyticsRow> => ({
   headerAlign: 'left',
   align: 'left',
@@ -85,7 +85,7 @@ export const getSamplingSiteColDef = (
 });
 
 export const getSamplingMethodColDef = (
-  getFunction: (id: number) => IGetSampleMethodRecord | undefined
+  getFunction: (id: number) => IGetSampleMethodDetails | undefined
 ): GridColDef<IObservationAnalyticsRow> => ({
   headerAlign: 'left',
   align: 'left',
@@ -96,7 +96,7 @@ export const getSamplingMethodColDef = (
   renderCell: (params) => {
     if (params.row.survey_sample_method_id) {
       const method = getFunction(params.row.survey_sample_method_id);
-      return <Typography>{method?.method_lookup_id}</Typography>;
+      return <Typography>{method?.technique.method_lookup_id}</Typography>;
     }
   }
 });

@@ -1,4 +1,4 @@
-import { mdiBroadcast, mdiChevronDown, mdiCog, mdiEye } from '@mdi/js';
+import { mdiChevronDown, mdiCog, mdiEye, mdiPaw, mdiWifiMarker } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -19,7 +19,7 @@ import { Link as RouterLink } from 'react-router-dom';
 export enum SurveySpatialDatasetViewEnum {
   OBSERVATIONS = 'OBSERVATIONS',
   TELEMETRY = 'TELEMETRY',
-  MARKED_ANIMALS = 'MARKED_ANIMALS'
+  ANIMALS = 'ANIMALS'
 }
 
 interface ISurveySpatialDatasetView {
@@ -29,13 +29,21 @@ interface ISurveySpatialDatasetView {
   isLoading: boolean;
 }
 
-interface ISurveySptialToolbarProps {
-  updateDatasetView: (view: SurveySpatialDatasetViewEnum) => void;
-  views: ISurveySpatialDatasetView[];
+interface ISurveySpatialToolbarProps {
   activeView: SurveySpatialDatasetViewEnum;
+  setActiveView: (view: SurveySpatialDatasetViewEnum) => void;
+  views: ISurveySpatialDatasetView[];
 }
 
-const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
+/**
+ * Toolbar that buttons (tabs) to switch between different views of the survey data (observations, animals, telemetry).
+ *
+ * @param {ISurveySpatialToolbarProps} props
+ * @return {*}
+ */
+export const SurveySpatialToolbar = (props: ISurveySpatialToolbarProps) => {
+  const { activeView, setActiveView, views } = props;
+
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   const updateDatasetView = (_event: React.MouseEvent<HTMLElement>, view: SurveySpatialDatasetViewEnum) => {
@@ -43,7 +51,7 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
       return;
     }
 
-    props.updateDatasetView(view);
+    setActiveView(view);
   };
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -85,13 +93,19 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
         }}>
         <MenuItem component={RouterLink} to="observations">
           <ListItemIcon>
-            <Icon path={mdiEye} size={1} />
+            <Icon path={mdiEye} size={0.8} />
           </ListItemIcon>
           <ListItemText>Observations</ListItemText>
         </MenuItem>
+        <MenuItem component={RouterLink} to="animals">
+          <ListItemIcon>
+            <Icon path={mdiPaw} size={0.8} />
+          </ListItemIcon>
+          <ListItemText>Animals</ListItemText>
+        </MenuItem>
         <MenuItem component={RouterLink} to="telemetry">
           <ListItemIcon>
-            <Icon path={mdiBroadcast} size={1} />
+            <Icon path={mdiWifiMarker} size={0.8} />
           </ListItemIcon>
           <ListItemText>Telemetry</ListItemText>
         </MenuItem>
@@ -126,7 +140,7 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
         <Divider flexItem></Divider>
         <Box p={2} display="flex" justifyContent="space-between">
           <ToggleButtonGroup
-            value={props.activeView}
+            value={activeView}
             onChange={updateDatasetView}
             exclusive
             sx={{
@@ -142,7 +156,7 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
                 letterSpacing: '0.02rem'
               }
             }}>
-            {props.views.map((view) => (
+            {views.map((view) => (
               <ToggleButton
                 key={view.value}
                 component={Button}
@@ -158,5 +172,3 @@ const SurveySpatialToolbar = (props: ISurveySptialToolbarProps) => {
     </>
   );
 };
-
-export default SurveySpatialToolbar;

@@ -1,10 +1,13 @@
+import Box from '@mui/material/Box';
+import { grey } from '@mui/material/colors';
 import { GridRenderEditCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import AsyncAutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AsyncAutocompleteDataGridEditCell';
+import { IAutocompleteDataGridTaxonomyOption } from 'components/data-grid/taxonomy/TaxonomyDataGrid.interface';
+import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTaxonomyContext } from 'hooks/useContext';
 import debounce from 'lodash-es/debounce';
 import { useMemo } from 'react';
-import { IAutocompleteDataGridTaxonomyOption } from '../autocomplete/AutocompleteDataGrid.interface';
 
 export interface ITaxonomyDataGridCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderEditCellParams<DataGridType>;
@@ -19,7 +22,7 @@ export interface ITaxonomyDataGridCellProps<DataGridType extends GridValidRowMod
  * @param {ITaxonomyDataGridCellProps<DataGridType>} props
  * @return {*}
  */
-const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueType extends string | number>(
+const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel>(
   props: ITaxonomyDataGridCellProps<DataGridType>
 ) => {
   const { dataGridProps } = props;
@@ -27,9 +30,7 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
   const taxonomyContext = useTaxonomyContext();
   const biohubApi = useBiohubApi();
 
-  const getCurrentOption = async (
-    speciesId: string | number
-  ): Promise<IAutocompleteDataGridTaxonomyOption<ValueType> | null> => {
+  const getCurrentOption = async (speciesId: string | number): Promise<IAutocompleteDataGridTaxonomyOption | null> => {
     if (!speciesId) {
       return null;
     }
@@ -47,7 +48,7 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
     }
 
     return {
-      value: Number(response.tsn) as ValueType,
+      value: response.tsn,
       label: response.scientificName,
       commonNames: response.commonNames,
       tsn: response.tsn,
@@ -62,7 +63,7 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
       debounce(
         async (
           searchTerm: string,
-          onSearchResults: (searchedValues: IAutocompleteDataGridTaxonomyOption<ValueType>[]) => void
+          onSearchResults: (searchedValues: IAutocompleteDataGridTaxonomyOption[]) => void
         ) => {
           if (!searchTerm) {
             onSearchResults([]);
@@ -72,7 +73,7 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
           const searchTermsSplit = searchTerm.split(' ').filter(Boolean);
           const response = await biohubApi.taxonomy.searchSpeciesByTerms(searchTermsSplit);
           const options = response.map((item) => ({
-            value: item.tsn as ValueType,
+            value: item.tsn,
             label: item.scientificName,
             tsn: item.tsn,
             commonNames: item.commonNames,
@@ -93,6 +94,21 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel, ValueT
       getCurrentOption={getCurrentOption}
       getOptions={getOptions}
       error={props.error}
+      renderOption={(renderProps, renderOption) => (
+        <Box
+          component="li"
+          sx={{
+            '& + li': {
+              borderTop: '1px solid' + grey[300]
+            }
+          }}
+          {...renderProps}
+          key={`${renderOption.tsn}-${renderOption.label}`}>
+          <Box py={1} width="100%">
+            <SpeciesCard taxon={renderOption} />
+          </Box>
+        </Box>
+      )}
     />
   );
 };

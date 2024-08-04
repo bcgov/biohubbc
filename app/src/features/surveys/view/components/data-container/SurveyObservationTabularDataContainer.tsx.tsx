@@ -4,22 +4,24 @@ import Divider from '@mui/material/Divider';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useState } from 'react';
+import { SurveySpatialObservationTable } from '../../survey-spatial/components/observation/SurveySpatialObservationTable';
 import SurveyObservationAnalytics from '../analytics/SurveyObservationAnalytics';
-import SurveySpatialObservationDataTable from '../spatial-data/SurveySpatialObservationDataTable';
 
-export enum SurveyDataContainerViewEnum {
+export enum SurveyObservationTabularDataContainerViewEnum {
   COUNTS = 'COUNTS',
   ANALYTICS = 'ANALYTICS'
 }
 
-interface ISurveyDataContainerProps {
+interface ISurveyObservationTabularDataContainerProps {
   isLoading: boolean;
 }
 
-const SurveyDataContainer = (props: ISurveyDataContainerProps) => {
+const SurveyObservationTabularDataContainer = (props: ISurveyObservationTabularDataContainerProps) => {
   const { isLoading } = props;
 
-  const [activeDataView, setActiveDataView] = useState<SurveyDataContainerViewEnum>(SurveyDataContainerViewEnum.COUNTS);
+  const [activeDataView, setActiveDataView] = useState<SurveyObservationTabularDataContainerViewEnum>(
+    SurveyObservationTabularDataContainerViewEnum.COUNTS
+  );
 
   const views = [
     { label: 'Counts', value: 'COUNTS' },
@@ -47,11 +49,7 @@ const SurveyDataContainer = (props: ISurveyDataContainerProps) => {
             }
           }}>
           {views.map((view) => (
-            <ToggleButton
-              key={view.value}
-              component={Button}
-              color="primary"
-              value={view.value}>
+            <ToggleButton key={view.value} component={Button} color="primary" value={view.value}>
               {view.label}
             </ToggleButton>
           ))}
@@ -59,13 +57,13 @@ const SurveyDataContainer = (props: ISurveyDataContainerProps) => {
       </Box>
       <Divider sx={{ mt: 2, mb: 1 }} />
       <Box p={2}>
-        {activeDataView === SurveyDataContainerViewEnum.COUNTS && (
-          <SurveySpatialObservationDataTable isLoading={isLoading} />
+        {activeDataView === SurveyObservationTabularDataContainerViewEnum.COUNTS && (
+          <SurveySpatialObservationTable isLoading={isLoading} />
         )}
-        {activeDataView === SurveyDataContainerViewEnum.ANALYTICS && <SurveyObservationAnalytics />}
+        {activeDataView === SurveyObservationTabularDataContainerViewEnum.ANALYTICS && <SurveyObservationAnalytics />}
       </Box>
     </>
   );
 };
 
-export default SurveyDataContainer;
+export default SurveyObservationTabularDataContainer;

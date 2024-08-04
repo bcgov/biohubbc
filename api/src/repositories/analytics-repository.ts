@@ -1,6 +1,6 @@
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { ObservationCountByGroupWithMeasurements } from '../models/observation-analytics';
+import { ObservationCountByGroupSQLResponse } from '../models/observation-analytics';
 import { BaseRepository } from './base-repository';
 
 export class AnalyticsRepository extends BaseRepository {
@@ -11,7 +11,7 @@ export class AnalyticsRepository extends BaseRepository {
    * @param {string[]} groupByColumns - Columns to group by
    * @param {string[]} groupByQuantitativeMeasurements - Quantitative measurements to group by
    * @param {string[]} groupByQualitativeMeasurements - Qualitative measurements to group by
-   * @returns {Promise<IObservationCountByGroupWithMeasurements[]>} - Observation count by group
+   * @returns {Promise<ObservationCountByGroupSQLResponse[]>} - Observation count by group
    * @memberof AnalyticsRepository
    */
   async getObservationCountByGroup(
@@ -19,7 +19,7 @@ export class AnalyticsRepository extends BaseRepository {
     groupByColumns: string[],
     groupByQuantitativeMeasurements: string[],
     groupByQualitativeMeasurements: string[]
-  ): Promise<ObservationCountByGroupWithMeasurements[]> {
+  ): Promise<ObservationCountByGroupSQLResponse[]> {
     const knex = getKnex();
 
     const combinedColumns = [...groupByColumns, ...groupByQuantitativeMeasurements, ...groupByQualitativeMeasurements];
@@ -72,9 +72,7 @@ export class AnalyticsRepository extends BaseRepository {
       })
       .select(knex.raw('COUNT(subcount)::NUMERIC as row_count'))
       .select(knex.raw('SUM(subcount)::NUMERIC as individual_count'))
-      .select(
-        knex.raw(`ROUND(SUM(os.subcount)::NUMERIC / (${totalCountSubquery}) * 100, 2) as individual_percentage`)
-      )
+      .select(knex.raw(`ROUND(SUM(os.subcount)::NUMERIC / (${totalCountSubquery}) * 100, 2) as individual_percentage`))
       .select(groupByColumns.map((column) => knex.raw('??', [column])))
       // Measurement properties are objects of {'<critterbase_taxon_measurement_id>' : '<value>', '<critterbase_taxon_measurement_id>' : '<value>'}
       .select(

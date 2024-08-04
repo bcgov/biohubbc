@@ -1,46 +1,40 @@
 import { Paper } from '@mui/material';
-import Autocomplete from '@mui/material/Autocomplete';
+import Autocomplete, { AutocompleteProps } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { grey } from '@mui/material/colors';
+import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
 import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
-import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
-import {
-  IAutocompleteDataGridOption,
-  IAutocompleteDataGridTaxonomyOption
-} from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
-import SpeciesCard from 'components/species/components/SpeciesCard';
+import { GridRenderEditCellParams, GridValidRowModel } from '@mui/x-data-grid';
+import { IAutocompleteDataGridOption } from 'components/data-grid/autocomplete/AutocompleteDataGrid.interface';
 import { DebouncedFunc } from 'lodash-es';
 import { useEffect, useRef, useState } from 'react';
 
 export interface IAsyncAutocompleteDataGridEditCell<
   DataGridType extends GridValidRowModel,
+  AutocompleteOptionType extends IAutocompleteDataGridOption<ValueType>,
   ValueType extends string | number
 > {
   /**
    * Data grid props for the cell.
    *
-   * @type {GridRenderCellParams<DataGridType>}
+   * @type {GridRenderEditCellParams<DataGridType>}
    * @memberof IAsyncAutocompleteDataGridEditCell
    */
-  dataGridProps: GridRenderCellParams<DataGridType>;
+  dataGridProps: GridRenderEditCellParams<DataGridType>;
   /**
    * Function that returns a single option. Used to translate an existing value to its matching option.
    *
    * @memberof IAsyncAutocompleteDataGridEditCell
    */
-  getCurrentOption: (value: ValueType) => Promise<IAutocompleteDataGridTaxonomyOption<ValueType> | null>;
+  getCurrentOption: (value: ValueType) => Promise<AutocompleteOptionType | null>;
   /**
    * Search function that returns an array of options to choose from.
    *
    * @memberof IAsyncAutocompleteDataGridEditCell
    */
   getOptions: DebouncedFunc<
-    (
-      searchTerm: string,
-      onSearchResults: (searchResults: IAutocompleteDataGridTaxonomyOption<ValueType>[]) => void
-    ) => Promise<void>
+    (searchTerm: string, onSearchResults: (searchResults: AutocompleteOptionType[]) => void) => Promise<void>
   >;
   /**
    * Indicates if there is an error with the control
@@ -51,21 +45,26 @@ export interface IAsyncAutocompleteDataGridEditCell<
   /**
    * Optional function to render the autocomplete option.
    */
-  renderOption?: (option: IAutocompleteDataGridOption<ValueType>) => JSX.Element;
+  renderOption?: AutocompleteProps<AutocompleteOptionType, false, false, false>['renderOption'];
 }
 
 /**
  * Data grid single value asynchronous autocomplete component for edit.
  *
  * @template DataGridType
+ * @template AutocompleteOptionType
  * @template ValueType
- * @param {IAsyncAutocompleteDataGridEditCell<DataGridType, ValueType>} props
+ * @param {IAsyncAutocompleteDataGridEditCell<DataGridType, AutocompleteOptionType, ValueType>} props
  * @return {*}
  */
-const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowModel, ValueType extends string | number>(
-  props: IAsyncAutocompleteDataGridEditCell<DataGridType, ValueType>
+const AsyncAutocompleteDataGridEditCell = <
+  DataGridType extends GridValidRowModel,
+  AutocompleteOptionType extends IAutocompleteDataGridOption<ValueType>,
+  ValueType extends string | number
+>(
+  props: IAsyncAutocompleteDataGridEditCell<DataGridType, AutocompleteOptionType, ValueType>
 ) => {
-  const { dataGridProps, getCurrentOption, getOptions } = props;
+  const { dataGridProps, getCurrentOption, getOptions, error, renderOption } = props;
 
   const ref = useRef<HTMLInputElement>();
 
@@ -78,11 +77,11 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
   // The current data grid value
   const dataGridValue = dataGridProps.value;
   // The input field value
-  const [inputValue, setInputValue] = useState<IAutocompleteDataGridTaxonomyOption<ValueType>['label']>('');
+  const [inputValue, setInputValue] = useState<AutocompleteOptionType['label']>('');
   // The currently selected option
-  const [currentOption, setCurrentOption] = useState<IAutocompleteDataGridTaxonomyOption<ValueType> | null>(null);
+  const [currentOption, setCurrentOption] = useState<AutocompleteOptionType | null>(null);
   // The array of options to choose from
-  const [options, setOptions] = useState<IAutocompleteDataGridTaxonomyOption<ValueType>[]>([]);
+  const [options, setOptions] = useState<AutocompleteOptionType[]>([]);
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
 
@@ -187,9 +186,9 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
           size="small"
           variant="outlined"
           fullWidth
-          error={props.error}
+          error={error}
           InputProps={{
-            color: props.error ? 'error' : undefined,
+            color: error ? 'error' : undefined,
             ...params.InputProps,
             endAdornment: (
               <>
@@ -200,23 +199,16 @@ const AsyncAutocompleteDataGridEditCell = <DataGridType extends GridValidRowMode
           }}
         />
       )}
-      renderOption={(renderProps, renderOption) => {
-        return (
-          <Box
-            component="li"
-            sx={{
-              '& + li': {
-                borderTop: '1px solid' + grey[300]
-              }
-            }}
-            key={`${renderOption.tsn}-${renderOption.label}`}
-            {...renderProps}>
-            <Box py={1} width="100%">
-              <SpeciesCard taxon={renderOption} />
+      renderOption={
+        renderOption ??
+        ((renderProps, renderOption) => {
+          return (
+            <Box component="li" {...renderProps}>
+              <ListItemText primary={renderOption.label} secondary={renderOption.subtext} />
             </Box>
-          </Box>
-        );
-      }}
+          );
+        })
+      }
       data-testid={dataGridProps.id}
     />
   );

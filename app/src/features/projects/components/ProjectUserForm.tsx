@@ -218,8 +218,8 @@ const ProjectUserForm = (props: IProjectUserFormProps) => {
                       borderTop: '1px solid' + grey[300]
                     }
                   }}
-                  key={renderOption.system_user_id}
-                  {...renderProps}>
+                  {...renderProps}
+                  key={renderOption.system_user_id}>
                   <Box py={0.5} width="100%">
                     <UserCard
                       name={renderOption.display_name}

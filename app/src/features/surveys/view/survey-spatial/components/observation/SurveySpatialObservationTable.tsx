@@ -1,12 +1,11 @@
 import { mdiArrowTopRight } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import grey from '@mui/material/colors/grey';
-import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridOverlay, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { SkeletonRow } from 'components/loading/SkeletonLoaders';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -14,7 +13,7 @@ import { useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useState } from 'react';
 
-// Set height so we the skeleton loader will match table rows
+// Set height so the skeleton loader will match table rows
 const rowHeight = 52;
 
 interface IObservationTableRow {
@@ -31,45 +30,17 @@ interface IObservationTableRow {
   longitude: number | null;
 }
 
-interface ISurveySpatialObservationDataTableProps {
+interface ISurveyDataObservationTableProps {
   isLoading: boolean;
 }
 
-// Skeleton Loader template
-const SkeletonRow = () => (
-  <Stack
-    flexDirection="row"
-    alignItems="center"
-    gap={2}
-    py={2}
-    px={1}
-    height={rowHeight}
-    overflow="hidden"
-    sx={{
-      borderBottom: '1px solid ' + grey[300],
-      '&:last-of-type': {
-        borderBottom: 'none'
-      },
-      '& .MuiSkeleton-root': {
-        flex: '1 1 auto'
-      },
-      '& *': {
-        fontSize: '0.875rem'
-      }
-    }}>
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-    <Skeleton variant="text" />
-  </Stack>
-);
-
-const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataTableProps) => {
+/**
+ * Component to display observation data in a table with server-side pagination and sorting.
+ *
+ * @param {ISurveyDataObservationTableProps} props - Component properties.
+ * @returns {JSX.Element} The rendered component.
+ */
+export const SurveySpatialObservationTable = (props: ISurveyDataObservationTableProps) => {
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
   const taxonomyContext = useTaxonomyContext();
@@ -83,14 +54,14 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
 
   const paginatedDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
     biohubApi.observation.getObservationRecords(surveyContext.projectId, surveyContext.surveyId, {
-      page: page + 1, // this fixes an off by one error between the front end and the back end
+      page: page + 1, // This fixes an off-by-one error between the front end and the back end
       limit,
       sort,
       order
     })
   );
 
-  // page information has changed, fetch more data
+  // Page information has changed, fetch more data
   useEffect(() => {
     if (sortModel.length > 0) {
       if (sortModel[0].sort) {
@@ -99,10 +70,10 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
     } else {
       paginatedDataLoader.refresh(page, pageSize);
     }
-    // Should not re-run this effect on `paginatedDataLoader.refresh` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, sortModel]);
 
+  // Update table data and columns when new data is loaded
   useEffect(() => {
     if (paginatedDataLoader.data) {
       setTotalRows(paginatedDataLoader.data.pagination.total);
@@ -132,9 +103,7 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
           headerName: 'Species',
           flex: 1,
           minWidth: 200,
-          renderCell: (params) => {
-            return <em>{params.row.itis_scientific_name}</em>;
-          }
+          renderCell: (params) => <em>{params.row.itis_scientific_name}</em>
         },
         {
           field: 'survey_sample_site_name',
@@ -256,5 +225,3 @@ const SurveySpatialObservationDataTable = (props: ISurveySpatialObservationDataT
     </>
   );
 };
-
-export default SurveySpatialObservationDataTable;

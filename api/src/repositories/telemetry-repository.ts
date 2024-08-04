@@ -8,8 +8,17 @@ import { BaseRepository } from './base-repository';
 const defaultLog = getLogger('repositories/telemetry-repository');
 
 export const Deployment = z.object({
+  /**
+   * SIMS deployment primary ID
+   */
   deployment_id: z.number(),
+  /**
+   * SIMS critter primary ID
+   */
   critter_id: z.number(),
+  /**
+   * BCTW deployment primary ID
+   */
   bctw_deployment_id: z.string().uuid()
 });
 
@@ -110,6 +119,37 @@ export class TelemetryRepository extends BaseRepository {
       .whereIn('critter_id', critterIds);
 
     const response = await this.connection.knex(queryBuilder, Deployment);
+
+    return response.rows;
+  }
+
+  /**
+   * Get deployments for the provided survey id.
+   *
+   * Note: SIMS does not store deployment information, beyond an ID. Deployment details must be fetched from the
+   * external BCTW API.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<Deployment[]>}
+   * @memberof TelemetryRepository
+   */
+  async getDeploymentsBySurveyId(surveyId: number): Promise<Deployment[]> {
+    const sqlStatement = SQL`
+      SELECT
+        deployment.deployment_id,
+        deployment.critter_id,
+        deployment.bctw_deployment_id
+      FROM
+        deployment
+      LEFT JOIN
+        critter
+      ON
+        critter.critter_id = deployment.critter_id
+      WHERE
+        critter.survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, Deployment);
 
     return response.rows;
   }
