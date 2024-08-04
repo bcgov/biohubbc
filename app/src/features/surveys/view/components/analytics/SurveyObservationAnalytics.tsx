@@ -59,7 +59,7 @@ const SurveyObservationAnalytics = () => {
   ];
 
   const handleToggleChange = (_: React.MouseEvent<HTMLElement, MouseEvent>, value: IGroupByOption[]) => {
-    if (!value || !value[0]?.type) return;
+    if (!value[0]?.type) return;
 
     // Update group by arrays
     if (value[0].type === 'column') {
@@ -180,8 +180,6 @@ const SurveyObservationAnalytics = () => {
             groupByColumns={groupByColumns}
             groupByQuantitativeMeasurements={groupByQuantitativeMeasurements}
             groupByQualitativeMeasurements={groupByQualitativeMeasurements}
-            qualitativeMeasurementDefinitions={measurementDefinitionsDataLoader.data?.qualitative_measurements ?? []}
-            quantitativeMeasurementDefinitions={measurementDefinitionsDataLoader.data?.quantitative_measurements ?? []}
           />
         )}
       </Stack>

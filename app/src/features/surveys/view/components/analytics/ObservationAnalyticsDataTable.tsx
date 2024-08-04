@@ -5,10 +5,6 @@ import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import {
-  CBQualitativeMeasurementTypeDefinition,
-  CBQuantitativeMeasurementTypeDefinition
-} from 'interfaces/useCritterApi.interface';
 import { useEffect } from 'react';
 import {
   getDateColDef,
@@ -27,8 +23,6 @@ interface IObservationAnalyticsDataTableProps {
   groupByColumns: string[];
   groupByQuantitativeMeasurements: string[];
   groupByQualitativeMeasurements: string[];
-  qualitativeMeasurementDefinitions: CBQualitativeMeasurementTypeDefinition[];
-  quantitativeMeasurementDefinitions: CBQuantitativeMeasurementTypeDefinition[];
 }
 
 export interface IObservationAnalyticsRow {
