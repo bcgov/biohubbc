@@ -98,17 +98,10 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
 
   return (
     <Box>
-      <Typography variant="h5" mb={2}>
-        Select Columns to Show
-      </Typography>
-      <Stack
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="space-between"
-        py={0.5}
-        pl={2.5}
-        pr={1.5}
-        minWidth={400}>
+      <Stack flexDirection="row" alignItems="center" justifyContent="space-between" py={0.5} pr={1.5} minWidth={400}>
+        <Typography variant="h5" mb={2}>
+          Select Columns to Show
+        </Typography>
         <FormControlLabel
           control={
             <Checkbox
@@ -154,11 +147,11 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
                 dense
                 onClick={() => onToggleColumnVisibility(column.field)}
                 disabled={disabled}
-                sx={{ background: grey[50], borderRadius: '5px' }}>
+                sx={{ background: grey[100], borderRadius: '5px' }}>
                 <ListItemIcon>
                   <Checkbox edge="start" checked={!hiddenFields.includes(column.field)} />
                 </ListItemIcon>
-                <ListItemText>{column.headerName}</ListItemText>
+                <ListItemText sx={{ '& .MuiTypography-root': { fontWeight: 700 } }}>{column.headerName}</ListItemText>
               </ListItemButton>
             </ListItem>
           );

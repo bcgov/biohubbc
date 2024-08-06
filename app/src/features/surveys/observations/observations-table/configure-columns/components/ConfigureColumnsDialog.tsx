@@ -125,7 +125,7 @@ export const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
 
   return (
     <Dialog
-      sx={{ '& .MuiDialog-paper': { maxWidth: 1200, minHeight: '75vh' } }}
+      sx={{ '& .MuiDialog-paper': { maxWidth: 1200 } }}
       fullWidth
       open={open}
       onClose={onClose}
@@ -156,8 +156,8 @@ export const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
         />
       </DialogContent>
       <DialogActions>
-        <LoadingButton data-testid="no-button" onClick={props.onClose} color="primary" variant="outlined">
-          Close
+        <LoadingButton data-testid="no-button" onClick={props.onClose} color="primary" variant="contained">
+          Save & Close
         </LoadingButton>
       </DialogActions>
     </Dialog>
