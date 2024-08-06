@@ -1,7 +1,11 @@
 import Box from '@mui/material/Box';
+import Skeleton from '@mui/material/Skeleton';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useEffect } from 'react';
+import { debounce } from 'lodash-es';
+import { useEffect, useMemo, useState } from 'react';
 import { EnvironmentStandardsResults } from './EnvironmentStandardsResults';
 
 /**
@@ -12,15 +16,56 @@ import { EnvironmentStandardsResults } from './EnvironmentStandardsResults';
 export const EnvironmentStandards = () => {
   const biohubApi = useBiohubApi();
 
-  const environmentDataLoader = useDataLoader(() => biohubApi.standards.getEnvironmentStandards());
+  const [searchTerm, setSearchTerm] = useState<string>('');
+
+  const environmentsDataLoader = useDataLoader((keyword?: string) =>
+    biohubApi.standards.getEnvironmentStandards(keyword)
+  );
+
+  const debouncedRefresh = useMemo(
+    () =>
+      debounce((value: string) => {
+        environmentsDataLoader.refresh(value);
+      }, 500),
+    []
+  );
 
   useEffect(() => {
-    environmentDataLoader.load();
-  }, [environmentDataLoader]);
+    environmentsDataLoader.load();
+  }, [environmentsDataLoader]);
 
   return (
-    <Box flex="1 1 auto">
-      {environmentDataLoader.data && <EnvironmentStandardsResults data={environmentDataLoader.data} />}
-    </Box>
+    <>
+      <TextField
+        name="name"
+        label="Environmental variable name"
+        key="environments-name-search"
+        value={searchTerm}
+        fullWidth
+        onChange={(event) => {
+          const value = event.currentTarget.value;
+          setSearchTerm(value);
+          debouncedRefresh(value);
+        }}
+      />
+      <Box mt={2}>
+        {environmentsDataLoader.data ? (
+          <EnvironmentStandardsResults data={environmentsDataLoader.data} />
+        ) : (
+          <Stack gap={1}>
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+          </Stack>
+        )}
+      </Box>
+    </>
   );
 };

@@ -53,25 +53,26 @@ export class StandardsService extends DBService {
   /**
    * Gets environment standards
    *
+   * @param {string} keyword
    * @return {EnvironmentStandard[]}
    * @memberof standardsService
    */
-  async getEnvironmentStandards(): Promise<EnvironmentStandards> {
-    const response = await this.standardsRepository.getEnvironmentStandards();
+  async getEnvironmentStandards(keyword?: string): Promise<EnvironmentStandards> {
+    const response = await this.standardsRepository.getEnvironmentStandards(keyword);
 
     return response;
   }
 
 
-// THE BELOW IS NOT IMPORTING MethodStandards correctly. STANDARDS VIEW INTERFACE FOR METHODS IS PROBABLY WRONG
-
   /**
-   * Gets METHOD standards
+   * Gets standards for method lookups
+   * 
+   * @param {string} keyword
    * @return {MethodStandards}
    * @memberof standardsService
    */
-  async getMethodStandards(): Promise<MethodStandard[]> {
-    const response = await this.standardsRepository.getMethodStandards();
+  async getMethodStandards(keyword?: string): Promise<MethodStandard[]> {
+    const response = await this.standardsRepository.getMethodStandards(keyword);
     return response;
 
 }}

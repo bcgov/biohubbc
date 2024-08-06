@@ -1,6 +1,7 @@
+import { grey } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
+import { AccordionStandardCard } from 'features/standards/components/AccordionStandardCard';
 import { IEnvironmentStandards } from 'interfaces/useStandardsApi.interface';
-import MeasurementStandardCard from '../components/MeasurementStandardCard';
 
 interface ISpeciesStandardsResultsProps {
   data: IEnvironmentStandards;
@@ -19,10 +20,10 @@ export const EnvironmentStandardsResults = (props: ISpeciesStandardsResultsProps
     <>
       <Stack gap={2}>
         {data.quantitative.map((environment) => (
-          <MeasurementStandardCard label={environment.name} description={environment.description ?? ''} />
+          <AccordionStandardCard label={environment.name} subtitle={environment.description} colour={grey[200]} />
         ))}
         {data.qualitative.map((environment) => (
-          <MeasurementStandardCard label={environment.name} description={environment.description ?? ''} />
+          <AccordionStandardCard label={environment.name} subtitle={environment.description} colour={grey[200]} />
         ))}
       </Stack>
     </>

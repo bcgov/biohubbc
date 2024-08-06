@@ -1,10 +1,11 @@
 import { mdiRuler, mdiTag } from '@mdi/js';
 import { Box, CircularProgress, Divider, Stack, Typography } from '@mui/material';
+import { grey } from '@mui/material/colors';
+import { AccordionStandardCard } from 'features/standards/components/AccordionStandardCard';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { ISpeciesStandards } from 'interfaces/useStandardsApi.interface';
 import { useState } from 'react';
 import MarkingBodyLocationStandardCard from '../components/MarkingBodyLocationStandardCard';
-import MeasurementStandardCard from '../components/MeasurementStandardCard';
 import SpeciesStandardsToolbar, { SpeciesStandardsViewEnum } from '../components/SpeciesStandardsToolbar';
 
 interface ISpeciesStandardsResultsProps {
@@ -61,16 +62,29 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
       {activeView === SpeciesStandardsViewEnum.MEASUREMENTS && (
         <Stack gap={2}>
           {props.data.measurements.qualitative.map((measurement) => (
-            <MeasurementStandardCard
+            <AccordionStandardCard
               label={measurement.measurement_name}
-              description={measurement.measurement_desc ?? ''}
-              options={measurement.options}
+              subtitle={measurement.measurement_desc ?? ''}
+              colour={grey[100]}
+              children={
+                <Stack gap={2} my={2}>
+                  {measurement.options.map((option) => (
+                    <AccordionStandardCard
+                      key={option.option_label}
+                      label={option.option_label}
+                      subtitle={option.option_desc ?? ''}
+                      colour={grey[200]}
+                    />
+                  ))}
+                </Stack>
+              }
             />
           ))}
           {props.data.measurements.quantitative.map((measurement) => (
-            <MeasurementStandardCard
+            <AccordionStandardCard
               label={measurement.measurement_name}
-              description={measurement.measurement_desc ?? ''}
+              subtitle={measurement.measurement_desc ?? ''}
+              colour={grey[100]}
             />
           ))}
         </Stack>

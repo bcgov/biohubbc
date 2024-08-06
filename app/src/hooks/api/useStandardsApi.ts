@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IEnvironmentStandards, ISpeciesStandards, IMethodStandard } from 'interfaces/useStandardsApi.interface';
+import { IEnvironmentStandards, IMethodStandard, ISpeciesStandards } from 'interfaces/useStandardsApi.interface';
 
 /**
  * Returns information about what data can be uploaded for a given species,
@@ -20,28 +20,41 @@ const useStandardsApi = (axios: AxiosInstance) => {
     return data;
   };
 
-    /**
-     * Fetch method standards
-     *
-     * @return {*}  {Promise<IGetMethodsStandardsResponse>}
-     */
-    const getMethodStandards = async (): Promise<IMethodStandard[]> => {
-      const { data } = await axios.get(`/api/standards/methods`);
-  
-      return data;
-    };
-  
-        /**
-     * Fetch environment standards
-     *
-     * @return {*}  {Promise<IGetEnvironmentStandardsResponse>}
-     */
-        const getEnvironmentStandards = async (): Promise<IEnvironmentStandards> => {
-          const { data } = await axios.get(`/api/standards/environment`);
-      
-          return data;
-        };
-      
+  /**
+   * Fetch method standards
+   *
+   * @param {string} keyword
+   * @return {*}  {Promise<IGetMethodsStandardsResponse>}
+   */
+  const getMethodStandards = async (keyword?: string): Promise<IMethodStandard[]> => {
+    let url = '/api/standards/methods';
+
+    if (keyword) {
+      url += `?keyword=${keyword}`;
+    }
+
+    const { data } = await axios.get(url);
+
+    return data;
+  };
+
+  /**
+   * Fetch environment standards
+   *
+   * @param {string} keyword
+   * @return {*}  {Promise<IEnvironmentStandards>}
+   */
+  const getEnvironmentStandards = async (keyword?: string): Promise<IEnvironmentStandards> => {
+    let url = '/api/standards/environment';
+
+    if (keyword) {
+      url += `?keyword=${keyword}`;
+    }
+
+    const { data } = await axios.get(url);
+
+    return data;
+  };
 
   return {
     getSpeciesStandards,

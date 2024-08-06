@@ -13,7 +13,8 @@ export const EnvironmentStandardsSchema: OpenAPIV3.SchemaObject = {
             type: 'string'
           },
           description: {
-            type: 'string'
+            type: 'string',
+            nullable: true
           },
           options: {
             type: 'array',
@@ -24,7 +25,8 @@ export const EnvironmentStandardsSchema: OpenAPIV3.SchemaObject = {
                   type: 'string'
                 },
                 description: {
-                  type: 'string'
+                  type: 'string',
+                  nullable: true
                 }
               }
             }
@@ -41,15 +43,17 @@ export const EnvironmentStandardsSchema: OpenAPIV3.SchemaObject = {
             type: 'string'
           },
           description: {
-            type: 'string'
-          }
+            type: 'string',
+            nullable: true
+          },
+          unit: { type: 'string', nullable: true }
         }
       }
     }
   }
 };
 
-export const MethodStandardsSchema: OpenAPIV3.SchemaObject = {
+export const MethodStandardSchema: OpenAPIV3.SchemaObject = {
   type: 'array',
   items: {
     type: 'object',
@@ -57,7 +61,7 @@ export const MethodStandardsSchema: OpenAPIV3.SchemaObject = {
     properties: {
       method_lookup_id: { type: 'number' },
       name: { type: 'string' },
-      description: { type: 'string' },
+      description: { type: 'string', nullable: true },
       attributes: {
         type: 'object',
         additionalProperties: false,
@@ -72,7 +76,8 @@ export const MethodStandardsSchema: OpenAPIV3.SchemaObject = {
                   type: 'string'
                 },
                 description: {
-                  type: 'string'
+                  type: 'string',
+                  nullable: true
                 },
                 options: {
                   type: 'array',
@@ -84,7 +89,8 @@ export const MethodStandardsSchema: OpenAPIV3.SchemaObject = {
                         type: 'string'
                       },
                       description: {
-                        type: 'string'
+                        type: 'string',
+                        nullable: true
                       }
                     }
                   }
@@ -102,9 +108,10 @@ export const MethodStandardsSchema: OpenAPIV3.SchemaObject = {
                   type: 'string'
                 },
                 description: {
-                  type: 'string'
+                  type: 'string',
+                  nullable: true
                 },
-                unit: { type: 'string' }
+                unit: { type: 'string', nullable: true }
               }
             }
           }

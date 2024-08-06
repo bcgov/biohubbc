@@ -25,38 +25,29 @@ export interface ISpeciesStandards {
   ecologicalUnits: ICollectionUnit[];
 }
 
-export interface IEnvironmentStandards {
-  qualitative: {
-    name: string;
-    description: string;
-    options: {
-      name: string;
-      description: string;
-    };
-  }[];
-  quantitative: { name: string; description: string; units: string }[];
-}
-
-export interface IMethodStandard {
-  method_lookup_id: number;
+export interface IStandardNameDescription {
   name: string;
   description: string;
-  attributes: {
-    qualitative: {
-      name: string;
-      description: string;
-      options: {
-        name: string;
-        description: string;
-      }[];
-    }[];
-    quantitative: { name: string; description: string }[];
-  };
 }
 
-// export interface IMethodStandards {
-//   methods: Array<{
-//     name: string;
-//     description: string;
-//   }>;
-// }
+export interface IQualitativeAttributeStandard {
+  name: string;
+  description: string;
+  options: IStandardNameDescription[];
+}
+
+export interface IQuantitativeAttributeStandard {
+  name: string;
+  description: string;
+  unit: string;
+}
+
+export interface IMethodStandard extends IStandardNameDescription {
+  method_lookup_id: number;
+  attributes: { qualitative: IQualitativeAttributeStandard[]; quantitative: IQuantitativeAttributeStandard[] };
+}
+
+export interface IEnvironmentStandards {
+  qualitative: IQualitativeAttributeStandard[];
+  quantitative: IQuantitativeAttributeStandard[];
+}

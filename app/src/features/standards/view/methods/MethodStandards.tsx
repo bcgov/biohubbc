@@ -1,29 +1,68 @@
+import { Skeleton, Stack, TextField } from '@mui/material';
 import Box from '@mui/material/Box';
-import { MethodStandardsResults } from './MethodStandardsResults';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useEffect } from 'react';
+import { debounce } from 'lodash-es';
+import { useEffect, useMemo, useState } from 'react';
+import { MethodStandardsResults } from './MethodStandardsResults';
 
 /**
  *
- * This component will handle the data request, then pass the data to its children components.
+ * Returns information about method lookup options
  *
  * @returns
  */
 
-
 export const MethodStandards = () => {
   const biohubApi = useBiohubApi();
+  const [searchTerm, setSearchTerm] = useState<string>('');
 
-  const methodDataLoader = useDataLoader(() => biohubApi.standards.getMethodStandards());
+  const methodDataLoader = useDataLoader((keyword?: string) => biohubApi.standards.getMethodStandards(keyword));
+
+  const debouncedRefresh = useMemo(
+    () =>
+      debounce((value: string) => {
+        methodDataLoader.refresh(value);
+      }, 500),
+    []
+  );
 
   useEffect(() => {
     methodDataLoader.load();
   }, [methodDataLoader]);
 
   return (
-    <Box sx={{ mt: 2 }} flex="1 1 auto">
-      {methodDataLoader.data && <MethodStandardsResults data={methodDataLoader.data} />}
-    </Box>
+    <>
+      <TextField
+        name="name"
+        label="Method name"
+        key="method-name-search"
+        value={searchTerm}
+        fullWidth
+        onChange={(event) => {
+          const value = event.currentTarget.value;
+          setSearchTerm(value);
+          debouncedRefresh(value);
+        }}
+      />
+      <Box mt={2}>
+        {methodDataLoader.data ? (
+          <MethodStandardsResults data={methodDataLoader.data} />
+        ) : (
+          <Stack gap={1}>
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+          </Stack>
+        )}
+      </Box>
+    </>
   );
 };

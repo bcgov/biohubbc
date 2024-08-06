@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../../../database/db';
-import { MethodStandardsSchema } from '../../../openapi/schemas/standards';
+import { MethodStandardSchema } from '../../../openapi/schemas/standards';
 import { StandardsService } from '../../../services/standards-service';
 import { getLogger } from '../../../utils/logger';
 
@@ -12,14 +12,24 @@ export const GET: Operation = [getMethodStandards()];
 GET.apiDoc = {
   description: 'Gets lookup values for method variables',
   tags: ['standards'],
-  parameters: [],
+  parameters: [
+    {
+      in: 'query',
+      name: 'keyword',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    }
+  ],
   security: [{ Bearer: [] }],
   responses: {
     200: {
       description: 'Method data standards response object.',
       content: {
         'application/json': {
-          schema: MethodStandardsSchema
+          schema: MethodStandardSchema
         }
       }
     },
@@ -47,7 +57,7 @@ GET.apiDoc = {
  * @returns {RequestHandler}
  */
 export function getMethodStandards(): RequestHandler {
-  return async (_, res) => {
+  return async (req, res) => {
     const connection = getAPIUserDBConnection();
 
     try {
@@ -55,7 +65,9 @@ export function getMethodStandards(): RequestHandler {
 
       const standardsService = new StandardsService(connection);
 
-      const response = await standardsService.getMethodStandards();
+      const keyword = (req.query.keyword as string) ?? '';
+
+      const response = await standardsService.getMethodStandards(keyword);
 
       await connection.commit();
 

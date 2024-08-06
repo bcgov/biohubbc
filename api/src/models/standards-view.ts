@@ -14,16 +14,15 @@ export interface ISpeciesStandards {
   markingBodyLocations: { id: string; key: string; value: string }[];
 }
 
-// Define Zod schema
 export const EnvironmentStandardsSchema = z.object({
   qualitative: z.array(
     z.object({
       name: z.string(),
-      description: z.string(),
+      description: z.string().nullable(),
       options: z.array(
         z.object({
           name: z.string(),
-          description: z.string()
+          description: z.string().nullable()
         })
       )
     })
@@ -31,35 +30,27 @@ export const EnvironmentStandardsSchema = z.object({
   quantitative: z.array(
     z.object({
       name: z.string(),
-      description: z.string()
+      description: z.string().nullable(),
+      unit: z.string().nullable()
     })
   )
 });
 
-// Infer the TypeScript type from the Zod schema
 export type EnvironmentStandards = z.infer<typeof EnvironmentStandardsSchema>;
-
-// THIS AINT WORKING OR BEING IMPORTED CORRECTLY IN STANDARSD SERVICE
-
-// export interface MethodStandards {
-//   name: string;
-//   description: string;
-
-// }
 
 export const MethodStandardSchema = z.object({
   method_lookup_id: z.number(),
   name: z.string(),
-  description: z.string(),
+  description: z.string().nullable(),
   attributes: z.object({
     qualitative: z.array(
       z.object({
         name: z.string(),
-        description: z.string(),
+        description: z.string().nullable(),
         options: z.array(
           z.object({
             name: z.string(),
-            description: z.string()
+            description: z.string().nullable()
           })
         )
       })
@@ -67,8 +58,8 @@ export const MethodStandardSchema = z.object({
     quantitative: z.array(
       z.object({
         name: z.string(),
-        description: z.string(),
-        units: z.string()
+        description: z.string().nullable(),
+        unit: z.string().nullable()
       })
     )
   })

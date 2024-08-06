@@ -1,3 +1,5 @@
+import { mdiLeaf, mdiPaw, mdiToolbox } from '@mdi/js';
+import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
@@ -17,15 +19,16 @@ export enum StandardsPageView {
 export interface IStandardsPageView {
   label: string;
   value: StandardsPageView;
+  icon: string;
 }
 
 const StandardsPage = () => {
   const [currentView, setCurrentView] = useState(StandardsPageView.SPECIES);
 
   const views: IStandardsPageView[] = [
-    { label: 'Species', value: StandardsPageView.SPECIES },
-    { label: 'Sampling Methods', value: StandardsPageView.METHODS },
-    { label: 'Environment variables', value: StandardsPageView.ENVIRONMENT }
+    { label: 'Species', value: StandardsPageView.SPECIES, icon: mdiPaw },
+    { label: 'Sampling Methods', value: StandardsPageView.METHODS, icon: mdiToolbox },
+    { label: 'Environment variables', value: StandardsPageView.ENVIRONMENT, icon: mdiLeaf }
   ];
 
   return (
@@ -34,16 +37,20 @@ const StandardsPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Stack direction="row" gap={3} component={Paper} sx={{ p: 3 }}>
           {/* TOOLBAR FOR SWITCHING VIEWS */}
-          <StandardsToolbar views={views} currentView={currentView} setCurrentView={setCurrentView} />
+          <Box width="300px" flexShrink={0}>
+            <StandardsToolbar views={views} currentView={currentView} setCurrentView={setCurrentView} />
+          </Box>
 
-          {/* SPECIES STANDARDS */}
-          {currentView === StandardsPageView.SPECIES && <SpeciesStandards />}
+          <Box flex=" 1 1 auto">
+            {/* SPECIES STANDARDS */}
+            {currentView === StandardsPageView.SPECIES && <SpeciesStandards />}
 
-          {/* METHOD STANDARDS */}
-          {currentView === StandardsPageView.METHODS && <MethodStandards />}
+            {/* METHOD STANDARDS */}
+            {currentView === StandardsPageView.METHODS && <MethodStandards />}
 
-          {/* ENVIRONMENT STANDARDS */}
-          {currentView === StandardsPageView.ENVIRONMENT && <EnvironmentStandards />}
+            {/* ENVIRONMENT STANDARDS */}
+            {currentView === StandardsPageView.ENVIRONMENT && <EnvironmentStandards />}
+          </Box>
         </Stack>
       </Container>
     </>

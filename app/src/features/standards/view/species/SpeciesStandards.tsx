@@ -1,4 +1,6 @@
+import { Skeleton } from '@mui/material';
 import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -20,7 +22,7 @@ export const SpeciesStandards = () => {
   );
 
   return (
-    <Box flex="1 1 auto">
+    <>
       <SpeciesAutocompleteField
         formikFieldName="tsn"
         label={''}
@@ -30,11 +32,24 @@ export const SpeciesStandards = () => {
           }
         }}
       />
-      {isDefined(standardsDataLoader.data) && (
-        <Box my={2}>
+      <Box my={2}>
+        {isDefined(standardsDataLoader.data) ? (
           <SpeciesStandardsResults data={standardsDataLoader.data} isLoading={standardsDataLoader.isLoading} />
-        </Box>
-      )}
-    </Box>
+        ) : (
+          <Stack gap={1}>
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+          </Stack>
+        )}
+      </Box>
+    </>
   );
 };

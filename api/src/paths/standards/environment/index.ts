@@ -12,7 +12,17 @@ export const GET: Operation = [getEnvironmentStandards()];
 GET.apiDoc = {
   description: 'Gets lookup values for environment variables',
   tags: ['standards'],
-  parameters: [],
+  parameters: [
+    {
+      in: 'query',
+      name: 'keyword',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    }
+  ],
   security: [{ Bearer: [] }],
   responses: {
     200: {
@@ -47,7 +57,7 @@ GET.apiDoc = {
  * @returns {RequestHandler}
  */
 export function getEnvironmentStandards(): RequestHandler {
-  return async (_, res) => {
+  return async (req, res) => {
     const connection = getAPIUserDBConnection();
 
     try {
@@ -55,7 +65,9 @@ export function getEnvironmentStandards(): RequestHandler {
 
       const standardsService = new StandardsService(connection);
 
-      const response = await standardsService.getEnvironmentStandards();
+      const keyword = (req.query.keyword as string) ?? '';
+
+      const response = await standardsService.getEnvironmentStandards(keyword);
 
       await connection.commit();
 
