@@ -1,4 +1,4 @@
-import { mdiAutoFix, mdiMapMarker } from '@mdi/js';
+import { mdiAutoFix, mdiCalendarRange, mdiMapMarker } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -7,6 +7,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { SamplingPeriodTable } from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
 import { SurveySitesTable } from 'features/surveys/view/components/sampling-data/components/SurveySitesTable';
 import { SurveyTechniquesTable } from 'features/surveys/view/components/sampling-data/components/SurveyTechniquesTable';
 import { useSurveyContext } from 'hooks/useContext';
@@ -14,7 +15,8 @@ import { useEffect, useState } from 'react';
 
 export enum SurveySamplingView {
   TECHNIQUES = 'TECHNIQUES',
-  SITES = 'SITES'
+  SITES = 'SITES',
+  PERIODS = 'PERIODS'
 }
 
 export const SurveySamplingTabs = () => {
@@ -82,7 +84,7 @@ export const SurveySamplingTabs = () => {
             color="primary"
             startIcon={<Icon path={mdiAutoFix} size={0.75} />}
             value={SurveySamplingView.TECHNIQUES}>
-            {`Techniques (${surveyContext.techniqueDataLoader.data?.count ?? 0})`}
+            {`${SurveySamplingView.TECHNIQUES} (${surveyContext.techniqueDataLoader.data?.count ?? 0})`}
           </ToggleButton>
           <ToggleButton
             key="sampling-sites-view"
@@ -90,37 +92,36 @@ export const SurveySamplingTabs = () => {
             color="primary"
             startIcon={<Icon path={mdiMapMarker} size={0.75} />}
             value={SurveySamplingView.SITES}>
-            {`Sites (${surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0})`}
+            {`${SurveySamplingView.SITES} (${surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0})`}
+          </ToggleButton>
+          <ToggleButton
+            key="sampling-sites-view"
+            component={Button}
+            color="primary"
+            startIcon={<Icon path={mdiCalendarRange} size={0.75} />}
+            value={SurveySamplingView.PERIODS}>
+            {`${SurveySamplingView.PERIODS} (${surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0})`}
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
 
       <Divider />
 
-      <Box p={2}>
-        <Box>
+      <Box p={2} position="relative">
+        <LoadingGuard
+          isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
+          fallback={<SkeletonTable />}
+          delay={200}>
           {activeView === SurveySamplingView.TECHNIQUES && (
-            <Box position="relative">
-              <LoadingGuard
-                isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
-                fallback={<SkeletonTable />}
-                delay={200}>
-                <SurveyTechniquesTable techniques={surveyContext.techniqueDataLoader.data} />
-              </LoadingGuard>
-            </Box>
+            <SurveyTechniquesTable techniques={surveyContext.techniqueDataLoader.data} />
           )}
-
           {activeView === SurveySamplingView.SITES && (
-            <Box position="relative">
-              <LoadingGuard
-                isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}
-                fallback={<SkeletonTable />}
-                delay={200}>
-                <SurveySitesTable sites={surveyContext.sampleSiteDataLoader.data} />
-              </LoadingGuard>
-            </Box>
+            <SurveySitesTable sites={surveyContext.sampleSiteDataLoader.data} />
           )}
-        </Box>
+          {activeView === SurveySamplingView.PERIODS && (
+            <SamplingPeriodTable sites={surveyContext.sampleSiteDataLoader.data?.sampleSites ?? []} />
+          )}
+        </LoadingGuard>
       </Box>
     </>
   );

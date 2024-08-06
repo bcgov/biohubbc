@@ -126,7 +126,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   const isMounted = useIsMounted();
 
   // A default species has been provided and it is not a promise
-  const isDefaultSpecies = defaultSpecies && !('then' in defaultSpecies);
+  const isDefaultSpecies = defaultSpecies && !(defaultSpecies instanceof Promise);
 
   const [hasLoadedDefaultSpecies, setHasLoadedDefaultSpecies] = useState(false);
   // The input field value
@@ -137,7 +137,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (defaultSpecies && 'then' in defaultSpecies) {
+    if (defaultSpecies instanceof Promise) {
       // A default species has been provided and it is a promise
       defaultSpecies.then((taxonomy) => {
         if (hasLoadedDefaultSpecies) {
@@ -186,27 +186,36 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       id={formikFieldName}
       disabled={disabled}
       data-testid={formikFieldName}
-      filterSelectedOptions
       noOptionsText="No matching options"
       options={options}
       getOptionLabel={(option) => option.scientificName}
-      isOptionEqualToValue={(option, value) => {
-        return option.tsn === value.tsn;
-      }}
       filterOptions={(item) => item}
       inputValue={inputValue}
       // Text field value changed
       onInputChange={(_, value, reason) => {
         if (reason === 'reset') {
-          if (clearOnSelect) {
-            setInputValue('');
-            setOptions([]);
-            handleClear?.();
+          if (!clearOnSelect) {
+            return;
           }
+
+          if (inputValue === '' && options.length === 0) {
+            // Nothing to clear
+            return;
+          }
+
+          setInputValue('');
+          setOptions([]);
+          handleClear?.();
+
           return;
         }
 
         if (reason === 'clear') {
+          if (inputValue === '' && options.length === 0) {
+            // Nothing to clear
+            return;
+          }
+
           setInputValue('');
           setOptions([]);
           handleClear?.();
@@ -214,6 +223,11 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
         }
 
         if (!value) {
+          if (inputValue === '' && options.length === 0) {
+            // Nothing to clear
+            return;
+          }
+
           setInputValue('');
           setOptions([]);
           return;
@@ -255,8 +269,8 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
                 borderTop: '1px solid' + grey[300]
               }
             }}
-            key={`${renderOption.tsn}-${renderOption.scientificName}`}
-            {...renderProps}>
+            {...renderProps}
+            key={`${renderOption.tsn}-${renderOption.scientificName}`}>
             <Box py={1} width={'100%'}>
               <SpeciesCard taxon={renderOption} />
             </Box>
