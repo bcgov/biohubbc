@@ -165,7 +165,10 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
 
       <Box component="fieldset" mt={5}>
         <Typography component="legend" variant="h5">
-          Were any permits used for this work?
+          Were any permits used for this work?&nbsp;
+          <Typography component="span" color="error">
+            *
+          </Typography>
         </Typography>
         <Box>
           <SurveyPermitForm />

@@ -13,7 +13,6 @@ import { CreateSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
-import { SurveyPermitFormInitialValues } from 'features/surveys/SurveyPermitForm';
 import { SurveyPartnershipsFormInitialValues } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
@@ -36,7 +35,6 @@ import EditSurveyForm from './edit/EditSurveyForm';
 
 export const defaultSurveyDataFormValues: ICreateSurveyRequest = {
   ...GeneralInformationInitialValues,
-  ...SurveyPermitFormInitialValues,
   ...PurposeAndMethodologyInitialValues,
   ...SurveyFundingSourceFormInitialValues,
   ...SurveyPartnershipsFormInitialValues,
@@ -105,9 +103,13 @@ const CreateSurveyPage = () => {
    */
   const handleSubmit = async (values: ICreateSurveyRequest) => {
     setIsSaving(true);
-
+    // Remove the permit.used property
+    const { permit, ...data } = values;
     try {
-      const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), values);
+      const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), {
+        ...data,
+        permit: { permits: permit.permits }
+      });
 
       if (!response?.id) {
         showCreateErrorDialog({
@@ -172,7 +174,13 @@ const CreateSurveyPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <EditSurveyForm
-            initialSurveyData={defaultSurveyDataFormValues}
+            initialSurveyData={{
+              ...defaultSurveyDataFormValues,
+              permit: {
+                permits: defaultSurveyDataFormValues.permit.permits,
+                used: null
+              }
+            }}
             handleSubmit={(formikData) => handleSubmit(formikData as unknown as ICreateSurveyRequest)}
             formikRef={formikRef}
           />
