@@ -1,11 +1,11 @@
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { TechniqueAttributesForm } from 'features/surveys/sampling-information/techniques/form/components/attributes/TechniqueAttributesForm';
+import { TechniqueAttributesForm } from 'features/surveys/sampling-information/techniques/components/attributes/TechniqueAttributesForm';
 import {
   CreateTechniqueFormValues,
   UpdateTechniqueFormValues
-} from 'features/surveys/sampling-information/techniques/form/components/TechniqueFormContainer';
+} from 'features/surveys/sampling-information/techniques/components/TechniqueFormContainer';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';

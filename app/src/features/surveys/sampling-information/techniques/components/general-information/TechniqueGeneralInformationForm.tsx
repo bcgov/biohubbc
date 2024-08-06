@@ -6,7 +6,7 @@ import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubte
 import {
   CreateTechniqueFormValues,
   UpdateTechniqueFormValues
-} from 'features/surveys/sampling-information/techniques/form/components/TechniqueFormContainer';
+} from 'features/surveys/sampling-information/techniques/components/TechniqueFormContainer';
 
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';
@@ -41,50 +41,48 @@ export const TechniqueGeneralInformationForm = <
   }
 
   return (
-    <>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <CustomTextField
-            name="name"
-            label="Technique Name"
-            maxLength={64}
-            other={{
-              required: true
-            }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <AutocompleteField
-            id="method_lookup_id"
-            label="Sampling method"
-            name="method_lookup_id"
-            showValue
-            required
-            loading={codesContext.codesDataLoader.isLoading}
-            options={methodOptions.map((option) => ({
-              value: option.value as number,
-              label: option.label,
-              description: option.subText
-            }))}
-            onChange={(_, value) => {
-              if (value?.value) {
-                setFieldValue('method_lookup_id', value.value);
-              }
-            }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <CustomTextField
-            name="description"
-            label="Description"
-            maxLength={1000}
-            other={{
-              multiline: true,
-              rows: 4
-            }}
-          />
-        </Grid>
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <CustomTextField
+          name="name"
+          label="Technique Name"
+          maxLength={64}
+          other={{
+            required: true
+          }}
+        />
       </Grid>
-    </>
+      <Grid item xs={12}>
+        <AutocompleteField
+          id="method_lookup_id"
+          label="Sampling method"
+          name="method_lookup_id"
+          showValue
+          required
+          loading={codesContext.codesDataLoader.isLoading}
+          options={methodOptions.map((option) => ({
+            value: option.value as number,
+            label: option.label,
+            description: option.subText
+          }))}
+          onChange={(_, value) => {
+            if (value?.value) {
+              setFieldValue('method_lookup_id', value.value);
+            }
+          }}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <CustomTextField
+          name="description"
+          label="Description"
+          maxLength={1000}
+          other={{
+            multiline: true,
+            rows: 4
+          }}
+        />
+      </Grid>
+    </Grid>
   );
 };

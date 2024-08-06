@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
-import { TechniqueForm } from 'features/surveys/sampling-information/techniques/form/components/TechniqueForm';
+import { TechniqueForm } from 'features/surveys/sampling-information/techniques/components/TechniqueForm';
 import { Formik, FormikProps } from 'formik';
 import { ICreateTechniqueRequest, IGetTechniqueResponse } from 'interfaces/useTechniqueApi.interface';
 import { isDefined } from 'utils/Utils';
