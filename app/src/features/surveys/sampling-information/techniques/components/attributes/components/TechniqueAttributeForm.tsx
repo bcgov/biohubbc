@@ -111,7 +111,6 @@ export const TechniqueAttributeForm = <FormValues extends CreateTechniqueFormVal
       <Box flex="0.5">
         <TechniqueAttributeValueControl
           selectedAttributeTypeDefinition={selectedAttributeTypeDefinition}
-          arrayHelpers={arrayHelpers}
           index={index}
         />
       </Box>
