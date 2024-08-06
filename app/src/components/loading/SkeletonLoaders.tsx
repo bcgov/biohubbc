@@ -125,11 +125,4 @@ const SkeletonMap = () => (
   </Box>
 );
 
-export {
-  SkeletonHorizontalStack,
-  SkeletonList,
-  SkeletonListStack,
-  SkeletonMap,
-  SkeletonRow,
-  SkeletonTable
-};
+export { SkeletonHorizontalStack, SkeletonList, SkeletonListStack, SkeletonMap, SkeletonRow, SkeletonTable };

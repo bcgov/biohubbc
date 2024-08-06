@@ -50,16 +50,9 @@ export const MethodStandards = () => {
           <MethodStandardsResults data={methodDataLoader.data} />
         ) : (
           <Stack gap={1}>
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
+            {[...Array(10)].map((_, index) => (
+              <Skeleton key={index} variant="rectangular" height="60px" />
+            ))}
           </Stack>
         )}
       </Box>

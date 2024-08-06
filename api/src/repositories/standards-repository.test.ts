@@ -3,7 +3,6 @@ import { afterEach, describe, it } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ApiExecuteSQLError } from '../errors/api-error';
 import { getMockDBConnection } from '../__mocks__/db';
 import { StandardsRepository } from './standards-repository';
 
@@ -56,11 +55,45 @@ describe('StandardsRepository', () => {
 
       expect(result).to.deep.equal(mockData);
     });
+  });
 
-    it('should handle empty result and throw ApiExecuteSQLError', async () => {
+  describe('getMethodStandards', () => {
+    it('should successfully retrieve method standards', async () => {
+      const mockData = [
+        {
+          method_lookup_id: 1,
+          name: 'Method 1',
+          description: ' Description 1',
+          attributes: {
+            quantitative: [
+              { name: 'Method Standard 1', description: 'Description 1', unit: 'Unit 1' },
+              { name: 'Method Standard 2', description: 'Description 2', unit: 'Unit 2' }
+            ],
+            qualitative: [
+              {
+                name: 'Qualitative 1',
+                description: 'Description 1',
+                options: [
+                  { name: 'Option 1', description: 'Option 1 Description' },
+                  { name: 'Option 2', description: 'Option 2 Description' }
+                ]
+              },
+              {
+                name: 'Qualitative 2',
+                description: 'Description 2',
+                options: [
+                  { name: 'Option 3', description: 'Option 3 Description' },
+                  { name: 'Option 4', description: 'Option 4 Description' }
+                ]
+              }
+            ]
+          }
+        }
+      ];
+
       const mockResponse = {
-        rows: [],
-        rowCount: 0
+        rows: mockData,
+        rowCount: 1
       } as any as Promise<QueryResult<any>>;
 
       const dbConnection = getMockDBConnection({
@@ -69,12 +102,9 @@ describe('StandardsRepository', () => {
 
       const repository = new StandardsRepository(dbConnection);
 
-      try {
-        await repository.getEnvironmentStandards();
-        expect.fail();
-      } catch (error) {
-        expect((error as ApiExecuteSQLError).message).to.be.eq('Failed to get environment standards');
-      }
+      const result = await repository.getMethodStandards();
+
+      expect(result).to.deep.equal(mockData);
     });
   });
 });

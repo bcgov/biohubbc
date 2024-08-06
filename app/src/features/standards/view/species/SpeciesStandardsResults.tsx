@@ -1,12 +1,12 @@
 import { mdiRuler, mdiTag } from '@mdi/js';
 import { Box, CircularProgress, Divider, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
-import { AccordionStandardCard } from 'features/standards/components/AccordionStandardCard';
+import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { ISpeciesStandards } from 'interfaces/useStandardsApi.interface';
 import { useState } from 'react';
 import MarkingBodyLocationStandardCard from '../components/MarkingBodyLocationStandardCard';
-import SpeciesStandardsToolbar, { SpeciesStandardsViewEnum } from '../components/SpeciesStandardsToolbar';
+import SpeciesStandardsToolbar, { SpeciesStandardsViewEnum } from './components/SpeciesStandardsToolbar';
 
 interface ISpeciesStandardsResultsProps {
   data: ISpeciesStandards;

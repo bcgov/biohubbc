@@ -2,7 +2,7 @@ import { blueGrey, grey } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { IMethodStandard } from 'interfaces/useStandardsApi.interface';
-import { AccordionStandardCard } from '../../components/AccordionStandardCard';
+import { AccordionStandardCard } from '../components/AccordionStandardCard';
 
 interface ISpeciesStandardsResultsProps {
   data: IMethodStandard[];

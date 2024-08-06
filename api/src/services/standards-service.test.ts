@@ -73,8 +73,8 @@ describe('StandardsService', () => {
     const mockData = {
       qualitative: [{ name: 'name', description: 'name', options: [{ name: 'name', description: 'description' }] }],
       quantitative: [
-        { name: 'name', description: 'description' },
-        { name: 'name', description: 'description' }
+        { name: 'name', description: 'description', unit: 'unit' },
+        { name: 'name', description: 'description', unit: 'unit' }
       ]
     };
     const mockDbConnection = getMockDBConnection();
@@ -88,6 +88,53 @@ describe('StandardsService', () => {
     const response = await standardsService.getEnvironmentStandards();
 
     expect(getEnvironmentStandardsStub).to.be.calledOnce;
+    expect(response).to.eql(mockData);
+  });
+
+  describe('getMethodStandards', async () => {
+    const mockData = [
+      {
+        method_lookup_id: 1,
+        name: 'Method 1',
+        description: ' Description 1',
+        attributes: {
+          quantitative: [
+            { name: 'Method Standard 1', description: 'Description 1', unit: 'Unit 1' },
+            { name: 'Method Standard 2', description: 'Description 2', unit: 'Unit 2' }
+          ],
+          qualitative: [
+            {
+              name: 'Qualitative 1',
+              description: 'Description 1',
+              options: [
+                { name: 'Option 1', description: 'Option 1 Description' },
+                { name: 'Option 2', description: 'Option 2 Description' }
+              ]
+            },
+            {
+              name: 'Qualitative 2',
+              description: 'Description 2',
+              options: [
+                { name: 'Option 3', description: 'Option 3 Description' },
+                { name: 'Option 4', description: 'Option 4 Description' }
+              ]
+            }
+          ]
+        }
+      }
+    ];
+
+    const mockDbConnection = getMockDBConnection();
+
+    const standardsService = new StandardsService(mockDbConnection);
+
+    const getMethodStandardsStub = sinon
+      .stub(standardsService.standardsRepository, 'getMethodStandards')
+      .resolves(mockData);
+
+    const response = await standardsService.getMethodStandards();
+
+    expect(getMethodStandardsStub).to.be.calledOnce;
     expect(response).to.eql(mockData);
   });
 });

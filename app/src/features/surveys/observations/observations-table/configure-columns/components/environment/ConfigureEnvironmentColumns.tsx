@@ -1,7 +1,9 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, IconButton, Stack, Typography } from '@mui/material';
-import EnvironmentStandardCard from 'features/standards/view/components/EnvironmentStandardCard';
+import { blueGrey, grey } from '@mui/material/colors';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
+import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { EnvironmentType, EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 import { EnvironmentsSearch } from './search/EnvironmentsSearch';
 
@@ -60,11 +62,22 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
                   display="flex"
                   alignItems="flex-start"
                   key={`qualitative_environment_item_${environment.environment_qualitative_id}`}>
-                  <EnvironmentStandardCard
-                    small
+                  <AccordionStandardCard
                     label={environment.name}
-                    description={environment.description ?? ''}
-                    options={environment.options}
+                    subtitle={environment.description ?? ''}
+                    colour={grey[100]}
+                    children={
+                      <Stack gap={1} my={2}>
+                        {environment.options.map((option) => (
+                          <AccordionStandardCard
+                            label={option.name}
+                            subtitle={option.description ?? ''}
+                            colour={grey[200]}
+                            disableCollapse
+                          />
+                        ))}
+                      </Stack>
+                    }
                   />
                   <Box ml={1} mt={1}>
                     <IconButton
@@ -86,7 +99,12 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
                   display="flex"
                   alignItems="flex-start"
                   key={`quantitative_environment_item_${environment.environment_quantitative_id}`}>
-                  <EnvironmentStandardCard small label={environment.name} description={environment.description ?? ''} />
+                  <AccordionStandardCard
+                    label={environment.name}
+                    subtitle={environment.description ?? ''}
+                    colour={grey[100]}
+                    ornament={<ColouredRectangleChip colour={blueGrey} label={environment.unit ?? ''} />}
+                  />
                   <Box ml={1} mt={1}>
                     <IconButton
                       aria-label="Remove environment column"

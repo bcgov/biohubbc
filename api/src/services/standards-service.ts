@@ -63,10 +63,9 @@ export class StandardsService extends DBService {
     return response;
   }
 
-
   /**
    * Gets standards for method lookups
-   * 
+   *
    * @param {string} keyword
    * @return {MethodStandards}
    * @memberof standardsService
@@ -74,5 +73,5 @@ export class StandardsService extends DBService {
   async getMethodStandards(keyword?: string): Promise<MethodStandard[]> {
     const response = await this.standardsRepository.getMethodStandards(keyword);
     return response;
-
-}}
+  }
+}

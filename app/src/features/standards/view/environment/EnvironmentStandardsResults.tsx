@@ -1,6 +1,6 @@
 import { grey } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
-import { AccordionStandardCard } from 'features/standards/components/AccordionStandardCard';
+import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { IEnvironmentStandards } from 'interfaces/useStandardsApi.interface';
 
 interface ISpeciesStandardsResultsProps {

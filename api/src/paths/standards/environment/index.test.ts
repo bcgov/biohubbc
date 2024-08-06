@@ -19,8 +19,8 @@ describe('standards/environment', () => {
     it('should retrieve environment standards successfully', async () => {
       const mockResponse = {
         quantitative: [
-          { name: 'Quantitative Standard 1', description: 'Description 1' },
-          { name: 'Quantitative Standard 2', description: 'Description 2' }
+          { name: 'Quantitative Standard 1', description: 'Description 1', unit: 'Unit' },
+          { name: 'Quantitative Standard 2', description: 'Description 2', unit: 'Unit' }
         ],
         qualitative: [
           {
