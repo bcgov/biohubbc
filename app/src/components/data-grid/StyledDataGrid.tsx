@@ -55,6 +55,15 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
         '& .MuiTypography-root, .MuiDataGrid-cellContent': {
           fontSize: '0.9rem'
         },
+        '& .MuiDataGrid-overlay': {
+          minHeight: '250px',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center'
+        },
+        '& .MuiDataGrid-columnHeaderDraggableContainer': {
+          minWidth: '50px'
+        },
         ...props.sx
       }}
     />

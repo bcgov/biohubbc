@@ -1,11 +1,13 @@
 import { mdiArrowTopRight } from '@mdi/js';
-import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
+import blueGrey from '@mui/material/colors/blueGrey';
 import { GridColDef, GridOverlay } from '@mui/x-data-grid';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import { ISamplingSiteRowData } from 'features/surveys/sampling-information/sites/table/SamplingSiteTable';
 import { IGetSampleSiteResponse } from 'interfaces/useSamplingSiteApi.interface';
-import { IGetTechniqueResponse } from 'interfaces/useTechniqueApi.interface';
+import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
 
 export interface ISurveySitesTableProps {
   sites?: IGetSampleSiteResponse;
@@ -14,43 +16,67 @@ export interface ISurveySitesTableProps {
 export const SurveySitesTable = (props: ISurveySitesTableProps) => {
   const { sites } = props;
 
-  const rows =
+  const rows: ISamplingSiteRowData[] =
     sites?.sampleSites.map((site) => ({
       id: site.survey_sample_site_id,
       name: site.name,
-      description: site.description
+      description: site.description,
+      geojson: site.geojson,
+      blocks: site.blocks.map((block) => block.name),
+      stratums: site.stratums.map((stratum) => stratum.name)
     })) || [];
 
-  const columns: GridColDef<IGetTechniqueResponse>[] = [
+  const columns: GridColDef<ISamplingSiteRowData>[] = [
     {
       field: 'name',
       headerName: 'Name',
-      flex: 0.3
+      flex: 1
+    },
+    {
+      field: 'geometry_type',
+      headerName: 'Geometry',
+      flex: 1,
+      renderCell: (params) => (
+        <Box>
+          <ColouredRectangleChip
+            label={getSamplingSiteSpatialType(params.row.geojson) ?? 'Unknown'}
+            colour={blueGrey}
+          />
+        </Box>
+      )
     },
     {
       field: 'description',
       headerName: 'Description',
+      flex: 1
+    },
+    {
+      field: 'blocks',
+      headerName: 'Blocks',
       flex: 1,
-      renderCell: (params) => {
-        return (
-          <Box alignItems="flex-start">
-            <Typography
-              color="textSecondary"
-              variant="body2"
-              flex="0.4"
-              sx={{
-                whiteSpace: 'normal',
-                wordBreak: 'break-word',
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}>
-              {params.row.description}
-            </Typography>
-          </Box>
-        );
-      }
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+          {params.row.blocks.map((block) => (
+            <Box key={block} mr={1} mb={1}>
+              <ColouredRectangleChip label={block} colour={blueGrey} />
+            </Box>
+          ))}
+        </Box>
+      )
+    },
+    {
+      field: 'stratums',
+      headerName: 'Strata',
+      flex: 1,
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+          {params.row.stratums.map((stratum) => (
+            <Box key={stratum} mr={1} mb={1}>
+              <ColouredRectangleChip label={stratum} colour={blueGrey} />
+            </Box>
+          ))}
+        </Box>
+      )
     }
   ];
 
@@ -66,15 +92,11 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
       disableRowSelectionOnClick
       noRowsOverlay={
         <GridOverlay>
-          <Box justifyContent="center" display="flex" flexDirection="column">
-            <Typography mb={1} variant="h4" color="textSecondary" textAlign="center">
-              Start by adding sampling information&nbsp;
-              <Icon path={mdiArrowTopRight} size={1} />
-            </Typography>
-            <Typography color="textSecondary" textAlign="center">
-              Add <strong>Techniques</strong>, then apply your techniques to <strong>Sites</strong>
-            </Typography>
-          </Box>
+          <NoDataOverlay
+            title="Add Sampling Sites"
+            subtitle="Add sampling sites to show where you implemented a technique"
+            icon={mdiArrowTopRight}
+          />
         </GridOverlay>
       }
       sx={{
@@ -82,12 +104,6 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
           height: rows.length === 0 ? '250px' : 'unset',
           overflowY: 'auto !important',
           overflowX: 'hidden'
-        },
-        '& .MuiDataGrid-overlay': {
-          height: '250px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
         }
       }}
     />

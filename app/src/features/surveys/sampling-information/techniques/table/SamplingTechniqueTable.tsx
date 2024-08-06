@@ -8,27 +8,29 @@ import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import { GridRowSelectionModel } from '@mui/x-data-grid';
-import { GridOverlay } from '@mui/x-data-grid/components/containers/GridOverlay';
+import { GridOverlay, GridRowSelectionModel } from '@mui/x-data-grid';
 import { GridColDef } from '@mui/x-data-grid/models/colDef/gridColDef';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DeleteTechniqueI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { IGetTechniqueResponse } from 'interfaces/useTechniqueApi.interface';
+import { IGetTechniqueResponse, TechniqueAttractant } from 'interfaces/useTechniqueApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getCodesName } from 'utils/Utils';
 
-interface ITechniqueRowData {
+export interface ITechniqueRowData {
   id: number;
-  method_lookup: string;
+  method_lookup_id: number;
   name: string;
   description: string | null;
+  attractants: TechniqueAttractant[];
+  distance_threshold: number | null;
 }
 
-interface ISamplingTechniqueCardContainer {
+interface ISamplingTechniqueTable {
   techniques: IGetTechniqueResponse[];
   bulkActionTechniques: GridRowSelectionModel;
   setBulkActionTechniques: (selection: GridRowSelectionModel) => void;
@@ -39,7 +41,7 @@ interface ISamplingTechniqueCardContainer {
  *
  * @returns
  */
-export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(props: ISamplingTechniqueCardContainer) => {
+export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamplingTechniqueTable) => {
   const { techniques, bulkActionTechniques, setBulkActionTechniques } = props;
 
   // Individual row action menu
@@ -109,10 +111,11 @@ export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(prop
   const rows: ITechniqueRowData[] =
     techniques.map((technique) => ({
       id: technique.method_technique_id,
-      method_lookup:
-        getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id) ?? '',
+      method_lookup_id: technique.method_lookup_id,
       name: technique.name,
-      description: technique.description
+      description: technique.description,
+      attractants: technique.attractants,
+      distance_threshold: technique.distance_threshold
     })) || [];
 
   const columns: GridColDef<T>[] = [
@@ -123,7 +126,10 @@ export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(prop
       headerName: 'Method',
       renderCell: (params) => (
         <Box>
-          <ColouredRectangleChip label={params.row.method_lookup} colour={blueGrey} />
+          <ColouredRectangleChip
+            label={getCodesName(codesContext.codesDataLoader.data, 'sample_methods', params.row.method_lookup_id) ?? ''}
+            colour={blueGrey}
+          />
         </Box>
       )
     },
@@ -153,10 +159,35 @@ export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(prop
       }
     },
     {
+      field: 'attractants',
+      flex: 0.5,
+      headerName: 'Attractants',
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+          {params.row.attractants.map((attractant) => (
+            <Box key={attractant.attractant_lookup_id} mr={1} mb={1}>
+              <ColouredRectangleChip
+                label={
+                  getCodesName(codesContext.codesDataLoader.data, 'attractants', attractant.attractant_lookup_id) ?? ''
+                }
+                colour={blueGrey}
+              />
+            </Box>
+          ))}
+        </Box>
+      )
+    },
+    {
+      field: 'distance_threshold',
+      headerName: 'Distance threshold',
+      flex: 0.3,
+      renderCell: (params) => (params.row.distance_threshold ? <>{params.row.distance_threshold}&nbsp;m</> : <></>)
+    },
+    {
       field: 'actions',
       type: 'actions',
       sortable: false,
-      flex: 1,
+      flex: 0.3,
       align: 'right',
       renderCell: (params) => {
         return (
@@ -237,15 +268,11 @@ export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(prop
           onRowSelectionModelChange={setBulkActionTechniques}
           noRowsOverlay={
             <GridOverlay>
-              <Box justifyContent="center" display="flex" flexDirection="column">
-                <Typography mb={1} variant="h4" color="textSecondary" textAlign="center">
-                  Start by adding sampling information&nbsp;
-                  <Icon path={mdiArrowTopRight} size={1} />
-                </Typography>
-                <Typography color="textSecondary" textAlign="center">
-                  Add techniques, then apply your techniques to sampling sites
-                </Typography>
-              </Box>
+              <NoDataOverlay
+                title="Add a Technique"
+                subtitle="Techniques describe the details of how species observations were collected"
+                icon={mdiArrowTopRight}
+              />
             </GridOverlay>
           }
           sx={{
@@ -254,18 +281,8 @@ export const SamplingTechniqueCardContainer = <T extends ITechniqueRowData>(prop
               overflowY: 'auto !important',
               overflowX: 'hidden'
             },
-            '& .MuiDataGrid-overlay': {
-              height: '250px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            },
             '& .MuiDataGrid-columnHeaderDraggableContainer': {
               minWidth: '50px'
-            },
-            // '& .MuiDataGrid-cell--textLeft': { justifyContent: 'flex-end' }
-            '& .MuiDataGrid-cell--textLeft:last-child': {
-              // justifyContent: 'flex-end !important'
             }
           }}
         />

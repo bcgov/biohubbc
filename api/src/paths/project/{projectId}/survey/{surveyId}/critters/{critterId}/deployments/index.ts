@@ -238,10 +238,12 @@ PATCH.apiDoc = {
 export function deployDevice(): RequestHandler {
   return async (req, res) => {
     const critterId = Number(req.params.critterId);
+
     const newDeploymentId = v4(); // New deployment ID
+
     const newDeploymentDevice = {
       ...req.body,
-      deploymentId: newDeploymentId
+      deployment_id: newDeploymentId
     };
 
     const connection = getDBConnection(req.keycloak_token);
