@@ -22,7 +22,7 @@ export const EnvironmentStandardsResults = (props: ISpeciesStandardsResultsProps
           key={environment.name}
           label={environment.name}
           subtitle={environment.description}
-          colour={grey[200]}
+          colour={grey[100]}
         />
       ))}
       {data.qualitative.map((environment) => (
@@ -30,7 +30,7 @@ export const EnvironmentStandardsResults = (props: ISpeciesStandardsResultsProps
           key={environment.name}
           label={environment.name}
           subtitle={environment.description}
-          colour={grey[200]}
+          colour={grey[100]}
         />
       ))}
     </Stack>
