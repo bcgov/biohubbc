@@ -9,7 +9,6 @@ import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubte
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import AncillarySpeciesComponent from 'components/species/AncillarySpeciesComponent';
 import FocalSpeciesComponent from 'components/species/FocalSpeciesComponent';
-import { useFormikContext } from 'formik';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -110,8 +109,6 @@ export interface IGeneralInformationFormProps {
  * @return {*}
  */
 const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) => {
-  const formikProps = useFormikContext<IGeneralInformationForm>();
-
   return (
     <>
       <Grid container spacing={3}>
@@ -144,7 +141,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Grid>
         <Grid item xs={12}>
           <StartEndDateFields
-            formikProps={formikProps}
             startName="survey_details.start_date"
             endName="survey_details.end_date"
             startRequired={true}
@@ -169,10 +165,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
 
       <Box component="fieldset" mt={5}>
         <Typography component="legend" variant="h5">
-          Were any permits used for this work?&nbsp;
-          <Typography component="span" color="error">
-            *
-          </Typography>
+          Were any permits used for this work?
         </Typography>
         <Box>
           <SurveyPermitForm />

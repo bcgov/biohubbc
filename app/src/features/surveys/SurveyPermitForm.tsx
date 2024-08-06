@@ -16,11 +16,9 @@ import RadioGroup from '@mui/material/RadioGroup';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import AlertBar from 'components/alert/AlertBar';
 import CustomTextField from 'components/fields/CustomTextField';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import { get } from 'lodash-es';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 
@@ -32,7 +30,6 @@ export interface ISurveyPermitFormArrayItem {
 
 export interface ISurveyPermitForm {
   permit: {
-    used: boolean | null;
     permits: ISurveyPermitFormArrayItem[];
   };
 }
@@ -45,14 +42,12 @@ export const SurveyPermitFormArrayItemInitialValues: ISurveyPermitFormArrayItem 
 
 export const SurveyPermitFormInitialValues: ISurveyPermitForm = {
   permit: {
-    used: null,
     permits: []
   }
 };
 
 export const SurveyPermitFormYupSchema = yup.object().shape({
   permit: yup.object().shape({
-    used: yup.boolean().required('You must indicate whether a permit was used'),
     permits: yup.array().of(
       yup.object().shape({
         permit_id: yup.number().nullable(true),
@@ -85,52 +80,29 @@ export const SurveyPermitFormYupSchema = yup.object().shape({
  * @return {*}
  */
 const SurveyPermitForm: React.FC = () => {
-  const { values, handleChange, getFieldMeta, errors, setFieldValue, submitCount } =
-    useFormikContext<ISurveyPermitForm>();
+  const { values, handleChange, getFieldMeta, setFieldValue, errors } = useFormikContext<ISurveyPermitForm>();
 
-  useEffect(() => {
-    setFieldValue('permit.used', values.permit.used);
-  }, [values.permit]);
-
-  const getPermitUsedValue = () => {
-    if (values.permit.used === true) {
-      return 'true';
-    }
-    if (values.permit.used === false) {
-      return 'false';
-    }
-    return null;
-  };
+  const [hasPermits, setHasPermits] = React.useState<boolean>(values.permit.permits.length > 0);
 
   return (
     <FieldArray
       name="permit.permits"
       render={(arrayHelpers: FieldArrayRenderProps) => (
         <Stack gap={1}>
-          {get(errors, 'permit.used') && submitCount > 0 && (
-            <AlertBar
-              severity="error"
-              variant="outlined"
-              title="Permit Declaration missing"
-              text={get(errors, 'permit.used') || 'Indicate whether a permit was used'}
-            />
-          )}
           <RadioGroup
             aria-label="permit"
-            name="permit.used"
-            value={getPermitUsedValue()}
+            value={hasPermits}
             onChange={(event) => {
               const value = event.target.value === 'true' ? true : false;
-              setFieldValue('permit.used', value);
-              if (value) {
-                arrayHelpers.push(SurveyPermitFormArrayItemInitialValues);
-              }
               if (!value) {
                 setFieldValue('permit.permits', []);
+              } else {
+                arrayHelpers.push(SurveyPermitFormArrayItemInitialValues);
               }
+              setHasPermits(value);
             }}>
-            <FormControlLabel value="true" control={<Radio color="primary" />} label="Yes" />
-            <FormControlLabel value="false" control={<Radio color="primary" />} label="No" />
+            <FormControlLabel value="true" control={<Radio required={true} color="primary" />} label="Yes" />
+            <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />
           </RadioGroup>
 
           <TransitionGroup
@@ -216,7 +188,7 @@ const SurveyPermitForm: React.FC = () => {
               <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.permit.permits}</Typography>
             </Box>
           )}
-          {values.permit.used && (
+          {hasPermits && (
             <Button
               type="button"
               variant="outlined"
