@@ -1,5 +1,5 @@
 import { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
-import { TechniqueAttributeFormValues } from 'features/surveys/sampling-information/techniques/form/components/TechniqueFormContainer';
+import { TechniqueAttributeFormValues } from 'features/surveys/sampling-information/techniques/components/TechniqueFormContainer';
 import { ITechniqueAttributeQualitative, ITechniqueAttributeQuantitative } from 'interfaces/useReferenceApi.interface';
 
 /**
@@ -80,10 +80,8 @@ export const getAttributeType = (
       if (attribute.method_lookup_attribute_qualitative_id === attributeId) {
         return 'qualitative';
       }
-    } else {
-      if (attribute.method_lookup_attribute_quantitative_id === attributeId) {
-        return 'quantitative';
-      }
+    } else if (attribute.method_lookup_attribute_quantitative_id === attributeId) {
+      return 'quantitative';
     }
   }
 };

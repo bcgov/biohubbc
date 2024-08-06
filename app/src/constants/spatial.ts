@@ -19,3 +19,15 @@ export const ALL_OF_BC_BOUNDARY: Feature = {
     ]
   }
 };
+
+/**
+ * The spatial type (business definition) of a sampling site.
+ *
+ * @export
+ * @enum {number}
+ */
+export enum SAMPLING_SITE_SPATIAL_TYPE {
+  POINT = 'POINT',
+  TRANSECT = 'TRANSECT',
+  AREA = 'AREA'
+}

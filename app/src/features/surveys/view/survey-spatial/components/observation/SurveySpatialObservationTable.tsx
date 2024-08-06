@@ -1,11 +1,9 @@
 import { mdiArrowTopRight } from '@mdi/js';
-import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
 import { GridColDef, GridOverlay, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SkeletonRow } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -197,15 +195,11 @@ export const SurveySpatialObservationTable = (props: ISurveyDataObservationTable
           data-testid="survey-spatial-observation-data-table"
           noRowsOverlay={
             <GridOverlay sx={{ position: 'relative' }}>
-              <Box justifyContent="center" display="flex" flexDirection="column">
-                <Typography mb={1} variant="h4" color="textSecondary" textAlign="center">
-                  Add observations after sampling information&nbsp;
-                  <Icon path={mdiArrowTopRight} size={1} />
-                </Typography>
-                <Typography color="textSecondary" textAlign="center">
-                  After adding sampling information, add observations and assign them to a sampling period
-                </Typography>
-              </Box>
+              <NoDataOverlay
+                title="Add observations after samping information"
+                subtitle="Assign observations to sampling periods to keep track of observations at each site"
+                icon={mdiArrowTopRight}
+              />
             </GridOverlay>
           }
           sx={{

@@ -1,132 +1,269 @@
-import { Feature, GeoJsonProperties, Point } from 'geojson';
-import {
-  createGeoJSONFeature,
-  createGeoJSONPoint,
-  getCoordinatesFromGeoJson,
-  isGeoJsonPointFeature,
-  isValidCoordinates
-} from './spatial-utils';
-
-describe('createGeoJSONPoint', () => {
-  it('creates a valid GeoJSON point', () => {
-    const latitude = 45;
-    const longitude = -75;
-    const point = createGeoJSONPoint(latitude, longitude);
-
-    expect(point).toEqual({
-      type: 'Point',
-      coordinates: [-75, 45]
-    });
-  });
-});
-
-describe('createGeoJSONFeature', () => {
-  it('creates a valid GeoJSON feature with point geometry and properties', () => {
-    const latitude = 45;
-    const longitude = -75;
-    const properties = { name: 'Test Point' };
-    const feature = createGeoJSONFeature(latitude, longitude, properties);
-
-    expect(feature).toEqual({
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [-75, 45]
-      },
-      properties
-    });
-  });
-
-  it('creates a valid GeoJSON feature with point geometry and empty properties', () => {
-    const latitude = 45;
-    const longitude = -75;
-    const feature = createGeoJSONFeature(latitude, longitude);
-
-    expect(feature).toEqual({
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [-75, 45]
-      },
-      properties: {}
-    });
-  });
-});
+import { SAMPLING_SITE_SPATIAL_TYPE } from 'constants/spatial';
+import { Feature, Point } from 'geojson';
+import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
+import { getCoordinatesFromGeoJson, isGeoJsonPointFeature, isValidCoordinates } from './spatial-utils';
 
 describe('isValidCoordinates', () => {
-  it('returns true for valid coordinates', () => {
-    expect(isValidCoordinates(45, -75)).toBe(true);
+  it('returns true when the latitude and longitude values are valid', () => {
+    const latitude = 0;
+    const longitude = 0;
+
+    const response = isValidCoordinates(latitude, longitude);
+
+    expect(response).toEqual(true);
   });
 
-  it('returns false for invalid latitude', () => {
-    expect(isValidCoordinates(95, -75)).toBe(false);
+  it('returns false when the latitude is less than -90', () => {
+    const latitude = -91;
+    const longitude = 0;
+
+    const response = isValidCoordinates(latitude, longitude);
+
+    expect(response).toEqual(false);
   });
 
-  it('returns false for invalid longitude', () => {
-    expect(isValidCoordinates(45, -195)).toBe(false);
+  it('returns false when the latitude is greater than 90', () => {
+    const latitude = 91;
+    const longitude = 0;
+
+    const response = isValidCoordinates(latitude, longitude);
+
+    expect(response).toEqual(false);
   });
 
-  it('returns false for undefined latitude', () => {
-    expect(isValidCoordinates(undefined, -75)).toBe(false);
+  it('returns false when the longitude is less than -180', () => {
+    const latitude = 0;
+    const longitude = -181;
+
+    const response = isValidCoordinates(latitude, longitude);
+
+    expect(response).toEqual(false);
   });
 
-  it('returns false for undefined longitude', () => {
-    expect(isValidCoordinates(45, undefined)).toBe(false);
+  it('returns false when the longitude is greater than 180', () => {
+    const latitude = 0;
+    const longitude = 181;
+
+    const response = isValidCoordinates(latitude, longitude);
+
+    expect(response).toEqual(false);
+  });
+
+  it('returns false when the latitude is undefined', () => {
+    const longitude = 0;
+
+    const response = isValidCoordinates(undefined, longitude);
+
+    expect(response).toEqual(false);
+  });
+
+  it('returns false when the longitude is undefined', () => {
+    const latitude = 0;
+
+    const response = isValidCoordinates(latitude, undefined);
+
+    expect(response).toEqual(false);
   });
 });
 
 describe('getCoordinatesFromGeoJson', () => {
-  it('extracts coordinates from a GeoJSON point feature', () => {
-    const feature: Feature<Point, GeoJsonProperties> = {
+  it('returns the latitude and longitude values from a GeoJson Point Feature', () => {
+    const feature: Feature<Point> = {
       type: 'Feature',
       geometry: {
         type: 'Point',
-        coordinates: [-75, 45]
+        coordinates: [11, 22]
       },
       properties: {}
     };
 
-    const coordinates = getCoordinatesFromGeoJson(feature);
+    const response = getCoordinatesFromGeoJson(feature);
 
-    expect(coordinates).toEqual({ latitude: 45, longitude: -75 });
+    expect(response).toEqual({ latitude: 22, longitude: 11 });
   });
 });
 
 describe('isGeoJsonPointFeature', () => {
-  it('returns true for a GeoJSON feature with point geometry', () => {
-    const feature: Feature<Point, GeoJsonProperties> = {
+  it('returns true when the feature is a GeoJson Point Feature', () => {
+    const feature: Feature = {
       type: 'Feature',
       geometry: {
         type: 'Point',
-        coordinates: [-75, 45]
+        coordinates: [0, 0]
       },
       properties: {}
     };
 
-    expect(isGeoJsonPointFeature(feature)).toBe(true);
+    const response = isGeoJsonPointFeature(feature);
+
+    expect(response).toEqual(true);
   });
 
-  it('returns false for a GeoJSON feature with non-point geometry', () => {
-    const feature = {
+  it('returns false when the feature is not a GeoJson Point Feature', () => {
+    const feature: Feature = {
       type: 'Feature',
       geometry: {
         type: 'LineString',
         coordinates: [
-          [-75, 45],
-          [-80, 50]
+          [0, 0],
+          [1, 1]
         ]
       },
       properties: {}
     };
 
-    expect(isGeoJsonPointFeature(feature)).toBe(false);
+    const response = isGeoJsonPointFeature(feature);
+
+    expect(response).toEqual(false);
   });
 
-  it('returns false for non-GeoJSON feature', () => {
-    const nonFeature = {
-      not: 'a feature'
+  it('returns false when the feature is undefined', () => {
+    const response = isGeoJsonPointFeature(undefined);
+
+    expect(response).toEqual(false);
+  });
+
+  it('returns false when the feature is null', () => {
+    const response = isGeoJsonPointFeature(null);
+
+    expect(response).toEqual(false);
+  });
+
+  it('returns false when the feature is an empty object', () => {
+    const response = isGeoJsonPointFeature({});
+
+    expect(response).toEqual(false);
+  });
+
+  it('returns false when the feature is an empty array', () => {
+    const response = isGeoJsonPointFeature([]);
+
+    expect(response).toEqual(false);
+  });
+
+  it('returns false when the feature is a string', () => {
+    const response = isGeoJsonPointFeature('string');
+
+    expect(response).toEqual(false);
+  });
+
+  it('returns false when the feature is a number', () => {
+    const response = isGeoJsonPointFeature(1);
+
+    expect(response).toEqual(false);
+  });
+});
+
+describe('getSamplingSiteSpatialType', () => {
+  it('maps MultiLineString to Transect', () => {
+    const feature: Feature = {
+      type: 'Feature',
+      geometry: {
+        type: 'MultiLineString',
+        coordinates: [[[0, 0]], [[1, 1]]]
+      },
+      properties: {}
     };
 
-    expect(isGeoJsonPointFeature(nonFeature)).toBe(false);
+    const response = getSamplingSiteSpatialType(feature);
+
+    expect(response).toEqual(SAMPLING_SITE_SPATIAL_TYPE.TRANSECT);
+  });
+
+  it('maps LineString to Transect', () => {
+    const feature: Feature = {
+      type: 'Feature',
+      geometry: {
+        type: 'LineString',
+        coordinates: [
+          [0, 0],
+          [1, 1]
+        ]
+      },
+      properties: {}
+    };
+
+    const response = getSamplingSiteSpatialType(feature);
+
+    expect(response).toEqual(SAMPLING_SITE_SPATIAL_TYPE.TRANSECT);
+  });
+
+  it('maps Point to Point', () => {
+    const feature: Feature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Point',
+        coordinates: [0, 0]
+      },
+      properties: {}
+    };
+
+    const response = getSamplingSiteSpatialType(feature);
+
+    expect(response).toEqual(SAMPLING_SITE_SPATIAL_TYPE.POINT);
+  });
+
+  it('maps MultiPoint to Point', () => {
+    const feature: Feature = {
+      type: 'Feature',
+      geometry: {
+        type: 'MultiPoint',
+        coordinates: [
+          [0, 0],
+          [1, 1]
+        ]
+      },
+      properties: {}
+    };
+
+    const response = getSamplingSiteSpatialType(feature);
+
+    expect(response).toEqual(SAMPLING_SITE_SPATIAL_TYPE.POINT);
+  });
+
+  it('maps Polygon to Area', () => {
+    const feature: Feature = {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [0, 0],
+            [1, 1],
+            [0, 1],
+            [0, 0]
+          ]
+        ]
+      },
+      properties: {}
+    };
+
+    const response = getSamplingSiteSpatialType(feature);
+
+    expect(response).toEqual(SAMPLING_SITE_SPATIAL_TYPE.AREA);
+  });
+
+  it('maps MultiPolygon to Area', () => {
+    const feature: Feature = {
+      type: 'Feature',
+      geometry: {
+        type: 'MultiPolygon',
+        coordinates: [
+          [
+            [
+              [0, 0],
+              [1, 1],
+              [0, 1],
+              [0, 0]
+            ]
+          ]
+        ]
+      },
+      properties: {}
+    };
+
+    const response = getSamplingSiteSpatialType(feature);
+
+    expect(response).toEqual(SAMPLING_SITE_SPATIAL_TYPE.AREA);
   });
 });
