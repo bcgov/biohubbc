@@ -6,7 +6,6 @@ import { AccordionStandardCard } from '../components/AccordionStandardCard';
 
 interface ISpeciesStandardsResultsProps {
   data: IMethodStandard[];
-  isLoading?: boolean;
 }
 
 /**

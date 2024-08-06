@@ -64,14 +64,14 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
                   key={`qualitative_environment_item_${environment.environment_qualitative_id}`}>
                   <AccordionStandardCard
                     label={environment.name}
-                    subtitle={environment.description ?? ''}
+                    subtitle={environment.description}
                     colour={grey[100]}
                     children={
                       <Stack gap={1} my={2}>
                         {environment.options.map((option) => (
                           <AccordionStandardCard
                             label={option.name}
-                            subtitle={option.description ?? ''}
+                            subtitle={option.description}
                             colour={grey[200]}
                             disableCollapse
                           />
@@ -101,9 +101,13 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
                   key={`quantitative_environment_item_${environment.environment_quantitative_id}`}>
                   <AccordionStandardCard
                     label={environment.name}
-                    subtitle={environment.description ?? ''}
+                    subtitle={environment.description}
                     colour={grey[100]}
-                    ornament={<ColouredRectangleChip colour={blueGrey} label={environment.unit ?? ''} />}
+                    ornament={
+                      environment.unit ? (
+                        <ColouredRectangleChip colour={blueGrey} label={environment.unit} />
+                      ) : undefined
+                    }
                   />
                   <Box ml={1} mt={1}>
                     <IconButton

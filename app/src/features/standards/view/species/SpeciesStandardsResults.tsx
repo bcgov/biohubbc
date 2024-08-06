@@ -1,16 +1,14 @@
 import { mdiRuler, mdiTag } from '@mdi/js';
-import { Box, CircularProgress, Divider, Stack, Typography } from '@mui/material';
+import { Box, Divider, Stack, Typography } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { ISpeciesStandards } from 'interfaces/useStandardsApi.interface';
 import { useState } from 'react';
-import MarkingBodyLocationStandardCard from '../components/MarkingBodyLocationStandardCard';
 import SpeciesStandardsToolbar, { SpeciesStandardsViewEnum } from './components/SpeciesStandardsToolbar';
 
 interface ISpeciesStandardsResultsProps {
   data: ISpeciesStandards;
-  isLoading: boolean;
 }
 
 /**
@@ -20,14 +18,6 @@ interface ISpeciesStandardsResultsProps {
  */
 const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
   const [activeView, setActiveView] = useState<SpeciesStandardsViewEnum>(SpeciesStandardsViewEnum.MEASUREMENTS);
-
-  if (props.isLoading) {
-    return (
-      <Box display="flex" alignItems="center" justifyContent="center">
-        <CircularProgress size={40} />
-      </Box>
-    );
-  }
 
   return (
     <>
@@ -58,44 +48,46 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
           updateDatasetView={setActiveView}
         />
       </Box>
-
-      {activeView === SpeciesStandardsViewEnum.MEASUREMENTS && (
-        <Stack gap={2}>
-          {props.data.measurements.qualitative.map((measurement) => (
-            <AccordionStandardCard
-              label={measurement.measurement_name}
-              subtitle={measurement.measurement_desc ?? ''}
-              colour={grey[100]}
-              children={
-                <Stack gap={2} my={2}>
-                  {measurement.options.map((option) => (
-                    <AccordionStandardCard
-                      key={option.option_label}
-                      label={option.option_label}
-                      subtitle={option.option_desc ?? ''}
-                      colour={grey[200]}
-                    />
-                  ))}
-                </Stack>
-              }
-            />
-          ))}
-          {props.data.measurements.quantitative.map((measurement) => (
-            <AccordionStandardCard
-              label={measurement.measurement_name}
-              subtitle={measurement.measurement_desc ?? ''}
-              colour={grey[100]}
-            />
-          ))}
-        </Stack>
-      )}
-      {activeView === SpeciesStandardsViewEnum.MARKING_BODY_LOCATIONS && (
-        <Stack gap={2}>
-          {props.data.markingBodyLocations.map((location) => (
-            <MarkingBodyLocationStandardCard label={location.value} />
-          ))}
-        </Stack>
-      )}
+      <Stack gap={2}>
+        {activeView === SpeciesStandardsViewEnum.MEASUREMENTS && (
+          <>
+            {props.data.measurements.qualitative.map((measurement) => (
+              <AccordionStandardCard
+                label={measurement.measurement_name}
+                subtitle={measurement.measurement_desc}
+                colour={grey[100]}
+                children={
+                  <Stack gap={2} my={2}>
+                    {measurement.options.map((option) => (
+                      <AccordionStandardCard
+                        key={option.option_label}
+                        label={option.option_label}
+                        subtitle={option.option_desc}
+                        colour={grey[200]}
+                        disableCollapse
+                      />
+                    ))}
+                  </Stack>
+                }
+              />
+            ))}
+            {props.data.measurements.quantitative.map((measurement) => (
+              <AccordionStandardCard
+                label={measurement.measurement_name}
+                subtitle={measurement.measurement_desc}
+                colour={grey[100]}
+              />
+            ))}
+          </>
+        )}
+        {activeView === SpeciesStandardsViewEnum.MARKING_BODY_LOCATIONS && (
+          <>
+            {props.data.markingBodyLocations.map((location) => (
+              <AccordionStandardCard label={location.value} colour={grey[100]} disableCollapse />
+            ))}
+          </>
+        )}
+      </Stack>
     </>
   );
 };

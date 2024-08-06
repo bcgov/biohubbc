@@ -5,7 +5,6 @@ import { IEnvironmentStandards } from 'interfaces/useStandardsApi.interface';
 
 interface ISpeciesStandardsResultsProps {
   data: IEnvironmentStandards;
-  isLoading?: boolean;
 }
 
 /**
@@ -17,15 +16,23 @@ export const EnvironmentStandardsResults = (props: ISpeciesStandardsResultsProps
   const { data } = props;
 
   return (
-    <>
-      <Stack gap={2}>
-        {data.quantitative.map((environment) => (
-          <AccordionStandardCard label={environment.name} subtitle={environment.description} colour={grey[200]} />
-        ))}
-        {data.qualitative.map((environment) => (
-          <AccordionStandardCard label={environment.name} subtitle={environment.description} colour={grey[200]} />
-        ))}
-      </Stack>
-    </>
+    <Stack gap={2}>
+      {data.quantitative.map((environment) => (
+        <AccordionStandardCard
+          key={environment.name}
+          label={environment.name}
+          subtitle={environment.description}
+          colour={grey[200]}
+        />
+      ))}
+      {data.qualitative.map((environment) => (
+        <AccordionStandardCard
+          key={environment.name}
+          label={environment.name}
+          subtitle={environment.description}
+          colour={grey[200]}
+        />
+      ))}
+    </Stack>
   );
 };

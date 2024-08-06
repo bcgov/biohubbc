@@ -57,13 +57,9 @@ describe('standards/environment', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      try {
-        const requestHandler = getMethodStandards();
+      const requestHandler = getMethodStandards();
 
-        await requestHandler(mockReq, mockRes, mockNext);
-      } catch (actualError) {
-        expect.fail();
-      }
+      await requestHandler(mockReq, mockRes, mockNext);
 
       expect(mockRes.status).to.have.been.calledWith(200);
       expect(mockRes.json).to.have.been.calledWith(mockResponse);

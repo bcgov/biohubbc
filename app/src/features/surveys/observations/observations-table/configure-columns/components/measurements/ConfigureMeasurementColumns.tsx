@@ -70,7 +70,7 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
                             <AccordionStandardCard
                               key={option.option_label}
                               label={option.option_label}
-                              subtitle={option.option_desc ?? ''}
+                              subtitle={option.option_desc}
                               colour={grey[200]}
                             />
                           ))}
@@ -78,11 +78,9 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
                       ) : undefined
                     }
                     ornament={
-                      'unit' in measurement ? (
-                        <ColouredRectangleChip colour={blueGrey} label={measurement.unit ?? ''} />
-                      ) : (
-                        <></>
-                      )
+                      'unit' in measurement && measurement.unit ? (
+                        <ColouredRectangleChip colour={blueGrey} label={measurement.unit} />
+                      ) : undefined
                     }
                   />
                   <Box ml={1} mt={1}>

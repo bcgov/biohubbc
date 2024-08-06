@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 interface IAccordionStandardCardProps extends BoxProps {
   label: string;
-  subtitle: string;
+  subtitle?: string | null;
   ornament?: JSX.Element;
   children?: JSX.Element;
   colour: string;
@@ -25,6 +25,14 @@ export const AccordionStandardCard = (props: IAccordionStandardCardProps) => {
 
   const [isCollapsed, setIsCollapsed] = useState(true);
 
+  const expandable = (children || subtitle) && !disableCollapse;
+
+  const handleHeaderClick = () => {
+    if (expandable) {
+      setIsCollapsed(!isCollapsed);
+    }
+  };
+
   return (
     <Paper sx={{ bgcolor: colour, flex: '1 1 auto' }} elevation={0}>
       <Box
@@ -32,12 +40,8 @@ export const AccordionStandardCard = (props: IAccordionStandardCardProps) => {
         justifyContent="space-between"
         flex="1 1 auto"
         alignItems="center"
-        sx={{ cursor: disableCollapse ? 'default' : 'pointer', px: 3, py: 2 }}
-        onClick={() => {
-          if (!disableCollapse) {
-            setIsCollapsed(!isCollapsed);
-          }
-        }}>
+        sx={{ cursor: expandable ? 'pointer' : 'default', px: 3, py: 2 }}
+        onClick={handleHeaderClick}>
         <Box display="flex" justifyContent="space-between" flex={0.975}>
           <Typography
             variant="h5"
@@ -50,13 +54,15 @@ export const AccordionStandardCard = (props: IAccordionStandardCardProps) => {
           </Typography>
           {ornament}
         </Box>
-        {!disableCollapse && <Icon path={isCollapsed ? mdiChevronDown : mdiChevronUp} size={1} />}
+        {expandable && <Icon path={isCollapsed ? mdiChevronDown : mdiChevronUp} size={1} />}
       </Box>
       <Box sx={{ px: 3 }}>
         <Collapse in={!isCollapsed || disableCollapse}>
-          <Typography sx={{ pb: subtitle && !children ? 2 : 0 }} color="textSecondary">
-            {subtitle}
-          </Typography>
+          {subtitle && (
+            <Typography sx={{ pb: !children ? 2 : 0 }} color="textSecondary">
+              {subtitle}
+            </Typography>
+          )}
           {children}
         </Collapse>
       </Box>

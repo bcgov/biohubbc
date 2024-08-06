@@ -48,14 +48,17 @@ export const EnvironmentStandards = () => {
           debouncedRefresh(value);
         }}
       />
-      <Box mt={2}>
+      <Box my={2}>
         {environmentsDataLoader.data ? (
           <EnvironmentStandardsResults data={environmentsDataLoader.data} />
         ) : (
           <Stack gap={1}>
-            {[...Array(10)].map((_, index) => (
-              <Skeleton key={index} variant="rectangular" height="60px" />
-            ))}
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
           </Stack>
         )}
       </Box>

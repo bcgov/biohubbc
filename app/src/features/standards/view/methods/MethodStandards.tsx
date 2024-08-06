@@ -45,14 +45,17 @@ export const MethodStandards = () => {
           debouncedRefresh(value);
         }}
       />
-      <Box mt={2}>
+      <Box my={2}>
         {methodDataLoader.data ? (
           <MethodStandardsResults data={methodDataLoader.data} />
         ) : (
           <Stack gap={1}>
-            {[...Array(10)].map((_, index) => (
-              <Skeleton key={index} variant="rectangular" height="60px" />
-            ))}
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
+            <Skeleton variant="rectangular" height="60px" />
           </Stack>
         )}
       </Box>
