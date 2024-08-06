@@ -33,7 +33,7 @@ import { SamplingSiteManageSiteTable } from './table/site/SamplingSiteManageSite
  *
  * @returns {*}
  */
-const SamplingSiteManageContainer = () => {
+const SamplingSiteContainer = () => {
   const surveyContext = useSurveyContext();
   const codesContext = useCodesContext();
   const dialogContext = useDialogContext();
@@ -207,4 +207,4 @@ const SamplingSiteManageContainer = () => {
   );
 };
 
-export default SamplingSiteManageContainer;
+export default SamplingSiteContainer;

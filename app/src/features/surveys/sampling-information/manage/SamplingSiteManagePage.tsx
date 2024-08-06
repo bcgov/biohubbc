@@ -4,7 +4,7 @@ import Stack from '@mui/material/Stack';
 import { SamplingSiteManageHeader } from 'features/surveys/sampling-information/manage/SamplingSiteManageHeader';
 import { SamplingTechniqueContainer } from 'features/surveys/sampling-information/techniques/SamplingTechniqueContainer';
 import { useProjectContext, useSurveyContext } from 'hooks/useContext';
-import SamplingSiteManageContainer from '../sites/manage/SamplingSiteManageContainer';
+import SamplingSiteContainer from '../sites/SamplingSiteContainer';
 
 /**
  * Page for managing sampling information (sampling techniques and sites).
@@ -29,7 +29,7 @@ export const SamplingSiteManagePage = () => {
           <SamplingTechniqueContainer />
         </Paper>
         <Paper>
-          <SamplingSiteManageContainer />
+          <SamplingSiteContainer />
         </Paper>
       </Container>
     </Stack>

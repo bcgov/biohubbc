@@ -11,7 +11,7 @@ import AutocompleteField from 'components/fields/AutocompleteField';
 import {
   CreateTechniqueFormValues,
   UpdateTechniqueFormValues
-} from 'features/surveys/sampling-information/techniques/form/components/TechniqueFormContainer';
+} from 'features/surveys/sampling-information/techniques/components/TechniqueFormContainer';
 
 import { useFormikContext } from 'formik';
 import { useCodesContext } from 'hooks/useContext';

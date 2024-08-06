@@ -5,7 +5,7 @@ import { GridColDef, GridOverlay } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
-import { ISamplingSiteRowData } from 'features/surveys/sampling-information/sites/manage/table/site/SamplingSiteManageSiteTable';
+import { ISamplingSiteRowData } from 'features/surveys/sampling-information/sites/table/site/SamplingSiteManageSiteTable';
 import { IGetSampleSiteResponse } from 'interfaces/useSamplingSiteApi.interface';
 import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
 

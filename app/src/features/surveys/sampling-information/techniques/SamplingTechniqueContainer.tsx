@@ -19,7 +19,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { SamplingTechniqueTable } from './components/SamplingTechniqueTable';
+import { SamplingTechniqueTable } from './table/SamplingTechniqueTable';
 
 /**
  * Renders a list of techniques.

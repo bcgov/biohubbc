@@ -6,7 +6,7 @@ import { GridColDef, GridOverlay } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
-import { ITechniqueRowData } from 'features/surveys/sampling-information/techniques/components/SamplingTechniqueTable';
+import { ITechniqueRowData } from 'features/surveys/sampling-information/techniques/table/SamplingTechniqueTable';
 import { useCodesContext } from 'hooks/useContext';
 import { IGetTechniquesResponse } from 'interfaces/useTechniqueApi.interface';
 import { getCodesName } from 'utils/Utils';

@@ -3,7 +3,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 import {
   CreateTechniqueFormValues,
   UpdateTechniqueFormValues
-} from 'features/surveys/sampling-information/techniques/form/components/TechniqueFormContainer';
+} from 'features/surveys/sampling-information/techniques/components/TechniqueFormContainer';
 import { FieldArrayRenderProps, useFormikContext } from 'formik';
 import { ITechniqueAttributeQualitative, ITechniqueAttributeQuantitative } from 'interfaces/useReferenceApi.interface';
 
