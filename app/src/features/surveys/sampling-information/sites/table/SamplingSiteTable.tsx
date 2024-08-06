@@ -29,7 +29,7 @@ export interface ISamplingSiteRowData {
   stratums: string[];
 }
 
-interface ISamplingSiteManageSiteTableProps {
+interface ISamplingSiteTableProps {
   sites: IGetSampleLocationDetails[];
   bulkActionSites: GridRowSelectionModel;
   setBulkActionSites: (selection: GridRowSelectionModel) => void;
@@ -38,10 +38,10 @@ interface ISamplingSiteManageSiteTableProps {
 /**
  * Returns a table of sampling sites with edit actions
  *
- * @param props {<ISamplingSiteManageSiteTableProps>}
+ * @param props {<ISamplingSiteTableProps>}
  * @returns {*}
  */
-export const SamplingSiteManageSiteTable = (props: ISamplingSiteManageSiteTableProps) => {
+export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
   const { sites, bulkActionSites, setBulkActionSites } = props;
 
   const biohubApi = useBiohubApi();

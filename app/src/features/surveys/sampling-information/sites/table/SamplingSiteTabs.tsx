@@ -21,13 +21,19 @@ export interface ISamplingSiteCount {
   value: number;
 }
 
-interface ISamplingSiteManageTableToolbarProps {
+interface ISamplingSiteTabsProps {
   activeView: SamplingSiteManageTableView;
   setActiveView: React.Dispatch<SetStateAction<SamplingSiteManageTableView>>;
   counts: ISamplingSiteCount[];
 }
 
-export const SamplingSiteManageTableToolbar = (props: ISamplingSiteManageTableToolbarProps) => {
+/**
+ * Renders tab controls for the sampling site table, which allow the user to switch between viewing sites and periods.
+ *
+ * @param {ISamplingSiteTabsProps} props
+ * @return {*}
+ */
+export const SamplingSiteTabs = (props: ISamplingSiteTabsProps) => {
   const { activeView, setActiveView, counts } = props;
 
   const views: ISamplingSiteManageTableView[] = [

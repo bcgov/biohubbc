@@ -20,17 +20,17 @@ interface ISamplingSitePeriodRowData {
   end_time: string | null;
 }
 
-interface ISurveyPeriodsTableProps {
+interface ISamplingPeriodTableProps {
   sites: IGetSampleLocationDetails[];
 }
 
 /**
- * Returns a table of sampling periods for the survey
+ * Renders a table of sampling periods.
  *
- * @param props {<ISurveyPeriodsTableProps>}
+ * @param props {<ISamplingPeriodTableProps>}
  * @returns {*}
  */
-export const SurveyPeriodsTable = (props: ISurveyPeriodsTableProps) => {
+export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
   const { sites } = props;
 
   const codesContext = useCodesContext();

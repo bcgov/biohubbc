@@ -14,18 +14,18 @@ import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonMap, SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { SamplingPeriodTable } from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
+import { SamplingSiteMapContainer } from 'features/surveys/sampling-information/sites/map/SamplingSiteMapContainer';
+import { SamplingSiteTable } from 'features/surveys/sampling-information/sites/table/SamplingSiteTable';
+import {
+  ISamplingSiteCount,
+  SamplingSiteManageTableView,
+  SamplingSiteTabs
+} from 'features/surveys/sampling-information/sites/table/SamplingSiteTabs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { SamplingSiteMapContainer } from './map/SamplingSiteMapContainer';
-import {
-  ISamplingSiteCount,
-  SamplingSiteManageTableToolbar,
-  SamplingSiteManageTableView
-} from './table/components/SamplingSiteManageTableToolbar';
-import { SurveyPeriodsTable } from './table/period/SurveyPeriodsTable';
-import { SamplingSiteManageSiteTable } from './table/site/SamplingSiteManageSiteTable';
 
 /**
  * Component for managing sampling sites, methods, and periods.
@@ -182,14 +182,14 @@ const SamplingSiteContainer = () => {
             <SamplingSiteMapContainer samplingSites={sampleSites?.sampleSites || []} />
 
             {/* Toggle buttons for changing between sites, methods, and periods */}
-            <SamplingSiteManageTableToolbar activeView={activeView} setActiveView={setActiveView} counts={counts} />
+            <SamplingSiteTabs activeView={activeView} setActiveView={setActiveView} counts={counts} />
 
             <Divider flexItem />
 
             {/* Data tables */}
             <Box p={2}>
               {activeView === SamplingSiteManageTableView.SITES && (
-                <SamplingSiteManageSiteTable
+                <SamplingSiteTable
                   sites={sampleSites?.sampleSites ?? []}
                   setBulkActionSites={setSiteSelection}
                   bulkActionSites={siteSelection}
@@ -197,7 +197,7 @@ const SamplingSiteContainer = () => {
               )}
 
               {activeView === SamplingSiteManageTableView.PERIODS && (
-                <SurveyPeriodsTable sites={sampleSites?.sampleSites ?? []} />
+                <SamplingPeriodTable sites={sampleSites?.sampleSites ?? []} />
               )}
             </Box>
           </LoadingGuard>

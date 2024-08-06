@@ -7,7 +7,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
-import { SurveyPeriodsTable } from 'features/surveys/sampling-information/sites/table/period/SurveyPeriodsTable';
+import { SamplingPeriodTable } from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
 import { SurveySitesTable } from 'features/surveys/view/components/sampling-data/components/SurveySitesTable';
 import { SurveyTechniquesTable } from 'features/surveys/view/components/sampling-data/components/SurveyTechniquesTable';
 import { useSurveyContext } from 'hooks/useContext';
@@ -119,7 +119,7 @@ export const SurveySamplingTabs = () => {
             <SurveySitesTable sites={surveyContext.sampleSiteDataLoader.data} />
           )}
           {activeView === SurveySamplingView.PERIODS && (
-            <SurveyPeriodsTable sites={surveyContext.sampleSiteDataLoader.data?.sampleSites ?? []} />
+            <SamplingPeriodTable sites={surveyContext.sampleSiteDataLoader.data?.sampleSites ?? []} />
           )}
         </LoadingGuard>
       </Box>
