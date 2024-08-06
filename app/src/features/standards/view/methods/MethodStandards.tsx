@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { debounce } from 'lodash-es';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { MethodStandardsResults } from './MethodStandardsResults';
 
 /**
@@ -12,10 +12,8 @@ import { MethodStandardsResults } from './MethodStandardsResults';
  *
  * @returns
  */
-
 export const MethodStandards = () => {
   const biohubApi = useBiohubApi();
-  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const methodDataLoader = useDataLoader((keyword?: string) => biohubApi.standards.getMethodStandards(keyword));
 
@@ -24,6 +22,7 @@ export const MethodStandards = () => {
       debounce((value: string) => {
         methodDataLoader.refresh(value);
       }, 500),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 
@@ -37,11 +36,9 @@ export const MethodStandards = () => {
         name="name"
         label="Method name"
         key="method-name-search"
-        value={searchTerm}
         fullWidth
         onChange={(event) => {
           const value = event.currentTarget.value;
-          setSearchTerm(value);
           debouncedRefresh(value);
         }}
       />

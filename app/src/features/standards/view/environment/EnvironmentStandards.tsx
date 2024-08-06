@@ -5,7 +5,7 @@ import TextField from '@mui/material/TextField';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { debounce } from 'lodash-es';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { EnvironmentStandardsResults } from './EnvironmentStandardsResults';
 
 /**
@@ -15,8 +15,6 @@ import { EnvironmentStandardsResults } from './EnvironmentStandardsResults';
  */
 export const EnvironmentStandards = () => {
   const biohubApi = useBiohubApi();
-
-  const [searchTerm, setSearchTerm] = useState<string>('');
 
   const environmentsDataLoader = useDataLoader((keyword?: string) =>
     biohubApi.standards.getEnvironmentStandards(keyword)
@@ -40,11 +38,9 @@ export const EnvironmentStandards = () => {
         name="name"
         label="Environmental variable name"
         key="environments-name-search"
-        value={searchTerm}
         fullWidth
         onChange={(event) => {
           const value = event.currentTarget.value;
-          setSearchTerm(value);
           debouncedRefresh(value);
         }}
       />

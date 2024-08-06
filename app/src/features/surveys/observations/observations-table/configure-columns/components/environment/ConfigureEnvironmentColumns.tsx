@@ -70,6 +70,7 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
                       <Stack gap={1} my={2}>
                         {environment.options.map((option) => (
                           <AccordionStandardCard
+                            key={option.environment_qualitative_option_id}
                             label={option.name}
                             subtitle={option.description}
                             colour={grey[200]}

@@ -53,6 +53,7 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
           <>
             {props.data.measurements.qualitative.map((measurement) => (
               <AccordionStandardCard
+                key={measurement.taxon_measurement_id}
                 label={measurement.measurement_name}
                 subtitle={measurement.measurement_desc}
                 colour={grey[100]}
@@ -60,7 +61,7 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
                   <Stack gap={2} my={2}>
                     {measurement.options.map((option) => (
                       <AccordionStandardCard
-                        key={option.option_label}
+                        key={option.qualitative_option_id}
                         label={option.option_label}
                         subtitle={option.option_desc}
                         colour={grey[200]}
@@ -73,6 +74,7 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
             ))}
             {props.data.measurements.quantitative.map((measurement) => (
               <AccordionStandardCard
+                key={measurement.taxon_measurement_id}
                 label={measurement.measurement_name}
                 subtitle={measurement.measurement_desc}
                 colour={grey[100]}
@@ -83,7 +85,7 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
         {activeView === SpeciesStandardsViewEnum.MARKING_BODY_LOCATIONS && (
           <>
             {props.data.markingBodyLocations.map((location) => (
-              <AccordionStandardCard label={location.value} colour={grey[100]} disableCollapse />
+              <AccordionStandardCard label={location.value} colour={grey[100]} disableCollapse key={location.id} />
             ))}
           </>
         )}
