@@ -44,6 +44,22 @@ describe('SampleMethodRepository', () => {
     });
   });
 
+  describe('getSampleMethodsCountForTechniqueId', () => {
+    it('should return a non-zero count', async () => {
+      const count = 2;
+      const mockRows: any[] = [{ count }];
+      const mockResponse = { rows: mockRows, rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
+
+      const techniqueIds = [1, 2];
+      const repo = new SampleMethodRepository(dbConnectionObj);
+      const response = await repo.getSampleMethodsCountForTechniqueIds(techniqueIds);
+
+      expect(dbConnectionObj.knex).to.have.been.calledOnce;
+      expect(response).to.eql(count);
+    });
+  });
+
   describe('updateSampleMethod', () => {
     it('should update the record and return a single row', async () => {
       const mockRow = {};

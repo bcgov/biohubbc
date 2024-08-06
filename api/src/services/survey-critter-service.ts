@@ -2,9 +2,12 @@ import { IDBConnection } from '../database/db';
 import { IAnimalAdvancedFilters } from '../models/animal-view';
 import { ITelemetryAdvancedFilters } from '../models/telemetry-view';
 import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
+import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { CritterbaseService, ICritter } from './critterbase-service';
 import { DBService } from './db-service';
+
+const defaultLog = getLogger('SurveyCritterService');
 
 export type FindCrittersResponse = Pick<
   ICritter,
@@ -43,6 +46,18 @@ export class SurveyCritterService extends DBService {
    */
   async getCrittersInSurvey(surveyId: number): Promise<SurveyCritterRecord[]> {
     return this.critterRepository.getCrittersInSurvey(surveyId);
+  }
+
+  /**
+   * Get critter from a specific survey
+   *
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @return {*}  {Promise<SurveyCritterRecord | undefined>}
+   * @memberof SurveyCritterService
+   */
+  async getCritterInSurvey(surveyId: number, critterId: number): Promise<SurveyCritterRecord | undefined> {
+    return this.critterRepository.getCritterInSurvey(surveyId, critterId);
   }
 
   /**
@@ -202,21 +217,69 @@ export class SurveyCritterService extends DBService {
   }
 
   /**
+   * Get survey Critterbase critters.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ICritter[]>}
+   * @memberof SurveyCritterService
+   */
+  async getCritterbaseSurveyCritters(surveyId: number): Promise<ICritter[]> {
+    const surveyCritters = await this.getCrittersInSurvey(surveyId);
+
+    const critterbaseCritterIds = surveyCritters.map((critter) => critter.critterbase_critter_id);
+
+    return this.critterbaseService.getMultipleCrittersByIds(critterbaseCritterIds);
+  }
+
+  /**
    * Get unique Set of critter aliases (animal id / nickname) of a survey.
+   *
+   * Note: Business expects unique critter alias' in Surveys effective 01/06/2024
    *
    * @param {number} surveyId
    * @return {*}  {Promise<ICritter[]>}
    * @memberof SurveyCritterService
    */
   async getUniqueSurveyCritterAliases(surveyId: number): Promise<Set<string>> {
-    const surveyCritters = await this.getCrittersInSurvey(surveyId);
-
-    const critterbaseCritterIds = surveyCritters.map((critter) => critter.critterbase_critter_id);
-
-    const critters = await this.critterbaseService.getMultipleCrittersByIds(critterbaseCritterIds);
+    const critters = await this.getCritterbaseSurveyCritters(surveyId);
 
     // Return a unique Set of non-null critterbase aliases of a Survey
     // Note: The type from filtered critters should be Set<string> not Set<string | null>
     return new Set(critters.filter(Boolean).map((critter) => critter.animal_id)) as Set<string>;
+  }
+
+  /**
+   * Get mapping of `alias` (animal_id) -> critterbase `critter_id` (UUID) for a survey.
+   * For a survey the critter alias works as a unique identifier of a Critterbase critter.
+   *
+   * Note: Business expects unique critter alias' in Surveys effective 01/06/2024
+   *
+   * @async
+   * @param {number} surveyId
+   * @returns {Promise<Map<string, string | undefined>>} Critter alias -> critter_id (UUID) Map
+   */
+  async getSurveyCritterIdAliasMap(surveyId: number): Promise<Map<string, string | undefined>> {
+    const critters = await this.getCritterbaseSurveyCritters(surveyId);
+
+    // Create mapping of alias -> critter_id
+    const critterAliasMap = new Map();
+    for (const critter of critters) {
+      // Do not allow existing duplicate aliases to map over eachother
+      if (critterAliasMap.get(critter.animal_id)) {
+        defaultLog.debug({
+          label: 'critter alias map',
+          message: 'duplicate critter alias for survey',
+          details: { surveyId: surveyId, alias: critter.animal_id }
+        });
+
+        critterAliasMap.set(critter.animal_id, undefined);
+      }
+
+      if (critter.animal_id) {
+        critterAliasMap.set(critter.animal_id, critter.critter_id);
+      }
+    }
+
+    return critterAliasMap;
   }
 }

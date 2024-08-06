@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 import { InsertSamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-period-repository';
@@ -95,6 +96,26 @@ export class SampleMethodRepository extends BaseRepository {
 
     const response = await this.connection.sql(sql, SampleMethodRecord);
     return response.rows;
+  }
+
+  /**
+   * Gets count of sample methods associated with one or more method technique Ids
+   *
+   * @param {number[]} techniqueIds
+   * @return {*}  {Promise<number>}
+   * @memberof SampleMethodRepository
+   */
+  async getSampleMethodsCountForTechniqueIds(techniqueIds: number[]): Promise<number> {
+    const knex = getKnex();
+    const queryBuilder = knex
+      .queryBuilder()
+      .select(knex.raw('COUNT(*)::integer AS count'))
+      .from('survey_sample_method')
+      .whereIn('method_technique_id', techniqueIds);
+
+    const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
+
+    return response.rows[0].count;
   }
 
   /**

@@ -55,11 +55,11 @@ const TAXON_RANK_COLOUR_MAP = {
  *
  */
 const NRM_REGION_COLOUR_MAP = {
-  'Kootenay-Boundary Natural Resource Region': { colour: cyan },
+  'Kootenay-Boundary Natural Resource Region': { colour: blue },
   'Thompson-Okanagan Natural Resource Region': { colour: orange },
   'West Coast Natural Resource Region': { colour: green },
   'Cariboo Natural Resource Region': { colour: deepPurple },
-  'South Coast Natural Resource Region': { colour: blue },
+  'South Coast Natural Resource Region': { colour: cyan },
   'Northeast Natural Resource Region': { colour: brown },
   'Omineca Natural Resource Region': { colour: pink },
   'Skeena Natural Resource Region': { colour: red }
@@ -102,3 +102,16 @@ export const getTaxonRankColour = generateColourMapGetter(TAXON_RANK_COLOUR_MAP)
  *
  */
 export const getNrmRegionColour = generateColourMapGetter(NRM_REGION_COLOUR_MAP);
+
+/**
+ * Colours for layers on the survey map
+ */
+export const SURVEY_MAP_LAYER_COLOURS = {
+  OBSERVATIONS_COLOUR: '#f15454',
+  STUDY_AREA_COLOUR: '#e3a82b',
+  SAMPLING_SITE_COLOUR: '#1f6fb5',
+  MORTALITY_COLOUR: '#f15454',
+  CAPTURE_COLOUR: '#348ab3',
+  TELEMETRY_COLOUR: '#f15454',
+  DEFAULT_COLOUR: '#396a91'
+};
