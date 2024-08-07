@@ -135,6 +135,34 @@ export interface IMarking {
   removed_timestamp: string;
 }
 
+/**
+ * This is the more flexible interface for bulk importing Markings.
+ *
+ * Note: Critterbase bulk-create endpoint will attempt to patch
+ * english values to UUID's.
+ * ie: primary_colour: "red" -> primary_colour_id: <uuid>
+ *
+ */
+export interface IBulkCreateMarking {
+  marking_id?: string;
+  critter_id: string;
+  capture_id?: string | null;
+  mortality_id?: string | null;
+  body_location: string; // Critterbase will patch to UUID
+  marking_type?: string | null; // Critterbase will patch to UUID
+  marking_material_id?: string | null;
+  primary_colour?: string | null; // Critterbase will patch to UUID
+  secondary_colour?: string | null; // Critterbase will patch to UUID
+  text_colour_id?: string | null;
+  identifier?: string | null;
+  frequency?: number | null;
+  frequency_unit?: string | null;
+  order?: number | null;
+  comment?: string | null;
+  attached_timestamp?: string | null;
+  removed_timestamp?: string | null;
+}
+
 export interface IQualMeasurement {
   measurement_qualitative_id?: string;
   critter_id: string;
@@ -174,7 +202,7 @@ export interface IBulkCreate {
   collections?: ICollection[];
   mortalities?: IMortality[];
   locations?: ILocation[];
-  markings?: IMarking[];
+  markings?: IMarking[] | IBulkCreateMarking[];
   quantitative_measurements?: IQuantMeasurement[];
   qualitative_measurements?: IQualMeasurement[];
   families?: IFamilyPayload[];

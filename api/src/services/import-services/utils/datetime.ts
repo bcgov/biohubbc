@@ -13,7 +13,7 @@ dayjs.extend(customParseFormat);
  * @param {string} [time] - Time string
  * @returns {string | undefined}
  */
-export const formatTimeString = (time?: string): string | undefined => {
+export const formatTimeString = (time?: string | null): string | undefined => {
   const fullTime = dayjs(time, 'HH:mm:ss');
   const shortTime = dayjs(time, 'HH:mm');
 
@@ -24,4 +24,22 @@ export const formatTimeString = (time?: string): string | undefined => {
   if (shortTime.isValid()) {
     return shortTime.format('HH:mm:ss');
   }
+};
+
+/**
+ * Checks if two date strings are equal.
+ *
+ * Note: This will attempt to unify the formatting between the dates.
+ * ie: 2024-01-01 === 01-01-2024
+ *
+ * @param {string} _dateA - Date string
+ * @param {string} _dateB - Date string
+ * @returns {string | undefined}
+ */
+export const areDatesEqual = (_dateA: string, _dateB: string): boolean => {
+  const format = 'dd-mm-yyyy';
+  const dateA = dayjs(_dateA, format);
+  const dateB = dayjs(_dateB, format);
+
+  return dateA.isValid() && dateB.isValid() && dateA.format(format) === dateB.format(format);
 };

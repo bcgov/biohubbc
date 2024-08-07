@@ -70,8 +70,8 @@ export class ImportCapturesService extends DBService implements CSVImportService
     const rowsToValidate = [];
 
     for (const row of rows) {
-      const alias = getCellValue(row, 'ALIAS');
-      const critterId = alias && critterAliasMap.get(alias);
+      const alias = getCellValue<string>(row, 'ALIAS');
+      const critterId = alias && critterAliasMap.get(alias.toLowerCase())?.critter_id;
       const releaseLatitude = getCellValue(row, 'RELEASE_LATITUDE');
       const releaseLongitude = getCellValue(row, 'RELEASE_LONGITUDE');
       const captureTime = getCellValue(row, 'CAPTURE_TIME');
