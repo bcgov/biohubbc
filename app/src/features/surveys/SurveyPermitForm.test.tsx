@@ -6,6 +6,7 @@ describe('SurveyPermitForm', () => {
   it('deletes existing permits when delete icon is clicked', async () => {
     const existingFormValues: ISurveyPermitForm = {
       permit: {
+        used: true,
         permits: [
           {
             permit_id: 1,

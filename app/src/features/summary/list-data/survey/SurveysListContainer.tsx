@@ -8,15 +8,13 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { SystemRoleGuard } from 'components/security/Guards';
 import { getNrmRegionColour, NrmRegionKeys } from 'constants/colours';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
-import { SYSTEM_ROLE } from 'constants/roles';
 import dayjs from 'dayjs';
 import { SurveyProgressChip } from 'features/surveys/components/SurveyProgressChip';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
+import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
@@ -25,6 +23,8 @@ import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull, getCodesName } from 'utils/Utils';
+import { firstOrNull } from 'utils/Utils';
+import { SurveyProgressChip } from '../../../surveys/components/SurveyProgressChip';
 import SurveysListFilterForm, {
   ISurveyAdvancedFilters,
   SurveyAdvancedFiltersInitialValues
@@ -68,7 +68,6 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
 
   const biohubApi = useBiohubApi();
   const codesContext = useCodesContext();
-  const taxonomyContext = useTaxonomyContext();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<SurveyDataTableURLParams>>();
 
@@ -138,22 +137,6 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params) => {
-        const dates = [params.row.start_date?.split('-')[0], params.row.end_date?.split('-')[0]]
-          .filter(Boolean)
-          .join(' \u2013 '); // n-dash with spaces
-
-        const focalSpecies = params.row.focal_species
-          .map((species) => taxonomyContext.getCachedSpeciesTaxonomyById(species)?.commonNames)
-          .filter(Boolean)
-          .join(' \u2013 '); // n-dash with spaces
-
-        const types = params.row.types
-          .map((type) => getCodesName(codesContext.codesDataLoader.data, 'type', type || 0))
-          .filter(Boolean)
-          .join(' \u2013 '); // n-dash with spaces
-
-        const detailsArray = [dates, focalSpecies, types].filter(Boolean).join(' \u2013 ');
-
         return (
           <Stack mb={0.25}>
             <Link
@@ -165,12 +148,6 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
               to={`/admin/projects/${params.row.project_id}/surveys/${params.row.survey_id}`}
               children={params.row.name}
             />
-            {/* Only administrators see the second title to help them find Projects with a standard naming convention */}
-            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-              <Typography variant="body2" color="textSecondary">
-                {detailsArray}
-              </Typography>
-            </SystemRoleGuard>
           </Stack>
         );
       }
@@ -227,7 +204,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   return (
     <>
       <Collapse in={showSearch}>
-        <Box py={2} px={3} bgcolor={grey[50]}>
+        <Box py={2} px={2}>
           <SurveysListFilterForm
             initialValues={advancedFiltersModel}
             handleSubmit={(values) => {
@@ -243,7 +220,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="70vh">
+      <Box height="500px" p={2}>
         <StyledDataGrid
           noRowsMessage="No surveys found"
           loading={!surveysDataLoader.isReady && !surveysDataLoader.data}

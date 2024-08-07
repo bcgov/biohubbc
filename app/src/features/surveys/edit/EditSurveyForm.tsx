@@ -27,9 +27,10 @@ import PurposeAndMethodologyForm, {
 } from '../components/methodology/PurposeAndMethodologyForm';
 import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/participants/SurveyUserForm';
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
+import { ISurveyPermitForm } from '../SurveyPermitForm';
 
 export interface IEditSurveyForm {
-  initialSurveyData: SurveyUpdateObject | ICreateSurveyRequest;
+  initialSurveyData: SurveyUpdateObject | (ICreateSurveyRequest & ISurveyPermitForm);
   handleSubmit: (formikData: IEditSurveyRequest) => void;
   formikRef: React.RefObject<FormikProps<IEditSurveyRequest>>;
 }

@@ -196,9 +196,7 @@ const SamplingSiteContainer = () => {
                 />
               )}
 
-              {activeView === SamplingSiteManageTableView.PERIODS && (
-                <SamplingPeriodTable sites={sampleSites?.sampleSites ?? []} />
-              )}
+              {activeView === SamplingSiteManageTableView.PERIODS && <SamplingPeriodTable sites={sampleSites} />}
             </Box>
           </LoadingGuard>
         </Box>

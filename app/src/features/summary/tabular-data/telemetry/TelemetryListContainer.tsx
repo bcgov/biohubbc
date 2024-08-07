@@ -145,7 +145,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
   return (
     <>
       <Collapse in={showSearch}>
-        <Box py={2} px={3} bgcolor={grey[50]}>
+        <Box py={2} px={2}>
           <TelemetryListFilterForm
             initialValues={advancedFiltersModel}
             handleSubmit={(values) => {
@@ -156,7 +156,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="70vh">
+      <Box height="500px" p={2}>
         <StyledDataGrid
           noRowsMessage="No telemetry found"
           loading={!telemetryDataLoader.isReady && !telemetryDataLoader.data}
