@@ -130,6 +130,10 @@ export interface IProjectsListItemData {
    * The types of the surveys in the project.
    */
   types: number[];
+  /**
+   * Members of the project
+   */
+  members: { system_user_id: number; display_name: string }[];
 }
 
 export interface IProjectUserRoles {

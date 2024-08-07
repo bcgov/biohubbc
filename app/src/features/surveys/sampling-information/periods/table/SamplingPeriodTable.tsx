@@ -6,7 +6,7 @@ import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useCodesContext } from 'hooks/useContext';
-import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleSiteResponse } from 'interfaces/useSamplingSiteApi.interface';
 import { getCodesName } from 'utils/Utils';
 
 interface ISamplingSitePeriodRowData {
@@ -21,7 +21,7 @@ interface ISamplingSitePeriodRowData {
 }
 
 interface ISamplingPeriodTableProps {
-  sites: IGetSampleLocationDetails[];
+  sites?: IGetSampleSiteResponse;
 }
 
 /**
@@ -37,7 +37,8 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
 
   const rows: ISamplingSitePeriodRowData[] = [];
 
-  for (const site of sites) {
+  // Flatten the sample sites, methods, and periods into a single array of rows
+  for (const site of sites?.sampleSites ?? []) {
     for (const method of site.sample_methods) {
       for (const period of method.sample_periods) {
         rows.push({

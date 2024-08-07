@@ -103,8 +103,13 @@ const CreateSurveyPage = () => {
    */
   const handleSubmit = async (values: ICreateSurveyRequest) => {
     setIsSaving(true);
+    // Remove the permit.used property
+    const { permit, ...data } = values;
     try {
-      const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), values);
+      const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), {
+        ...data,
+        permit: { permits: permit.permits }
+      });
 
       if (!response?.id) {
         showCreateErrorDialog({
@@ -169,7 +174,13 @@ const CreateSurveyPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <EditSurveyForm
-            initialSurveyData={defaultSurveyDataFormValues}
+            initialSurveyData={{
+              ...defaultSurveyDataFormValues,
+              permit: {
+                permits: defaultSurveyDataFormValues.permit.permits,
+                used: null
+              }
+            }}
             handleSubmit={(formikData) => handleSubmit(formikData as unknown as ICreateSurveyRequest)}
             formikRef={formikRef}
           />

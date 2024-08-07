@@ -55,7 +55,7 @@ const TAXON_RANK_COLOUR_MAP = {
  *
  */
 const NRM_REGION_COLOUR_MAP = {
-  'Kootenay-Boundary Natural Resource Region': { colour: blue },
+  'Kootenay-Boundary Natural Resource Region': { colour: teal },
   'Thompson-Okanagan Natural Resource Region': { colour: orange },
   'West Coast Natural Resource Region': { colour: green },
   'Cariboo Natural Resource Region': { colour: deepPurple },

@@ -1,14 +1,14 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
-import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
+import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import AncillarySpeciesComponent from 'components/species/AncillarySpeciesComponent';
 import FocalSpeciesComponent from 'components/species/FocalSpeciesComponent';
-import { useFormikContext } from 'formik';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -109,8 +109,6 @@ export interface IGeneralInformationFormProps {
  * @return {*}
  */
 const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) => {
-  const formikProps = useFormikContext<IGeneralInformationForm>();
-
   return (
     <>
       <Grid container spacing={3}>
@@ -133,17 +131,16 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           />
         </Grid>
         <Grid item xs={12}>
-          <SelectWithSubtextField
+          <AutocompleteField
             id={'survey_details.progress_id'}
             name={'survey_details.progress_id'}
             label={'Progress'}
+            required
             options={props.progress}
-            required={true}
           />
         </Grid>
         <Grid item xs={12}>
           <StartEndDateFields
-            formikProps={formikProps}
             startName="survey_details.start_date"
             endName="survey_details.end_date"
             startRequired={true}
@@ -168,7 +165,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
 
       <Box component="fieldset" mt={5}>
         <Typography component="legend" variant="h5">
-          Permits
+          Were any permits used for this work?
         </Typography>
         <Box>
           <SurveyPermitForm />

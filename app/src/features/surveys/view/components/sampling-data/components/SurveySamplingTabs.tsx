@@ -2,7 +2,6 @@ import { mdiAutoFix, mdiCalendarRange, mdiMapMarker } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -51,6 +50,13 @@ export const SurveySamplingTabs = () => {
     surveyContext.surveyId
   ]);
 
+  const techniquesCount = surveyContext.techniqueDataLoader.data?.count;
+  const sampleSitesCount = surveyContext.sampleSiteDataLoader.data?.sampleSites.length;
+  const samplePeriodsCount = surveyContext.sampleSiteDataLoader.data?.sampleSites.reduce(
+    (acc, site) => acc + site.sample_methods.reduce((acc, method) => acc + method.sample_periods.length, 0),
+    0
+  );
+
   return (
     <>
       <Box p={2} display="flex" flexDirection="row" justifyContent="space-between">
@@ -84,7 +90,7 @@ export const SurveySamplingTabs = () => {
             color="primary"
             startIcon={<Icon path={mdiAutoFix} size={0.75} />}
             value={SurveySamplingView.TECHNIQUES}>
-            {`${SurveySamplingView.TECHNIQUES} (${surveyContext.techniqueDataLoader.data?.count ?? 0})`}
+            {`${SurveySamplingView.TECHNIQUES} (${techniquesCount ?? 0})`}
           </ToggleButton>
           <ToggleButton
             key="sampling-sites-view"
@@ -92,7 +98,7 @@ export const SurveySamplingTabs = () => {
             color="primary"
             startIcon={<Icon path={mdiMapMarker} size={0.75} />}
             value={SurveySamplingView.SITES}>
-            {`${SurveySamplingView.SITES} (${surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0})`}
+            {`${SurveySamplingView.SITES} (${sampleSitesCount ?? 0})`}
           </ToggleButton>
           <ToggleButton
             key="sampling-sites-view"
@@ -100,28 +106,44 @@ export const SurveySamplingTabs = () => {
             color="primary"
             startIcon={<Icon path={mdiCalendarRange} size={0.75} />}
             value={SurveySamplingView.PERIODS}>
-            {`${SurveySamplingView.PERIODS} (${surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0})`}
+            {`${SurveySamplingView.PERIODS} (${samplePeriodsCount ?? 0})`}
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
 
-      <Divider />
+      <Box px={2} py={0.5}>
+        {activeView === SurveySamplingView.TECHNIQUES && (
+          <Box position="relative">
+            <LoadingGuard
+              isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
+              fallback={<SkeletonTable />}
+              delay={200}>
+              <SurveyTechniquesTable techniques={surveyContext.techniqueDataLoader.data} />
+            </LoadingGuard>
+          </Box>
+        )}
 
-      <Box p={2} position="relative">
-        <LoadingGuard
-          isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
-          fallback={<SkeletonTable />}
-          delay={200}>
-          {activeView === SurveySamplingView.TECHNIQUES && (
-            <SurveyTechniquesTable techniques={surveyContext.techniqueDataLoader.data} />
-          )}
-          {activeView === SurveySamplingView.SITES && (
-            <SurveySitesTable sites={surveyContext.sampleSiteDataLoader.data} />
-          )}
-          {activeView === SurveySamplingView.PERIODS && (
-            <SamplingPeriodTable sites={surveyContext.sampleSiteDataLoader.data?.sampleSites ?? []} />
-          )}
-        </LoadingGuard>
+        {activeView === SurveySamplingView.SITES && (
+          <Box position="relative">
+            <LoadingGuard
+              isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}
+              fallback={<SkeletonTable />}
+              delay={200}>
+              <SurveySitesTable sites={surveyContext.sampleSiteDataLoader.data} />
+            </LoadingGuard>
+          </Box>
+        )}
+
+        {activeView === SurveySamplingView.PERIODS && (
+          <Box position="relative">
+            <LoadingGuard
+              isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}
+              fallback={<SkeletonTable />}
+              delay={200}>
+              <SamplingPeriodTable sites={surveyContext.sampleSiteDataLoader.data} />
+            </LoadingGuard>
+          </Box>
+        )}
       </Box>
     </>
   );
