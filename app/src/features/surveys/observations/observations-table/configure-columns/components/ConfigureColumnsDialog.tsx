@@ -125,7 +125,7 @@ export const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
 
   return (
     <Dialog
-      sx={{ '& .MuiDialog-paper': { maxWidth: 1200 } }}
+      sx={{ '& .MuiDialog-paper': { maxWidth: 1200, height: '75vh' } }}
       fullWidth
       open={open}
       onClose={onClose}

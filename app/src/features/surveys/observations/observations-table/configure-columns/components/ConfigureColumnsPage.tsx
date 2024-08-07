@@ -127,7 +127,7 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
   const [activeView, setActiveView] = useState(ConfigureColumnsViewEnum.GENERAL);
 
   return (
-    <Grid container justifyContent="space-between" pr={2}>
+    <Grid container justifyContent="space-between" pr={2} height='100%'>
       <Grid item>
         <ToggleButtonGroup
           value={activeView}
@@ -187,7 +187,7 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
         </ToggleButtonGroup>
       </Grid>
       <Divider orientation="vertical" flexItem />
-      <Grid item xs={9.5}>
+      <Grid item xs={9.5} height='100%'>
         {activeView === ConfigureColumnsViewEnum.GENERAL && (
           <ConfigureGeneralColumns
             key={ConfigureColumnsViewEnum.GENERAL}

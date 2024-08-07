@@ -37,7 +37,7 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
   const { measurementColumns, onAddMeasurementColumns, onRemoveMeasurementColumns } = props;
 
   return (
-    <>
+    <Box height='100%'>
       <Typography variant="h5" mb={2}>
         Configure Measurement Columns
       </Typography>
@@ -45,13 +45,19 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
         selectedMeasurements={measurementColumns}
         onAddMeasurementColumn={(measurementColumn) => onAddMeasurementColumns([measurementColumn])}
       />
-      <Box mt={3}>
+      <Box mt={3} height='100%'>
         {measurementColumns.length ? (
           <>
             <Typography variant="h5" sx={{ fontWeight: 500 }} color="textSecondary" mb={2}>
               Selected measurements
             </Typography>
-            <Stack gap={2} sx={{ overflowY: 'auto' }} maxHeight={400}>
+            <Stack
+              gap={2}
+              sx={{
+                p: 0.5,
+                maxHeight: '100%',
+                overflowY: 'auto'
+              }}>
               {measurementColumns.map((measurement) => (
                 <Box
                   display="flex"
@@ -81,6 +87,6 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
           </Box>
         )}
       </Box>
-    </>
+    </Box>
   );
 };

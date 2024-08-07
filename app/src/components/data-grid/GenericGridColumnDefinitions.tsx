@@ -13,13 +13,15 @@ import { getFormattedDate } from 'utils/Utils';
 export const GenericDateColDef = <T extends GridValidRowModel>(props: {
   field: string;
   headerName: string;
+  description?: string;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<T> => {
-  const { field, headerName, hasError } = props;
+  const { field, headerName, hasError, description } = props;
 
   return {
     field,
     headerName,
+    description: description ?? undefined,
     editable: true,
     hideable: true,
     type: 'date',
@@ -62,15 +64,17 @@ export const GenericDateColDef = <T extends GridValidRowModel>(props: {
 export const GenericTimeColDef = <T extends GridValidRowModel>(props: {
   field: string;
   headerName: string;
+  description?: string;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<T> => {
-  const { hasError, field, headerName } = props;
+  const { hasError, field, headerName, description } = props;
 
   return {
     field,
     headerName,
     editable: true,
     hideable: true,
+    description: description ?? undefined,
     type: 'string',
     width: 150,
     disableColumnMenu: true,
@@ -124,13 +128,15 @@ export const GenericTimeColDef = <T extends GridValidRowModel>(props: {
 export const GenericLatitudeColDef = <T extends GridValidRowModel>(props: {
   field: string;
   headerName: string;
+  description?: string;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<T> => {
-  const { hasError, field, headerName } = props;
+  const { hasError, field, headerName, description } = props;
 
   return {
     field,
     headerName,
+    description: description ?? undefined,
     editable: true,
     hideable: true,
     width: 120,
@@ -183,13 +189,15 @@ export const GenericLatitudeColDef = <T extends GridValidRowModel>(props: {
 export const GenericLongitudeColDef = <T extends GridValidRowModel>(props: {
   field: string;
   headerName: string;
+  description?: string;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<T> => {
-  const { hasError, field, headerName } = props;
+  const { hasError, field, headerName, description } = props;
 
   return {
     field,
     headerName,
+    description: description ?? undefined,
     editable: true,
     hideable: true,
     width: 120,

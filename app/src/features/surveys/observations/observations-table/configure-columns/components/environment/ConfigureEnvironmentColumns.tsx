@@ -54,7 +54,13 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
             <Typography variant="h5" sx={{ fontWeight: 500 }} color="textSecondary" mb={2}>
               Selected environments
             </Typography>
-            <Stack gap={2} sx={{ overflowY: 'auto' }} maxHeight={400}>
+            <Stack
+              gap={2}
+              sx={{
+                p: 0.5,
+                maxHeight: '90%',
+                overflowY: 'auto'
+              }}>
               {environmentColumns.qualitative_environments.map((environment) => (
                 <Box
                   display="flex"
