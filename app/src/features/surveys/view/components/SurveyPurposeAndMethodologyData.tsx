@@ -26,29 +26,31 @@ const SurveyPurposeAndMethodologyData = () => {
     <Box component="dl">
       <Box className="row">
         <Typography component="dt">Ecological Variables</Typography>
-        {surveyData.purpose_and_methodology.intended_outcome_ids?.map((outcomeId: number) => {
-          return (
-            <Typography
-              component="dd"
-              key={`key-outcome-${outcomeId}`}
-              sx={{
-                position: 'relative',
-                display: 'inline-block',
-                mr: 1.25,
-                '&::after': {
-                  content: `','`,
-                  position: 'absolute',
-                  top: 0
-                },
-                '&:last-child::after': {
-                  display: 'none'
-                }
-              }}
-              data-testid={`intended_outcome_codes`}>
-              {codes?.intended_outcomes?.find((item: any) => item.id === outcomeId)?.name}
-            </Typography>
-          );
-        })}
+        <Typography component="dd">
+          {surveyData.purpose_and_methodology.intended_outcome_ids?.map((intended_outcome_id: number) => {
+            return (
+              <Typography
+                component="span"
+                key={intended_outcome_id}
+                sx={{
+                  position: 'relative',
+                  display: 'inline-block',
+                  mr: 1.25,
+                  '&::after': {
+                    content: "','",
+                    position: 'absolute',
+                    top: 0
+                  },
+                  '&:last-child::after': {
+                    display: 'none'
+                  }
+                }}
+                data-testid="intended_outcome_codes">
+                {codes?.intended_outcomes?.find((item: any) => item.id === intended_outcome_id)?.name}
+              </Typography>
+            );
+          })}
+        </Typography>
       </Box>
       {surveyData.purpose_and_methodology.additional_details && (
         <>

@@ -73,15 +73,21 @@ const SurveyGeneralInformation = () => {
                   display: 'inline-block',
                   mr: 1.25,
                   '&::after': {
-                    content: `','`,
+                    content: "';'",
                     position: 'absolute',
                     top: 0
                   },
                   '&:last-child::after': {
                     display: 'none'
                   }
-                }}>
-                {[...focalSpecies.commonNames, `(${focalSpecies.scientificName})`].filter(Boolean).join(' ')}
+                }}
+                data-testid="focal_species">
+                <Typography component="span" sx={{ display: 'inline' }}>
+                  {focalSpecies.commonNames.join(',')}
+                </Typography>{' '}
+                <Typography component="span" sx={{ display: 'inline' }} fontStyle="italic">
+                  ({focalSpecies.scientificName})
+                </Typography>
               </Typography>
             );
           })}

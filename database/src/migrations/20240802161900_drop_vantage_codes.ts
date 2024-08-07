@@ -8,7 +8,7 @@ import { Knex } from 'knex';
  * @return {*}  {Promise<void>}
  */
 export async function up(knex: Knex): Promise<void> {
-  await knex.raw(`--sql  
+  await knex.raw(`--sql
     ----------------------------------------------------------------------------------------
     -- Drop survey vantage
     ----------------------------------------------------------------------------------------
@@ -37,21 +37,21 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     -- Update survey type codes
     ----------------------------------------------------------------------------------------
-    INSERT INTO 
-      type (name, record_effective_date) 
-    VALUES 
-      ('Telemetry', now()), 
-      ('Species observations', now()), 
-      ('Animal captures', now()), 
-      ('Animal mortalities', now()), 
+    INSERT INTO
+      type (name, record_effective_date)
+    VALUES
+      ('Telemetry', now()),
+      ('Species observations', now()),
+      ('Animal captures', now()),
+      ('Animal mortalities', now()),
       ('Habitat features', now());
 
     ----------------------------------------------------------------------------------------
     -- Update ecological variables (intended outcomes) codes
     ----------------------------------------------------------------------------------------
-    INSERT INTO 
-      intended_outcome (name, description, record_effective_date) 
-    VALUES 
+    INSERT INTO
+      intended_outcome (name, description, record_effective_date)
+    VALUES
       ('Survival or mortality', 'The survival or mortality of individuals in a population, including causes of death.', now()),
       ('Birth or recruitment', 'The number of individuals born into a population.', now()),
       ('Geographic distribution or dispersal', 'The geographic distribution of one or more populations, including movement and dispersals patterns.', now()),
