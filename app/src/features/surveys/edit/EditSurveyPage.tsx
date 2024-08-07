@@ -109,7 +109,7 @@ const EditSurveyPage = () => {
         })),
         participants: values.participants,
         partnerships: values.partnerships,
-        permit: values.permit,
+        permit: { permits: values.permit.permits },
         proprietor: values.proprietor,
         site_selection: {
           stratums: values.site_selection.stratums.map((stratum) => ({
@@ -195,7 +195,15 @@ const EditSurveyPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <EditSurveyForm
-            initialSurveyData={{ ...surveyData, funding_used: Boolean(surveyData.funding_sources?.length) }}
+            initialSurveyData={{
+              ...surveyData,
+              permit: {
+                permits: surveyData.permit?.permits ?? [],
+                used: Boolean(surveyData.permit?.permits.length)
+              },
+              funding_sources: surveyData.funding_sources ?? [],
+              funding_used: Boolean(surveyData.funding_sources?.length)
+            }}
             handleSubmit={handleSubmit}
             formikRef={formikRef}
           />

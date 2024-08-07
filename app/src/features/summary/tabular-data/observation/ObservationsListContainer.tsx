@@ -226,7 +226,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
   return (
     <>
       <Collapse in={showSearch}>
-        <Box py={2} px={3} bgcolor={grey[50]}>
+        <Box py={2} px={2}>
           <ObservationsListFilterForm
             initialValues={advancedFiltersModel}
             handleSubmit={(values) => {
@@ -247,7 +247,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="70vh">
+      <Box height="500px" p={2}>
         <StyledDataGrid
           noRowsMessage="No observations found"
           loading={!observationsDataLoader.isReady && !observationsDataLoader.data}

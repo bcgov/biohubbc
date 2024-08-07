@@ -10,6 +10,7 @@ import { ISurveyLocationForm } from 'features/surveys/components/locations/Study
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/methodology/PurposeAndMethodologyForm';
 import { IBlockData } from 'features/surveys/components/sampling-strategy/blocks/BlockForm';
 import { ISpeciesForm } from 'features/surveys/components/species/SpeciesForm';
+import { ISurveyPermit } from 'features/surveys/SurveyPermitForm';
 import { ISurveyPartnershipsForm } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Feature } from 'geojson';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
@@ -33,6 +34,9 @@ export interface ICreateSurveyRequest
     ISurveyPartnershipsForm,
     ISurveySiteSelectionForm,
     ISpeciesForm {
+  permit: {
+    permits: ISurveyPermit[];
+  };
   funding_sources: ISurveyFundingSource[];
 }
 

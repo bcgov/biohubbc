@@ -7,6 +7,7 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
 import SamplingStrategyForm from 'features/surveys/components/sampling-strategy/SamplingStrategyForm';
+import { ISurveyPermitForm } from 'features/surveys/SurveyPermitForm';
 import SurveyPartnershipsForm, {
   SurveyPartnershipsFormYupSchema
 } from 'features/surveys/view/components/SurveyPartnershipsForm';
@@ -16,6 +17,7 @@ import React, { useContext } from 'react';
 import AgreementsForm, { AgreementsYupSchema } from '../components/agreements/AgreementsForm';
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/agreements/ProprietaryDataForm';
 import SurveyFundingSourceForm, {
+  ISurveyFundingSourceForm,
   SurveyFundingSourceFormYupSchema
 } from '../components/funding/SurveyFundingSourceForm';
 import GeneralInformationForm, {
@@ -30,7 +32,7 @@ import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/Su
 import SpeciesForm from '../components/species/SpeciesForm';
 
 export interface IEditSurveyForm {
-  initialSurveyData: SurveyUpdateObject | (ICreateSurveyRequest & { funding_used: boolean | null });
+  initialSurveyData: SurveyUpdateObject | (ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm);
   handleSubmit: (formikData: IEditSurveyRequest) => void;
   formikRef: React.RefObject<FormikProps<IEditSurveyRequest>>;
 }

@@ -6,32 +6,38 @@ import Card from '@mui/material/Card';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import Select from '@mui/material/Select';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import AlertBar from 'components/alert/AlertBar';
 import CustomTextField from 'components/fields/CustomTextField';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
-import React from 'react';
+import { get } from 'lodash-es';
+import React, { useEffect } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 
-export interface ISurveyPermitFormArrayItem {
-  permit_id: number;
+export interface ISurveyPermit {
+  permit_id?: number;
   permit_number: string;
   permit_type: string;
 }
 
 export interface ISurveyPermitForm {
   permit: {
-    permits: ISurveyPermitFormArrayItem[];
+    used: boolean | null;
+    permits: ISurveyPermit[];
   };
 }
 
-export const SurveyPermitFormArrayItemInitialValues: ISurveyPermitFormArrayItem = {
+export const SurveyPermitFormArrayItemInitialValues: ISurveyPermit = {
   permit_id: null as unknown as number,
   permit_number: '',
   permit_type: ''
@@ -39,35 +45,47 @@ export const SurveyPermitFormArrayItemInitialValues: ISurveyPermitFormArrayItem 
 
 export const SurveyPermitFormInitialValues: ISurveyPermitForm = {
   permit: {
+    used: null,
     permits: []
   }
 };
 
 export const SurveyPermitFormYupSchema = yup.object().shape({
   permit: yup.object().shape({
-    permits: yup.array().of(
-      yup.object().shape({
-        permit_id: yup.number().nullable(true),
-        permit_number: yup
-          .string()
-          .max(100, 'Cannot exceed 100 characters')
-          .required('Permit Number is Required')
-          .test('is-unique-permit-number', 'Permit numbers must be unique', function (permitNumber) {
-            const formValues = this.options.context;
+    used: yup.boolean().nullable().required('You must indicate whether a permit was used'),
+    permits: yup
+      .array()
+      .of(
+        yup.object().shape({
+          permit_id: yup.number().nullable(true),
+          permit_number: yup
+            .string()
+            .max(100, 'Cannot exceed 100 characters')
+            .required('Permit Number is Required')
+            .test('is-unique-permit-number', 'Permit numbers must be unique', function (permitNumber) {
+              const formValues = this.options.context;
 
-            if (!formValues?.permit?.permits?.length) {
-              return true;
-            }
+              if (!formValues?.permit?.permits?.length) {
+                return true;
+              }
 
-            return (
-              formValues.permit.permits.filter(
-                (permit: ISurveyPermitFormArrayItem) => permit.permit_number === permitNumber
-              ).length <= 1
-            );
-          }),
-        permit_type: yup.string().required('Permit Type is Required')
+              return (
+                formValues.permit.permits.filter((permit: ISurveyPermit) => permit.permit_number === permitNumber)
+                  .length <= 1
+              );
+            }),
+          permit_type: yup.string().required('Permit Type is Required')
+        })
+      )
+      .test('is-permit-used', 'You must add at least one permit', function (permits) {
+        const formValues = this.options.context;
+
+        if (!formValues?.permit?.used) {
+          return true;
+        }
+
+        return !!permits?.length;
       })
-    )
   })
 });
 
@@ -77,13 +95,53 @@ export const SurveyPermitFormYupSchema = yup.object().shape({
  * @return {*}
  */
 const SurveyPermitForm: React.FC = () => {
-  const { values, handleChange, getFieldMeta, errors } = useFormikContext<ISurveyPermitForm>();
+  const { values, handleChange, getFieldMeta, errors, setFieldValue, submitCount } =
+    useFormikContext<ISurveyPermitForm>();
+
+  useEffect(() => {
+    setFieldValue('permit.used', values.permit.used);
+  }, [setFieldValue, values.permit]);
+
+  const getPermitUsedValue = () => {
+    if (values.permit.used === true) {
+      return 'true';
+    }
+    if (values.permit.used === false) {
+      return 'false';
+    }
+    return null;
+  };
 
   return (
     <FieldArray
       name="permit.permits"
       render={(arrayHelpers: FieldArrayRenderProps) => (
         <Stack gap={1}>
+          {get(errors, 'permit.used') && submitCount > 0 && (
+            <AlertBar
+              severity="error"
+              variant="outlined"
+              title="Permit Declaration missing"
+              text={get(errors, 'permit.used') || 'Indicate whether a permit was used'}
+            />
+          )}
+          <RadioGroup
+            aria-label="permit"
+            name="permit.used"
+            value={getPermitUsedValue()}
+            onChange={(event) => {
+              const permitsUsed = event.target.value === 'true' ? true : false;
+              setFieldValue('permit.used', permitsUsed);
+              if (permitsUsed) {
+                setFieldValue('permit.permits', [SurveyPermitFormArrayItemInitialValues]);
+              } else if (!permitsUsed) {
+                setFieldValue('permit.permits', []);
+              }
+            }}>
+            <FormControlLabel value="true" control={<Radio required={true} color="primary" />} label="Yes" />
+            <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />
+          </RadioGroup>
+
           <TransitionGroup
             component={Stack}
             role="list"
@@ -93,7 +151,7 @@ const SurveyPermitForm: React.FC = () => {
                 display: 'none'
               }
             }}>
-            {values.permit.permits?.map((permit: ISurveyPermitFormArrayItem, index) => {
+            {values.permit.permits?.map((permit: ISurveyPermit, index) => {
               const permitNumberMeta = getFieldMeta(`permit.permits.[${index}].permit_number`);
               const permitTypeMeta = getFieldMeta(`permit.permits.[${index}].permit_type`);
 
@@ -167,18 +225,20 @@ const SurveyPermitForm: React.FC = () => {
               <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.permit.permits}</Typography>
             </Box>
           )}
-
-          <Button
-            type="button"
-            variant="outlined"
-            color="primary"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => arrayHelpers.push(SurveyPermitFormArrayItemInitialValues)}
-            sx={{
-              alignSelf: 'flex-start'
-            }}>
-            Add New Permit
-          </Button>
+          {values.permit.used && (
+            <Button
+              type="button"
+              variant="outlined"
+              color="primary"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              onClick={() => arrayHelpers.push(SurveyPermitFormArrayItemInitialValues)}
+              sx={{
+                alignSelf: 'flex-start',
+                mt: 1
+              }}>
+              Add New Permit
+            </Button>
+          )}
         </Stack>
       )}
     />

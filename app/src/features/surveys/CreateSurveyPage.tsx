@@ -13,6 +13,7 @@ import { CreateSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
+import { SurveyPermitFormInitialValues } from 'features/surveys/SurveyPermitForm';
 import { SurveyPartnershipsFormInitialValues } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
@@ -36,6 +37,7 @@ import EditSurveyForm from './edit/EditSurveyForm';
 
 export const defaultSurveyDataFormValues: ICreateSurveyRequest = {
   ...GeneralInformationInitialValues,
+  ...SurveyPermitFormInitialValues,
   ...PurposeAndMethodologyInitialValues,
   ...SurveyFundingSourceFormInitialValues,
   ...SurveyPartnershipsFormInitialValues,
@@ -105,29 +107,12 @@ const CreateSurveyPage = () => {
    */
   const handleSubmit = async (values: ICreateSurveyRequest) => {
     setIsSaving(true);
+    // Remove the permit.used property
+    const { permit, ...data } = values;
     try {
       const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), {
-        blocks: values.blocks,
-        funding_sources: values.funding_sources,
-        locations: values.locations.map((location) => ({
-          survey_location_id: location.survey_location_id,
-          geojson: location.geojson,
-          name: location.name,
-          description: location.description,
-          revision_count: location.revision_count
-        })),
-        participants: values.participants,
-        partnerships: values.partnerships,
-        permit: values.permit,
-        proprietor: values.proprietor,
-        site_selection: {
-          stratums: values.site_selection.stratums,
-          strategies: values.site_selection.strategies
-        },
-        species: values.species,
-        survey_details: values.survey_details,
-        purpose_and_methodology: values.purpose_and_methodology,
-        agreements: values.agreements
+        ...data,
+        permit: { permits: permit.permits }
       });
 
       if (!response?.id) {

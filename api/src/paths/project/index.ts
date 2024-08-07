@@ -147,6 +147,18 @@ GET.apiDoc = {
                       items: {
                         type: 'integer'
                       }
+                    },
+                    members: {
+                      type: 'array',
+                      description: 'Members of the Project',
+                      items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                          system_user_id: { type: 'number' },
+                          display_name: { type: 'string' }
+                        }
+                      }
                     }
                   }
                 }
