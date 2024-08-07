@@ -12,12 +12,11 @@ import { getNrmRegionColour, NrmRegionKeys } from 'constants/colours';
 import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import { TeamMemberAvatar } from 'features/projects/view/components/TeamMemberAvatar';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull, getRandomHexColor } from 'utils/Utils';
@@ -63,13 +62,8 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
-  const codesContext = useCodesContext();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<ProjectDataTableURLParams>>();
-
-  useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('p_limit') ?? ApiPaginationRequestOptionsInitialValues.limit),
