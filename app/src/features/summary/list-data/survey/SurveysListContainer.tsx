@@ -22,9 +22,7 @@ import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
-import { firstOrNull, getCodesName } from 'utils/Utils';
 import { firstOrNull } from 'utils/Utils';
-import { SurveyProgressChip } from '../../../surveys/components/SurveyProgressChip';
 import SurveysListFilterForm, {
   ISurveyAdvancedFilters,
   SurveyAdvancedFiltersInitialValues
