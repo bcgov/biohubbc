@@ -3,6 +3,13 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 
 dayjs.extend(customParseFormat);
 
+// Simplified Capture interface
+interface ICaptureStub {
+  capture_id: string;
+  capture_date: string;
+  capture_time?: string | null;
+}
+
 /**
  * Format time strings to correct format for Zod and external systems.
  *
@@ -42,4 +49,28 @@ export const areDatesEqual = (_dateA: string, _dateB: string): boolean => {
   const dateB = dayjs(_dateB, format);
 
   return dateA.isValid() && dateB.isValid() && dateA.format(format) === dateB.format(format);
+};
+
+/**
+ * Find Capture ID from Capture date and time fields.
+ *
+ * @param {ICapture[]} captures - Array of Critterbase captures
+ * @param {string} captureDate - String date
+ * @param {string} captureTime - String time
+ * @returns {string | undefined} Capture ID or undefined
+ */
+export const findCaptureIdFromDateTime = <T extends ICaptureStub>(
+  captures: T[],
+  captureDate: string,
+  captureTime: string
+): string | undefined => {
+  const foundCapture = captures.find((capture) => {
+    return (
+      (formatTimeString(capture.capture_time) === formatTimeString(captureTime) &&
+        areDatesEqual(capture.capture_date, captureDate)) ||
+      areDatesEqual(capture.capture_date, captureDate)
+    );
+  });
+
+  return foundCapture?.capture_id;
 };

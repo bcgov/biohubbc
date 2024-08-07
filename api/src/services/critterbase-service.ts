@@ -54,7 +54,7 @@ export interface ICapture {
 }
 
 export interface ICaptureDetailed {
-  capture_id?: string;
+  capture_id: string;
   critter_id: string;
   capture_method_id?: string | null;
   capture_location_id?: string | null;
@@ -239,6 +239,13 @@ export interface ICollectionCategory {
   category_name: string;
   description: string | null;
   itis_tsn: number;
+}
+
+// Lookup value `asSelect` format
+export interface IAsSelectLookup {
+  id: string;
+  key: string;
+  value: string;
 }
 
 /**
@@ -471,6 +478,26 @@ export class CritterbaseService {
    */
   async getLookupValues(route: CbRouteKey, params: QueryParam[]): Promise<any> {
     return this._makeGetRequest(CbRoutes[route], params);
+  }
+
+  /**
+   * Fetches Critterbase colour lookup values.
+   *
+   * @async
+   * @returns {Promise<IAsSelectLookup[]>} AsSelect format
+   */
+  async getColours(): Promise<IAsSelectLookup[]> {
+    return this.getLookupValues('colours', [{ key: 'format', value: 'asSelect' }]);
+  }
+
+  /**
+   * Fetches Critterbase marking type lookup values.
+   *
+   * @async
+   * @returns {Promise<IAsSelectLookup[]>} AsSelect format
+   */
+  async getMarkingTypes(): Promise<IAsSelectLookup[]> {
+    return this.getLookupValues('marking-types', [{ key: 'format', value: 'asSelect' }]);
   }
 
   /**

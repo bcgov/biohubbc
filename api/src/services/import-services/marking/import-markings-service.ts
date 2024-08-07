@@ -7,8 +7,8 @@ import { IBulkCreateMarking } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
 import { CSVImportService, Row } from '../csv-import-strategy.interface';
-import { areDatesEqual, formatTimeString } from '../utils/datetime';
-import { CsvMarking, CsvMarkingSchema } from './import-markings-service.interface';
+import { findCaptureIdFromDateTime } from '../utils/datetime';
+import { CsvMarking, getCsvMarkingSchema } from './import-markings-service.interface';
 
 /**
  *
@@ -62,32 +62,34 @@ export class ImportMarkingsService extends DBService implements CSVImportService
   async validateRows(rows: Row[]) {
     // Generate type-safe cell getter from column validator
     const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
+
+    // Get reference values
     const critterAliasMap = await this.surveyCritterService.getSurveyCritterIdAliasMap(this.surveyId);
+    const colours = await this.surveyCritterService.critterbaseService.getColours();
+    const markingTypes = await this.surveyCritterService.critterbaseService.getMarkingTypes();
 
     const rowsToValidate: Partial<CsvMarking>[] = [];
 
     for (const row of rows) {
-      const alias = getCellValue<string>(row, 'ALIAS');
       let critterId, captureId;
 
-      if (alias) {
-        const critter = critterAliasMap.get(alias);
-        const captureDate = getCellValue(row, 'CAPTURE_DATE');
-        const captureTime = formatTimeString(getCellValue(row, 'CAPTURE_TIME'));
+      const alias = getCellValue<string>(row, 'ALIAS');
 
+      // If the alias is included attempt to retrieve the critter_id and capture_id for the row
+      if (alias) {
+        const captureDate = getCellValue(row, 'CAPTURE_DATE');
+        const captureTime = getCellValue(row, 'CAPTURE_TIME');
+
+        const critter = critterAliasMap.get(alias);
+
+        // Find the capture_id from the date time columns
+        captureId = findCaptureIdFromDateTime(critter?.captures ?? [], captureDate, captureTime);
         critterId = critter?.critter_id;
-        captureId = critter?.captures.find((capture) => {
-          return (
-            (formatTimeString(capture.capture_time) === formatTimeString(captureTime) &&
-              areDatesEqual(capture.capture_date, captureDate)) ||
-            areDatesEqual(capture.capture_date, captureDate)
-          );
-        })?.capture_id;
       }
 
       rowsToValidate.push({
-        critter_id: critterId,
-        capture_id: captureId,
+        critter_id: critterId, // Found using alias
+        capture_id: captureId, // Found using capture date and time
         body_location: getCellValue(row, 'BODY_LOCATION'),
         marking_type: getCellValue(row, 'MARKING_TYPE'),
         identifier: getCellValue(row, 'IDENTIFIER'),
@@ -97,7 +99,8 @@ export class ImportMarkingsService extends DBService implements CSVImportService
       });
     }
 
-    return z.array(CsvMarkingSchema).safeParseAsync(rowsToValidate);
+    // Generate the zod schema with injected lookup values
+    return z.array(getCsvMarkingSchema(colours, markingTypes)).safeParseAsync(rowsToValidate);
   }
 
   /**
