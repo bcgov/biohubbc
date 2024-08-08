@@ -6,6 +6,9 @@ import { IAsSelectLookup } from '../../critterbase-service';
  *
  * Note: This getter allows custom values to be injected for validation.
  *
+ * Note: This could be updated to transform the string values into the primary keys
+ * to prevent Critterbase from having to translate / patch in incomming bulk values.
+ *
  * @param {IAsSelectLookup[]} colours - Array of supported Critterbase colours
  * @returns {*} Custom Zod schema for CSV Markings
  */
@@ -56,7 +59,9 @@ export const getCsvMarkingSchema = (
           code: z.ZodIssueCode.custom,
           message: 'No taxon body locations found for Critter'
         });
-      } else if (!bodyLocations.filter((location) => location.value === schema.body_location).length) {
+      } else if (
+        !bodyLocations.filter((location) => location.value.toLowerCase() === schema.body_location.toLowerCase()).length
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: `Invalid body location for Critter. Allowed values: ${bodyLocations

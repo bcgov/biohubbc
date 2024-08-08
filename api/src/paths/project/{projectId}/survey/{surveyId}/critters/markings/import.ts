@@ -6,7 +6,7 @@ import { HTTP400 } from '../../../../../../../errors/http-error';
 import { csvFileSchema } from '../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { importCSV } from '../../../../../../../services/import-services/csv-import-strategy';
-import { ImportMarkingsService } from '../../../../../../../services/import-services/marking/import-markings-service';
+import { ImportMarkingsStrategy } from '../../../../../../../services/import-services/marking/import-markings-strategy';
 import { scanFileForVirus } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../../utils/media/media-utils';
@@ -142,10 +142,10 @@ export function importCsv(): RequestHandler {
         throw new HTTP400('Malicious content detected, import cancelled.');
       }
 
-      const importCsvMarkings = new ImportMarkingsService(connection, surveyId);
+      const importCsvMarkingsStrategy = new ImportMarkingsStrategy(connection, surveyId);
 
       // Pass CSV file and importer as dependencies
-      const markingsCreated = await importCSV(parseMulterFile(rawFile), importCsvMarkings);
+      const markingsCreated = await importCSV(parseMulterFile(rawFile), importCsvMarkingsStrategy);
 
       await connection.commit();
 

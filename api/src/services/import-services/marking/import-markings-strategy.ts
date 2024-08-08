@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
+import { getLogger } from '../../../utils/logger';
 import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
 import { generateCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
@@ -13,9 +14,11 @@ import { CsvMarking, getCsvMarkingSchema } from './import-markings-strategy.inte
 // TODO: Update all import services to use language Import<import-name>Strategy
 // TODO: Update CSVImportService interface -> CSVImportStrategy
 
+const defaultLog = getLogger('services/import/import-markings-strategy');
+
 /**
  *
- * @class ImportMarkingsService
+ * @class ImportMarkingsStrategy
  * @extends DBService
  * @see CSVImport
  *
@@ -43,7 +46,7 @@ export class ImportMarkingsStrategy extends DBService implements CSVImportServic
   } satisfies IXLSXCSVValidator;
 
   /**
-   * Construct an instance of ImportMarkingsService.
+   * Construct an instance of ImportMarkingsStrategy.
    *
    * @param {IDBConnection} connection - DB connection
    * @param {string} surveyId
@@ -105,11 +108,11 @@ export class ImportMarkingsStrategy extends DBService implements CSVImportServic
     const colours = await this.surveyCritterService.critterbaseService.getColours();
     const markingTypes = await this.surveyCritterService.critterbaseService.getMarkingTypes();
 
-    // Used to find critter_id -> body location map
+    // Used to find critter_id -> taxon body location [] map
     const rowCritters: ICritterDetailed[] = [];
 
     // Rows passed to validator
-    const rowsToValidate: Partial<CsvMarking & { _tsn?: number }>[] = [];
+    const rowsToValidate: Partial<CsvMarking>[] = [];
 
     for (const row of rows) {
       let critterId, captureId;
@@ -142,10 +145,11 @@ export class ImportMarkingsStrategy extends DBService implements CSVImportServic
         comment: getCellValue(row, 'COMMENT')
       });
     }
-    // Get the critter_id -> taxonBodyLocations[] mapping
+    // Get the critter_id -> taxonBodyLocations[] Map
     const critterBodyLocationsMap = await this.getTaxonBodyLocationsCritterIdMap(rowCritters);
 
-    // Generate the zod schema with injected lookup values
+    // Generate the zod schema with injected reference values
+    // This allows the zod schema to validate against Critterbase lookup values
     return z.array(getCsvMarkingSchema(colours, markingTypes, critterBodyLocationsMap)).safeParseAsync(rowsToValidate);
   }
 
@@ -160,6 +164,8 @@ export class ImportMarkingsStrategy extends DBService implements CSVImportServic
     const critterbasePayload: { markings: IBulkCreateMarking[] } = { markings };
 
     const response = await this.surveyCritterService.critterbaseService.bulkCreate(critterbasePayload);
+
+    defaultLog.debug({ label: 'import markings', markings, insertedCount: response.created.markings });
 
     return response.created.markings;
   }
