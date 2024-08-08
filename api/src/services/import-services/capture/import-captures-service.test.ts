@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import { MediaFile } from '../../../utils/media/media-file';
 import * as worksheetUtils from '../../../utils/xlsx-utils/worksheet-utils';
 import { getMockDBConnection } from '../../../__mocks__/db';
-import { IBulkCreateResponse } from '../../critterbase-service';
+import { IBulkCreateResponse, ICritterDetailed } from '../../critterbase-service';
 import { importCSV } from '../csv-import-strategy';
 import { ImportCapturesService } from './import-captures-service';
 
@@ -54,8 +54,8 @@ describe('import-captures-service', () => {
       getDefaultWorksheetStub.returns(worksheet);
       getAliasMapStub.resolves(
         new Map([
-          ['Carl', '66d43f10-bbd8-4047-894e-f7c072fce246'],
-          ['Carlita', '66d43f10-bbd8-4047-894e-f7c072fce246']
+          ['carl', { critter_id: '3647cdc9-6fe9-4c32-acfa-6096fe123c4a' } as ICritterDetailed],
+          ['carlita', { critter_id: '66d43f10-bbd8-4047-894e-f7c072fce246' } as ICritterDetailed]
         ])
       );
       critterbaseInsertStub.resolves({ created: { captures: 2 } } as IBulkCreateResponse);
@@ -71,7 +71,9 @@ describe('import-captures-service', () => {
       const importCaptures = new ImportCapturesService(mockConnection, 1);
       const aliasMapStub = sinon.stub(importCaptures.surveyCritterService, 'getSurveyCritterIdAliasMap');
 
-      aliasMapStub.resolves(new Map([['Carl', '3647cdc9-6fe9-4c32-acfa-6096fe123c4a']]));
+      aliasMapStub.resolves(
+        new Map([['carl', { critter_id: '3647cdc9-6fe9-4c32-acfa-6096fe123c4a' } as ICritterDetailed]])
+      );
 
       const validate = await importCaptures.validateRows([
         {
@@ -115,7 +117,9 @@ describe('import-captures-service', () => {
       const importCaptures = new ImportCapturesService(mockConnection, 1);
       const aliasMapStub = sinon.stub(importCaptures.surveyCritterService, 'getSurveyCritterIdAliasMap');
 
-      aliasMapStub.resolves(new Map([['Carl', '3647cdc9-6fe9-4c32-acfa-6096fe123c4a']]));
+      aliasMapStub.resolves(
+        new Map([['carl', { critter_id: '3647cdc9-6fe9-4c32-acfa-6096fe123c4a' } as ICritterDetailed]])
+      );
 
       const validate = await importCaptures.validateRows([
         {
@@ -151,7 +155,9 @@ describe('import-captures-service', () => {
       const importCaptures = new ImportCapturesService(mockConnection, 1);
       const aliasMapStub = sinon.stub(importCaptures.surveyCritterService, 'getSurveyCritterIdAliasMap');
 
-      aliasMapStub.resolves(new Map([['Carl', '3647cdc9-6fe9-4c32-acfa-6096fe123c4a']]));
+      aliasMapStub.resolves(
+        new Map([['carl', { critter_id: '3647cdc9-6fe9-4c32-acfa-6096fe123c4a' } as ICritterDetailed]])
+      );
 
       const validate = await importCaptures.validateRows([
         {
