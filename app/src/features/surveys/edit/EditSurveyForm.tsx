@@ -12,7 +12,7 @@ import SurveyPartnershipsForm, {
   SurveyPartnershipsFormYupSchema
 } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
-import { ICreateSurveyRequest, IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
+import { ICreateSurveyRequest, IUpdateSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import React, { useContext } from 'react';
 import AgreementsForm, { AgreementsYupSchema } from '../components/agreements/AgreementsForm';
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/agreements/ProprietaryDataForm';
@@ -29,12 +29,16 @@ import PurposeAndMethodologyForm, {
 } from '../components/methodology/PurposeAndMethodologyForm';
 import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/participants/SurveyUserForm';
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
-import SpeciesForm from '../components/species/SpeciesForm';
+import SpeciesForm, { SpeciesYupSchema } from '../components/species/SpeciesForm';
 
-export interface IEditSurveyForm {
-  initialSurveyData: SurveyUpdateObject | (ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm);
-  handleSubmit: (formikData: IEditSurveyRequest) => void;
-  formikRef: React.RefObject<FormikProps<IEditSurveyRequest>>;
+export interface IEditSurveyForm<
+  T extends
+    | (IUpdateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm)
+    | (ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm)
+> {
+  initialSurveyData: T;
+  handleSubmit: (formikData: T) => void;
+  formikRef: React.RefObject<FormikProps<T>>;
 }
 
 /**
@@ -42,7 +46,13 @@ export interface IEditSurveyForm {
  *
  * @return {*}
  */
-const EditSurveyForm = (props: IEditSurveyForm) => {
+const EditSurveyForm = <
+  T extends
+    | (IUpdateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm)
+    | (ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm)
+>(
+  props: IEditSurveyForm<T>
+) => {
   const projectContext = useContext(ProjectContext);
   const projectData = projectContext.projectDataLoader.data?.projectData;
 
@@ -61,12 +71,13 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
     .concat(SurveyUserJobYupSchema)
     .concat(SurveyLocationYupSchema)
     .concat(SurveySiteSelectionYupSchema)
-    .concat(SurveyPartnershipsFormYupSchema);
+    .concat(SurveyPartnershipsFormYupSchema)
+    .concat(SpeciesYupSchema);
 
   return (
-    <Formik
+    <Formik<T>
       innerRef={props.formikRef}
-      initialValues={props.initialSurveyData as IEditSurveyRequest}
+      initialValues={props.initialSurveyData}
       validationSchema={surveyEditYupSchemas}
       validateOnBlur={false}
       validateOnChange={false}

@@ -31,8 +31,8 @@ export interface ISurveyPermit {
 }
 
 export interface ISurveyPermitForm {
+  permit_used: boolean | null;
   permit: {
-    used: boolean | null;
     permits: ISurveyPermit[];
   };
 }
@@ -44,15 +44,15 @@ export const SurveyPermitFormArrayItemInitialValues: ISurveyPermit = {
 };
 
 export const SurveyPermitFormInitialValues: ISurveyPermitForm = {
+  permit_used: null,
   permit: {
-    used: null,
     permits: []
   }
 };
 
 export const SurveyPermitFormYupSchema = yup.object().shape({
+  permit_used: yup.boolean().nullable().required('You must indicate whether a permit was used'),
   permit: yup.object().shape({
-    used: yup.boolean().nullable().required('You must indicate whether a permit was used'),
     permits: yup
       .array()
       .of(
@@ -80,7 +80,7 @@ export const SurveyPermitFormYupSchema = yup.object().shape({
       .test('is-permit-used', 'You must add at least one permit', function (permits) {
         const formValues = this.options.context;
 
-        if (!formValues?.permit?.used) {
+        if (!formValues?.permit_used) {
           return true;
         }
 
@@ -99,14 +99,14 @@ const SurveyPermitForm: React.FC = () => {
     useFormikContext<ISurveyPermitForm>();
 
   useEffect(() => {
-    setFieldValue('permit.used', values.permit.used);
-  }, [setFieldValue, values.permit]);
+    setFieldValue('permit_used', values.permit_used);
+  }, [setFieldValue, values.permit_used]);
 
   const getPermitUsedValue = () => {
-    if (values.permit.used === true) {
+    if (values.permit_used === true) {
       return 'true';
     }
-    if (values.permit.used === false) {
+    if (values.permit_used === false) {
       return 'false';
     }
     return null;
@@ -117,21 +117,21 @@ const SurveyPermitForm: React.FC = () => {
       name="permit.permits"
       render={(arrayHelpers: FieldArrayRenderProps) => (
         <Stack gap={1}>
-          {get(errors, 'permit.used') && submitCount > 0 && (
+          {get(errors, 'permit_used') && submitCount > 0 && (
             <AlertBar
               severity="error"
               variant="outlined"
               title="Permit Declaration missing"
-              text={get(errors, 'permit.used') || 'Indicate whether a permit was used'}
+              text={get(errors, 'permit_used') || 'Indicate whether a permit was used'}
             />
           )}
           <RadioGroup
             aria-label="permit"
-            name="permit.used"
+            name="permit_used"
             value={getPermitUsedValue()}
             onChange={(event) => {
               const permitsUsed = event.target.value === 'true' ? true : false;
-              setFieldValue('permit.used', permitsUsed);
+              setFieldValue('permit_used', permitsUsed);
               if (permitsUsed) {
                 setFieldValue('permit.permits', [SurveyPermitFormArrayItemInitialValues]);
               } else if (!permitsUsed) {
@@ -225,7 +225,7 @@ const SurveyPermitForm: React.FC = () => {
               <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.permit.permits}</Typography>
             </Box>
           )}
-          {values.permit.used && (
+          {values.permit_used && (
             <Button
               type="button"
               variant="outlined"

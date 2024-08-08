@@ -59,15 +59,15 @@ const EditSurveyPage = () => {
 
   const surveyContext = useContext(SurveyContext);
 
-  const editSurveyDataLoader = useDataLoader((projectId: number, surveyId: number) =>
+  const getSurveyForUpdateDataLoader = useDataLoader((projectId: number, surveyId: number) =>
     biohubApi.survey.getSurveyForUpdate(projectId, surveyId)
   );
 
   if (surveyId) {
-    editSurveyDataLoader.load(projectContext.projectId, surveyId);
+    getSurveyForUpdateDataLoader.load(projectContext.projectId, surveyId);
   }
 
-  const surveyData = editSurveyDataLoader.data?.surveyData;
+  const surveyData = getSurveyForUpdateDataLoader.data?.surveyData;
 
   const handleCancel = () => {
     history.push('details');
@@ -97,6 +97,7 @@ const EditSurveyPage = () => {
     setIsSaving(true);
 
     try {
+      // Remove the permit_used and funding_used properties
       const response = await biohubApi.survey.updateSurvey(projectContext.projectId, surveyId, {
         blocks: values.blocks,
         funding_sources: values.funding_sources,
@@ -109,7 +110,9 @@ const EditSurveyPage = () => {
         })),
         participants: values.participants,
         partnerships: values.partnerships,
-        permit: { permits: values.permit.permits },
+        permit: {
+          permits: values.permit.permits
+        },
         proprietor: values.proprietor,
         site_selection: {
           stratums: values.site_selection.stratums.map((stratum) => ({
@@ -121,7 +124,8 @@ const EditSurveyPage = () => {
         },
         species: values.species,
         survey_details: values.survey_details,
-        purpose_and_methodology: values.purpose_and_methodology
+        purpose_and_methodology: values.purpose_and_methodology,
+        agreements: values.agreements
       });
 
       if (!response?.id) {
@@ -195,14 +199,22 @@ const EditSurveyPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <EditSurveyForm
+            // Add the permit_used and funding_used properties
             initialSurveyData={{
-              ...surveyData,
-              permit: {
-                permits: surveyData.permit?.permits ?? [],
-                used: Boolean(surveyData.permit?.permits.length)
-              },
-              funding_sources: surveyData.funding_sources ?? [],
-              funding_used: Boolean(surveyData.funding_sources?.length)
+              survey_details: surveyData.survey_details,
+              purpose_and_methodology: surveyData.purpose_and_methodology,
+              species: surveyData.species,
+              site_selection: surveyData.site_selection,
+              locations: surveyData.locations,
+              participants: surveyData.participants,
+              partnerships: surveyData.partnerships,
+              blocks: surveyData.blocks,
+              proprietor: surveyData.proprietor,
+              permit: surveyData.permit,
+              permit_used: Boolean(surveyData.permit?.permits.length),
+              funding_sources: surveyData.funding_sources,
+              funding_used: Boolean(surveyData.funding_sources?.length),
+              agreements: surveyData.agreements
             }}
             handleSubmit={handleSubmit}
             formikRef={formikRef}

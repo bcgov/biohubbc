@@ -27,12 +27,12 @@ export interface ISurveyFundingSource {
   funding_source_id: number;
   amount: number;
   revision_count: number;
-  survey_funding_source_id?: number;
+  survey_funding_source_id?: number | null;
   survey_id: number;
   funding_source_name?: string;
-  start_date?: string;
-  end_date?: string;
-  description?: string;
+  start_date?: string | null;
+  end_date?: string | null;
+  description?: string | null;
 }
 
 export interface ISurveyFundingSourceForm {
@@ -103,7 +103,7 @@ const SurveyFundingSourceForm = () => {
     } else if (!values.funding_sources.length) {
       setFieldValue('funding_used', values.funding_used);
     }
-  }, [values.funding_sources]);
+  }, [setFieldValue, values.funding_sources, values.funding_used]);
 
   const biohubApi = useBiohubApi();
   const fundingSourcesDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
@@ -153,8 +153,8 @@ const SurveyFundingSourceForm = () => {
                 }
                 setFieldError('funding_used', undefined);
               }}>
-              <FormControlLabel value="true" control={<Radio color="primary" />} label="Yes" />
-              <FormControlLabel value="false" control={<Radio color="primary" />} label="No" />
+              <FormControlLabel value="true" control={<Radio required={true} color="primary" />} label="Yes" />
+              <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />
             </RadioGroup>
 
             <TransitionGroup

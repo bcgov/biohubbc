@@ -29,25 +29,60 @@ const Partnerships = () => {
     <Box component="dl">
       <Box className="row">
         <Typography component="dt">Indigenous Partnerships</Typography>
-        {surveyData.partnerships.indigenous_partnerships?.map((indigenousPartnership: number) => {
-          return (
-            <Typography component="dd" key={`first-nations-${indigenousPartnership}`}>
-              {codes.first_nations?.find((item: any) => item.id === indigenousPartnership)?.name}
-            </Typography>
-          );
-        })}
+        <Typography component="dd">
+          {surveyData.partnerships.indigenous_partnerships?.map((indigenousPartnership: number) => {
+            return (
+              <Typography
+                component="span"
+                key={`first-nations-${indigenousPartnership}`}
+                sx={{
+                  position: 'relative',
+                  display: 'inline-block',
+                  mr: 1.25,
+                  '&::after': {
+                    content: "';'",
+                    position: 'absolute',
+                    top: 0
+                  },
+                  '&:last-child::after': {
+                    display: 'none'
+                  }
+                }}>
+                {codes.first_nations?.find((item: any) => item.id === indigenousPartnership)?.name}
+              </Typography>
+            );
+          })}
+        </Typography>
+
         {!hasIndigenousPartnerships && <Typography component="dd">None</Typography>}
       </Box>
 
       <Box className="row">
         <Typography component="dt">Other Partnerships</Typography>
-        {surveyData.partnerships.stakeholder_partnerships?.map((stakeholderPartnership: string) => {
-          return (
-            <Typography component="dd" key={`stakeholder-${stakeholderPartnership}`}>
-              {stakeholderPartnership}
-            </Typography>
-          );
-        })}
+        <Typography component="dd">
+          {surveyData.partnerships.stakeholder_partnerships?.map((stakeholderPartnership: string) => {
+            return (
+              <Typography
+                component="span"
+                key={`stakeholder-${stakeholderPartnership}`}
+                sx={{
+                  position: 'relative',
+                  display: 'inline-block',
+                  mr: 1.25,
+                  '&::after': {
+                    content: "';'",
+                    position: 'absolute',
+                    top: 0
+                  },
+                  '&:last-child::after': {
+                    display: 'none'
+                  }
+                }}>
+                {stakeholderPartnership}
+              </Typography>
+            );
+          })}
+        </Typography>
 
         {!hasStakeholderPartnerships && <Typography component="dd">None</Typography>}
       </Box>

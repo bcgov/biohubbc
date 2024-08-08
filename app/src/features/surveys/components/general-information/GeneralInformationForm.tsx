@@ -32,7 +32,7 @@ export interface IGeneralInformationForm {
     survey_name: string;
     start_date: string;
     end_date: string;
-    progress_id: number | null;
+    progress_id: number;
     survey_types: number[];
     revision_count: number;
   };
@@ -50,7 +50,7 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
     survey_name: '',
     start_date: '',
     end_date: '',
-    progress_id: null,
+    progress_id: null as unknown as number,
     survey_types: [],
     revision_count: 0
   },
