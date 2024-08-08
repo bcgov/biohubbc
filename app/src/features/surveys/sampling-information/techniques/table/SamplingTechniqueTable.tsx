@@ -269,7 +269,7 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
         ) : (
           <NoDataOverlay
             height="200px"
-            title="Add a Technique"
+            title="Add Techniques"
             subtitle="Techniques describe how you collected species observations"
             icon={mdiArrowTopRight}
           />

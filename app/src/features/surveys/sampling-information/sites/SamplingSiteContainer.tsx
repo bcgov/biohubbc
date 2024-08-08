@@ -152,6 +152,7 @@ const SamplingSiteContainer = () => {
           <Button
             variant="contained"
             color="primary"
+            disabled={Boolean(!surveyContext.techniqueDataLoader.data?.count)}
             component={RouterLink}
             to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/create`}
             startIcon={<Icon path={mdiPlus} size={0.8} />}>
@@ -201,7 +202,7 @@ const SamplingSiteContainer = () => {
                     <NoDataOverlay
                       height="200px"
                       title="Add Sampling Sites"
-                      subtitle="Sampling sites show where techniques were implemented"
+                      subtitle="Apply your techniques to sampling sites to show where you collected data"
                       icon={mdiArrowTopRight}
                     />
                   )}
@@ -215,8 +216,9 @@ const SamplingSiteContainer = () => {
                   ) : (
                     <NoDataOverlay
                       height="200px"
-                      title="Add Sampling Periods"
-                      subtitle="Sampling periods describe when a technique was implemented at a site"
+                      title="Add Periods"
+                      subtitle="Add periods when you create sampling sites to show when 
+                      you collected species observations"
                       icon={mdiArrowTopRight}
                     />
                   )}

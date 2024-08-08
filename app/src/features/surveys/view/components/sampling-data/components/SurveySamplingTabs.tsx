@@ -2,6 +2,7 @@ import { mdiArrowTopRight, mdiAutoFix, mdiCalendarRange, mdiMapMarker } from '@m
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -112,7 +113,9 @@ export const SurveySamplingTabs = () => {
         </ToggleButtonGroup>
       </Box>
 
-      <Box px={2} py={0.5}>
+      <Divider />
+
+      <Box px={2} py={2}>
         {activeView === SurveySamplingView.TECHNIQUES && (
           <Box position="relative">
             <LoadingGuard
@@ -123,8 +126,8 @@ export const SurveySamplingTabs = () => {
                 <SurveyTechniquesTable techniques={surveyContext.techniqueDataLoader.data} />
               ) : (
                 <NoDataOverlay
-                  height="200px"
-                  title="Add a Technique"
+                  height="250px"
+                  title="Add Techniques"
                   subtitle="Techniques describe how you collected species observations"
                   icon={mdiArrowTopRight}
                 />
@@ -143,9 +146,9 @@ export const SurveySamplingTabs = () => {
                 <SurveySitesTable sites={surveyContext.sampleSiteDataLoader.data} />
               ) : (
                 <NoDataOverlay
-                  height="200px"
+                  height="250px"
                   title="Add Sampling Sites"
-                  subtitle="Sampling sites are where you collected species observations"
+                  subtitle="Apply your techniques to sampling sites to show where you collected data"
                   icon={mdiArrowTopRight}
                 />
               )}
@@ -163,10 +166,10 @@ export const SurveySamplingTabs = () => {
                 <SamplingPeriodTable sites={surveyContext.sampleSiteDataLoader.data} />
               ) : (
                 <NoDataOverlay
-                  height="200px"
+                  height="250px"
                   title="Add Periods"
-                  subtitle="Add periods when you create sampling sites to describe when 
-                  exactly you collected species observations"
+                  subtitle="Add periods when you create sampling sites to show when 
+                  you collected species observations"
                   icon={mdiArrowTopRight}
                 />
               )}

@@ -4,7 +4,7 @@ import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridOverlay, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -154,70 +154,61 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="100vh" maxHeight="800px" p={2}>
-        <StyledDataGrid
-          noRowsMessage="No animals found"
-          loading={!animalsDataLoader.isReady && !animalsDataLoader.data}
-          // Columns
-          columns={columns}
-          // Rows
-          rows={animalRows}
-          rowCount={animalsDataLoader.data?.animals?.length ?? 0}
-          getRowId={(row) => row.critter_id}
-          // Pagination
-          paginationMode="server"
-          pageSizeOptions={pageSizeOptions}
-          paginationModel={paginationModel}
-          onPaginationModelChange={(model) => {
-            if (!model) {
-              return;
-            }
-            setSearchParams(searchParams.set('a_page', String(model.page)).set('a_limit', String(model.pageSize)));
-            setPaginationModel(model);
-          }}
-          // Sorting
-          sortingMode="server"
-          sortModel={sortModel}
-          sortingOrder={['asc', 'desc']}
-          onSortModelChange={(model) => {
-            if (!model.length) {
-              return;
-            }
-            setSearchParams(searchParams.set('a_sort', model[0].field).set('a_order', model[0].sort ?? 'desc'));
-            setSortModel(model);
-          }}
-          // Row options
-          checkboxSelection={false}
-          disableRowSelectionOnClick
-          rowSelection={false}
-          // Column options
-          disableColumnSelector
-          disableColumnFilter
-          disableColumnMenu
-          // Styling
-          rowHeight={70}
-          getRowHeight={() => 'auto'}
-          autoHeight={false}
-          noRowsOverlay={
-            <GridOverlay>
-              <NoDataOverlay
-                title="Create or Join Surveys to See Animal Data"
-                subtitle="You currently have no animal data. Once you create or join surveys with animal data, it will be displayed here"
-                icon={mdiArrowTopRight}
-              />
-            </GridOverlay>
-          }
-          sx={{
-            '& .MuiDataGrid-cell': {
-              py: 0.75,
-              background: '#fff',
-              '&.MuiDataGrid-cell--editing:focus-within': {
-                outline: 'none'
+      {animalRows.length ? (
+        <Box height="100vh" maxHeight="800px" p={2}>
+          <StyledDataGrid
+            noRowsMessage="No animals found"
+            loading={!animalsDataLoader.isReady && !animalsDataLoader.data}
+            // Columns
+            columns={columns}
+            // Rows
+            rows={animalRows}
+            rowCount={animalsDataLoader.data?.animals?.length ?? 0}
+            getRowId={(row) => row.critter_id}
+            // Pagination
+            paginationMode="server"
+            pageSizeOptions={pageSizeOptions}
+            paginationModel={paginationModel}
+            onPaginationModelChange={(model) => {
+              if (!model) {
+                return;
               }
-            }
-          }}
+              setSearchParams(searchParams.set('a_page', String(model.page)).set('a_limit', String(model.pageSize)));
+              setPaginationModel(model);
+            }}
+            // Sorting
+            sortingMode="server"
+            sortModel={sortModel}
+            sortingOrder={['asc', 'desc']}
+            onSortModelChange={(model) => {
+              if (!model.length) {
+                return;
+              }
+              setSearchParams(searchParams.set('a_sort', model[0].field).set('a_order', model[0].sort ?? 'desc'));
+              setSortModel(model);
+            }}
+            // Row options
+            checkboxSelection={false}
+            disableRowSelectionOnClick
+            rowSelection={false}
+            // Column options
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
+            // Styling
+            rowHeight={70}
+            getRowHeight={() => 'auto'}
+            autoHeight={false}
+          />
+        </Box>
+      ) : (
+        <NoDataOverlay
+          height="400px"
+          title="Create or Join Surveys to See Animals"
+          subtitle="You currently have no animal data. Once you create or join surveys with animal data, it will be displayed here"
+          icon={mdiArrowTopRight}
         />
-      </Box>
+      )}
     </>
   );
 };

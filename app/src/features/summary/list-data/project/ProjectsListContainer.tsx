@@ -6,7 +6,7 @@ import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridOverlay, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
@@ -212,73 +212,61 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="100vh" maxHeight="700px" p={2}>
-        <StyledDataGrid
-          noRowsMessage="No projects found"
-          loading={!isReady && !data}
-          // Columns
-          columns={columns}
-          // Rows
-          rows={rows}
-          rowCount={data?.pagination.total ?? 0}
-          getRowId={(row) => row.project_id}
-          // Pagination
-          paginationMode="server"
-          paginationModel={paginationModel}
-          pageSizeOptions={pageSizeOptions}
-          onPaginationModelChange={(model) => {
-            if (!model) {
-              return;
-            }
-            setSearchParams(searchParams.set('p_page', String(model.page)).set('p_limit', String(model.pageSize)));
-            setPaginationModel(model);
-          }}
-          // Sorting
-          sortingMode="server"
-          sortModel={sortModel}
-          sortingOrder={['asc', 'desc']}
-          onSortModelChange={(model) => {
-            if (!model.length) {
-              return;
-            }
-            setSearchParams(searchParams.set('p_sort', model[0].field).set('p_order', model[0].sort ?? 'desc'));
-            setSortModel(model);
-          }}
-          // Row options
-          rowSelection={false}
-          checkboxSelection={false}
-          disableRowSelectionOnClick
-          // Column options
-          disableColumnSelector
-          disableColumnFilter
-          disableColumnMenu
-          // Styling
-          rowHeight={70}
-          getRowHeight={() => 'auto'}
-          autoHeight={false}
-          noRowsOverlay={
-            <GridOverlay>
-              <NoDataOverlay
-                title="Create or Join Projects"
-                subtitle="You currently have no projects. Once you create or get invited to projects, they will be displayed here"
-                icon={mdiArrowTopRight}
-              />
-            </GridOverlay>
-          }
-          sx={{
-            '& .MuiDataGrid-overlay': {
-              background: grey[50]
-            },
-            '& .MuiDataGrid-cell': {
-              py: 0.75,
-              background: '#fff',
-              '&.MuiDataGrid-cell--editing:focus-within': {
-                outline: 'none'
+      {rows.length ? (
+        <Box height="100vh" maxHeight="700px" p={2}>
+          <StyledDataGrid
+            noRowsMessage="No projects found"
+            loading={!isReady && !data}
+            // Columns
+            columns={columns}
+            // Rows
+            rows={rows}
+            rowCount={data?.pagination.total ?? 0}
+            getRowId={(row) => row.project_id}
+            // Pagination
+            paginationMode="server"
+            paginationModel={paginationModel}
+            pageSizeOptions={pageSizeOptions}
+            onPaginationModelChange={(model) => {
+              if (!model) {
+                return;
               }
-            }
-          }}
+              setSearchParams(searchParams.set('p_page', String(model.page)).set('p_limit', String(model.pageSize)));
+              setPaginationModel(model);
+            }}
+            // Sorting
+            sortingMode="server"
+            sortModel={sortModel}
+            sortingOrder={['asc', 'desc']}
+            onSortModelChange={(model) => {
+              if (!model.length) {
+                return;
+              }
+              setSearchParams(searchParams.set('p_sort', model[0].field).set('p_order', model[0].sort ?? 'desc'));
+              setSortModel(model);
+            }}
+            // Row options
+            rowSelection={false}
+            checkboxSelection={false}
+            disableRowSelectionOnClick
+            // Column options
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
+            // Styling
+            rowHeight={70}
+            getRowHeight={() => 'auto'}
+            autoHeight={false}
+          />
+        </Box>
+      ) : (
+        <NoDataOverlay
+          height="400px"
+          title="Create or Join Projects"
+          subtitle="You currently have no projects. Once you create or get invited to projects, they will be displayed here"
+          icon={mdiArrowTopRight}
         />
-      </Box>
+      )}
     </>
   );
 };

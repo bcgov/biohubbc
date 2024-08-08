@@ -6,7 +6,7 @@ import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridOverlay, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
@@ -220,73 +220,61 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="100vh" maxHeight="700px" p={2}>
-        <StyledDataGrid
-          noRowsMessage="No surveys found"
-          loading={!surveysDataLoader.isReady && !surveysDataLoader.data}
-          // Columns
-          columns={columns}
-          // Rows
-          rows={rows}
-          rowCount={surveysDataLoader.data?.pagination.total ?? 0}
-          getRowId={(row) => row.survey_id}
-          // Pagination
-          paginationMode="server"
-          paginationModel={paginationModel}
-          pageSizeOptions={pageSizeOptions}
-          onPaginationModelChange={(model) => {
-            if (!model) {
-              return;
-            }
-            setSearchParams(searchParams.set('s_page', String(model.page)).set('s_limit', String(model.pageSize)));
-            setPaginationModel(model);
-          }}
-          // Sorting
-          sortingMode="server"
-          sortModel={sortModel}
-          sortingOrder={['asc', 'desc']}
-          onSortModelChange={(model) => {
-            if (!model.length) {
-              return;
-            }
-            setSearchParams(searchParams.set('s_sort', model[0].field).set('s_order', model[0].sort ?? 'desc'));
-            setSortModel(model);
-          }}
-          // Row options
-          checkboxSelection={false}
-          disableRowSelectionOnClick
-          rowSelection={false}
-          // Column options
-          disableColumnSelector
-          disableColumnFilter
-          disableColumnMenu
-          // Styling
-          rowHeight={70}
-          getRowHeight={() => 'auto'}
-          autoHeight={false}
-          noRowsOverlay={
-            <GridOverlay>
-              <NoDataOverlay
-                title="Create or Join Surveys"
-                subtitle="You currently have no surveys. Once you create or get invited to surveys, they will be displayed here"
-                icon={mdiArrowTopRight}
-              />
-            </GridOverlay>
-          }
-          sx={{
-            '& .MuiDataGrid-overlay': {
-              background: grey[50]
-            },
-            '& .MuiDataGrid-cell': {
-              py: 0.75,
-              background: '#fff',
-              '&.MuiDataGrid-cell--editing:focus-within': {
-                outline: 'none'
+      {rows.length ? (
+        <Box height="100vh" maxHeight="700px" p={2}>
+          <StyledDataGrid
+            noRowsMessage="No surveys found"
+            loading={!surveysDataLoader.isReady && !surveysDataLoader.data}
+            // Columns
+            columns={columns}
+            // Rows
+            rows={rows}
+            rowCount={surveysDataLoader.data?.pagination.total ?? 0}
+            getRowId={(row) => row.survey_id}
+            // Pagination
+            paginationMode="server"
+            paginationModel={paginationModel}
+            pageSizeOptions={pageSizeOptions}
+            onPaginationModelChange={(model) => {
+              if (!model) {
+                return;
               }
-            }
-          }}
+              setSearchParams(searchParams.set('s_page', String(model.page)).set('s_limit', String(model.pageSize)));
+              setPaginationModel(model);
+            }}
+            // Sorting
+            sortingMode="server"
+            sortModel={sortModel}
+            sortingOrder={['asc', 'desc']}
+            onSortModelChange={(model) => {
+              if (!model.length) {
+                return;
+              }
+              setSearchParams(searchParams.set('s_sort', model[0].field).set('s_order', model[0].sort ?? 'desc'));
+              setSortModel(model);
+            }}
+            // Row options
+            checkboxSelection={false}
+            disableRowSelectionOnClick
+            rowSelection={false}
+            // Column options
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
+            // Styling
+            rowHeight={70}
+            getRowHeight={() => 'auto'}
+            autoHeight={false}
+          />
+        </Box>
+      ) : (
+        <NoDataOverlay
+          height="400px"
+          title="Create Surveys in Projects"
+          subtitle="You currently have no surveys. Once you create or get invited to projects with surveys, they will be displayed here"
+          icon={mdiArrowTopRight}
         />
-      </Box>
+      )}
     </>
   );
 };

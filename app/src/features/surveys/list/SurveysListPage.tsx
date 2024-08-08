@@ -161,7 +161,7 @@ const SurveysListPage = () => {
           />
         ) : (
           <NoDataOverlay
-            height="250px"
+            height="200px"
             title="Create a Survey"
             subtitle="Start managing ecological data by creating a survey"
             icon={mdiArrowTopRight}
