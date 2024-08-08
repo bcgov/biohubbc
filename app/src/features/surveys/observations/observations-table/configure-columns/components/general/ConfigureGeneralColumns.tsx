@@ -98,11 +98,10 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
   } = props;
 
   return (
-    <Box height='100%'>
+    // display="flex" and flexDirection="column" is necessary for the scrollbars to be correctly positioned
+    <Box height="100%" display="flex" flexDirection="column">
       <Stack flexDirection="row" alignItems="center" justifyContent="space-between" minWidth={400}>
-        <Typography variant="h5" mb={2}>
-          Select Columns to Show
-        </Typography>
+        <Typography variant="h5">Select Columns to Show</Typography>
         <FormControlLabel
           control={
             <Checkbox
@@ -110,10 +109,11 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
               checked={hiddenFields.length === 0}
               onClick={() => onToggleShowHideAll()}
               disabled={disabled}
+              sx={{ m: 0, p: 0 }}
             />
           }
           label={
-            <Typography variant="body2" sx={{ ml: 1 }} color="textSecondary" textTransform="uppercase" fontWeight={700}>
+            <Typography variant="body2" sx={{ ml: 0.5 }} color="textSecondary" textTransform="uppercase" fontWeight={700}>
               Show/Hide all
             </Typography>
           }
@@ -122,10 +122,11 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
 
       <List
         component={Stack}
-        gap={0.5}
+        gap={1}
         sx={{
+          my: 1,
           p: 0.5,
-          maxHeight: '90%',
+          maxHeight: '100%',
           overflowY: 'auto'
         }}
         disablePadding>
@@ -150,7 +151,7 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
                 onClick={() => onToggleColumnVisibility(column.field)}
                 disabled={disabled}
                 sx={{
-                  background: isSelected ? blueGrey[50] : '#fff',
+                  background: isSelected ? blueGrey[50] : grey[50],
                   borderRadius: '5px',
                   alignItems: 'flex-start',
                   '& .MuiListItemText-root': { my: 0 }

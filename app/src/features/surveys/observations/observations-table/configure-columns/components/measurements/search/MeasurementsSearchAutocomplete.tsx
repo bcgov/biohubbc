@@ -1,4 +1,4 @@
-import { mdiMagnify } from '@mdi/js';
+import { mdiMagnify, mdiStar } from '@mdi/js';
 import Icon from '@mdi/react';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
@@ -6,6 +6,8 @@ import ListItem from '@mui/material/ListItem';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
+import { useTaxonomyContext } from 'hooks/useContext';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { debounce } from 'lodash-es';
 import { useMemo, useState } from 'react';
@@ -39,6 +41,13 @@ export interface IMeasurementsSearchAutocompleteProps {
    * @memberof IMeasurementsSearchAutocompleteProps
    */
   speciesTsn?: number[];
+  /**
+   * TSNs to highlight
+   *
+   * @type {number[]}
+   * @memberof IMeasurementSearchAutocompleteProps
+   */
+  priorityTsns?: number[];
 }
 
 /**
@@ -48,7 +57,7 @@ export interface IMeasurementsSearchAutocompleteProps {
  * @return {*}
  */
 export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompleteProps) => {
-  const { selectedOptions, getOptions, onAddMeasurementColumn } = props;
+  const { selectedOptions, getOptions, onAddMeasurementColumn, priorityTsns } = props;
 
   const [inputValue, setInputValue] = useState('');
   const [options, setOptions] = useState<CBMeasurementType[]>([]);
@@ -61,6 +70,8 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
       }, 500),
     [getOptions]
   );
+
+  const taxonomyContext = useTaxonomyContext();
 
   return (
     <Autocomplete
@@ -129,25 +140,22 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
             data-testid="measurements-autocomplete-option">
             <Stack gap={0.75} mt={-0.25}>
               <Box>
-                <Typography variant="body2">
-                  <em>{renderOption.itis_tsn}</em>
-                </Typography>
-                {/* <Typography variant="body2">
-                  {renderOption.commonNames ? (
-                    <>
-                      <span>{renderOption.commonNames}</span>&nbsp;
-                      <span>
-                        (<em>{renderOption.scientificName}</em>)
-                      </span>
-                    </>
-                  ) : (
-                    <em>{renderOption.scientificName}</em>
-                  )}
-                </Typography> */}
+                <ScientificNameTypography
+                  variant="body2"
+                  color="textSecondary"
+                  name={
+                    renderOption.itis_tsn
+                      ? taxonomyContext.getCachedSpeciesTaxonomyById(renderOption.itis_tsn)?.scientificName ?? ''
+                      : ''
+                  }
+                />
               </Box>
               <Box>
                 <Typography component="div" variant="body1" fontWeight={700}>
                   {renderOption.measurement_name}
+                  {renderOption.itis_tsn && priorityTsns?.includes(renderOption.itis_tsn) && (
+                    <Icon path={mdiStar} size={2} />
+                  )}
                 </Typography>
                 <Typography
                   component="div"

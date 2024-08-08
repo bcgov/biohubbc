@@ -125,7 +125,7 @@ export const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
 
   return (
     <Dialog
-      sx={{ '& .MuiDialog-paper': { maxWidth: 1200, height: '75vh' } }}
+      sx={{ '& .MuiDialog-paper': { maxWidth: 1200, height: '75vh' }, py: 0 }}
       fullWidth
       open={open}
       onClose={onClose}
@@ -139,7 +139,7 @@ export const ConfigureColumnsDialog = (props: IConfigureColumnsDialogProps) => {
           measurements.
         </Typography>
       </DialogTitle>
-      <DialogContent id="configure-dialog-content">
+      <DialogContent id="configure-dialog-content" sx={{ overflowY: 'hidden', py: 0 }}>
         <ConfigureColumnsPage
           disabled={disabled}
           hiddenFields={hiddenFields}

@@ -1,5 +1,5 @@
 import { useConfigContext } from 'hooks/useContext';
-import { IPartialTaxonomy, ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { IPartialTaxonomy, ITaxonomy, ITaxonomyHierarchy } from 'interfaces/useTaxonomyApi.interface';
 import { startCase } from 'lodash-es';
 import qs from 'qs';
 import useAxios from './useAxios';
@@ -33,6 +33,27 @@ const useTaxonomyApi = () => {
   };
 
   /**
+   * Retrieves parent taxons for multiple TSNs
+   *
+   * @param {number[]} tsns
+   * @return {*}  {Promise<IPartialTaxonomy[]>}
+   */
+  const getTaxonHierarchyByTSNs = async (tsns: number[]): Promise<ITaxonomyHierarchy[]> => {
+    const { data } = await apiAxios.get<{
+      searchResponse: ITaxonomyHierarchy[];
+    }>(config.BIOHUB_TAXON_TSN_PATH, {
+      params: {
+        tsn: [...new Set(tsns)]
+      },
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
+
+    return data.searchResponse;
+  };
+
+  /**
    * Search for taxon records by search terms.
    *
    * @param {string[]} searchTerms
@@ -59,7 +80,8 @@ const useTaxonomyApi = () => {
 
   return {
     getSpeciesFromIds,
-    searchSpeciesByTerms
+    searchSpeciesByTerms,
+    getTaxonHierarchyByTSNs
   };
 };
 
