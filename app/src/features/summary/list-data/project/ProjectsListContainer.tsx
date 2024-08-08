@@ -213,7 +213,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
         <Divider />
       </Collapse>
       {rows.length ? (
-        <Box height="100vh" maxHeight="700px" p={2}>
+        <Box height="90vh" maxHeight="700px" p={2}>
           <StyledDataGrid
             noRowsMessage="No projects found"
             loading={!isReady && !data}

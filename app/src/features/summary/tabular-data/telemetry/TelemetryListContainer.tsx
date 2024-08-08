@@ -207,7 +207,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
         </Box>
       ) : (
         <NoDataOverlay
-          height="400px"
+          height="500px"
           title="Create or Join Surveys to See Telemetry Data"
           subtitle="You currently have no telemetry data. Once you create or join surveys with telemetry data, it will be displayed here"
           icon={mdiArrowTopRight}

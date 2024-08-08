@@ -221,7 +221,7 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
         <Divider />
       </Collapse>
       {rows.length ? (
-        <Box height="100vh" maxHeight="700px" p={2}>
+        <Box height="90vh" maxHeight="700px" p={2}>
           <StyledDataGrid
             noRowsMessage="No surveys found"
             loading={!surveysDataLoader.isReady && !surveysDataLoader.data}
