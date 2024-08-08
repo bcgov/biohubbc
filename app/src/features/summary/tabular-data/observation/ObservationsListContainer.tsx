@@ -1,10 +1,12 @@
+import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridOverlay, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import dayjs from 'dayjs';
@@ -247,7 +249,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="500px" p={2}>
+      <Box height="100vh" maxHeight="800px" p={2}>
         <StyledDataGrid
           noRowsMessage="No observations found"
           loading={!observationsDataLoader.isReady && !observationsDataLoader.data}
@@ -291,10 +293,16 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
           rowHeight={70}
           getRowHeight={() => 'auto'}
           autoHeight={false}
+          noRowsOverlay={
+            <GridOverlay>
+              <NoDataOverlay
+                title="Create or Join Surveys to See Observations Data"
+                subtitle="You currently have no observations data. Once you create or join surveys with observations data, it will be displayed here"
+                icon={mdiArrowTopRight}
+              />
+            </GridOverlay>
+          }
           sx={{
-            '& .MuiDataGrid-overlay': {
-              background: grey[50]
-            },
             '& .MuiDataGrid-cell': {
               py: 0.75,
               background: '#fff',

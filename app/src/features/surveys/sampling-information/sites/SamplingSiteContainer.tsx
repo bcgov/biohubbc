@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonMap, SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { SamplingPeriodTable } from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
 import { SamplingSiteMapContainer } from 'features/surveys/sampling-information/sites/map/SamplingSiteMapContainer';
 import { SamplingSiteTable } from 'features/surveys/sampling-information/sites/table/SamplingSiteTable';
@@ -189,14 +190,38 @@ const SamplingSiteContainer = () => {
             {/* Data tables */}
             <Box p={2}>
               {activeView === SamplingSiteManageTableView.SITES && (
-                <SamplingSiteTable
-                  sites={sampleSites?.sampleSites ?? []}
-                  setBulkActionSites={setSiteSelection}
-                  bulkActionSites={siteSelection}
-                />
+                <>
+                  {sampleSites?.sampleSites.length ? (
+                    <SamplingSiteTable
+                      sites={sampleSites?.sampleSites ?? []}
+                      setBulkActionSites={setSiteSelection}
+                      bulkActionSites={siteSelection}
+                    />
+                  ) : (
+                    <NoDataOverlay
+                      height="200px"
+                      title="Add Sampling Sites"
+                      subtitle="Sampling sites show where techniques were implemented"
+                      icon={mdiArrowTopRight}
+                    />
+                  )}
+                </>
               )}
 
-              {activeView === SamplingSiteManageTableView.PERIODS && <SamplingPeriodTable sites={sampleSites} />}
+              {activeView === SamplingSiteManageTableView.PERIODS && (
+                <>
+                  {sampleSites?.sampleSites.length ? (
+                    <SamplingPeriodTable sites={sampleSites} />
+                  ) : (
+                    <NoDataOverlay
+                      height="200px"
+                      title="Add Sampling Periods"
+                      subtitle="Sampling periods describe when a technique was implemented at a site"
+                      icon={mdiArrowTopRight}
+                    />
+                  )}
+                </>
+              )}
             </Box>
           </LoadingGuard>
         </Box>

@@ -1,6 +1,8 @@
+import { mdiArrowTopRight } from '@mdi/js';
 import Typography from '@mui/material/Typography';
 import AttachmentsList from 'components/attachments/list/AttachmentsList';
 import ProjectReportAttachmentDialog from 'components/dialog/attachments/project/ProjectReportAttachmentDialog';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { AttachmentType } from 'constants/attachments';
 import { AttachmentsI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
@@ -120,13 +122,22 @@ const ProjectAttachmentsList = () => {
         open={!!currentAttachment && currentAttachment?.fileType === AttachmentType.REPORT}
         onClose={handleViewDetailsClose}
       />
-      <AttachmentsList<IGetProjectAttachment>
-        attachments={attachmentsList}
-        handleDownload={handleDownload}
-        handleDelete={handleDelete}
-        handleViewDetails={handleViewDetailsOpen}
-        emptyStateText="No shared files found"
-      />
+      {attachmentsList.length ? (
+        <AttachmentsList<IGetProjectAttachment>
+          attachments={attachmentsList}
+          handleDownload={handleDownload}
+          handleDelete={handleDelete}
+          handleViewDetails={handleViewDetailsOpen}
+          emptyStateText="No shared files found"
+        />
+      ) : (
+        <NoDataOverlay
+          height="200px"
+          title="Upload Files"
+          subtitle="Share information with your team by uploading files"
+          icon={mdiArrowTopRight}
+        />
+      )}
     </>
   );
 };

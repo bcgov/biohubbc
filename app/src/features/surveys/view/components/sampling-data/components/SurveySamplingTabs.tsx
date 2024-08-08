@@ -1,4 +1,4 @@
-import { mdiAutoFix, mdiCalendarRange, mdiMapMarker } from '@mdi/js';
+import { mdiArrowTopRight, mdiAutoFix, mdiCalendarRange, mdiMapMarker } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -6,6 +6,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { SamplingPeriodTable } from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
 import { SurveySitesTable } from 'features/surveys/view/components/sampling-data/components/SurveySitesTable';
 import { SurveyTechniquesTable } from 'features/surveys/view/components/sampling-data/components/SurveyTechniquesTable';
@@ -118,7 +119,16 @@ export const SurveySamplingTabs = () => {
               isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
               fallback={<SkeletonTable />}
               delay={200}>
-              <SurveyTechniquesTable techniques={surveyContext.techniqueDataLoader.data} />
+              {surveyContext.techniqueDataLoader.data?.count ? (
+                <SurveyTechniquesTable techniques={surveyContext.techniqueDataLoader.data} />
+              ) : (
+                <NoDataOverlay
+                  height="200px"
+                  title="Add a Technique"
+                  subtitle="Techniques describe how you collected species observations"
+                  icon={mdiArrowTopRight}
+                />
+              )}
             </LoadingGuard>
           </Box>
         )}
@@ -129,7 +139,16 @@ export const SurveySamplingTabs = () => {
               isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}
               fallback={<SkeletonTable />}
               delay={200}>
-              <SurveySitesTable sites={surveyContext.sampleSiteDataLoader.data} />
+              {surveyContext.sampleSiteDataLoader.data?.sampleSites.length ? (
+                <SurveySitesTable sites={surveyContext.sampleSiteDataLoader.data} />
+              ) : (
+                <NoDataOverlay
+                  height="200px"
+                  title="Add Sampling Sites"
+                  subtitle="Sampling sites are where you collected species observations"
+                  icon={mdiArrowTopRight}
+                />
+              )}
             </LoadingGuard>
           </Box>
         )}
@@ -140,7 +159,17 @@ export const SurveySamplingTabs = () => {
               isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}
               fallback={<SkeletonTable />}
               delay={200}>
-              <SamplingPeriodTable sites={surveyContext.sampleSiteDataLoader.data} />
+              {surveyContext.sampleSiteDataLoader.data?.sampleSites.length ? (
+                <SamplingPeriodTable sites={surveyContext.sampleSiteDataLoader.data} />
+              ) : (
+                <NoDataOverlay
+                  height="200px"
+                  title="Add Periods"
+                  subtitle="Add periods when you create sampling sites to describe when 
+                  exactly you collected species observations"
+                  icon={mdiArrowTopRight}
+                />
+              )}
             </LoadingGuard>
           </Box>
         )}

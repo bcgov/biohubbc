@@ -1,10 +1,8 @@
-import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
 import blueGrey from '@mui/material/colors/blueGrey';
-import { GridColDef, GridOverlay } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { ISamplingSiteRowData } from 'features/surveys/sampling-information/sites/table/SamplingSiteTable';
 import { IGetSampleSiteResponse } from 'interfaces/useSamplingSiteApi.interface';
 import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
@@ -90,22 +88,6 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
       getRowId={(row) => row.id}
       columns={columns}
       disableRowSelectionOnClick
-      noRowsOverlay={
-        <GridOverlay>
-          <NoDataOverlay
-            title="Add Sampling Sites"
-            subtitle="Add sampling sites to show where you implemented a technique"
-            icon={mdiArrowTopRight}
-          />
-        </GridOverlay>
-      }
-      sx={{
-        '& .MuiDataGrid-virtualScroller': {
-          height: rows.length === 0 ? '250px' : 'unset',
-          overflowY: 'auto !important',
-          overflowX: 'hidden'
-        }
-      }}
     />
   );
 };

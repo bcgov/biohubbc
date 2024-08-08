@@ -1,5 +1,7 @@
+import { mdiArrowTopRight } from '@mdi/js';
 import AttachmentsList from 'components/attachments/list/AttachmentsList';
 import SurveyReportAttachmentDialog from 'components/dialog/attachments/survey/SurveyReportAttachmentDialog';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { AttachmentsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -96,6 +98,11 @@ const SurveyAttachmentsList: React.FC = () => {
     });
   };
 
+  const attachments = [
+    ...(surveyContext.artifactDataLoader.data?.attachmentsList || []),
+    ...(surveyContext.artifactDataLoader.data?.reportAttachmentsList || [])
+  ];
+
   return (
     <>
       <SurveyReportAttachmentDialog
@@ -105,16 +112,22 @@ const SurveyAttachmentsList: React.FC = () => {
         open={viewReportDetailsDialogOpen}
         onClose={() => setViewReportDetailsDialogOpen(false)}
       />
-      <AttachmentsList<IGetSurveyAttachment>
-        attachments={[
-          ...(surveyContext.artifactDataLoader.data?.attachmentsList || []),
-          ...(surveyContext.artifactDataLoader.data?.reportAttachmentsList || [])
-        ]}
-        handleDownload={handleDownload}
-        handleDelete={handleDelete}
-        handleViewDetails={handleViewDetails}
-        emptyStateText="No documents found"
-      />
+      {attachments.length ? (
+        <AttachmentsList<IGetSurveyAttachment>
+          attachments={attachments}
+          handleDownload={handleDownload}
+          handleDelete={handleDelete}
+          handleViewDetails={handleViewDetails}
+          emptyStateText="No documents found"
+        />
+      ) : (
+        <NoDataOverlay
+          height="250px"
+          title="Upload Files"
+          subtitle="Add more information about your survey by uploading files"
+          icon={mdiArrowTopRight}
+        />
+      )}
     </>
   );
 };
