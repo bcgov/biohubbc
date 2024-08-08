@@ -106,9 +106,6 @@ const AttachmentsList = <T extends IGetProjectAttachment | IGetSurveyAttachment>
       noRowsMessage={props.emptyStateText ?? 'No Attachments'}
       columns={attachmentsListColumnDefs}
       rows={attachments}
-      rowHeight={70}
-      getRowHeight={() => 'auto'}
-      autoHeight={false}
       pageSizeOptions={pageSizeOptions}
       initialState={{
         pagination: {

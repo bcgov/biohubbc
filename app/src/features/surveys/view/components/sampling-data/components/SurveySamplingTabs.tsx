@@ -115,9 +115,9 @@ export const SurveySamplingTabs = () => {
 
       <Divider />
 
-      <Box px={2} py={2}>
+      <Box p={2} position="relative">
         {activeView === SurveySamplingView.TECHNIQUES && (
-          <Box position="relative">
+          <>
             <LoadingGuard
               isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
               fallback={<SkeletonTable />}
@@ -133,11 +133,11 @@ export const SurveySamplingTabs = () => {
                 />
               )}
             </LoadingGuard>
-          </Box>
+          </>
         )}
 
         {activeView === SurveySamplingView.SITES && (
-          <Box position="relative">
+          <>
             <LoadingGuard
               isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}
               fallback={<SkeletonTable />}
@@ -153,11 +153,11 @@ export const SurveySamplingTabs = () => {
                 />
               )}
             </LoadingGuard>
-          </Box>
+          </>
         )}
 
         {activeView === SurveySamplingView.PERIODS && (
-          <Box position="relative">
+          <>
             <LoadingGuard
               isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}
               fallback={<SkeletonTable />}
@@ -174,7 +174,7 @@ export const SurveySamplingTabs = () => {
                 />
               )}
             </LoadingGuard>
-          </Box>
+          </>
         )}
       </Box>
     </>

@@ -255,26 +255,24 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
         </MenuItem>
       </Menu>
 
-      <Box>
-        {rows.length ? (
-          <StyledDataGrid
-            rows={rows}
-            columns={columns}
-            disableRowSelectionOnClick
-            disableColumnMenu
-            checkboxSelection
-            rowSelectionModel={bulkActionTechniques}
-            onRowSelectionModelChange={setBulkActionTechniques}
-          />
-        ) : (
-          <NoDataOverlay
-            height="200px"
-            title="Add Techniques"
-            subtitle="Techniques describe how you collected species observations"
-            icon={mdiArrowTopRight}
-          />
-        )}
-      </Box>
+      {rows.length ? (
+        <StyledDataGrid
+          rows={rows}
+          columns={columns}
+          disableRowSelectionOnClick
+          disableColumnMenu
+          checkboxSelection
+          rowSelectionModel={bulkActionTechniques}
+          onRowSelectionModelChange={setBulkActionTechniques}
+        />
+      ) : (
+        <NoDataOverlay
+          height="200px"
+          title="Add Techniques"
+          subtitle="Techniques describe how you collected species observations"
+          icon={mdiArrowTopRight}
+        />
+      )}
     </>
   );
 };

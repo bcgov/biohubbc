@@ -124,7 +124,7 @@ const SurveyAttachmentsList: React.FC = () => {
         <NoDataOverlay
           height="250px"
           title="Upload Files"
-          subtitle="Add more information about your survey by uploading files"
+          subtitle="Add extra information about your survey by uploading files"
           icon={mdiArrowTopRight}
         />
       )}
