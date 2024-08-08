@@ -1,8 +1,6 @@
-import { mdiArrowTopRight } from '@mdi/js';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridOverlay } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useCodesContext } from 'hooks/useContext';
@@ -118,28 +116,6 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       columns={columns}
       checkboxSelection={false}
       disableRowSelectionOnClick
-      noRowsOverlay={
-        <GridOverlay>
-          <NoDataOverlay
-            title="Add Sampling Periods"
-            subtitle="Sampling periods describe when a technique was implemented at a site"
-            icon={mdiArrowTopRight}
-          />
-        </GridOverlay>
-      }
-      sx={{
-        '& .MuiDataGrid-virtualScroller': {
-          height: rows.length === 0 ? '250px' : 'unset',
-          overflowY: 'auto !important',
-          overflowX: 'hidden'
-        },
-        '& .MuiDataGrid-overlay': {
-          height: '250px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
-        }
-      }}
     />
   );
 };

@@ -1,6 +1,6 @@
 import { mdiArrowTopRight } from '@mdi/js';
 import Stack from '@mui/material/Stack';
-import { GridColDef, GridOverlay, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SkeletonRow } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
@@ -160,13 +160,15 @@ export const SurveySpatialObservationTable = (props: ISurveyDataObservationTable
 
   return (
     <>
-      {props.isLoading ? (
+      {props.isLoading && (
         <Stack>
           <SkeletonRow />
           <SkeletonRow />
           <SkeletonRow />
         </Stack>
-      ) : (
+      )}
+
+      {tableData.length && !props.isLoading ? (
         <StyledDataGrid
           noRowsMessage="No observation records found"
           columnHeaderHeight={rowHeight}
@@ -193,27 +195,13 @@ export const SurveySpatialObservationTable = (props: ISurveyDataObservationTable
           disableColumnMenu
           disableVirtualization
           data-testid="survey-spatial-observation-data-table"
-          noRowsOverlay={
-            <GridOverlay sx={{ position: 'relative' }}>
-              <NoDataOverlay
-                title="Add observations after samping information"
-                subtitle="Assign observations to sampling periods to keep track of observations at each site"
-                icon={mdiArrowTopRight}
-              />
-            </GridOverlay>
-          }
-          sx={{
-            '& .MuiDataGrid-virtualScroller': {
-              height: '250px',
-              overflowY: 'auto !important'
-            },
-            '& .MuiDataGrid-overlay': {
-              height: '250px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }
-          }}
+        />
+      ) : (
+        <NoDataOverlay
+          height="250px"
+          title="Add Observations"
+          subtitle="After adding sampling information, upload observations and link them to sampling efforts"
+          icon={mdiArrowTopRight}
         />
       )}
     </>

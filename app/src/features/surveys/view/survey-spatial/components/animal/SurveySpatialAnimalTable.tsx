@@ -1,7 +1,9 @@
+import { mdiArrowTopRight } from '@mdi/js';
 import Stack from '@mui/material/Stack';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SkeletonRow } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
@@ -73,14 +75,15 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
 
   return (
     <>
-      {props.isLoading ? (
+      {props.isLoading && (
         <Stack>
           {/* Skeleton rows for loading state */}
           <SkeletonRow />
           <SkeletonRow />
           <SkeletonRow />
         </Stack>
-      ) : (
+      )}
+      {tableData.length && !props.isLoading ? (
         <StyledDataGrid
           // Data grid component for displaying animal data
           noRowsMessage={'No animals found'}
@@ -104,6 +107,13 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
           disableVirtualization
           sortingOrder={['asc', 'desc']}
           data-testid="survey-animals-data-table"
+        />
+      ) : (
+        <NoDataOverlay
+          height="250px"
+          title="Add Animals"
+          subtitle="Add animals that you have captured, individually identified, or found deceased"
+          icon={mdiArrowTopRight}
         />
       )}
     </>

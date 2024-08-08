@@ -1,4 +1,4 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiArrowTopRight, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -8,6 +8,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
@@ -52,6 +53,8 @@ const SurveysListPage = () => {
     // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortModel, paginationModel]);
+
+  const surveys = projectContext.surveysListDataLoader.data?.surveys ?? [];
 
   const columns: GridColDef<SurveyBasicFieldsObject>[] = [
     {
@@ -132,29 +135,38 @@ const SurveysListPage = () => {
         </ProjectRoleGuard>
       </Toolbar>
       <Divider></Divider>
+
       <Box p={2}>
-        <StyledDataGrid
-          noRowsMessage="No surveys found"
-          columns={columns}
-          autoHeight
-          rows={projectContext.surveysListDataLoader.data?.surveys ?? []}
-          rowCount={projectContext.surveysListDataLoader.data?.pagination?.total ?? 0}
-          getRowId={(row) => row.survey_id}
-          pageSizeOptions={[...pageSizeOptions]}
-          paginationMode="server"
-          sortingMode="server"
-          sortModel={sortModel}
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
-          onSortModelChange={setSortModel}
-          rowSelection={false}
-          checkboxSelection={false}
-          disableRowSelectionOnClick
-          disableColumnSelector
-          disableColumnFilter
-          disableColumnMenu
-          sortingOrder={['asc', 'desc']}
-        />
+        {surveys.length ? (
+          <StyledDataGrid
+            noRowsMessage="No surveys found"
+            columns={columns}
+            rows={surveys}
+            rowCount={projectContext.surveysListDataLoader.data?.pagination?.total ?? 0}
+            getRowId={(row) => row.survey_id}
+            pageSizeOptions={[...pageSizeOptions]}
+            paginationMode="server"
+            sortingMode="server"
+            sortModel={sortModel}
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+            onSortModelChange={setSortModel}
+            rowSelection={false}
+            checkboxSelection={false}
+            disableRowSelectionOnClick
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
+            sortingOrder={['asc', 'desc']}
+          />
+        ) : (
+          <NoDataOverlay
+            height="250px"
+            title="Create a Survey"
+            subtitle="Start managing ecological data by creating a survey"
+            icon={mdiArrowTopRight}
+          />
+        )}
       </Box>
     </>
   );

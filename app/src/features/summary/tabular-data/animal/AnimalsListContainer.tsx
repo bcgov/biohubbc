@@ -1,10 +1,12 @@
+import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridOverlay, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
@@ -152,7 +154,7 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="500px" p={2}>
+      <Box height="100vh" maxHeight="800px" p={2}>
         <StyledDataGrid
           noRowsMessage="No animals found"
           loading={!animalsDataLoader.isReady && !animalsDataLoader.data}
@@ -196,10 +198,16 @@ const AnimalsListContainer = (props: IAnimalsListContainerProps) => {
           rowHeight={70}
           getRowHeight={() => 'auto'}
           autoHeight={false}
+          noRowsOverlay={
+            <GridOverlay>
+              <NoDataOverlay
+                title="Create or Join Surveys to See Animal Data"
+                subtitle="You currently have no animal data. Once you create or join surveys with animal data, it will be displayed here"
+                icon={mdiArrowTopRight}
+              />
+            </GridOverlay>
+          }
           sx={{
-            '& .MuiDataGrid-overlay': {
-              background: grey[50]
-            },
             '& .MuiDataGrid-cell': {
               py: 0.75,
               background: '#fff',

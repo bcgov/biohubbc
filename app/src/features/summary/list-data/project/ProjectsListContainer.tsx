@@ -1,3 +1,4 @@
+import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
@@ -5,9 +6,10 @@ import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridOverlay, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { getNrmRegionColour, NrmRegionKeys } from 'constants/colours';
 import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import { TeamMemberAvatar } from 'features/projects/view/components/TeamMemberAvatar';
@@ -210,7 +212,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="500px" p={2}>
+      <Box height="100vh" maxHeight="700px" p={2}>
         <StyledDataGrid
           noRowsMessage="No projects found"
           loading={!isReady && !data}
@@ -254,6 +256,15 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
           rowHeight={70}
           getRowHeight={() => 'auto'}
           autoHeight={false}
+          noRowsOverlay={
+            <GridOverlay>
+              <NoDataOverlay
+                title="Create or Join Projects"
+                subtitle="You currently have no projects. Once you create or get invited to projects, they will be displayed here"
+                icon={mdiArrowTopRight}
+              />
+            </GridOverlay>
+          }
           sx={{
             '& .MuiDataGrid-overlay': {
               background: grey[50]

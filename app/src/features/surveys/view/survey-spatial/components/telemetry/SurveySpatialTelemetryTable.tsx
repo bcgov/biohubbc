@@ -1,8 +1,10 @@
+import { mdiArrowTopRight } from '@mdi/js';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { SkeletonRow } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
@@ -116,15 +118,16 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
 
   return (
     <>
-      {props.isLoading ? (
+      {props.isLoading && (
         // Display skeleton loader while data is loading
         <Stack>
           <SkeletonRow />
           <SkeletonRow />
           <SkeletonRow />
         </Stack>
-      ) : (
-        // Display data grid when data is loaded
+      )}
+
+      {tableRows.length && !props.isLoading ? (
         <StyledDataGrid
           noRowsMessage={'No telemetry records found'}
           columnHeaderHeight={rowHeight}
@@ -147,6 +150,13 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
           disableVirtualization
           sortingOrder={['asc', 'desc']}
           data-testid="survey-spatial-telemetry-data-table"
+        />
+      ) : (
+        <NoDataOverlay
+          height="250px"
+          title="Add Telemetry"
+          subtitle="Add telemetry devices to animals and upload device data"
+          icon={mdiArrowTopRight}
         />
       )}
     </>

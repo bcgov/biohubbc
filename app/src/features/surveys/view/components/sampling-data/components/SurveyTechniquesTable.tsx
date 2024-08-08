@@ -1,11 +1,9 @@
-import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
 import blueGrey from '@mui/material/colors/blueGrey';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridOverlay } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { ITechniqueRowData } from 'features/surveys/sampling-information/techniques/table/SamplingTechniqueTable';
 import { useCodesContext } from 'hooks/useContext';
 import { IGetTechniquesResponse } from 'interfaces/useTechniqueApi.interface';
@@ -109,22 +107,6 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
       getRowId={(row) => row.id}
       columns={columns}
       disableRowSelectionOnClick
-      noRowsOverlay={
-        <GridOverlay>
-          <NoDataOverlay
-            title="Start by Adding a Technique"
-            subtitle="Add techniques to describe your sampling methods, then apply your techniques to sampling sites"
-            icon={mdiArrowTopRight}
-          />
-        </GridOverlay>
-      }
-      sx={{
-        '& .MuiDataGrid-virtualScroller': {
-          height: rows.length === 0 ? '250px' : 'unset',
-          overflowY: 'auto !important',
-          overflowX: 'hidden'
-        }
-      }}
     />
   );
 };
