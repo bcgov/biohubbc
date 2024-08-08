@@ -5,6 +5,8 @@ import { ApiError, ApiErrorType } from '../errors/api-error';
 import { getLogger } from '../utils/logger';
 import { KeycloakService } from './keycloak-service';
 
+// TODO: TechDebt: Audit the existing types / return types in this file.
+
 export interface ICritterbaseUser {
   username: string;
   keycloak_guid: string;
@@ -518,9 +520,9 @@ export class CritterbaseService {
    * Fetches body location information for the specified taxon.
    *
    * @param {string} tsn - The taxon serial number (TSN).
-   * @returns {Promise<any>} - The response data containing body location information.
+   * @returns {Promise<IAsSelectLookup[]>} - The response data containing body location information.
    */
-  async getTaxonBodyLocations(tsn: string): Promise<any> {
+  async getTaxonBodyLocations(tsn: string): Promise<IAsSelectLookup[]> {
     return this._makeGetRequest(CbRoutes['taxon-marking-body-locations'], [
       { key: 'tsn', value: tsn },
       { key: 'format', value: 'asSelect' }

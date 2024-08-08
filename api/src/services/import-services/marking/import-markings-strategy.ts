@@ -3,21 +3,24 @@ import { IDBConnection } from '../../../database/db';
 import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
 import { generateCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
-import { IBulkCreateMarking } from '../../critterbase-service';
+import { IAsSelectLookup, IBulkCreateMarking, ICritterDetailed } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
 import { CSVImportService, Row } from '../csv-import-strategy.interface';
 import { findCaptureIdFromDateTime } from '../utils/datetime';
-import { CsvMarking, getCsvMarkingSchema } from './import-markings-service.interface';
+import { CsvMarking, getCsvMarkingSchema } from './import-markings-strategy.interface';
+
+// TODO: Update all import services to use language Import<import-name>Strategy
+// TODO: Update CSVImportService interface -> CSVImportStrategy
 
 /**
  *
  * @class ImportMarkingsService
  * @extends DBService
- * @see CSVImportStrategy
+ * @see CSVImport
  *
  */
-export class ImportMarkingsService extends DBService implements CSVImportService {
+export class ImportMarkingsStrategy extends DBService implements CSVImportService {
   surveyCritterService: SurveyCritterService;
   surveyId: number;
 
@@ -54,6 +57,40 @@ export class ImportMarkingsService extends DBService implements CSVImportService
   }
 
   /**
+   * Get taxon body locations Map from a list of Critters.
+   *
+   * @async
+   * @param {ICritterDetailed[]} critters - List of detailed critters
+   * @returns {Promise<Map<string, IAsSelectLookup[]>>} Critter id -> taxon body locations Map
+   */
+  async getTaxonBodyLocationsCritterIdMap(critters: ICritterDetailed[]): Promise<Map<string, IAsSelectLookup[]>> {
+    const tsnBodyLocationsMap = new Map<number, IAsSelectLookup[]>();
+    const critterBodyLocationsMap = new Map<string, IAsSelectLookup[]>();
+
+    const uniqueTsns = Array.from(new Set(critters.map((critter) => critter.itis_tsn)));
+
+    // Only fetch body locations for unique tsns
+    const bodyLocations = await Promise.all(
+      uniqueTsns.map((tsn) => this.surveyCritterService.critterbaseService.getTaxonBodyLocations(String(tsn)))
+    );
+
+    // Loop through the flattened responses and set the body locations for each tsn
+    bodyLocations.flatMap((bodyLocationValues, idx) => {
+      tsnBodyLocationsMap.set(uniqueTsns[idx], bodyLocationValues);
+    });
+
+    // Now loop through the critters and assign the body locations to the critter id
+    for (const critter of critters) {
+      const tsnBodyLocations = tsnBodyLocationsMap.get(critter.itis_tsn);
+      if (tsnBodyLocations) {
+        critterBodyLocationsMap.set(critter.critter_id, tsnBodyLocations);
+      }
+    }
+
+    return critterBodyLocationsMap;
+  }
+
+  /**
    * Validate the CSV rows against zod schema.
    *
    * @param {Row[]} rows - CSV rows
@@ -63,12 +100,16 @@ export class ImportMarkingsService extends DBService implements CSVImportService
     // Generate type-safe cell getter from column validator
     const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
 
-    // Get reference values
+    // Get validation reference data
     const critterAliasMap = await this.surveyCritterService.getSurveyCritterIdAliasMap(this.surveyId);
     const colours = await this.surveyCritterService.critterbaseService.getColours();
     const markingTypes = await this.surveyCritterService.critterbaseService.getMarkingTypes();
 
-    const rowsToValidate: Partial<CsvMarking>[] = [];
+    // Used to find critter_id -> body location map
+    const rowCritters: ICritterDetailed[] = [];
+
+    // Rows passed to validator
+    const rowsToValidate: Partial<CsvMarking & { _tsn?: number }>[] = [];
 
     for (const row of rows) {
       let critterId, captureId;
@@ -82,9 +123,12 @@ export class ImportMarkingsService extends DBService implements CSVImportService
 
         const critter = critterAliasMap.get(alias);
 
-        // Find the capture_id from the date time columns
-        captureId = findCaptureIdFromDateTime(critter?.captures ?? [], captureDate, captureTime);
-        critterId = critter?.critter_id;
+        if (critter) {
+          // Find the capture_id from the date time columns
+          captureId = findCaptureIdFromDateTime(critter.captures, captureDate, captureTime);
+          critterId = critter.critter_id;
+          rowCritters.push(critter);
+        }
       }
 
       rowsToValidate.push({
@@ -98,9 +142,11 @@ export class ImportMarkingsService extends DBService implements CSVImportService
         comment: getCellValue(row, 'COMMENT')
       });
     }
+    // Get the critter_id -> taxonBodyLocations[] mapping
+    const critterBodyLocationsMap = await this.getTaxonBodyLocationsCritterIdMap(rowCritters);
 
     // Generate the zod schema with injected lookup values
-    return z.array(getCsvMarkingSchema(colours, markingTypes)).safeParseAsync(rowsToValidate);
+    return z.array(getCsvMarkingSchema(colours, markingTypes, critterBodyLocationsMap)).safeParseAsync(rowsToValidate);
   }
 
   /**
