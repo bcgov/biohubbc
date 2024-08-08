@@ -1,0 +1,5 @@
+{
+  "extension": ["ts"],
+  "spec": "src/{*.@(int).ts,!(__mocks__)/**/*.@(int).ts}",
+  "require": "ts-node/register, mocha-fixtures.int.ts"
+}
