@@ -119,6 +119,8 @@ describe.only('ImportMarkingsStrategy', () => {
       if (!validation.success) {
         expect.fail();
       } else {
+        expect(validation.success);
+        // TODO: check validation object
       }
     });
   });
