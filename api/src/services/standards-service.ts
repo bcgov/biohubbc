@@ -53,7 +53,7 @@ export class StandardsService extends DBService {
   /**
    * Gets environment standards
    *
-   * @param {string} keyword
+   * @param {string} keyword - search term for filtering the response based on environemntal variable name
    * @return {EnvironmentStandard[]}
    * @memberof standardsService
    */
@@ -66,7 +66,7 @@ export class StandardsService extends DBService {
   /**
    * Gets standards for method lookups
    *
-   * @param {string} keyword
+   * @param {string} keyword - search term for filtering the response based on method lookup name
    * @return {MethodStandards}
    * @memberof standardsService
    */

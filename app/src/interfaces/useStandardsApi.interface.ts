@@ -4,6 +4,19 @@ import {
   ICollectionUnit
 } from './useCritterApi.interface';
 
+interface IStandardNameDescription {
+  name: string;
+  description: string;
+}
+
+interface IQualitativeAttributeStandard extends IStandardNameDescription {
+  options: IStandardNameDescription[];
+}
+
+interface IQuantitativeAttributeStandard extends IStandardNameDescription {
+  unit: string;
+}
+
 /**
  * Data standards for a taxon
  *
@@ -25,28 +38,23 @@ export interface ISpeciesStandards {
   ecologicalUnits: ICollectionUnit[];
 }
 
-export interface IStandardNameDescription {
-  name: string;
-  description: string;
-}
-
-export interface IQualitativeAttributeStandard {
-  name: string;
-  description: string;
-  options: IStandardNameDescription[];
-}
-
-export interface IQuantitativeAttributeStandard {
-  name: string;
-  description: string;
-  unit: string;
-}
-
+/**
+ * Data standards for methods
+ *
+ * @export
+ * @interface IMethodStandard
+ */
 export interface IMethodStandard extends IStandardNameDescription {
   method_lookup_id: number;
   attributes: { qualitative: IQualitativeAttributeStandard[]; quantitative: IQuantitativeAttributeStandard[] };
 }
 
+/**
+ * Data standards for environments
+ *
+ * @export
+ * @interface IEnvironmentStandards
+ */
 export interface IEnvironmentStandards {
   qualitative: IQualitativeAttributeStandard[];
   quantitative: IQuantitativeAttributeStandard[];

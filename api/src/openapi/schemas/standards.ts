@@ -2,30 +2,38 @@ import { OpenAPIV3 } from 'openapi-types';
 
 export const EnvironmentStandardsSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
+  description:
+    'Environment standards response object showing supported environmental variables and associated information',
   additionalProperties: false,
   properties: {
     qualitative: {
       type: 'array',
+      description: 'Array of qualitative environmental variables',
       items: {
         type: 'object',
         properties: {
           name: {
-            type: 'string'
+            type: 'string',
+            description: 'Name of the environmental variable'
           },
           description: {
             type: 'string',
+            description: 'Description of the environmental variable',
             nullable: true
           },
           options: {
             type: 'array',
+            description: 'Array of options for the qualitative variable',
             items: {
               type: 'object',
               properties: {
                 name: {
-                  type: 'string'
+                  type: 'string',
+                  description: 'Description of the environmental variable option'
                 },
                 description: {
                   type: 'string',
+                  description: 'Description of the environmental variable option',
                   nullable: true
                 }
               }
@@ -36,17 +44,24 @@ export const EnvironmentStandardsSchema: OpenAPIV3.SchemaObject = {
     },
     quantitative: {
       type: 'array',
+      description: 'Array of quantitative environmental variables',
       items: {
         type: 'object',
         properties: {
           name: {
-            type: 'string'
+            type: 'string',
+            description: 'Name of the quantitative environmental variable'
           },
           description: {
             type: 'string',
+            description: 'Description of the quantitative environmental variable',
             nullable: true
           },
-          unit: { type: 'string', nullable: true }
+          unit: {
+            type: 'string',
+            description: 'Unit of measurement of the quantitative environmental variable',
+            nullable: true
+          }
         }
       }
     }

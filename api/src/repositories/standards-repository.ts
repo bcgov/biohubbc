@@ -18,9 +18,9 @@ export class StandardsRepository extends BaseRepository {
   /**
    * Gets environment standards
    *
-   * @param {string} keyword
+   * @param {string} keyword - search term for filtering the response based on environmental variable name
    * @return {*}
-   * @memberof standardsRepository
+   * @memberof StandardsRepository
    */
   async getEnvironmentStandards(keyword?: string): Promise<EnvironmentStandards> {
     const sql = SQL`
@@ -60,6 +60,13 @@ export class StandardsRepository extends BaseRepository {
     return response.rows[0];
   }
 
+  /**
+   * Gets method standards
+   *
+   * @param {string} keyword - search term for filtering the response based on method lookup name
+   * @return {*}
+   * @memberof StandardsRepository
+   */
   async getMethodStandards(keyword?: string): Promise<MethodStandard[]> {
     const sql = SQL`
     WITH 

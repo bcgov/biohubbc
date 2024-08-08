@@ -27,7 +27,7 @@ export const StandardsToolbar = (props: IStandardsToolbar) => {
       <ToggleButtonGroup
         orientation="vertical"
         value={currentView}
-        onChange={(_event: React.MouseEvent<HTMLElement>, view: StandardsPageView) => {
+        onChange={(_event: React.MouseEvent<HTMLElement>, view: StandardsPageView | null) => {
           if (view) {
             setCurrentView(view);
           }

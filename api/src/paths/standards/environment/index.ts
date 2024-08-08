@@ -23,7 +23,7 @@ GET.apiDoc = {
       }
     }
   ],
-  security: [{ Bearer: [] }],
+  security: [],
   responses: {
     200: {
       description: 'Environment data standards response object.',

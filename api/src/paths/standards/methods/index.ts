@@ -23,7 +23,7 @@ GET.apiDoc = {
       }
     }
   ],
-  security: [{ Bearer: [] }],
+  security: [],
   responses: {
     200: {
       description: 'Method data standards response object.',

@@ -1,5 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { IEnvironmentStandards, IMethodStandard, ISpeciesStandards } from 'interfaces/useStandardsApi.interface';
+import qs from 'qs';
 
 /**
  * Returns information about what data can be uploaded for a given species,
@@ -27,13 +28,12 @@ const useStandardsApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IGetMethodsStandardsResponse>}
    */
   const getMethodStandards = async (keyword?: string): Promise<IMethodStandard[]> => {
-    let url = '/api/standards/methods';
+    const params = { keyword };
 
-    if (keyword) {
-      url += `?keyword=${keyword}`;
-    }
-
-    const { data } = await axios.get(url);
+    const { data } = await axios.get('/api/standards/methods', {
+      params,
+      paramsSerializer: (params) => qs.stringify(params)
+    });
 
     return data;
   };
@@ -45,13 +45,12 @@ const useStandardsApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IEnvironmentStandards>}
    */
   const getEnvironmentStandards = async (keyword?: string): Promise<IEnvironmentStandards> => {
-    let url = '/api/standards/environment';
+    const params = { keyword };
 
-    if (keyword) {
-      url += `?keyword=${keyword}`;
-    }
-
-    const { data } = await axios.get(url);
+    const { data } = await axios.get('/api/standards/environment', {
+      params,
+      paramsSerializer: (params) => qs.stringify(params)
+    });
 
     return data;
   };
