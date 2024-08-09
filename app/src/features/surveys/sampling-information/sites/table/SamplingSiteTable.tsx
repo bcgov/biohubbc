@@ -244,6 +244,12 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
         rowSelectionModel={bulkActionSites}
         onRowSelectionModelChange={setBulkActionSites}
         checkboxSelection
+        initialState={{
+          pagination: {
+            paginationModel: { page: 1, pageSize: 10 }
+          }
+        }}
+        pageSizeOptions={[10, 25, 50]}
       />
     </>
   );

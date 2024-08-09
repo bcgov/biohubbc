@@ -26,7 +26,7 @@ describe('SurveyPurposeAndMethodologyData', () => {
     const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
-    const { getByTestId, getAllByTestId } = render(
+    const { getByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <SurveyContext.Provider
           value={{
@@ -46,10 +46,6 @@ describe('SurveyPurposeAndMethodologyData', () => {
     );
 
     expect(getByTestId('intended_outcome_codes').textContent).toEqual('Intended Outcome 1');
-    expect(getAllByTestId('survey_vantage_code').map((item) => item.textContent)).toEqual([
-      'Vantage Code 1',
-      'Vantage Code 2'
-    ]);
     expect(getByTestId('survey_additional_details').textContent).toEqual('details');
   });
 
@@ -78,7 +74,7 @@ describe('SurveyPurposeAndMethodologyData', () => {
     const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
-    const { getByTestId, getAllByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
         <SurveyContext.Provider
           value={{
@@ -98,10 +94,6 @@ describe('SurveyPurposeAndMethodologyData', () => {
     );
 
     expect(getByTestId('intended_outcome_codes').textContent).toEqual('Intended Outcome 1');
-    expect(getAllByTestId('survey_vantage_code').map((item) => item.textContent)).toEqual([
-      'Vantage Code 1',
-      'Vantage Code 2'
-    ]);
     expect(queryByTestId('survey_additional_details')).toBeNull();
   });
 });

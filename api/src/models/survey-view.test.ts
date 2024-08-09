@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import { IPermitModel } from '../repositories/permit-repository';
 import {
-  GetAncillarySpeciesData,
   GetAttachmentsData,
   GetFocalSpeciesData,
   GetPermitData,
@@ -94,40 +93,6 @@ describe('GetFocalSpeciesData', () => {
 
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([
-        { tsn: 1, commonNames: ['species1'] },
-        { tsn: 2, commonNames: ['species2'] }
-      ]);
-    });
-  });
-});
-
-describe('GetAncillarySpeciesData', () => {
-  describe('No values provided', () => {
-    let data: GetAncillarySpeciesData;
-
-    before(() => {
-      data = new GetAncillarySpeciesData();
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let data: GetAncillarySpeciesData;
-
-    const obj = [
-      { tsn: 1, commonNames: ['species1'] },
-      { tsn: 2, commonNames: ['species2'] }
-    ];
-
-    before(() => {
-      data = new GetAncillarySpeciesData(obj);
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([
         { tsn: 1, commonNames: ['species1'] },
         { tsn: 2, commonNames: ['species2'] }
       ]);
@@ -325,10 +290,6 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
     it('sets additional_details', () => {
       expect(data.additional_details).to.equal('');
     });
-
-    it('sets vantage_code_ids', () => {
-      expect(data.vantage_code_ids).to.eql([]);
-    });
   });
 
   describe('All values provided with first nations id', () => {
@@ -337,7 +298,6 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
     const obj = {
       intended_outcome_ids: [1],
       additional_details: 'additional_detail',
-      vantage_ids: [4, 5],
       revision_count: 'count'
     };
 
@@ -351,10 +311,6 @@ describe('GetSurveyPurposeAndMethodologyData', () => {
 
     it('sets additional_details', () => {
       expect(data.additional_details).to.eql(obj.additional_details);
-    });
-
-    it('sets vantage_code_ids', () => {
-      expect(data.vantage_code_ids).to.eql(obj.vantage_ids);
     });
 
     it('sets revision_count', function () {

@@ -37,7 +37,8 @@ describe('SurveysListPage', () => {
   it('renders correctly with an empty list of surveys', async () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
-        data: codes
+        data: codes,
+        load: () => {}
       } as DataLoader<any, any, any>
     };
     const mockProjectContext: IProjectContext = {
@@ -86,7 +87,8 @@ describe('SurveysListPage', () => {
   it('renders correctly with a populated list of surveys', async () => {
     const mockCodesContext: ICodesContext = {
       codesDataLoader: {
-        data: codes
+        data: codes,
+        load: () => {}
       } as DataLoader<any, any, any>
     };
 

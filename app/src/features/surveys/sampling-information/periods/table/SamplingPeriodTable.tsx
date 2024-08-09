@@ -95,6 +95,12 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       columns={columns}
       checkboxSelection={false}
       disableRowSelectionOnClick
+      initialState={{
+        pagination: {
+          paginationModel: { page: 1, pageSize: 10 }
+        }
+      }}
+      pageSizeOptions={[10, 25, 50]}
     />
   );
 };

@@ -19,7 +19,7 @@ import Typography from '@mui/material/Typography';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { SamplingSiteListSite } from 'features/surveys/observations/sampling-sites/components/SamplingSiteListSite';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext, useDialogContext, useObservationsPageContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useObservationsPageContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -30,14 +30,9 @@ import { Link as RouterLink } from 'react-router-dom';
  */
 export const SamplingSiteListContainer = () => {
   const surveyContext = useSurveyContext();
-  const codesContext = useCodesContext();
   const dialogContext = useDialogContext();
   const observationsPageContext = useObservationsPageContext();
   const biohubApi = useBiohubApi();
-
-  useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
 
   useEffect(() => {
     surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
@@ -295,7 +290,7 @@ export const SamplingSiteListContainer = () => {
         <Divider flexItem />
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
           <Box position="absolute" top="0" right="0" bottom="0" left="0">
-            {surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
+            {surveyContext.sampleSiteDataLoader.isLoading ? (
               <SkeletonList />
             ) : (
               <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
