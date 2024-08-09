@@ -1,6 +1,8 @@
 import { mdiArrowTopRight } from '@mdi/js';
 import AttachmentsList from 'components/attachments/list/AttachmentsList';
 import SurveyReportAttachmentDialog from 'components/dialog/attachments/survey/SurveyReportAttachmentDialog';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { AttachmentsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
@@ -112,7 +114,20 @@ const SurveyAttachmentsList: React.FC = () => {
         open={viewReportDetailsDialogOpen}
         onClose={() => setViewReportDetailsDialogOpen(false)}
       />
-      {attachments.length ? (
+      <LoadingGuard
+        isLoading={surveyContext.artifactDataLoader.isLoading || !surveyContext.artifactDataLoader.isReady}
+        isLoadingFallback={<SkeletonTable />}
+        isLoadingFallbackDelay={100}
+        hasNoData={!attachments.length}
+        hasNoDataFallback={
+          <NoDataOverlay
+            height="250px"
+            title="Upload Files"
+            subtitle="Add extra information about your survey by uploading files"
+            icon={mdiArrowTopRight}
+          />
+        }
+        hasNoDataFallbackDelay={100}>
         <AttachmentsList<IGetSurveyAttachment>
           attachments={attachments}
           handleDownload={handleDownload}
@@ -120,14 +135,7 @@ const SurveyAttachmentsList: React.FC = () => {
           handleViewDetails={handleViewDetails}
           emptyStateText="No documents found"
         />
-      ) : (
-        <NoDataOverlay
-          height="250px"
-          title="Upload Files"
-          subtitle="Add extra information about your survey by uploading files"
-          icon={mdiArrowTopRight}
-        />
-      )}
+      </LoadingGuard>
     </>
   );
 };

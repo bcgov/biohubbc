@@ -4,25 +4,24 @@ import { GridColDef } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ISamplingSiteRowData } from 'features/surveys/sampling-information/sites/table/SamplingSiteTable';
-import { IGetSampleSiteResponse } from 'interfaces/useSamplingSiteApi.interface';
+import { Feature } from 'geojson';
 import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
 
+export interface ISurveySitesRowData {
+  id: number;
+  name: string;
+  description: string;
+  geojson: Feature;
+  blocks: string[];
+  stratums: string[];
+}
+
 export interface ISurveySitesTableProps {
-  sites?: IGetSampleSiteResponse;
+  sites: ISurveySitesRowData[];
 }
 
 export const SurveySitesTable = (props: ISurveySitesTableProps) => {
   const { sites } = props;
-
-  const rows: ISamplingSiteRowData[] =
-    sites?.sampleSites.map((site) => ({
-      id: site.survey_sample_site_id,
-      name: site.name,
-      description: site.description,
-      geojson: site.geojson,
-      blocks: site.blocks.map((block) => block.name),
-      stratums: site.stratums.map((stratum) => stratum.name)
-    })) || [];
 
   const columns: GridColDef<ISamplingSiteRowData>[] = [
     {
@@ -84,7 +83,7 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
       rowSelection={false}
       autoHeight
       getRowHeight={() => 'auto'}
-      rows={rows}
+      rows={sites}
       getRowId={(row) => row.id}
       columns={columns}
       disableRowSelectionOnClick

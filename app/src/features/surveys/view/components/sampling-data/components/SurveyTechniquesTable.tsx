@@ -6,27 +6,26 @@ import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ITechniqueRowData } from 'features/surveys/sampling-information/techniques/table/SamplingTechniqueTable';
 import { useCodesContext } from 'hooks/useContext';
-import { IGetTechniquesResponse } from 'interfaces/useTechniqueApi.interface';
+import { TechniqueAttractant } from 'interfaces/useTechniqueApi.interface';
 import { getCodesName } from 'utils/Utils';
 
+export interface ISurveyTechniqueRowData {
+  id: number;
+  method_lookup_id: number;
+  name: string;
+  description: string | null;
+  attractants: TechniqueAttractant[];
+  distance_threshold: number | null;
+}
+
 export interface ISurveyTechniquesTableProps {
-  techniques?: IGetTechniquesResponse;
+  techniques: ISurveyTechniqueRowData[];
 }
 
 export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
   const { techniques } = props;
 
   const codesContext = useCodesContext();
-
-  const rows: ITechniqueRowData[] =
-    techniques?.techniques.map((technique) => ({
-      id: technique.method_technique_id,
-      name: technique.name,
-      method_lookup_id: technique.method_lookup_id,
-      description: technique.description,
-      attractants: technique.attractants,
-      distance_threshold: technique.distance_threshold
-    })) || [];
 
   const columns: GridColDef<ITechniqueRowData>[] = [
     {
@@ -103,7 +102,7 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
       rowSelection={false}
       autoHeight
       getRowHeight={() => 'auto'}
-      rows={rows}
+      rows={techniques}
       getRowId={(row) => row.id}
       columns={columns}
       disableRowSelectionOnClick

@@ -4,10 +4,9 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useCodesContext } from 'hooks/useContext';
-import { IGetSampleSiteResponse } from 'interfaces/useSamplingSiteApi.interface';
 import { getCodesName } from 'utils/Utils';
 
-interface ISamplingSitePeriodRowData {
+export interface ISamplingSitePeriodRowData {
   id: number;
   sample_site: string;
   sample_method: string;
@@ -19,7 +18,7 @@ interface ISamplingSitePeriodRowData {
 }
 
 interface ISamplingPeriodTableProps {
-  sites?: IGetSampleSiteResponse;
+  periods: ISamplingSitePeriodRowData[];
 }
 
 /**
@@ -29,29 +28,9 @@ interface ISamplingPeriodTableProps {
  * @returns {*}
  */
 export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
-  const { sites } = props;
+  const { periods } = props;
 
   const codesContext = useCodesContext();
-
-  const rows: ISamplingSitePeriodRowData[] = [];
-
-  // Flatten the sample sites, methods, and periods into a single array of rows
-  for (const site of sites?.sampleSites ?? []) {
-    for (const method of site.sample_methods) {
-      for (const period of method.sample_periods) {
-        rows.push({
-          sample_site: site.name,
-          sample_method: method.technique.name,
-          method_response_metric_id: method.method_response_metric_id,
-          start_date: period.start_date,
-          end_date: period.end_date,
-          start_time: period.start_time,
-          end_time: period.end_time,
-          id: period.survey_sample_period_id
-        });
-      }
-    }
-  }
 
   const columns: GridColDef<any>[] = [
     {
@@ -111,7 +90,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       autoHeight
       getRowHeight={() => 'auto'}
       disableColumnMenu
-      rows={rows}
+      rows={periods}
       getRowId={(row: ISamplingSitePeriodRowData) => row.id}
       columns={columns}
       checkboxSelection={false}

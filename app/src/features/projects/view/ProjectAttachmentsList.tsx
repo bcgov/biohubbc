@@ -2,6 +2,8 @@ import { mdiArrowTopRight } from '@mdi/js';
 import Typography from '@mui/material/Typography';
 import AttachmentsList from 'components/attachments/list/AttachmentsList';
 import ProjectReportAttachmentDialog from 'components/dialog/attachments/project/ProjectReportAttachmentDialog';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { AttachmentType } from 'constants/attachments';
 import { AttachmentsI18N } from 'constants/i18n';
@@ -122,7 +124,20 @@ const ProjectAttachmentsList = () => {
         open={!!currentAttachment && currentAttachment?.fileType === AttachmentType.REPORT}
         onClose={handleViewDetailsClose}
       />
-      {attachmentsList.length ? (
+      <LoadingGuard
+        isLoading={projectContext.artifactDataLoader.isLoading}
+        hasNoData={!attachmentsList.length}
+        isLoadingFallbackDelay={100}
+        hasNoDataFallbackDelay={100}
+        isLoadingFallback={<SkeletonTable />}
+        hasNoDataFallback={
+          <NoDataOverlay
+            height="200px"
+            title="Upload Files"
+            subtitle="Share information with your team by uploading files"
+            icon={mdiArrowTopRight}
+          />
+        }>
         <AttachmentsList<IGetProjectAttachment>
           attachments={attachmentsList}
           handleDownload={handleDownload}
@@ -130,14 +145,7 @@ const ProjectAttachmentsList = () => {
           handleViewDetails={handleViewDetailsOpen}
           emptyStateText="No shared files found"
         />
-      ) : (
-        <NoDataOverlay
-          height="200px"
-          title="Upload Files"
-          subtitle="Share information with your team by uploading files"
-          icon={mdiArrowTopRight}
-        />
-      )}
+      </LoadingGuard>
     </>
   );
 };

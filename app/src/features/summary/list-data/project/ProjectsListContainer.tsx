@@ -9,6 +9,8 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { getNrmRegionColour, NrmRegionKeys } from 'constants/colours';
 import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
@@ -104,17 +106,17 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     [paginationModel.page, paginationModel.pageSize, sort?.field, sort?.sort]
   );
 
-  const { refresh, isReady, data } = useDataLoader(
+  const projectsDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) =>
       biohubApi.project.findProjects(pagination, filter)
   );
 
   // Fetch projects when either the pagination, sort, or advanced filters change
   useDeepCompareEffect(() => {
-    refresh(paginationSort, advancedFiltersModel);
+    projectsDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
-  const rows = data?.projects ?? [];
+  const rows = projectsDataLoader.data?.projects ?? [];
 
   // Define the columns for the DataGrid
   const columns: GridColDef<IProjectsListItemData>[] = [
@@ -212,16 +214,30 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      {rows.length ? (
-        <Box height="90vh" maxHeight="700px" p={2}>
+
+      <Box height="90vh" maxHeight="700px" p={2}>
+        <LoadingGuard
+          isLoading={projectsDataLoader.isLoading || !projectsDataLoader.isReady}
+          isLoadingFallback={<SkeletonTable />}
+          isLoadingFallbackDelay={100}
+          hasNoData={!rows.length}
+          hasNoDataFallback={
+            <NoDataOverlay
+              height="400px"
+              title="Create or Join Projects"
+              subtitle="You currently have no projects. Once you create or get invited to projects, they will be displayed here"
+              icon={mdiArrowTopRight}
+            />
+          }
+          hasNoDataFallbackDelay={100}>
           <StyledDataGrid
             noRowsMessage="No projects found"
-            loading={!isReady && !data}
+            loading={projectsDataLoader.isLoading || !projectsDataLoader.isReady}
             // Columns
             columns={columns}
             // Rows
             rows={rows}
-            rowCount={data?.pagination.total ?? 0}
+            rowCount={projectsDataLoader.data?.pagination.total ?? 0}
             getRowId={(row) => row.project_id}
             // Pagination
             paginationMode="server"
@@ -258,15 +274,8 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
             getRowHeight={() => 'auto'}
             autoHeight={false}
           />
-        </Box>
-      ) : (
-        <NoDataOverlay
-          height="400px"
-          title="Create or Join Projects"
-          subtitle="You currently have no projects. Once you create or get invited to projects, they will be displayed here"
-          icon={mdiArrowTopRight}
-        />
-      )}
+        </LoadingGuard>
+      </Box>
     </>
   );
 };

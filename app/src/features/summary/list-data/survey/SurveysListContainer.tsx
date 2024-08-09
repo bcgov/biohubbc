@@ -9,6 +9,8 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { getNrmRegionColour, NrmRegionKeys } from 'constants/colours';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -220,11 +222,25 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      {rows.length ? (
-        <Box height="90vh" maxHeight="700px" p={2}>
+
+      <Box height="90vh" maxHeight="700px" p={2}>
+        <LoadingGuard
+          isLoading={surveysDataLoader.isLoading || !surveysDataLoader.isReady}
+          isLoadingFallback={<SkeletonTable />}
+          isLoadingFallbackDelay={100}
+          hasNoData={!rows.length}
+          hasNoDataFallback={
+            <NoDataOverlay
+              height="400px"
+              title="Create Surveys in Projects"
+              subtitle="You currently have no surveys. Once you create or get invited to projects with surveys, they will be displayed here"
+              icon={mdiArrowTopRight}
+            />
+          }
+          hasNoDataFallbackDelay={100}>
           <StyledDataGrid
             noRowsMessage="No surveys found"
-            loading={!surveysDataLoader.isReady && !surveysDataLoader.data}
+            loading={surveysDataLoader.isLoading || !surveysDataLoader.isReady}
             // Columns
             columns={columns}
             // Rows
@@ -254,9 +270,9 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
               setSortModel(model);
             }}
             // Row options
+            rowSelection={false}
             checkboxSelection={false}
             disableRowSelectionOnClick
-            rowSelection={false}
             // Column options
             disableColumnSelector
             disableColumnFilter
@@ -266,15 +282,8 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
             getRowHeight={() => 'auto'}
             autoHeight={false}
           />
-        </Box>
-      ) : (
-        <NoDataOverlay
-          height="400px"
-          title="Create Surveys in Projects"
-          subtitle="You currently have no surveys. Once you create or get invited to projects with surveys, they will be displayed here"
-          icon={mdiArrowTopRight}
-        />
-      )}
+        </LoadingGuard>
+      </Box>
     </>
   );
 };

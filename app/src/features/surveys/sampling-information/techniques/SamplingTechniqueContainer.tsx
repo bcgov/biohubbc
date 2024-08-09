@@ -158,8 +158,8 @@ export const SamplingTechniqueContainer = () => {
 
       <LoadingGuard
         isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
-        fallback={<SkeletonTable />}
-        delay={200}>
+        isLoadingFallback={<SkeletonTable />}
+        isLoadingFallbackDelay={100}>
         <Box p={2}>
           <SamplingTechniqueTable
             techniques={techniques}

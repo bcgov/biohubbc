@@ -12,6 +12,7 @@ import { GridRowSelectionModel } from '@mui/x-data-grid';
 import { GridColDef } from '@mui/x-data-grid/models/colDef/gridColDef';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DeleteTechniqueI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -255,7 +256,17 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
         </MenuItem>
       </Menu>
 
-      {rows.length ? (
+      <LoadingGuard
+        hasNoData={!rows.length}
+        hasNoDataFallback={
+          <NoDataOverlay
+            height="200px"
+            title="Add Techniques"
+            subtitle="Techniques describe how you collected species observations"
+            icon={mdiArrowTopRight}
+          />
+        }
+        hasNoDataFallbackDelay={100}>
         <StyledDataGrid
           rows={rows}
           columns={columns}
@@ -265,14 +276,7 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
           rowSelectionModel={bulkActionTechniques}
           onRowSelectionModelChange={setBulkActionTechniques}
         />
-      ) : (
-        <NoDataOverlay
-          height="200px"
-          title="Add Techniques"
-          subtitle="Techniques describe how you collected species observations"
-          icon={mdiArrowTopRight}
-        />
-      )}
+      </LoadingGuard>
     </>
   );
 };

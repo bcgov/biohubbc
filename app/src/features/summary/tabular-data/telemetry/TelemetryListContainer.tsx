@@ -6,6 +6,8 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
@@ -95,7 +97,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
     telemetryDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
-  const telemetryRows = telemetryDataLoader.data?.telemetry ?? [];
+  const rows = telemetryDataLoader.data?.telemetry ?? [];
 
   const columns: GridColDef<IFindTelementryObj>[] = [
     {
@@ -158,21 +160,35 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      {telemetryRows.length ? (
-        <Box height="100vh" maxHeight="800px" p={2}>
+
+      <Box height="100vh" maxHeight="800px" p={2}>
+        <LoadingGuard
+          isLoading={telemetryDataLoader.isLoading || !telemetryDataLoader.isReady}
+          isLoadingFallback={<SkeletonTable />}
+          isLoadingFallbackDelay={100}
+          hasNoData={!rows.length}
+          hasNoDataFallback={
+            <NoDataOverlay
+              height="500px"
+              title="Create or Join Surveys to See Telemetry Data"
+              subtitle="You currently have no telemetry data. Once you create or join surveys with telemetry data, it will be displayed here"
+              icon={mdiArrowTopRight}
+            />
+          }
+          hasNoDataFallbackDelay={100}>
           <StyledDataGrid
             noRowsMessage="No telemetry found"
-            loading={!telemetryDataLoader.isReady && !telemetryDataLoader.data}
+            loading={telemetryDataLoader.isLoading || !telemetryDataLoader.isReady}
             // Columns
             columns={columns}
             // Rows
-            rows={telemetryRows}
+            rows={rows}
             rowCount={telemetryDataLoader.data?.telemetry.length ?? 0}
-            getRowId={(row: IFindTelementryObj) => row.telemetry_id}
+            getRowId={(row) => row.telemetry_id}
             // Pagination
             paginationMode="server"
-            pageSizeOptions={pageSizeOptions}
             paginationModel={paginationModel}
+            pageSizeOptions={pageSizeOptions}
             onPaginationModelChange={(model) => {
               if (!model) {
                 return;
@@ -185,16 +201,16 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
             sortModel={sortModel}
             sortingOrder={['asc', 'desc']}
             onSortModelChange={(model) => {
-              if (!model[0]) {
+              if (!model.length) {
                 return;
               }
               setSearchParams(searchParams.set('t_sort', model[0].field).set('t_order', model[0].sort ?? 'desc'));
               setSortModel(model);
             }}
             // Row options
+            rowSelection={false}
             checkboxSelection={false}
             disableRowSelectionOnClick
-            rowSelection={false}
             // Column options
             disableColumnSelector
             disableColumnFilter
@@ -204,15 +220,8 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
             getRowHeight={() => 'auto'}
             autoHeight={false}
           />
-        </Box>
-      ) : (
-        <NoDataOverlay
-          height="500px"
-          title="Create or Join Surveys to See Telemetry Data"
-          subtitle="You currently have no telemetry data. Once you create or join surveys with telemetry data, it will be displayed here"
-          icon={mdiArrowTopRight}
-        />
-      )}
+        </LoadingGuard>
+      </Box>
     </>
   );
 };

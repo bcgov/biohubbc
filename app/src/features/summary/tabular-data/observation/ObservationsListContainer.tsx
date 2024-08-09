@@ -6,6 +6,8 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
@@ -165,7 +167,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
     []
   );
 
-  const observationRows = observationsDataLoader.data ? getRowsFromObservations(observationsDataLoader.data) : [];
+  const rows = observationsDataLoader.data ? getRowsFromObservations(observationsDataLoader.data) : [];
 
   const columns: GridColDef<IObservationTableRow>[] = [
     {
@@ -249,21 +251,35 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      {observationRows.length ? (
-        <Box height="100vh" maxHeight="800px" p={2}>
+
+      <Box height="100vh" maxHeight="800px" p={2}>
+        <LoadingGuard
+          isLoading={observationsDataLoader.isLoading || !observationsDataLoader.isReady}
+          isLoadingFallback={<SkeletonTable />}
+          isLoadingFallbackDelay={100}
+          hasNoData={!rows.length}
+          hasNoDataFallback={
+            <NoDataOverlay
+              height="500px"
+              title="Create or Join Surveys to See Observations"
+              subtitle="You currently have no observations data. Once you create or join surveys with observations data, it will be displayed here"
+              icon={mdiArrowTopRight}
+            />
+          }
+          hasNoDataFallbackDelay={100}>
           <StyledDataGrid
             noRowsMessage="No observations found"
-            loading={!observationsDataLoader.isReady && !observationsDataLoader.data}
+            loading={observationsDataLoader.isLoading || !observationsDataLoader.isReady}
             // Columns
             columns={columns}
             // Rows
-            rows={observationRows}
+            rows={rows}
             rowCount={observationsDataLoader.data?.pagination.total ?? 0}
             getRowId={(row) => row.observation_subcount_id}
             // Pagination
             paginationMode="server"
-            pageSizeOptions={pageSizeOptions}
             paginationModel={paginationModel}
+            pageSizeOptions={pageSizeOptions}
             onPaginationModelChange={(model) => {
               if (!model) {
                 return;
@@ -283,9 +299,9 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
               setSortModel(model);
             }}
             // Row options
+            rowSelection={false}
             checkboxSelection={false}
             disableRowSelectionOnClick
-            rowSelection={false}
             // Column options
             disableColumnSelector
             disableColumnFilter
@@ -295,15 +311,8 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
             getRowHeight={() => 'auto'}
             autoHeight={false}
           />
-        </Box>
-      ) : (
-        <NoDataOverlay
-          height="500px"
-          title="Create or Join Surveys to See Observations"
-          subtitle="You currently have no observations data. Once you create or join surveys with observations data, it will be displayed here"
-          icon={mdiArrowTopRight}
-        />
-      )}
+        </LoadingGuard>
+      </Box>
     </>
   );
 };

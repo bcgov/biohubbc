@@ -8,6 +8,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -134,10 +136,24 @@ const SurveysListPage = () => {
           </Button>
         </ProjectRoleGuard>
       </Toolbar>
-      <Divider></Divider>
+
+      <Divider />
 
       <Box p={2}>
-        {surveys.length ? (
+        <LoadingGuard
+          isLoading={projectContext.surveysListDataLoader.isLoading || !projectContext.surveysListDataLoader.isReady}
+          isLoadingFallback={<SkeletonTable />}
+          isLoadingFallbackDelay={100}
+          hasNoData={!surveys.length}
+          hasNoDataFallback={
+            <NoDataOverlay
+              height="200px"
+              title="Create a Survey"
+              subtitle="Start managing ecological data by creating a survey"
+              icon={mdiArrowTopRight}
+            />
+          }
+          hasNoDataFallbackDelay={100}>
           <StyledDataGrid
             noRowsMessage="No surveys found"
             columns={columns}
@@ -159,14 +175,7 @@ const SurveysListPage = () => {
             disableColumnMenu
             sortingOrder={['asc', 'desc']}
           />
-        ) : (
-          <NoDataOverlay
-            height="200px"
-            title="Create a Survey"
-            subtitle="Start managing ecological data by creating a survey"
-            icon={mdiArrowTopRight}
-          />
-        )}
+        </LoadingGuard>
       </Box>
     </>
   );

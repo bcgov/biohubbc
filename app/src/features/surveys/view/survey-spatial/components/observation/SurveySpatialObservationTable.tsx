@@ -1,8 +1,8 @@
 import { mdiArrowTopRight } from '@mdi/js';
-import Stack from '@mui/material/Stack';
 import { GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { SkeletonRow } from 'components/loading/SkeletonLoaders';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
@@ -47,7 +47,7 @@ export const SurveySpatialObservationTable = (props: ISurveyDataObservationTable
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(5);
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
-  const [tableData, setTableData] = useState<IObservationTableRow[]>([]);
+  const [rows, setTableData] = useState<IObservationTableRow[]>([]);
   const [tableColumns, setTableColumns] = useState<GridColDef<IObservationTableRow>[]>([]);
 
   const paginatedDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
@@ -159,51 +159,47 @@ export const SurveySpatialObservationTable = (props: ISurveyDataObservationTable
   }, [paginatedDataLoader.data, taxonomyContext]);
 
   return (
-    <>
-      {props.isLoading && (
-        <Stack>
-          <SkeletonRow />
-          <SkeletonRow />
-          <SkeletonRow />
-        </Stack>
-      )}
-
-      {tableData.length && !props.isLoading ? (
-        <StyledDataGrid
-          noRowsMessage="No observation records found"
-          columnHeaderHeight={rowHeight}
-          rowHeight={rowHeight}
-          rows={tableData}
-          rowCount={totalRows}
-          paginationModel={{ pageSize, page }}
-          onPaginationModelChange={(model) => {
-            setPage(model.page);
-            setPageSize(model.pageSize);
-          }}
-          pageSizeOptions={[5]}
-          paginationMode="server"
-          sortingMode="server"
-          sortModel={sortModel}
-          onSortModelChange={(model) => setSortModel(model)}
-          loading={paginatedDataLoader.isLoading}
-          getRowId={(row) => row.survey_observation_id}
-          columns={tableColumns}
-          rowSelection={false}
-          checkboxSelection={false}
-          disableColumnSelector
-          disableColumnFilter
-          disableColumnMenu
-          disableVirtualization
-          data-testid="survey-spatial-observation-data-table"
-        />
-      ) : (
+    <LoadingGuard
+      isLoading={props.isLoading || paginatedDataLoader.isLoading || !paginatedDataLoader.isReady}
+      isLoadingFallback={<SkeletonTable />}
+      isLoadingFallbackDelay={100}
+      hasNoData={!rows.length}
+      hasNoDataFallback={
         <NoDataOverlay
           height="250px"
           title="Add Observations"
           subtitle="After adding sampling information, upload observations and link them to sampling efforts"
           icon={mdiArrowTopRight}
         />
-      )}
-    </>
+      }
+      hasNoDataFallbackDelay={100}>
+      <StyledDataGrid
+        noRowsMessage="No observation records found"
+        columnHeaderHeight={rowHeight}
+        rowHeight={rowHeight}
+        rows={rows}
+        rowCount={totalRows}
+        paginationModel={{ pageSize, page }}
+        onPaginationModelChange={(model) => {
+          setPage(model.page);
+          setPageSize(model.pageSize);
+        }}
+        pageSizeOptions={[5]}
+        paginationMode="server"
+        sortingMode="server"
+        sortModel={sortModel}
+        onSortModelChange={(model) => setSortModel(model)}
+        loading={paginatedDataLoader.isLoading}
+        getRowId={(row) => row.survey_observation_id}
+        columns={tableColumns}
+        rowSelection={false}
+        checkboxSelection={false}
+        disableColumnSelector
+        disableColumnFilter
+        disableColumnMenu
+        disableVirtualization
+        data-testid="survey-spatial-observation-data-table"
+      />
+    </LoadingGuard>
   );
 };

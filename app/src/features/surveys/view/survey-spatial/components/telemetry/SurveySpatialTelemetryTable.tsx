@@ -1,9 +1,9 @@
 import { mdiArrowTopRight } from '@mdi/js';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { SkeletonRow } from 'components/loading/SkeletonLoaders';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
@@ -43,7 +43,7 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
    * Memoized calculation of table rows based on critter deployments data.
    * Formats dates and combines necessary fields for display.
    */
-  const tableRows: ITelemetryData[] = useMemo(() => {
+  const rows: ITelemetryData[] = useMemo(() => {
     return surveyContext.critterDeployments.map((item) => {
       return {
         // Critters in this table may use multiple devices across multiple timespans
@@ -117,48 +117,43 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
   ];
 
   return (
-    <>
-      {props.isLoading && (
-        // Display skeleton loader while data is loading
-        <Stack>
-          <SkeletonRow />
-          <SkeletonRow />
-          <SkeletonRow />
-        </Stack>
-      )}
-
-      {tableRows.length && !props.isLoading ? (
-        <StyledDataGrid
-          noRowsMessage={'No telemetry records found'}
-          columnHeaderHeight={rowHeight}
-          rowHeight={rowHeight}
-          rows={tableRows}
-          getRowId={(row) => row.id}
-          columns={columns}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 1, pageSize: 5 }
-            }
-          }}
-          pageSizeOptions={[5]}
-          rowSelection={false}
-          checkboxSelection={false}
-          disableRowSelectionOnClick
-          disableColumnSelector
-          disableColumnFilter
-          disableColumnMenu
-          disableVirtualization
-          sortingOrder={['asc', 'desc']}
-          data-testid="survey-spatial-telemetry-data-table"
-        />
-      ) : (
+    <LoadingGuard
+      isLoading={props.isLoading}
+      isLoadingFallback={<SkeletonTable />}
+      isLoadingFallbackDelay={100}
+      hasNoData={!rows.length}
+      hasNoDataFallback={
         <NoDataOverlay
           height="250px"
           title="Add Telemetry"
           subtitle="Add telemetry devices to animals and upload device data"
           icon={mdiArrowTopRight}
         />
-      )}
-    </>
+      }
+      hasNoDataFallbackDelay={100}>
+      <StyledDataGrid
+        noRowsMessage={'No telemetry records found'}
+        columnHeaderHeight={rowHeight}
+        rowHeight={rowHeight}
+        rows={rows}
+        getRowId={(row) => row.id}
+        columns={columns}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 1, pageSize: 5 }
+          }
+        }}
+        pageSizeOptions={[5]}
+        rowSelection={false}
+        checkboxSelection={false}
+        disableRowSelectionOnClick
+        disableColumnSelector
+        disableColumnFilter
+        disableColumnMenu
+        disableVirtualization
+        sortingOrder={['asc', 'desc']}
+        data-testid="survey-spatial-telemetry-data-table"
+      />
+    </LoadingGuard>
   );
 };
