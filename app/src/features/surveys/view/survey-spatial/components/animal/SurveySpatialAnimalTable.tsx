@@ -73,6 +73,10 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
     }
   ];
 
+  console.log(props.isLoading);
+  console.log(animalsDataLoader.isLoading);
+  console.log(animalsDataLoader.isReady);
+
   return (
     <LoadingGuard
       isLoading={props.isLoading || animalsDataLoader.isLoading || !animalsDataLoader.isReady}

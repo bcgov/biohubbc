@@ -116,7 +116,7 @@ const SurveyAttachmentsList: React.FC = () => {
       />
       <LoadingGuard
         isLoading={surveyContext.artifactDataLoader.isLoading || !surveyContext.artifactDataLoader.isReady}
-        isLoadingFallback={<SkeletonTable />}
+        isLoadingFallback={<SkeletonTable data-testid="survey-attachments-loading-skeleton" />}
         isLoadingFallbackDelay={100}
         hasNoData={!attachments.length}
         hasNoDataFallback={
@@ -125,6 +125,7 @@ const SurveyAttachmentsList: React.FC = () => {
             title="Upload Files"
             subtitle="Add extra information about your survey by uploading files"
             icon={mdiArrowTopRight}
+            data-testid="survey-attachments-list-no-data-overlay"
           />
         }
         hasNoDataFallbackDelay={100}>

@@ -126,18 +126,19 @@ const ProjectAttachmentsList = () => {
       />
       <LoadingGuard
         isLoading={projectContext.artifactDataLoader.isLoading}
-        hasNoData={!attachmentsList.length}
+        isLoadingFallback={<SkeletonTable data-testid="project-attachments-loading-skeleton" />}
         isLoadingFallbackDelay={100}
-        hasNoDataFallbackDelay={100}
-        isLoadingFallback={<SkeletonTable />}
+        hasNoData={!attachmentsList.length}
         hasNoDataFallback={
           <NoDataOverlay
             height="200px"
             title="Upload Files"
             subtitle="Share information with your team by uploading files"
             icon={mdiArrowTopRight}
+            data-testid="project-attachments-list-no-data-overlay"
           />
-        }>
+        }
+        hasNoDataFallbackDelay={100}>
         <AttachmentsList<IGetProjectAttachment>
           attachments={attachmentsList}
           handleDownload={handleDownload}

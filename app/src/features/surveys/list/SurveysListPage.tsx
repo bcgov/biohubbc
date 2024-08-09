@@ -142,7 +142,7 @@ const SurveysListPage = () => {
       <Box p={2}>
         <LoadingGuard
           isLoading={projectContext.surveysListDataLoader.isLoading || !projectContext.surveysListDataLoader.isReady}
-          isLoadingFallback={<SkeletonTable />}
+          isLoadingFallback={<SkeletonTable data-testid="survey-list-skeleton" />}
           isLoadingFallbackDelay={100}
           hasNoData={!surveys.length}
           hasNoDataFallback={
@@ -151,6 +151,7 @@ const SurveysListPage = () => {
               title="Create a Survey"
               subtitle="Start managing ecological data by creating a survey"
               icon={mdiArrowTopRight}
+              data-testid="survey-list-no-data-overlay"
             />
           }
           hasNoDataFallbackDelay={100}>
