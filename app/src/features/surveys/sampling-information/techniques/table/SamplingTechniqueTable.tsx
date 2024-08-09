@@ -17,7 +17,7 @@ import { DeleteTechniqueI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { IGetTechniqueResponse, TechniqueAttractant } from 'interfaces/useTechniqueApi.interface';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getCodesName } from 'utils/Utils';
 
@@ -52,6 +52,10 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
   const dialogContext = useDialogContext();
   const codesContext = useCodesContext();
   const biohubApi = useBiohubApi();
+
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   /**
    * Handle the delete technique API call.
@@ -266,6 +270,12 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
           checkboxSelection
           rowSelectionModel={bulkActionTechniques}
           onRowSelectionModelChange={setBulkActionTechniques}
+          initialState={{
+            pagination: {
+              paginationModel: { page: 1, pageSize: 10 }
+            }
+          }}
+          pageSizeOptions={[10, 25, 50]}
           noRowsOverlay={
             <GridOverlay>
               <NoDataOverlay

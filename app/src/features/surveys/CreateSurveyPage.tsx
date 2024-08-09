@@ -13,6 +13,7 @@ import { CreateSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
+import { ISurveyPermitForm, SurveyPermitFormInitialValues } from 'features/surveys/SurveyPermitForm';
 import { SurveyPartnershipsFormInitialValues } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
@@ -24,17 +25,22 @@ import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { AgreementsInitialValues } from './components/agreements/AgreementsForm';
 import { ProprietaryDataInitialValues } from './components/agreements/ProprietaryDataForm';
-import { SurveyFundingSourceFormInitialValues } from './components/funding/SurveyFundingSourceForm';
+import {
+  ISurveyFundingSourceForm,
+  SurveyFundingSourceFormInitialValues
+} from './components/funding/SurveyFundingSourceForm';
 import { GeneralInformationInitialValues } from './components/general-information/GeneralInformationForm';
 import { SurveyLocationInitialValues } from './components/locations/StudyAreaForm';
 import { PurposeAndMethodologyInitialValues } from './components/methodology/PurposeAndMethodologyForm';
 import { SurveyUserJobFormInitialValues } from './components/participants/SurveyUserForm';
 import { SurveyBlockInitialValues } from './components/sampling-strategy/blocks/SurveyBlockForm';
 import { SurveySiteSelectionInitialValues } from './components/sampling-strategy/SurveySiteSelectionForm';
+import { SpeciesInitialValues } from './components/species/SpeciesForm';
 import EditSurveyForm from './edit/EditSurveyForm';
 
-export const defaultSurveyDataFormValues: ICreateSurveyRequest = {
+export const defaultSurveyDataFormValues: ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm = {
   ...GeneralInformationInitialValues,
+  ...SurveyPermitFormInitialValues,
   ...PurposeAndMethodologyInitialValues,
   ...SurveyFundingSourceFormInitialValues,
   ...SurveyPartnershipsFormInitialValues,
@@ -43,7 +49,8 @@ export const defaultSurveyDataFormValues: ICreateSurveyRequest = {
   ...SurveyLocationInitialValues,
   ...SurveySiteSelectionInitialValues,
   ...SurveyUserJobFormInitialValues,
-  ...SurveyBlockInitialValues
+  ...SurveyBlockInitialValues,
+  ...SpeciesInitialValues
 };
 
 /**
@@ -101,14 +108,38 @@ const CreateSurveyPage = () => {
    *
    * @return {*}
    */
-  const handleSubmit = async (values: ICreateSurveyRequest) => {
+  const handleSubmit = async (values: ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm) => {
     setIsSaving(true);
-    // Remove the permit.used property
-    const { permit, ...data } = values;
     try {
+      // Remove the permit_used and funding_used properties
       const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), {
-        ...data,
-        permit: { permits: permit.permits }
+        blocks: values.blocks,
+        funding_sources: values.funding_sources,
+        locations: values.locations.map((location) => ({
+          survey_location_id: location.survey_location_id,
+          geojson: location.geojson,
+          name: location.name,
+          description: location.description,
+          revision_count: location.revision_count
+        })),
+        participants: values.participants,
+        partnerships: values.partnerships,
+        permit: {
+          permits: values.permit.permits
+        },
+        proprietor: values.proprietor,
+        site_selection: {
+          stratums: values.site_selection.stratums.map((stratum) => ({
+            survey_stratum_id: stratum.survey_stratum_id,
+            name: stratum.name,
+            description: stratum.description
+          })),
+          strategies: values.site_selection.strategies
+        },
+        species: values.species,
+        survey_details: values.survey_details,
+        purpose_and_methodology: values.purpose_and_methodology,
+        agreements: values.agreements
       });
 
       if (!response?.id) {
@@ -174,14 +205,10 @@ const CreateSurveyPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 5 }}>
           <EditSurveyForm
-            initialSurveyData={{
-              ...defaultSurveyDataFormValues,
-              permit: {
-                permits: defaultSurveyDataFormValues.permit.permits,
-                used: null
-              }
-            }}
-            handleSubmit={(formikData) => handleSubmit(formikData as unknown as ICreateSurveyRequest)}
+            initialSurveyData={defaultSurveyDataFormValues}
+            handleSubmit={(formikData) =>
+              handleSubmit(formikData as unknown as ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm)
+            }
             formikRef={formikRef}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>

@@ -106,7 +106,16 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: ['project_id', 'name', 'start_date', 'end_date', 'focal_species', 'regions', 'types'],
+                  required: [
+                    'project_id',
+                    'name',
+                    'start_date',
+                    'end_date',
+                    'focal_species',
+                    'regions',
+                    'types',
+                    'members'
+                  ],
                   properties: {
                     project_id: {
                       type: 'integer',
@@ -154,6 +163,7 @@ GET.apiDoc = {
                       items: {
                         type: 'object',
                         additionalProperties: false,
+                        required: ['system_user_id', 'display_name'],
                         properties: {
                           system_user_id: { type: 'number' },
                           display_name: { type: 'string' }

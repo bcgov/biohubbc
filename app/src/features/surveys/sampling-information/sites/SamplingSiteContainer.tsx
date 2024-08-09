@@ -23,7 +23,7 @@ import {
   SamplingSiteTabs
 } from 'features/surveys/sampling-information/sites/table/SamplingSiteTabs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -35,7 +35,6 @@ import { Link as RouterLink } from 'react-router-dom';
  */
 const SamplingSiteContainer = () => {
   const surveyContext = useSurveyContext();
-  const codesContext = useCodesContext();
   const dialogContext = useDialogContext();
   const biohubApi = useBiohubApi();
 
@@ -52,14 +51,8 @@ const SamplingSiteContainer = () => {
   const samplePeriods = sampleMethods.flatMap((method) => method.sample_periods);
 
   useEffect(() => {
-    codesContext.codesDataLoader.load();
     surveyContext.sampleSiteDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [
-    codesContext.codesDataLoader,
-    surveyContext.sampleSiteDataLoader,
-    surveyContext.projectId,
-    surveyContext.surveyId
-  ]);
+  }, [surveyContext.sampleSiteDataLoader, surveyContext.projectId, surveyContext.surveyId]);
 
   // Handler for bulk delete operation
   const handleBulkDelete = async () => {
@@ -171,7 +164,7 @@ const SamplingSiteContainer = () => {
 
         <Box>
           <LoadingGuard
-            isLoading={surveyContext.sampleSiteDataLoader.isLoading || codesContext.codesDataLoader.isLoading}
+            isLoading={surveyContext.sampleSiteDataLoader.isLoading}
             fallback={
               <>
                 <SkeletonMap />

@@ -13,12 +13,11 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
@@ -65,13 +64,8 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
-  const codesContext = useCodesContext();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<SurveyDataTableURLParams>>();
-
-  useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('s_limit') ?? initialPaginationParams.limit),
