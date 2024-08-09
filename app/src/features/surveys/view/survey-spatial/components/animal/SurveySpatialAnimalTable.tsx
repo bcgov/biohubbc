@@ -73,16 +73,12 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
     }
   ];
 
-  console.log(props.isLoading);
-  console.log(animalsDataLoader.isLoading);
-  console.log(animalsDataLoader.isReady);
-
   return (
     <LoadingGuard
-      isLoading={props.isLoading || animalsDataLoader.isLoading || !animalsDataLoader.isReady}
+      isLoading={animals.length > 0 && (props.isLoading || animalsDataLoader.isLoading || !animalsDataLoader.isReady)}
       isLoadingFallback={<SkeletonTable />}
       isLoadingFallbackDelay={100}
-      hasNoData={!rows.length}
+      hasNoData={!animals.length || !rows.length}
       hasNoDataFallback={
         <NoDataOverlay
           height="250px"
