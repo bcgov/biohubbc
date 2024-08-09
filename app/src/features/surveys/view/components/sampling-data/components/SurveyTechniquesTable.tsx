@@ -111,10 +111,10 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
       disableRowSelectionOnClick
       initialState={{
         pagination: {
-          paginationModel: { page: 1, pageSize: 5 }
+          paginationModel: { page: 1, pageSize: 10 }
         }
       }}
-      pageSizeOptions={[5, 10, 25]}
+      pageSizeOptions={[10, 25, 50]}
       noRowsOverlay={
         <GridOverlay>
           <NoDataOverlay

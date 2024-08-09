@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -13,7 +14,7 @@ import SurveyPartnershipsForm, {
 } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
 import { ICreateSurveyRequest, IUpdateSurveyRequest } from 'interfaces/useSurveyApi.interface';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import AgreementsForm, { AgreementsYupSchema } from '../components/agreements/AgreementsForm';
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/agreements/ProprietaryDataForm';
 import SurveyFundingSourceForm, {
@@ -59,8 +60,12 @@ const EditSurveyForm = <
   const codesContext = useContext(CodesContext);
   const codes = codesContext.codesDataLoader.data;
 
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
+
   if (!projectData || !codes) {
-    return <></>;
+    return <CircularProgress className="pageProgress" size={40} />;
   }
 
   const surveyEditYupSchemas = GeneralInformationYupSchema()
