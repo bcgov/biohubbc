@@ -1,16 +1,27 @@
-import { mdiAutoFix, mdiCalendarRange, mdiMapMarker } from '@mdi/js';
+import { mdiArrowTopRight, mdiAutoFix, mdiCalendarRange, mdiMapMarker } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
-import { SamplingPeriodTable } from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
-import { SurveySitesTable } from 'features/surveys/view/components/sampling-data/components/SurveySitesTable';
-import { SurveyTechniquesTable } from 'features/surveys/view/components/sampling-data/components/SurveyTechniquesTable';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import {
+  ISamplingSitePeriodRowData,
+  SamplingPeriodTable
+} from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
+import {
+  ISurveySitesRowData,
+  SurveySitesTable
+} from 'features/surveys/view/components/sampling-data/components/SurveySitesTable';
+import {
+  ISurveyTechniqueRowData,
+  SurveyTechniquesTable
+} from 'features/surveys/view/components/sampling-data/components/SurveyTechniquesTable';
 import { useSurveyContext } from 'hooks/useContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 export enum SurveySamplingView {
   TECHNIQUES = 'TECHNIQUES',
@@ -50,12 +61,55 @@ export const SurveySamplingTabs = () => {
     surveyContext.surveyId
   ]);
 
+  const techniques: ISurveyTechniqueRowData[] =
+    surveyContext.techniqueDataLoader.data?.techniques.map((technique) => ({
+      id: technique.method_technique_id,
+      name: technique.name,
+      method_lookup_id: technique.method_lookup_id,
+      description: technique.description,
+      attractants: technique.attractants,
+      distance_threshold: technique.distance_threshold
+    })) ?? [];
+
+  const sampleSites: ISurveySitesRowData[] = useMemo(
+    () =>
+      surveyContext.sampleSiteDataLoader.data?.sampleSites.map((site) => ({
+        id: site.survey_sample_site_id,
+        name: site.name,
+        description: site.description,
+        geojson: site.geojson,
+        blocks: site.blocks.map((block) => block.name),
+        stratums: site.stratums.map((stratum) => stratum.name)
+      })) ?? [],
+    [surveyContext.sampleSiteDataLoader.data?.sampleSites]
+  );
+
+  const samplePeriods: ISamplingSitePeriodRowData[] = useMemo(() => {
+    const data: ISamplingSitePeriodRowData[] = [];
+
+    for (const site of surveyContext.sampleSiteDataLoader.data?.sampleSites ?? []) {
+      for (const method of site.sample_methods) {
+        for (const period of method.sample_periods) {
+          data.push({
+            id: period.survey_sample_period_id,
+            sample_site: site.name,
+            sample_method: method.technique.name,
+            method_response_metric_id: method.method_response_metric_id,
+            start_date: period.start_date,
+            end_date: period.end_date,
+            start_time: period.start_time,
+            end_time: period.end_time
+          });
+        }
+      }
+    }
+
+    return data;
+  }, [surveyContext.sampleSiteDataLoader.data?.sampleSites]);
+
   const techniquesCount = surveyContext.techniqueDataLoader.data?.count;
   const sampleSitesCount = surveyContext.sampleSiteDataLoader.data?.sampleSites.length;
-  const samplePeriodsCount = surveyContext.sampleSiteDataLoader.data?.sampleSites.reduce(
-    (acc, site) => acc + site.sample_methods.reduce((acc, method) => acc + method.sample_periods.length, 0),
-    0
-  );
+  const samplePeriodsCount = samplePeriods.length;
 
   return (
     <>
@@ -111,38 +165,71 @@ export const SurveySamplingTabs = () => {
         </ToggleButtonGroup>
       </Box>
 
-      <Box px={2} py={0.5}>
+      <Divider />
+
+      <Box p={2} position="relative">
         {activeView === SurveySamplingView.TECHNIQUES && (
-          <Box position="relative">
+          <>
             <LoadingGuard
               isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
-              fallback={<SkeletonTable />}
-              delay={200}>
-              <SurveyTechniquesTable techniques={surveyContext.techniqueDataLoader.data} />
+              isLoadingFallback={<SkeletonTable />}
+              isLoadingFallbackDelay={100}
+              hasNoData={!techniquesCount}
+              hasNoDataFallback={
+                <NoDataOverlay
+                  height="250px"
+                  title="Add Techniques"
+                  subtitle="Techniques describe how you collected species observations"
+                  icon={mdiArrowTopRight}
+                />
+              }
+              hasNoDataFallbackDelay={100}>
+              <SurveyTechniquesTable techniques={techniques} />
             </LoadingGuard>
-          </Box>
+          </>
         )}
 
         {activeView === SurveySamplingView.SITES && (
-          <Box position="relative">
+          <>
             <LoadingGuard
               isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}
-              fallback={<SkeletonTable />}
-              delay={200}>
-              <SurveySitesTable sites={surveyContext.sampleSiteDataLoader.data} />
+              isLoadingFallback={<SkeletonTable />}
+              isLoadingFallbackDelay={100}
+              hasNoData={!sampleSitesCount}
+              hasNoDataFallback={
+                <NoDataOverlay
+                  height="250px"
+                  title="Add Sampling Sites"
+                  subtitle="Apply your techniques to sampling sites to show where you collected data"
+                  icon={mdiArrowTopRight}
+                />
+              }
+              hasNoDataFallbackDelay={100}>
+              <SurveySitesTable sites={sampleSites} />
             </LoadingGuard>
-          </Box>
+          </>
         )}
 
         {activeView === SurveySamplingView.PERIODS && (
-          <Box position="relative">
+          <>
             <LoadingGuard
               isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}
-              fallback={<SkeletonTable />}
-              delay={200}>
-              <SamplingPeriodTable sites={surveyContext.sampleSiteDataLoader.data} />
+              isLoadingFallback={<SkeletonTable />}
+              isLoadingFallbackDelay={100}
+              hasNoData={!samplePeriodsCount}
+              hasNoDataFallback={
+                <NoDataOverlay
+                  height="250px"
+                  title="Add Periods"
+                  subtitle="Add periods when you create sampling sites to show when 
+                  you collected species observations"
+                  icon={mdiArrowTopRight}
+                />
+              }
+              hasNoDataFallbackDelay={100}>
+              <SamplingPeriodTable periods={samplePeriods} />
             </LoadingGuard>
-          </Box>
+          </>
         )}
       </Box>
     </>

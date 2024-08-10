@@ -1,3 +1,4 @@
+import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
@@ -8,18 +9,20 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { getNrmRegionColour, NrmRegionKeys } from 'constants/colours';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import dayjs from 'dayjs';
 import { SurveyProgressChip } from 'features/surveys/components/SurveyProgressChip';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
@@ -65,13 +68,8 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
-  const codesContext = useCodesContext();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<SurveyDataTableURLParams>>();
-
-  useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('s_limit') ?? initialPaginationParams.limit),
@@ -218,63 +216,67 @@ const SurveysListContainer = (props: ISurveysListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="500px" p={2}>
-        <StyledDataGrid
-          noRowsMessage="No surveys found"
-          loading={!surveysDataLoader.isReady && !surveysDataLoader.data}
-          // Columns
-          columns={columns}
-          // Rows
-          rows={rows}
-          rowCount={surveysDataLoader.data?.pagination.total ?? 0}
-          getRowId={(row) => row.survey_id}
-          // Pagination
-          paginationMode="server"
-          paginationModel={paginationModel}
-          pageSizeOptions={pageSizeOptions}
-          onPaginationModelChange={(model) => {
-            if (!model) {
-              return;
-            }
-            setSearchParams(searchParams.set('s_page', String(model.page)).set('s_limit', String(model.pageSize)));
-            setPaginationModel(model);
-          }}
-          // Sorting
-          sortingMode="server"
-          sortModel={sortModel}
-          sortingOrder={['asc', 'desc']}
-          onSortModelChange={(model) => {
-            if (!model.length) {
-              return;
-            }
-            setSearchParams(searchParams.set('s_sort', model[0].field).set('s_order', model[0].sort ?? 'desc'));
-            setSortModel(model);
-          }}
-          // Row options
-          checkboxSelection={false}
-          disableRowSelectionOnClick
-          rowSelection={false}
-          // Column options
-          disableColumnSelector
-          disableColumnFilter
-          disableColumnMenu
-          // Styling
-          rowHeight={70}
-          getRowHeight={() => 'auto'}
-          autoHeight={false}
-          sx={{
-            '& .MuiDataGrid-overlay': {
-              background: grey[50]
-            },
-            '& .MuiDataGrid-cell': {
-              py: 0.75,
-              background: '#fff',
-              '&.MuiDataGrid-cell--editing:focus-within': {
-                outline: 'none'
+
+      <Box height="90vh" maxHeight="700px" p={2}>
+        <LoadingGuard
+          isLoading={surveysDataLoader.isLoading || !surveysDataLoader.isReady}
+          isLoadingFallback={<SkeletonTable />}
+          isLoadingFallbackDelay={100}
+          hasNoData={!rows.length}
+          hasNoDataFallback={
+            <NoDataOverlay
+              height="400px"
+              title="Create Surveys in Projects"
+              subtitle="You currently have no surveys. Once you create or get invited to projects with surveys, they will be displayed here"
+              icon={mdiArrowTopRight}
+            />
+          }
+          hasNoDataFallbackDelay={100}>
+          <StyledDataGrid
+            noRowsMessage="No surveys found"
+            loading={surveysDataLoader.isLoading || !surveysDataLoader.isReady}
+            // Columns
+            columns={columns}
+            // Rows
+            rows={rows}
+            rowCount={surveysDataLoader.data?.pagination.total ?? 0}
+            getRowId={(row) => row.survey_id}
+            // Pagination
+            paginationMode="server"
+            paginationModel={paginationModel}
+            pageSizeOptions={pageSizeOptions}
+            onPaginationModelChange={(model) => {
+              if (!model) {
+                return;
               }
-            }
-          }}
-        />
+              setSearchParams(searchParams.set('s_page', String(model.page)).set('s_limit', String(model.pageSize)));
+              setPaginationModel(model);
+            }}
+            // Sorting
+            sortingMode="server"
+            sortModel={sortModel}
+            sortingOrder={['asc', 'desc']}
+            onSortModelChange={(model) => {
+              if (!model.length) {
+                return;
+              }
+              setSearchParams(searchParams.set('s_sort', model[0].field).set('s_order', model[0].sort ?? 'desc'));
+              setSortModel(model);
+            }}
+            // Row options
+            rowSelection={false}
+            checkboxSelection={false}
+            disableRowSelectionOnClick
+            // Column options
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
+            // Styling
+            rowHeight={70}
+            getRowHeight={() => 'auto'}
+            autoHeight={false}
+          />
+        </LoadingGuard>
       </Box>
     </>
   );

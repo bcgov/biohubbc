@@ -1,3 +1,4 @@
+import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
@@ -8,16 +9,18 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { getNrmRegionColour, NrmRegionKeys } from 'constants/colours';
 import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import { TeamMemberAvatar } from 'features/projects/view/components/TeamMemberAvatar';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { IProjectsListItemData } from 'interfaces/useProjectApi.interface';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull, getRandomHexColor } from 'utils/Utils';
@@ -63,13 +66,8 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
-  const codesContext = useCodesContext();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<ProjectDataTableURLParams>>();
-
-  useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('p_limit') ?? ApiPaginationRequestOptionsInitialValues.limit),
@@ -102,17 +100,17 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
     [paginationModel.page, paginationModel.pageSize, sort?.field, sort?.sort]
   );
 
-  const { refresh, isReady, data } = useDataLoader(
+  const projectsDataLoader = useDataLoader(
     (pagination: ApiPaginationRequestOptions, filter?: IProjectAdvancedFilters) =>
       biohubApi.project.findProjects(pagination, filter)
   );
 
   // Fetch projects when either the pagination, sort, or advanced filters change
   useDeepCompareEffect(() => {
-    refresh(paginationSort, advancedFiltersModel);
+    projectsDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
-  const rows = data?.projects ?? [];
+  const rows = projectsDataLoader.data?.projects ?? [];
 
   // Define the columns for the DataGrid
   const columns: GridColDef<IProjectsListItemData>[] = [
@@ -210,63 +208,67 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="500px" p={2}>
-        <StyledDataGrid
-          noRowsMessage="No projects found"
-          loading={!isReady && !data}
-          // Columns
-          columns={columns}
-          // Rows
-          rows={rows}
-          rowCount={data?.pagination.total ?? 0}
-          getRowId={(row) => row.project_id}
-          // Pagination
-          paginationMode="server"
-          paginationModel={paginationModel}
-          pageSizeOptions={pageSizeOptions}
-          onPaginationModelChange={(model) => {
-            if (!model) {
-              return;
-            }
-            setSearchParams(searchParams.set('p_page', String(model.page)).set('p_limit', String(model.pageSize)));
-            setPaginationModel(model);
-          }}
-          // Sorting
-          sortingMode="server"
-          sortModel={sortModel}
-          sortingOrder={['asc', 'desc']}
-          onSortModelChange={(model) => {
-            if (!model.length) {
-              return;
-            }
-            setSearchParams(searchParams.set('p_sort', model[0].field).set('p_order', model[0].sort ?? 'desc'));
-            setSortModel(model);
-          }}
-          // Row options
-          rowSelection={false}
-          checkboxSelection={false}
-          disableRowSelectionOnClick
-          // Column options
-          disableColumnSelector
-          disableColumnFilter
-          disableColumnMenu
-          // Styling
-          rowHeight={70}
-          getRowHeight={() => 'auto'}
-          autoHeight={false}
-          sx={{
-            '& .MuiDataGrid-overlay': {
-              background: grey[50]
-            },
-            '& .MuiDataGrid-cell': {
-              py: 0.75,
-              background: '#fff',
-              '&.MuiDataGrid-cell--editing:focus-within': {
-                outline: 'none'
+
+      <Box height="90vh" maxHeight="700px" p={2}>
+        <LoadingGuard
+          isLoading={projectsDataLoader.isLoading || !projectsDataLoader.isReady}
+          isLoadingFallback={<SkeletonTable />}
+          isLoadingFallbackDelay={100}
+          hasNoData={!rows.length}
+          hasNoDataFallback={
+            <NoDataOverlay
+              height="400px"
+              title="Create or Join Projects"
+              subtitle="You currently have no projects. Once you create or get invited to projects, they will be displayed here"
+              icon={mdiArrowTopRight}
+            />
+          }
+          hasNoDataFallbackDelay={100}>
+          <StyledDataGrid
+            noRowsMessage="No projects found"
+            loading={projectsDataLoader.isLoading || !projectsDataLoader.isReady}
+            // Columns
+            columns={columns}
+            // Rows
+            rows={rows}
+            rowCount={projectsDataLoader.data?.pagination.total ?? 0}
+            getRowId={(row) => row.project_id}
+            // Pagination
+            paginationMode="server"
+            paginationModel={paginationModel}
+            pageSizeOptions={pageSizeOptions}
+            onPaginationModelChange={(model) => {
+              if (!model) {
+                return;
               }
-            }
-          }}
-        />
+              setSearchParams(searchParams.set('p_page', String(model.page)).set('p_limit', String(model.pageSize)));
+              setPaginationModel(model);
+            }}
+            // Sorting
+            sortingMode="server"
+            sortModel={sortModel}
+            sortingOrder={['asc', 'desc']}
+            onSortModelChange={(model) => {
+              if (!model.length) {
+                return;
+              }
+              setSearchParams(searchParams.set('p_sort', model[0].field).set('p_order', model[0].sort ?? 'desc'));
+              setSortModel(model);
+            }}
+            // Row options
+            rowSelection={false}
+            checkboxSelection={false}
+            disableRowSelectionOnClick
+            // Column options
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
+            // Styling
+            rowHeight={70}
+            getRowHeight={() => 'auto'}
+            autoHeight={false}
+          />
+        </LoadingGuard>
       </Box>
     </>
   );

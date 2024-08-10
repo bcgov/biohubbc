@@ -1,3 +1,4 @@
+import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
@@ -5,16 +6,18 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import {
@@ -65,13 +68,8 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
-  const codesContext = useCodesContext();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<ObservationDataTableURLParams>>();
-
-  useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('o_limit') ?? initialPaginationParams.limit),
@@ -163,7 +161,7 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
     []
   );
 
-  const observationRows = observationsDataLoader.data ? getRowsFromObservations(observationsDataLoader.data) : [];
+  const rows = observationsDataLoader.data ? getRowsFromObservations(observationsDataLoader.data) : [];
 
   const columns: GridColDef<IObservationTableRow>[] = [
     {
@@ -247,63 +245,67 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="500px" p={2}>
-        <StyledDataGrid
-          noRowsMessage="No observations found"
-          loading={!observationsDataLoader.isReady && !observationsDataLoader.data}
-          // Columns
-          columns={columns}
-          // Rows
-          rows={observationRows}
-          rowCount={observationsDataLoader.data?.pagination.total ?? 0}
-          getRowId={(row) => row.observation_subcount_id}
-          // Pagination
-          paginationMode="server"
-          pageSizeOptions={pageSizeOptions}
-          paginationModel={paginationModel}
-          onPaginationModelChange={(model) => {
-            if (!model) {
-              return;
-            }
-            setSearchParams(searchParams.set('o_page', String(model.page)).set('o_limit', String(model.pageSize)));
-            setPaginationModel(model);
-          }}
-          // Sorting
-          sortingMode="server"
-          sortModel={sortModel}
-          sortingOrder={['asc', 'desc']}
-          onSortModelChange={(model) => {
-            if (!model.length) {
-              return;
-            }
-            setSearchParams(searchParams.set('o_sort', model[0].field).set('o_order', model[0].sort ?? 'desc'));
-            setSortModel(model);
-          }}
-          // Row options
-          checkboxSelection={false}
-          disableRowSelectionOnClick
-          rowSelection={false}
-          // Column options
-          disableColumnSelector
-          disableColumnFilter
-          disableColumnMenu
-          // Styling
-          rowHeight={70}
-          getRowHeight={() => 'auto'}
-          autoHeight={false}
-          sx={{
-            '& .MuiDataGrid-overlay': {
-              background: grey[50]
-            },
-            '& .MuiDataGrid-cell': {
-              py: 0.75,
-              background: '#fff',
-              '&.MuiDataGrid-cell--editing:focus-within': {
-                outline: 'none'
+
+      <Box height="100vh" maxHeight="800px" p={2}>
+        <LoadingGuard
+          isLoading={observationsDataLoader.isLoading || !observationsDataLoader.isReady}
+          isLoadingFallback={<SkeletonTable />}
+          isLoadingFallbackDelay={100}
+          hasNoData={!rows.length}
+          hasNoDataFallback={
+            <NoDataOverlay
+              height="500px"
+              title="Create or Join Surveys to See Observations"
+              subtitle="You currently have no observations data. Once you create or join surveys with observations data, it will be displayed here"
+              icon={mdiArrowTopRight}
+            />
+          }
+          hasNoDataFallbackDelay={100}>
+          <StyledDataGrid
+            noRowsMessage="No observations found"
+            loading={observationsDataLoader.isLoading || !observationsDataLoader.isReady}
+            // Columns
+            columns={columns}
+            // Rows
+            rows={rows}
+            rowCount={observationsDataLoader.data?.pagination.total ?? 0}
+            getRowId={(row) => row.observation_subcount_id}
+            // Pagination
+            paginationMode="server"
+            paginationModel={paginationModel}
+            pageSizeOptions={pageSizeOptions}
+            onPaginationModelChange={(model) => {
+              if (!model) {
+                return;
               }
-            }
-          }}
-        />
+              setSearchParams(searchParams.set('o_page', String(model.page)).set('o_limit', String(model.pageSize)));
+              setPaginationModel(model);
+            }}
+            // Sorting
+            sortingMode="server"
+            sortModel={sortModel}
+            sortingOrder={['asc', 'desc']}
+            onSortModelChange={(model) => {
+              if (!model.length) {
+                return;
+              }
+              setSearchParams(searchParams.set('o_sort', model[0].field).set('o_order', model[0].sort ?? 'desc'));
+              setSortModel(model);
+            }}
+            // Row options
+            rowSelection={false}
+            checkboxSelection={false}
+            disableRowSelectionOnClick
+            // Column options
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
+            // Styling
+            rowHeight={70}
+            getRowHeight={() => 'auto'}
+            autoHeight={false}
+          />
+        </LoadingGuard>
       </Box>
     </>
   );
