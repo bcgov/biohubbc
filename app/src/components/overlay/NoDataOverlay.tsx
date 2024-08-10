@@ -1,8 +1,8 @@
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
+import Box, { BoxProps } from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-interface INoDataOverlayProps {
+interface INoDataOverlayProps extends BoxProps {
   title: string;
   subtitle?: string;
   icon?: string;
@@ -17,7 +17,7 @@ interface INoDataOverlayProps {
 export const NoDataOverlay = (props: INoDataOverlayProps) => {
   const { title, subtitle, icon } = props;
   return (
-    <Box justifyContent="center" display="flex" flexDirection="column">
+    <Box justifyContent="center" display="flex" flexDirection="column" {...props}>
       <Typography mb={1} variant="h4" color="textSecondary" textAlign="center">
         {title}
         {icon && <Icon path={icon} size={1} style={{ marginLeft: '8px' }} />}

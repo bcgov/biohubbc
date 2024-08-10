@@ -8,10 +8,11 @@ import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import { GridOverlay, GridRowSelectionModel } from '@mui/x-data-grid';
+import { GridRowSelectionModel } from '@mui/x-data-grid';
 import { GridColDef } from '@mui/x-data-grid/models/colDef/gridColDef';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DeleteTechniqueI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -259,10 +260,18 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
         </MenuItem>
       </Menu>
 
-      <Box position="relative">
+      <LoadingGuard
+        hasNoData={!rows.length}
+        hasNoDataFallback={
+          <NoDataOverlay
+            height="200px"
+            title="Add Techniques"
+            subtitle="Techniques describe how you collected species observations"
+            icon={mdiArrowTopRight}
+          />
+        }
+        hasNoDataFallbackDelay={100}>
         <StyledDataGrid
-          autoHeight
-          getRowHeight={() => 'auto'}
           rows={rows}
           columns={columns}
           disableRowSelectionOnClick
@@ -276,27 +285,8 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
             }
           }}
           pageSizeOptions={[10, 25, 50]}
-          noRowsOverlay={
-            <GridOverlay>
-              <NoDataOverlay
-                title="Add a Technique"
-                subtitle="Techniques describe the details of how species observations were collected"
-                icon={mdiArrowTopRight}
-              />
-            </GridOverlay>
-          }
-          sx={{
-            '& .MuiDataGrid-virtualScroller': {
-              height: rows.length === 0 ? '250px' : 'unset',
-              overflowY: 'auto !important',
-              overflowX: 'hidden'
-            },
-            '& .MuiDataGrid-columnHeaderDraggableContainer': {
-              minWidth: '50px'
-            }
-          }}
         />
-      </Box>
+      </LoadingGuard>
     </>
   );
 };

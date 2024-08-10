@@ -1,4 +1,4 @@
-import { mdiArrowTopRight, mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import { blueGrey } from '@mui/material/colors';
@@ -8,10 +8,9 @@ import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridOverlay, GridRowSelectionModel } from '@mui/x-data-grid';
+import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
@@ -251,22 +250,6 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
           }
         }}
         pageSizeOptions={[10, 25, 50]}
-        noRowsOverlay={
-          <GridOverlay>
-            <NoDataOverlay
-              title="Add Sampling Sites"
-              subtitle="Sampling sites show where techniques were implemented"
-              icon={mdiArrowTopRight}
-            />
-          </GridOverlay>
-        }
-        sx={{
-          '& .MuiDataGrid-virtualScroller': {
-            height: rows.length === 0 ? '250px' : 'unset',
-            overflowY: 'auto !important',
-            overflowX: 'hidden'
-          }
-        }}
       />
     </>
   );

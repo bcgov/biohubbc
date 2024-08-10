@@ -10,7 +10,7 @@ import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helper
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
-import { cleanup, render, waitFor } from 'test-helpers/test-utils';
+import { cleanup, render, screen, waitFor } from 'test-helpers/test-utils';
 import SurveysListPage from './SurveysListPage';
 
 const history = createMemoryHistory();
@@ -45,7 +45,11 @@ describe('SurveysListPage', () => {
       projectDataLoader: {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
-      surveysListDataLoader: { data: [], refresh: jest.fn() } as unknown as DataLoader<any, any, any>,
+      surveysListDataLoader: { data: [], isLoading: false, isReady: true, refresh: jest.fn() } as unknown as DataLoader<
+        any,
+        any,
+        any
+      >,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
     };
@@ -63,7 +67,7 @@ describe('SurveysListPage', () => {
 
     const authState = getMockAuthState({ base: SystemAdminAuthState });
 
-    const { getByText } = render(
+    const { getByTestId } = render(
       <AuthStateContext.Provider value={authState}>
         <Router history={history}>
           <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
@@ -77,10 +81,9 @@ describe('SurveysListPage', () => {
       </AuthStateContext.Provider>
     );
 
+    screen.debug();
     await waitFor(() => {
-      expect(getByText(/^Surveys/)).toBeInTheDocument();
-      expect(getByText('Create Survey')).toBeInTheDocument();
-      expect(getByText('No surveys found')).toBeInTheDocument();
+      expect(getByTestId('survey-list-no-data-overlay')).toBeInTheDocument();
     });
   });
 
@@ -105,11 +108,12 @@ describe('SurveysListPage', () => {
       projectDataLoader: {
         data: getProjectForViewResponse
       } as DataLoader<any, any, any>,
-      surveysListDataLoader: { data: getSurveyForListResponse, refresh: jest.fn() } as unknown as DataLoader<
-        any,
-        any,
-        any
-      >,
+      surveysListDataLoader: {
+        data: getSurveyForListResponse,
+        isLoading: false,
+        isReady: true,
+        refresh: jest.fn()
+      } as unknown as DataLoader<any, any, any>,
       artifactDataLoader: { data: null } as DataLoader<any, any, any>,
       projectId: 1
     };

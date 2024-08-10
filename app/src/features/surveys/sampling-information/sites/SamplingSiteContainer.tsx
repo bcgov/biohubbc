@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -14,17 +14,20 @@ import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonMap, SkeletonTable } from 'components/loading/SkeletonLoaders';
-import { SamplingPeriodTable } from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import {
+  ISamplingSitePeriodRowData,
+  SamplingPeriodTable
+} from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
 import { SamplingSiteMapContainer } from 'features/surveys/sampling-information/sites/map/SamplingSiteMapContainer';
 import { SamplingSiteTable } from 'features/surveys/sampling-information/sites/table/SamplingSiteTable';
 import {
-  ISamplingSiteCount,
   SamplingSiteManageTableView,
   SamplingSiteTabs
 } from 'features/surveys/sampling-information/sites/table/SamplingSiteTabs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 /**
@@ -45,10 +48,34 @@ const SamplingSiteContainer = () => {
   // Controls whether sites, methods, or periods are shown
   const [activeView, setActiveView] = useState<SamplingSiteManageTableView>(SamplingSiteManageTableView.SITES);
 
-  const sampleSites = surveyContext.sampleSiteDataLoader.data;
-  const sampleSiteCount = sampleSites?.pagination.total ?? 0;
-  const sampleMethods = sampleSites?.sampleSites.flatMap((site) => site.sample_methods) || [];
-  const samplePeriods = sampleMethods.flatMap((method) => method.sample_periods);
+  const sampleSites = useMemo(
+    () => surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [],
+    [surveyContext.sampleSiteDataLoader.data?.sampleSites]
+  );
+  const sampleSiteCount = surveyContext.sampleSiteDataLoader.data?.pagination.total ?? 0;
+
+  const samplePeriods: ISamplingSitePeriodRowData[] = useMemo(() => {
+    const data: ISamplingSitePeriodRowData[] = [];
+
+    for (const site of sampleSites) {
+      for (const method of site.sample_methods) {
+        for (const period of method.sample_periods) {
+          data.push({
+            id: period.survey_sample_period_id,
+            sample_site: site.name,
+            sample_method: method.technique.name,
+            method_response_metric_id: method.method_response_metric_id,
+            start_date: period.start_date,
+            end_date: period.end_date,
+            start_time: period.start_time,
+            end_time: period.end_time
+          });
+        }
+      }
+    }
+
+    return data;
+  }, [sampleSites]);
 
   useEffect(() => {
     surveyContext.sampleSiteDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
@@ -111,10 +138,10 @@ const SamplingSiteContainer = () => {
   };
 
   // Counts for the toggle button labels
-  const counts: ISamplingSiteCount[] = [
-    { type: SamplingSiteManageTableView.SITES, value: sampleSiteCount },
-    { type: SamplingSiteManageTableView.PERIODS, value: samplePeriods.length }
-  ];
+  const viewCounts = {
+    [SamplingSiteManageTableView.SITES]: sampleSiteCount,
+    [SamplingSiteManageTableView.PERIODS]: samplePeriods.length
+  };
 
   return (
     <>
@@ -144,6 +171,7 @@ const SamplingSiteContainer = () => {
           <Button
             variant="contained"
             color="primary"
+            disabled={Boolean(!surveyContext.techniqueDataLoader.data?.count)}
             component={RouterLink}
             to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/create`}
             startIcon={<Icon path={mdiPlus} size={0.8} />}>
@@ -165,31 +193,67 @@ const SamplingSiteContainer = () => {
         <Box>
           <LoadingGuard
             isLoading={surveyContext.sampleSiteDataLoader.isLoading}
-            fallback={
+            isLoadingFallback={
               <>
                 <SkeletonMap />
                 <SkeletonTable numberOfLines={5} />
               </>
             }
-            delay={200}>
-            <SamplingSiteMapContainer samplingSites={sampleSites?.sampleSites || []} />
+            isLoadingFallbackDelay={100}>
+            <SamplingSiteMapContainer samplingSites={sampleSites} />
 
             {/* Toggle buttons for changing between sites, methods, and periods */}
-            <SamplingSiteTabs activeView={activeView} setActiveView={setActiveView} counts={counts} />
+            <SamplingSiteTabs activeView={activeView} setActiveView={setActiveView} viewCounts={viewCounts} />
 
             <Divider flexItem />
 
             {/* Data tables */}
             <Box p={2}>
               {activeView === SamplingSiteManageTableView.SITES && (
-                <SamplingSiteTable
-                  sites={sampleSites?.sampleSites ?? []}
-                  setBulkActionSites={setSiteSelection}
-                  bulkActionSites={siteSelection}
-                />
+                <LoadingGuard
+                  isLoading={
+                    surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady
+                  }
+                  isLoadingFallback={<SkeletonTable />}
+                  isLoadingFallbackDelay={100}
+                  hasNoData={!viewCounts[SamplingSiteManageTableView.SITES]}
+                  hasNoDataFallback={
+                    <NoDataOverlay
+                      height="200px"
+                      title="Add Sampling Sites"
+                      subtitle="Apply your techniques to sampling sites to show where you collected data"
+                      icon={mdiArrowTopRight}
+                    />
+                  }
+                  hasNoDataFallbackDelay={100}>
+                  <SamplingSiteTable
+                    sites={sampleSites}
+                    setBulkActionSites={setSiteSelection}
+                    bulkActionSites={siteSelection}
+                  />
+                </LoadingGuard>
               )}
 
-              {activeView === SamplingSiteManageTableView.PERIODS && <SamplingPeriodTable sites={sampleSites} />}
+              {activeView === SamplingSiteManageTableView.PERIODS && (
+                <LoadingGuard
+                  isLoading={
+                    surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady
+                  }
+                  isLoadingFallback={<SkeletonTable />}
+                  isLoadingFallbackDelay={100}
+                  hasNoData={!viewCounts[SamplingSiteManageTableView.PERIODS]}
+                  hasNoDataFallback={
+                    <NoDataOverlay
+                      height="200px"
+                      title="Add Periods"
+                      subtitle="Add periods when you create sampling sites to show when you collected species observations"
+                      icon={mdiArrowTopRight}
+                    />
+                  }
+                  hasNoDataFallbackDelay={100}>
+                  <SamplingPeriodTable periods={samplePeriods} />
+                </LoadingGuard>
+              )}
             </Box>
           </LoadingGuard>
         </Box>

@@ -16,15 +16,12 @@ interface ISamplingSiteManageTableView {
   icon: React.ReactNode;
 }
 
-export interface ISamplingSiteCount {
-  type: SamplingSiteManageTableView;
-  value: number;
-}
+export type ISamplingSiteCount = Record<SamplingSiteManageTableView, number>;
 
 interface ISamplingSiteTabsProps {
   activeView: SamplingSiteManageTableView;
   setActiveView: React.Dispatch<SetStateAction<SamplingSiteManageTableView>>;
-  counts: ISamplingSiteCount[];
+  viewCounts: Record<SamplingSiteManageTableView, number>;
 }
 
 /**
@@ -34,12 +31,14 @@ interface ISamplingSiteTabsProps {
  * @return {*}
  */
 export const SamplingSiteTabs = (props: ISamplingSiteTabsProps) => {
-  const { activeView, setActiveView, counts } = props;
+  const { activeView, setActiveView, viewCounts } = props;
 
   const views: ISamplingSiteManageTableView[] = [
     { value: SamplingSiteManageTableView.SITES, icon: <Icon path={mdiMapMarker} size={0.75} /> },
     { value: SamplingSiteManageTableView.PERIODS, icon: <Icon path={mdiCalendarRange} size={0.75} /> }
   ];
+
+  const activeViewCount = viewCounts[activeView];
 
   const updateDatasetView = (_: React.MouseEvent<HTMLElement>, view: SamplingSiteManageTableView) => {
     if (view) {
@@ -68,7 +67,7 @@ export const SamplingSiteTabs = (props: ISamplingSiteTabsProps) => {
         }}>
         {views.map((view) => (
           <ToggleButton key={view.value} component={Button} color="primary" value={view.value} startIcon={view.icon}>
-            {view.value}&nbsp;({counts.find((count) => count.type === view.value)?.value ?? 0})
+            {view.value}&nbsp;({activeViewCount})
           </ToggleButton>
         ))}
       </ToggleButtonGroup>

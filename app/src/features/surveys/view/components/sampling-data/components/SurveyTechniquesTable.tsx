@@ -1,34 +1,31 @@
-import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
 import blueGrey from '@mui/material/colors/blueGrey';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridOverlay } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { ITechniqueRowData } from 'features/surveys/sampling-information/techniques/table/SamplingTechniqueTable';
 import { useCodesContext } from 'hooks/useContext';
-import { IGetTechniquesResponse } from 'interfaces/useTechniqueApi.interface';
+import { TechniqueAttractant } from 'interfaces/useTechniqueApi.interface';
 import { getCodesName } from 'utils/Utils';
 
+export interface ISurveyTechniqueRowData {
+  id: number;
+  method_lookup_id: number;
+  name: string;
+  description: string | null;
+  attractants: TechniqueAttractant[];
+  distance_threshold: number | null;
+}
+
 export interface ISurveyTechniquesTableProps {
-  techniques?: IGetTechniquesResponse;
+  techniques: ISurveyTechniqueRowData[];
 }
 
 export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
   const { techniques } = props;
 
   const codesContext = useCodesContext();
-
-  const rows: ITechniqueRowData[] =
-    techniques?.techniques.map((technique) => ({
-      id: technique.method_technique_id,
-      name: technique.name,
-      method_lookup_id: technique.method_lookup_id,
-      description: technique.description,
-      attractants: technique.attractants,
-      distance_threshold: technique.distance_threshold
-    })) || [];
 
   const columns: GridColDef<ITechniqueRowData>[] = [
     {
@@ -105,7 +102,7 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
       rowSelection={false}
       autoHeight
       getRowHeight={() => 'auto'}
-      rows={rows}
+      rows={techniques}
       getRowId={(row) => row.id}
       columns={columns}
       disableRowSelectionOnClick
@@ -115,22 +112,6 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
         }
       }}
       pageSizeOptions={[10, 25, 50]}
-      noRowsOverlay={
-        <GridOverlay>
-          <NoDataOverlay
-            title="Start by Adding a Technique"
-            subtitle="Add techniques to describe your sampling methods, then apply your techniques to sampling sites"
-            icon={mdiArrowTopRight}
-          />
-        </GridOverlay>
-      }
-      sx={{
-        '& .MuiDataGrid-virtualScroller': {
-          height: rows.length === 0 ? '250px' : 'unset',
-          overflowY: 'auto !important',
-          overflowX: 'hidden'
-        }
-      }}
     />
   );
 };
