@@ -36,7 +36,6 @@ export const IAllCodeSets = z.object({
   project_roles: CodeSet(),
   administrative_activity_status_type: CodeSet(),
   intended_outcomes: CodeSet(IntendedOutcomeCode.shape),
-  vantage_codes: CodeSet(),
   survey_jobs: CodeSet(),
   site_selection_strategies: CodeSet(),
   sample_methods: CodeSet(SampleMethodsCode.shape),
@@ -164,26 +163,6 @@ export class CodeRepository extends BaseRepository {
         name
       FROM
         type
-      WHERE record_end_date is null;
-    `;
-
-    const response = await this.connection.sql(sqlStatement, ICode);
-
-    return response.rows;
-  }
-
-  /**
-   * Fetch vantage codes.
-   *
-   * @return {*}
-   * @memberof CodeRepository
-   */
-  async getVantageCodes() {
-    const sqlStatement = SQL`
-      SELECT
-        vantage_id as id,
-        name
-      FROM vantage
       WHERE record_end_date is null;
     `;
 

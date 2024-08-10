@@ -47,7 +47,9 @@ describe('ProjectAttachments', () => {
     const mockProjectContext: IProjectContext = {
       artifactDataLoader: {
         data: null,
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
@@ -119,7 +121,7 @@ describe('ProjectAttachments', () => {
       hasLoadedParticipantInfo: true
     };
 
-    const { getByText } = render(
+    const { getByTestId } = render(
       <ConfigContext.Provider value={{} as IConfig}>
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
@@ -133,7 +135,7 @@ describe('ProjectAttachments', () => {
       </ConfigContext.Provider>
     );
     await waitFor(() => {
-      expect(getByText('No shared files found')).toBeInTheDocument();
+      expect(getByTestId('project-attachments-list-no-data-overlay')).toBeInTheDocument();
     });
   });
 
@@ -155,7 +157,9 @@ describe('ProjectAttachments', () => {
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -361,12 +365,16 @@ describe('ProjectAttachments', () => {
             }
           ]
         },
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 

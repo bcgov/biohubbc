@@ -40,7 +40,6 @@ describe('CodeService', () => {
         'project_roles',
         'administrative_activity_status_type',
         'intended_outcomes',
-        'vantage_codes',
         'site_selection_strategies',
         'survey_jobs',
         'sample_methods',
