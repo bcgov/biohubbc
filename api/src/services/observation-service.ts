@@ -7,6 +7,7 @@ import {
   ObservationRecord,
   ObservationRecordWithSamplingAndSubcountData,
   ObservationRepository,
+  ObservationSpecies,
   ObservationSubmissionRecord,
   UpdateObservation
 } from '../repositories/observation-repository/observation-repository';
@@ -245,6 +246,17 @@ export class ObservationService extends DBService {
   async getAllSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
     return this.observationRepository.getAllSurveyObservations(surveyId);
   }
+
+    /**
+   * Retrieves all species observed in a given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ObservationSpecies[]>}
+   * @memberof ObservationRepository
+   */
+    async getSurveyObservationsSpecies(surveyId: number): Promise<ObservationSpecies[]> {
+      return this.observationRepository.getSurveyObservationsSpecies(surveyId);
+    }
 
   /**
    * Retrieves a single observation records by ID

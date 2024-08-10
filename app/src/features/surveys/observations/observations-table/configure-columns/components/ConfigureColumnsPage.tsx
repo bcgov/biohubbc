@@ -186,7 +186,7 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
           </ToggleButton>
         </ToggleButtonGroup>
       </Grid>
-      <Divider orientation="vertical" flexItem sx={{ px: 0.5 }} />
+      <Divider orientation="vertical" flexItem />
       <Grid item xs={9.5} height="100%">
         {activeView === ConfigureColumnsViewEnum.GENERAL && (
           <ConfigureGeneralColumns

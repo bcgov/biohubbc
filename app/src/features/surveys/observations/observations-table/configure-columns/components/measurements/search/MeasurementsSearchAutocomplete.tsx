@@ -1,7 +1,8 @@
-import { mdiMagnify, mdiStar } from '@mdi/js';
+import { mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
 import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import ListItem from '@mui/material/ListItem';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
@@ -42,12 +43,19 @@ export interface IMeasurementsSearchAutocompleteProps {
    */
   speciesTsn?: number[];
   /**
-   * TSNs to highlight
+   * Measurements applied to any of these TSNs will have the ornament applied to them in the options list
    *
    * @type {number[]}
-   * @memberof IMeasurementSearchAutocompleteProps
+   * @memberof IMeasurementsSearchAutocompleteProps
    */
   priorityTsns?: number[];
+  /**
+   * Ornament to display on the option card, typically indicating whether focal species can have the measurement
+   *
+   * @type {JSX.Element}
+   * @memberof IMeasurementSearchAutocompleteProps
+   */
+  ornament?: JSX.Element;
 }
 
 /**
@@ -57,10 +65,11 @@ export interface IMeasurementsSearchAutocompleteProps {
  * @return {*}
  */
 export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompleteProps) => {
-  const { selectedOptions, getOptions, onAddMeasurementColumn, priorityTsns } = props;
+  const { selectedOptions, getOptions, onAddMeasurementColumn, ornament, priorityTsns } = props;
 
   const [inputValue, setInputValue] = useState('');
   const [options, setOptions] = useState<CBMeasurementType[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSearch = useMemo(
     () =>
@@ -77,10 +86,11 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
     <Autocomplete
       id="measurements-autocomplete"
       data-testid="measurements-autocomplete"
-      noOptionsText="No matching options"
+      noOptionsText={isLoading ? 'Loading...' : 'No matching options'}
       autoHighlight={true}
       options={options}
       disableCloseOnSelect={true}
+      clearOnEscape={false}
       blurOnSelect={true}
       clearOnBlur={true}
       getOptionLabel={(option) => option.measurement_name}
@@ -114,8 +124,10 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
         }
 
         setInputValue(value);
+        setIsLoading(true);
         handleSearch(value, (newOptions) => {
           setOptions(() => newOptions);
+          setIsLoading(false);
         });
       }}
       value={null} // The selected value is not displayed in the input field or tracked by this component
@@ -127,19 +139,22 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
         }
       }}
       renderOption={(renderProps, renderOption) => {
+        const isPriority = renderOption.itis_tsn && priorityTsns?.includes(renderOption.itis_tsn);
+
         return (
           <ListItem
             disablePadding
             divider
             sx={{
+              flex: '1 1 auto',
               py: '12px !important',
               px: 2
             }}
             {...renderProps}
             key={renderOption.taxon_measurement_id}
             data-testid="measurements-autocomplete-option">
-            <Stack gap={0.75} mt={-0.25}>
-              <Box>
+            <Stack gap={0.75} mt={-0.25} flex="1 1 auto">
+              <Box display="flex" alignItems="center" justifyContent="space-between">
                 <ScientificNameTypography
                   variant="body2"
                   color="textSecondary"
@@ -149,14 +164,11 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
                       : ''
                   }
                 />
+                {isPriority && ornament}
               </Box>
               <Box>
-                <Typography component="div" variant="body1" fontWeight={700}>
-                  {renderOption.measurement_name}
-                  {renderOption.itis_tsn && priorityTsns?.includes(renderOption.itis_tsn) && (
-                    <Icon path={mdiStar} size={2} />
-                  )}
-                </Typography>
+                <Typography fontWeight={700}>{renderOption.measurement_name}</Typography>
+
                 <Typography
                   component="div"
                   variant="subtitle2"
@@ -188,6 +200,12 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
               <Box mx={1} mt="6px">
                 <Icon path={mdiMagnify} size={1}></Icon>
               </Box>
+            ),
+            endAdornment: (
+              <>
+                {inputValue && isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {params.InputProps.endAdornment}
+              </>
             )
           }}
           data-testid="measurements-autocomplete-input"

@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
-import blueGrey from '@mui/material/colors/blueGrey';
 import grey from '@mui/material/colors/grey';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import List from '@mui/material/List';
@@ -113,7 +112,12 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
             />
           }
           label={
-            <Typography variant="body2" sx={{ ml: 0.5 }} color="textSecondary" textTransform="uppercase" fontWeight={700}>
+            <Typography
+              variant="body2"
+              sx={{ ml: 0.5 }}
+              color="textSecondary"
+              textTransform="uppercase"
+              fontWeight={700}>
               Show/Hide all
             </Typography>
           }
@@ -122,9 +126,9 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
 
       <List
         component={Stack}
-        gap={1}
+        gap={0.5}
         sx={{
-          my: 1,
+          my: 2,
           p: 0.5,
           maxHeight: '100%',
           overflowY: 'auto'
@@ -151,17 +155,17 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
                 onClick={() => onToggleColumnVisibility(column.field)}
                 disabled={disabled}
                 sx={{
-                  background: isSelected ? blueGrey[50] : grey[50],
+                  background: isSelected ? grey[100] : '#fff',
                   borderRadius: '5px',
                   alignItems: 'flex-start',
-                  '& .MuiListItemText-root': { my: 0 }
+                  '& .MuiListItemText-root': { my: 0.25 }
                 }}>
                 <ListItemIcon>
                   <Checkbox edge="start" checked={isSelected} />
                 </ListItemIcon>
                 <Box my={1}>
                   <ListItemText sx={{ '& .MuiTypography-root': { fontWeight: 700 } }}>{column.headerName}</ListItemText>
-                  <ListItemText sx={{ '& .MuiTypography-root': { color: grey[600] } }}>
+                  <ListItemText sx={{ '& .MuiTypography-root': { color: grey[600] }}}>
                     {column.description}
                   </ListItemText>
                 </Box>

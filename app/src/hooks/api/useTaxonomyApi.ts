@@ -39,9 +39,7 @@ const useTaxonomyApi = () => {
    * @return {*}  {Promise<IPartialTaxonomy[]>}
    */
   const getTaxonHierarchyByTSNs = async (tsns: number[]): Promise<ITaxonomyHierarchy[]> => {
-    const { data } = await apiAxios.get<{
-      searchResponse: ITaxonomyHierarchy[];
-    }>(config.BIOHUB_TAXON_TSN_PATH, {
+    const { data } = await apiAxios.get<ITaxonomyHierarchy[]>('/api/taxonomy/taxon/tsn/hierarchy', {
       params: {
         tsn: [...new Set(tsns)]
       },
@@ -50,7 +48,7 @@ const useTaxonomyApi = () => {
       }
     });
 
-    return data.searchResponse;
+    return data;
   };
 
   /**

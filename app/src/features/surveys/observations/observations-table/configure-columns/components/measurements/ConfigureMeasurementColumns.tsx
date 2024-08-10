@@ -1,8 +1,16 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, IconButton, List, Stack, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
+import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import MeasurementStandardCard from 'features/standards/view/components/MeasurementStandardCard';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
+import { useState } from 'react';
 import { MeasurementsSearch } from './search/MeasurementsSearch';
 
 export interface IConfigureMeasurementColumnsProps {
@@ -37,6 +45,8 @@ export interface IConfigureMeasurementColumnsProps {
 export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsProps) => {
   const { measurementColumns, onAddMeasurementColumns, onRemoveMeasurementColumns } = props;
 
+  const [isPriorityOnly, setIsPriorityOnly] = useState<boolean>(true);
+
   return (
     <Box height="100%" display="flex" flexDirection="column">
       <Typography variant="h5" mb={2}>
@@ -45,7 +55,22 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
       <MeasurementsSearch
         selectedMeasurements={measurementColumns}
         onAddMeasurementColumn={(measurementColumn) => onAddMeasurementColumns([measurementColumn])}
+        priorityOnly={isPriorityOnly}
       />
+      <FormGroup>
+        <FormControlLabel
+          slotProps={{ typography: { variant: 'body1' } }}
+          sx={{
+            my: 1.5,
+            ml: '4px',
+            '& .MuiCheckbox-root': {
+              mr: 0.5
+            }
+          }}
+          label="Only show measurements applicable to focal or observed species"
+          control={<Checkbox checked={isPriorityOnly} onClick={() => setIsPriorityOnly((prev) => !prev)} />}
+        />
+      </FormGroup>
       {measurementColumns.length ? (
         <List
           component={Stack}
