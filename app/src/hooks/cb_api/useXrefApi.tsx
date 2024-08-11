@@ -5,6 +5,7 @@ import {
   ICollectionCategory,
   ICollectionUnit
 } from 'interfaces/useCritterApi.interface';
+import qs from 'qs';
 
 export const useXrefApi = (axios: AxiosInstance) => {
   /**
@@ -34,16 +35,22 @@ export const useXrefApi = (axios: AxiosInstance) => {
   /**
    * Get collection (ie. ecological) units that are available for a given taxon (by itis tsn).
    *
-   * @param {number} tsn
+   * @param {number[]} tsns
    * @return {*}  {Promise<ICollectionCategory[]>}
    */
-  const getTsnCollectionCategories = async (tsn: number): Promise<ICollectionCategory[]> => {
-    const { data } = await axios.get(`/api/critterbase/xref/taxon-collection-categories?tsn=${tsn}`);
+  const getTsnCollectionCategories = async (tsns: number[]): Promise<ICollectionCategory[]> => {
+    const { data } = await axios.get('/api/critterbase/xref/taxon-collection-categories', {
+      params: { tsn: tsns },
+      paramsSerializer: (params: any) => {
+        return qs.stringify(params);
+      }
+    });
+
     return data;
   };
 
   /**
-   * Get collection (ie. ecological) units that are available for a given taxon
+   * Get collection (ie. ecological) units for a unit category
    *
    * @param {string} unit_id
    * @return {*}  {Promise<ICollectionUnit[]>}

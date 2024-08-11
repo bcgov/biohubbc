@@ -66,6 +66,12 @@ const useTaxonomyApi = () => {
 /**
  * Parses the taxon search response into start case.
  *
+ * The case of scientific names should not be modified. Genus names and higher are capitalized while
+ * species-level and subspecies-level names (the second and third words in a species/subspecies name) are not capitalized.
+ * Example: Ursus americanus, Rangifier tarandus caribou, Mammalia, Alces alces.
+ *
+ * The case of common names is less standardized and often just preference.
+ *
  * @template T
  * @param {T[]} searchResponse - Array of Taxonomy objects
  * @returns {T[]} Correctly cased Taxonomy
@@ -74,7 +80,7 @@ const parseSearchResponse = <T extends IPartialTaxonomy>(searchResponse: T[]): T
   return searchResponse.map((taxon) => ({
     ...taxon,
     commonNames: taxon.commonNames.map((commonName) => startCase(commonName)),
-    scientificName: startCase(taxon.scientificName)
+    scientificName: taxon.scientificName
   }));
 };
 

@@ -8,11 +8,11 @@ import {
 import { IGeneralInformationForm } from 'features/surveys/components/general-information/GeneralInformationForm';
 import { ISurveyLocationForm } from 'features/surveys/components/locations/StudyAreaForm';
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/methodology/PurposeAndMethodologyForm';
-import { ISpeciesForm } from 'features/surveys/components/species/SpeciesForm';
-import { ISurveyPermitForm } from 'features/surveys/SurveyPermitForm';
+import { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
+import { ISpeciesForm, ISpeciesWithEcologicalUnits } from 'features/surveys/components/species/SpeciesForm';
 import { ISurveyPartnershipsForm } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Feature } from 'geojson';
-import { IPartialTaxonomy, ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { ApiPaginationResponseParams, StringBoolean } from 'types/misc';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from './useCritterApi.interface';
 
@@ -185,7 +185,7 @@ export type IUpdateSurveyRequest = ISurveyLocationForm & {
     revision_count: number;
   };
   species: {
-    focal_species: IPartialTaxonomy[];
+    focal_species: ISpeciesWithEcologicalUnits[];
   };
   permit: {
     permits: {
@@ -359,7 +359,7 @@ export interface IGetSurveyForUpdateResponse {
       revision_count: number;
     };
     species: {
-      focal_species: IPartialTaxonomy[];
+      focal_species: ISpeciesWithEcologicalUnits[];
     };
     permit: {
       permits: {

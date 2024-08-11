@@ -3,7 +3,7 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
+import { PostProprietorData, PostSurveyObject, SpeciesWithEcologicalUnits } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
   FindSurveysResponse,
@@ -13,6 +13,7 @@ import {
   GetSurveyPurposeAndMethodologyData,
   ISurveyAdvancedFilters
 } from '../models/survey-view';
+import { IPostCollectionUnit } from '../services/platform-service';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
@@ -360,17 +361,38 @@ export class SurveyRepository extends BaseRepository {
    * @returns {*} {Promise<IGetSpeciesData[]>}
    * @memberof SurveyRepository
    */
-  async getSpeciesData(surveyId: number): Promise<IGetSpeciesData[]> {
+  async getSpeciesData(surveyId: number): Promise<SpeciesWithEcologicalUnits[]> {
     const sqlStatement = SQL`
+    WITH ecological_units AS (
       SELECT
-        itis_tsn
+        ssu.study_species_id,
+        json_agg(
+          json_build_object(
+            'critterbase_collection_category_id', ssu.critterbase_collection_category_id,
+            'critterbase_collection_unit_id', ssu.critterbase_collection_unit_id
+          )
+        ) AS units
       FROM
-        study_species
+        study_species_unit ssu
+      LEFT JOIN
+        study_species ss ON ss.study_species_id = ssu.study_species_id
       WHERE
-        survey_id = ${surveyId};
+        ss.survey_id = ${surveyId}
+      GROUP BY
+        ssu.study_species_id
+    )
+    SELECT
+      ss.itis_tsn,
+      COALESCE(eu.units, '[]'::json) AS ecological_units
+    FROM
+      study_species ss
+    LEFT JOIN
+      ecological_units eu ON eu.study_species_id = ss.study_species_id
+    WHERE
+      ss.survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql<IGetSpeciesData>(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, SpeciesWithEcologicalUnits);
 
     return response.rows;
   }
@@ -751,7 +773,43 @@ export class SurveyRepository extends BaseRepository {
 
     if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert focal species data', [
-        'SurveyRepository->insertSurveyData',
+        'SurveyRepository->insertFocalSpecies',
+        'response was null or undefined, expected response != null'
+      ]);
+    }
+
+    return result.id;
+  }
+
+  /**
+   * Inserts focal ecological units for focal species
+   *
+   * @param {IPostCollectionUnit} ecologicalUnitObject
+   * @param {number} studySpeciesId
+   * @returns {*} Promise<number>
+   * @memberof SurveyRepository
+   */
+  async insertFocalSpeciesUnits(ecologicalUnitObject: IPostCollectionUnit, studySpeciesId: number): Promise<number> {
+    const sqlStatement = SQL`
+      INSERT INTO study_species_unit (
+        study_species_id,
+        critterbase_collection_category_id,
+        critterbase_collection_unit_id
+      ) VALUES (
+        ${studySpeciesId},
+        ${ecologicalUnitObject.critterbase_collection_category_id},
+        ${ecologicalUnitObject.critterbase_collection_unit_id}
+      ) RETURNING study_species_id AS id;
+    `;
+
+    console.log(ecologicalUnitObject);
+
+    const response = await this.connection.sql(sqlStatement);
+    const result = response.rows?.[0];
+
+    if (!result?.id) {
+      throw new ApiExecuteSQLError('Failed to insert focal species units data', [
+        'SurveyRepository->insertFocalSpeciesUnits',
         'response was null or undefined, expected response != null'
       ]);
     }
@@ -996,6 +1054,24 @@ export class SurveyRepository extends BaseRepository {
         from study_species
       WHERE
         survey_id = ${surveyId};
+    `;
+
+    await this.connection.sql(sqlStatement);
+  }
+
+  /**
+   * Deletes Survey species data for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<void>
+   * @memberof SurveyRepository
+   */
+  async deleteSurveySpeciesUnitData(surveyId: number) {
+    const sqlStatement = SQL`
+      DELETE FROM study_species_unit ssu
+      USING study_species ss
+      WHERE ss.study_species_id = ssu.study_species_id
+      AND ss.survey_id = ${surveyId};
     `;
 
     await this.connection.sql(sqlStatement);
