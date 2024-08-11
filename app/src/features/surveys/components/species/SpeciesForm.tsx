@@ -4,9 +4,18 @@ import FocalSpeciesComponent from 'components/species/FocalSpeciesComponent';
 import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import yup from 'utils/YupSchema';
 
+export type PostCollectionUnit = {
+  critterbase_collection_category_id: string;
+  critterbase_collection_unit_id: string;
+};
+
+export interface ISpeciesWithEcologicalUnits extends IPartialTaxonomy {
+  ecological_units: PostCollectionUnit[];
+}
+
 export interface ISpeciesForm {
   species: {
-    focal_species: IPartialTaxonomy[];
+    focal_species: ISpeciesWithEcologicalUnits[];
   };
 }
 

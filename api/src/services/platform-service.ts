@@ -57,6 +57,15 @@ export interface ITaxonomy {
   kingdom: string;
 }
 
+export interface IPostCollectionUnit {
+  critterbase_collection_unit_id: string;
+  critterbase_collection_category_id: string;
+}
+
+export interface ITaxonomyWithEcologicalUnits extends ITaxonomy {
+  ecological_units: IPostCollectionUnit[];
+}
+
 const getBackboneInternalApiHost = () => process.env.BACKBONE_INTERNAL_API_HOST || '';
 const getBackboneArtifactIntakePath = () => process.env.BACKBONE_ARTIFACT_INTAKE_PATH || '';
 const getBackboneSurveyIntakePath = () => process.env.BACKBONE_INTAKE_PATH || '';

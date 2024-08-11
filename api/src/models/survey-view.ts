@@ -7,7 +7,7 @@ import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
-import { ITaxonomy } from '../services/platform-service';
+import { ITaxonomyWithEcologicalUnits } from '../services/platform-service';
 
 export interface ISurveyAdvancedFilters {
   keyword?: string;
@@ -101,7 +101,7 @@ export class GetSurveyFundingSourceData {
 }
 
 export class GetFocalSpeciesData {
-  focal_species: ITaxonomy[];
+  focal_species: ITaxonomyWithEcologicalUnits[];
 
   constructor(obj?: any[]) {
     this.focal_species = [];

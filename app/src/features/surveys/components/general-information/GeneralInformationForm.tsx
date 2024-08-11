@@ -1,13 +1,11 @@
-import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import React from 'react';
 import yup from 'utils/YupSchema';
-import SurveyPermitForm, { SurveyPermitFormYupSchema } from '../../SurveyPermitForm';
+import { SurveyPermitFormYupSchema } from '../permit/SurveyPermitForm';
 
 export const AddPermitFormInitialValues = {
   permits: [
@@ -122,14 +120,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           />
         </Grid>
       </Grid>
-      <Box component="fieldset" mt={5}>
-        <Typography component="legend" variant="h5">
-          Were any permits used for this work?
-        </Typography>
-        <Box>
-          <SurveyPermitForm />
-        </Box>
-      </Box>
     </>
   );
 };

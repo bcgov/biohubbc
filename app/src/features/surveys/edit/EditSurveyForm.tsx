@@ -7,8 +7,8 @@ import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
+import SurveyPermitForm, { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
 import SamplingStrategyForm from 'features/surveys/components/sampling-strategy/SamplingStrategyForm';
-import { ISurveyPermitForm } from 'features/surveys/SurveyPermitForm';
 import SurveyPartnershipsForm, {
   SurveyPartnershipsFormYupSchema
 } from 'features/surveys/view/components/SurveyPartnershipsForm';
@@ -112,6 +112,32 @@ const EditSurveyForm = <
         <Divider />
 
         <HorizontalSplitFormComponent
+          title="Permits"
+          summary="Enter any permits used in this survey"
+          component={
+            <Box component="fieldset">
+              <Typography component="legend">Were any permits used in this survey?</Typography>
+              <SurveyPermitForm />
+            </Box>
+          }
+        />
+
+        <Divider />
+
+        <HorizontalSplitFormComponent
+          title="Funding Sources"
+          summary="Specify funding sources for this survey"
+          component={
+            <Box component="fieldset">
+              <Typography component="legend">Do any funding agencies require this survey to be submitted?</Typography>
+              <SurveyFundingSourceForm />
+            </Box>
+          }
+        />
+
+        <Divider />
+
+        <HorizontalSplitFormComponent
           title="Purpose and Methodology"
           summary="Select the types of data collected and describe the survey objectives"
           component={
@@ -135,19 +161,6 @@ const EditSurveyForm = <
           title="Survey Participants"
           summary="Specify people who participated in this survey. Only people who have signed up for SIMS can be selected."
           component={<SurveyUserForm jobs={codes.survey_jobs} />}
-        />
-
-        <Divider />
-
-        <HorizontalSplitFormComponent
-          title="Funding Sources"
-          summary="Specify funding sources for this survey"
-          component={
-            <Box component="fieldset">
-              <Typography component="legend">Does a funding agency require this survey to be submitted?</Typography>
-              <SurveyFundingSourceForm />
-            </Box>
-          }
         />
 
         <Divider />
