@@ -1,14 +1,110 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { MediaFile } from '../../../utils/media/media-file';
+import * as worksheetUtils from '../../../utils/xlsx-utils/worksheet-utils';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { IBulkCreateResponse, ICritterDetailed } from '../../critterbase-service';
+import { importCSV } from '../csv-import-strategy';
 import { ImportMarkingsStrategy } from './import-markings-strategy';
 import { CsvMarking } from './import-markings-strategy.interface';
 
 chai.use(sinonChai);
 
 describe('ImportMarkingsStrategy', () => {
+  describe('importCSV capture worksheet', () => {
+    it.only('should validate successfully', async () => {
+      const worksheet = {
+        A1: { t: 's', v: 'CAPTURE_DATE' }, // testing order incorrect
+        B1: { t: 's', v: 'ALIAS' },
+        C1: { t: 's', v: 'CAPTURE_TIME' },
+        D1: { t: 's', v: 'BODY_LOCATION' },
+        E1: { t: 's', v: 'MARKING_TYPE' },
+        F1: { t: 's', v: 'IDENTIFIER' },
+        G1: { t: 's', v: 'PRIMARY_COLOUR' },
+        H1: { t: 's', v: 'SECONDARY_COLOUR' },
+        I1: { t: 's', v: 'DESCRIPTION' }, // testing alias works
+        A2: { z: 'm/d/yy', t: 'd', v: '2024-10-10T07:00:00.000Z', w: '10/10/24' },
+        B2: { t: 's', v: 'Carl' },
+        C2: { t: 's', v: '10:10:12' },
+        D2: { t: 's', v: 'Left ear' }, // testing case insensitivity
+        E2: { t: 's', v: 'Ear tag' },
+        F2: { t: 's', v: 'asdfasdf' },
+        G2: { t: 's', v: 'red' },
+        H2: { t: 's', v: 'blue' },
+        I2: { t: 's', v: 'tagged' },
+        '!ref': 'A1:I2'
+      };
+
+      const mockDBConnection = getMockDBConnection();
+
+      const strategy = new ImportMarkingsStrategy(mockDBConnection, 1);
+
+      const getDefaultWorksheetStub = sinon.stub(worksheetUtils, 'getDefaultWorksheet');
+      const critterbaseInsertStub = sinon.stub(strategy.surveyCritterService.critterbaseService, 'bulkCreate');
+      const aliasMapStub = sinon.stub(strategy.surveyCritterService, 'getSurveyCritterIdAliasMap');
+      const colourStub = sinon.stub(strategy.surveyCritterService.critterbaseService, 'getColours');
+      const markingTypeStub = sinon.stub(strategy.surveyCritterService.critterbaseService, 'getMarkingTypes');
+      const taxonBodyLocationStub = sinon.stub(strategy, 'getTaxonBodyLocationsCritterIdMap');
+
+      colourStub.resolves([
+        { id: 'A', key: 'colour', value: 'red' },
+        { id: 'B', key: 'colour', value: 'blue' }
+      ]);
+
+      markingTypeStub.resolves([
+        { id: 'C', key: 'markingType', value: 'ear tag' },
+        { id: 'D', key: 'markingType', value: 'nose band' }
+      ]);
+
+      taxonBodyLocationStub.resolves(
+        new Map([
+          ['3647cdc9-6fe9-4c32-acfa-6096fe123c4a', [{ id: 'D', key: 'bodylocation', value: 'left ear' }]],
+          ['4540d43a-7ced-4216-b49e-2a972d25dfdc', [{ id: 'E', key: 'bodylocation', value: 'tail' }]]
+        ])
+      );
+
+      getDefaultWorksheetStub.returns(worksheet);
+      aliasMapStub.resolves(
+        new Map([
+          [
+            'carl',
+            {
+              critter_id: '3647cdc9-6fe9-4c32-acfa-6096fe123c4a',
+              captures: [
+                {
+                  capture_id: '4647cdc9-6fe9-4c32-acfa-6096fe123c4a',
+                  capture_date: '2024-10-10',
+                  capture_time: '10:10:12'
+                }
+              ]
+            } as ICritterDetailed
+          ],
+          [
+            'carlita',
+            {
+              critter_id: '3647cdc9-6fe9-4c32-acfa-6096fe123c4a',
+              captures: [
+                {
+                  capture_id: '5647cdc9-6fe9-4c32-acfa-6096fe123c4a',
+                  capture_date: '2024-10-10',
+                  capture_time: '10:10:10'
+                }
+              ]
+            } as ICritterDetailed
+          ]
+        ])
+      );
+      critterbaseInsertStub.resolves({ created: { markings: 2 } } as IBulkCreateResponse);
+
+      try {
+        const data = await importCSV(new MediaFile('test', 'test', 'test' as unknown as Buffer), strategy);
+        expect(data).to.deep.equal(2);
+      } catch (err: any) {
+        expect.fail();
+      }
+    });
+  });
   describe('getTaxonBodyLocationsCritterIdMap', () => {
     it('should return a critter_id mapping of body locations', async () => {
       const mockDBConnection = getMockDBConnection();
