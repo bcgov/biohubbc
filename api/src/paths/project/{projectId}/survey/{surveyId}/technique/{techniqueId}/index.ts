@@ -7,7 +7,7 @@ import { techniqueUpdateSchema, techniqueViewSchema } from '../../../../../../..
 import { ITechniquePutData } from '../../../../../../../repositories/technique-repository';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttractantService } from '../../../../../../../services/attractants-service';
-import { ObservationService } from '../../../../../../../services/observation-service';
+import { SampleMethodService } from '../../../../../../../services/sample-method-service';
 import { TechniqueAttributeService } from '../../../../../../../services/technique-attributes-service';
 import { TechniqueService } from '../../../../../../../services/technique-service';
 import { getLogger } from '../../../../../../../utils/logger';
@@ -110,14 +110,12 @@ export function deleteTechnique(): RequestHandler {
     try {
       await connection.open();
 
-      const observationService = new ObservationService(connection);
+      const sampleMethodService = new SampleMethodService(connection);
 
-      const observationCount = await observationService.getObservationsCountByTechniqueIds(surveyId, [
-        methodTechniqueId
-      ]);
+      const samplingMethodsCount = await sampleMethodService.getSampleMethodsCountForTechniqueIds([methodTechniqueId]);
 
-      if (observationCount > 0) {
-        throw new HTTP409('Cannot delete a technique that is associated with an observation');
+      if (samplingMethodsCount > 0) {
+        throw new HTTP409('Cannot delete a technique that is associated with a sampling site');
       }
 
       const techniqueService = new TechniqueService(connection);

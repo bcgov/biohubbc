@@ -5,15 +5,21 @@ import Button from '@mui/material/Button';
 import Card from '@mui/material/Card';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import IconButton from '@mui/material/IconButton';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import AlertBar from 'components/alert/AlertBar';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import DollarAmountField from 'components/fields/DollarAmountField';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
+import get from 'lodash-es/get';
+import { useEffect } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 
@@ -21,15 +27,16 @@ export interface ISurveyFundingSource {
   funding_source_id: number;
   amount: number;
   revision_count: number;
-  survey_funding_source_id?: number;
+  survey_funding_source_id?: number | null;
   survey_id: number;
   funding_source_name?: string;
-  start_date?: string;
-  end_date?: string;
-  description?: string;
+  start_date?: string | null;
+  end_date?: string | null;
+  description?: string | null;
 }
 
 export interface ISurveyFundingSourceForm {
+  funding_used: boolean | null;
   funding_sources: ISurveyFundingSource[];
 }
 
@@ -42,10 +49,15 @@ const SurveyFundingSourceInitialValues: ISurveyFundingSource = {
 };
 
 export const SurveyFundingSourceFormInitialValues: ISurveyFundingSourceForm = {
+  funding_used: null,
   funding_sources: []
 };
 
 export const SurveyFundingSourceFormYupSchema = yup.object().shape({
+  funding_used: yup
+    .boolean()
+    .nullable()
+    .required('You must indicate whether a funding source requires this survey to be submitted'),
   funding_sources: yup.array(
     yup.object().shape({
       funding_source_id: yup
@@ -82,7 +94,16 @@ export const SurveyFundingSourceFormYupSchema = yup.object().shape({
  */
 const SurveyFundingSourceForm = () => {
   const formikProps = useFormikContext<IEditSurveyRequest>();
-  const { values, handleChange, handleSubmit, errors } = formikProps;
+  const { values, handleChange, handleSubmit, errors, setFieldValue, submitCount, setFieldError } = formikProps;
+
+  // Determine value of funding_used based on whether funding_sources exist
+  useEffect(() => {
+    if (values.funding_sources.length > 0) {
+      setFieldValue('funding_used', values.funding_used);
+    } else if (!values.funding_sources.length) {
+      setFieldValue('funding_used', values.funding_used);
+    }
+  }, [setFieldValue, values.funding_sources, values.funding_used]);
 
   const biohubApi = useBiohubApi();
   const fundingSourcesDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
@@ -90,12 +111,52 @@ const SurveyFundingSourceForm = () => {
 
   const fundingSources = fundingSourcesDataLoader.data ?? [];
 
+  // Determine the radio button value
+  const getFundingUsedValue = () => {
+    if (values.funding_used === true) {
+      return 'true';
+    }
+    if (values.funding_used === false) {
+      return 'false';
+    }
+    return null;
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <FieldArray
         name="funding_sources"
         render={(arrayHelpers: FieldArrayRenderProps) => (
           <Stack gap={1}>
+            {get(errors, 'funding_used') && submitCount > 0 && (
+              <AlertBar
+                severity="error"
+                variant="outlined"
+                title="Funding declaration missing"
+                text={
+                  get(errors, 'funding_used') ||
+                  'Indicate whether a funding source requires this survey to be submitted'
+                }
+              />
+            )}
+            <RadioGroup
+              aria-label="funding_used"
+              name="funding_used"
+              value={getFundingUsedValue()}
+              onChange={(event) => {
+                const value = event.target.value === 'true' ? true : false;
+                setFieldValue('funding_used', value);
+                if (value) {
+                  arrayHelpers.push(SurveyFundingSourceInitialValues);
+                } else {
+                  setFieldValue('funding_sources', []);
+                }
+                setFieldError('funding_used', undefined);
+              }}>
+              <FormControlLabel value="true" control={<Radio required={true} color="primary" />} label="Yes" />
+              <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />
+            </RadioGroup>
+
             <TransitionGroup
               component={Stack}
               gap={1}
@@ -116,6 +177,7 @@ const SurveyFundingSourceForm = () => {
                       gap={2}
                       sx={{
                         width: '100%',
+                        mt: 1,
                         p: 2,
                         backgroundColor: grey[100]
                       }}>
@@ -162,19 +224,21 @@ const SurveyFundingSourceForm = () => {
                 <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.funding_sources}</Typography>
               </Box>
             )}
-            <Button
-              data-testid="funding-form-add-button"
-              variant="outlined"
-              color="primary"
-              title="Create Funding Source"
-              aria-label="Create Funding Source"
-              startIcon={<Icon path={mdiPlus} size={1} />}
-              onClick={() => arrayHelpers.push(SurveyFundingSourceInitialValues)}
-              sx={{
-                alignSelf: 'flex-start'
-              }}>
-              Add Funding Source
-            </Button>
+            {values.funding_used && (
+              <Button
+                data-testid="funding-form-add-button"
+                variant="outlined"
+                color="primary"
+                title="Create Funding Source"
+                aria-label="Create Funding Source"
+                startIcon={<Icon path={mdiPlus} size={1} />}
+                onClick={() => arrayHelpers.push(SurveyFundingSourceInitialValues)}
+                sx={{
+                  alignSelf: 'flex-start'
+                }}>
+                Add Funding Source
+              </Button>
+            )}
           </Stack>
         )}
       />

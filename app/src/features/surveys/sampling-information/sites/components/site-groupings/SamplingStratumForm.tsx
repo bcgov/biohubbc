@@ -13,7 +13,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import { BlockStratumCard } from 'features/surveys/sampling-information/sites/components/site-groupings/BlockStratumCard';
 import { useFormikContext } from 'formik';
 import { IGetSampleLocationDetails, IGetSampleStratumDetails } from 'interfaces/useSamplingSiteApi.interface';
-import { IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyStratum, IPostSurveyStratum } from 'interfaces/useSurveyApi.interface';
 import { useContext, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
@@ -30,7 +30,7 @@ export const SamplingStratumForm = () => {
 
   const [searchText, setSearchText] = useState('');
 
-  const handleAddStratum = (stratum: IGetSurveyStratum) => {
+  const handleAddStratum = (stratum: IPostSurveyStratum | IGetSurveyStratum) => {
     setFieldValue(`stratums[${values.stratums.length}]`, stratum);
   };
   const handleRemoveItem = (stratum: IGetSurveyStratum | IGetSampleStratumDetails) => {
@@ -59,7 +59,7 @@ export const SamplingStratumForm = () => {
         noOptionsText="No records found"
         options={options}
         filterOptions={(options, state) => {
-          const searchFilter = createFilterOptions<IGetSurveyStratum>({ ignoreCase: true });
+          const searchFilter = createFilterOptions<IPostSurveyStratum | IGetSurveyStratum>({ ignoreCase: true });
           const unselectedOptions = options.filter((option) =>
             values.stratums.every((existing) => existing.survey_stratum_id !== option.survey_stratum_id)
           );

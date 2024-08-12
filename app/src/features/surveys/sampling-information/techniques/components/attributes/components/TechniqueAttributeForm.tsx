@@ -6,17 +6,17 @@ import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import AutocompleteField from 'components/fields/AutocompleteField';
-import { TechniqueAttributeValueControl } from 'features/surveys/sampling-information/techniques/form/components/attributes/components/TechniqueAttributeValueControl';
+import { TechniqueAttributeValueControl } from 'features/surveys/sampling-information/techniques/components/attributes/components/TechniqueAttributeValueControl';
 import {
   formatAttributesForAutoComplete,
   getAttributeId,
   getAttributeType,
   getRemainingAttributes
-} from 'features/surveys/sampling-information/techniques/form/components/attributes/components/utils';
+} from 'features/surveys/sampling-information/techniques/components/attributes/components/utils';
 import {
   CreateTechniqueFormValues,
   UpdateTechniqueFormValues
-} from 'features/surveys/sampling-information/techniques/form/components/TechniqueFormContainer';
+} from 'features/surveys/sampling-information/techniques/components/TechniqueFormContainer';
 import { FieldArrayRenderProps, useFormikContext } from 'formik';
 import { ITechniqueAttributeQualitative, ITechniqueAttributeQuantitative } from 'interfaces/useReferenceApi.interface';
 import { useMemo } from 'react';
@@ -111,7 +111,6 @@ export const TechniqueAttributeForm = <FormValues extends CreateTechniqueFormVal
       <Box flex="0.5">
         <TechniqueAttributeValueControl
           selectedAttributeTypeDefinition={selectedAttributeTypeDefinition}
-          arrayHelpers={arrayHelpers}
           index={index}
         />
       </Box>

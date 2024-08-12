@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteField from 'components/fields/MultiAutocompleteField';
 import MultiAutocompleteFieldVariableSize, {
@@ -14,7 +13,6 @@ export interface IPurposeAndMethodologyForm {
   purpose_and_methodology: {
     intended_outcome_ids: number[];
     additional_details: string;
-    vantage_code_ids: number[];
     revision_count: number;
   };
 }
@@ -23,7 +21,6 @@ export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
   purpose_and_methodology: {
     intended_outcome_ids: [],
     additional_details: '',
-    vantage_code_ids: [],
     revision_count: 0
   }
 };
@@ -31,14 +28,13 @@ export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
 export const PurposeAndMethodologyYupSchema = yup.object().shape({
   purpose_and_methodology: yup.object().shape({
     additional_details: yup.string(),
-    intended_outcome_ids: yup.array().min(1, 'One or more Ecological Variables are Required').required('Required'),
-    vantage_code_ids: yup.array().min(1, 'One or more Vantage Codes are Required').required('Required')
+    intended_outcome_ids: yup.array().min(1, 'One or more Ecological Variables are Required').required('Required')
   })
 });
 
 export interface IPurposeAndMethodologyFormProps {
   intended_outcomes: ISelectWithSubtextFieldOption[];
-  vantage_codes: IMultiAutocompleteFieldOption[];
+  type: IMultiAutocompleteFieldOption[];
 }
 
 /**
@@ -50,14 +46,19 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
   return (
     <form>
       <Box component="fieldset">
-        <Typography component="legend" variant="h5">
-          Purpose of Survey
-        </Typography>
         <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <MultiAutocompleteFieldVariableSize
+              id={'survey_details.survey_types'}
+              label={'Collected data'}
+              options={props.type}
+              required={true}
+            />
+          </Grid>
           <Grid item xs={12}>
             <MultiAutocompleteField
               id="purpose_and_methodology.intended_outcome_ids"
-              label="Ecological Variables"
+              label="Ecological concepts of interest"
               options={props.intended_outcomes}
               required={true}
             />
@@ -65,23 +66,8 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
           <Grid item xs={12}>
             <CustomTextField
               name="purpose_and_methodology.additional_details"
-              label="Additional Details"
-              other={{ multiline: true, rows: 2 }}
-            />
-          </Grid>
-        </Grid>
-      </Box>
-      <Box component="fieldset" mt={5}>
-        <Typography component="legend" variant="h5">
-          Survey Methodology
-        </Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <MultiAutocompleteFieldVariableSize
-              id="purpose_and_methodology.vantage_code_ids"
-              label="Vantage Codes"
-              options={props.vantage_codes}
-              required={true}
+              label="Objectives"
+              other={{ multiline: true, rows: 5, required: true }}
             />
           </Grid>
         </Grid>
