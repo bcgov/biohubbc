@@ -119,8 +119,19 @@ describe('ImportMarkingsStrategy', () => {
       if (!validation.success) {
         expect.fail();
       } else {
-        expect(validation.success);
-        // TODO: check validation object
+        expect(validation.success).to.be.true;
+        expect(validation.data).to.be.deep.equal([
+          {
+            critter_id: '4df8fd4c-4d7b-4142-8f03-92d8bf52d8cb',
+            capture_id: 'e9087545-5b1f-4b86-bf1d-a3372a7b33c7',
+            body_location: 'Ear',
+            marking_type: 'ear tag',
+            identifier: 'identifier',
+            primary_colour: 'Red',
+            secondary_colour: 'blue',
+            comment: 'comment'
+          }
+        ]);
       }
     });
   });

@@ -42,7 +42,7 @@ export class ImportMarkingsStrategy extends DBService implements CSVImportServic
     IDENTIFIER: { type: 'string', optional: true },
     PRIMARY_COLOUR: { type: 'string', optional: true },
     SECONDARY_COLOUR: { type: 'string', optional: true },
-    COMMENT: { type: 'string', aliases: CSV_COLUMN_ALIASES.DESCRIPTION, optional: true }
+    DESCRIPTION: { type: 'string', aliases: CSV_COLUMN_ALIASES.DESCRIPTION, optional: true }
   } satisfies IXLSXCSVValidator;
 
   /**
@@ -143,7 +143,7 @@ export class ImportMarkingsStrategy extends DBService implements CSVImportServic
         identifier: getCellValue(row, 'IDENTIFIER'),
         primary_colour: getCellValue(row, 'PRIMARY_COLOUR'),
         secondary_colour: getCellValue(row, 'SECONDARY_COLOUR'),
-        comment: getCellValue(row, 'COMMENT')
+        comment: getCellValue(row, 'DESCRIPTION')
       });
     }
     // Get the critter_id -> taxonBodyLocations[] Map
