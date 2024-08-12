@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
-import { URLSearchParams } from 'url';
+import qs from 'qs';
 import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { getLogger } from '../utils/logger';
@@ -342,57 +342,30 @@ export const CBMeasurementType = z.union([
 
 export type CBMeasurementType = z.infer<typeof CBMeasurementType>;
 
-const lookups = '/lookups';
-const xref = '/xref';
-const lookupsEnum = lookups + '/enum';
-const lookupsTaxons = lookups + '/taxons';
-export const CbRoutes = {
-  // lookups
-  ['region-envs']: `${lookups}/region-envs`,
-  ['region_nrs']: `${lookups}/region-nrs`,
-  wmus: `${lookups}/wmus`,
-  cods: `${lookups}/cods`,
-  ['marking-materials']: `${lookups}/marking-materials`,
-  ['marking-types']: `${lookups}/marking-types`,
-  ['collection-categories']: `${lookups}/collection-unit-categories`,
-  taxons: lookupsTaxons,
-  species: `${lookupsTaxons}/species`,
-  colours: `${lookups}/colours`,
-
-  // lookups/enum
-  sex: `${lookupsEnum}/sex`,
-  ['critter-status']: `${lookupsEnum}/critter-status`,
-  ['cause-of-death-confidence']: `${lookupsEnum}/cod-confidence`,
-  ['coordinate-uncertainty-unit']: `${lookupsEnum}/coordinate-uncertainty-unit`,
-  ['frequency-units']: `${lookupsEnum}/frequency-units`,
-  ['measurement-units']: `${lookupsEnum}/measurement-units`,
-
-  // xref
-  ['collection-units']: `${xref}/collection-units`,
-
-  // taxon xrefs
-  ['taxon-measurements']: `${xref}/taxon-measurements`,
-  ['taxon_qualitative_measurements']: `${xref}/taxon-qualitative-measurements`,
-  ['taxon-qualitative-measurement-options']: `${xref}/taxon-qualitative-measurement-options`,
-  ['taxon-quantitative-measurements']: `${xref}/taxon-quantitative-measurements`,
-  ['taxon-collection-categories']: `${xref}/taxon-collection-categories`,
-  ['taxon-marking-body-locations']: `${xref}/taxon-marking-body-locations`
-} as const;
-
-export type CbRouteKey = keyof typeof CbRoutes;
-
 export const CRITTERBASE_API_HOST = process.env.CB_API_HOST || ``;
-const CRITTER_ENDPOINT = '/critters';
-const BULK_ENDPOINT = '/bulk';
-const SIGNUP_ENDPOINT = '/signup';
-const FAMILY_ENDPOINT = '/family';
-const XREF_ENDPOINT = '/xref';
 
 const defaultLog = getLogger('CritterbaseServiceLogger');
 
+/**
+ * @export
+ * @class CritterbaseService
+ *
+ */
 export class CritterbaseService {
+  /**
+   * User details for Critterbase auditing
+   *
+   */
   user: ICritterbaseUser;
+  /**
+   * KeycloakService for retrieving token
+   *
+   */
   keycloak: KeycloakService;
+  /**
+   * Critterbase specific axios instance
+   *
+   */
   axiosInstance: AxiosInstance;
 
   constructor(user: ICritterbaseUser) {
@@ -400,12 +373,14 @@ export class CritterbaseService {
     this.keycloak = new KeycloakService();
 
     this.axiosInstance = axios.create({
-      headers: {
-        user: this.getUserHeader()
-      },
+      paramsSerializer: (params) => qs.stringify(params),
       baseURL: CRITTERBASE_API_HOST
     });
-
+    /**
+     * Async response interceptor
+     *
+     * Formats Critterbase errors into SIMS format
+     */
     this.axiosInstance.interceptors.response.use(
       (response: AxiosResponse) => {
         return response;
@@ -423,11 +398,17 @@ export class CritterbaseService {
       }
     );
 
-    // Async request interceptor
+    /**
+     * Async request interceptor
+     *
+     * Injects the bearer authentication token and user details into headers
+     */
     this.axiosInstance.interceptors.request.use(
       async (config) => {
-        const token = await this.getToken();
+        const token = await this.keycloak.getKeycloakServiceToken();
+
         config.headers['Authorization'] = `Bearer ${token}`;
+        config.headers.user = JSON.stringify(this.user);
 
         return config;
       },
@@ -437,51 +418,6 @@ export class CritterbaseService {
     );
   }
 
-  async getToken(): Promise<string> {
-    const token = await this.keycloak.getKeycloakServiceToken();
-    return token;
-  }
-
-  /**
-   * Return user information as a JSON string.
-   *
-   * @return {*}  {string}
-   * @memberof BctwService
-   */
-  getUserHeader(): string {
-    return JSON.stringify(this.user);
-  }
-
-  /**
-   * Makes a GET request to the specified endpoint with the provided query parameters.
-   *
-   * @param {string} endpoint - The endpoint to send the GET request to.
-   * @param {QueryParam[]} params - The query parameters to append to the URL.
-   * @returns {Promise<any>} - The response data from the GET request.
-   * @private
-   */
-  async _makeGetRequest(endpoint: string, params: QueryParam[]): Promise<any> {
-    const appendParams = new URLSearchParams();
-    for (const p of params) {
-      appendParams.append(p.key, p.value);
-    }
-    const url = `${endpoint}?${appendParams.toString()}`;
-
-    const response = await this.axiosInstance.get(url);
-    return response.data;
-  }
-
-  /**
-   * Fetches lookup values from the specified route with the provided query parameters.
-   *
-   * @param {CbRouteKey} route - The route key to fetch lookup values from.
-   * @param {QueryParam[]} params - The query parameters to append to the URL.
-   * @returns {Promise<any>} - The response data containing lookup values.
-   */
-  async getLookupValues(route: CbRouteKey, params: QueryParam[]): Promise<any> {
-    return this._makeGetRequest(CbRoutes[route], params);
-  }
-
   /**
    * Fetches Critterbase colour lookup values.
    *
@@ -489,7 +425,9 @@ export class CritterbaseService {
    * @returns {Promise<IAsSelectLookup[]>} AsSelect format
    */
   async getColours(): Promise<IAsSelectLookup[]> {
-    return this.getLookupValues('colours', [{ key: 'format', value: 'asSelect' }]);
+    const { data } = await this.axiosInstance.get('/lookups/colours', { params: { format: 'asSelect' } });
+
+    return data;
   }
 
   /**
@@ -499,7 +437,9 @@ export class CritterbaseService {
    * @returns {Promise<IAsSelectLookup[]>} AsSelect format
    */
   async getMarkingTypes(): Promise<IAsSelectLookup[]> {
-    return this.getLookupValues('marking-types', [{ key: 'format', value: 'asSelect' }]);
+    const { data } = await this.axiosInstance.get('/lookups/marking-types', { params: { format: 'asSelect' } });
+
+    return data;
   }
 
   /**
@@ -512,8 +452,9 @@ export class CritterbaseService {
     qualitative: CBQualitativeMeasurementTypeDefinition[];
     quantitative: CBQuantitativeMeasurementTypeDefinition[];
   }> {
-    const response = await this._makeGetRequest(CbRoutes['taxon-measurements'], [{ key: 'tsn', value: tsn }]);
-    return response;
+    const { data } = await this.axiosInstance.get('/xref/taxon-measurements', { params: { tsn } });
+
+    return data;
   }
 
   /**
@@ -523,10 +464,11 @@ export class CritterbaseService {
    * @returns {Promise<IAsSelectLookup[]>} - The response data containing body location information.
    */
   async getTaxonBodyLocations(tsn: string): Promise<IAsSelectLookup[]> {
-    return this._makeGetRequest(CbRoutes['taxon-marking-body-locations'], [
-      { key: 'tsn', value: tsn },
-      { key: 'format', value: 'asSelect' }
-    ]);
+    const { data } = await this.axiosInstance.get('/xref/taxon-marking-body-locations', {
+      params: { tsn, format: 'asSelect' }
+    });
+
+    return data;
   }
 
   /**
@@ -537,10 +479,11 @@ export class CritterbaseService {
    * @returns {Promise<any>} - The response data containing qualitative options.
    */
   async getQualitativeOptions(taxon_measurement_id: string, format = 'asSelect'): Promise<any> {
-    return this._makeGetRequest(CbRoutes['taxon-qualitative-measurement-options'], [
-      { key: 'taxon_measurement_id', value: taxon_measurement_id },
-      { key: 'format', value: format }
-    ]);
+    const { data } = await this.axiosInstance.get('/xref/taxon-qualitative-measurement-options', {
+      params: { taxon_measurement_id, format }
+    });
+
+    return data;
   }
 
   /**
@@ -549,7 +492,9 @@ export class CritterbaseService {
    * @returns {Promise<any>} - The response data containing a list of families.
    */
   async getFamilies(): Promise<any> {
-    return this._makeGetRequest(FAMILY_ENDPOINT, []);
+    const { data } = await this.axiosInstance.get('/family');
+
+    return data;
   }
 
   /**
@@ -559,7 +504,9 @@ export class CritterbaseService {
    * @returns {Promise<any>} - The response data containing family information.
    */
   async getFamilyById(family_id: string): Promise<any> {
-    return this._makeGetRequest(`${FAMILY_ENDPOINT}/${family_id}`, []);
+    const { data } = await this.axiosInstance.get(`/family/${family_id}`);
+
+    return data;
   }
 
   /**
@@ -569,7 +516,9 @@ export class CritterbaseService {
    * @returns {Promise<any>} - The response data containing critter information.
    */
   async getCritter(critter_id: string): Promise<any> {
-    return this._makeGetRequest(`${CRITTER_ENDPOINT}/${critter_id}`, [{ key: 'format', value: 'detail' }]);
+    const { data } = await this.axiosInstance.get(`/critters/${critter_id}`, { params: { format: 'detail' } });
+
+    return data;
   }
 
   /**
@@ -579,7 +528,8 @@ export class CritterbaseService {
    * @returns {Promise<any>} - The response data from the create operation.
    */
   async createCritter(data: ICreateCritter): Promise<any> {
-    const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}/create`, data);
+    const response = await this.axiosInstance.post(`/critters/create`, data);
+
     return response.data;
   }
 
@@ -590,7 +540,8 @@ export class CritterbaseService {
    * @returns {Promise<any>} - The response data from the update operation.
    */
   async updateCritter(data: IBulkCreate): Promise<any> {
-    const response = await this.axiosInstance.patch(BULK_ENDPOINT, data);
+    const response = await this.axiosInstance.patch('/bulk', data);
+
     return response.data;
   }
 
@@ -602,7 +553,8 @@ export class CritterbaseService {
    * @memberof CritterbaseService
    */
   async bulkCreate(data: IBulkCreate): Promise<IBulkCreateResponse> {
-    const response = await this.axiosInstance.post(BULK_ENDPOINT, data);
+    const response = await this.axiosInstance.post('/bulk', data);
+
     return response.data;
   }
 
@@ -613,7 +565,8 @@ export class CritterbaseService {
    * @returns {Promise<ICritter[]>} - The response data containing multiple critters.
    */
   async getMultipleCrittersByIds(critter_ids: string[]): Promise<ICritter[]> {
-    const response = await this.axiosInstance.post(CRITTER_ENDPOINT, { critter_ids });
+    const response = await this.axiosInstance.post('/critters', { critter_ids });
+
     return response.data;
   }
 
@@ -624,7 +577,8 @@ export class CritterbaseService {
    * @returns {Promise<ICritterDetailed[]>} - The response data containing detailed information about multiple critters.
    */
   async getMultipleCrittersByIdsDetailed(critter_ids: string[]): Promise<ICritterDetailed[]> {
-    const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}?format=detailed`, { critter_ids });
+    const response = await this.axiosInstance.post(`/critters`, { critter_ids }, { params: { format: 'detail' } });
+
     return response.data;
   }
 
@@ -635,7 +589,8 @@ export class CritterbaseService {
    * @returns {Promise<ICritterDetailed[]>} - The response data containing detailed information about multiple critters.
    */
   async getMultipleCrittersGeometryByIds(critter_ids: string[]): Promise<ICritterDetailed[]> {
-    const response = await this.axiosInstance.post(`${CRITTER_ENDPOINT}/spatial`, { critter_ids });
+    const response = await this.axiosInstance.post(`/critters/spatial`, { critter_ids });
+
     return response.data;
   }
 
@@ -645,7 +600,8 @@ export class CritterbaseService {
    * @returns {Promise<any>} - The response data from the sign-up operation.
    */
   async signUp(): Promise<any> {
-    const response = await this.axiosInstance.post(SIGNUP_ENDPOINT);
+    const response = await this.axiosInstance.post('/signup');
+
     return response.data;
   }
 
@@ -659,7 +615,7 @@ export class CritterbaseService {
   async getQualitativeMeasurementTypeDefinition(
     taxon_measurement_ids: string[]
   ): Promise<CBQualitativeMeasurementTypeDefinition[]> {
-    const { data } = await this.axiosInstance.post(`${XREF_ENDPOINT}/taxon-qualitative-measurements`, {
+    const { data } = await this.axiosInstance.post(`/xref/taxon-qualitative-measurements`, {
       taxon_measurement_ids: taxon_measurement_ids
     });
 
@@ -676,7 +632,7 @@ export class CritterbaseService {
   async getQuantitativeMeasurementTypeDefinition(
     taxon_measurement_ids: string[]
   ): Promise<CBQuantitativeMeasurementTypeDefinition[]> {
-    const { data } = await this.axiosInstance.post(`${XREF_ENDPOINT}/taxon-quantitative-measurements`, {
+    const { data } = await this.axiosInstance.post(`/xref/taxon-quantitative-measurements`, {
       taxon_measurement_ids: taxon_measurement_ids
     });
 
@@ -691,7 +647,7 @@ export class CritterbaseService {
    * @returns {Promise<ICollectionCategory[]>} Collection categories
    */
   async findTaxonCollectionCategories(tsn: string): Promise<ICollectionCategory[]> {
-    const response = await this.axiosInstance.get(`/xref/taxon-collection-categories?tsn=${tsn}`);
+    const response = await this.axiosInstance.get(`/xref/taxon-collection-categories`, { params: { tsn } });
 
     return response.data;
   }
@@ -704,7 +660,7 @@ export class CritterbaseService {
    * @returns {Promise<ICollectionUnitWithCategory[]>} Collection units
    */
   async findTaxonCollectionUnits(tsn: string): Promise<ICollectionUnitWithCategory[]> {
-    const response = await this.axiosInstance.get(`/xref/taxon-collection-units?tsn=${tsn}`);
+    const response = await this.axiosInstance.get(`/xref/taxon-collection-units`, { params: { tsn } });
 
     return response.data;
   }
