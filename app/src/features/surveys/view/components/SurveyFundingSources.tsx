@@ -1,5 +1,4 @@
 import Box from '@mui/material/Box';
-import grey from '@mui/material/colors/grey';
 import Typography from '@mui/material/Typography';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useContext } from 'react';
@@ -41,12 +40,10 @@ const SurveyFundingSources = () => {
           ))}
         </Box>
       ) : (
-        <Box
-          pt={1}
-          sx={{
-            borderTop: '1px solid' + grey[200]
-          }}>
-          <Typography color="textSecondary">No funding sources found</Typography>
+        <Box>
+          <Box className="row">
+            <Typography color="textSecondary">No funding sources found</Typography>
+          </Box>
         </Box>
       )}
     </>

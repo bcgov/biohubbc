@@ -3,7 +3,6 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
-import SelectWithSubtextField from 'components/fields/SelectWithSubtext';
 import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
@@ -87,7 +86,7 @@ export const SamplingMethodForm = () => {
       <Stack gap={3}>
         <Stack component="fieldset" gap={3}>
           <Typography component="legend">Details</Typography>
-          <SelectWithSubtextField
+          <AutocompleteField
             id="method_technique_id"
             label="Technique"
             name="technique.method_technique_id"

@@ -461,9 +461,10 @@ export const firstOrNull = <T,>(arr: T[]): T | null => (arr.length > 0 ? arr[0] 
  * @param seed
  * @returns
  */
-export const getRandomHexColor = (seed: number, min = 100, max = 170): string => {
+export const getRandomHexColor = (seed: number, min = 120, max = 180): string => {
   const randomChannel = (): string => {
-    const x = Math.sin(seed++) * 10000;
+    // Change the multiplier to change the colour boldness
+    const x = Math.sin(seed++) * 1000;
     return (Math.floor((x - Math.floor(x)) * (max - min + 1)) + min).toString(16).padStart(2, '0');
   };
 

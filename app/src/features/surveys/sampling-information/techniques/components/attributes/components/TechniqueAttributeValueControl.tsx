@@ -3,13 +3,12 @@ import CustomTextField from 'components/fields/CustomTextField';
 import {
   CreateTechniqueFormValues,
   UpdateTechniqueFormValues
-} from 'features/surveys/sampling-information/techniques/form/components/TechniqueFormContainer';
-import { FieldArrayRenderProps, useFormikContext } from 'formik';
+} from 'features/surveys/sampling-information/techniques/components/TechniqueFormContainer';
+import { useFormikContext } from 'formik';
 import { ITechniqueAttributeQualitative, ITechniqueAttributeQuantitative } from 'interfaces/useReferenceApi.interface';
 
 interface ITechniqueAttributeValueControlProps {
   selectedAttributeTypeDefinition?: ITechniqueAttributeQuantitative | ITechniqueAttributeQualitative;
-  arrayHelpers: FieldArrayRenderProps;
   index: number;
 }
 
@@ -76,7 +75,7 @@ export const TechniqueAttributeValueControl = <
   return (
     <CustomTextField
       name={`attributes.[${index}].attribute_value`}
-      label={`Value${selectedAttributeTypeDefinition?.unit ? ` (${selectedAttributeTypeDefinition.unit})` : ''}`}
+      label={selectedAttributeTypeDefinition.unit ? `Value (${selectedAttributeTypeDefinition.unit})` : 'Value'}
       other={{
         required: true,
         type: 'number',

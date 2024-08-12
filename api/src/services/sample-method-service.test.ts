@@ -64,6 +64,28 @@ describe('SampleMethodService', () => {
     });
   });
 
+  describe('getSampleMethodsCountForTechniqueIds', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('Gets a count of sample methods for a method technique ID', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      const getSampleMethodsCountForTechniqueIdsStub = sinon
+        .stub(SampleMethodRepository.prototype, 'getSampleMethodsCountForTechniqueIds')
+        .resolves(0);
+
+      const techniqueIds = [1, 2];
+      const sampleMethodService = new SampleMethodService(mockDBConnection);
+
+      const response = await sampleMethodService.getSampleMethodsCountForTechniqueIds(techniqueIds);
+
+      expect(getSampleMethodsCountForTechniqueIdsStub).to.be.calledOnceWith(techniqueIds);
+      expect(response).to.eql(0);
+    });
+  });
+
   describe('deleteSampleMethodRecord', () => {
     afterEach(() => {
       sinon.restore();

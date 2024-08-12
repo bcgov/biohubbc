@@ -34,7 +34,8 @@ export const FindProjectsResponse = z.object({
   end_date: z.string().nullable(),
   regions: z.array(z.string()),
   focal_species: z.array(z.number()),
-  types: z.array(z.number())
+  types: z.array(z.number()),
+  members: z.array(z.object({ system_user_id: z.number(), display_name: z.string() }))
 });
 
 export type FindProjectsResponse = z.infer<typeof FindProjectsResponse>;

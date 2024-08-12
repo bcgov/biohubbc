@@ -8,6 +8,7 @@ import { PROJECT_ROLE_ICONS } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext, useMemo } from 'react';
 import { getRandomHexColor } from 'utils/Utils';
+import { TeamMemberAvatar } from './TeamMemberAvatar';
 
 interface IProjectParticipantsRoles {
   display_name: string;
@@ -59,19 +60,8 @@ const TeamMembers = () => {
         return (
           <Box display="flex" alignItems="center" key={member.display_name}>
             {/* Avatar Box */}
-            <Box
-              sx={{
-                height: '35px',
-                width: '35px',
-                minWidth: '35px',
-                borderRadius: '50%',
-                bgcolor: member.avatarColor,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                mr: 1
-              }}>
-              <Typography sx={{ fontSize: '0.8rem', color: '#fff' }}>{member.initials}</Typography>
+            <Box mr={1}>
+              <TeamMemberAvatar color={member.avatarColor} label={member.initials} />
             </Box>
 
             {/* Member Display Name and Roles */}

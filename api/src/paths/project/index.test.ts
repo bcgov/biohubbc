@@ -28,7 +28,8 @@ describe('findProjects', () => {
         end_date: '2021-12-31',
         regions: ['region1'],
         focal_species: [123, 456],
-        types: [1, 2, 3]
+        types: [1, 2, 3],
+        members: [{ system_user_id: 1, display_name: 'John Doe' }]
       }
     ];
 
@@ -87,7 +88,8 @@ describe('findProjects', () => {
         end_date: '2021-12-31',
         regions: ['region1'],
         focal_species: [123, 456],
-        types: [1, 2, 3]
+        types: [1, 2, 3],
+        members: [{ system_user_id: 1, display_name: 'John Doe' }]
       }
     ];
 
