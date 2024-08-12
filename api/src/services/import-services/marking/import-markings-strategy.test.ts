@@ -1,6 +1,5 @@
-import chai, { expect } from 'chai';
+import { expect } from 'chai';
 import sinon from 'sinon';
-import sinonChai from 'sinon-chai';
 import { MediaFile } from '../../../utils/media/media-file';
 import * as worksheetUtils from '../../../utils/xlsx-utils/worksheet-utils';
 import { getMockDBConnection } from '../../../__mocks__/db';
@@ -9,11 +8,12 @@ import { importCSV } from '../csv-import-strategy';
 import { ImportMarkingsStrategy } from './import-markings-strategy';
 import { CsvMarking } from './import-markings-strategy.interface';
 
-chai.use(sinonChai);
-
 describe('ImportMarkingsStrategy', () => {
-  describe('importCSV capture worksheet', () => {
-    it.only('should validate successfully', async () => {
+  describe('importCSV marking worksheet', () => {
+    beforeEach(() => {
+      sinon.restore();
+    });
+    it('should validate successfully', async () => {
       const worksheet = {
         A1: { t: 's', v: 'CAPTURE_DATE' }, // testing order incorrect
         B1: { t: 's', v: 'ALIAS' },
