@@ -8,7 +8,7 @@ import { CsvMarking } from './import-markings-strategy.interface';
 
 chai.use(sinonChai);
 
-describe.only('ImportMarkingsStrategy', () => {
+describe('ImportMarkingsStrategy', () => {
   describe('getTaxonBodyLocationsCritterIdMap', () => {
     it('should return a critter_id mapping of body locations', async () => {
       const mockDBConnection = getMockDBConnection();
