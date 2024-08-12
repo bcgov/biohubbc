@@ -38,14 +38,19 @@ export const createGeoJSONFeature = (
 };
 
 /**
- * Checks whether a latitude-longitude pair of coordinates is valid
+ * Checks whether a latitude-longitude pair of coordinates is valid.
+ *
+ * A valid latitude is between -90 and 90 degrees, inclusive.
+ * A valid longitude is between -180 and 180 degrees, inclusive.
  *
  * @param {number} latitude
  * @param {number} longitude
  * @returns boolean
  */
 export const isValidCoordinates = (latitude: number | undefined, longitude: number | undefined) => {
-  return latitude && longitude && latitude > -90 && latitude < 90 && longitude > -180 && longitude < 180 ? true : false;
+  return latitude && longitude && latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180
+    ? true
+    : false;
 };
 
 /**
