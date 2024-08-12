@@ -346,6 +346,12 @@ export const CRITTERBASE_API_HOST = process.env.CB_API_HOST || ``;
 
 const defaultLog = getLogger('CritterbaseServiceLogger');
 
+// Response formats
+enum CritterbaseFormatEnum {
+  DETAILED = 'detailed',
+  AS_SELECT = 'asSelect'
+}
+
 /**
  * @export
  * @class CritterbaseService
@@ -378,7 +384,7 @@ export class CritterbaseService {
     });
 
     /**
-     * Async response interceptor
+     * Response interceptor
      *
      * Formats Critterbase errors into SIMS format
      */
@@ -426,7 +432,9 @@ export class CritterbaseService {
    * @returns {Promise<IAsSelectLookup[]>} AsSelect format
    */
   async getColours(): Promise<IAsSelectLookup[]> {
-    const response = await this.axiosInstance.get('/lookups/colours', { params: { format: 'asSelect' } });
+    const response = await this.axiosInstance.get('/lookups/colours', {
+      params: { format: CritterbaseFormatEnum.AS_SELECT }
+    });
 
     return response.data;
   }
@@ -438,7 +446,9 @@ export class CritterbaseService {
    * @returns {Promise<IAsSelectLookup[]>} AsSelect format
    */
   async getMarkingTypes(): Promise<IAsSelectLookup[]> {
-    const response = await this.axiosInstance.get('/lookups/marking-types', { params: { format: 'asSelect' } });
+    const response = await this.axiosInstance.get('/lookups/marking-types', {
+      params: { format: CritterbaseFormatEnum.AS_SELECT }
+    });
 
     return response.data;
   }
@@ -466,7 +476,7 @@ export class CritterbaseService {
    */
   async getTaxonBodyLocations(tsn: string): Promise<IAsSelectLookup[]> {
     const response = await this.axiosInstance.get('/xref/taxon-marking-body-locations', {
-      params: { tsn, format: 'asSelect' }
+      params: { tsn, format: CritterbaseFormatEnum.AS_SELECT }
     });
 
     return response.data;
@@ -479,7 +489,7 @@ export class CritterbaseService {
    * @param {string} [format='asSelect'] - The format of the response data.
    * @returns {Promise<any>} - The response data containing qualitative options.
    */
-  async getQualitativeOptions(taxon_measurement_id: string, format = 'asSelect'): Promise<any> {
+  async getQualitativeOptions(taxon_measurement_id: string, format = CritterbaseFormatEnum.AS_SELECT): Promise<any> {
     const response = await this.axiosInstance.get('/xref/taxon-qualitative-measurement-options', {
       params: { taxon_measurement_id, format }
     });
@@ -517,7 +527,9 @@ export class CritterbaseService {
    * @returns {Promise<any>} - The response data containing critter information.
    */
   async getCritter(critter_id: string): Promise<any> {
-    const response = await this.axiosInstance.get(`/critters/${critter_id}`, { params: { format: 'detail' } });
+    const response = await this.axiosInstance.get(`/critters/${critter_id}`, {
+      params: { format: CritterbaseFormatEnum.DETAILED }
+    });
 
     return response.data;
   }
@@ -578,7 +590,11 @@ export class CritterbaseService {
    * @returns {Promise<ICritterDetailed[]>} - The response data containing detailed information about multiple critters.
    */
   async getMultipleCrittersByIdsDetailed(critter_ids: string[]): Promise<ICritterDetailed[]> {
-    const response = await this.axiosInstance.post(`/critters`, { critter_ids }, { params: { format: 'detail' } });
+    const response = await this.axiosInstance.post(
+      `/critters`,
+      { critter_ids },
+      { params: { format: CritterbaseFormatEnum.DETAILED } }
+    );
 
     return response.data;
   }

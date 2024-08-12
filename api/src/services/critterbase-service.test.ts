@@ -70,7 +70,7 @@ describe('CritterbaseService', () => {
       it('should fetch a critter', async () => {
         const axiosStub = sinon.stub(cb.axiosInstance, 'get').resolves({ data: [] });
         await cb.getCritter('asdf');
-        expect(axiosStub).to.have.been.calledOnceWith('/critters/' + 'asdf', { params: { format: 'detail' } });
+        expect(axiosStub).to.have.been.calledOnceWith('/critters/' + 'asdf', { params: { format: 'detailed' } });
       });
     });
 
