@@ -44,11 +44,7 @@ export const formatTimeString = (time?: string | null): string | undefined => {
  * @returns {string | undefined}
  */
 export const areDatesEqual = (_dateA: string, _dateB: string): boolean => {
-  const format = 'dd-mm-yyyy';
-  const dateA = dayjs(_dateA, format);
-  const dateB = dayjs(_dateB, format);
-
-  return dateA.isValid() && dateB.isValid() && dateA.format(format) === dateB.format(format);
+  return dayjs(_dateA).isSame(dayjs(_dateB));
 };
 
 /**
