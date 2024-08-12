@@ -52,25 +52,23 @@ export const areDatesEqual = (_dateA: string, _dateB: string): boolean => {
 };
 
 /**
- * Find Capture ID from Capture date and time fields.
+ * Find Captures from Capture date and time fields.
  *
+ * @template {T} Capture stub
  * @param {ICapture[]} captures - Array of Critterbase captures
  * @param {string} captureDate - String date
  * @param {string} captureTime - String time
- * @returns {string | undefined} Capture ID or undefined
+ * @returns {T[]} Capture ID or undefined
  */
-export const findCaptureIdFromDateTime = <T extends ICaptureStub>(
+export const findCapturesFromDateTime = <T extends ICaptureStub>(
   captures: T[],
   captureDate: string,
   captureTime: string
-): string | undefined => {
-  const foundCapture = captures.find((capture) => {
+): T[] => {
+  return captures.filter((capture) => {
     return (
-      (formatTimeString(capture.capture_time) === formatTimeString(captureTime) &&
-        areDatesEqual(capture.capture_date, captureDate)) ||
+      formatTimeString(capture.capture_time) === formatTimeString(captureTime) &&
       areDatesEqual(capture.capture_date, captureDate)
     );
   });
-
-  return foundCapture?.capture_id;
 };

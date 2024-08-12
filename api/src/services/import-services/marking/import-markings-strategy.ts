@@ -4,11 +4,11 @@ import { getLogger } from '../../../utils/logger';
 import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
 import { generateCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
-import { IAsSelectLookup, IBulkCreateMarking, ICritterDetailed } from '../../critterbase-service';
+import { IAsSelectLookup, ICritterDetailed } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
 import { CSVImportService, Row } from '../csv-import-strategy.interface';
-import { findCaptureIdFromDateTime } from '../utils/datetime';
+import { findCapturesFromDateTime } from '../utils/datetime';
 import { CsvMarking, getCsvMarkingSchema } from './import-markings-strategy.interface';
 
 // TODO: Update all import services to use language Import<import-name>Strategy
@@ -124,11 +124,12 @@ export class ImportMarkingsStrategy extends DBService implements CSVImportServic
         const captureDate = getCellValue(row, 'CAPTURE_DATE');
         const captureTime = getCellValue(row, 'CAPTURE_TIME');
 
-        const critter = critterAliasMap.get(alias);
+        const critter = critterAliasMap.get(alias.toLowerCase());
 
         if (critter) {
           // Find the capture_id from the date time columns
-          captureId = findCaptureIdFromDateTime(critter.captures, captureDate, captureTime);
+          const captures = findCapturesFromDateTime(critter.captures, captureDate, captureTime);
+          captureId = captures.length === 1 ? captures[0].capture_id : undefined;
           critterId = critter.critter_id;
           rowCritters.push(critter);
         }
@@ -161,9 +162,7 @@ export class ImportMarkingsStrategy extends DBService implements CSVImportServic
    * @returns {Promise<number>} Number of created markings
    */
   async insert(markings: CsvMarking[]): Promise<number> {
-    const critterbasePayload: { markings: IBulkCreateMarking[] } = { markings };
-
-    const response = await this.surveyCritterService.critterbaseService.bulkCreate(critterbasePayload);
+    const response = await this.surveyCritterService.critterbaseService.bulkCreate({ markings });
 
     defaultLog.debug({ label: 'import markings', markings, insertedCount: response.created.markings });
 
