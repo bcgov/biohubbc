@@ -74,7 +74,8 @@ export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never,
         critterDataLoader.refresh(projectId, surveyId, animal.critter_id);
       }
     },
-    [selectedAnimal, critterDataLoader]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [selectedAnimal, projectId, surveyId]
   );
 
   const setSelectedAnimalFromSurveyCritterId = useCallback(

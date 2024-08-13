@@ -2,7 +2,9 @@ import { IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { Popup } from 'react-leaflet';
 
 export interface ISurveySpatialTelemetryPopupProps {
@@ -21,8 +23,12 @@ export interface ISurveySpatialTelemetryPopupProps {
 export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupProps) => {
   const { feature } = props;
 
+  const biohubApi = useBiohubApi();
+
   const surveyContext = useSurveyContext();
   const telemetryContext = useTelemetryDataContext();
+
+  const deploymentDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
 
   const getTelemetryMetadata = () => {
     const telemetryId = feature.id;
@@ -35,7 +41,7 @@ export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupP
       return [{ label: 'Telemetry ID', value: telemetryId }];
     }
 
-    const deploymentRecord = surveyContext.deploymentDataLoader.data?.find(
+    const deploymentRecord = deploymentDataLoader.data?.find(
       (deployment) => deployment.bctw_deployment_id === telemetryRecord.deployment_id
     );
 

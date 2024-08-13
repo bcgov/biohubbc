@@ -35,22 +35,18 @@ const EditDeploymentPage = () => {
   const formikRef = useRef<FormikProps<ICreateAnimalDeployment>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
   const deploymentId: number | undefined = Number(urlParams['deployment_id']);
 
   const critters = surveyContext.critterDataLoader.data ?? [];
 
-  const deploymentDataLoader = useDataLoader(() =>
-    biohubApi.survey.getDeploymentById(surveyContext.projectId, surveyContext.surveyId, deploymentId)
-  );
-
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const deploymentDataLoader = useDataLoader(biohubApi.survey.getDeploymentById);
 
   useEffect(() => {
-    deploymentDataLoader.load();
-  }, []);
+    deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId, deploymentId);
+  }, [deploymentDataLoader, deploymentId, surveyContext.projectId, surveyContext.surveyId]);
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -106,8 +102,7 @@ const EditDeploymentPage = () => {
 
   const handleSubmit = async (values: ICreateAnimalDeployment) => {
     setIsSubmitting(true);
-    // Disable cancel prompt so we can navigate away from the page after saving
-    setEnableCancelCheck(false);
+
     try {
       const critter_id = Number(critters?.find((animal) => animal.critter_id === values.critter_id)?.critter_id);
 
@@ -128,7 +123,7 @@ const EditDeploymentPage = () => {
         attachment_end_date: values.attachment_end_date,
         attachment_end_time: values.attachment_end_time
       });
-      surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId, deploymentId);
 
       // create complete, navigate back to observations page
       history.push(
@@ -148,7 +143,7 @@ const EditDeploymentPage = () => {
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
+      <Prompt when={true} message={locationChangeInterceptor} />
       <Formik
         innerRef={formikRef}
         initialValues={initialDeploymentValues}

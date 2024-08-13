@@ -7,8 +7,10 @@ import { SurveySpatialTelemetryPopup } from 'features/surveys/view/survey-spatia
 import { SurveySpatialTelemetryTable } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryTable';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { Position } from 'geojson';
-import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
-import { ITelemetry } from 'hooks/useTelemetryApi';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
+import { ITelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { useCallback, useEffect, useMemo } from 'react';
 
@@ -19,26 +21,29 @@ import { useCallback, useEffect, useMemo } from 'react';
  */
 export const SurveySpatialTelemetry = () => {
   const surveyContext = useSurveyContext();
-  const telemetryContext = useTelemetryDataContext();
+
+  const biohubApi = useBiohubApi();
+  const telemetryApi = useTelemetryApi();
+
+  const telemetryDataLoader = useDataLoader(telemetryApi.getAllTelemetryByDeploymentIds);
+  const deploymentDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
 
   // Load deployments data
   useEffect(() => {
-    surveyContext.deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surveyContext.projectId, surveyContext.surveyId]);
 
   // Load telemetry data for all deployments
   useEffect(() => {
-    if (!surveyContext.deploymentDataLoader.data?.length) {
+    if (!deploymentDataLoader.data?.length) {
       // No deployments data, therefore no telemetry data to load
       return;
     }
 
-    telemetryContext.telemetryDataLoader.refresh(
-      surveyContext.deploymentDataLoader.data?.map((deployment) => deployment.bctw_deployment_id) ?? []
-    );
+    telemetryDataLoader.refresh(deploymentDataLoader.data?.map((deployment) => deployment.bctw_deployment_id) ?? []);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [surveyContext.deploymentDataLoader.data]);
+  }, [deploymentDataLoader.data]);
 
   /**
    * Combines telemetry, deployment, and critter data into a single list of telemetry points.
@@ -100,17 +105,12 @@ export const SurveySpatialTelemetry = () => {
   );
 
   const telemetryPoints: IStaticLayerFeature[] = useMemo(() => {
-    const telemetry = telemetryContext.telemetryDataLoader.data ?? [];
-    const deployments = surveyContext.deploymentDataLoader.data ?? [];
+    const telemetry = telemetryDataLoader.data ?? [];
+    const deployments = deploymentDataLoader.data ?? [];
     const critters = surveyContext.critterDataLoader.data ?? [];
 
     return combineTelemetryData(telemetry, deployments, critters);
-  }, [
-    combineTelemetryData,
-    surveyContext.critterDataLoader.data,
-    surveyContext.deploymentDataLoader.data,
-    telemetryContext.telemetryDataLoader.data
-  ]);
+  }, [combineTelemetryData, surveyContext.critterDataLoader.data, deploymentDataLoader.data, telemetryDataLoader.data]);
 
   const telemetryLayer: IStaticLayer = {
     layerName: 'Telemetry',
@@ -128,12 +128,12 @@ export const SurveySpatialTelemetry = () => {
     <>
       {/* Display map with telemetry points */}
       <Box height={{ sm: 300, md: 500 }} position="relative">
-        <SurveySpatialMap staticLayers={[telemetryLayer]} isLoading={telemetryContext.telemetryDataLoader.isLoading} />
+        <SurveySpatialMap staticLayers={[telemetryLayer]} isLoading={telemetryDataLoader.isLoading} />
       </Box>
 
       {/* Display data table with telemetry details */}
       <Box p={2} position="relative">
-        <SurveySpatialTelemetryTable isLoading={telemetryContext.telemetryDataLoader.isLoading} />
+        <SurveySpatialTelemetryTable isLoading={telemetryDataLoader.isLoading} />
       </Box>
     </>
   );

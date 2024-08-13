@@ -49,7 +49,7 @@ const DeploymentForm = (props: IDeploymentFormProps) => {
     if (values.critter_id) {
       critterDataLoader.load(values.critter_id);
     }
-  }, []);
+  }, [critterDataLoader, deviceMakesDataLoader, frequencyUnitDataLoader, values.critter_id]);
 
   // useEffect(() => {
   //   if (critterDataLoader.data) {
@@ -67,6 +67,7 @@ const DeploymentForm = (props: IDeploymentFormProps) => {
       // setFieldValue('critterbase_end_capture_id', null);
       critterDataLoader.refresh(selectedAnimal);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedAnimal]);
 
   return (

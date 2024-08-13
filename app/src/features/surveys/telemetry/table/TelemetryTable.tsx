@@ -9,8 +9,11 @@ import {
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryTableContext } from 'hooks/useContext';
-import { useContext } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
+import { useContext, useEffect, useMemo } from 'react';
 import { DeploymentColDef, DeviceColDef, TelemetryTypeColDef } from './utils/GridColumnDefinitions';
 
 const MANUAL_TELEMETRY_TYPE = 'MANUAL';
@@ -20,10 +23,44 @@ interface IManualTelemetryTableProps {
 }
 
 const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
-  const telemetryTableContext = useTelemetryTableContext();
-  const surveyContext = useContext(SurveyContext);
+  const biohubApi = useBiohubApi();
 
-  const { critterDeployments } = surveyContext;
+  const surveyContext = useContext(SurveyContext);
+  const telemetryTableContext = useTelemetryTableContext();
+
+  const deploymentDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
+  const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
+
+  useEffect(() => {
+    deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    critterDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+  }, [critterDataLoader, deploymentDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+
+  /**
+   * Merges critters with associated deployments
+   *
+   * @returns {ICritterDeployment[]} Critter deployments
+   */
+  const critterDeployments: IAnimalDeploymentWithCritter[] = useMemo(() => {
+    const critterDeployments: IAnimalDeploymentWithCritter[] = [];
+    const critters = critterDataLoader.data ?? [];
+    const deployments = deploymentDataLoader.data ?? [];
+
+    if (!critters.length || !deployments.length) {
+      return [];
+    }
+
+    const critterMap = new Map(critters.map((critter) => [critter.critterbase_critter_id, critter]));
+
+    deployments.forEach((deployment) => {
+      const critter = critterMap.get(String(deployment.critterbase_critter_id));
+      if (critter) {
+        critterDeployments.push({ critter, deployment });
+      }
+    });
+
+    return critterDeployments;
+  }, [critterDataLoader.data, deploymentDataLoader.data]);
 
   const columns: GridColDef<IManualTelemetryTableRow>[] = [
     DeploymentColDef({ critterDeployments, hasError: telemetryTableContext.hasError }),

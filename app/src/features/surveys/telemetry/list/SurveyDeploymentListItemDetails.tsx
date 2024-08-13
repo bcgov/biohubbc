@@ -34,7 +34,7 @@ export const SurveyDeploymentListItemDetails = (props: ISurveyDeploymentListItem
 
   useEffect(() => {
     captureDataLoader.load();
-  }, []);
+  }, [captureDataLoader]);
 
   if (!captureDataLoader.data) {
     return <Skeleton width="100%" height="55px" />;

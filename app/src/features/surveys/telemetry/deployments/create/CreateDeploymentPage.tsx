@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateAnimalDeploymentI18N } from 'constants/i18n';
 import {
   CreateAnimalDeployment,
@@ -10,8 +9,9 @@ import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import DeploymentHeader from '../components/DeploymentHeader';
 import DeploymentForm from '../components/form/DeploymentForm';
@@ -46,10 +46,14 @@ const CreateDeploymentPage = () => {
 
   const critters = surveyContext.critterDataLoader.data ?? [];
 
+  const deploymentDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
+
+  useEffect(() => {
+    deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+  }, [deploymentDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+
   const formikRef = useRef<FormikProps<ICreateAnimalDeployment>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
   const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
@@ -57,25 +61,9 @@ const CreateDeploymentPage = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
-      dialogTitle: CreateAnimalDeploymentI18N.createErrorTitle,
-      dialogText: CreateAnimalDeploymentI18N.createErrorText,
-      onClose: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      onOk: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      ...textDialogProps,
-      open: true
-    });
-  };
-
   const handleSubmit = async (values: ICreateAnimalDeployment) => {
     setIsSubmitting(true);
-    // Disable cancel prompt so we can navigate away from the page after saving
-    setEnableCancelCheck(false);
+
     try {
       const critter_id = Number(critters?.find((animal) => animal.critter_id === values.critter_id)?.critter_id);
 
@@ -95,7 +83,8 @@ const CreateDeploymentPage = () => {
         attachment_end_date: values.attachment_end_date,
         attachment_end_time: values.attachment_end_time
       });
-      surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+
+      deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
       // create complete, navigate back to observations page
       history.push(
@@ -103,11 +92,18 @@ const CreateDeploymentPage = () => {
         SKIP_CONFIRMATION_DIALOG
       );
     } catch (error) {
-      showCreateErrorDialog({
+      dialogContext.setErrorDialog({
         dialogTitle: CreateAnimalDeploymentI18N.createErrorTitle,
         dialogText: CreateAnimalDeploymentI18N.createErrorText,
         dialogError: (error as APIError).message,
-        dialogErrorDetails: (error as APIError)?.errors
+        dialogErrorDetails: (error as APIError)?.errors,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        open: true
       });
       setIsSubmitting(false);
     }
@@ -115,7 +111,7 @@ const CreateDeploymentPage = () => {
 
   return (
     <>
-      <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
+      <Prompt when={true} message={locationChangeInterceptor} />
       <Formik
         innerRef={formikRef}
         initialValues={initialDeploymentValues}

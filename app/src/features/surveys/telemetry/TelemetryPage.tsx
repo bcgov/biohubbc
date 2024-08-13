@@ -5,14 +5,24 @@ import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import { TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
-import { useContext } from 'react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
+import { useContext, useEffect } from 'react';
 import SurveyDeploymentsList from './list/SurveyDeploymentList';
 import ManualTelemetryTableContainer from './table/TelemetryTableContainer';
 import ManualTelemetryHeader from './TelemetryHeader';
 
 const TelemetryPage = () => {
+  const biohubApi = useBiohubApi();
+
   const surveyContext = useContext(SurveyContext);
   const projectContext = useContext(ProjectContext);
+
+  const deploymentsDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
+
+  useEffect(() => {
+    deploymentsDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+  }, [deploymentsDataLoader, surveyContext.projectId, surveyContext.surveyId]);
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -43,9 +53,7 @@ const TelemetryPage = () => {
           {/* Telemetry Component */}
           <Box flex="1 1 auto" position="relative">
             <TelemetryTableContextProvider
-              deployment_ids={
-                surveyContext.deploymentDataLoader.data?.map((deployment) => deployment.bctw_deployment_id) ?? []
-              }>
+              deployment_ids={deploymentsDataLoader.data?.map((deployment) => deployment.bctw_deployment_id) ?? []}>
               <ManualTelemetryTableContainer />
             </TelemetryTableContextProvider>
           </Box>

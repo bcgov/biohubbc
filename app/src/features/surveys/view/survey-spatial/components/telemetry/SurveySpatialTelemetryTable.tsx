@@ -9,7 +9,10 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
-import { useContext, useMemo } from 'react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
+import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
+import { useContext, useEffect, useMemo } from 'react';
 
 // Set height so the skeleton loader will match table rows
 const rowHeight = 52;
@@ -39,12 +42,48 @@ interface ISurveyDataTelemetryTableProps {
 export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProps) => {
   const surveyContext = useContext(SurveyContext);
 
+  const biohubApi = useBiohubApi();
+
+  const deploymentDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
+  const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
+
+  useEffect(() => {
+    deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    critterDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+  }, [critterDataLoader, deploymentDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+
+  /**
+   * Merges critters with associated deployments
+   *
+   * @returns {ICritterDeployment[]} Critter deployments
+   */
+  const critterDeployments: IAnimalDeploymentWithCritter[] = useMemo(() => {
+    const critterDeployments: IAnimalDeploymentWithCritter[] = [];
+    const critters = critterDataLoader.data ?? [];
+    const deployments = deploymentDataLoader.data ?? [];
+
+    if (!critters.length || !deployments.length) {
+      return [];
+    }
+
+    const critterMap = new Map(critters.map((critter) => [critter.critterbase_critter_id, critter]));
+
+    deployments.forEach((deployment) => {
+      const critter = critterMap.get(String(deployment.critterbase_critter_id));
+      if (critter) {
+        critterDeployments.push({ critter, deployment });
+      }
+    });
+
+    return critterDeployments;
+  }, [critterDataLoader.data, deploymentDataLoader.data]);
+
   /**
    * Memoized calculation of table rows based on critter deployments data.
    * Formats dates and combines necessary fields for display.
    */
   const rows: ITelemetryData[] = useMemo(() => {
-    return surveyContext.critterDeployments.map((item) => {
+    return critterDeployments.map((item) => {
       return {
         // Critters in this table may use multiple devices across multiple timespans
         id: item.deployment.deployment_id,
@@ -60,7 +99,7 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
         itis_scientific_name: item.critter.itis_scientific_name
       };
     });
-  }, [surveyContext.critterDeployments]);
+  }, [critterDeployments]);
 
   // Define table columns
   const columns: GridColDef<ITelemetryData>[] = [

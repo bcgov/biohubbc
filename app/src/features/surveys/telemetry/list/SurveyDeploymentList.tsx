@@ -19,6 +19,7 @@ import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { SurveyDeploymentListItem } from './SurveyDeploymentListItem';
@@ -36,11 +37,11 @@ const SurveyDeploymentList = () => {
   const surveyContext = useSurveyContext();
   const dialogContext = useDialogContext();
 
-  const deploymentsDataLoader = surveyContext.deploymentDataLoader;
+  const deploymentsDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
 
   useEffect(() => {
     deploymentsDataLoader.load(projectId, surveyId);
-  }, []);
+  }, [deploymentsDataLoader, projectId, surveyId]);
 
   const deployments = deploymentsDataLoader.data ?? [];
 
@@ -69,7 +70,7 @@ const SurveyDeploymentList = () => {
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setAnchorEl(null);
-        surveyContext.deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+        deploymentsDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });

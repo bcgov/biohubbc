@@ -36,7 +36,7 @@ export const PulsatingDot = (props: IPulsatingDotProps): JSX.Element => {
 
       return () => clearTimeout(timer); // Cleanup timer on component unmount
     }
-  }, []);
+  }, [off, time]);
 
   // Styles for the pulsating animation
   const sx =
