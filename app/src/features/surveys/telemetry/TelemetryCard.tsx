@@ -8,7 +8,7 @@ import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { default as dayjs } from 'dayjs';
-export interface ManualTelemetryCardProps {
+export interface TelemetryCardProps {
   device_id: number;
   device_make: string;
   name: string; // should be animal alias
@@ -18,7 +18,7 @@ export interface ManualTelemetryCardProps {
   onMenu: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => void;
 }
 
-const ManualTelemetryCard = (props: ManualTelemetryCardProps) => {
+export const TelemetryCard = (props: TelemetryCardProps) => {
   return (
     <Accordion
       disableGutters
@@ -81,5 +81,3 @@ const ManualTelemetryCard = (props: ManualTelemetryCardProps) => {
     </Accordion>
   );
 };
-
-export default ManualTelemetryCard;

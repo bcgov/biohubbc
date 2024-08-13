@@ -535,11 +535,11 @@ export class CritterbaseService {
   }
 
   async getCaptureById(capture_id: string): Promise<ICapture> {
-    const response = await this._makeGetRequest(`/captures/${capture_id}`, {
+    const response = await this.axiosInstance.get(`/captures/${capture_id}`, {
       params: { format: CritterbaseFormatEnum.DETAILED }
     });
 
-    return response.data
+    return response.data;
   }
 
   /**

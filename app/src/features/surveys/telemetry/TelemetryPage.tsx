@@ -5,14 +5,14 @@ import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import { TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
+import { SurveyDeploymentList } from 'features/surveys/telemetry/list/SurveyDeploymentList';
+import { TelemetryTableContainer } from 'features/surveys/telemetry/table/TelemetryTableContainer';
+import { TelemetryHeader } from 'features/surveys/telemetry/TelemetryHeader';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect } from 'react';
-import SurveyDeploymentsList from './list/SurveyDeploymentList';
-import ManualTelemetryTableContainer from './table/TelemetryTableContainer';
-import ManualTelemetryHeader from './TelemetryHeader';
 
-const TelemetryPage = () => {
+export const TelemetryPage = () => {
   const biohubApi = useBiohubApi();
 
   const surveyContext = useContext(SurveyContext);
@@ -38,7 +38,7 @@ const TelemetryPage = () => {
           maxWidth: 'none'
         }
       }}>
-      <ManualTelemetryHeader
+      <TelemetryHeader
         project_id={surveyContext.projectId}
         project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
         survey_id={surveyContext.surveyId}
@@ -48,13 +48,13 @@ const TelemetryPage = () => {
         <Stack flex="1 1 auto" direction="row" gap={1} p={1}>
           {/* Telematry List */}
           <Box flex="0 0 auto" position="relative" width="400px">
-            <SurveyDeploymentsList />
+            <SurveyDeploymentList />
           </Box>
           {/* Telemetry Component */}
           <Box flex="1 1 auto" position="relative">
             <TelemetryTableContextProvider
               deployment_ids={deploymentsDataLoader.data?.map((deployment) => deployment.bctw_deployment_id) ?? []}>
-              <ManualTelemetryTableContainer />
+              <TelemetryTableContainer />
             </TelemetryTableContextProvider>
           </Box>
         </Stack>
@@ -62,5 +62,3 @@ const TelemetryPage = () => {
     </Stack>
   );
 };
-
-export default TelemetryPage;

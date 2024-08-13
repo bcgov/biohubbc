@@ -30,16 +30,17 @@ export const DeviceDetailsInitialValues = {
 
 export const DeviceDetailsYupSchema = () => yup.object();
 
-interface IDeviceDetailsFormProps {
+interface IDeploymentDeviceDetailsFormProps {
   deviceMakes: { label: string; value: string }[];
 }
 
 /**
- * Create survey - general information fields
+ * Deployment form - device details section.
  *
+ * @param {IDeploymentDeviceDetailsFormProps} props
  * @return {*}
  */
-const DeviceDetailsForm = (props: IDeviceDetailsFormProps) => {
+export const DeploymentDeviceDetailsForm = (props: IDeploymentDeviceDetailsFormProps) => {
   const { values } = useFormikContext<ICreateAnimalDeployment>();
   return (
     <>
@@ -80,5 +81,3 @@ const DeviceDetailsForm = (props: IDeviceDetailsFormProps) => {
     </>
   );
 };
-
-export default DeviceDetailsForm;

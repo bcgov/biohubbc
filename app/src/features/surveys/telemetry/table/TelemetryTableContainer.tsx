@@ -22,13 +22,13 @@ import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { TelemetryTable } from 'features/surveys/telemetry/table/TelemetryTable';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useContext, useDeferredValue, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
-import ManualTelemetryTable from './TelemetryTable';
 
-const ManualTelemetryTableContainer = () => {
+export const TelemetryTableContainer = () => {
   const telemetryApi = useTelemetryApi();
 
   const dialogContext = useContext(DialogContext);
@@ -276,12 +276,10 @@ const ManualTelemetryTableContainer = () => {
 
         <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
           <Box position="absolute" width="100%" height="100%">
-            <ManualTelemetryTable isLoading={processingRecords} />
+            <TelemetryTable isLoading={processingRecords} />
           </Box>
         </Box>
       </Paper>
     </>
   );
 };
-
-export default ManualTelemetryTableContainer;

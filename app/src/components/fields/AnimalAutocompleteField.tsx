@@ -12,7 +12,7 @@ import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { get } from 'lodash-es';
 import { useState } from 'react';
 
-export interface IAutocompleteField<T extends string | number> {
+export interface IAnimalAutocompleteFieldProps<T extends string | number> {
   name: string;
   label: string;
   handleAnimal: (animal: ICritterSimpleResponse) => void;
@@ -24,7 +24,14 @@ export interface IAutocompleteField<T extends string | number> {
   clearOnSelect?: boolean;
 }
 
-const AnimalAutocompleteField = <T extends string | number>(props: IAutocompleteField<T>) => {
+/**
+ * An autocomplete field for selecting an existing animal from the Survey.
+ *
+ * @template T
+ * @param {IAnimalAutocompleteFieldProps<T>} props
+ * @return {*}
+ */
+export const AnimalAutocompleteField = <T extends string | number>(props: IAnimalAutocompleteFieldProps<T>) => {
   const { name, label, required, handleAnimal, defaultAnimal } = props;
 
   const { touched, errors, setFieldValue } = useFormikContext<IAutocompleteFieldOption<T>>();
@@ -116,5 +123,3 @@ const AnimalAutocompleteField = <T extends string | number>(props: IAutocomplete
     />
   );
 };
-
-export default AnimalAutocompleteField;

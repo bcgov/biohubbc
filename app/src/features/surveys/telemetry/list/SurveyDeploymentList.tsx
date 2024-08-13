@@ -17,14 +17,14 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { SurveyContext } from 'contexts/surveyContext';
+import { SurveyDeploymentListItem } from 'features/surveys/telemetry/list/SurveyDeploymentListItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { SurveyDeploymentListItem } from './SurveyDeploymentListItem';
 
-const SurveyDeploymentList = () => {
+export const SurveyDeploymentList = () => {
   const { projectId, surveyId } = useContext(SurveyContext);
 
   const biohubApi = useBiohubApi();
@@ -294,5 +294,3 @@ const SurveyDeploymentList = () => {
     </>
   );
 };
-
-export default SurveyDeploymentList;

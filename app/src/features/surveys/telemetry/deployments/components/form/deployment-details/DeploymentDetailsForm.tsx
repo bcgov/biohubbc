@@ -1,6 +1,7 @@
 import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { AnimalAutocompleteField } from 'components/fields/AnimalAutocompleteField';
 import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
@@ -11,7 +12,6 @@ import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import React, { SetStateAction } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import yup from 'utils/YupSchema';
-import AnimalAutocompleteField from './components/AnimalAutocomplete';
 
 export const DeviceDetailsInitialValues = {
   survey_details: {
@@ -40,11 +40,12 @@ interface IDeploymentDetailsFormProps {
 }
 
 /**
- * Create survey - general information fields
+ * Deployment form - deployment details section.
  *
+ * @param {IDeploymentDetailsFormProps} props
  * @return {*}
  */
-const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
+export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
   const surveyContext = useSurveyContext();
   const { setFieldValue, values } = useFormikContext<ICreateAnimalDeployment>();
 
@@ -119,5 +120,3 @@ const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
     </>
   );
 };
-
-export default DeploymentDetailsForm;

@@ -2,6 +2,8 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditAnimalDeploymentI18N } from 'constants/i18n';
+import { DeploymentForm } from 'features/surveys/telemetry/deployments/components/form/DeploymentForm';
+import { DeploymentFormHeader } from 'features/surveys/telemetry/deployments/components/form/DeploymentFormHeader';
 import {
   CreateAnimalDeployment,
   IAnimalDeployment,
@@ -15,15 +17,13 @@ import useDataLoader from 'hooks/useDataLoader';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
-import DeploymentHeader from '../components/DeploymentHeader';
-import DeploymentForm from '../components/form/DeploymentForm';
 
 /**
- * Renders the body content of the Deployment page.
+ * Renders the Edit Deployment page.
  *
  * @return {*}
  */
-const EditDeploymentPage = () => {
+export const EditDeploymentPage = () => {
   const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
@@ -152,7 +152,7 @@ const EditDeploymentPage = () => {
         validateOnChange={false}
         onSubmit={handleSubmit}>
         <Box display="flex" flexDirection="column">
-          <DeploymentHeader
+          <DeploymentFormHeader
             project_id={surveyContext.projectId}
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
@@ -172,5 +172,3 @@ const EditDeploymentPage = () => {
     </>
   );
 };
-
-export default EditDeploymentPage;

@@ -5,6 +5,9 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
+import { DeploymentDetailsForm } from 'features/surveys/telemetry/deployments/components/form/deployment-details/DeploymentDetailsForm';
+import { DeploymentDeviceDetailsForm } from 'features/surveys/telemetry/deployments/components/form/device-details/DeploymentDeviceDetailsForm';
+import { DeploymentTimelineForm } from 'features/surveys/telemetry/deployments/components/form/timeline/DeploymentTimelineForm';
 import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -13,15 +16,12 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import DeploymentDetailsForm from './deployment-details/DeploymentDetailsForm';
-import DeviceDetailsForm from './device-details/DeviceDetailsForm';
-import DeploymentTimelineForm from './timeline/DeploymentTimelineForm';
 
 interface IDeploymentFormProps {
   isSubmitting: boolean;
 }
 
-const DeploymentForm = (props: IDeploymentFormProps) => {
+export const DeploymentForm = (props: IDeploymentFormProps) => {
   const { isSubmitting } = props;
 
   const surveyContext = useSurveyContext();
@@ -74,43 +74,33 @@ const DeploymentForm = (props: IDeploymentFormProps) => {
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Paper sx={{ p: 5 }}>
         <Stack gap={5}>
-          <HorizontalSplitFormComponent
-            title="Deployment Details"
-            summary="Enter information about the deployment"
-            component={
-              <DeploymentDetailsForm
-                animals={surveyContext.critterDataLoader.data ?? []}
-                setSelectedAnimal={setSelectedAnimal}
-                frequencyUnits={frequencyUnitDataLoader.data ?? []}
-              />
-            }
-          />
+          <HorizontalSplitFormComponent title="Deployment Details" summary="Enter information about the deployment">
+            <DeploymentDetailsForm
+              animals={surveyContext.critterDataLoader.data ?? []}
+              setSelectedAnimal={setSelectedAnimal}
+              frequencyUnits={frequencyUnitDataLoader.data ?? []}
+            />
+          </HorizontalSplitFormComponent>
 
           <Divider />
 
-          <HorizontalSplitFormComponent
-            title="Timeline"
-            summary="Enter information about when the device was deployed"
-            component={
-              <DeploymentTimelineForm
-                captures={critterDataLoader.data?.captures ?? []}
-                mortality={critterDataLoader.data?.mortality[0]}
-              />
-            }
-          />
+          <HorizontalSplitFormComponent title="Timeline" summary="Enter information about when the device was deployed">
+            <DeploymentTimelineForm
+              captures={critterDataLoader.data?.captures ?? []}
+              mortality={critterDataLoader.data?.mortality[0]}
+            />
+          </HorizontalSplitFormComponent>
 
           <Divider />
 
           <HorizontalSplitFormComponent
             title="Device Metadata"
             summary="Enter additional information about the device and optionally enable automatic data 
-            retrievals for compatible device makes"
-            component={
-              <DeviceDetailsForm
-                deviceMakes={deviceMakesDataLoader.data?.map((data) => ({ label: data.code, value: data.code })) ?? []}
-              />
-            }
-          />
+            retrievals for compatible device makes">
+            <DeploymentDeviceDetailsForm
+              deviceMakes={deviceMakesDataLoader.data?.map((data) => ({ label: data.code, value: data.code })) ?? []}
+            />
+          </HorizontalSplitFormComponent>
 
           <Divider />
 
@@ -139,5 +129,3 @@ const DeploymentForm = (props: IDeploymentFormProps) => {
     </Container>
   );
 };
-
-export default DeploymentForm;

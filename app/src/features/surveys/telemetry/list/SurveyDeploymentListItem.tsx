@@ -12,10 +12,10 @@ import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import dayjs from 'dayjs';
+import { PulsatingDot } from 'features/surveys/telemetry/list/components/PulsatingDot';
+import { SurveyDeploymentListItemDetails } from 'features/surveys/telemetry/list/SurveyDeploymentListItemDetails';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
-import { PulsatingDot } from './components/PulsatingDot';
-import { SurveyDeploymentListItemDetails } from './SurveyDeploymentListItemDetails';
 
 export interface ISurveyDeploymentListItemProps {
   animal: ICritterSimpleResponse;

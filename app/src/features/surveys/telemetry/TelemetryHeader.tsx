@@ -4,14 +4,14 @@ import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
 import { Link as RouterLink } from 'react-router-dom';
 
-export interface ManualTelemetryHeaderProps {
+export interface TelemetryHeaderProps {
   project_id: number;
   project_name: string;
   survey_id: number;
   survey_name: string;
 }
 
-const ManualTelemetryHeader: React.FC<ManualTelemetryHeaderProps> = (props) => {
+export const TelemetryHeader = (props: TelemetryHeaderProps) => {
   const { project_id, project_name, survey_id, survey_name } = props;
   return (
     <PageHeader
@@ -35,5 +35,3 @@ const ManualTelemetryHeader: React.FC<ManualTelemetryHeaderProps> = (props) => {
     />
   );
 };
-
-export default ManualTelemetryHeader;

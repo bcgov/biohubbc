@@ -9,12 +9,16 @@ import {
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { SurveyContext } from 'contexts/surveyContext';
 import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
+import {
+  DeploymentColDef,
+  DeviceColDef,
+  TelemetryTypeColDef
+} from 'features/surveys/telemetry/table/utils/GridColumnDefinitions';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo } from 'react';
-import { DeploymentColDef, DeviceColDef, TelemetryTypeColDef } from './utils/GridColumnDefinitions';
 
 const MANUAL_TELEMETRY_TYPE = 'MANUAL';
 
@@ -22,7 +26,7 @@ interface IManualTelemetryTableProps {
   isLoading: boolean;
 }
 
-const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
+export const TelemetryTable = (props: IManualTelemetryTableProps) => {
   const biohubApi = useBiohubApi();
 
   const surveyContext = useContext(SurveyContext);
@@ -193,5 +197,3 @@ const ManualTelemetryTable = (props: IManualTelemetryTableProps) => {
     />
   );
 };
-
-export default ManualTelemetryTable;

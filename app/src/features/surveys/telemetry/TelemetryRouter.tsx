@@ -1,20 +1,19 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import React from 'react';
+import { CreateDeploymentPage } from 'features/surveys/telemetry/deployments/create/CreateDeploymentPage';
+import { EditDeploymentPage } from 'features/surveys/telemetry/deployments/edit/EditDeploymentPage';
+import { TelemetryPage } from 'features/surveys/telemetry/TelemetryPage';
 import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
-import CreateDeploymentPage from './deployments/create/CreateDeploymentPage';
-import EditDeploymentPage from './deployments/edit/EditDeploymentPage';
-import TelemetryPage from './TelemetryPage';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/telemetry/*` pages.
  *
  * @return {*}
  */
-export const TelemetryRouter: React.FC = () => {
+export const TelemetryRouter = () => {
   return (
     <Switch>
       <Redirect

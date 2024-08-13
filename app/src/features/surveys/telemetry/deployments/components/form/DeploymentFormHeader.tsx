@@ -12,7 +12,7 @@ import { useFormikContext } from 'formik';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
-export interface IDeploymentHeaderProps {
+export interface IDeploymentFormHeaderProps {
   project_id: number;
   project_name: string;
   survey_id: number;
@@ -24,12 +24,12 @@ export interface IDeploymentHeaderProps {
 }
 
 /**
- * Renders the header of the Sampling Site page.
+ * Renders the header of the create and edit deployment pages.
  *
- * @param {*} props
+ * @param {IDeploymentFormHeaderProps} props
  * @return {*}
  */
-export const DeploymentHeader: React.FC<IDeploymentHeaderProps> = (props) => {
+export const DeploymentFormHeader = (props: IDeploymentFormHeaderProps) => {
   const history = useHistory();
   const formikProps = useFormikContext<ICreateAnimalDeployment>();
 
@@ -114,5 +114,3 @@ export const DeploymentHeader: React.FC<IDeploymentHeaderProps> = (props) => {
     </>
   );
 };
-
-export default DeploymentHeader;

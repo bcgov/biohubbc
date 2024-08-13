@@ -1,6 +1,8 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { CreateAnimalDeploymentI18N } from 'constants/i18n';
+import { DeploymentForm } from 'features/surveys/telemetry/deployments/components/form/DeploymentForm';
+import { DeploymentFormHeader } from 'features/surveys/telemetry/deployments/components/form/DeploymentFormHeader';
 import {
   CreateAnimalDeployment,
   ICreateAnimalDeployment
@@ -13,8 +15,6 @@ import useDataLoader from 'hooks/useDataLoader';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
-import DeploymentHeader from '../components/DeploymentHeader';
-import DeploymentForm from '../components/form/DeploymentForm';
 
 const initialDeploymentValues = {
   critter_id: '' as unknown as number,
@@ -31,11 +31,11 @@ const initialDeploymentValues = {
 };
 
 /**
- * Renders the body content of the Deployment page.
+ * Renders the Create Deployment page.
  *
  * @return {*}
  */
-const CreateDeploymentPage = () => {
+export const CreateDeploymentPage = () => {
   const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
@@ -120,7 +120,7 @@ const CreateDeploymentPage = () => {
         validateOnChange={false}
         onSubmit={handleSubmit}>
         <Box display="flex" flexDirection="column">
-          <DeploymentHeader
+          <DeploymentFormHeader
             project_id={surveyContext.projectId}
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
@@ -137,5 +137,3 @@ const CreateDeploymentPage = () => {
     </>
   );
 };
-
-export default CreateDeploymentPage;
