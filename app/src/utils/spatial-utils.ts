@@ -1,5 +1,6 @@
 import { SAMPLING_SITE_SPATIAL_TYPE } from 'constants/spatial';
 import { Feature, Point } from 'geojson';
+import { isDefined } from './Utils';
 
 /**
  * Checks whether a latitude-longitude pair of coordinates is valid.
@@ -12,9 +13,14 @@ import { Feature, Point } from 'geojson';
  * @return {*}  {boolean}
  */
 export const isValidCoordinates = (latitude: number | undefined, longitude: number | undefined) => {
-  return latitude && longitude && latitude >= -90 && latitude <= 90 && longitude >= -180 && longitude <= 180
-    ? true
-    : false;
+  return (
+    isDefined(latitude) &&
+    isDefined(longitude) &&
+    latitude >= -90 &&
+    latitude <= 90 &&
+    longitude >= -180 &&
+    longitude <= 180
+  );
 };
 
 /**
