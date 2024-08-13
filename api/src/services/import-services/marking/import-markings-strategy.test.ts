@@ -4,7 +4,7 @@ import { MediaFile } from '../../../utils/media/media-file';
 import * as worksheetUtils from '../../../utils/xlsx-utils/worksheet-utils';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { IBulkCreateResponse, ICritterDetailed } from '../../critterbase-service';
-import { importCSV } from '../csv-import';
+import { importCSV } from '../import-csv';
 import { ImportMarkingsStrategy } from './import-markings-strategy';
 import { CsvMarking } from './import-markings-strategy.interface';
 

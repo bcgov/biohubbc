@@ -7,7 +7,7 @@ import { IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
 import { ICapture, ILocation } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
-import { CSVImportStrategy, Row } from '../csv-import.interface';
+import { CSVImportStrategy, Row } from '../import-csv.interface';
 import { findCapturesFromDateTime, formatTimeString } from '../utils/datetime';
 import { CsvCapture, CsvCaptureSchema } from './import-captures-strategy.interface';
 

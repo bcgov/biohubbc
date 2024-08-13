@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import * as db from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
-import * as strategy from '../../../../../../services/import-services/csv-import';
+import * as strategy from '../../../../../../services/import-services/import-csv';
 import * as fileUtils from '../../../../../../utils/file-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import { importCsv } from './import';

@@ -6,7 +6,7 @@ import { HTTP400 } from '../../../../../../errors/http-error';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ImportCrittersStrategy } from '../../../../../../services/import-services/critter/import-critters-strategy';
-import { importCSV } from '../../../../../../services/import-services/csv-import';
+import { importCSV } from '../../../../../../services/import-services/import-csv';
 import { scanFileForVirus } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';

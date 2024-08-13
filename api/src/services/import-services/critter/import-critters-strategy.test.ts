@@ -4,6 +4,7 @@ import sinonChai from 'sinon-chai';
 import { WorkSheet } from 'xlsx';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { IBulkCreateResponse } from '../../critterbase-service';
+import { ImportCrittersStrategy } from './import-critters-strategy';
 import { CsvCritter } from './import-critters-strategy.interface';
 
 chai.use(sinonChai);

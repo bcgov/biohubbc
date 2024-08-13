@@ -4,7 +4,8 @@ import { MediaFile } from '../../../utils/media/media-file';
 import * as worksheetUtils from '../../../utils/xlsx-utils/worksheet-utils';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { IBulkCreateResponse, ICritterDetailed } from '../../critterbase-service';
-import { importCSV } from '../csv-import';
+import { importCSV } from '../import-csv';
+import { ImportCapturesStrategy } from './import-captures-strategy';
 
 describe('import-captures-service', () => {
   describe('importCSV capture worksheet', () => {

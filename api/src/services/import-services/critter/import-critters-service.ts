@@ -17,7 +17,7 @@ import {
 import { DBService } from '../../db-service';
 import { PlatformService } from '../../platform-service';
 import { SurveyCritterService } from '../../survey-critter-service';
-import { CSVImportStrategy, Row, Validation, ValidationError } from '../import-csv.interface';
+import { Row, Validation, ValidationError } from '../import-csv.interface';
 import { CsvCritter, PartialCsvCritter } from './import-critters-strategy.interface';
 
 const defaultLog = getLogger('services/import/import-critters-service');
@@ -26,15 +26,15 @@ const CSV_CRITTER_SEX_OPTIONS = ['UNKNOWN', 'MALE', 'FEMALE', 'HERMAPHRODITIC'];
 
 /**
  *
- * ImportCrittersStrategy - Injected into CSVImportStrategy as the CSV import dependency
+ * ImportCrittersService - Injected into CSVImportStrategy as the CSV import dependency
  *
- * @example new CSVImportStrategy(new ImportCrittersStrategy(connection, surveyId)).import(file);
+ * @example new CSVImportStrategy(new ImportCrittersService(connection, surveyId)).import(file);
  *
- * @class ImportCrittersStrategy
+ * @class ImportCrittersService
  * @extends DBService
  *
  */
-export class ImportCrittersStrategy extends DBService implements CSVImportStrategy {
+export class ImportCrittersService extends DBService implements CSVImportStrategy {
   platformService: PlatformService;
   critterbaseService: CritterbaseService;
   surveyCritterService: SurveyCritterService;
@@ -56,7 +56,7 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
   } satisfies IXLSXCSVValidator;
 
   /**
-   * Instantiates an instance of ImportCrittersStrategy
+   * Instantiates an instance of ImportCrittersService
    *
    * @param {IDBConnection} connection - Database connection
    * @param {number} surveyId - Survey identifier
@@ -333,7 +333,7 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
     // In reality this error should not be triggered, safeguard to prevent floating critter ids in SIMS
     if (bulkResponse.created.critters !== simsPayload.length) {
       throw new ApiGeneralError('Unable to fully import critters from CSV', [
-        'importCrittersStrategy -> insertCsvCrittersIntoSimsAndCritterbase',
+        'importCrittersService -> insertCsvCrittersIntoSimsAndCritterbase',
         'critterbase bulk create response count !== critterIds.length'
       ]);
     }

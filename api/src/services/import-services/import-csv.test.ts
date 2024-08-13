@@ -4,7 +4,8 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { MediaFile } from '../../utils/media/media-file';
 import * as worksheetUtils from '../../utils/xlsx-utils/worksheet-utils';
-import { importCSV } from './csv-import';
+import { importCSV } from './import-csv';
+import { CSVImportStrategy } from './import-csv.interface';
 
 chai.use(sinonChai);
 
