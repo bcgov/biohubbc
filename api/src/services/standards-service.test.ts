@@ -31,7 +31,7 @@ describe('StandardsService', () => {
 
       const getTaxonBodyLocationsStub = sinon
         .stub(standardsService.critterbaseService, 'getTaxonBodyLocations')
-        .resolves({ markingBodyLocations: [{ id: '', key: '', value: 'left ear' }] });
+        .resolves([{ id: '', key: '', value: 'left ear' }]);
 
       const getTaxonMeasurementsStub = sinon
         .stub(standardsService.critterbaseService, 'getTaxonMeasurements')
