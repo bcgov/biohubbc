@@ -5,8 +5,8 @@ import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
 import { csvFileSchema } from '../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { ImportCapturesService } from '../../../../../../../services/import-services/capture/import-captures-service';
-import { importCSV } from '../../../../../../../services/import-services/csv-import-strategy';
+import { ImportCapturesStrategy } from '../../../../../../../services/import-services/capture/import-captures-strategy';
+import { importCSV } from '../../../../../../../services/import-services/import-csv';
 import { scanFileForVirus } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../../utils/media/media-utils';
@@ -142,7 +142,7 @@ export function importCsv(): RequestHandler {
         throw new HTTP400('Malicious content detected, import cancelled.');
       }
 
-      const importCsvCaptures = new ImportCapturesService(connection, surveyId);
+      const importCsvCaptures = new ImportCapturesStrategy(connection, surveyId);
 
       // Pass CSV file and importer as dependencies
       const capturesCreated = await importCSV(parseMulterFile(rawFile), importCsvCaptures);
