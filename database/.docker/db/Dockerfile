@@ -1,5 +1,5 @@
 # ########################################################################################################
-# This DockerFile is used for local development (via docker-compose) only.
+# This DockerFile is used for local development (via compose.yml) only.
 # ########################################################################################################
 
 ARG POSTGRES_VERSION=12.5
