@@ -9,15 +9,16 @@ import { IXLSXCSVValidator } from '../../utils/xlsx-utils/worksheet-utils';
 export type Row = Record<string, any>;
 
 /**
- * Implementation for CSV Import Services.
+ * Implementation for CSV Import Strategies.
  *
- * All CSV import services should implement this interface to be used with `CSVImportStrategy`
- * Note: When implementing a service using this interface the generics will be inferred.
+ * All CSV import strategies should implement this interface to be used with `CSVImport` function.
+ *
+ * Note: When implementing a strategy using this interface the generics will be inferred.
  *
  * @template ValidatedRow
  * @template InsertReturn
  */
-export interface CSVImportService<ValidatedRow = Record<string, unknown>, InsertReturn = unknown> {
+export interface CSVImportStrategy<ValidatedRow = Record<string, unknown>, InsertReturn = unknown> {
   /**
    * Standard column validator - used to validate the column headers and types.
    *
