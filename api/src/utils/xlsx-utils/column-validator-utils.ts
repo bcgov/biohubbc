@@ -1,4 +1,4 @@
-import { Row } from '../../services/import-services/csv-import-strategy.interface';
+import { Row } from '../../services/import-services/csv-import.interface';
 import { IXLSXCSVColumn, IXLSXCSVValidator } from './worksheet-utils';
 
 // TODO: Move the IXLSXCSVValidator type to this file

@@ -7,12 +7,9 @@ import { IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
 import { IAsSelectLookup, ICritterDetailed } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
-import { CSVImportService, Row } from '../csv-import-strategy.interface';
+import { CSVImportStrategy, Row } from '../csv-import.interface';
 import { findCapturesFromDateTime } from '../utils/datetime';
 import { CsvMarking, getCsvMarkingSchema } from './import-markings-strategy.interface';
-
-// TODO: Update all import services to use language Import<import-name>Strategy
-// TODO: Update CSVImportService interface -> CSVImportStrategy
 
 const defaultLog = getLogger('services/import/import-markings-strategy');
 
@@ -23,7 +20,7 @@ const defaultLog = getLogger('services/import/import-markings-strategy');
  * @see CSVImport
  *
  */
-export class ImportMarkingsStrategy extends DBService implements CSVImportService {
+export class ImportMarkingsStrategy extends DBService implements CSVImportStrategy {
   surveyCritterService: SurveyCritterService;
   surveyId: number;
 

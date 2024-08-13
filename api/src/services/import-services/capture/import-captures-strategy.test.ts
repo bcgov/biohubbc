@@ -4,8 +4,7 @@ import { MediaFile } from '../../../utils/media/media-file';
 import * as worksheetUtils from '../../../utils/xlsx-utils/worksheet-utils';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { IBulkCreateResponse, ICritterDetailed } from '../../critterbase-service';
-import { importCSV } from '../csv-import-strategy';
-import { ImportCapturesService } from './import-captures-service';
+import { importCSV } from '../csv-import';
 
 describe('import-captures-service', () => {
   describe('importCSV capture worksheet', () => {
@@ -42,12 +41,12 @@ describe('import-captures-service', () => {
 
       const mockDBConnection = getMockDBConnection();
 
-      const importCapturesService = new ImportCapturesService(mockDBConnection, 1);
+      const importCapturesStrategy = new ImportCapturesStrategy(mockDBConnection, 1);
 
       const getDefaultWorksheetStub = sinon.stub(worksheetUtils, 'getDefaultWorksheet');
-      const aliasMapStub = sinon.stub(importCapturesService.surveyCritterService, 'getSurveyCritterAliasMap');
+      const aliasMapStub = sinon.stub(importCapturesStrategy.surveyCritterService, 'getSurveyCritterAliasMap');
       const critterbaseInsertStub = sinon.stub(
-        importCapturesService.surveyCritterService.critterbaseService,
+        importCapturesStrategy.surveyCritterService.critterbaseService,
         'bulkCreate'
       );
 
@@ -72,7 +71,7 @@ describe('import-captures-service', () => {
       );
       critterbaseInsertStub.resolves({ created: { captures: 2 } } as IBulkCreateResponse);
 
-      const data = await importCSV(new MediaFile('test', 'test', 'test' as unknown as Buffer), importCapturesService);
+      const data = await importCSV(new MediaFile('test', 'test', 'test' as unknown as Buffer), importCapturesStrategy);
 
       expect(data).to.deep.equal(2);
     });
@@ -80,7 +79,7 @@ describe('import-captures-service', () => {
   describe('validateRows', () => {
     it('should format and validate the rows successfully', async () => {
       const mockConnection = getMockDBConnection();
-      const importCaptures = new ImportCapturesService(mockConnection, 1);
+      const importCaptures = new ImportCapturesStrategy(mockConnection, 1);
       const aliasMapStub = sinon.stub(importCaptures.surveyCritterService, 'getSurveyCritterAliasMap');
 
       aliasMapStub.resolves(
@@ -134,7 +133,7 @@ describe('import-captures-service', () => {
 
     it('should format and validate the rows with optional values successfully', async () => {
       const mockConnection = getMockDBConnection();
-      const importCaptures = new ImportCapturesService(mockConnection, 1);
+      const importCaptures = new ImportCapturesStrategy(mockConnection, 1);
       const aliasMapStub = sinon.stub(importCaptures.surveyCritterService, 'getSurveyCritterAliasMap');
 
       aliasMapStub.resolves(
@@ -180,7 +179,7 @@ describe('import-captures-service', () => {
 
     it('should return error if invalid', async () => {
       const mockConnection = getMockDBConnection();
-      const importCaptures = new ImportCapturesService(mockConnection, 1);
+      const importCaptures = new ImportCapturesStrategy(mockConnection, 1);
       const aliasMapStub = sinon.stub(importCaptures.surveyCritterService, 'getSurveyCritterAliasMap');
 
       aliasMapStub.resolves(

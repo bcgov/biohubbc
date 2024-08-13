@@ -4,8 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { MediaFile } from '../../utils/media/media-file';
 import * as worksheetUtils from '../../utils/xlsx-utils/worksheet-utils';
-import { importCSV } from './csv-import-strategy';
-import { CSVImportService } from './csv-import-strategy.interface';
+import { importCSV } from './csv-import';
 
 chai.use(sinonChai);
 
@@ -18,7 +17,7 @@ describe('importCSV', () => {
     const mockCsv = new MediaFile('file', 'file', Buffer.from(''));
     const mockWorksheet = {};
 
-    const importer: CSVImportService<any> = {
+    const importer: CSVImportStrategy<any> = {
       columnValidator: { ID: { type: 'string' } },
       validateRows: sinon.stub().resolves({ success: true, data: true }),
       insert: sinon.stub().resolves(true)
@@ -38,7 +37,7 @@ describe('importCSV', () => {
   it('should throw error if column validator fails', async () => {
     const mockCsv = new MediaFile('file', 'file', Buffer.from(''));
 
-    const importer: CSVImportService<any> = {
+    const importer: CSVImportStrategy<any> = {
       columnValidator: { ID: { type: 'string' } },
       validateRows: sinon.stub().resolves({ success: true, data: true }),
       insert: sinon.stub().resolves(true)
@@ -65,12 +64,12 @@ describe('importCSV', () => {
     }
   });
 
-  it('should throw error if import service validateRows fails', async () => {
+  it('should throw error if import strategy validateRows fails', async () => {
     const mockCsv = new MediaFile('file', 'file', Buffer.from(''));
     const mockWorksheet = {};
     const mockValidation = { success: false, error: { issues: [{ row: 1, message: 'invalidated' }] } };
 
-    const importer: CSVImportService<any> = {
+    const importer: CSVImportStrategy<any> = {
       columnValidator: { ID: { type: 'string' } },
       validateRows: sinon.stub().returns(mockValidation),
       insert: sinon.stub().resolves(true)

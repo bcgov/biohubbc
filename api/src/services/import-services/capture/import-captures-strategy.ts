@@ -7,18 +7,18 @@ import { IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
 import { ICapture, ILocation } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
-import { CSVImportService, Row } from '../csv-import-strategy.interface';
+import { CSVImportStrategy, Row } from '../csv-import.interface';
 import { findCapturesFromDateTime, formatTimeString } from '../utils/datetime';
-import { CsvCapture, CsvCaptureSchema } from './import-captures-service.interface';
+import { CsvCapture, CsvCaptureSchema } from './import-captures-strategy.interface';
 
 /**
  *
- * @class ImportCapturesService
+ * @class ImportCapturesStrategy
  * @extends DBService
  * @see CSVImportStrategy
  *
  */
-export class ImportCapturesService extends DBService implements CSVImportService {
+export class ImportCapturesStrategy extends DBService implements CSVImportStrategy {
   surveyCritterService: SurveyCritterService;
   surveyId: number;
 
@@ -43,7 +43,7 @@ export class ImportCapturesService extends DBService implements CSVImportService
   } satisfies IXLSXCSVValidator;
 
   /**
-   * Construct an instance of ImportCapturesService.
+   * Construct an instance of ImportCapturesStrategy.
    *
    * @param {IDBConnection} connection - DB connection
    * @param {string} surveyId

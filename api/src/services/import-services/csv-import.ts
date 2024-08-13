@@ -7,30 +7,30 @@ import {
   getWorksheetRowObjects,
   validateCsvFile
 } from '../../utils/xlsx-utils/worksheet-utils';
-import { CSVImportService } from './csv-import-strategy.interface';
+import { CSVImportStrategy } from './csv-import.interface';
 
 /**
- * Import CSV (Strategy) - Used with `CSVImportService` classes.
+ * Import CSV - Used with `CSVImportStrategy` classes.
  *
- * How to?: Inject a media-file and import service that implements the CSVImportService.
+ * How to?: Inject a media-file and import strategy that implements `CSVImportStrategy`.
  *
  * Flow:
  *  1. Get the worksheet from the CSV MediaFile - _getWorksheet
- *  2. Validate the standard columns with the `importCsvService` column validator - _validate -> validateCsvFile
- *  3. Validate row data with import service - _validate -> importCsvService.validateRows
- *  4. Insert the data into database or send to external system - import -> importCsvService.insert
+ *  2. Validate the standard columns with the `importCsvStrategy` column validator - _validate -> validateCsvFile
+ *  3. Validate row data with import strategy - _validate -> importCsvService.validateRows
+ *  4. Insert the data into database or send to external system - import -> importCsvStrategy.insert
  *
  * @async
  * @template ValidatedRow - Validated row object
  * @template InsertReturn - Return type of the importer insert method
  * @param {MediaFile} csvMediaFile - CSV converted to MediaFile
- * @param {CSVImportService<ValidatedRow, InsertReturn>} importer - Import service
+ * @param {CSVImportStrategy<ValidatedRow, InsertReturn>} importer - Import strategy
  * @throws {ApiGeneralError} - If validation fails
  * @returns {Promise<ReturnType>} Generic return type
  */
 export const importCSV = async <ValidatedRow, InsertReturn>(
   csvMediaFile: MediaFile,
-  importer: CSVImportService<ValidatedRow, InsertReturn>
+  importer: CSVImportStrategy<ValidatedRow, InsertReturn>
 ) => {
   const _worksheet = getDefaultWorksheet(constructXLSXWorkbook(csvMediaFile));
 
@@ -42,7 +42,7 @@ export const importCSV = async <ValidatedRow, InsertReturn>(
   if (!validateCsvFile(worksheet, importer.columnValidator)) {
     throw new ApiGeneralError(`Column validator failed. Column headers or cell data types are incorrect.`, [
       { csv_column_errors: getColumnValidatorSpecification(importer.columnValidator) },
-      'importCapturesService->_validate->validateCsvFile'
+      'importCSV->_validate->validateCsvFile'
     ]);
   }
 
@@ -57,7 +57,7 @@ export const importCSV = async <ValidatedRow, InsertReturn>(
   if (!validation.success) {
     throw new ApiGeneralError(`Failed to import Critter CSV. Column data validator failed.`, [
       { csv_row_errors: validation.error.issues },
-      'importCapturesService->_validate->_validateRows'
+      'importCSV->_validate->_validateRows'
     ]);
   }
 
