@@ -4,7 +4,7 @@ import { IAllTelemetryAdvancedFilters } from '../models/telemetry-view';
 import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
-import { CritterbaseService, ICritter } from './critterbase-service';
+import { CritterbaseService, ICritter, ICritterDetailed } from './critterbase-service';
 import { DBService } from './db-service';
 
 const defaultLog = getLogger('SurveyCritterService');
@@ -197,15 +197,15 @@ export class SurveyCritterService extends DBService {
    * Get survey Critterbase critters.
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<ICritter[]>}
+   * @return {*}  {Promise<ICritterDetailed[]>}
    * @memberof SurveyCritterService
    */
-  async getCritterbaseSurveyCritters(surveyId: number): Promise<ICritter[]> {
+  async getCritterbaseSurveyCritters(surveyId: number): Promise<ICritterDetailed[]> {
     const surveyCritters = await this.getCrittersInSurvey(surveyId);
 
     const critterbaseCritterIds = surveyCritters.map((critter) => critter.critterbase_critter_id);
 
-    return this.critterbaseService.getMultipleCrittersByIds(critterbaseCritterIds);
+    return this.critterbaseService.getMultipleCrittersByIdsDetailed(critterbaseCritterIds);
   }
 
   /**
@@ -226,34 +226,39 @@ export class SurveyCritterService extends DBService {
   }
 
   /**
-   * Get mapping of `alias` (animal_id) -> critterbase `critter_id` (UUID) for a survey.
-   * For a survey the critter alias works as a unique identifier of a Critterbase critter.
+   * Get mapping of `alias` (animal_id) -> critterbase critter for a survey.
    *
+   * Note: Aliases are converted to lowercase, when accessing the value use .toLowerCase()
    * Note: Business expects unique critter alias' in Surveys effective 01/06/2024
+   *
+   * TODO: Update this function to handle duplicate, not found and found critter aliases ie: `alias -> critter[]`
    *
    * @async
    * @param {number} surveyId
-   * @returns {Promise<Map<string, string | undefined>>} Critter alias -> critter_id (UUID) Map
+   * @returns {Promise<Map<string, ICritterDetailed | undefined>>} Critter alias -> Detailed critter
    */
-  async getSurveyCritterIdAliasMap(surveyId: number): Promise<Map<string, string | undefined>> {
+  async getSurveyCritterAliasMap(surveyId: number): Promise<Map<string, ICritterDetailed | undefined>> {
     const critters = await this.getCritterbaseSurveyCritters(surveyId);
 
     // Create mapping of alias -> critter_id
     const critterAliasMap = new Map();
+
     for (const critter of critters) {
-      // Do not allow existing duplicate aliases to map over eachother
-      if (critterAliasMap.get(critter.animal_id)) {
-        defaultLog.debug({
-          label: 'critter alias map',
-          message: 'duplicate critter alias for survey',
-          details: { surveyId: surveyId, alias: critter.animal_id }
-        });
-
-        critterAliasMap.set(critter.animal_id, undefined);
-      }
-
       if (critter.animal_id) {
-        critterAliasMap.set(critter.animal_id, critter.critter_id);
+        const alias = critter.animal_id.toLowerCase();
+        // Do not allow existing duplicate aliases to map over eachother
+        if (critterAliasMap.get(alias)) {
+          defaultLog.debug({
+            label: 'critter alias map',
+            message: 'duplicate critter alias for survey',
+            details: { surveyId: surveyId, critter: critter }
+          });
+
+          // Duplicate alias found, overwrite as undefined
+          critterAliasMap.set(alias, undefined);
+        } else {
+          critterAliasMap.set(alias, critter);
+        }
       }
     }
 
