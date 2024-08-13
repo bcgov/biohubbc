@@ -104,9 +104,11 @@ export class ImportMarkingsStrategy extends DBService implements CSVImportServic
     const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
 
     // Get validation reference data
-    const critterAliasMap = await this.surveyCritterService.getSurveyCritterIdAliasMap(this.surveyId);
-    const colours = await this.surveyCritterService.critterbaseService.getColours();
-    const markingTypes = await this.surveyCritterService.critterbaseService.getMarkingTypes();
+    const [critterAliasMap, colours, markingTypes] = await Promise.all([
+      this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId),
+      this.surveyCritterService.critterbaseService.getColours(),
+      this.surveyCritterService.critterbaseService.getMarkingTypes()
+    ]);
 
     // Used to find critter_id -> taxon body location [] map
     const rowCritters: ICritterDetailed[] = [];

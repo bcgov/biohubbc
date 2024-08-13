@@ -254,11 +254,13 @@ export class SurveyCritterService extends DBService {
    * Note: Aliases are converted to lowercase, when accessing the value use .toLowerCase()
    * Note: Business expects unique critter alias' in Surveys effective 01/06/2024
    *
+   * TODO: Update this function to handle duplicate, not found and found critter aliases ie: `alias -> critter[]`
+   *
    * @async
    * @param {number} surveyId
    * @returns {Promise<Map<string, ICritterDetailed | undefined>>} Critter alias -> Detailed critter
    */
-  async getSurveyCritterIdAliasMap(surveyId: number): Promise<Map<string, ICritterDetailed | undefined>> {
+  async getSurveyCritterAliasMap(surveyId: number): Promise<Map<string, ICritterDetailed | undefined>> {
     const critters = await this.getCritterbaseSurveyCritters(surveyId);
 
     // Create mapping of alias -> critter_id
@@ -275,6 +277,7 @@ export class SurveyCritterService extends DBService {
             details: { surveyId: surveyId, critter: critter }
           });
 
+          // Duplicate alias found, overwrite as undefined
           critterAliasMap.set(alias, undefined);
         } else {
           critterAliasMap.set(alias, critter);

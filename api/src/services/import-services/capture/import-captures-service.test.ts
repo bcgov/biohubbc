@@ -45,7 +45,7 @@ describe('import-captures-service', () => {
       const importCapturesService = new ImportCapturesService(mockDBConnection, 1);
 
       const getDefaultWorksheetStub = sinon.stub(worksheetUtils, 'getDefaultWorksheet');
-      const aliasMapStub = sinon.stub(importCapturesService.surveyCritterService, 'getSurveyCritterIdAliasMap');
+      const aliasMapStub = sinon.stub(importCapturesService.surveyCritterService, 'getSurveyCritterAliasMap');
       const critterbaseInsertStub = sinon.stub(
         importCapturesService.surveyCritterService.critterbaseService,
         'bulkCreate'
@@ -81,7 +81,7 @@ describe('import-captures-service', () => {
     it('should format and validate the rows successfully', async () => {
       const mockConnection = getMockDBConnection();
       const importCaptures = new ImportCapturesService(mockConnection, 1);
-      const aliasMapStub = sinon.stub(importCaptures.surveyCritterService, 'getSurveyCritterIdAliasMap');
+      const aliasMapStub = sinon.stub(importCaptures.surveyCritterService, 'getSurveyCritterAliasMap');
 
       aliasMapStub.resolves(
         new Map([
@@ -135,7 +135,7 @@ describe('import-captures-service', () => {
     it('should format and validate the rows with optional values successfully', async () => {
       const mockConnection = getMockDBConnection();
       const importCaptures = new ImportCapturesService(mockConnection, 1);
-      const aliasMapStub = sinon.stub(importCaptures.surveyCritterService, 'getSurveyCritterIdAliasMap');
+      const aliasMapStub = sinon.stub(importCaptures.surveyCritterService, 'getSurveyCritterAliasMap');
 
       aliasMapStub.resolves(
         new Map([
@@ -181,7 +181,7 @@ describe('import-captures-service', () => {
     it('should return error if invalid', async () => {
       const mockConnection = getMockDBConnection();
       const importCaptures = new ImportCapturesService(mockConnection, 1);
-      const aliasMapStub = sinon.stub(importCaptures.surveyCritterService, 'getSurveyCritterIdAliasMap');
+      const aliasMapStub = sinon.stub(importCaptures.surveyCritterService, 'getSurveyCritterAliasMap');
 
       aliasMapStub.resolves(
         new Map([

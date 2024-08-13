@@ -17,6 +17,11 @@ describe('formatTimeString', () => {
   it('should return undefined if cannot format time', () => {
     expect(formatTimeString('BLAH')).to.be.undefined;
   });
+
+  it('should return undefined if dates are null', () => {
+    expect(formatTimeString(null)).to.be.undefined;
+    expect(formatTimeString(undefined)).to.be.undefined;
+  });
 });
 
 describe('areDatesEqual', () => {

@@ -65,7 +65,7 @@ export class ImportCapturesService extends DBService implements CSVImportService
   async validateRows(rows: Row[]) {
     // Generate type-safe cell getter from column validator
     const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
-    const critterAliasMap = await this.surveyCritterService.getSurveyCritterIdAliasMap(this.surveyId);
+    const critterAliasMap = await this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId);
 
     const rowsToValidate = [];
 

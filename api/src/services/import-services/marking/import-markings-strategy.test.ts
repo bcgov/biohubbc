@@ -42,7 +42,7 @@ describe('ImportMarkingsStrategy', () => {
 
       const getDefaultWorksheetStub = sinon.stub(worksheetUtils, 'getDefaultWorksheet');
       const critterbaseInsertStub = sinon.stub(strategy.surveyCritterService.critterbaseService, 'bulkCreate');
-      const aliasMapStub = sinon.stub(strategy.surveyCritterService, 'getSurveyCritterIdAliasMap');
+      const aliasMapStub = sinon.stub(strategy.surveyCritterService, 'getSurveyCritterAliasMap');
       const colourStub = sinon.stub(strategy.surveyCritterService.critterbaseService, 'getColours');
       const markingTypeStub = sinon.stub(strategy.surveyCritterService.critterbaseService, 'getMarkingTypes');
       const taxonBodyLocationStub = sinon.stub(strategy, 'getTaxonBodyLocationsCritterIdMap');
@@ -167,7 +167,7 @@ describe('ImportMarkingsStrategy', () => {
         ]
       } as ICritterDetailed;
 
-      const aliasStub = sinon.stub(strategy.surveyCritterService, 'getSurveyCritterIdAliasMap');
+      const aliasStub = sinon.stub(strategy.surveyCritterService, 'getSurveyCritterAliasMap');
       const colourStub = sinon.stub(strategy.surveyCritterService.critterbaseService, 'getColours');
       const markingTypeStub = sinon.stub(strategy.surveyCritterService.critterbaseService, 'getMarkingTypes');
       const taxonBodyLocationStub = sinon.stub(strategy, 'getTaxonBodyLocationsCritterIdMap');

@@ -151,7 +151,7 @@ export function importCsv(): RequestHandler {
 
       return res.status(201).json({ markingsCreated });
     } catch (error) {
-      defaultLog.error({ label: 'importCritterCsv', message: 'error', error });
+      defaultLog.error({ label: 'importMarkingsCSV', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
