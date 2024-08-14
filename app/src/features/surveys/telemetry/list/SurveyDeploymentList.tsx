@@ -16,16 +16,16 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
-import { SurveyContext } from 'contexts/surveyContext';
 import { SurveyDeploymentListItem } from 'features/surveys/telemetry/list/SurveyDeploymentListItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useSurveyContext } from 'hooks/useContext';
-import useDataLoader from 'hooks/useDataLoader';
-import { useContext, useEffect, useState } from 'react';
+import { useDialogContext, useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 export const SurveyDeploymentList = () => {
-  const { projectId, surveyId } = useContext(SurveyContext);
+  const dialogContext = useDialogContext();
+  const surveyContext = useSurveyContext();
+  const telemetryDataContext = useTelemetryDataContext();
 
   const biohubApi = useBiohubApi();
 
@@ -34,14 +34,11 @@ export const SurveyDeploymentList = () => {
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
   const [selectedDeploymentId, setSelectedDeploymentId] = useState<number | null>();
 
-  const surveyContext = useSurveyContext();
-  const dialogContext = useDialogContext();
-
-  const deploymentsDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
+  const deploymentsDataLoader = telemetryDataContext.deploymentsDataLoader;
 
   useEffect(() => {
-    deploymentsDataLoader.load(projectId, surveyId);
-  }, [deploymentsDataLoader, projectId, surveyId]);
+    deploymentsDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+  }, [deploymentsDataLoader, surveyContext.projectId, surveyContext.surveyId]);
 
   const deployments = deploymentsDataLoader.data ?? [];
 
@@ -140,7 +137,7 @@ export const SurveyDeploymentList = () => {
         }}>
         <MenuItem
           component={RouterLink}
-          to={`/admin/projects/${projectId}/surveys/${surveyId}/telemetry/deployment/${selectedDeploymentId}/edit`}
+          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/deployment/${selectedDeploymentId}/edit`}
           onClick={() => setAnchorEl(null)}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />

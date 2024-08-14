@@ -7,7 +7,6 @@ import {
   GenericTimeColDef
 } from 'components/data-grid/GenericGridColumnDefinitions';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
-import { SurveyContext } from 'contexts/surveyContext';
 import { IManualTelemetryTableRow } from 'contexts/telemetryTableContext';
 import {
   DeploymentColDef,
@@ -15,10 +14,10 @@ import {
   TelemetryTypeColDef
 } from 'features/surveys/telemetry/table/utils/GridColumnDefinitions';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useTelemetryTableContext } from 'hooks/useContext';
+import { useSurveyContext, useTelemetryDataContext, useTelemetryTableContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
-import { useContext, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 const MANUAL_TELEMETRY_TYPE = 'MANUAL';
 
@@ -29,10 +28,11 @@ interface IManualTelemetryTableProps {
 export const TelemetryTable = (props: IManualTelemetryTableProps) => {
   const biohubApi = useBiohubApi();
 
-  const surveyContext = useContext(SurveyContext);
+  const surveyContext = useSurveyContext();
+  const telemetryDataContext = useTelemetryDataContext();
   const telemetryTableContext = useTelemetryTableContext();
 
-  const deploymentDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
+  const deploymentDataLoader = telemetryDataContext.deploymentsDataLoader;
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
 
   useEffect(() => {

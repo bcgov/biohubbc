@@ -1,4 +1,5 @@
 import { AttachmentType } from 'constants/attachments';
+import { DeploymentFormYupSchema } from 'features/surveys/telemetry/deployments/components/form/DeploymentForm';
 import { FeatureCollection } from 'geojson';
 import yup from 'utils/YupSchema';
 import { InferType } from 'yup';
@@ -9,7 +10,7 @@ export type IDeploymentTimespan = InferType<typeof AnimalDeploymentTimespanSchem
 
 export type IAnimalTelemetryDevice = InferType<typeof AnimalTelemetryDeviceSchema>;
 
-export type ICreateAnimalDeployment = InferType<typeof CreateAnimalDeployment>;
+export type ICreateAnimalDeployment = InferType<typeof DeploymentFormYupSchema>;
 
 export type IAllTelemetryPointCollection = { points: FeatureCollection; tracks: FeatureCollection };
 
@@ -63,25 +64,6 @@ export const AnimalDeploymentSchema = yup.object({}).shape({
   frequency_unit: yup.string(),
   attachment_file: yup.mixed(),
   attachment_type: yup.mixed<AttachmentType>().oneOf(Object.values(AttachmentType))
-});
-
-export const CreateAnimalDeployment = yup.object({
-  critter_id: yup.number().min(1).required('You must select the animal that the device is associated to'),
-  device_id: yup.string().required('You must enter the device ID. This is typically the serial number'),
-  device_make: yup.string().required('You must enter the device make'),
-  frequency: numSchema,
-  frequency_unit: yup.string().when('frequency', {
-    is: (frequency: number | undefined | string) =>
-      !(frequency === null || frequency === undefined || frequency === ''),
-    then: yup.string().oneOf(['MHZ', 'KHZ', 'HZ']).required('Frequency unit is required when frequency is specified'),
-    otherwise: yup.string().nullable()
-  }),
-  device_model: yup.string(),
-  critterbase_start_capture_id: yup.string().uuid().nullable(),
-  critterbase_end_mortality_id: yup.string().uuid().nullable(),
-  critterbase_end_capture_id: yup.string().uuid().nullable(),
-  attachment_end_date: yup.string().nullable(),
-  attachment_end_time: yup.string().nullable()
 });
 
 export interface ICreateAnimalDeploymentPostData extends Omit<ICreateAnimalDeployment, 'device_id'> {

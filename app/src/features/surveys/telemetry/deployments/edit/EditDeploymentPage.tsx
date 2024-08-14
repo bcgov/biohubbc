@@ -2,10 +2,12 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { EditAnimalDeploymentI18N } from 'constants/i18n';
-import { DeploymentForm } from 'features/surveys/telemetry/deployments/components/form/DeploymentForm';
+import {
+  DeploymentForm,
+  DeploymentFormYupSchema
+} from 'features/surveys/telemetry/deployments/components/form/DeploymentForm';
 import { DeploymentFormHeader } from 'features/surveys/telemetry/deployments/components/form/DeploymentFormHeader';
 import {
-  CreateAnimalDeployment,
   IAnimalDeployment,
   ICreateAnimalDeployment
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
@@ -125,7 +127,7 @@ export const EditDeploymentPage = () => {
       });
       deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId, deploymentId);
 
-      // create complete, navigate back to observations page
+      // create complete, navigate back to telemetry page
       history.push(
         `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry`,
         SKIP_CONFIRMATION_DIALOG
@@ -147,7 +149,7 @@ export const EditDeploymentPage = () => {
       <Formik
         innerRef={formikRef}
         initialValues={initialDeploymentValues}
-        validationSchema={CreateAnimalDeployment}
+        validationSchema={DeploymentFormYupSchema}
         validateOnBlur={false}
         validateOnChange={false}
         onSubmit={handleSubmit}>

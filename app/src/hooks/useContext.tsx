@@ -8,7 +8,7 @@ import { IObservationsTableContext, ObservationsTableContext } from 'contexts/ob
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { ITaxonomyContext, TaxonomyContext } from 'contexts/taxonomyContext';
-import { IAllTelemetryDataContext, TelemetryDataContext } from 'contexts/telemetryDataContext';
+import { ITelemetryDataContext, TelemetryDataContext } from 'contexts/telemetryDataContext';
 import { IAllTelemetryTableContext, TelemetryTableContext } from 'contexts/telemetryTableContext';
 import { useContext } from 'react';
 
@@ -153,7 +153,7 @@ export const useObservationsTableContext = (): IObservationsTableContext => {
  *
  * @return {*}  {ITelemetryDataContext}
  */
-export const useTelemetryDataContext = (): IAllTelemetryDataContext => {
+export const useTelemetryDataContext = (): ITelemetryDataContext => {
   const context = useContext(TelemetryDataContext);
 
   if (!context) {

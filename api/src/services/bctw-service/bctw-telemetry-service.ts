@@ -156,7 +156,8 @@ export class BctwTelemetryService extends BctwService {
    * @returns {*} IManualTelemetry[]
    **/
   async getManualTelemetry(): Promise<IManualTelemetry[]> {
-    return this._makeGetRequest(MANUAL_TELEMETRY);
+    const res = await this.axiosInstance.get(`${MANUAL_TELEMETRY}`);
+    return res.data;
   }
 
   /**

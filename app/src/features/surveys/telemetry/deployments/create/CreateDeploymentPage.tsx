@@ -1,12 +1,12 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import { CreateAnimalDeploymentI18N } from 'constants/i18n';
-import { DeploymentForm } from 'features/surveys/telemetry/deployments/components/form/DeploymentForm';
-import { DeploymentFormHeader } from 'features/surveys/telemetry/deployments/components/form/DeploymentFormHeader';
 import {
-  CreateAnimalDeployment,
-  ICreateAnimalDeployment
-} from 'features/surveys/view/survey-animals/telemetry-device/device';
+  DeploymentForm,
+  DeploymentFormYupSchema
+} from 'features/surveys/telemetry/deployments/components/form/DeploymentForm';
+import { DeploymentFormHeader } from 'features/surveys/telemetry/deployments/components/form/DeploymentFormHeader';
+import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -86,7 +86,7 @@ export const CreateDeploymentPage = () => {
 
       deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
-      // create complete, navigate back to observations page
+      // create complete, navigate back to telemetry page
       history.push(
         `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry`,
         SKIP_CONFIRMATION_DIALOG
@@ -115,7 +115,7 @@ export const CreateDeploymentPage = () => {
       <Formik
         innerRef={formikRef}
         initialValues={initialDeploymentValues}
-        validationSchema={CreateAnimalDeployment}
+        validationSchema={DeploymentFormYupSchema}
         validateOnBlur={false}
         validateOnChange={false}
         onSubmit={handleSubmit}>

@@ -5,9 +5,18 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { DeploymentDetailsForm } from 'features/surveys/telemetry/deployments/components/form/deployment-details/DeploymentDetailsForm';
-import { DeploymentDeviceDetailsForm } from 'features/surveys/telemetry/deployments/components/form/device-details/DeploymentDeviceDetailsForm';
-import { DeploymentTimelineForm } from 'features/surveys/telemetry/deployments/components/form/timeline/DeploymentTimelineForm';
+import {
+  DeploymentDetailsForm,
+  DeploymentDetailsFormYupSchema
+} from 'features/surveys/telemetry/deployments/components/form/deployment-details/DeploymentDetailsForm';
+import {
+  DeploymentDeviceDetailsForm,
+  DeploymentDeviceDetailsFormYupSchema
+} from 'features/surveys/telemetry/deployments/components/form/device-details/DeploymentDeviceDetailsForm';
+import {
+  DeploymentTimelineForm,
+  DeploymentTimelineFormYupSchema
+} from 'features/surveys/telemetry/deployments/components/form/timeline/DeploymentTimelineForm';
 import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -16,6 +25,10 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+
+export const DeploymentFormYupSchema = DeploymentDeviceDetailsFormYupSchema.concat(
+  DeploymentTimelineFormYupSchema
+).concat(DeploymentDetailsFormYupSchema);
 
 interface IDeploymentFormProps {
   isSubmitting: boolean;

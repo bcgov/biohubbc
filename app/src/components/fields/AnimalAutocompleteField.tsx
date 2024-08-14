@@ -12,16 +12,68 @@ import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { get } from 'lodash-es';
 import { useState } from 'react';
 
-export interface IAnimalAutocompleteFieldProps<T extends string | number> {
-  name: string;
+export interface IAnimalAutocompleteFieldProps {
+  /**
+   * Formik field name.
+   *
+   * @type {string}
+   * @memberof IAnimalAutocompleteFieldProps
+   */
+  formikFieldName: string;
+  /**
+   * The field label.
+   *
+   * @type {string}
+   * @memberof IAnimalAutocompleteFieldProps
+   */
   label: string;
-  handleAnimal: (animal: ICritterSimpleResponse) => void;
-  getOptionDisabled?: (option: IAutocompleteFieldOption<T>) => boolean;
+  /**
+   * Callback fired on option selection.
+   *
+   * @memberof IAnimalAutocompleteFieldProps
+   */
+  onSelect: (animal: ICritterSimpleResponse) => void;
+  /**
+   * Optional callback fired on option de-selected/cleared.
+   *
+   * @memberof IAnimalAutocompleteFieldProps
+   */
+  onClear?: () => void;
+  /**
+   * Default animal to render for input and options.
+   *
+   * @type {ICritterSimpleResponse}
+   * @memberof IAnimalAutocompleteFieldProps
+   */
   defaultAnimal?: ICritterSimpleResponse;
-  error?: string;
+  /**
+   * If field is required.
+   *
+   * @type {boolean}
+   * @memberof IAnimalAutocompleteFieldProps
+   */
   required?: boolean;
+  /**
+   * If field is disabled.
+   *
+   * @type {boolean}
+   * @memberof IAnimalAutocompleteFieldProps
+   */
   disabled?: boolean;
+  /**
+   * If `true`, clears the input field after a selection is made.
+   *
+   * @type {ICritterSimpleResponse}
+   * @memberof IAnimalAutocompleteFieldProps
+   */
   clearOnSelect?: boolean;
+  /**
+   * Placeholder text for the TextField
+   *
+   * @type {string}
+   * @memberof IAnimalAutocompleteFieldProps
+   */
+  placeholder?: string;
 }
 
 /**
@@ -31,8 +83,8 @@ export interface IAnimalAutocompleteFieldProps<T extends string | number> {
  * @param {IAnimalAutocompleteFieldProps<T>} props
  * @return {*}
  */
-export const AnimalAutocompleteField = <T extends string | number>(props: IAnimalAutocompleteFieldProps<T>) => {
-  const { name, label, required, handleAnimal, defaultAnimal } = props;
+export const AnimalAutocompleteField = <T extends string | number>(props: IAnimalAutocompleteFieldProps) => {
+  const { formikFieldName, label, onSelect, defaultAnimal, required, disabled, clearOnSelect, placeholder } = props;
 
   const { touched, errors, setFieldValue } = useFormikContext<IAutocompleteFieldOption<T>>();
 
@@ -46,9 +98,9 @@ export const AnimalAutocompleteField = <T extends string | number>(props: IAnima
 
   return (
     <Autocomplete
-      id={props.name}
-      disabled={props.disabled}
-      data-testid={props.name}
+      id={formikFieldName}
+      disabled={disabled}
+      data-testid={formikFieldName}
       filterSelectedOptions
       noOptionsText="No matching options"
       options={options ?? []}
@@ -59,14 +111,14 @@ export const AnimalAutocompleteField = <T extends string | number>(props: IAnima
       filterOptions={(item) => item}
       inputValue={inputValue}
       onInputChange={(_, _value, reason) => {
-        if (props.clearOnSelect && reason === 'clear') {
-          setFieldValue(name, '');
+        if (clearOnSelect && reason === 'clear') {
+          setFieldValue(formikFieldName, '');
           setInputValue('');
         }
       }}
       onChange={(_, option) => {
         if (option) {
-          handleAnimal(option);
+          onSelect(option);
           setInputValue(option.animal_id ?? String(option.critter_id)); //startCase(option?.commonNames?.length ? option.commonNames[0] : option.scientificName));
         }
       }}
@@ -99,16 +151,16 @@ export const AnimalAutocompleteField = <T extends string | number>(props: IAnima
       renderInput={(params) => (
         <TextField
           {...params}
-          name={name}
-          onChange={(event) => setInputValue(event.currentTarget.value)}
-          required={required}
           label={label}
           variant="outlined"
+          name={formikFieldName}
+          onChange={(event) => setInputValue(event.currentTarget.value)}
+          required={required}
           sx={{ opacity: props?.disabled ? 0.25 : 1 }}
-          error={get(touched, props.name) && Boolean(get(errors, props.name))}
-          helperText={get(touched, props.name) && get(errors, props.name)}
+          error={get(touched, formikFieldName) && Boolean(get(errors, formikFieldName))}
+          helperText={get(touched, formikFieldName) && get(errors, formikFieldName)}
           fullWidth
-          placeholder="Search for an animal in the Survey"
+          placeholder={placeholder || 'Search for an animal in the Survey'}
           InputProps={{
             ...params.InputProps,
             endAdornment: (

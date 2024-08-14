@@ -15,12 +15,12 @@ import { SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
+import { useTelemetryDataContext } from 'hooks/useContext';
 import { usePersistentState } from 'hooks/usePersistentState';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
-import { TelemetryDataContext } from './telemetryDataContext';
 
 export interface IManualTelemetryRecord {
   deployment_id: string;
@@ -157,7 +157,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
 
   const telemetryApi = useTelemetryApi();
 
-  const telemetryDataContext = useContext(TelemetryDataContext);
+  const telemetryDataContext = useTelemetryDataContext();
   const dialogContext = useContext(DialogContext);
 
   // The data grid rows

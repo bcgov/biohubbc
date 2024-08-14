@@ -10,6 +10,7 @@ import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useTelemetryDataContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo } from 'react';
@@ -41,11 +42,12 @@ interface ISurveyDataTelemetryTableProps {
  */
 export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProps) => {
   const surveyContext = useContext(SurveyContext);
+  const surveySpatialTelemetryContext = useTelemetryDataContext();
 
   const biohubApi = useBiohubApi();
 
-  const deploymentDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
+  const deploymentDataLoader = surveySpatialTelemetryContext.deploymentsDataLoader;
 
   useEffect(() => {
     deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);

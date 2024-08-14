@@ -2,7 +2,6 @@ import {
   DELETE_DEPLOYMENT_ENDPOINT,
   DEPLOY_DEVICE_ENDPOINT,
   GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT,
-  GET_DEPLOYMENTS_ENDPOINT,
   UPDATE_DEPLOYMENT_ENDPOINT
 } from '../../constants/bctw-routes';
 import { IBctwDeploymentRecord, IDeployDevice, IDeploymentUpdate } from '../../models/bctw';
@@ -28,11 +27,13 @@ export class BctwDeploymentService extends BctwService {
    * @memberof BctwDeploymentService
    */
   async getDeploymentsByIds(deploymentIds: string[]): Promise<IBctwDeploymentRecord[]> {
-    const queryParams: Record<string, string | string[]> = {};
-    if (deploymentIds.length > 0) {
-      queryParams.deployment_ids = deploymentIds;
-    }
-    return this._makeGetRequest(GET_DEPLOYMENTS_ENDPOINT, queryParams);
+    const response = await this.axiosInstance.get('/get-deployments', {
+      params: {
+        deployment_ids: deploymentIds
+      }
+    });
+
+    return (await response).data;
   }
 
   /**

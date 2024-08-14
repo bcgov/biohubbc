@@ -18,6 +18,7 @@ import { ICaptureResponse, IMortalityResponse } from 'interfaces/useCritterApi.i
 import { SyntheticEvent, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { TransitionGroup } from 'react-transition-group';
+import yup from 'utils/YupSchema';
 
 const validateDeploymentEnd = async (value: string, deploymentEndType: DeploymentEndType | null) => {
   if (deploymentEndType === 'capture' && !value) {
@@ -38,6 +39,14 @@ interface IDeploymentTimelineFormProps {
   captures: ICaptureResponse[];
   mortality: IMortalityResponse | undefined;
 }
+
+export const DeploymentTimelineFormYupSchema = yup.object({
+  critterbase_start_capture_id: yup.string().required('You must select the initial capture event'),
+  critterbase_end_mortality_id: yup.string().uuid().nullable(),
+  critterbase_end_capture_id: yup.string().uuid().nullable(),
+  attachment_end_date: yup.string().nullable(),
+  attachment_end_time: yup.string().nullable()
+});
 
 /**
  * Deployment form - deployment timeline section.

@@ -1,24 +1,20 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
-import { ProjectContext } from 'contexts/projectContext';
-import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import { TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
 import { SurveyDeploymentList } from 'features/surveys/telemetry/list/SurveyDeploymentList';
 import { TelemetryTableContainer } from 'features/surveys/telemetry/table/TelemetryTableContainer';
 import { TelemetryHeader } from 'features/surveys/telemetry/TelemetryHeader';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
-import { useContext, useEffect } from 'react';
+import { useProjectContext, useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
+import { useEffect } from 'react';
 
 export const TelemetryPage = () => {
-  const biohubApi = useBiohubApi();
+  const projectContext = useProjectContext();
+  const surveyContext = useSurveyContext();
+  const telemetryDataContext = useTelemetryDataContext();
 
-  const surveyContext = useContext(SurveyContext);
-  const projectContext = useContext(ProjectContext);
-
-  const deploymentsDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
+  const deploymentsDataLoader = telemetryDataContext.deploymentsDataLoader;
 
   useEffect(() => {
     deploymentsDataLoader.load(surveyContext.projectId, surveyContext.surveyId);

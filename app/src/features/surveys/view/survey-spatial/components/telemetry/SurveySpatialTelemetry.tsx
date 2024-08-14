@@ -7,10 +7,8 @@ import { SurveySpatialTelemetryPopup } from 'features/surveys/view/survey-spatia
 import { SurveySpatialTelemetryTable } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryTable';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { Position } from 'geojson';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useSurveyContext } from 'hooks/useContext';
-import useDataLoader from 'hooks/useDataLoader';
-import { ITelemetry, useTelemetryApi } from 'hooks/useTelemetryApi';
+import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
+import { ITelemetry } from 'hooks/useTelemetryApi';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { useCallback, useEffect, useMemo } from 'react';
 
@@ -21,12 +19,10 @@ import { useCallback, useEffect, useMemo } from 'react';
  */
 export const SurveySpatialTelemetry = () => {
   const surveyContext = useSurveyContext();
+  const surveySpatialTelemetryContext = useTelemetryDataContext();
 
-  const biohubApi = useBiohubApi();
-  const telemetryApi = useTelemetryApi();
-
-  const telemetryDataLoader = useDataLoader(telemetryApi.getAllTelemetryByDeploymentIds);
-  const deploymentDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
+  const deploymentDataLoader = surveySpatialTelemetryContext.deploymentsDataLoader;
+  const telemetryDataLoader = surveySpatialTelemetryContext.telemetryDataLoader;
 
   // Load deployments data
   useEffect(() => {
@@ -41,7 +37,7 @@ export const SurveySpatialTelemetry = () => {
       return;
     }
 
-    telemetryDataLoader.refresh(deploymentDataLoader.data?.map((deployment) => deployment.bctw_deployment_id) ?? []);
+    telemetryDataLoader.load(deploymentDataLoader.data?.map((deployment) => deployment.bctw_deployment_id) ?? []);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deploymentDataLoader.data]);
 
@@ -128,12 +124,27 @@ export const SurveySpatialTelemetry = () => {
     <>
       {/* Display map with telemetry points */}
       <Box height={{ sm: 300, md: 500 }} position="relative">
-        <SurveySpatialMap staticLayers={[telemetryLayer]} isLoading={telemetryDataLoader.isLoading} />
+        <SurveySpatialMap
+          staticLayers={[telemetryLayer]}
+          isLoading={
+            deploymentDataLoader.isLoading ||
+            !deploymentDataLoader.isReady ||
+            telemetryDataLoader.isLoading ||
+            !telemetryDataLoader.isReady
+          }
+        />
       </Box>
 
       {/* Display data table with telemetry details */}
       <Box p={2} position="relative">
-        <SurveySpatialTelemetryTable isLoading={telemetryDataLoader.isLoading} />
+        <SurveySpatialTelemetryTable
+          isLoading={
+            deploymentDataLoader.isLoading ||
+            !deploymentDataLoader.isReady ||
+            telemetryDataLoader.isLoading ||
+            !telemetryDataLoader.isReady
+          }
+        />
       </Box>
     </>
   );

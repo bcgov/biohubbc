@@ -10,7 +10,7 @@ import { useFormikContext } from 'formik';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 
-export const DeviceDetailsInitialValues = {
+export const DeploymentDeviceDetailsFormInitialValues = {
   survey_details: {
     survey_name: '',
     start_date: '',
@@ -28,7 +28,10 @@ export const DeviceDetailsInitialValues = {
   }
 };
 
-export const DeviceDetailsYupSchema = () => yup.object();
+export const DeploymentDeviceDetailsFormYupSchema = yup.object({
+  device_make: yup.string().required('You must enter the device make'),
+  device_model: yup.string().nullable()
+});
 
 interface IDeploymentDeviceDetailsFormProps {
   deviceMakes: { label: string; value: string }[];

@@ -6,6 +6,12 @@ interface IVerticalKeyValuePairProps {
   value: string | number;
 }
 
+/**
+ * TODO: Unused? Delete?
+ *
+ * @param {IVerticalKeyValuePairProps} props
+ * @return {*}
+ */
 const VerticalKeyValuePair = (props: IVerticalKeyValuePairProps) => {
   return (
     <Box>

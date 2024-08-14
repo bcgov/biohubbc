@@ -103,7 +103,7 @@ export const DeploymentFormHeader = (props: IDeploymentFormHeaderProps) => {
                 variant="outlined"
                 color="primary"
                 onClick={() => {
-                  history.push(`/admin/projects/${project_id}/surveys/${survey_id}/observations`);
+                  history.push(`/admin/projects/${project_id}/surveys/${survey_id}/telemetry`);
                 }}>
                 Cancel
               </Button>

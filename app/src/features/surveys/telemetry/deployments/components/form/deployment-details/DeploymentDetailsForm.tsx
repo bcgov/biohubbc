@@ -13,7 +13,7 @@ import React, { SetStateAction } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import yup from 'utils/YupSchema';
 
-export const DeviceDetailsInitialValues = {
+export const DeploymentDetailsFormInitialValues = {
   survey_details: {
     survey_name: '',
     start_date: '',
@@ -31,7 +31,24 @@ export const DeviceDetailsInitialValues = {
   }
 };
 
-export const DeviceDetailsYupSchema = () => yup.object();
+export const DeploymentDetailsFormYupSchema = yup.object({
+  device_id: yup.string().required('You must enter the device ID. This is typically the serial number'),
+  critter_id: yup.number().required('You must select the animal that the device is associated to'),
+  frequency: yup.lazy(() =>
+    yup.number().when('frequency_unit', {
+      is: (unit: string) => !!unit, // when frequency_unit is defined
+      then: yup.number().required('Frequency is required'),
+      otherwise: yup.number().nullable()
+    })
+  ),
+  frequency_unit: yup.lazy(() =>
+    yup.string().when('frequency', {
+      is: (frequency: number) => !!frequency, // when frequency is defined
+      then: yup.string().required('Frequency unit is required'),
+      otherwise: yup.string().nullable()
+    })
+  )
+});
 
 interface IDeploymentDetailsFormProps {
   animals: ICritterSimpleResponse[];
@@ -85,14 +102,14 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
         </Grid>
         <Grid item xs={12}>
           <AnimalAutocompleteField
+            formikFieldName="critter_id"
             label="Animal"
-            name="critter_id"
             defaultAnimal={surveyContext.critterDataLoader.data?.find(
               (animal) => animal.critter_id === values.critter_id
             )}
             required
             clearOnSelect
-            handleAnimal={(animal: ICritterSimpleResponse) => {
+            onSelect={(animal: ICritterSimpleResponse) => {
               if (animal) {
                 setFieldValue('critter_id', animal.critter_id);
                 props.setSelectedAnimal(animal.critter_id);
