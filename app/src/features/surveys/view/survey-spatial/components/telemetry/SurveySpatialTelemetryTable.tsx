@@ -42,12 +42,12 @@ interface ISurveyDataTelemetryTableProps {
  */
 export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProps) => {
   const surveyContext = useContext(SurveyContext);
-  const surveySpatialTelemetryContext = useTelemetryDataContext();
+  const telemetryDataContext = useTelemetryDataContext();
 
   const biohubApi = useBiohubApi();
 
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
-  const deploymentDataLoader = surveySpatialTelemetryContext.deploymentsDataLoader;
+  const deploymentDataLoader = telemetryDataContext.deploymentsDataLoader;
 
   useEffect(() => {
     deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);

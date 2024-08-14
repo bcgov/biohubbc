@@ -13,40 +13,33 @@ import React, { SetStateAction } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import yup from 'utils/YupSchema';
 
-export const DeploymentDetailsFormInitialValues = {
-  survey_details: {
-    survey_name: '',
-    start_date: '',
-    end_date: '',
-    progress_id: null,
-    survey_types: [],
-    revision_count: 0
-  },
-  species: {
-    focal_species: [],
-    ancillary_species: []
-  },
-  permit: {
-    permits: []
-  }
+export const DeploymentDetailsFormInitialValues: yup.InferType<typeof DeploymentDetailsFormYupSchema> = {
+  device_id: null as unknown as string,
+  critter_id: null as unknown as number,
+  frequency: null,
+  frequency_unit: null
 };
 
 export const DeploymentDetailsFormYupSchema = yup.object({
-  device_id: yup.string().required('You must enter the device ID. This is typically the serial number'),
-  critter_id: yup.number().required('You must select the animal that the device is associated to'),
+  device_id: yup.string().nullable().required('You must enter the device ID. This is typically the serial number'),
+  critter_id: yup.number().nullable().required('You must select the animal that the device is associated to'),
   frequency: yup.lazy(() =>
-    yup.number().when('frequency_unit', {
-      is: (unit: string) => !!unit, // when frequency_unit is defined
-      then: yup.number().required('Frequency is required'),
-      otherwise: yup.number().nullable()
-    })
+    yup
+      .number()
+      .nullable()
+      .when('frequency_unit', {
+        is: (unit: string) => !!unit, // when frequency_unit is defined
+        then: yup.number().nullable().required('Frequency is required')
+      })
   ),
   frequency_unit: yup.lazy(() =>
-    yup.string().when('frequency', {
-      is: (frequency: number) => !!frequency, // when frequency is defined
-      then: yup.string().required('Frequency unit is required'),
-      otherwise: yup.string().nullable()
-    })
+    yup
+      .string()
+      .nullable()
+      .when('frequency', {
+        is: (frequency: number) => !!frequency, // when frequency is defined
+        then: yup.string().nullable().required('Frequency unit is required')
+      })
   )
 });
 
@@ -119,7 +112,15 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
         </Grid>
         <Grid item xs={12}>
           <Stack direction="row" flex="1 1 auto">
-            <CustomTextField name="frequency" label="Device frequency" other={{ type: 'number', sx: { flex: 1 } }} />
+            <CustomTextField
+              name="frequency"
+              label="Device frequency"
+              other={{
+                type: 'number',
+                sx: { flex: 1 },
+                required: !!(values.frequency_unit || values.frequency)
+              }}
+            />
             <AutocompleteField
               sx={{ flex: 0.4 }}
               name="frequency_unit"
@@ -129,7 +130,7 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
                 value: unit.code,
                 label: unit.code
               }))}
-              required={values.frequency ? true : false}
+              required={!!(values.frequency || values.frequency_unit)}
             />
           </Stack>
         </Grid>

@@ -19,10 +19,10 @@ import { useCallback, useEffect, useMemo } from 'react';
  */
 export const SurveySpatialTelemetry = () => {
   const surveyContext = useSurveyContext();
-  const surveySpatialTelemetryContext = useTelemetryDataContext();
+  const telemetryDataContext = useTelemetryDataContext();
 
-  const deploymentDataLoader = surveySpatialTelemetryContext.deploymentsDataLoader;
-  const telemetryDataLoader = surveySpatialTelemetryContext.telemetryDataLoader;
+  const deploymentDataLoader = telemetryDataContext.deploymentsDataLoader;
+  const telemetryDataLoader = telemetryDataContext.telemetryDataLoader;
 
   // Load deployments data
   useEffect(() => {

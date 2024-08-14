@@ -1,10 +1,5 @@
 import { z } from 'zod';
-import {
-  DELETE_MANUAL_TELEMETRY,
-  MANUAL_AND_VENDOR_TELEMETRY,
-  MANUAL_TELEMETRY,
-  VENDOR_TELEMETRY
-} from '../../constants/bctw-routes';
+import { DELETE_MANUAL_TELEMETRY, MANUAL_TELEMETRY, VENDOR_TELEMETRY } from '../../constants/bctw-routes';
 import { BctwService } from './bctw-service';
 
 export const IDeployDevice = z.object({
@@ -192,7 +187,7 @@ export class BctwTelemetryService extends BctwService {
    * @returns {*} IAllTelemetry[]
    */
   async getAllTelemetryByDeploymentIds(deploymentIds: string[]): Promise<IAllTelemetry[]> {
-    const res = await this.axiosInstance.post(`${MANUAL_AND_VENDOR_TELEMETRY}/deployments`, deploymentIds);
+    const res = await this.axiosInstance.post('/all-telemetry/deployments', deploymentIds);
     return res.data;
   }
 

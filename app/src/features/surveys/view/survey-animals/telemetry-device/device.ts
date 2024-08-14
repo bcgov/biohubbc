@@ -2,15 +2,31 @@ import { AttachmentType } from 'constants/attachments';
 import { DeploymentFormYupSchema } from 'features/surveys/telemetry/deployments/components/form/DeploymentForm';
 import { FeatureCollection } from 'geojson';
 import yup from 'utils/YupSchema';
-import { InferType } from 'yup';
 
-export type IAnimalDeployment = InferType<typeof AnimalDeploymentSchema>;
+export type IAnimalDeployment = {
+  assignment_id: string;
+  collar_id: string;
+  critter_id: number;
+  critterbase_critter_id: string;
+  attachment_end_date: string | null;
+  attachment_end_time: string | null;
+  critterbase_start_capture_id: string;
+  critterbase_end_capture_id: string | null;
+  critterbase_end_mortality_id: string | null;
+  deployment_id: number;
+  bctw_deployment_id: string;
+  device_id: number;
+  device_make: string;
+  device_model: string | null;
+  frequency: number | null;
+  frequency_unit: string | null;
+  attachment_file: File | null;
+  attachment_type: AttachmentType;
+};
 
-export type IDeploymentTimespan = InferType<typeof AnimalDeploymentTimespanSchema>;
+export type IAnimalTelemetryDevice = yup.InferType<typeof AnimalTelemetryDeviceSchema>;
 
-export type IAnimalTelemetryDevice = InferType<typeof AnimalTelemetryDeviceSchema>;
-
-export type ICreateAnimalDeployment = InferType<typeof DeploymentFormYupSchema>;
+export type ICreateAnimalDeployment = yup.InferType<typeof DeploymentFormYupSchema>;
 
 export type IAllTelemetryPointCollection = { points: FeatureCollection; tracks: FeatureCollection };
 
@@ -39,31 +55,6 @@ export const AnimalTelemetryDeviceSchema = yup.object({}).shape({
   frequency_unit: yup.string().nullable(),
   device_model: yup.string().nullable(),
   deployments: yup.array(AnimalDeploymentTimespanSchema)
-});
-
-export const AnimalDeploymentSchema = yup.object({}).shape({
-  assignment_id: yup.string().required(),
-  collar_id: yup.string().required(),
-  // Integer Id of the animal in the Survey'
-  critter_id: yup.number().required(),
-  critterbase_critter_id: yup.string().required(),
-  attachment_end_date: yup.string().isValidDateString().nullable(),
-  attachment_end_time: yup.string().nullable(),
-  critterbase_start_capture_id: yup
-    .string()
-    .required('You must select an initial capture for when the deployment started'),
-  critterbase_end_capture_id: yup.string().nullable(),
-  critterbase_end_mortality_id: yup.string().nullable(),
-  // Integer Id of the deployment in the Survey'
-  deployment_id: yup.number().required(),
-  bctw_deployment_id: yup.string().required(),
-  device_id: yup.number().required(),
-  device_make: yup.string().required(),
-  device_model: yup.string(),
-  frequency: numSchema,
-  frequency_unit: yup.string(),
-  attachment_file: yup.mixed(),
-  attachment_type: yup.mixed<AttachmentType>().oneOf(Object.values(AttachmentType))
 });
 
 export interface ICreateAnimalDeploymentPostData extends Omit<ICreateAnimalDeployment, 'device_id'> {

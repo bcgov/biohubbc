@@ -7,14 +7,17 @@ import Stack from '@mui/material/Stack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import {
   DeploymentDetailsForm,
+  DeploymentDetailsFormInitialValues,
   DeploymentDetailsFormYupSchema
 } from 'features/surveys/telemetry/deployments/components/form/deployment-details/DeploymentDetailsForm';
 import {
   DeploymentDeviceDetailsForm,
+  DeploymentDeviceDetailsFormInitialValues,
   DeploymentDeviceDetailsFormYupSchema
 } from 'features/surveys/telemetry/deployments/components/form/device-details/DeploymentDeviceDetailsForm';
 import {
   DeploymentTimelineForm,
+  DeploymentTimelineFormInitialValues,
   DeploymentTimelineFormYupSchema
 } from 'features/surveys/telemetry/deployments/components/form/timeline/DeploymentTimelineForm';
 import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
@@ -25,6 +28,12 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
+
+export const DeploymentFormInitialValues = {
+  ...DeploymentDetailsFormInitialValues,
+  ...DeploymentDeviceDetailsFormInitialValues,
+  ...DeploymentTimelineFormInitialValues
+};
 
 export const DeploymentFormYupSchema = DeploymentDeviceDetailsFormYupSchema.concat(
   DeploymentTimelineFormYupSchema

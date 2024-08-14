@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
-import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import { TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
 import { SurveyDeploymentList } from 'features/surveys/telemetry/list/SurveyDeploymentList';
 import { TelemetryTableContainer } from 'features/surveys/telemetry/table/TelemetryTableContainer';
@@ -40,21 +39,19 @@ export const TelemetryPage = () => {
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
-      <TelemetryDataContextProvider>
-        <Stack flex="1 1 auto" direction="row" gap={1} p={1}>
-          {/* Telematry List */}
-          <Box flex="0 0 auto" position="relative" width="400px">
-            <SurveyDeploymentList />
-          </Box>
-          {/* Telemetry Component */}
-          <Box flex="1 1 auto" position="relative">
-            <TelemetryTableContextProvider
-              deployment_ids={deploymentsDataLoader.data?.map((deployment) => deployment.bctw_deployment_id) ?? []}>
-              <TelemetryTableContainer />
-            </TelemetryTableContextProvider>
-          </Box>
-        </Stack>
-      </TelemetryDataContextProvider>
+      <Stack flex="1 1 auto" direction="row" gap={1} p={1}>
+        {/* Telematry List */}
+        <Box flex="0 0 auto" position="relative" width="400px">
+          <SurveyDeploymentList />
+        </Box>
+        {/* Telemetry Component */}
+        <Box flex="1 1 auto" position="relative">
+          <TelemetryTableContextProvider
+            deployment_ids={deploymentsDataLoader.data?.map((deployment) => deployment.bctw_deployment_id) ?? []}>
+            <TelemetryTableContainer />
+          </TelemetryTableContextProvider>
+        </Box>
+      </Stack>
     </Stack>
   );
 };

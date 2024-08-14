@@ -3,6 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { CreateAnimalDeploymentI18N } from 'constants/i18n';
 import {
   DeploymentForm,
+  DeploymentFormInitialValues,
   DeploymentFormYupSchema
 } from 'features/surveys/telemetry/deployments/components/form/DeploymentForm';
 import { DeploymentFormHeader } from 'features/surveys/telemetry/deployments/components/form/DeploymentFormHeader';
@@ -11,24 +12,9 @@ import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
-import useDataLoader from 'hooks/useDataLoader';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
-
-const initialDeploymentValues = {
-  critter_id: '' as unknown as number,
-  device_id: '',
-  frequency: undefined,
-  frequency_unit: undefined,
-  device_model: '',
-  device_make: '',
-  critterbase_start_capture_id: '',
-  critterbase_end_capture_id: null,
-  critterbase_end_mortality_id: null,
-  attachment_end_date: null,
-  attachment_end_time: null
-};
 
 /**
  * Renders the Create Deployment page.
@@ -36,21 +22,15 @@ const initialDeploymentValues = {
  * @return {*}
  */
 export const CreateDeploymentPage = () => {
-  const biohubApi = useBiohubApi();
-
-  const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext();
-  const dialogContext = useDialogContext();
-
   const history = useHistory();
 
+  const biohubApi = useBiohubApi();
+
+  const dialogContext = useDialogContext();
+  const projectContext = useProjectContext();
+  const surveyContext = useSurveyContext();
+
   const critters = surveyContext.critterDataLoader.data ?? [];
-
-  const deploymentDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
-
-  useEffect(() => {
-    deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [deploymentDataLoader, surveyContext.projectId, surveyContext.surveyId]);
 
   const formikRef = useRef<FormikProps<ICreateAnimalDeployment>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -84,8 +64,6 @@ export const CreateDeploymentPage = () => {
         attachment_end_time: values.attachment_end_time
       });
 
-      deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-
       // create complete, navigate back to telemetry page
       history.push(
         `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry`,
@@ -114,7 +92,7 @@ export const CreateDeploymentPage = () => {
       <Prompt when={true} message={locationChangeInterceptor} />
       <Formik
         innerRef={formikRef}
-        initialValues={initialDeploymentValues}
+        initialValues={DeploymentFormInitialValues}
         validationSchema={DeploymentFormYupSchema}
         validateOnBlur={false}
         validateOnChange={false}

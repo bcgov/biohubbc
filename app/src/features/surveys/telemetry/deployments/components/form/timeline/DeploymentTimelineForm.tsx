@@ -35,18 +35,26 @@ const validateDeploymentEnd = async (value: string, deploymentEndType: Deploymen
 // Types to know how the deployment ended, determining which form components to display
 type DeploymentEndType = 'capture' | 'mortality' | 'fall';
 
-interface IDeploymentTimelineFormProps {
-  captures: ICaptureResponse[];
-  mortality: IMortalityResponse | undefined;
-}
+export const DeploymentTimelineFormInitialValues: yup.InferType<typeof DeploymentTimelineFormYupSchema> = {
+  critterbase_start_capture_id: null as unknown as string,
+  critterbase_end_mortality_id: null,
+  critterbase_end_capture_id: null,
+  attachment_end_date: null,
+  attachment_end_time: null
+};
 
 export const DeploymentTimelineFormYupSchema = yup.object({
-  critterbase_start_capture_id: yup.string().required('You must select the initial capture event'),
+  critterbase_start_capture_id: yup.string().nullable().required('You must select the initial capture event'),
   critterbase_end_mortality_id: yup.string().uuid().nullable(),
   critterbase_end_capture_id: yup.string().uuid().nullable(),
   attachment_end_date: yup.string().nullable(),
   attachment_end_time: yup.string().nullable()
 });
+
+interface IDeploymentTimelineFormProps {
+  captures: ICaptureResponse[];
+  mortality: IMortalityResponse | undefined;
+}
 
 /**
  * Deployment form - deployment timeline section.
@@ -60,8 +68,6 @@ export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
   const formikProps = useFormikContext<ICreateAnimalDeployment>();
 
   const { values, setFieldValue } = formikProps;
-
-  console.log(values);
 
   // Determine deploymentEndType based on values
   const initialDeploymentEndType = useMemo(() => {

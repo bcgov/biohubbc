@@ -17,4 +17,3 @@ export const GET_TELEMETRY_TRACKS_ENDPOINT = '/get-critter-tracks';
 export const MANUAL_TELEMETRY = '/manual-telemetry';
 export const VENDOR_TELEMETRY = '/vendor-telemetry';
 export const DELETE_MANUAL_TELEMETRY = '/manual-telemetry/delete';
-export const MANUAL_AND_VENDOR_TELEMETRY = '/all-telemetry';

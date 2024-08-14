@@ -22,12 +22,10 @@ export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupP
   const { feature } = props;
 
   const surveyContext = useSurveyContext();
-  const surveySpatialTelemetryContext = useTelemetryDataContext();
+  const telemetryDataContext = useTelemetryDataContext();
 
-  const deploymentDataLoader = surveySpatialTelemetryContext.deploymentsDataLoader;
-  const telemetryDataLoader = surveySpatialTelemetryContext.telemetryDataLoader;
-
-  console.log('AA');
+  const deploymentDataLoader = telemetryDataContext.deploymentsDataLoader;
+  const telemetryDataLoader = telemetryDataContext.telemetryDataLoader;
 
   const getTelemetryMetadata = () => {
     const telemetryId = feature.id;

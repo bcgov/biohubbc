@@ -1,7 +1,7 @@
 import Collapse from '@mui/material/Collapse';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import AutocompleteField from 'components/fields/AutocompleteField';
+import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { AttachmentType } from 'constants/attachments';
 import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
@@ -10,31 +10,18 @@ import { useFormikContext } from 'formik';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 
-export const DeploymentDeviceDetailsFormInitialValues = {
-  survey_details: {
-    survey_name: '',
-    start_date: '',
-    end_date: '',
-    progress_id: null,
-    survey_types: [],
-    revision_count: 0
-  },
-  species: {
-    focal_species: [],
-    ancillary_species: []
-  },
-  permit: {
-    permits: []
-  }
+export const DeploymentDeviceDetailsFormInitialValues: yup.InferType<typeof DeploymentDeviceDetailsFormYupSchema> = {
+  device_make: null as unknown as string,
+  device_model: null
 };
 
 export const DeploymentDeviceDetailsFormYupSchema = yup.object({
-  device_make: yup.string().required('You must enter the device make'),
+  device_make: yup.string().nullable().required('You must enter the device make'),
   device_model: yup.string().nullable()
 });
 
 interface IDeploymentDeviceDetailsFormProps {
-  deviceMakes: { label: string; value: string }[];
+  deviceMakes: IAutocompleteFieldOption<string>[];
 }
 
 /**
@@ -44,18 +31,15 @@ interface IDeploymentDeviceDetailsFormProps {
  * @return {*}
  */
 export const DeploymentDeviceDetailsForm = (props: IDeploymentDeviceDetailsFormProps) => {
+  const { deviceMakes } = props;
+
   const { values } = useFormikContext<ICreateAnimalDeployment>();
+
   return (
     <>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <AutocompleteField
-            name="device_make"
-            id="device_make"
-            label="Make"
-            options={props.deviceMakes}
-            required={true}
-          />
+          <AutocompleteField name="device_make" id="device_make" label="Make" options={deviceMakes} required={true} />
         </Grid>
         <Grid item xs={12}>
           <CustomTextField name="device_model" label="Model (optional)" maxLength={200} />

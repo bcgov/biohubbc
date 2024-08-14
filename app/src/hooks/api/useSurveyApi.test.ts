@@ -135,7 +135,7 @@ describe('useSurveyApi', () => {
         device_model: 'a',
         frequency: 1,
         frequency_unit: 'Hz',
-        attachment_file: '',
+        attachment_file: null,
         attachment_type: 'Other' as AttachmentType
       };
 

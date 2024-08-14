@@ -17,7 +17,6 @@ import {
   GET_TELEMETRY_POINTS_ENDPOINT,
   GET_TELEMETRY_TRACKS_ENDPOINT,
   HEALTH_ENDPOINT,
-  MANUAL_AND_VENDOR_TELEMETRY,
   MANUAL_TELEMETRY,
   UPDATE_DEPLOYMENT_ENDPOINT,
   UPSERT_DEVICE_ENDPOINT,
@@ -401,7 +400,7 @@ describe('BctwService', () => {
         const payload: any = { key: 'value' };
         const ret = await bctwService.getAllTelemetryByDeploymentIds(payload);
 
-        expect(mockAxios).to.have.been.calledOnceWith(`${MANUAL_AND_VENDOR_TELEMETRY}/deployments`, payload);
+        expect(mockAxios).to.have.been.calledOnceWith('/all-telemetry/deployments', payload);
         expect(ret).to.be.true;
       });
     });

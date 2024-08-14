@@ -9,7 +9,6 @@ import {
 } from 'interfaces/useCritterApi.interface';
 import { PROJECTION_MODE } from 'utils/mapProjectionHelpers';
 import yup from 'utils/YupSchema';
-import { AnyObjectSchema, InferType } from 'yup';
 
 /**
  * Critterbase related enums.
@@ -91,7 +90,7 @@ export type AnimalFormProps<T> =
  * @param {keyof T['fields']} key - Property of yup schema.
  * @returns {boolean} indicator if required in schema.
  */
-export const isRequiredInSchema = <T extends AnyObjectSchema>(schema: T, key: keyof T['fields']): boolean => {
+export const isRequiredInSchema = <T extends yup.AnyObjectSchema>(schema: T, key: keyof T['fields']): boolean => {
   return Boolean(schema.fields[key].exclusiveTests.required);
 };
 
@@ -226,14 +225,14 @@ export const CreateCritterFamilySchema = yup.object({
  * Critterbase schema infered types.
  *
  */
-export type ICreateCritter = InferType<typeof CreateCritterSchema>;
+export type ICreateCritter = yup.InferType<typeof CreateCritterSchema>;
 
-export type ICreateCritterMarking = InferType<typeof CreateCritterMarkingSchema>;
-export type ICreateCritterMeasurement = InferType<typeof CreateCritterMeasurementSchema>;
-export type ICreateCritterCollectionUnit = InferType<typeof CreateCritterCollectionUnitSchema> & { key?: string };
-export type ICreateCritterCapture = InferType<typeof CreateCritterCaptureSchema>;
-export type ICreateCritterFamily = InferType<typeof CreateCritterFamilySchema>;
-export type ICreateCritterMortality = InferType<typeof CreateCritterMortalitySchema>;
+export type ICreateCritterMarking = yup.InferType<typeof CreateCritterMarkingSchema>;
+export type ICreateCritterMeasurement = yup.InferType<typeof CreateCritterMeasurementSchema>;
+export type ICreateCritterCollectionUnit = yup.InferType<typeof CreateCritterCollectionUnitSchema> & { key?: string };
+export type ICreateCritterCapture = yup.InferType<typeof CreateCritterCaptureSchema>;
+export type ICreateCritterFamily = yup.InferType<typeof CreateCritterFamilySchema>;
+export type ICreateCritterMortality = yup.InferType<typeof CreateCritterMortalitySchema>;
 
 /**
  * Adding data to a critters in bulk

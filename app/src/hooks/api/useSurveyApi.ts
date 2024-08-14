@@ -404,7 +404,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} critterId
-   * @returns {ICritterDetailedResponse}
+   * @return {*}  {Promise<ICritterDetailedResponse>}
    */
   const getCritterById = async (
     projectId: number,
@@ -423,7 +423,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @returns {ICritterDetailedResponse[]}
+   * @return {*}  {Promise<ICritterDetailedResponse[]>}
    */
   const getSurveyCrittersDetailed = async (
     projectId: number,
@@ -438,8 +438,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {Critter} critter Critter payload type
-   * @returns Count of affected rows
+   * @param {ICreateCritter} critter
+   * @return {*}  {Promise<ISurveyCritter>}
    */
   const createCritterAndAddToSurvey = async (
     projectId: number,
@@ -455,8 +455,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {number} critterId
-   * @returns {*}
+   * @param {number[]} critterIds
+   * @return {*}  {Promise<number>}
    */
   const removeCrittersFromSurvey = async (
     projectId: number,
@@ -475,8 +475,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} critterId
-   * @param {IAnimalTelemetryDevice & {critter_id: string}} body
-   * @returns {*}
+   * @param {Omit<ICreateAnimalDeploymentPostData, 'critter_id'>} body
+   * @return {*}  {Promise<{ deploymentId: number }>}
    */
   const createDeployment = async (
     projectId: number,
@@ -497,8 +497,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} deploymentId
-   * @param {IDeploymentTimespan} body
-   * @returns {*}
+   * @param {ICreateAnimalDeploymentPostData} body
+   * @return {*}  {Promise<number>}
    */
   const updateDeployment = async (
     projectId: number,
@@ -515,7 +515,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @returns {*}
+   * @return {*}  {Promise<IAnimalDeployment[]>}
    */
   const getDeploymentsInSurvey = async (projectId: number, surveyId: number): Promise<IAnimalDeployment[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments`);
@@ -528,7 +528,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} deploymentId
-   * @returns {*}
+   * @return {*}  {Promise<IAnimalDeployment>}
    */
   const getDeploymentById = async (
     projectId: number,
@@ -569,7 +569,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @param {number} critterId
    * @param {number} deploymentId
-   * @returns {*}
+   * @return {*}  {Promise<string>}
    */
   const endDeployment = async (
     projectId: number,
@@ -589,7 +589,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} deploymentId
-   * @returns {*}
+   * @return {*}  {Promise<string>}
    */
   const deleteDeployment = async (projectId: number, surveyId: number, deploymentId: number): Promise<string> => {
     const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
@@ -599,11 +599,10 @@ const useSurveyApi = (axios: AxiosInstance) => {
   /**
    * Bulk upload Critters from CSV.
    *
-   * @async
-   * @param {File} file - Critters CSV.
+   * @param {File} file
    * @param {number} projectId
    * @param {number} surveyId
-   * @returns {Promise<number[]>}
+   * @return {*}  {Promise<{ survey_critter_ids: number[] }>}
    */
   const importCrittersFromCsv = async (
     file: File,

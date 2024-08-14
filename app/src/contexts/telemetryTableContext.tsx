@@ -15,7 +15,7 @@ import { SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
-import { useTelemetryDataContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { usePersistentState } from 'hooks/usePersistentState';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
@@ -157,7 +157,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
 
   const telemetryApi = useTelemetryApi();
 
-  const telemetryDataContext = useTelemetryDataContext();
+  const telemetryDataLoader = useDataLoader(telemetryApi.getAllTelemetryByDeploymentIds);
   const dialogContext = useContext(DialogContext);
 
   // The data grid rows
@@ -191,7 +191,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   const recordCount = rows.length;
 
   // True if telemetry is fetching
-  const isLoading = telemetryDataContext.telemetryDataLoader.isLoading;
+  const isLoading = telemetryDataLoader.isLoading;
 
   // True if table has unsaved changes, deferring value to prevent ui issue with controls rendering
   const hasUnsavedChanges = _modifiedRowIds.current.length > 0 || _stagedRowIds.current.length > 0;
@@ -354,8 +354,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
    * @returns {Promise<void>}
    */
   const refreshRecords = useCallback(async () => {
-    const telemetry =
-      (deployment_ids.length && (await telemetryDataContext.telemetryDataLoader.refresh(deployment_ids))) || [];
+    const telemetry = (deployment_ids.length && (await telemetryDataLoader.refresh(deployment_ids))) || [];
 
     // Format the rows to use date and time
     const rows: IManualTelemetryTableRow[] = telemetry.map((item) => {
