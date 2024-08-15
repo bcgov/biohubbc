@@ -1,9 +1,3 @@
-import {
-  DELETE_DEPLOYMENT_ENDPOINT,
-  DEPLOY_DEVICE_ENDPOINT,
-  GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT,
-  UPDATE_DEPLOYMENT_ENDPOINT
-} from '../../constants/bctw-routes';
 import { IBctwDeploymentRecord, IDeployDevice, IDeploymentUpdate } from '../../models/bctw';
 import { BctwService } from './bctw-service';
 
@@ -16,7 +10,9 @@ export class BctwDeploymentService extends BctwService {
    * @memberof BctwDeploymentService
    */
   async createDeployment(device: IDeployDevice): Promise<IBctwDeploymentRecord> {
-    return this.axiosInstance.post(DEPLOY_DEVICE_ENDPOINT, device);
+    const { data } = await this.axiosInstance.post('/deploy-device', device);
+
+    return data;
   }
 
   /**
@@ -27,13 +23,13 @@ export class BctwDeploymentService extends BctwService {
    * @memberof BctwDeploymentService
    */
   async getDeploymentsByIds(deploymentIds: string[]): Promise<IBctwDeploymentRecord[]> {
-    const response = await this.axiosInstance.get('/get-deployments', {
+    const { data } = await this.axiosInstance.get('/get-deployments', {
       params: {
         deployment_ids: deploymentIds
       }
     });
 
-    return (await response).data;
+    return data;
   }
 
   /**
@@ -44,8 +40,11 @@ export class BctwDeploymentService extends BctwService {
    * @memberof BctwDeploymentService
    */
   async getDeploymentsByCritterId(critter_ids: string[]): Promise<IBctwDeploymentRecord[]> {
-    const query = { critter_ids: critter_ids };
-    return this._makeGetRequest(GET_DEPLOYMENTS_BY_CRITTER_ENDPOINT, query);
+    const { data } = await this.axiosInstance.get('/get-deployments-by-critter-id', {
+      params: { critter_ids: critter_ids }
+    });
+
+    return data;
   }
 
   /**
@@ -56,7 +55,9 @@ export class BctwDeploymentService extends BctwService {
    * @memberof BctwDeploymentService
    */
   async updateDeployment(deployment: IDeploymentUpdate): Promise<IBctwDeploymentRecord> {
-    return this.axiosInstance.patch(UPDATE_DEPLOYMENT_ENDPOINT, deployment);
+    const { data } = await this.axiosInstance.patch('/update-deployment', deployment);
+
+    return data;
   }
 
   /**
@@ -67,6 +68,8 @@ export class BctwDeploymentService extends BctwService {
    * @memberof BctwDeploymentService
    */
   async deleteDeployment(deployment_id: string): Promise<IBctwDeploymentRecord> {
-    return this.axiosInstance.delete(`${DELETE_DEPLOYMENT_ENDPOINT}/${deployment_id}`);
+    const { data } = await this.axiosInstance.delete(`/delete-deployment/${deployment_id}`);
+
+    return data;
   }
 }

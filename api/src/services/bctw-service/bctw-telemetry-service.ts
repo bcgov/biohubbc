@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { DELETE_MANUAL_TELEMETRY, MANUAL_TELEMETRY, VENDOR_TELEMETRY } from '../../constants/bctw-routes';
 import { BctwService } from './bctw-service';
 
 export const IDeployDevice = z.object({
@@ -82,6 +81,7 @@ export type IKeyXDetails = z.infer<typeof IKeyXDetails>;
 
 export const IAllTelemetry = z
   .object({
+    id: z.string().uuid(),
     deployment_id: z.string().uuid(),
     latitude: z.number(),
     longitude: z.number(),
@@ -151,7 +151,7 @@ export class BctwTelemetryService extends BctwService {
    * @returns {*} IManualTelemetry[]
    **/
   async getManualTelemetry(): Promise<IManualTelemetry[]> {
-    const res = await this.axiosInstance.get(`${MANUAL_TELEMETRY}`);
+    const res = await this.axiosInstance.get('/manual-telemetry');
     return res.data;
   }
 
@@ -163,7 +163,7 @@ export class BctwTelemetryService extends BctwService {
    * @returns {*} IManualTelemetry[]
    */
   async getManualTelemetryByDeploymentIds(deployment_ids: string[]): Promise<IManualTelemetry[]> {
-    const res = await this.axiosInstance.post(`${MANUAL_TELEMETRY}/deployments`, deployment_ids);
+    const res = await this.axiosInstance.post('/manual-telemetry/deployments', deployment_ids);
     return res.data;
   }
 
@@ -175,7 +175,7 @@ export class BctwTelemetryService extends BctwService {
    * @returns {*} IVendorTelemetry[]
    */
   async getVendorTelemetryByDeploymentIds(deployment_ids: string[]): Promise<IVendorTelemetry[]> {
-    const res = await this.axiosInstance.post(`${VENDOR_TELEMETRY}/deployments`, deployment_ids);
+    const res = await this.axiosInstance.post('/vendor-telemetry/deployments', deployment_ids);
     return res.data;
   }
 
@@ -199,7 +199,7 @@ export class BctwTelemetryService extends BctwService {
    * @returns {*} IManualTelemetry[]
    **/
   async deleteManualTelemetry(telemetry_manual_ids: string[]): Promise<IManualTelemetry[]> {
-    const res = await this.axiosInstance.post(DELETE_MANUAL_TELEMETRY, telemetry_manual_ids);
+    const res = await this.axiosInstance.post('/manual-telemetry/delete', telemetry_manual_ids);
     return res.data;
   }
 
@@ -210,7 +210,7 @@ export class BctwTelemetryService extends BctwService {
    * @returns {*} IManualTelemetry[]
    **/
   async createManualTelemetry(payload: ICreateManualTelemetry[]): Promise<IManualTelemetry[]> {
-    const res = await this.axiosInstance.post(MANUAL_TELEMETRY, payload);
+    const res = await this.axiosInstance.post('/manual-telemetry', payload);
     return res.data;
   }
 
@@ -221,7 +221,7 @@ export class BctwTelemetryService extends BctwService {
    * @returns {*} IManualTelemetry[]
    **/
   async updateManualTelemetry(payload: IManualTelemetry[]): Promise<IManualTelemetry[]> {
-    const res = await this.axiosInstance.patch(MANUAL_TELEMETRY, payload);
+    const res = await this.axiosInstance.patch('/manual-telemetry', payload);
     return res.data;
   }
 }

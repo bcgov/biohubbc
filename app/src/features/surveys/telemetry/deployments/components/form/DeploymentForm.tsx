@@ -26,7 +26,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useHistory } from 'react-router';
 
 export const DeploymentFormInitialValues = {
@@ -43,54 +43,46 @@ interface IDeploymentFormProps {
   isSubmitting: boolean;
 }
 
+/**
+ * Deployment form component.
+ *
+ * @param {IDeploymentFormProps} props
+ * @return {*}
+ */
 export const DeploymentForm = (props: IDeploymentFormProps) => {
   const { isSubmitting } = props;
 
+  const { submitForm, values } = useFormikContext<ICreateAnimalDeployment>();
+
   const surveyContext = useSurveyContext();
-  const { projectId, surveyId } = surveyContext;
+
+  const biohubApi = useBiohubApi();
+
+  const telemetryApi = useTelemetryApi();
 
   const history = useHistory();
 
-  const { submitForm, values } = useFormikContext<ICreateAnimalDeployment>();
-  const [selectedAnimal, setSelectedAnimal] = useState<number | null>(values.critter_id);
-
-  const telemetryApi = useTelemetryApi();
-  const biohubApi = useBiohubApi();
-
   const critterDataLoader = useDataLoader((critterId: number) =>
-    biohubApi.survey.getCritterById(projectId, surveyId, critterId)
+    biohubApi.survey.getCritterById(surveyContext.projectId, surveyContext.surveyId, critterId)
   );
 
   const frequencyUnitDataLoader = useDataLoader(() => telemetryApi.devices.getCodeValues('frequency_unit'));
 
   const deviceMakesDataLoader = useDataLoader(() => telemetryApi.devices.getCodeValues('device_make'));
 
+  // Fetch frequency unit and device make code values on component mount
   useEffect(() => {
     frequencyUnitDataLoader.load();
     deviceMakesDataLoader.load();
-    if (values.critter_id) {
-      critterDataLoader.load(values.critter_id);
-    }
-  }, [critterDataLoader, deviceMakesDataLoader, frequencyUnitDataLoader, values.critter_id]);
+  }, [critterDataLoader, deviceMakesDataLoader, frequencyUnitDataLoader]);
 
-  // useEffect(() => {
-  //   if (critterDataLoader.data) {
-  //     setSelectedAnimal({
-  //       critter_id: critterDataLoader.data.critter_id,
-  //       critterbase_critter_id: critterDataLoader.data.critterbase_critter_id
-  //     });
-  //   }
-  // }, [critterDataLoader.data]);
-
-  // Get captures for selected animal
+  // Fetch critter data when critter_id changes (ie. when the user selects a critter)
   useEffect(() => {
-    if (selectedAnimal) {
-      // setFieldValue('critterbase_start_capture_id', '');
-      // setFieldValue('critterbase_end_capture_id', null);
-      critterDataLoader.refresh(selectedAnimal);
+    if (values.critter_id) {
+      critterDataLoader.refresh(values.critter_id);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedAnimal]);
+  }, [values.critter_id]);
 
   return (
     <Container maxWidth="xl" sx={{ py: 3 }}>
@@ -99,7 +91,6 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
           <HorizontalSplitFormComponent title="Deployment Details" summary="Enter information about the deployment">
             <DeploymentDetailsForm
               animals={surveyContext.critterDataLoader.data ?? []}
-              setSelectedAnimal={setSelectedAnimal}
               frequencyUnits={frequencyUnitDataLoader.data ?? []}
             />
           </HorizontalSplitFormComponent>

@@ -60,7 +60,7 @@ describe('processFile', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(mockGetDBConnection.calledOnce).to.be.true;
+    expect(mockGetDBConnection).to.have.been.calledOnce;
     expect(mockRes.status).to.be.calledWith(200);
     expect(mockRes.json).not.to.have.been.called;
   });

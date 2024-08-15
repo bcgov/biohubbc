@@ -154,7 +154,7 @@ export class DeploymentRepository extends BaseRepository {
    * @memberof DeploymentRepository
    */
   async deleteDeployment(surveyId: number, deploymentId: number): Promise<{ bctw_deployment_id: string }> {
-    defaultLog.debug({ label: 'endDeployment', deploymentId });
+    defaultLog.debug({ label: 'deleteDeployment', deploymentId });
 
     const queryBuilder = getKnex()
       .table('deployment')

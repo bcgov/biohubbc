@@ -1,4 +1,3 @@
-import { GET_COLLAR_VENDORS_ENDPOINT, GET_DEVICE_DETAILS, UPSERT_DEVICE_ENDPOINT } from '../../constants/bctw-routes';
 import { IDevice } from '../../models/bctw';
 import { BctwService } from './bctw-service';
 
@@ -10,7 +9,9 @@ export class BctwDeviceService extends BctwService {
    * @memberof  BctwDeviceService
    */
   async getCollarVendors(): Promise<string[]> {
-    return this._makeGetRequest(GET_COLLAR_VENDORS_ENDPOINT);
+    const { data } = await this.axiosInstance.get('/get-collar-vendors');
+
+    return data;
   }
 
   /**
@@ -22,7 +23,11 @@ export class BctwDeviceService extends BctwService {
    * @memberof BctwService
    */
   async getDeviceDetails(deviceId: number, deviceMake: string): Promise<IDevice[]> {
-    return this._makeGetRequest(`${GET_DEVICE_DETAILS}${deviceId}`, { make: deviceMake });
+    const { data } = await this.axiosInstance.get(`/get-collar-history-by-device/${deviceId}`, {
+      params: { make: deviceMake }
+    });
+
+    return data;
   }
 
   /**
@@ -33,10 +38,12 @@ export class BctwDeviceService extends BctwService {
    * @memberof BctwService
    */
   async updateDevice(device: IDevice): Promise<IDevice> {
-    const { data } = await this.axiosInstance.post(UPSERT_DEVICE_ENDPOINT, device);
+    const { data } = await this.axiosInstance.post('/upsert-collar', device);
+
     if (data.errors.length) {
       throw Error(JSON.stringify(data.errors));
     }
+
     return data;
   }
 }

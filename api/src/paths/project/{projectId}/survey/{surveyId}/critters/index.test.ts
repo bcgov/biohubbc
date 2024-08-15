@@ -39,8 +39,8 @@ describe('getCrittersFromSurvey', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(mockGetDBConnection.calledOnce).to.be.true;
-    expect(mockGetCrittersInSurvey.calledOnce).to.be.true;
+    expect(mockGetDBConnection).to.have.been.calledOnce;
+    expect(mockGetCrittersInSurvey).to.have.been.calledOnce;
     expect(mockGetMultipleCrittersByIds).to.be.calledOnceWith([mockSurveyCritter.critterbase_critter_id]);
     expect(mockRes.json).to.have.been.calledWith([{ ...mockCBCritter, critter_id: mockSurveyCritter.critter_id }]);
   });
@@ -56,8 +56,8 @@ describe('getCrittersFromSurvey', () => {
     const requestHandler = getCrittersFromSurvey();
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(mockGetDBConnection.calledOnce).to.be.true;
-    expect(mockGetCrittersInSurvey.calledOnce).to.be.true;
+    expect(mockGetDBConnection).to.have.been.calledOnce;
+    expect(mockGetCrittersInSurvey).to.have.been.calledOnce;
     expect(mockRes.json).to.have.been.calledWith([]);
   });
 
@@ -79,8 +79,8 @@ describe('getCrittersFromSurvey', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError).to.equal(mockError);
-      expect(mockGetCrittersInSurvey.calledOnce).to.be.true;
-      expect(mockGetDBConnection.calledOnce).to.be.true;
+      expect(mockGetCrittersInSurvey).to.have.been.calledOnce;
+      expect(mockGetDBConnection).to.have.been.calledOnce;
       expect(mockDBConnection.release).to.have.been.called;
     }
   });
@@ -110,9 +110,9 @@ describe('addCritterToSurvey', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(mockGetDBConnection.calledOnce).to.be.true;
-    expect(mockAddCritterToSurvey.calledOnce).to.be.true;
-    expect(mockCreateCritter.notCalled).to.be.true;
+    expect(mockGetDBConnection).to.have.been.calledOnce;
+    expect(mockAddCritterToSurvey).to.have.been.calledOnce;
+    expect(mockCreateCritter).not.to.have.been.called;
     expect(mockRes.status).to.have.been.calledWith(201);
     expect(mockRes.json).to.have.been.calledWith(mockSurveyCritter);
   });
@@ -135,9 +135,9 @@ describe('addCritterToSurvey', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(mockGetDBConnection.calledOnce).to.be.true;
-    expect(mockAddCritterToSurvey.calledOnce).to.be.true;
-    expect(mockCreateCritter.calledOnce).to.be.true;
+    expect(mockGetDBConnection).to.have.been.calledOnce;
+    expect(mockAddCritterToSurvey).to.have.been.calledOnce;
+    expect(mockCreateCritter).to.have.been.calledOnce;
     expect(mockRes.status).to.have.been.calledWith(201);
     expect(mockRes.json).to.have.been.calledWith(mockSurveyCritter);
   });
@@ -161,9 +161,9 @@ describe('addCritterToSurvey', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError).to.equal(mockError);
-      expect(mockAddCritterToSurvey.calledOnce).to.be.true;
-      expect(mockCreateCritter.calledOnce).to.be.true;
-      expect(mockGetDBConnection.calledOnce).to.be.true;
+      expect(mockAddCritterToSurvey).to.have.been.calledOnce;
+      expect(mockCreateCritter).to.have.been.calledOnce;
+      expect(mockGetDBConnection).to.have.been.calledOnce;
       expect(mockDBConnection.release).to.have.been.called;
     }
   });

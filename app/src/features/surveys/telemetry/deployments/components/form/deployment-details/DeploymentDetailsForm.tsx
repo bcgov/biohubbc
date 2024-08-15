@@ -9,7 +9,6 @@ import { useFormikContext } from 'formik';
 import { ICodeResponse } from 'hooks/telemetry/useDeviceApi';
 import { useSurveyContext } from 'hooks/useContext';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
-import React, { SetStateAction } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import yup from 'utils/YupSchema';
 
@@ -45,7 +44,6 @@ export const DeploymentDetailsFormYupSchema = yup.object({
 
 interface IDeploymentDetailsFormProps {
   animals: ICritterSimpleResponse[];
-  setSelectedAnimal: React.Dispatch<SetStateAction<number | null>>;
   frequencyUnits: ICodeResponse[];
 }
 
@@ -56,8 +54,9 @@ interface IDeploymentDetailsFormProps {
  * @return {*}
  */
 export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
-  const surveyContext = useSurveyContext();
   const { setFieldValue, values } = useFormikContext<ICreateAnimalDeployment>();
+
+  const surveyContext = useSurveyContext();
 
   return (
     <>
@@ -105,7 +104,6 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
             onSelect={(animal: ICritterSimpleResponse) => {
               if (animal) {
                 setFieldValue('critter_id', animal.critter_id);
-                props.setSelectedAnimal(animal.critter_id);
               }
             }}
           />

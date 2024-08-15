@@ -33,7 +33,7 @@ describe('importCsv', () => {
 
     expect(mockFileScan).to.have.been.calledOnceWithExactly(mockFile);
 
-    expect(mockGetDBConnection.calledOnce).to.be.true;
+    expect(mockGetDBConnection).to.have.been.calledOnce;
 
     expect(mockImportCSV).to.have.been.calledOnce;
 
@@ -78,7 +78,7 @@ describe('importCsv', () => {
     expect(mockDBConnection.open).to.have.been.calledOnce;
     expect(mockFileScan).to.have.been.calledOnceWithExactly(mockFile);
 
-    expect(mockGetDBConnection.calledOnce).to.be.true;
+    expect(mockGetDBConnection).to.have.been.calledOnce;
     expect(mockRes.json).to.not.have.been.called;
 
     expect(mockDBConnection.rollback).to.have.been.called;

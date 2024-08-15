@@ -20,6 +20,7 @@ interface IPulsatingDotProps {
 
 /**
  * PulsatingDot component displays a dot with a pulsating effect around it.
+ *
  * @param props IPulsatingDotProps
  * @returns JSX.Element
  */

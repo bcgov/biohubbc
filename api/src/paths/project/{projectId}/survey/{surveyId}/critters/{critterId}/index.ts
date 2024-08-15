@@ -229,8 +229,6 @@ export function getCrittersFromSurvey(): RequestHandler {
 
       const critterbaseCritter = await critterbaseService.getCritter(surveyCritter.critterbase_critter_id);
 
-      console.log(critterbaseCritter);
-
       if (!critterbaseCritter || critterbaseCritter.length === 0) {
         return res.status(404).json({ error: `Critter ${surveyCritter.critterbase_critter_id} not found.` });
       }

@@ -53,7 +53,7 @@ export const DeploymentTimelineFormYupSchema = yup.object({
 
 interface IDeploymentTimelineFormProps {
   captures: ICaptureResponse[];
-  mortality: IMortalityResponse | undefined;
+  mortality?: IMortalityResponse;
 }
 
 /**

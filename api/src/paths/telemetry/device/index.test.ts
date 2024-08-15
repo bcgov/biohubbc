@@ -49,7 +49,7 @@ describe('upsertDevice', () => {
       expect.fail();
     } catch (actualError) {
       expect((mockError as HTTPError).message).to.eql('a test error');
-      expect(mockBctwService.calledOnce).to.be.true;
+      expect(mockBctwService).to.have.been.calledOnce;
     }
   });
 });

@@ -30,12 +30,12 @@ export const CreateDeploymentPage = () => {
   const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
 
-  const critters = surveyContext.critterDataLoader.data ?? [];
-
   const formikRef = useRef<FormikProps<ICreateAnimalDeployment>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { locationChangeInterceptor } = useUnsavedChangesDialog();
+
+  const critters = surveyContext.critterDataLoader.data ?? [];
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -100,9 +100,9 @@ export const CreateDeploymentPage = () => {
         <Box display="flex" flexDirection="column">
           <DeploymentFormHeader
             project_id={surveyContext.projectId}
+            project_name={projectContext.projectDataLoader.data?.projectData.project.project_name}
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-            project_name={projectContext.projectDataLoader.data?.projectData.project.project_name}
             is_submitting={isSubmitting}
             title="Add Deployment"
             breadcrumb="Add Deployments"

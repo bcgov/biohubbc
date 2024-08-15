@@ -94,6 +94,8 @@ export const useTelemetryApi = () => {
   /**
    * Get a list of vendor retrieved telemetry by deployment ids
    *
+   * TODO: unused?
+   *
    * @param {string[]} deploymentIds Vendor telemetry deployment ids
    * @return {*}  {Promise<IVendorTelemetry[]>}
    */
@@ -104,6 +106,8 @@ export const useTelemetryApi = () => {
 
   /**
    * Get a list of manually created telemetry by deployment ids
+   *
+   * TODO: unused?
    *
    * @param {string[]} deploymentIds Manual Telemetry deployment ids
    * @return {*}  {Promise<IManualTelemetry[]>}
@@ -187,7 +191,7 @@ export const useTelemetryApi = () => {
    * @return {*}
    */
   const processTelemetryCsvSubmission = async (submissionId: number) => {
-    const { data } = await axios.post(`/api/telemetry/manual/process`, {
+    const { data } = await axios.post('/api/telemetry/manual/process', {
       submission_id: submissionId
     });
 

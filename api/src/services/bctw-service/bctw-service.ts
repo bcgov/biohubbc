@@ -1,6 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { Request } from 'express';
-import { BCTW_API_HOST, GET_CODE_ENDPOINT, HEALTH_ENDPOINT } from '../../constants/bctw-routes';
 import { ApiError, ApiErrorType } from '../../errors/api-error';
 import { HTTP500 } from '../../errors/http-error';
 import { IBctwUser, ICodeResponse } from '../../models/bctw';
@@ -23,7 +22,7 @@ export class BctwService {
       headers: {
         user: this.getUserHeader()
       },
-      baseURL: BCTW_API_HOST,
+      baseURL: process.env.BCTW_API_HOST || '',
       timeout: 10000
     });
 
@@ -91,33 +90,15 @@ export class BctwService {
   }
 
   /**
-   * Send an authorized get request to the BCTW API.
-   *
-   * @param {string} endpoint
-   * @param {Record<string, string>} [queryParams] - An object containing query parameters as key-value pairs
-   * @return {*}
-   * @memberof BctwService
-   */
-  async _makeGetRequest(endpoint: string, queryParams?: Record<string, string | string[]>) {
-    let url = endpoint;
-    if (queryParams) {
-      const params = new URLSearchParams(queryParams);
-      console.log(params);
-      url += `?${params.toString()}`;
-    }
-
-    const response = await this.axiosInstance.get(url);
-    return response.data;
-  }
-
-  /**
    * Get the health of the platform.
    *
    * @return {*}  {Promise<string>}
    * @memberof BctwService
    */
   async getHealth(): Promise<string> {
-    return this._makeGetRequest(HEALTH_ENDPOINT);
+    const { data } = await this.axiosInstance.get('/health');
+
+    return data;
   }
 
   /**
@@ -128,6 +109,8 @@ export class BctwService {
    * @memberof BctwService
    */
   async getCode(codeHeaderName: string): Promise<ICodeResponse[]> {
-    return this._makeGetRequest(GET_CODE_ENDPOINT, { codeHeader: codeHeaderName });
+    const { data } = await this.axiosInstance.get('/get-code', { params: { codeHeader: codeHeaderName } });
+
+    return data;
   }
 }

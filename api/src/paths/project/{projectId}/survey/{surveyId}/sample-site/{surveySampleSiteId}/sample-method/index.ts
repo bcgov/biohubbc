@@ -320,7 +320,8 @@ export function createSurveySampleSiteRecord(): RequestHandler {
     try {
       const sampleSiteService = new SampleLocationService(connection);
 
-      const sampleSite = sampleSiteService.getSurveySampleSiteById(surveyId, surveySampleSiteId);
+      const sampleSite = await sampleSiteService.getSurveySampleSiteById(surveyId, surveySampleSiteId);
+
       if (!sampleSite) {
         throw new HTTP400('The given sample site does not belong to the given survey');
       }

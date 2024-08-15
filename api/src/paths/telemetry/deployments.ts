@@ -6,7 +6,7 @@ import { getBctwUser } from '../../services/bctw-service/bctw-service';
 import { BctwTelemetryService } from '../../services/bctw-service/bctw-telemetry-service';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('paths/telemetry');
+const defaultLog = getLogger('paths/telemetry/deployments');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
