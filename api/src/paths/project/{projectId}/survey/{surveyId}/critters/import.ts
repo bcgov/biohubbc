@@ -5,8 +5,8 @@ import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ImportCrittersService } from '../../../../../../services/import-services/critter/import-critters-service';
-import { importCSV } from '../../../../../../services/import-services/csv-import-strategy';
+import { ImportCrittersStrategy } from '../../../../../../services/import-services/critter/import-critters-strategy';
+import { importCSV } from '../../../../../../services/import-services/import-csv';
 import { scanFileForVirus } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
@@ -144,8 +144,8 @@ export function importCsv(): RequestHandler {
         throw new HTTP400('Malicious content detected, import cancelled.');
       }
 
-      // Critter CSV import service - child of CSVImportStrategy
-      const importCsvCritters = new ImportCrittersService(connection, surveyId);
+      // Critter CSV import strategy - child of CSVImportStrategy
+      const importCsvCritters = new ImportCrittersStrategy(connection, surveyId);
 
       const surveyCritterIds = await importCSV(parseMulterFile(rawFile), importCsvCritters);
 

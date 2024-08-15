@@ -8,16 +8,17 @@ import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import { GridOverlay, GridRowSelectionModel } from '@mui/x-data-grid';
+import { GridRowSelectionModel } from '@mui/x-data-grid';
 import { GridColDef } from '@mui/x-data-grid/models/colDef/gridColDef';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DeleteTechniqueI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { IGetTechniqueResponse, TechniqueAttractant } from 'interfaces/useTechniqueApi.interface';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getCodesName } from 'utils/Utils';
 
@@ -52,6 +53,10 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
   const dialogContext = useDialogContext();
   const codesContext = useCodesContext();
   const biohubApi = useBiohubApi();
+
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   /**
    * Handle the delete technique API call.
@@ -255,10 +260,18 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
         </MenuItem>
       </Menu>
 
-      <Box position="relative">
+      <LoadingGuard
+        hasNoData={!rows.length}
+        hasNoDataFallback={
+          <NoDataOverlay
+            height="200px"
+            title="Add Techniques"
+            subtitle="Techniques describe how you collected species observations"
+            icon={mdiArrowTopRight}
+          />
+        }
+        hasNoDataFallbackDelay={100}>
         <StyledDataGrid
-          autoHeight
-          getRowHeight={() => 'auto'}
           rows={rows}
           columns={columns}
           disableRowSelectionOnClick
@@ -266,27 +279,14 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
           checkboxSelection
           rowSelectionModel={bulkActionTechniques}
           onRowSelectionModelChange={setBulkActionTechniques}
-          noRowsOverlay={
-            <GridOverlay>
-              <NoDataOverlay
-                title="Add a Technique"
-                subtitle="Techniques describe the details of how species observations were collected"
-                icon={mdiArrowTopRight}
-              />
-            </GridOverlay>
-          }
-          sx={{
-            '& .MuiDataGrid-virtualScroller': {
-              height: rows.length === 0 ? '250px' : 'unset',
-              overflowY: 'auto !important',
-              overflowX: 'hidden'
-            },
-            '& .MuiDataGrid-columnHeaderDraggableContainer': {
-              minWidth: '50px'
+          initialState={{
+            pagination: {
+              paginationModel: { page: 1, pageSize: 10 }
             }
           }}
+          pageSizeOptions={[10, 25, 50]}
         />
-      </Box>
+      </LoadingGuard>
     </>
   );
 };

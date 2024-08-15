@@ -1,30 +1,27 @@
-import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
 import blueGrey from '@mui/material/colors/blueGrey';
-import { GridColDef, GridOverlay } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { ISamplingSiteRowData } from 'features/surveys/sampling-information/sites/table/SamplingSiteTable';
-import { IGetSampleSiteResponse } from 'interfaces/useSamplingSiteApi.interface';
+import { Feature } from 'geojson';
 import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
 
+export interface ISurveySitesRowData {
+  id: number;
+  name: string;
+  description: string;
+  geojson: Feature;
+  blocks: string[];
+  stratums: string[];
+}
+
 export interface ISurveySitesTableProps {
-  sites?: IGetSampleSiteResponse;
+  sites: ISurveySitesRowData[];
 }
 
 export const SurveySitesTable = (props: ISurveySitesTableProps) => {
   const { sites } = props;
-
-  const rows: ISamplingSiteRowData[] =
-    sites?.sampleSites.map((site) => ({
-      id: site.survey_sample_site_id,
-      name: site.name,
-      description: site.description,
-      geojson: site.geojson,
-      blocks: site.blocks.map((block) => block.name),
-      stratums: site.stratums.map((stratum) => stratum.name)
-    })) || [];
 
   const columns: GridColDef<ISamplingSiteRowData>[] = [
     {
@@ -86,26 +83,16 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
       rowSelection={false}
       autoHeight
       getRowHeight={() => 'auto'}
-      rows={rows}
+      rows={sites}
       getRowId={(row) => row.id}
       columns={columns}
       disableRowSelectionOnClick
-      noRowsOverlay={
-        <GridOverlay>
-          <NoDataOverlay
-            title="Add Sampling Sites"
-            subtitle="Add sampling sites to show where you implemented a technique"
-            icon={mdiArrowTopRight}
-          />
-        </GridOverlay>
-      }
-      sx={{
-        '& .MuiDataGrid-virtualScroller': {
-          height: rows.length === 0 ? '250px' : 'unset',
-          overflowY: 'auto !important',
-          overflowX: 'hidden'
+      initialState={{
+        pagination: {
+          paginationModel: { page: 1, pageSize: 10 }
         }
       }}
+      pageSizeOptions={[10, 25, 50]}
     />
   );
 };
