@@ -1,22 +1,25 @@
 import { SAMPLING_SITE_SPATIAL_TYPE } from 'constants/spatial';
 import { Feature, Point } from 'geojson';
-import { isDefined } from 'utils/Utils';
+import { isDefined } from './Utils';
 
 /**
- * Checks whether a latitude-longitude pair of coordinates is valid
+ * Checks whether a latitude-longitude pair of coordinates is valid.
+ *
+ * A valid latitude is between -90 and 90 degrees, inclusive.
+ * A valid longitude is between -180 and 180 degrees, inclusive.
  *
  * @param {(number | undefined)} latitude
  * @param {(number | undefined)} longitude
  * @return {*}  {boolean}
  */
-export const isValidCoordinates = (latitude: number | undefined, longitude: number | undefined): boolean => {
+export const isValidCoordinates = (latitude: number | undefined, longitude: number | undefined) => {
   return (
     isDefined(latitude) &&
     isDefined(longitude) &&
-    latitude > -90 &&
-    latitude < 90 &&
-    longitude > -180 &&
-    longitude < 180
+    latitude >= -90 &&
+    latitude <= 90 &&
+    longitude >= -180 &&
+    longitude <= 180
   );
 };
 

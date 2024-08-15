@@ -7,18 +7,18 @@ import { IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
 import { ICapture, ILocation } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
-import { CSVImportService, Row } from '../csv-import-strategy.interface';
-import { formatTimeString } from '../utils/datetime';
-import { CsvCapture, CsvCaptureSchema } from './import-captures-service.interface';
+import { CSVImportStrategy, Row } from '../import-csv.interface';
+import { findCapturesFromDateTime, formatTimeString } from '../utils/datetime';
+import { CsvCapture, CsvCaptureSchema } from './import-captures-strategy.interface';
 
 /**
  *
- * @class ImportCapturesService
+ * @class ImportCapturesStrategy
  * @extends DBService
  * @see CSVImportStrategy
  *
  */
-export class ImportCapturesService extends DBService implements CSVImportService {
+export class ImportCapturesStrategy extends DBService implements CSVImportStrategy {
   surveyCritterService: SurveyCritterService;
   surveyId: number;
 
@@ -43,7 +43,7 @@ export class ImportCapturesService extends DBService implements CSVImportService
   } satisfies IXLSXCSVValidator;
 
   /**
-   * Construct an instance of ImportCapturesService.
+   * Construct an instance of ImportCapturesStrategy.
    *
    * @param {IDBConnection} connection - DB connection
    * @param {string} surveyId
@@ -65,15 +65,18 @@ export class ImportCapturesService extends DBService implements CSVImportService
   async validateRows(rows: Row[]) {
     // Generate type-safe cell getter from column validator
     const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
-    const critterAliasMap = await this.surveyCritterService.getSurveyCritterIdAliasMap(this.surveyId);
+    const critterAliasMap = await this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId);
 
     const rowsToValidate = [];
 
     for (const row of rows) {
-      const alias = getCellValue(row, 'ALIAS');
-      const critterId = alias && critterAliasMap.get(alias);
+      let critterId, captureId;
+
+      const alias = getCellValue<string>(row, 'ALIAS');
+
       const releaseLatitude = getCellValue(row, 'RELEASE_LATITUDE');
       const releaseLongitude = getCellValue(row, 'RELEASE_LONGITUDE');
+      const captureDate = getCellValue(row, 'CAPTURE_DATE');
       const captureTime = getCellValue(row, 'CAPTURE_TIME');
       const releaseTime = getCellValue(row, 'RELEASE_TIME');
 
@@ -81,10 +84,23 @@ export class ImportCapturesService extends DBService implements CSVImportService
       const formattedCaptureTime = formatTimeString(captureTime);
       const formattedReleaseTime = formatTimeString(releaseTime);
 
+      // If the alias is included attempt to retrieve the critterId from row
+      // Checks if date time fields are unique for the critter's captures
+      if (alias) {
+        const critter = critterAliasMap.get(alias.toLowerCase());
+        if (critter) {
+          const captures = findCapturesFromDateTime(critter.captures, captureDate, captureTime);
+          critterId = critter.critter_id;
+          // Only set the captureId if a capture does not exist with matching date time
+          captureId = captures.length > 0 ? undefined : uuid();
+        }
+      }
+
       rowsToValidate.push({
+        capture_id: captureId, // this will be undefined if capture exists with same date / time
         critter_id: critterId,
         capture_location_id: uuid(),
-        capture_date: getCellValue(row, 'CAPTURE_DATE'),
+        capture_date: captureDate,
         capture_time: formattedCaptureTime,
         capture_latitude: getCellValue(row, 'CAPTURE_LATITUDE'),
         capture_longitude: getCellValue(row, 'CAPTURE_LONGITUDE'),

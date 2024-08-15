@@ -125,7 +125,7 @@ Below are all of the relevant files that need to be updated when modifying envir
 #### Local Development
 
 - `env.docker`
-- `docker-compose.yml`
+- `compose.yml`
 - `app/src/contexts/configContext.tsx`
 
 #### Deployed to OpenShift
