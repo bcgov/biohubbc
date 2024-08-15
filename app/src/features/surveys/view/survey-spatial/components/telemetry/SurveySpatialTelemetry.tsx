@@ -41,6 +41,11 @@ export const SurveySpatialTelemetry = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deploymentDataLoader.data]);
 
+  const isLoading =
+    deploymentDataLoader.isLoading ||
+    !deploymentDataLoader.isReady ||
+    ((telemetryDataLoader.isLoading || !telemetryDataLoader.isReady) && !!deploymentDataLoader.data?.length);
+
   /**
    * Combines telemetry, deployment, and critter data into a single list of telemetry points.
    *
@@ -124,27 +129,12 @@ export const SurveySpatialTelemetry = () => {
     <>
       {/* Display map with telemetry points */}
       <Box height={{ sm: 300, md: 500 }} position="relative">
-        <SurveySpatialMap
-          staticLayers={[telemetryLayer]}
-          isLoading={
-            deploymentDataLoader.isLoading ||
-            !deploymentDataLoader.isReady ||
-            telemetryDataLoader.isLoading ||
-            !telemetryDataLoader.isReady
-          }
-        />
+        <SurveySpatialMap staticLayers={[telemetryLayer]} isLoading={isLoading} />
       </Box>
 
       {/* Display data table with telemetry details */}
       <Box p={2} position="relative">
-        <SurveySpatialTelemetryTable
-          isLoading={
-            deploymentDataLoader.isLoading ||
-            !deploymentDataLoader.isReady ||
-            telemetryDataLoader.isLoading ||
-            !telemetryDataLoader.isReady
-          }
-        />
+        <SurveySpatialTelemetryTable isLoading={isLoading} />
       </Box>
     </>
   );

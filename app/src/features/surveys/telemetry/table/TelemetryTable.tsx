@@ -109,6 +109,12 @@ export const TelemetryTable = (props: IManualTelemetryTableProps) => {
         noRowsLabel: 'No Records'
       }}
       getRowHeight={() => 'auto'}
+      initialState={{
+        pagination: {
+          paginationModel: { page: 0, pageSize: 25 }
+        }
+      }}
+      pageSizeOptions={[25, 50, 100]}
       slots={{
         loadingOverlay: SkeletonTable
       }}

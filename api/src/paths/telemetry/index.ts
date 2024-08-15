@@ -99,7 +99,7 @@ GET.apiDoc = {
                   additionalProperties: false,
                   properties: {
                     telemetry_id: {
-                      type: 'number',
+                      type: 'string',
                       description: 'The BCTW telemetry record ID.'
                     },
                     acquisition_date: {

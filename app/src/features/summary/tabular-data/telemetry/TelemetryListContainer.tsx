@@ -103,8 +103,7 @@ const TelemetryListContainer = (props: IAllTelemetryListContainerProps) => {
     {
       field: 'telemetry_id',
       headerName: 'ID',
-      width: 50,
-      minWidth: 50,
+      minWidth: 200,
       sortable: false,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
