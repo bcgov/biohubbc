@@ -30,7 +30,7 @@ export const useXrefApi = (axios: AxiosInstance) => {
     name: string,
     tsns?: number[]
   ): Promise<CBMeasurementSearchByTermResponse> => {
-    const t = tsns?.map((tsn) => Number(tsn))
+    const t = tsns?.map((tsn) => Number(tsn));
     const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements/search`, {
       params: { name, tsns: t },
       paramsSerializer: (params) => {

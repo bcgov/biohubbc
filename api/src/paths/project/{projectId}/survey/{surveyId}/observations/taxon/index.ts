@@ -73,7 +73,11 @@ GET.apiDoc = {
               additionalProperties: false,
               properties: {
                 tsn: { type: 'number', description: 'The TSN of the observed species' },
-                commonNames: { type: 'array', items: { type: 'string' }, description: 'Common names of the observed species'},
+                commonNames: {
+                  type: 'array',
+                  items: { type: 'string' },
+                  description: 'Common names of the observed species'
+                },
                 scientificName: { type: 'string', description: 'Scientific name of the observed species' }
               }
             }

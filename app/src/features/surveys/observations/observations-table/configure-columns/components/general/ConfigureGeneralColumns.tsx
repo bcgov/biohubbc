@@ -165,7 +165,7 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
                 </ListItemIcon>
                 <Box my={1}>
                   <ListItemText sx={{ '& .MuiTypography-root': { fontWeight: 700 } }}>{column.headerName}</ListItemText>
-                  <ListItemText sx={{ '& .MuiTypography-root': { color: grey[600] }}}>
+                  <ListItemText sx={{ '& .MuiTypography-root': { color: grey[600] } }}>
                     {column.description}
                   </ListItemText>
                 </Box>

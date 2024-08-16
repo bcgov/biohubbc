@@ -166,21 +166,22 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
                 />
                 {isPriority && ornament}
               </Box>
-                <Typography fontWeight={700} textTransform='capitalize'>{renderOption.measurement_name}</Typography>
-                <Typography
-                  component="div"
-                  variant="subtitle2"
-                  color="textSecondary"
-                  sx={{
-                    display: '-webkit-box',
-                    WebkitLineClamp: '2',
-                    WebkitBoxOrient: 'vertical',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis'
-                  }}>
-                  {renderOption.measurement_desc}
-                </Typography>
-              
+              <Typography fontWeight={700} textTransform="capitalize">
+                {renderOption.measurement_name}
+              </Typography>
+              <Typography
+                component="div"
+                variant="subtitle2"
+                color="textSecondary"
+                sx={{
+                  display: '-webkit-box',
+                  WebkitLineClamp: '2',
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis'
+                }}>
+                {renderOption.measurement_desc}
+              </Typography>
             </Stack>
           </ListItem>
         );

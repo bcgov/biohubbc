@@ -224,7 +224,6 @@ describe('ObservationRepository', () => {
     });
   });
 
-  
   describe('getObservedSpeciesForSurvey', () => {
     it('gets observed species for a given survey', async () => {
       const mockQueryResponse = { rows: [{ itis_tsn: 5 }], rowCount: 1 } as unknown as QueryResult<any>;
