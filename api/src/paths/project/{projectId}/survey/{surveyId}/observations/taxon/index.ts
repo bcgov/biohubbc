@@ -23,7 +23,7 @@ export const GET: Operation = [
           discriminator: 'ProjectPermission'
         },
         {
-          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN],
           discriminator: 'SystemRole'
         }
       ]
@@ -73,8 +73,8 @@ GET.apiDoc = {
               additionalProperties: false,
               properties: {
                 tsn: { type: 'number', description: 'The TSN of the observed species' },
-                commonNames: { type: 'array', items: { type: 'string' } },
-                scientificName: { type: 'string' }
+                commonNames: { type: 'array', items: { type: 'string' }, description: 'Common names of the observed species'},
+                scientificName: { type: 'string', description: 'Scientific name of the observed species' }
               }
             }
           }
@@ -118,11 +118,13 @@ export function getSurveyObservedSpecies(): RequestHandler {
       const observationService = new ObservationService(connection);
       const platformService = new PlatformService(connection);
 
-      const observedSpecies = await observationService.getSurveyObservationsSpecies(surveyId);
+      const observedSpecies = await observationService.getObservedSpeciesForSurvey(surveyId);
 
       const species = await platformService.getTaxonomyByTsns(observedSpecies.flatMap((species) => species.itis_tsn));
 
-      return res.status(200).json(species);
+      const formattedResponse = species.map((taxon) => ({ ...taxon, tsn: Number(taxon.tsn) }));
+
+      return res.status(200).json(formattedResponse);
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservedSpecies', message: 'error', error });
       await connection.rollback();

@@ -429,7 +429,7 @@ export class ObservationRepository extends BaseRepository {
    * @return {*}  {Promise<ObservationSpecies[]>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationsSpecies(surveyId: number): Promise<ObservationSpecies[]> {
+  async getObservedSpeciesForSurvey(surveyId: number): Promise<ObservationSpecies[]> {
     const knex = getKnex();
     const allRowsQuery = knex
       .queryBuilder()

@@ -166,9 +166,7 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
                 />
                 {isPriority && ornament}
               </Box>
-              <Box>
-                <Typography fontWeight={700}>{renderOption.measurement_name}</Typography>
-
+                <Typography fontWeight={700} textTransform='capitalize'>{renderOption.measurement_name}</Typography>
                 <Typography
                   component="div"
                   variant="subtitle2"
@@ -182,7 +180,7 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
                   }}>
                   {renderOption.measurement_desc}
                 </Typography>
-              </Box>
+              
             </Stack>
           </ListItem>
         );

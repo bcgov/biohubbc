@@ -224,6 +224,23 @@ describe('ObservationRepository', () => {
     });
   });
 
+  
+  describe('getObservedSpeciesForSurvey', () => {
+    it('gets observed species for a given survey', async () => {
+      const mockQueryResponse = { rows: [{ itis_tsn: 5 }], rowCount: 1 } as unknown as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({
+        knex: sinon.stub().resolves(mockQueryResponse)
+      });
+
+      const repo = new ObservationRepository(mockDBConnection);
+
+      const response = await repo.getObservedSpeciesForSurvey(1);
+
+      expect(response).to.eql([{ itis_tsn: 5 }]);
+    });
+  });
+
   describe('getObservationsCountBySampleSiteIds', () => {
     it('gets the observation count by sample site ids', async () => {
       const mockQueryResponse = { rows: [{ count: 50 }], rowCount: 1 } as unknown as QueryResult<any>;

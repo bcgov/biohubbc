@@ -94,7 +94,7 @@ const parseSearchResponse = <T extends IPartialTaxonomy>(searchResponse: T[]): T
   return searchResponse.map((taxon) => ({
     ...taxon,
     commonNames: taxon.commonNames.map((commonName) => startCase(commonName)),
-    scientificName: startCase(taxon.scientificName)
+    scientificName: taxon.scientificName
   }));
 };
 

@@ -2,6 +2,7 @@ import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
+import { grey } from '@mui/material/colors';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import IconButton from '@mui/material/IconButton';
@@ -65,7 +66,8 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
             ml: '4px',
             '& .MuiCheckbox-root': {
               mr: 0.5
-            }
+            },
+            color: grey[600]
           }}
           label="Only show measurements applicable to focal or observed species"
           control={<Checkbox checked={isPriorityOnly} onClick={() => setIsPriorityOnly((prev) => !prev)} />}
