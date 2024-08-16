@@ -1,42 +1,116 @@
 import { PropsWithChildren, useEffect, useState } from 'react';
 
-export interface ILoadingGuardProps {
-  isLoading: boolean;
-  fallback: JSX.Element;
-  delay?: number;
-}
+export type ILoadingGuardProps = {
+  /**
+   * Whether the component is in a loading state.
+   *
+   * @type {boolean}
+   */
+  isLoading?: boolean;
+  /**
+   * The loading fallback component to render when `isLoading` is true.
+   *
+   * @type {JSX.Element}
+   */
+  isLoadingFallback?: JSX.Element;
+  /**
+   * The minimum time in milliseconds to show the loading fallback component.
+   *
+   * @type {number}
+   */
+  isLoadingFallbackDelay?: number;
+  /**
+   * Whether the component has no data to display.
+   *
+   * @type {boolean}
+   */
+  hasNoData?: boolean;
+  /**
+   * The 'no data' fallback component to render when `isLoading` is false and `hasNoData` is true.
+   *
+   * @type {JSX.Element}
+   */
+  hasNoDataFallback?: JSX.Element;
+  /**
+   * The minimum time in milliseconds to show the 'no data' fallback component.
+   *
+   * @type {number}
+   */
+  hasNoDataFallbackDelay?: number;
+};
 
 /**
- * Renders `props.children` if `isLoading` is false, otherwise renders `fallback`.
+ * Supports rendering various fallback components based on the loading/data state.
  *
- * If `delay` is provided, the fallback will be shown for at least `delay` milliseconds.
+ * Renders a loading fallback component if `isLoading` is true.
+ * Optionally renders a 'no data' fallback component if `isLoading` is false and `hasNoData` is true.
  *
- * Fallback should be a loading spinner or skeleton component, etc.
+ * If `isLoadingFallbackDelay` or `hasNoDataFallbackDelay` are provided, the respective fallback will be shown for at
+ * least `isLoadingFallbackDelay` or `hasNoDataFallbackDelay` milliseconds. Why? To prevent flickering of the UI when
+ * the loading state is short-lived.
+ *
+ * The fallback components are typically loading spinners, skeleton loaders, etc.
  *
  * @param {PropsWithChildren<ILoadingGuardProps>} props
  * @return {*}
  */
 export const LoadingGuard = (props: PropsWithChildren<ILoadingGuardProps>) => {
-  const { isLoading, fallback, delay, children } = props;
+  const {
+    isLoading,
+    isLoadingFallback,
+    isLoadingFallbackDelay,
+    hasNoData,
+    hasNoDataFallback,
+    hasNoDataFallbackDelay,
+    children
+  } = props;
 
-  const [showFallback, setShowFallback] = useState(isLoading);
+  const [showIsLoadingFallback, setShowIsLoadingFallback] = useState(isLoading ?? false);
+  const [showHasNoDataFallback, setShowHasNoDataFallback] = useState(hasNoData ?? false);
 
   useEffect(() => {
     if (!isLoading) {
-      // If the loading state changes to false, hide the fallback
-      if (delay) {
+      // If the loading state changes to false, hide the is loading fallback
+      if (isLoadingFallbackDelay) {
+        // If there is a delay, show the is loading fallback for at least `isLoadingFallbackDelay` milliseconds
         setTimeout(() => {
-          // Show the fallback for at least `delay` milliseconds
-          setShowFallback(false);
-        }, delay);
+          // Disable the is loading fallback after the delay
+          setShowIsLoadingFallback(false);
+        }, isLoadingFallbackDelay);
       } else {
-        setShowFallback(false);
+        // If there is no delay, disable the is loading fallback immediately
+        setShowIsLoadingFallback(false);
       }
     }
-  }, [isLoading, delay]);
+  }, [isLoading, isLoadingFallbackDelay]);
 
-  if (showFallback) {
-    return <>{fallback}</>;
+  useEffect(() => {
+    if (isLoading) {
+      // Do nothing - the loading state takes precedence over the no data state
+      return;
+    }
+
+    if (!hasNoData) {
+      // If there is data to display, hide the no data fallback
+      if (hasNoDataFallbackDelay) {
+        // If there is a delay, show the no data fallback for at least `hasNoDataFallbackDelay` milliseconds
+        setTimeout(() => {
+          // Disable the no data fallback after the delay
+          setShowHasNoDataFallback(false);
+        }, hasNoDataFallbackDelay);
+      } else {
+        // If there is no delay, disable the no data fallback immediately
+        setShowHasNoDataFallback(false);
+      }
+    }
+  }, [hasNoData, hasNoDataFallbackDelay, isLoading]);
+
+  if (showIsLoadingFallback) {
+    return <>{isLoadingFallback}</>;
+  }
+
+  if (showHasNoDataFallback) {
+    return <>{hasNoDataFallback}</>;
   }
 
   return <>{children}</>;

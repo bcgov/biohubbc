@@ -5,6 +5,7 @@ import SurveyPermitForm, { ISurveyPermitForm, SurveyPermitFormYupSchema } from '
 describe('SurveyPermitForm', () => {
   it('deletes existing permits when delete icon is clicked', async () => {
     const existingFormValues: ISurveyPermitForm = {
+      permit_used: true,
       permit: {
         permits: [
           {

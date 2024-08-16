@@ -20,7 +20,7 @@ import {
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
   ISimpleCritterWithInternalId,
-  SurveyUpdateObject
+  IUpdateSurveyRequest
 } from 'interfaces/useSurveyApi.interface';
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
@@ -127,10 +127,10 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {SurveyUpdateObject} surveyData
+   * @param {IUpdateSurveyRequest} surveyData
    * @return {*}  {Promise<any>}
    */
-  const updateSurvey = async (projectId: number, surveyId: number, surveyData: SurveyUpdateObject): Promise<any> => {
+  const updateSurvey = async (projectId: number, surveyId: number, surveyData: IUpdateSurveyRequest): Promise<any> => {
     const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/update`, surveyData);
 
     return data;
