@@ -159,6 +159,7 @@ const ProjectsListContainer = (props: IProjectsListContainerProps) => {
         <Stack direction="row" gap={0.5} flexWrap="wrap">
           {params.row.members.map((member) => (
             <TeamMemberAvatar
+              key={member.system_user_id}
               title={member.display_name}
               label={member.display_name
                 .split(',')
