@@ -1,6 +1,7 @@
-import { mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, IconButton, Stack, Typography } from '@mui/material';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import EnvironmentStandardCard from 'features/standards/view/components/EnvironmentStandardCard';
 import { EnvironmentType, EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 import { EnvironmentsSearch } from './search/EnvironmentsSearch';
@@ -106,9 +107,12 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
           ))}
         </Stack>
       ) : (
-        <Box mt={5} height={100} display="flex" justifyContent="center" alignItems="center">
-          <Typography color="textSecondary">No environmental variables selected</Typography>
-        </Box>
+        <NoDataOverlay
+          minHeight="200px"
+          title="Add Environmental Variables"
+          subtitle="Select variables to include in your observations data. There are currently none selected."
+          icon={mdiArrowTopRight}
+        />
       )}
     </Box>
   );

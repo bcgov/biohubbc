@@ -1,4 +1,4 @@
-import { mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import MeasurementStandardCard from 'features/standards/view/components/MeasurementStandardCard';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
@@ -104,9 +105,12 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
           ))}
         </List>
       ) : (
-        <Box mt={5} display="flex" justifyContent="center" alignItems="center">
-          <Typography color="textSecondary">No measurements selected</Typography>
-        </Box>
+        <NoDataOverlay
+          minHeight="200px"
+          title="Add Species Attributes"
+          subtitle="Select species attributes to include in your observations data. There are currently none selected."
+          icon={mdiArrowTopRight}
+        />
       )}
     </Box>
   );

@@ -153,7 +153,7 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
             {...renderProps}
             key={renderOption.taxon_measurement_id}
             data-testid="measurements-autocomplete-option">
-            <Stack gap={0.75} mt={-0.25} flex="1 1 auto">
+            <Stack mt={-0.25} flex="1 1 auto">
               <Box display="flex" alignItems="center" justifyContent="space-between">
                 <ScientificNameTypography
                   variant="body2"
@@ -166,7 +166,7 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
                 />
                 {isPriority && ornament}
               </Box>
-              <Typography fontWeight={700} textTransform="capitalize">
+              <Typography fontWeight={700} textTransform="capitalize" mb={0.25}>
                 {renderOption.measurement_name}
               </Typography>
               <Typography

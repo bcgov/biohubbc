@@ -155,7 +155,7 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
                 onClick={() => onToggleColumnVisibility(column.field)}
                 disabled={disabled}
                 sx={{
-                  background: isSelected ? grey[100] : '#fff',
+                  background: isSelected ? grey[50] : '#fff',
                   borderRadius: '5px',
                   alignItems: 'flex-start',
                   '& .MuiListItemText-root': { my: 0.25 }
