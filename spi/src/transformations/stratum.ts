@@ -1,12 +1,9 @@
 import SQL from 'sql-template-strings';
 import { IDBConnection } from '../db';
 
-export const transformUsersSql = SQL`
+export const transformSurveyStratums = async (connection: IDBConnection): Promise<void> => {
+  const transformSurveyStratumsSql = SQL`
 -------------------------------------------------------------------------------------------------
--- Moving stratum data from SPI to SIMS to show the stratum that a Design Component is in for a particular survey.
-
--- This is all the columns in SPI right now. doubt we will need all of them(?) so Ive commented out update date, but this is just a start.
-
 -- Create stratum
 -------------------------------------------------------------------------------------------------
     INSERT INTO 
@@ -20,12 +17,11 @@ export const transformUsersSql = SQL`
     FROM 
         public.spi_survey_stratums st
     JOIN 
-        biohub.survey s 
+        biohub.survey s
     ON 
         s.spi_survey_id = st.survey_id;
-
-
-  await connection.sql(sql);`
+`;
+  await connection.sql(transformSurveyStratumsSql);
 
   console.log('Successfully transformed stratums');
 };

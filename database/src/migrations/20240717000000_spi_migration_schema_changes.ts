@@ -40,6 +40,13 @@ export async function up(knex: Knex): Promise<void> {
       biohub_user_id  INTEGER NULL REFERENCES biohub.system_user(system_user_id) ON DELETE SET NULL ON UPDATE CASCADE DEFAULT NULL,
       CONSTRAINT dedup UNIQUE (family_name, given_name)
   );
+
+  -- Create design component sampling site join table
+    CREATE TABLE IF NOT EXISTS public.migrate_spi_sample_design_component (
+      id                         BIGSERIAL PRIMARY KEY,
+      survey_sample_site_id      INT NOT NULL,
+      design_component_id        INT NOT NULL
+  );
     
     ----------------------------------------------------------------------------------------
     -- Schema changes for the SPI data migration

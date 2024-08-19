@@ -1,8 +1,10 @@
+import { transformSampleSites } from 'transformations/sampling-site';
 import { defaultPoolConfig, getDBConnection, IDBConnection, initDBPool } from './db';
 import { transformProjects } from './transformations/project';
 import { transformSurveys } from './transformations/survey';
 import { transformUsers } from './transformations/user';
 import { truncateTables } from './utils/truncateTables';
+import { transformSurveyStratums } from 'transformations/stratum';
 
 let connection: IDBConnection; // Declare connection variable at the module level
 
@@ -36,6 +38,12 @@ async function main() {
     // STEP 3. Transforms SPI Surveys into SIMS Surveys
     await transformSurveys(connection);
 
+    // STEP 4. Transforms SPI Survey Stratums into SIMS Survey Stratums
+    await transformSurveyStratums(connection);
+
+    // STEP 5. Transforms SPI Design Components into SIMS Sampling Sites
+    await transformSampleSites(connection);
+
     // Commit the transactions
     connection.commit();
 
@@ -43,7 +51,7 @@ async function main() {
   } catch (error) {
     console.error('Error during transformations:', error);
   } finally {
-    await connection.release()
+    await connection.release();
   }
 }
 
