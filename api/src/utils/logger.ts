@@ -44,8 +44,13 @@ import DailyRotateFile from 'winston-daily-rotate-file';
  *
  * ...etc
  *
- * Valid `LOG_LEVEL` values (from least logging to most logging) (default: info):
- * silent, error, warn, info, debug, silly
+ * Environment Variables:
+ *
+ * LOG_LEVEL - Defines the level of logging that the logger will output to the console. (default: debug)
+ *
+ * LOG_LEVEL_FILE - Defines the level of logging that the logger will output to persistent log files. (default: debug)
+ *
+ * Valid logging level values (from least logging to most logging) - silent, error, warn, info, debug, silly
  *
  * @param {string} logLabel common label for the instance of the logger.
  * @returns
@@ -61,7 +66,7 @@ export const getLogger = function (logLabel: string) {
       datePattern: 'YYYY-MM-DD-HH',
       maxSize: '100m', // Rotate log file when it reaches 100MB
       maxFiles: '14d', // Keep logs for 14 days
-      level: process.env.LOG_LEVEL || 'info',
+      level: process.env.LOG_LEVEL_FILE || 'debug',
       format: winston.format.combine(
         winston.format((info) => {
           const { timestamp, level, ...rest } = info;
@@ -78,7 +83,7 @@ export const getLogger = function (logLabel: string) {
     // Additionally output logs to console in non-production environments
     transports.push(
       new winston.transports.Console({
-        level: process.env.LOG_LEVEL || 'info',
+        level: process.env.LOG_LEVEL || 'debug',
         format: winston.format.combine(
           winston.format((info) => {
             const { timestamp, level, ...rest } = info;
@@ -100,7 +105,7 @@ export const WinstonLogLevels = ['silent', 'error', 'warn', 'info', 'debug', 'si
 export type WinstonLogLevel = (typeof WinstonLogLevels)[number];
 
 /**
- * Set the winston logger log level.
+ * Set the winston logger log level for the console transport
  *
  * @param {WinstonLogLevel} logLevel
  */
@@ -108,8 +113,25 @@ export const setLogLevel = (logLevel: WinstonLogLevel) => {
   // Update env var for future loggers
   process.env.LOG_LEVEL = logLevel;
 
-  // Update existing loggers
+  if (process.env.NODE_ENV !== 'production') {
+    // Update console transport log level, which is the second transport in non-production environments
+    winston.loggers.loggers.forEach((logger) => {
+      logger.transports[1].level = logLevel;
+    });
+  }
+};
+
+/**
+ * Set the winston logger log level for the file transport.
+ *
+ * @param {WinstonLogLevel} logLevel
+ */
+export const setLogLevelFile = (logLevelFile: WinstonLogLevel) => {
+  // Update env var for future loggers
+  process.env.LOG_LEVEL_FILE = logLevelFile;
+
+  // Update file transport log level, which is the first transport in all environments
   winston.loggers.loggers.forEach((logger) => {
-    logger.transports[0].level = logLevel;
+    logger.transports[0].level = logLevelFile;
   });
 };

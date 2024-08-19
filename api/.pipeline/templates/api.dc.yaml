@@ -123,7 +123,9 @@ parameters:
     value: 'sims'
   # Logging and Validation
   - name: LOG_LEVEL
-    value: 'warn'
+    value: 'silent'
+  - name: LOG_LEVEL_FILE
+    value: 'debug'
   - name: API_RESPONSE_VALIDATION_ENABLED
     value: 'false'
   - name: DATABASE_RESPONSE_VALIDATION_ENABLED
@@ -340,6 +342,8 @@ objects:
                 # Logging and Validation
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
+                - name: LOG_LEVEL_FILE
+                  value: ${LOG_LEVEL_FILE}
                 - name: API_RESPONSE_VALIDATION_ENABLED
                   value: ${API_RESPONSE_VALIDATION_ENABLED}
                 - name: DATABASE_RESPONSE_VALIDATION_ENABLED

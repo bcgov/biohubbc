@@ -67,6 +67,7 @@ const apiDeploy = async (settings) => {
         KEYCLOAK_API_ENVIRONMENT: phases[phase].sso.cssApi.cssApiEnvironment,
         // Log Level
         LOG_LEVEL: phases[phase].logLevel,
+        LOG_LEVEL_FILE: phases[phase].logLevelFile,
         API_RESPONSE_VALIDATION_ENABLED: phases[phase].apiResponseValidationEnabled,
         DATABASE_RESPONSE_VALIDATION_ENABLED: phases[phase].databaseResponseValidationEnabled,
         // Feature Flags
