@@ -7,6 +7,7 @@ import { getAllTelemetryByDeploymentIds } from './deployments';
 
 const mockTelemetry: IAllTelemetry[] = [
   {
+    id: '123-123-123',
     telemetry_id: null,
     telemetry_manual_id: '123-123-123',
     deployment_id: '345-345-345',
@@ -16,6 +17,7 @@ const mockTelemetry: IAllTelemetry[] = [
     telemetry_type: 'manual'
   },
   {
+    id: '567-567-567',
     telemetry_id: '567-567-567',
     telemetry_manual_id: null,
     deployment_id: '345-345-345',

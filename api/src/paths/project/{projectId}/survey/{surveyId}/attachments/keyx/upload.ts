@@ -4,7 +4,7 @@ import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
-import { IBctwUser } from '../../../../../../../models/bctw';
+import { BctwUser } from '../../../../../../../models/bctw';
 import { fileSchema } from '../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
@@ -162,7 +162,7 @@ export function uploadKeyxMedia(): RequestHandler {
         throw new HTTP400('The file must either be a keyx file or a zip containing only keyx files.');
       }
 
-      const user: IBctwUser = {
+      const user: BctwUser = {
         keycloak_guid: connection.systemUserGUID(),
         username: connection.systemUserIdentifier()
       };

@@ -1,21 +1,28 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { Request } from 'express';
+import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../../errors/api-error';
 import { HTTP500 } from '../../errors/http-error';
-import { IBctwUser, ICodeResponse } from '../../models/bctw';
+import { ICodeResponse } from '../../models/bctw';
 import { KeycloakService } from '../keycloak-service';
 
-export const getBctwUser = (req: Request): IBctwUser => ({
+export const BctwUser = z.object({
+  keycloak_guid: z.string(),
+  username: z.string()
+});
+export type BctwUser = z.infer<typeof BctwUser>;
+
+export const getBctwUser = (req: Request): BctwUser => ({
   keycloak_guid: req.system_user?.user_guid ?? '',
   username: req.system_user?.user_identifier ?? ''
 });
 
 export class BctwService {
-  user: IBctwUser;
+  user: BctwUser;
   keycloak: KeycloakService;
   axiosInstance: AxiosInstance;
 
-  constructor(user: IBctwUser) {
+  constructor(user: BctwUser) {
     this.user = user;
     this.keycloak = new KeycloakService();
     this.axiosInstance = axios.create({

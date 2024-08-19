@@ -11,7 +11,7 @@ import { CritterbaseService, ICritterbaseUser } from '../../../../../../../servi
 import { DeploymentService } from '../../../../../../../services/deployment-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments/{deploymentId}');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments/{deploymentId}/index');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -67,7 +67,9 @@ GET.apiDoc = {
       description: 'Responds with information about a deployment',
       content: {
         'application/json': {
-          schema: getDeploymentSchema
+          schema: {
+            oneOf: [getDeploymentSchema, { type: 'null' }]
+          }
         }
       }
     },
@@ -111,7 +113,7 @@ export function getDeploymentById(): RequestHandler {
       // Return early if there are no deployments
       if (!surveyDeployment) {
         // TODO: 400 error instead?
-        return res.status(200).json({});
+        return res.status(200).send();
       }
 
       // Fetch additional deployment details from BCTW service
@@ -122,15 +124,19 @@ export function getDeploymentById(): RequestHandler {
       const result = bctwDeployments.reduce((acc, bctwDeployment) => {
         return {
           ...acc,
+          // bctw response properties
           assignment_id: bctwDeployment.assignment_id,
           collar_id: bctwDeployment.collar_id,
-          critter_id: surveyDeployment.critter_id,
-          critterbase_critter_id: surveyDeployment?.critterbase_critter_id,
+          //   valid_from: bctwDeployments.valid_from,
+          //   valid_to: bctwDeployments.valid_to,
           attachment_start: bctwDeployment.attachment_start,
           attachment_end: bctwDeployment.attachment_end,
-          deployment_id: surveyDeployment?.deployment_id,
           device_id: bctwDeployment.device_id,
           bctw_deployment_id: surveyDeployment?.bctw_deployment_id,
+          // sims response properties
+          deployment_id: surveyDeployment?.deployment_id,
+          critter_id: surveyDeployment.critter_id,
+          critterbase_critter_id: surveyDeployment?.critterbase_critter_id,
           critterbase_start_capture_id: surveyDeployment?.critterbase_start_capture_id,
           critterbase_end_capture_id: surveyDeployment?.critterbase_end_capture_id,
           critterbase_end_mortality_id: surveyDeployment?.critterbase_end_mortality_id

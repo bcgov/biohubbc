@@ -225,15 +225,15 @@ export function getCrittersFromSurvey(): RequestHandler {
 
       const critterIds = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
 
-      const result = await surveyService.critterbaseService.getMultipleCrittersByIds(critterIds);
+      const critterbaseCritters = await surveyService.critterbaseService.getMultipleCrittersByIds(critterIds);
 
       const critterMap = new Map();
-      for (const item of result) {
-        critterMap.set(item.critter_id, {
-          ...item,
+      for (const critterbaseCritter of critterbaseCritters) {
+        critterMap.set(critterbaseCritter.critter_id, {
+          ...critterbaseCritter,
           // Rename `critter_id` from Critterbase to critterbase_critter_id to distinguish it from
           // the integer `critter_id` in SIMS
-          critterbase_critter_id: item.critter_id
+          critterbase_critter_id: critterbaseCritter.critter_id
         });
       }
 
@@ -247,7 +247,7 @@ export function getCrittersFromSurvey(): RequestHandler {
 
       return res.status(200).json([...critterMap.values()]);
     } catch (error) {
-      defaultLog.error({ label: 'createCritter', message: 'error', error });
+      defaultLog.error({ label: 'getCrittersFromSurvey', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

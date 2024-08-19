@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const IDeployDevice = z.object({
+export const BctwDeployDevice = z.object({
   device_id: z.number(),
   frequency: z.number().optional(),
   frequency_unit: z.string().optional(),
@@ -14,37 +14,21 @@ export const IDeployDevice = z.object({
   critterbase_end_mortality_id: z.string().uuid().nullable()
 });
 
-export type IDeployDevice = z.infer<typeof IDeployDevice>;
+export type BctwDeployDevice = z.infer<typeof BctwDeployDevice>;
 
-export type IDevice = Omit<IDeployDevice, 'attachment_start' | 'attachment_end' | 'critter_id'> & { collar_id: string };
+export type BctwDevice = Omit<BctwDeployDevice, 'attachment_start' | 'attachment_end' | 'critter_id'> & {
+  collar_id: string;
+};
 
-export const IDeploymentUpdate = z.object({
+export const BctwDeploymentUpdate = z.object({
   deployment_id: z.string(),
   attachment_start: z.string(),
   attachment_end: z.string()
 });
 
-export type IDeploymentUpdate = z.infer<typeof IDeploymentUpdate>;
+export type BctwDeploymentUpdate = z.infer<typeof BctwDeploymentUpdate>;
 
-export const IBctwDeploymentRecord = z.object({
-  assignment_id: z.string(),
-  collar_id: z.string(),
-  critter_id: z.string(),
-  created_at: z.string(),
-  created_by_user_id: z.string(),
-  updated_at: z.string(),
-  updated_by_user_id: z.string(),
-  valid_from: z.string(),
-  valid_to: z.string(),
-  attachment_start: z.string(),
-  attachment_end: z.string(),
-  deployment_id: z.string(),
-  device_id: z.number()
-});
-
-export type IBctwDeploymentRecord = z.infer<typeof IBctwDeploymentRecord>;
-
-export const IUploadKeyxResponse = z.object({
+export const BctwUploadKeyxResponse = z.object({
   errors: z.array(
     z.object({
       row: z.string(),
@@ -64,9 +48,9 @@ export const IUploadKeyxResponse = z.object({
   )
 });
 
-export type IUploadKeyxResponse = z.infer<typeof IUploadKeyxResponse>;
+export type BctwUploadKeyxResponse = z.infer<typeof BctwUploadKeyxResponse>;
 
-export const IKeyXDetails = z.object({
+export const BctwKeyXDetails = z.object({
   device_id: z.number(),
   keyx: z
     .object({
@@ -79,7 +63,7 @@ export const IKeyXDetails = z.object({
     .nullable()
 });
 
-export type IKeyXDetails = z.infer<typeof IKeyXDetails>;
+export type BctwKeyXDetails = z.infer<typeof BctwKeyXDetails>;
 
 export const IManualTelemetry = z.object({
   telemetry_manual_id: z.string().uuid(),
@@ -91,7 +75,7 @@ export const IManualTelemetry = z.object({
 
 export type IManualTelemetry = z.infer<typeof IManualTelemetry>;
 
-export const IBctwUser = z.object({
+export const BctwUser = z.object({
   keycloak_guid: z.string(),
   username: z.string()
 });
@@ -105,7 +89,7 @@ export interface ICodeResponse {
   long_description: string;
 }
 
-export type IBctwUser = z.infer<typeof IBctwUser>;
+export type BctwUser = z.infer<typeof BctwUser>;
 
 export interface ICreateManualTelemetry {
   deployment_id: string;

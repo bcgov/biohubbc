@@ -1,5 +1,9 @@
-import { IDevice } from '../../models/bctw';
+import { BctwDeployDevice } from './bctw-deployment-service';
 import { BctwService } from './bctw-service';
+
+export type BctwDevice = Omit<BctwDeployDevice, 'attachment_start' | 'attachment_end' | 'critter_id'> & {
+  collar_id: string;
+};
 
 export class BctwDeviceService extends BctwService {
   /**
@@ -19,10 +23,10 @@ export class BctwDeviceService extends BctwService {
    *
    * @param {number} deviceId
    * @param {deviceMake} deviceMake
-   * @returns {*} {Promise<IDevice[]>}
+   * @returns {*} {Promise<BctwDevice[]>}
    * @memberof BctwService
    */
-  async getDeviceDetails(deviceId: number, deviceMake: string): Promise<IDevice[]> {
+  async getDeviceDetails(deviceId: number, deviceMake: string): Promise<BctwDevice[]> {
     const { data } = await this.axiosInstance.get(`/get-collar-history-by-device/${deviceId}`, {
       params: { make: deviceMake }
     });
@@ -33,11 +37,11 @@ export class BctwDeviceService extends BctwService {
   /**
    * Update device hardware details in BCTW.
    *
-   * @param {IDevice} device
-   * @returns {*} {IDevice}
+   * @param {BctwDevice} device
+   * @returns {*} {BctwDevice}
    * @memberof BctwService
    */
-  async updateDevice(device: IDevice): Promise<IDevice> {
+  async updateDevice(device: BctwDevice): Promise<BctwDevice> {
     const { data } = await this.axiosInstance.post('/upsert-collar', device);
 
     if (data.errors.length) {

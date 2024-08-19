@@ -1,9 +1,8 @@
-import dayjs from 'dayjs';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { isNull } from 'lodash';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { HTTP409 } from '../../../../../../errors/http-error';
 import { getDeploymentSchema } from '../../../../../../openapi/schemas/deployment';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { BctwDeploymentService } from '../../../../../../services/bctw-service/bctw-deployment-service';
@@ -11,7 +10,7 @@ import { ICritterbaseUser } from '../../../../../../services/critterbase-service
 import { DeploymentService } from '../../../../../../services/deployment-service';
 import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments/index');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -115,32 +114,55 @@ export function getDeploymentsInSurvey(): RequestHandler {
 
       // Fetch additional deployment details from BCTW service
       const bctwDeployments = await bctwDeploymentService.getDeploymentsByIds(deploymentIds);
-      const now = dayjs();
 
-      // TODO: Move this logic into bctw - bctw should only return valid deployment records, not soft deleted ones
-      const validDeployments = bctwDeployments.filter(
-        (deployment) => isNull(deployment.valid_to) || dayjs(deployment.valid_to) > now
-      );
+      const surveyDeploymentsWithBctwData = [];
 
-      // Merge survey and BCTW deployment information
-      const results = validDeployments.map((bctwDeployment) => {
-        const surveyDeployment = surveyDeployments.find(
-          (deployment) => deployment.bctw_deployment_id === bctwDeployment.deployment_id
+      // For each SIMS survey deployment record, find the matching BCTW deployment record.
+      // We expect exactly 1 matching record, otherwise we throw an error.
+      for (const surveyDeployment of surveyDeployments) {
+        const matchingBctwDeployments = bctwDeployments.filter(
+          (deployment) => deployment.deployment_id === surveyDeployment.bctw_deployment_id
         );
-        return {
-          ...bctwDeployment,
-          deployment_id: surveyDeployment?.deployment_id,
-          bctw_deployment_id: surveyDeployment?.bctw_deployment_id,
-          critterbase_start_capture_id: surveyDeployment?.critterbase_start_capture_id,
-          critterbase_end_capture_id: surveyDeployment?.critterbase_end_capture_id,
-          critterbase_end_mortality_id: surveyDeployment?.critterbase_end_mortality_id,
-          // Do not trust the Critter Id stored by BCTW. Instead, use the SIMS integer survey critter ID
-          critter_id: surveyDeployment?.critter_id,
-          critterbase_critter_id: surveyDeployment?.critterbase_critter_id
-        };
-      });
 
-      return res.status(200).json(results);
+        if (matchingBctwDeployments.length > 1) {
+          throw new HTTP409('Multiple active deployments found for the same deployment ID', [
+            'This is an issue in the BC Telemetry Warehouse (BCTW) data. There should only be one active deployment record for a given deployment ID.',
+            `SIMS deployment ID: ${surveyDeployment.deployment_id}`,
+            `BCTW deployment ID: ${surveyDeployment.bctw_deployment_id}`
+          ]);
+        }
+
+        if (matchingBctwDeployments.length === 0) {
+          throw new HTTP409('No active deployments found for deployment ID', [
+            'There should be no deployments recorded in SIMS that have no matching deployment record in BCTW.',
+            `SIMS Deployment ID: ${surveyDeployment.deployment_id}`,
+            `BCTW Deployment ID: ${surveyDeployment.bctw_deployment_id}`
+          ]);
+        }
+
+        surveyDeploymentsWithBctwData.push({
+          // BCTW properties
+          assignment_id: matchingBctwDeployments[0].assignment_id,
+          collar_id: matchingBctwDeployments[0].collar_id,
+          attachment_start: matchingBctwDeployments[0].attachment_start,
+          attachment_end: matchingBctwDeployments[0].attachment_end,
+          bctw_deployment_id: matchingBctwDeployments[0].deployment_id,
+          device_id: matchingBctwDeployments[0].device_id,
+          device_make: matchingBctwDeployments[0].device_make,
+          device_model: matchingBctwDeployments[0].device_model,
+          frequency: matchingBctwDeployments[0].frequency,
+          frequency_unit: matchingBctwDeployments[0].frequency_unit,
+          // SIMS properties
+          deployment_id: surveyDeployment.deployment_id,
+          critter_id: surveyDeployment.critter_id,
+          critterbase_critter_id: surveyDeployment.critterbase_critter_id,
+          critterbase_start_capture_id: surveyDeployment.critterbase_start_capture_id,
+          critterbase_end_capture_id: surveyDeployment.critterbase_end_capture_id,
+          critterbase_end_mortality_id: surveyDeployment.critterbase_end_mortality_id
+        });
+      }
+
+      return res.status(200).json(surveyDeploymentsWithBctwData);
     } catch (error) {
       defaultLog.error({ label: 'getDeploymentsInSurvey', message: 'error', error });
       await connection.rollback();

@@ -15,13 +15,8 @@ import {
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
-import { BctwDeploymentService } from './bctw-service/bctw-deployment-service';
-import {
-  BctwTelemetryService,
-  IAllTelemetry,
-  ICreateManualTelemetry,
-  IDeploymentRecord
-} from './bctw-service/bctw-telemetry-service';
+import { BctwDeploymentRecord, BctwDeploymentService } from './bctw-service/bctw-deployment-service';
+import { BctwTelemetryService, IAllTelemetry, ICreateManualTelemetry } from './bctw-service/bctw-telemetry-service';
 import { ICritter, ICritterbaseUser } from './critterbase-service';
 import { DBService } from './db-service';
 import { DeploymentService } from './deployment-service';
@@ -31,7 +26,7 @@ export type FindTelemetryResponse = { telemetry_id: string } & Pick<
   IAllTelemetry,
   'acquisition_date' | 'latitude' | 'longitude' | 'telemetry_type'
 > &
-  Pick<IDeploymentRecord, 'device_id'> &
+  Pick<BctwDeploymentRecord, 'device_id'> &
   Pick<Deployment, 'bctw_deployment_id' | 'critter_id' | 'deployment_id'> &
   Pick<SurveyCritterRecord, 'critterbase_critter_id'> &
   Pick<ICritter, 'animal_id'>;
@@ -337,7 +332,7 @@ export class TelemetryService extends DBService {
         latitude: telemetryRecord.latitude,
         longitude: telemetryRecord.longitude,
         telemetry_type: telemetryRecord.telemetry_type,
-        // IDeploymentRecord
+        // BctwDeploymentRecord
         device_id: usersBctwDeployment.device_id,
         // Deployment
         bctw_deployment_id: telemetryRecord.deployment_id,

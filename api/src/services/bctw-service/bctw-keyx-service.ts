@@ -1,7 +1,42 @@
 import FormData from 'form-data';
+import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../../errors/api-error';
-import { IKeyXDetails, IUploadKeyxResponse } from '../../models/bctw';
 import { BctwService } from './bctw-service';
+
+export const BctwUploadKeyxResponse = z.object({
+  errors: z.array(
+    z.object({
+      row: z.string(),
+      error: z.string(),
+      rownum: z.number()
+    })
+  ),
+  results: z.array(
+    z.object({
+      idcollar: z.number(),
+      comtype: z.string(),
+      idcom: z.string(),
+      collarkey: z.string(),
+      collartype: z.number(),
+      dtlast_fetch: z.string().nullable()
+    })
+  )
+});
+export type BctwUploadKeyxResponse = z.infer<typeof BctwUploadKeyxResponse>;
+
+export const BctwKeyXDetails = z.object({
+  device_id: z.number(),
+  keyx: z
+    .object({
+      idcom: z.string(),
+      comtype: z.string(),
+      idcollar: z.number(),
+      collarkey: z.string(),
+      collartype: z.number()
+    })
+    .nullable()
+});
+export type BctwKeyXDetails = z.infer<typeof BctwKeyXDetails>;
 
 export class BctwKeyxService extends BctwService {
   /**
@@ -24,7 +59,7 @@ export class BctwKeyxService extends BctwService {
 
     const response = await this.axiosInstance.post('/import-xml', formData, config);
 
-    const data: IUploadKeyxResponse = response.data;
+    const data: BctwUploadKeyxResponse = response.data;
 
     if (data.errors.length) {
       const actualErrors: string[] = [];
@@ -48,7 +83,7 @@ export class BctwKeyxService extends BctwService {
     };
   }
 
-  async getKeyXDetails(deviceIds: number[]): Promise<IKeyXDetails[]> {
+  async getKeyXDetails(deviceIds: number[]): Promise<BctwKeyXDetails[]> {
     const { data } = await this.axiosInstance.get('/get-collars-keyx', {
       params: {
         device_ids: deviceIds.map((id) => String(id))

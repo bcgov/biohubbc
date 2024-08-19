@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { surveyTelemetrySchema } from '../../openapi/schemas/telemetry';
+import { AllTelemetrySchema } from '../../openapi/schemas/telemetry';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getBctwUser } from '../../services/bctw-service/bctw-service';
 import { BctwTelemetryService } from '../../services/bctw-service/bctw-telemetry-service';
@@ -49,7 +49,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'array',
-            items: surveyTelemetrySchema
+            items: AllTelemetrySchema
           }
         }
       }

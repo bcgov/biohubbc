@@ -4,8 +4,10 @@ import { getDeploymentsInSurvey } from '.';
 import * as db from '../../../../../../database/db';
 import { SurveyCritterRecord } from '../../../../../../repositories/survey-critter-repository';
 import { Deployment } from '../../../../../../repositories/telemetry-repository';
-import { BctwDeploymentService } from '../../../../../../services/bctw-service/bctw-deployment-service';
-import { IDeploymentRecord } from '../../../../../../services/bctw-service/bctw-telemetry-service';
+import {
+  BctwDeploymentRecord,
+  BctwDeploymentService
+} from '../../../../../../services/bctw-service/bctw-deployment-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { TelemetryService } from '../../../../../../services/telemetry-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
@@ -29,7 +31,7 @@ describe('getDeploymentsInSurvey', () => {
       }
     ];
 
-    const mockBCTWDeployments: IDeploymentRecord[] = [
+    const mockBCTWDeployments: BctwDeploymentRecord[] = [
       {
         critter_id: 'critterbase1',
         assignment_id: 'assignment1',
@@ -86,7 +88,7 @@ describe('getDeploymentsInSurvey', () => {
         critterbase_critter_id: 'critterbase1'
       }
     ];
-    const mockBCTWDeployments: IDeploymentRecord[] = [
+    const mockBCTWDeployments: BctwDeploymentRecord[] = [
       {
         critter_id: 'critterbase1',
         assignment_id: 'assignment1',
@@ -148,7 +150,7 @@ describe('getDeploymentsInSurvey', () => {
       }
     ];
     const mockSIMSCritters: SurveyCritterRecord[] = []; // No SIMS critters
-    const mockBCTWDeployments: IDeploymentRecord[] = [
+    const mockBCTWDeployments: BctwDeploymentRecord[] = [
       {
         critter_id: 'critterbase1',
         assignment_id: 'assignment1',

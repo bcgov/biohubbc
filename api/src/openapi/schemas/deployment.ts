@@ -4,29 +4,86 @@ import { GeoJSONFeatureCollection } from './geoJson';
 export const getDeploymentSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   // TODO: REMOVE unnecessary columns from BCTW response
-  // additionalProperties: false,
+  additionalProperties: false,
+  required: [
+    // bctw properties
+    'assignment_id',
+    'collar_id',
+    'critter_id',
+    'device_id',
+    'attachment_start',
+    'attachment_end',
+    'bctw_deployment_id',
+    'device_make',
+    'device_model',
+    'frequency',
+    'frequency_unit',
+    // sims properties
+    'deployment_id',
+    'critterbase_critter_id',
+    'critterbase_start_capture_id',
+    'critterbase_end_capture_id',
+    'critterbase_end_mortality_id'
+  ],
   properties: {
-    deployment_id: {
-      type: 'integer',
-      description: 'Id of the deployment in the Survey'
+    // bctw properties
+    assignment_id: {
+      type: 'string',
+      format: 'uuid'
+    },
+    collar_id: {
+      type: 'string',
+      description: 'Id of the collar in BCTW'
+    },
+    attachment_start: {
+      type: 'string',
+      description: 'End date of the deployment, without time.'
+    },
+    attachment_end: {
+      type: 'string',
+      description: 'End time of the deployment.',
+      nullable: true
     },
     bctw_deployment_id: {
       type: 'string',
       format: 'uuid',
       description: 'Id of the deployment in BCTW. May match multiple records in BCTW'
     },
-    assignment_id: {
-      type: 'string',
-      format: 'uuid'
+    device_id: {
+      type: 'integer',
+      description: 'Id of the device, as reported by users. Not unique.'
     },
-    collar_id: { type: 'string', description: 'Id of the collar in BCTW' },
-    critter_id: { type: 'integer', minimum: 1, description: 'Id of the critter in the Survey' },
+    device_make: {
+      type: 'number',
+      nullable: true
+    },
+    device_model: {
+      type: 'string',
+      nullable: true
+    },
+    frequency: {
+      type: 'number',
+      nullable: true
+    },
+    frequency_unit: {
+      type: 'number',
+      nullable: true
+    },
+    // sims properties
+    deployment_id: {
+      type: 'integer',
+      description: 'Id of the deployment in the Survey.'
+    },
+    critter_id: {
+      type: 'integer',
+      minimum: 1,
+      description: 'Id of the critter in the Survey'
+    },
     critterbase_critter_id: {
       type: 'string',
       format: 'uuid',
-      description: 'Id of the critter in Critterbase'
+      description: 'Id of the critter in Critterbase.'
     },
-    device_id: { type: 'integer', description: 'Id of the device, as reported by users. Not unique.' },
     critterbase_start_capture_id: {
       type: 'string'
     },
@@ -35,14 +92,6 @@ export const getDeploymentSchema: OpenAPIV3.SchemaObject = {
       nullable: true
     },
     critterbase_end_mortality_id: {
-      type: 'string',
-      nullable: true
-    },
-    critterbase_end_date: {
-      type: 'string',
-      nullable: true
-    },
-    critterbase_end_time: {
       type: 'string',
       nullable: true
     }

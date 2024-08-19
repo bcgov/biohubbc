@@ -2,8 +2,10 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { createDeployment } from '.';
 import * as db from '../../../../../../../../database/db';
-import { IBctwDeploymentRecord } from '../../../../../../../../models/bctw';
-import { BctwDeploymentService } from '../../../../../../../../services/bctw-service/bctw-deployment-service';
+import {
+  BctwDeploymentRecord,
+  BctwDeploymentService
+} from '../../../../../../../../services/bctw-service/bctw-deployment-service';
 import { CritterbaseService, ICapture } from '../../../../../../../../services/critterbase-service';
 import { DeploymentService } from '../../../../../../../../services/deployment-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../__mocks__/db';
@@ -31,7 +33,7 @@ describe('createDeployment', () => {
       release_comment: null
     };
 
-    const mockDeployment: IBctwDeploymentRecord = {
+    const mockDeployment: BctwDeploymentRecord = {
       assignment_id: '111',
       collar_id: '222',
       critter_id: '333',

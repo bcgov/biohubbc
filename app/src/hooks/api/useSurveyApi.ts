@@ -542,6 +542,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
   /**
    * Get all telemetry points for a critter in a survey within a given time span.
    *
+   * TODO: Unused?
+   *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} critterId

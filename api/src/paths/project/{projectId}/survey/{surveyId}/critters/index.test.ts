@@ -14,7 +14,11 @@ describe('getCrittersFromSurvey', () => {
   it('returns critters from survey', async () => {
     const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
 
-    const mockSurveyCritter = { critter_id: 123, survey_id: 123, critterbase_critter_id: 'critterbase1' };
+    const mockSurveyCritter = {
+      critter_id: 123,
+      survey_id: 123,
+      critterbase_critter_id: 'critterbase1'
+    };
     const mockCBCritter = {
       critter_id: 'critterbase1',
       wlh_id: 'wlh1',
@@ -42,7 +46,13 @@ describe('getCrittersFromSurvey', () => {
     expect(mockGetDBConnection).to.have.been.calledOnce;
     expect(mockGetCrittersInSurvey).to.have.been.calledOnce;
     expect(mockGetMultipleCrittersByIds).to.be.calledOnceWith([mockSurveyCritter.critterbase_critter_id]);
-    expect(mockRes.json).to.have.been.calledWith([{ ...mockCBCritter, critter_id: mockSurveyCritter.critter_id }]);
+    expect(mockRes.json).to.have.been.calledWith([
+      {
+        ...mockCBCritter,
+        critter_id: mockSurveyCritter.critter_id,
+        critterbase_critter_id: mockSurveyCritter.critter_id
+      }
+    ]);
   });
 
   it('returns empty array if no critters in survey', async () => {

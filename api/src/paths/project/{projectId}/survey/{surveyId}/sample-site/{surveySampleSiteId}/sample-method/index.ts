@@ -216,7 +216,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  createSurveySampleSiteRecord()
+  createSurveySampleMethodRecord()
 ];
 
 POST.apiDoc = {
@@ -302,7 +302,7 @@ POST.apiDoc = {
   }
 };
 
-export function createSurveySampleSiteRecord(): RequestHandler {
+export function createSurveySampleMethodRecord(): RequestHandler {
   return async (req, res) => {
     if (!req.params.surveySampleSiteId) {
       throw new HTTP400('Missing required param `surveySampleSiteId`');
@@ -318,9 +318,9 @@ export function createSurveySampleSiteRecord(): RequestHandler {
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      const sampleSiteService = new SampleLocationService(connection);
+      const sampleLocationService = new SampleLocationService(connection);
 
-      const sampleSite = await sampleSiteService.getSurveySampleSiteById(surveyId, surveySampleSiteId);
+      const sampleSite = await sampleLocationService.getSurveySampleSiteById(surveyId, surveySampleSiteId);
 
       if (!sampleSite) {
         throw new HTTP400('The given sample site does not belong to the given survey');
@@ -341,7 +341,7 @@ export function createSurveySampleSiteRecord(): RequestHandler {
 
       return res.status(201).send();
     } catch (error) {
-      defaultLog.error({ label: 'insertProjectParticipants', message: 'error', error });
+      defaultLog.error({ label: 'createSurveySampleMethodRecord', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
