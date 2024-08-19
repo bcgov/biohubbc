@@ -1,11 +1,14 @@
+import { mdiShapePolygonPlus, mdiViewGridPlus } from '@mdi/js';
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
 import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import EditDialog from 'components/dialog/EditDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { IDrawControlsRef } from 'components/map/components/DrawControls';
+import ToggleButtonToolbar, { IToggleButtonView } from 'components/toolbar/ToggleButtonToolbar';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import { createRef, useMemo, useState } from 'react';
@@ -52,6 +55,11 @@ export const SurveyLocationYupSchema = yup.object({
     .min(1, 'At least one feature or boundary is required for a survey study area.')
 });
 
+enum StudyAreaViewEnum {
+  BOUNDS = 'BOUNDS',
+  BLOCKS = 'BLOCKS'
+}
+
 /**
  * Create survey - Study area section
  *
@@ -60,9 +68,12 @@ export const SurveyLocationYupSchema = yup.object({
 const StudyAreaForm = () => {
   const formikProps = useFormikContext<ISurveyLocationForm>();
   const { handleSubmit, values, setFieldValue, errors } = formikProps;
+
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState<number | undefined>(undefined);
+  const [activeView, setActiveView] = useState<StudyAreaViewEnum>(StudyAreaViewEnum.BOUNDS);
+
   const drawRef = createRef<IDrawControlsRef>();
   const locationDialogFormData = useMemo(() => {
     // Initial Dialog Data
@@ -118,6 +129,11 @@ const StudyAreaForm = () => {
     setFieldValue('locations', data);
   };
 
+  const views: IToggleButtonView<StudyAreaViewEnum>[] = [
+    { label: 'Bounds', value: StudyAreaViewEnum.BOUNDS, icon: mdiShapePolygonPlus },
+    { label: 'Blocks', value: StudyAreaViewEnum.BLOCKS, icon: mdiViewGridPlus }
+  ];
+
   return (
     <form onSubmit={handleSubmit}>
       <YesNoDialog
@@ -162,6 +178,18 @@ const StudyAreaForm = () => {
           </Alert>
         )}
         <Paper variant="outlined" sx={{ overflow: 'hidden' }}>
+          <Box p={2}>
+            <ToggleButtonToolbar
+              activeView={activeView}
+              views={views}
+              updateDatasetView={(view) => {
+                if (view) {
+                  setActiveView(view);
+                }
+              }}
+            />
+          </Box>
+          <Divider />
           <SurveyAreaMapControl
             map_id={'study_area_map'}
             formik_key="locations"

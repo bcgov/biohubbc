@@ -161,17 +161,17 @@ const EditSurveyForm = <
         <Divider />
 
         <HorizontalSplitFormComponent
-          title="Sampling Strategy"
-          summary="Specify site selection methods, stratums and optional sampling blocks for this survey"
-          component={<SamplingStrategyForm />}
+          title="Study Area"
+          summary="Import, draw or select a feature from an existing layer to define the study areas for this survey"
+          component={<StudyAreaForm />}
         />
 
         <Divider />
 
         <HorizontalSplitFormComponent
-          title="Study Area"
-          summary="Import, draw or select a feature from an existing layer to define the study areas for this survey"
-          component={<StudyAreaForm />}
+          title="Sampling Strategy"
+          summary="Specify site selection methods, stratums and optional sampling blocks for this survey"
+          component={<SamplingStrategyForm />}
         />
 
         <Divider />
