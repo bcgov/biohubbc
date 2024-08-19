@@ -32,6 +32,12 @@ parameters:
   - name: API_PORT_DEFAULT_NAME
     description: Api default port name
     value: '6100-tcp'
+  # Volume (for API logs and other persistent data)
+  - description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Volume Capacity
+    name: VOLUME_CAPACITY
+    required: true
+    value: '500Mi'
   # Clamav
   - name: ENABLE_FILE_VIRUS_SCAN
     value: 'true'
@@ -160,8 +166,8 @@ parameters:
   - name: REPLICAS_MAX
     value: '1'
 objects:
-  - apiVersion: image.openshift.io/v1
-    kind: ImageStream
+  - kind: ImageStream
+    apiVersion: image.openshift.io/v1
     metadata:
       annotations:
         description: Nodejs Runtime Image
@@ -174,6 +180,17 @@ objects:
         local: false
     status:
       dockerImageRepository: null
+
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${NAME}${SUFFIX}
+    spec:
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: '${VOLUME_CAPACITY}'
 
   - kind: DeploymentConfig
     apiVersion: apps.openshift.io/v1
@@ -380,16 +397,17 @@ objects:
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               volumeMounts:
-                - mountPath: /opt/app-root/app
-                  name: ${NAME}${SUFFIX}
+                - name: ${NAME}${SUFFIX}
+                  mountPath: /opt/app-root/src/data
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
           securityContext: {}
           terminationGracePeriodSeconds: 30
           volumes:
-            - emptyDir: {}
-              name: ${NAME}${SUFFIX}
+            - name: ${NAME}${SUFFIX}
+              persistentVolumeClaim:
+                claimName: ${NAME}${SUFFIX}
       test: false
       triggers:
         - imageChangeParams:
@@ -421,8 +439,8 @@ objects:
       name: ${NAME}${SUFFIX}
     type: Opaque
 
-  - apiVersion: v1
-    kind: Service
+  - kind: Service
+    apiVersion: v1
     metadata:
       annotations: null
       labels: {}

@@ -1,4 +1,5 @@
 import winston from 'winston';
+import DailyRotateFile from 'winston-daily-rotate-file';
 
 /**
  * Get or create a logger for the given `logLabel`.
@@ -50,8 +51,32 @@ import winston from 'winston';
  * @returns
  */
 export const getLogger = function (logLabel: string) {
-  return winston.loggers.get(logLabel || 'default', {
-    transports: [
+  const transports = [];
+
+  // Output logs to file
+  transports.push(
+    new DailyRotateFile({
+      dirname: 'data',
+      filename: 'sims-api-%DATE%.log',
+      datePattern: 'YYYY-MM-DD-HH',
+      maxSize: '100m', // Rotate log file when it reaches 100MB
+      maxFiles: '14d', // Keep logs for 14 days
+      level: process.env.LOG_LEVEL || 'info',
+      format: winston.format.combine(
+        winston.format((info) => {
+          const { timestamp, level, ...rest } = info;
+          // Return the properties of info in a specific order
+          return { timestamp, level, logger: logLabel, ...rest };
+        })(),
+        winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+        winston.format.prettyPrint({ colorize: false, depth: 10 })
+      )
+    })
+  );
+
+  if (process.env.NODE_ENV !== 'production') {
+    // Additionally output logs to console in non-production environments
+    transports.push(
       new winston.transports.Console({
         level: process.env.LOG_LEVEL || 'info',
         format: winston.format.combine(
@@ -61,11 +86,13 @@ export const getLogger = function (logLabel: string) {
             return { timestamp, level, logger: logLabel, ...rest };
           })(),
           winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-          winston.format.prettyPrint({ colorize: true, depth: 5 })
+          winston.format.prettyPrint({ colorize: true, depth: 10 })
         )
       })
-    ]
-  });
+    );
+  }
+
+  return winston.loggers.get(logLabel || 'default', { transports: transports });
 };
 
 export const WinstonLogLevels = ['silent', 'error', 'warn', 'info', 'debug', 'silly'] as const;

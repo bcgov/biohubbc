@@ -92,6 +92,7 @@ const phases = {
     sso: config.sso.dev,
     featureFlags: '',
     logLevel: 'info',
+    volumeCapacity: '500Mi',
     apiResponseValidationEnabled: true,
     databaseResponseValidationEnabled: true,
     nodeOptions: '--max_old_space_size=3000', // 75% of memoryLimit (bytes)
@@ -127,6 +128,7 @@ const phases = {
     tz: config.timezone.api,
     sso: config.sso.test,
     logLevel: 'info',
+    volumeCapacity: '500Mi',
     featureFlags: '',
     apiResponseValidationEnabled: true,
     databaseResponseValidationEnabled: true,
@@ -163,7 +165,8 @@ const phases = {
     tz: config.timezone.api,
     sso: config.sso.prod,
     featureFlags: 'API_FF_SUBMIT_BIOHUB',
-    logLevel: 'warn',
+    logLevel: 'info',
+    volumeCapacity: '500Mi',
     apiResponseValidationEnabled: false,
     databaseResponseValidationEnabled: false,
     nodeOptions: '--max_old_space_size=6000', // 75% of memoryLimit (bytes)
