@@ -1,4 +1,4 @@
-import SQL from 'sql-template-strings';
+git pulimport SQL from 'sql-template-strings';
 import { IDBConnection } from '../db';
 
 export const transformProjects = async (connection: IDBConnection): Promise<void> => {

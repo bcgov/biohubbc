@@ -10,19 +10,20 @@ export const transformUsersSql = SQL`
 -- Create stratum
 -------------------------------------------------------------------------------------------------
     INSERT INTO 
-        biohub.stratum (spi_project_id, survey_id, study_area, design_component_id, stratum_name, create_date, create_id)
+        biohub.survey_stratum (survey_id, name, description, create_date, update_date)
     SELECT 
-        st.spi_project_id,
-        st.survey_id,
-        st.study_area_id,
-        st.design_component_id,
+        s.survey_id,
         st.stratum_name,
+        st.stratum_description,
         st.when_created,
-        st.who_created, 
-        -- st.who_updated,
-        -- st.when_updated
+        st.when_updated
     FROM 
-        public.spi_component_stratums st;
+        public.spi_survey_stratums st
+    JOIN 
+        biohub.survey s 
+    ON 
+        s.spi_survey_id = st.survey_id;
+
 
   await connection.sql(sql);`
 
