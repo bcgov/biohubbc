@@ -6,6 +6,8 @@ export const transformUsersSql = SQL`
 -- Moving stratum data from SPI to SIMS to show the stratum that a Design Component is in for a particular survey.
 
 -- This is all the columns in SPI right now. doubt we will need all of them(?) so Ive commented out update date, but this is just a start.
+
+-- Create stratum
 -------------------------------------------------------------------------------------------------
     INSERT INTO 
         biohub.stratum (spi_project_id, survey_id, study_area, design_component_id, stratum_name, create_date, create_id)

@@ -86,6 +86,14 @@ export async function up(knex: Knex): Promise<void> {
     FOR EACH ROW
     EXECUTE FUNCTION public.migrate_populate_project_ids();
 
+    DROP TRIGGER IF EXISTS populate_project_ids ON biohub.migrate_spi_user_deduplication;
+    DROP FUNCTION IF EXISTS biohub.migrate_populate_project_ids();
+    ALTER TABLE biohub.project DROP COLUMN IF EXISTS spi_project_id;
+    ALTER TABLE biohub.study_species DROP COLUMN IF EXISTS spi_wldtaxonomic_units_id;
+    ALTER TABLE biohub.survey DROP COLUMN IF EXISTS spi_survey_id;
+    ALTER TABLE biohub.study_species DROP COLUMN IF EXISTS is_spi_import;
+    DROP TABLE IF EXISTS biohub.migrate_spi_user_deduplication;
+
   `);
 }
 
