@@ -8,7 +8,7 @@ import { DEFAULT_XLSX_SHEET_NAME } from '../media/xlsx/xlsx-file';
 import { safeToLowerCase } from '../string-utils';
 import { replaceCellDates, trimCellWhitespace } from './cell-utils';
 import {
-  generateCellGetterFromColumnValidator,
+  generateColumnCellGetterFromColumnValidator,
   getColumnAliasesFromValidator,
   getColumnNamesFromValidator
 } from './column-validator-utils';
@@ -240,11 +240,11 @@ export const validateWorksheetColumnTypes = (
 ): boolean => {
   const worksheetRows = getWorksheetRowObjects(worksheet);
   const columnNames = getColumnNamesFromValidator(columnValidator);
-  const getCellValue = generateCellGetterFromColumnValidator(columnValidator);
+  const getCellValue = generateColumnCellGetterFromColumnValidator(columnValidator);
 
   return worksheetRows.every((row) => {
     return columnNames.every((columnName, index) => {
-      const value = getCellValue(row, columnName.toUpperCase() as Uppercase<string>);
+      const value = getCellValue(row, columnName.toUpperCase() as Uppercase<string>).cell;
       const type = typeof value;
       const columnSpec: IXLSXCSVColumn = columnValidator[columnName];
 

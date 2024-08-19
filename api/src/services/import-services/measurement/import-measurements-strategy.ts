@@ -11,7 +11,7 @@ import {
 } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
-import { CSVImportStrategy, Row, ValidationError } from '../import-csv.interface';
+import { CSVImportStrategy, Row, Validation, ValidationError } from '../import-csv.interface';
 import { findCapturesFromDateTime } from '../utils/datetime';
 import { CsvMeasurement } from './import-measurements-strategy.interface';
 
@@ -121,7 +121,7 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
    * @param {WorkSheet} worksheet - Xlsx worksheet
    * @returns {*}
    */
-  async validateRows(rows: Row[], worksheet: WorkSheet) {
+  async validateRows(rows: Row[], worksheet: WorkSheet): Promise<Validation<any>> {
     // Generate type-safe cell getter from column validator
     const nonStandardColumns = this._getNonStandardColumns(worksheet);
 
@@ -212,6 +212,12 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
         }
       }
     });
+
+    if (!rowErrors.length) {
+      return { success: true, data: [] };
+    }
+
+    return { success: false, error: { issues: rowErrors } };
   }
 
   /**
