@@ -66,14 +66,14 @@ export const getColumnValidatorSpecification = (columnValidator: IXLSXCSVValidat
  * @param {T} columnValidator - Column validator
  * @returns {*}
  */
-export const generateCellGetterFromColumnValidator = <T extends IXLSXCSVValidator>(columnValidator: T) => {
-  return <J = any>(row: Row, validatorKey: keyof T): J | undefined => {
+export const generateColumnCellGetterFromColumnValidator = <T extends IXLSXCSVValidator>(columnValidator: T) => {
+  return <J = any>(row: Row, validatorKey: keyof T): { column: string; cell: J | undefined } => {
     // Cast the columnValidatorKey to a string for convienience
     const key = validatorKey as string;
 
     // Attempt to retrieve the cell value from the default column name
     if (row[key]) {
-      return row[key];
+      return { column: key, cell: row[key] };
     }
 
     const columnSpec = columnValidator[validatorKey] as IXLSXCSVColumn;
@@ -84,8 +84,10 @@ export const generateCellGetterFromColumnValidator = <T extends IXLSXCSVValidato
     // Loop through the aliases and attempt to retrieve the cell value
     for (const alias of aliases) {
       if (row[alias]) {
-        return row[alias];
+        return { column: alias, cell: row[alias] };
       }
     }
+
+    return { column: key, cell: undefined };
   };
 };
