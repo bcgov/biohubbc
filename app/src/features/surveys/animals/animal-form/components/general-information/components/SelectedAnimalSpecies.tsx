@@ -11,6 +11,12 @@ export interface ISelectedAnimalSpeciesProps {
   handleRemoveSpecies?: (species_id: number) => void;
 }
 
+/**
+ * Returns a stack of selected species cards.
+ *
+ * @param props {ISelectedAnimalSpeciesProps}
+ * @returns
+ */
 const SelectedAnimalSpecies = (props: ISelectedAnimalSpeciesProps) => {
   const { selectedSpecies, handleRemoveSpecies } = props;
 

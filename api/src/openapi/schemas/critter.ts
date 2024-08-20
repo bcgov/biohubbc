@@ -1,15 +1,11 @@
 import { OpenAPIV3 } from 'openapi-types';
 
-
 export const collectionUnitsSchema: OpenAPIV3.SchemaObject = {
   type: 'array',
   items: {
     type: 'object',
     additionalProperties: false,
-    required: [
-      'collection_category_id',
-      'collection_unit_id',
-    ],
+    required: ['collection_category_id', 'collection_unit_id'],
     properties: {
       critter_collection_unit_id: {
         type: 'string',

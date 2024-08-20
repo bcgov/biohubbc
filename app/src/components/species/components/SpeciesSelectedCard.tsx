@@ -33,11 +33,13 @@ const SpeciesSelectedCard = (props: ISpeciesSelectedCardProps) => {
   const { index, species, handleRemove } = props;
 
   return (
-    <Box display="flex" justifyContent="center" alignItems="center">
-      <SpeciesCard taxon={species} />
+    <Box display="flex" justifyContent="space-between" alignItems="center" position="relative">
+      <Box flex={0.95}>
+        <SpeciesCard taxon={species} />
+      </Box>
 
       {handleRemove && (
-        <Box flex="0 0 auto">
+        <Box flex="0 0 auto" position="absolute" right={0} top={-2}>
           <IconButton
             data-testid={`remove-species-button-${index}`}
             sx={{

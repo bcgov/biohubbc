@@ -152,7 +152,7 @@ export class PostAgreementsData {
   }
 }
 
-export const SpeciesWithEcologicalUnits = z.object({
+export const TaxonomyWithEcologicalUnits = z.object({
   itis_tsn: z.number(),
   ecological_units: z.array(
     z.object({
@@ -162,4 +162,4 @@ export const SpeciesWithEcologicalUnits = z.object({
   )
 });
 
-export type SpeciesWithEcologicalUnits = z.infer<typeof SpeciesWithEcologicalUnits>;
+export type TaxonomyWithEcologicalUnits = z.infer<typeof TaxonomyWithEcologicalUnits>;

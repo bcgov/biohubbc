@@ -9,7 +9,7 @@ import { IGeneralInformationForm } from 'features/surveys/components/general-inf
 import { ISurveyLocationForm } from 'features/surveys/components/locations/StudyAreaForm';
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/methodology/PurposeAndMethodologyForm';
 import { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
-import { ISpeciesForm, ISpeciesWithEcologicalUnits } from 'features/surveys/components/species/SpeciesForm';
+import { ISpeciesForm, ITaxonomyWithEcologicalUnits } from 'features/surveys/components/species/SpeciesForm';
 import { ISurveyPartnershipsForm } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Feature } from 'geojson';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
@@ -185,7 +185,7 @@ export type IUpdateSurveyRequest = ISurveyLocationForm & {
     revision_count: number;
   };
   species: {
-    focal_species: ISpeciesWithEcologicalUnits[];
+    focal_species: ITaxonomyWithEcologicalUnits[];
   };
   permit: {
     permits: {
@@ -359,7 +359,7 @@ export interface IGetSurveyForUpdateResponse {
       revision_count: number;
     };
     species: {
-      focal_species: ISpeciesWithEcologicalUnits[];
+      focal_species: ITaxonomyWithEcologicalUnits[];
     };
     permit: {
       permits: {

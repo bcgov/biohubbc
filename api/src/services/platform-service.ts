@@ -12,6 +12,7 @@ import { isFeatureFlagPresent } from '../utils/feature-flag-utils';
 import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
+import { IPostCollectionUnit } from './critterbase-service';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
@@ -55,11 +56,6 @@ export interface ITaxonomy {
   scientificName: string;
   rank: string;
   kingdom: string;
-}
-
-export interface IPostCollectionUnit {
-  critterbase_collection_unit_id: string;
-  critterbase_collection_category_id: string;
 }
 
 export interface ITaxonomyWithEcologicalUnits extends ITaxonomy {

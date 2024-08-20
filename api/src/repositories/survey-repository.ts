@@ -3,7 +3,7 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { PostProprietorData, PostSurveyObject, SpeciesWithEcologicalUnits } from '../models/survey-create';
+import { PostProprietorData, PostSurveyObject, TaxonomyWithEcologicalUnits } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
   FindSurveysResponse,
@@ -13,7 +13,7 @@ import {
   GetSurveyPurposeAndMethodologyData,
   ISurveyAdvancedFilters
 } from '../models/survey-view';
-import { IPostCollectionUnit } from '../services/platform-service';
+import { IPostCollectionUnit } from '../services/critterbase-service';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
@@ -361,7 +361,7 @@ export class SurveyRepository extends BaseRepository {
    * @returns {*} {Promise<IGetSpeciesData[]>}
    * @memberof SurveyRepository
    */
-  async getSpeciesData(surveyId: number): Promise<SpeciesWithEcologicalUnits[]> {
+  async getSpeciesData(surveyId: number): Promise<TaxonomyWithEcologicalUnits[]> {
     const sqlStatement = SQL`
     WITH ecological_units AS (
       SELECT
@@ -392,7 +392,7 @@ export class SurveyRepository extends BaseRepository {
       ss.survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql(sqlStatement, SpeciesWithEcologicalUnits);
+    const response = await this.connection.sql(sqlStatement, TaxonomyWithEcologicalUnits);
 
     return response.rows;
   }
@@ -802,8 +802,6 @@ export class SurveyRepository extends BaseRepository {
       ) RETURNING study_species_id AS id;
     `;
 
-    console.log(ecologicalUnitObject);
-
     const response = await this.connection.sql(sqlStatement);
     const result = response.rows?.[0];
 
@@ -1060,7 +1058,7 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Deletes Survey species data for a given survey ID
+   * Deletes ecological units data for focal species in a given survey ID
    *
    * @param {number} surveyId
    * @returns {*} Promise<void>

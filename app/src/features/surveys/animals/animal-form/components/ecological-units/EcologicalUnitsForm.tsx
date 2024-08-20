@@ -26,9 +26,7 @@ export const EcologicalUnitsForm = () => {
 
   const critterbaseApi = useCritterbaseApi();
 
-  const ecologicalUnitsDataLoader = useDataLoader((tsn: number) =>
-    critterbaseApi.xref.getTsnCollectionCategories([tsn])
-  );
+  const ecologicalUnitsDataLoader = useDataLoader((tsn: number) => critterbaseApi.xref.getTsnCollectionCategories(tsn));
 
   useEffect(() => {
     if (values.species?.tsn) {
@@ -51,7 +49,7 @@ export const EcologicalUnitsForm = () => {
                     categoryFieldName={`ecological_units[${index}].collection_category_id`}
                     unitFieldName={`ecological_units[${index}].collection_unit_id`}
                     selectedCategoryIds={values.ecological_units.map((unit) => unit.collection_category_id)}
-                    ecologicalUnits={ecologicalUnitsDataLoader.data ?? []}
+                    ecologicalUnits={ecologicalUnitsDataLoader?.data ?? []}
                     arrayHelpers={arrayHelpers}
                     index={index}
                   />

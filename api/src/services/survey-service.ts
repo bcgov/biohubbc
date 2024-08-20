@@ -178,7 +178,12 @@ export class SurveyService extends DBService {
     );
 
     // Create a lookup map for taxonomy data, to be used for injecting ecological units for each study species
-    const taxonomyMap = new Map(response.map((taxonomy) => [Number(taxonomy.tsn), taxonomy]));
+    const taxonomyMap = new Map(
+      response.map((taxonomy) => {
+        const taxon = { ...taxonomy, tsn: Number(taxonomy.tsn) };
+        return [Number(taxonomy.tsn), taxon];
+      })
+    );
 
     // Combine species data with taxonomy data and ecological units
     const focalSpecies = studySpeciesResponse.map((species) => ({
@@ -387,8 +392,7 @@ export class SurveyService extends DBService {
     promises.push(
       Promise.all(
         postSurveyData.species.focal_species.map((species: ITaxonomyWithEcologicalUnits) => {
-          const units = species.ecological_units;
-          if (units.length) {
+          if (species.ecological_units.length) {
             this.insertFocalSpeciesWithUnits(species, surveyId);
           } else {
             this.insertFocalSpecies(species.tsn, surveyId);

@@ -55,7 +55,12 @@ export const surveyDetailsSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
-export const SurveyCollectionUnitsSchema: OpenAPIV3.SchemaObject = {
+/**
+ * Schema for creating, updating and retrieving ecological units for focal species in a SIMS survey.
+ * Prefixed with critterbase_* to match database field names in SIMS.
+ *
+ */
+export const SurveyEcologicalUnitsSchema: OpenAPIV3.SchemaObject = {
   type: 'array',
   items: {
     type: 'object',
@@ -157,7 +162,7 @@ export const focalSpeciesSchema: OpenAPIV3.SchemaObject = {
       description: 'Taxonomy kingdom name',
       type: 'string'
     },
-    ecological_units: SurveyCollectionUnitsSchema
+    ecological_units: SurveyEcologicalUnitsSchema
   }
 };
 

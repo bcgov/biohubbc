@@ -21,6 +21,12 @@ interface EcologicalUnitsSelectProps {
   index: number;
 }
 
+/**
+ * Returns a pair of autocomplete fields for selecting an ecological unit category and value for the category.
+ *
+ * @param props {IEcologicalUnitsSelectProps}
+ * @returns
+ */
 export const EcologicalUnitsSelect = (props: EcologicalUnitsSelectProps) => {
   const { index, ecologicalUnits, arrayHelpers, categoryFieldName, unitFieldName, selectedCategoryIds } = props;
   const { setFieldValue } = useFormikContext();
@@ -36,6 +42,7 @@ export const EcologicalUnitsSelect = (props: EcologicalUnitsSelectProps) => {
     if (selectedCategoryId) {
       ecologicalUnitOptionsLoader.refresh(selectedCategoryId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategoryId]);
 
   // Memoized label for the selected ecological unit
