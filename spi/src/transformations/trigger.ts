@@ -40,13 +40,6 @@ export async function up(knex: Knex): Promise<void> {
       biohub_user_id  INTEGER NULL REFERENCES biohub.system_user(system_user_id) ON DELETE SET NULL ON UPDATE CASCADE DEFAULT NULL,
       CONSTRAINT dedup UNIQUE (family_name, given_name)
   );
-
-  -- Create design component sampling site join table
-    CREATE TABLE IF NOT EXISTS public.migrate_spi_sample_design_component (
-      id                         BIGSERIAL PRIMARY KEY,
-      survey_sample_site_id      INT NOT NULL,
-      design_component_id        INT NOT NULL
-  );
     
     ----------------------------------------------------------------------------------------
     -- Schema changes for the SPI data migration
@@ -92,6 +85,14 @@ export async function up(knex: Knex): Promise<void> {
     ON public.migrate_spi_user_deduplication
     FOR EACH ROW
     EXECUTE FUNCTION public.migrate_populate_project_ids();
+
+    DROP TRIGGER IF EXISTS populate_project_ids ON biohub.migrate_spi_user_deduplication;
+    DROP FUNCTION IF EXISTS biohub.migrate_populate_project_ids();
+    ALTER TABLE biohub.project DROP COLUMN IF EXISTS spi_project_id;
+    ALTER TABLE biohub.study_species DROP COLUMN IF EXISTS spi_wldtaxonomic_units_id;
+    ALTER TABLE biohub.survey DROP COLUMN IF EXISTS spi_survey_id;
+    ALTER TABLE biohub.study_species DROP COLUMN IF EXISTS is_spi_import;
+    DROP TABLE IF EXISTS biohub.migrate_spi_user_deduplication;
 
   `);
 }
