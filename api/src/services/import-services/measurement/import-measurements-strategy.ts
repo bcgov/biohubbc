@@ -37,7 +37,7 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
    * enforcing uppercase object keys.
    */
   columnValidator = {
-    ALIAS: { type: 'number', aliases: CSV_COLUMN_ALIASES.ALIAS },
+    ALIAS: { type: 'string', aliases: CSV_COLUMN_ALIASES.ALIAS },
     CAPTURE_DATE: { type: 'date' },
     CAPTURE_TIME: { type: 'string', optional: true }
   } satisfies IXLSXCSVValidator;
@@ -164,7 +164,7 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
           const measurements = tsnMeasurementsMap.get(tsn);
 
           if (!measurements || (!measurements.quantitative.length && !measurements.qualitative.length)) {
-            rowErrors.push({ row: index, message: 'No measurements exist for this taxon.' });
+            rowErrors.push({ row: index, col: column, message: 'No measurements exist for this taxon.' });
             continue;
           }
 
@@ -180,6 +180,7 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
             if (!matchingOptionValue) {
               rowErrors.push({
                 row: index,
+                col: column,
                 message: `Incorrect qualitative measurement value. Allowed: ${qualitativeMeasurement.options.map(
                   (option) => option.option_label.toLowerCase()
                 )}`
@@ -194,21 +195,33 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
 
           if (quantitativeMeasurement) {
             if (typeof cellValue !== 'number') {
-              rowErrors.push({ row: index, message: 'Quantitative measurement expecting number value.' });
+              rowErrors.push({ row: index, col: column, message: 'Quantitative measurement expecting number value.' });
             }
 
-            if (quantitativeMeasurement.max_value && cellValue > quantitativeMeasurement.max_value) {
-              rowErrors.push({ row: index, message: 'Quantitative measurement out of bounds. Too large.' });
+            if (quantitativeMeasurement.max_value != null && cellValue > quantitativeMeasurement.max_value) {
+              rowErrors.push({
+                row: index,
+                col: column,
+                message: 'Quantitative measurement out of bounds. Too large.'
+              });
             }
 
-            if (quantitativeMeasurement.min_value && cellValue < quantitativeMeasurement.min_value) {
-              rowErrors.push({ row: index, message: 'Quantitative measurement out of bounds. Too small.' });
+            if (quantitativeMeasurement.min_value != null && cellValue < quantitativeMeasurement.min_value) {
+              rowErrors.push({
+                row: index,
+                col: column,
+                message: 'Quantitative measurement out of bounds. Too small.'
+              });
             }
 
             continue;
           }
 
-          rowErrors.push({ row: index, message: 'Unable to match column name to an existing measurement.' });
+          rowErrors.push({
+            row: index,
+            col: column,
+            message: 'Unable to match column name to an existing measurement.'
+          });
         }
       }
     });
@@ -227,8 +240,8 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
    * @param {CsvCritter[]} measurementRows - CSV row measurements
    * @returns {Promise<number[]>} List of inserted measurements
    */
-  async insert(measurementRows: CsvMeasurement[]): Promise<number[]> {
+  async insert(measurementRows: CsvMeasurement[]): Promise<number> {
     console.log(measurementRows);
-    return [];
+    return 1;
   }
 }
