@@ -51,16 +51,16 @@ export const getColumnValidatorSpecification = (columnValidator: IXLSXCSVValidat
 };
 
 /**
- * Generate a cell getter from a column validator.
+ * Generate a column + cell getter from a column validator.
  *
- * Note: This will attempt to retrive the cell value from the row by the known header first.
+ * Note: This will attempt to retrive the column header and cell value from the row by the known header first.
  * If not found, it will then attempt to retrieve the value by the column header aliases.
  *
- * TODO: Can the internal typing for this be improved (without the `as` cast)?
- *
  * @example
- * const getCellValue = generateCellGetterFromColumnValidator(columnValidator)
- * const itis_tsn = getCellValue(row, 'ITIS_TSN')
+ * const getColumnCell = generateColumnCellGetterFromColumnValidator(columnValidator)
+ *
+ * const itis_tsn = getColumnCell(row, 'ITIS_TSN').cell
+ * const tsnColumn = getColumnCell(row, 'ITIS_TSN').column
  *
  * @template T
  * @param {T} columnValidator - Column validator
@@ -71,7 +71,7 @@ export const generateColumnCellGetterFromColumnValidator = <T extends IXLSXCSVVa
     // Cast the columnValidatorKey to a string for convienience
     const key = validatorKey as string;
 
-    // Attempt to retrieve the cell value from the default column name
+    // Attempt to retrieve the column and cell value from the default column name
     if (row[key]) {
       return { column: key, cell: row[key] };
     }
@@ -81,13 +81,14 @@ export const generateColumnCellGetterFromColumnValidator = <T extends IXLSXCSVVa
     // Get the column aliases
     const aliases = columnSpec.aliases ?? [];
 
-    // Loop through the aliases and attempt to retrieve the cell value
+    // Loop through the aliases and attempt to retrieve the column and cell value
     for (const alias of aliases) {
       if (row[alias]) {
         return { column: alias, cell: row[alias] };
       }
     }
 
+    // Returning the provided key when no match
     return { column: key, cell: undefined };
   };
 };
