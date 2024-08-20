@@ -70,7 +70,7 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
 
   const deviceMakesDataLoader = useDataLoader(() => telemetryApi.devices.getCodeValues('device_make'));
 
-  // Fetch frequency unit and device make code values on component mount
+  // Fetch frequency unit and device make code values from BCTW on component mount
   useEffect(() => {
     frequencyUnitDataLoader.load();
     deviceMakesDataLoader.load();
@@ -90,8 +90,8 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
         <Stack gap={5}>
           <HorizontalSplitFormComponent title="Deployment Details" summary="Enter information about the deployment">
             <DeploymentDetailsForm
-              animals={surveyContext.critterDataLoader.data ?? []}
-              frequencyUnits={frequencyUnitDataLoader.data ?? []}
+              surveyAnimals={surveyContext.critterDataLoader.data ?? []}
+              frequencyUnits={frequencyUnitDataLoader.data?.map((data) => ({ label: data.code, value: data.id })) ?? []}
             />
           </HorizontalSplitFormComponent>
 
@@ -111,7 +111,7 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
             summary="Enter additional information about the device and optionally enable automatic data 
             retrievals for compatible device makes">
             <DeploymentDeviceDetailsForm
-              deviceMakes={deviceMakesDataLoader.data?.map((data) => ({ label: data.code, value: data.code })) ?? []}
+              deviceMakes={deviceMakesDataLoader.data?.map((data) => ({ label: data.code, value: data.id })) ?? []}
             />
           </HorizontalSplitFormComponent>
 

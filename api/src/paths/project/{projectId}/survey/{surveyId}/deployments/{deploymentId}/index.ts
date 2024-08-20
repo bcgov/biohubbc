@@ -4,6 +4,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
+import { HTTP409 } from '../../../../../../../errors/http-error';
 import { getDeploymentSchema, postDeploymentSchema } from '../../../../../../../openapi/schemas/deployment';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { BctwDeploymentService } from '../../../../../../../services/bctw-service/bctw-deployment-service';
@@ -37,8 +38,8 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'Returns information about a specific deployment',
-  tags: ['bctw'],
+  description: 'Returns information about a specific deployment.',
+  tags: ['deployment', 'bctw'],
   security: [
     {
       Bearer: []
@@ -49,7 +50,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'integer'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -57,14 +59,25 @@ GET.apiDoc = {
       in: 'path',
       name: 'deploymentId',
       schema: {
-        type: 'integer'
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'deploymentId',
+      description: 'SIMS deployment ID',
+      schema: {
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
   ],
   responses: {
     200: {
-      description: 'Responds with information about a deployment',
+      description: 'Responds with information about a deployment under this survey.',
       content: {
         'application/json': {
           schema: {
@@ -82,6 +95,9 @@ GET.apiDoc = {
     403: {
       $ref: '#/components/responses/403'
     },
+    409: {
+      $ref: '#/components/responses/409'
+    },
     500: {
       $ref: '#/components/responses/500'
     },
@@ -96,6 +112,7 @@ export function getDeploymentById(): RequestHandler {
     const deploymentId = Number(req.params.deploymentId);
 
     const connection = getDBConnection(req.keycloak_token);
+
     try {
       await connection.open();
 
@@ -119,31 +136,51 @@ export function getDeploymentById(): RequestHandler {
       // Fetch additional deployment details from BCTW service
       const bctwDeployments = await bctwDeploymentService.getDeploymentsByIds([surveyDeployment.bctw_deployment_id]);
 
-      // Merge survey and BCTW deployment information
-      // Bctw might return multiple records for a deployment Id, so use reduce
-      const result = bctwDeployments.reduce((acc, bctwDeployment) => {
-        return {
-          ...acc,
-          // bctw response properties
-          assignment_id: bctwDeployment.assignment_id,
-          collar_id: bctwDeployment.collar_id,
-          //   valid_from: bctwDeployments.valid_from,
-          //   valid_to: bctwDeployments.valid_to,
-          attachment_start: bctwDeployment.attachment_start,
-          attachment_end: bctwDeployment.attachment_end,
-          device_id: bctwDeployment.device_id,
-          bctw_deployment_id: surveyDeployment?.bctw_deployment_id,
-          // sims response properties
-          deployment_id: surveyDeployment?.deployment_id,
-          critter_id: surveyDeployment.critter_id,
-          critterbase_critter_id: surveyDeployment?.critterbase_critter_id,
-          critterbase_start_capture_id: surveyDeployment?.critterbase_start_capture_id,
-          critterbase_end_capture_id: surveyDeployment?.critterbase_end_capture_id,
-          critterbase_end_mortality_id: surveyDeployment?.critterbase_end_mortality_id
-        };
-      }, {});
+      // For the SIMS survey deployment record, find the matching BCTW deployment record.
+      // We expect exactly 1 matching record, otherwise we throw an error.
+      // More than 1 matching active record indicates an error in the BCTW data.
+      const matchingBctwDeployments = bctwDeployments.filter(
+        (deployment) => deployment.deployment_id === surveyDeployment.bctw_deployment_id
+      );
 
-      return res.status(200).json(result);
+      if (matchingBctwDeployments.length > 1) {
+        throw new HTTP409('Multiple active deployments found for the same deployment ID', [
+          'This is an issue in the BC Telemetry Warehouse (BCTW) data. There should only be one active deployment record for a given deployment ID.',
+          `SIMS deployment ID: ${surveyDeployment.deployment_id}`,
+          `BCTW deployment ID: ${surveyDeployment.bctw_deployment_id}`
+        ]);
+      }
+
+      if (matchingBctwDeployments.length === 0) {
+        throw new HTTP409('No active deployments found for deployment ID', [
+          'There should be no deployments recorded in SIMS that have no matching deployment record in BCTW.',
+          `SIMS Deployment ID: ${surveyDeployment.deployment_id}`,
+          `BCTW Deployment ID: ${surveyDeployment.bctw_deployment_id}`
+        ]);
+      }
+
+      const surveyDeploymentWithBctwData = {
+        // BCTW properties
+        assignment_id: matchingBctwDeployments[0].assignment_id,
+        collar_id: matchingBctwDeployments[0].collar_id,
+        attachment_start: matchingBctwDeployments[0].attachment_start,
+        attachment_end: matchingBctwDeployments[0].attachment_end,
+        bctw_deployment_id: matchingBctwDeployments[0].deployment_id,
+        device_id: matchingBctwDeployments[0].device_id,
+        device_make: matchingBctwDeployments[0].device_make,
+        device_model: matchingBctwDeployments[0].device_model,
+        frequency: matchingBctwDeployments[0].frequency,
+        frequency_unit: matchingBctwDeployments[0].frequency_unit,
+        // SIMS properties
+        deployment_id: surveyDeployment.deployment_id,
+        critter_id: surveyDeployment.critter_id,
+        critterbase_critter_id: surveyDeployment.critterbase_critter_id,
+        critterbase_start_capture_id: surveyDeployment.critterbase_start_capture_id,
+        critterbase_end_capture_id: surveyDeployment.critterbase_end_capture_id,
+        critterbase_end_mortality_id: surveyDeployment.critterbase_end_mortality_id
+      };
+
+      return res.status(200).json(surveyDeploymentWithBctwData);
     } catch (error) {
       defaultLog.error({ label: 'getDeploymentById', message: 'error', error });
       await connection.rollback();
@@ -176,7 +213,7 @@ export const PUT: Operation = [
 
 PUT.apiDoc = {
   description: 'Updates information about the start and end of a deployment.',
-  tags: ['critterbase'],
+  tags: ['deployment', 'bctw'],
   security: [
     {
       Bearer: []
@@ -185,18 +222,31 @@ PUT.apiDoc = {
   parameters: [
     {
       in: 'path',
+      name: 'projectId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'integer'
-      }
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
     },
     {
       in: 'path',
       name: 'deploymentId',
-      description: 'Integer deployment Id in SIMS',
+      description: 'SIMS deployment ID',
       schema: {
-        type: 'integer'
-      }
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
     }
   ],
   requestBody: {
@@ -209,21 +259,7 @@ PUT.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Responds with count of rows created or updated in SIMS DB Deployments.',
-      content: {
-        'application/json': {
-          schema: {
-            title: 'Deployment response object',
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              message: {
-                type: 'string'
-              }
-            }
-          }
-        }
-      }
+      description: 'Deployment updated OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -294,7 +330,7 @@ export function updateDeployment(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json({ message: 'Deployment updated.' });
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'updateDeployment', message: 'error', error });
       await connection.rollback();
@@ -326,7 +362,7 @@ export const DELETE: Operation = [
 
 DELETE.apiDoc = {
   description: 'Deletes the deployment record in SIMS, and soft deletes the record in BCTW.',
-  tags: ['bctw'],
+  tags: ['deploymenty', 'bctw'],
   security: [
     {
       Bearer: []
@@ -335,15 +371,26 @@ DELETE.apiDoc = {
   parameters: [
     {
       in: 'path',
+      name: 'projectId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
     {
       in: 'path',
       name: 'deploymentId',
+      description: 'SIMS deployment ID',
       schema: {
         type: 'integer',
         minimum: 1
@@ -353,21 +400,7 @@ DELETE.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Removed deployment successfully.',
-      content: {
-        'application/json': {
-          schema: {
-            title: 'Deployment response object',
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              message: {
-                type: 'string'
-              }
-            }
-          }
-        }
-      }
+      description: 'Delete deployment OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -402,15 +435,14 @@ export function deleteDeployment(): RequestHandler {
         username: connection.systemUserIdentifier()
       };
 
-      const bctwDeploymentService = new BctwDeploymentService(user);
       const deploymentService = new DeploymentService(connection);
-
       const { bctw_deployment_id } = await deploymentService.deleteDeployment(surveyId, deploymentId);
 
+      const bctwDeploymentService = new BctwDeploymentService(user);
       await bctwDeploymentService.deleteDeployment(bctw_deployment_id);
 
       await connection.commit();
-      return res.status(200).json({ message: 'Succesfully deleted deployment.' });
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteDeployment', message: 'error', error });
       await connection.rollback();

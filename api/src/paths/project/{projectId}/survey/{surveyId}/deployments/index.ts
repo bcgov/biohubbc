@@ -36,9 +36,8 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description:
-    'Fetches a list of all the deployments under this survey. This is determined by the critters under this survey.',
-  tags: ['bctw'],
+  description: 'Returns information about all deployments under this survey.',
+  tags: ['deployment', 'bctw'],
   security: [
     {
       Bearer: []
@@ -56,7 +55,7 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Responds with all deployments under this survey.',
+      description: 'Responds with information about all deployments under this survey.',
       content: {
         'application/json': {
           schema: {
@@ -76,6 +75,9 @@ GET.apiDoc = {
     403: {
       $ref: '#/components/responses/403'
     },
+    409: {
+      $ref: '#/components/responses/409'
+    },
     500: {
       $ref: '#/components/responses/500'
     },
@@ -88,6 +90,7 @@ GET.apiDoc = {
 export function getDeploymentsInSurvey(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
+
     const connection = getDBConnection(req.keycloak_token);
 
     try {
@@ -109,6 +112,7 @@ export function getDeploymentsInSurvey(): RequestHandler {
 
       // Return early if there are no deployments
       if (!deploymentIds.length) {
+        // TODO: 400 error instead?
         return res.status(200).json([]);
       }
 
@@ -119,6 +123,7 @@ export function getDeploymentsInSurvey(): RequestHandler {
 
       // For each SIMS survey deployment record, find the matching BCTW deployment record.
       // We expect exactly 1 matching record, otherwise we throw an error.
+      // More than 1 matching active record indicates an error in the BCTW data.
       for (const surveyDeployment of surveyDeployments) {
         const matchingBctwDeployments = bctwDeployments.filter(
           (deployment) => deployment.deployment_id === surveyDeployment.bctw_deployment_id

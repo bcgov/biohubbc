@@ -29,7 +29,7 @@ export const PATCH: Operation = [
       ]
     };
   }),
-  updateDeployment()
+  patchDeployment()
 ];
 
 PATCH.apiDoc = {
@@ -43,9 +43,19 @@ PATCH.apiDoc = {
   parameters: [
     {
       in: 'path',
+      name: 'projectId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'integer'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -53,16 +63,19 @@ PATCH.apiDoc = {
       in: 'path',
       name: 'critterId',
       schema: {
-        type: 'integer'
-      }
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
     },
     {
       in: 'path',
-      name: 'bctwDeploymentId',
-      description: 'BCTW deployment Id, not the primary key of the deployment table.',
+      name: 'deploymentId',
       schema: {
-        type: 'integer'
-      }
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
     }
   ],
   requestBody: {
@@ -73,6 +86,15 @@ PATCH.apiDoc = {
           title: 'Deploy device request object',
           type: 'object',
           additionalProperties: false,
+          required: [
+            'deployment_id',
+            'bctw_deployment_id',
+            'critterbase_start_capture_id',
+            'critterbase_end_capture_id',
+            'critterbase_end_mortality_id',
+            'attachment_end_date',
+            'attachment_end_time'
+          ],
           properties: {
             deployment_id: {
               type: 'integer',
@@ -105,11 +127,15 @@ PATCH.apiDoc = {
             attachment_end_date: {
               type: 'string',
               description: 'End date of the deployment, without time.',
+              example: '2021-01-01',
+              pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$',
               nullable: true
             },
             attachment_end_time: {
               type: 'string',
               description: 'End time of the deployment.',
+              example: '12:00:00',
+              pattern: '^[0-9]{2}:[0-9]{2}:[0-9]{2}$',
               nullable: true
             }
           }
@@ -153,7 +179,7 @@ PATCH.apiDoc = {
   }
 };
 
-export function updateDeployment(): RequestHandler {
+export function patchDeployment(): RequestHandler {
   return async (req, res) => {
     const critterId = Number(req.params.critterId);
     const deploymentId = Number(req.params.deploymentId);
@@ -161,12 +187,13 @@ export function updateDeployment(): RequestHandler {
     const connection = getDBConnection(req.keycloak_token);
 
     const {
+      deployment_id,
+      bctw_deployment_id,
       critterbase_start_capture_id,
       critterbase_end_capture_id,
       critterbase_end_mortality_id,
       attachment_end_date,
-      attachment_end_time,
-      ...bctwRequestObject
+      attachment_end_time
     } = req.body;
 
     try {
@@ -183,7 +210,7 @@ export function updateDeployment(): RequestHandler {
 
       await deploymentService.updateDeployment(deploymentId, {
         critter_id: critterId,
-        bctw_deployment_id: bctwRequestObject.bctw_deployment_id,
+        bctw_deployment_id: bctw_deployment_id,
         critterbase_start_capture_id,
         critterbase_end_capture_id,
         critterbase_end_mortality_id
@@ -191,19 +218,18 @@ export function updateDeployment(): RequestHandler {
 
       const capture = await critterbaseService.getCaptureById(critterbase_start_capture_id);
 
-      // Update the deployment in BCTW, which works by soft deleting and inserting a new deployment record (hence createDeployment)
+      // Update the deployment in BCTW, which works by soft deleting and inserting a new deployment record
       await bctwDeploymentService.updateDeployment({
-        ...bctwRequestObject,
+        deployment_id,
         attachment_start: capture.capture_date,
-        attachment_end: dayjs(`${attachment_end_date} ${attachment_end_time}`), // TODO: ADD SEPARATE DATE AND TIME TO BCTW
-        critter_id: capture.critter_id
+        attachment_end: dayjs(`${attachment_end_date} ${attachment_end_time}`).toISOString() // TODO: ADD SEPARATE DATE AND TIME TO BCTW
       });
 
       await connection.commit();
 
-      return res.status(200).json({ message: 'Deployment updated.' });
+      return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'updateDeployment', message: 'error', error });
+      defaultLog.error({ label: 'patchDeployment', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

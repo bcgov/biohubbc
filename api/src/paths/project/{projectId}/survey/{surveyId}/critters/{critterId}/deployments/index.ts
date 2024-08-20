@@ -36,7 +36,7 @@ export const POST: Operation = [
 POST.apiDoc = {
   description:
     'Creates a deployment in SIMS and BCTW. Upserts a collar in BCTW and inserts a new deployment of the resulting collar_id.',
-  tags: ['critterbase'],
+  tags: ['deployment', 'bctw', 'critterbase'],
   security: [
     {
       Bearer: []

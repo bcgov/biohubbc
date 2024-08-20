@@ -2,11 +2,10 @@ import Grid from '@mui/material/Grid';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { AnimalAutocompleteField } from 'components/fields/AnimalAutocompleteField';
-import AutocompleteField from 'components/fields/AutocompleteField';
+import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useFormikContext } from 'formik';
-import { ICodeResponse } from 'hooks/telemetry/useDeviceApi';
 import { useSurveyContext } from 'hooks/useContext';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { Link as RouterLink } from 'react-router-dom';
@@ -43,8 +42,8 @@ export const DeploymentDetailsFormYupSchema = yup.object({
 });
 
 interface IDeploymentDetailsFormProps {
-  animals: ICritterSimpleResponse[];
-  frequencyUnits: ICodeResponse[];
+  surveyAnimals: ICritterSimpleResponse[];
+  frequencyUnits: IAutocompleteFieldOption<number>[];
 }
 
 /**
@@ -54,6 +53,8 @@ interface IDeploymentDetailsFormProps {
  * @return {*}
  */
 export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
+  const { surveyAnimals, frequencyUnits } = props;
+
   const { setFieldValue, values } = useFormikContext<ICreateAnimalDeployment>();
 
   const surveyContext = useSurveyContext();
@@ -96,9 +97,7 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
           <AnimalAutocompleteField
             formikFieldName="critter_id"
             label="Animal"
-            defaultAnimal={surveyContext.critterDataLoader.data?.find(
-              (animal) => animal.critter_id === values.critter_id
-            )}
+            defaultAnimal={surveyAnimals.find((animal) => animal.critter_id === values.critter_id)}
             required
             clearOnSelect
             onSelect={(animal: ICritterSimpleResponse) => {
@@ -124,10 +123,7 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
               name="frequency_unit"
               id="frequency_unit"
               label={'Unit'}
-              options={props.frequencyUnits.map((unit) => ({
-                value: unit.code,
-                label: unit.code
-              }))}
+              options={frequencyUnits}
               required={!!(values.frequency || values.frequency_unit)}
             />
           </Stack>

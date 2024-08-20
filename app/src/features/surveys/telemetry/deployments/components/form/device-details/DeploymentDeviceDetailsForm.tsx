@@ -21,7 +21,7 @@ export const DeploymentDeviceDetailsFormYupSchema = yup.object({
 });
 
 interface IDeploymentDeviceDetailsFormProps {
-  deviceMakes: IAutocompleteFieldOption<string>[];
+  deviceMakes: IAutocompleteFieldOption<number>[];
 }
 
 /**

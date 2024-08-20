@@ -14,7 +14,7 @@ describe('importCsv', () => {
 
   it('returns imported critters', async () => {
     const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });
-    const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+    const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
     const mockImportCSV = sinon.stub(strategy, 'importCSV').resolves([1, 2]);
     const mockFileScan = sinon.stub(fileUtils, 'scanFileForVirus').resolves(true);
 
@@ -33,7 +33,7 @@ describe('importCsv', () => {
 
     expect(mockFileScan).to.have.been.calledOnceWithExactly(mockFile);
 
-    expect(mockGetDBConnection).to.have.been.calledOnce;
+    expect(getDBConnectionStub).to.have.been.calledOnce;
 
     expect(mockImportCSV).to.have.been.calledOnce;
 
@@ -50,7 +50,7 @@ describe('importCsv', () => {
       release: sinon.stub(),
       rollback: sinon.stub()
     });
-    const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+    const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const mockFileScan = sinon.stub(fileUtils, 'scanFileForVirus').resolves(false);
 
@@ -78,7 +78,7 @@ describe('importCsv', () => {
     expect(mockDBConnection.open).to.have.been.calledOnce;
     expect(mockFileScan).to.have.been.calledOnceWithExactly(mockFile);
 
-    expect(mockGetDBConnection).to.have.been.calledOnce;
+    expect(getDBConnectionStub).to.have.been.calledOnce;
     expect(mockRes.json).to.not.have.been.called;
 
     expect(mockDBConnection.rollback).to.have.been.called;

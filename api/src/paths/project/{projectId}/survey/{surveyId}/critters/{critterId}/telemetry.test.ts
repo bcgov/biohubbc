@@ -14,7 +14,7 @@ describe('getCritterTelemetry', () => {
 
   it('fetches telemetry object', async () => {
     const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
-    const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+    const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const mockSurveyDeployment: SurveyDeployment = {
       deployment_id: 1,
@@ -76,14 +76,14 @@ describe('getCritterTelemetry', () => {
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.jsonValue).to.eql(mockTelemetry);
-    expect(mockGetDBConnection).to.have.been.calledOnce;
+    expect(getDBConnectionStub).to.have.been.calledOnce;
     expect(getDeploymentForCritterIdStub).to.have.been.calledOnce;
     expect(getAllTelemetryByDeploymentIdsStub).to.have.been.calledOnce;
   });
 
   it('catches and re-throws error', async () => {
     const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
-    const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+    const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const mockError = new Error('a test error');
     const getDeploymentForCritterIdStub = sinon
@@ -99,7 +99,7 @@ describe('getCritterTelemetry', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError).to.eql(mockError);
-      expect(mockGetDBConnection).to.have.been.calledOnce;
+      expect(getDBConnectionStub).to.have.been.calledOnce;
       expect(getDeploymentForCritterIdStub).to.have.been.calledOnce;
     }
   });

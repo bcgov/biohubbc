@@ -26,7 +26,7 @@ export const getDeploymentSchema: OpenAPIV3.SchemaObject = {
     'critterbase_end_mortality_id'
   ],
   properties: {
-    // bctw properties
+    // BCTW properties
     assignment_id: {
       type: 'string',
       format: 'uuid'
@@ -69,7 +69,7 @@ export const getDeploymentSchema: OpenAPIV3.SchemaObject = {
       type: 'number',
       nullable: true
     },
-    // sims properties
+    // SIMS properties
     deployment_id: {
       type: 'integer',
       description: 'Id of the deployment in the Survey.'
@@ -113,10 +113,12 @@ export const postDeploymentSchema: OpenAPIV3.SchemaObject = {
       type: 'number'
     },
     frequency_unit: {
-      type: 'string'
+      type: 'number',
+      nullable: true
     },
     device_make: {
-      type: 'string'
+      type: 'number',
+      nullable: true
     },
     device_model: {
       type: 'string'
@@ -206,7 +208,7 @@ export const GeoJSONTelemetryPointsAPISchema: OpenAPIV3.SchemaObject = {
                 nullable: true
               },
               frequency_unit: {
-                type: 'string',
+                type: 'number',
                 nullable: true
               },
               wlh_id: {

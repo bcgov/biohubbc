@@ -63,19 +63,19 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'path',
-      name: 'surveyId',
+      name: 'projectId',
       schema: {
         type: 'integer'
       },
       required: true
     },
     {
-      in: 'query',
-      name: 'format',
+      in: 'path',
+      name: 'surveyId',
       schema: {
-        type: 'string',
-        enum: ['detailed']
-      }
+        type: 'integer'
+      },
+      required: true
     }
   ],
   responses: {
@@ -112,7 +112,7 @@ GET.apiDoc = {
 POST.apiDoc = {
   description:
     'Creates a new critter in CritterBase, and if successful, adds a corresponding SIMS critter record under this survey.',
-  tags: ['critterbase'],
+  tags: ['survey', 'critterbase'],
   security: [
     {
       Bearer: []
@@ -121,9 +121,19 @@ POST.apiDoc = {
   parameters: [
     {
       in: 'path',
+      name: 'projectId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -227,25 +237,36 @@ export function getCrittersFromSurvey(): RequestHandler {
 
       const critterbaseCritters = await surveyService.critterbaseService.getMultipleCrittersByIds(critterIds);
 
-      const critterMap = new Map();
-      for (const critterbaseCritter of critterbaseCritters) {
-        critterMap.set(critterbaseCritter.critter_id, {
-          ...critterbaseCritter,
-          // Rename `critter_id` from Critterbase to critterbase_critter_id to distinguish it from
-          // the integer `critter_id` in SIMS
-          critterbase_critter_id: critterbaseCritter.critter_id
+      const response = [];
+
+      // For all SIMS critters
+      for (const surveyCritter of surveyCritters) {
+        // Find the corresponding Critterbase critter
+        const critterbaseCritter = critterbaseCritters.find(
+          (critter) => critter.critter_id === surveyCritter.critterbase_critter_id
+        );
+
+        if (!critterbaseCritter) {
+          // SIMS critter exists but Critterbase critter does not. As Critterbase is the source of truth for critter
+          // data, we should not return this critter, which SIMS cannot properly represent.
+          continue;
+        }
+
+        response.push({
+          // SIMS properties
+          critter_id: surveyCritter.critter_id,
+          critterbase_critter_id: surveyCritter.critterbase_critter_id,
+          // Critterbase properties
+          wlh_id: critterbaseCritter.wlh_id,
+          animal_id: critterbaseCritter.animal_id,
+          sex: critterbaseCritter.sex,
+          itis_tsn: critterbaseCritter.itis_tsn,
+          itis_scientific_name: critterbaseCritter.itis_scientific_name,
+          critter_comment: critterbaseCritter.critter_comment
         });
       }
 
-      // Update the critterMap with critter_id
-      for (const surveyCritter of surveyCritters) {
-        const key = String(surveyCritter.critterbase_critter_id);
-        if (critterMap.has(key)) {
-          critterMap.get(key).critter_id = surveyCritter.critter_id;
-        }
-      }
-
-      return res.status(200).json([...critterMap.values()]);
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getCrittersFromSurvey', message: 'error', error });
       await connection.rollback();

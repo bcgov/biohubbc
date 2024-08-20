@@ -48,7 +48,7 @@ describe('processFile', () => {
   });
 
   it('should succeed with valid params', async () => {
-    const mockGetDBConnection = sinon.stub(db, 'getDBConnection').returns({
+    const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
         return 20;
@@ -60,7 +60,7 @@ describe('processFile', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(mockGetDBConnection).to.have.been.calledOnce;
+    expect(getDBConnectionStub).to.have.been.calledOnce;
     expect(mockRes.status).to.be.calledWith(200);
     expect(mockRes.json).not.to.have.been.called;
   });
