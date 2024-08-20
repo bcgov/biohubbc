@@ -1,3 +1,4 @@
+import { transformPermits } from './transformations/permit';
 import { defaultPoolConfig, getDBConnection, IDBConnection, initDBPool } from './db';
 import { transformProjects } from './transformations/project';
 import { transformSurveys } from './transformations/survey';
@@ -13,6 +14,7 @@ async function main() {
 
   // Gets the database connection, connecting with the user `spi`
   connection = getDBConnection();
+
   try {
     // Opens a database connection for the transformations
     await connection.open();
@@ -35,6 +37,9 @@ async function main() {
 
     // STEP 3. Transforms SPI Surveys into SIMS Surveys
     await transformSurveys(connection);
+
+    // STEP 4. Transforms SPI Permits into SIMS Permits
+    await transformPermits(connection)
 
     // Commit the transactions
     connection.commit();

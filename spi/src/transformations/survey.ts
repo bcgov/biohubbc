@@ -24,7 +24,8 @@ export const transformSurveys = async (connection: IDBConnection): Promise<void>
     FROM 
         public.spi_surveys ss
     JOIN 
-        project p ON ss.spi_project_id = p.spi_project_id;
+        project p ON ss.spi_project_id = p.spi_project_id
+    ON CONFLICT DO NOTHING;
 
 
     -------------------------------------------------------------------------------------------------

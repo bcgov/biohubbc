@@ -1,26 +1,6 @@
 import SQL from 'sql-template-strings';
 import { IDBConnection } from '../db';
 
-export const transformUsersSql = SQL`
--------------------------------------------------------------------------------------------------
--- Creates a table in the public schema with unique users
--------------------------------------------------------------------------------------------------
-INSERT INTO migrate_spi_user_deduplication(family_name, given_name, display_name, when_created, when_updated, spi_project_ids, spi_person_ids)
-SELECT 
-  surname,
-  regexp_replace(concat(trim(first_given_name), ' ', trim(second_given_name)), '\s+', ' ', 'g') as given_name,
-  regexp_replace(concat(trim(first_given_name), ' ', trim(second_given_name), ' ', trim(surname)), '\s+', ' ', 'g') as display_name,
-  min(date_trunc('day', when_created)) as when_created,
-  max(date_trunc('day', when_updated)) as when_updated,
-  array_agg(spi_project_id) as spi_project_ids,
-  array_agg(person_id) as spi_person_ids
-FROM spi_persons
-GROUP BY 
-  surname, 
-  regexp_replace(concat(trim(first_given_name), ' ', trim(second_given_name)), '\s+', ' ', 'g'),
-  regexp_replace(concat(trim(first_given_name), ' ', trim(second_given_name), ' ', trim(surname)), '\s+', ' ', 'g');
-`
-
 export const transformUsers = async (connection: IDBConnection): Promise<void> => {
   console.log('Transforming users');
 
