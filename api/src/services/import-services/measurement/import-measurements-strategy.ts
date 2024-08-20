@@ -1,6 +1,7 @@
 import { uniq } from 'lodash';
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
+import { getLogger } from '../../../utils/logger';
 import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
 import { generateColumnCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { getNonStandardColumnNamesFromWorksheet, IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
@@ -13,7 +14,13 @@ import { DBService } from '../../db-service';
 import { SurveyCritterService } from '../../survey-critter-service';
 import { CSVImportStrategy, Row, Validation, ValidationError } from '../import-csv.interface';
 import { findCapturesFromDateTime } from '../utils/datetime';
-import { CsvMeasurement } from './import-measurements-strategy.interface';
+import {
+  CsvMeasurement,
+  CsvQualitativeMeasurement,
+  CsvQuantitativeMeasurement
+} from './import-measurements-strategy.interface';
+
+const defaultLog = getLogger('services/import/import-measurements-strategy');
 
 /**
  *
@@ -66,6 +73,15 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
     return uniq(getNonStandardColumnNamesFromWorksheet(worksheet, this.columnValidator));
   }
 
+  /**
+   * Get TSN measurement map for validation.
+   *
+   * For a list of TSNS return all measurements inherited or directly assigned.
+   *
+   * @async
+   * @param {string[]} tsns - List of ITIS TSN's
+   * @returns {*}
+   */
   async _getTsnsMeasurementMap(tsns: string[]) {
     const tsnMeasurementMap = new Map<
       string,
@@ -76,6 +92,7 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
     >();
 
     const uniqueTsns = [...new Set(tsns)];
+
     const measurements = await Promise.all(
       uniqueTsns.map((tsn) => this.surveyCritterService.critterbaseService.getTaxonMeasurements(tsn))
     );
@@ -87,6 +104,13 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
     return tsnMeasurementMap;
   }
 
+  /**
+   * Get row meta data for validation.
+   *
+   * @param {Row} row - CSV row
+   * @param {Map<string, ICritterDetailed | undefined>} critterAliasMap - Survey critter alias mapping
+   * @returns {{ capture_id?: string; critter_id?: string; tsn?: string }}
+   */
   _getRowMeta(
     row: Row,
     critterAliasMap: Map<string, ICritterDetailed | undefined>
@@ -116,6 +140,9 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
   /**
    * Validate CSV worksheet rows against reference data.
    *
+   * Note: This function is longer than I would like, but moving logic into seperate methods
+   * made the flow more complex and equally as long.
+   *
    * @async
    * @param {Row[]} rows - Invalidated CSV rows
    * @param {WorkSheet} worksheet - Xlsx worksheet
@@ -125,109 +152,156 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
     // Generate type-safe cell getter from column validator
     const nonStandardColumns = this._getNonStandardColumns(worksheet);
 
+    // Get Critterbase reference data
     const critterAliasMap = await this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId);
-
-    const rowErrors: ValidationError[] = [];
-    const rowTsns: string[] = [];
-
-    // Collect the tsns from the rows
-    rows.forEach((row) => {
-      const tsn = this._getRowMeta(row, critterAliasMap).tsn;
-      if (tsn) {
-        rowTsns.push(tsn);
-      }
-    });
-
+    const rowTsns = rows.map((row) => this._getRowMeta(row, critterAliasMap).tsn).filter(Boolean) as string[];
     const tsnMeasurementsMap = await this._getTsnsMeasurementMap(rowTsns);
 
+    const rowErrors: ValidationError[] = [];
+    const validatedRows: CsvMeasurement[] = [];
+
     rows.forEach((row, index) => {
+      const validatedRow: Partial<CsvMeasurement> = {};
+
       const { critter_id, capture_id, tsn } = this._getRowMeta(row, critterAliasMap);
 
+      // Validate critter can be matched via alias
       if (!critter_id) {
         rowErrors.push({ row: index, message: 'Unable to find matching Critter with alias.' });
       }
 
+      // Validate capture can be matched with date and time
       if (!capture_id) {
         rowErrors.push({ row: index, message: 'Unable to find matching Capture with date and time.' });
       }
 
+      // This will only be triggered with an invalid alias
       if (!tsn) {
         rowErrors.push({ row: index, message: 'Unable to find ITIS TSN for Critter.' });
-      } else {
-        for (const column of nonStandardColumns) {
-          const cellValue = row[column];
-
-          if (cellValue === undefined) {
-            continue;
-          }
-
-          const measurements = tsnMeasurementsMap.get(tsn);
-
-          if (!measurements || (!measurements.quantitative.length && !measurements.qualitative.length)) {
-            rowErrors.push({ row: index, col: column, message: 'No measurements exist for this taxon.' });
-            continue;
-          }
-
-          const qualitativeMeasurement = measurements?.qualitative.find(
-            (measurement) => measurement.measurement_name.toLowerCase() === column.toLowerCase()
-          );
-
-          if (qualitativeMeasurement) {
-            const matchingOptionValue = qualitativeMeasurement.options.find(
-              (option) => option.option_label.toLowerCase() === cellValue.toLowerCase()
-            );
-
-            if (!matchingOptionValue) {
-              rowErrors.push({
-                row: index,
-                col: column,
-                message: `Incorrect qualitative measurement value. Allowed: ${qualitativeMeasurement.options.map(
-                  (option) => option.option_label.toLowerCase()
-                )}`
-              });
-              continue;
-            }
-          }
-
-          const quantitativeMeasurement = measurements?.quantitative.find(
-            (measurement) => measurement.measurement_name.toLowerCase() === column.toLowerCase()
-          );
-
-          if (quantitativeMeasurement) {
-            if (typeof cellValue !== 'number') {
-              rowErrors.push({ row: index, col: column, message: 'Quantitative measurement expecting number value.' });
-            }
-
-            if (quantitativeMeasurement.max_value != null && cellValue > quantitativeMeasurement.max_value) {
-              rowErrors.push({
-                row: index,
-                col: column,
-                message: 'Quantitative measurement out of bounds. Too large.'
-              });
-            }
-
-            if (quantitativeMeasurement.min_value != null && cellValue < quantitativeMeasurement.min_value) {
-              rowErrors.push({
-                row: index,
-                col: column,
-                message: 'Quantitative measurement out of bounds. Too small.'
-              });
-            }
-
-            continue;
-          }
-
-          rowErrors.push({
-            row: index,
-            col: column,
-            message: 'Unable to match column name to an existing measurement.'
-          });
-        }
+        return;
       }
+
+      validatedRow.critter_id = critter_id;
+      validatedRow.capture_id = capture_id;
+
+      // Loop through all non-standard (measurement) columns
+      for (const column of nonStandardColumns) {
+        const cellValue = row[column];
+
+        console.log({ column, cellValue });
+
+        // If the cell value is null or undefined - skip validation
+        if (cellValue == null) {
+          continue;
+        }
+
+        const measurements = tsnMeasurementsMap.get(tsn);
+
+        // Validate taxon has reference measurements in Critterbase
+        if (!measurements || (!measurements.quantitative.length && !measurements.qualitative.length)) {
+          rowErrors.push({ row: index, col: column, message: 'No measurements exist for this taxon.' });
+          continue;
+        }
+
+        const qualitativeMeasurement = measurements?.qualitative.find(
+          (measurement) => measurement.measurement_name.toLowerCase() === column.toLowerCase()
+        );
+
+        /**
+         * --------------------------------------------------------
+         *
+         * Qualitative measurement validation
+         *
+         * --------------------------------------------------------
+         */
+        if (qualitativeMeasurement) {
+          if (typeof cellValue !== 'string') {
+            rowErrors.push({
+              row: index,
+              col: column,
+              message: 'Qualitative measurement expecting text value.'
+            });
+
+            continue;
+          }
+
+          const matchingOptionValue = qualitativeMeasurement.options.find(
+            (option) => option.option_label.toLowerCase() === cellValue.toLowerCase()
+          );
+
+          // Validate cell value is an alowed qualitative measurement option
+          if (!matchingOptionValue) {
+            rowErrors.push({
+              row: index,
+              col: column,
+              message: `Incorrect qualitative measurement value. Allowed: ${qualitativeMeasurement.options.map(
+                (option) => option.option_label.toLowerCase()
+              )}`
+            });
+
+            continue;
+          }
+
+          // Assign qualitative row properties to validated row object
+          validatedRow.taxon_measurement_id = qualitativeMeasurement.taxon_measurement_id;
+          validatedRow['qualitative_option_id'] = matchingOptionValue.qualitative_option_id;
+        }
+
+        const quantitativeMeasurement = measurements?.quantitative.find(
+          (measurement) => measurement.measurement_name.toLowerCase() === column.toLowerCase()
+        );
+
+        /**
+         * --------------------------------------------------------
+         *
+         * Quantitative measurement validation
+         *
+         * --------------------------------------------------------
+         */
+        if (quantitativeMeasurement) {
+          if (typeof cellValue !== 'number') {
+            rowErrors.push({ row: index, col: column, message: 'Quantitative measurement expecting number value.' });
+
+            continue;
+          }
+
+          // Validate cell value is withing the measurement min max bounds
+          if (quantitativeMeasurement.max_value != null && cellValue > quantitativeMeasurement.max_value) {
+            rowErrors.push({
+              row: index,
+              col: column,
+              message: 'Quantitative measurement out of bounds. Too large.'
+            });
+          }
+
+          if (quantitativeMeasurement.min_value != null && cellValue < quantitativeMeasurement.min_value) {
+            rowErrors.push({
+              row: index,
+              col: column,
+              message: 'Quantitative measurement out of bounds. Too small.'
+            });
+          }
+
+          // Assign quantitative row properties to validated row object
+          validatedRow.taxon_measurement_id = quantitativeMeasurement.taxon_measurement_id;
+          validatedRow['value'] = cellValue;
+
+          continue;
+        }
+
+        // Validate the column header is a known Critterbase measurement
+        rowErrors.push({
+          row: index,
+          col: column,
+          message: 'Unable to match column name to an existing measurement.'
+        });
+      }
+
+      validatedRows.push(validatedRow as CsvMeasurement);
     });
 
     if (!rowErrors.length) {
-      return { success: true, data: [] };
+      return { success: true, data: validatedRows };
     }
 
     return { success: false, error: { issues: rowErrors } };
@@ -237,11 +311,27 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
    * Insert CSV measurements into Critterbase.
    *
    * @async
-   * @param {CsvCritter[]} measurementRows - CSV row measurements
+   * @param {CsvCritter[]} measurements - CSV row measurements
    * @returns {Promise<number[]>} List of inserted measurements
    */
-  async insert(measurementRows: CsvMeasurement[]): Promise<number> {
-    console.log(measurementRows);
-    return 1;
+  async insert(measurements: CsvMeasurement[]): Promise<number> {
+    const qualitative_measurements = measurements.filter(
+      (measurement): measurement is CsvQualitativeMeasurement => 'qualitative_option_id' in measurement
+    );
+
+    const quantitative_measurements = measurements.filter(
+      (measurement): measurement is CsvQuantitativeMeasurement => 'value' in measurement
+    );
+
+    const response = await this.surveyCritterService.critterbaseService.bulkCreate({
+      qualitative_measurements,
+      quantitative_measurements
+    });
+
+    const measurementCount = response.created.qualitative_measurements + response.created.quantitative_measurements;
+
+    defaultLog.debug({ label: 'import markings', measurements, insertedCount: measurementCount });
+
+    return measurementCount;
   }
 }
