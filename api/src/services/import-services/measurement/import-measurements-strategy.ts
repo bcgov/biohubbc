@@ -161,18 +161,18 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
     const validatedRows: CsvMeasurement[] = [];
 
     rows.forEach((row, index) => {
-      const validatedRow: Partial<CsvMeasurement> = {};
-
       const { critter_id, capture_id, tsn } = this._getRowMeta(row, critterAliasMap);
 
       // Validate critter can be matched via alias
       if (!critter_id) {
         rowErrors.push({ row: index, message: 'Unable to find matching Critter with alias.' });
+        return;
       }
 
       // Validate capture can be matched with date and time
       if (!capture_id) {
         rowErrors.push({ row: index, message: 'Unable to find matching Capture with date and time.' });
+        return;
       }
 
       // This will only be triggered with an invalid alias
@@ -181,14 +181,9 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
         return;
       }
 
-      validatedRow.critter_id = critter_id;
-      validatedRow.capture_id = capture_id;
-
       // Loop through all non-standard (measurement) columns
       for (const column of nonStandardColumns) {
         const cellValue = row[column];
-
-        console.log({ column, cellValue });
 
         // If the cell value is null or undefined - skip validation
         if (cellValue == null) {
@@ -196,6 +191,8 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
         }
 
         const measurements = tsnMeasurementsMap.get(tsn);
+
+        defaultLog.debug({ measurements });
 
         // Validate taxon has reference measurements in Critterbase
         if (!measurements || (!measurements.quantitative.length && !measurements.qualitative.length)) {
@@ -242,9 +239,13 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
             continue;
           }
 
-          // Assign qualitative row properties to validated row object
-          validatedRow.taxon_measurement_id = qualitativeMeasurement.taxon_measurement_id;
-          validatedRow['qualitative_option_id'] = matchingOptionValue.qualitative_option_id;
+          // Assign qualitative measurement to validated rows
+          validatedRows.push({
+            critter_id,
+            capture_id,
+            taxon_measurement_id: qualitativeMeasurement.taxon_measurement_id,
+            qualitative_option_id: matchingOptionValue.qualitative_option_id
+          });
         }
 
         const quantitativeMeasurement = measurements?.quantitative.find(
@@ -282,9 +283,13 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
             });
           }
 
-          // Assign quantitative row properties to validated row object
-          validatedRow.taxon_measurement_id = quantitativeMeasurement.taxon_measurement_id;
-          validatedRow['value'] = cellValue;
+          // Assign quantitative measurement to validated rows
+          validatedRows.push({
+            critter_id,
+            capture_id,
+            taxon_measurement_id: quantitativeMeasurement.taxon_measurement_id,
+            value: cellValue
+          });
 
           continue;
         }
@@ -296,8 +301,6 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
           message: 'Unable to match column name to an existing measurement.'
         });
       }
-
-      validatedRows.push(validatedRow as CsvMeasurement);
     });
 
     if (!rowErrors.length) {
@@ -330,7 +333,7 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
 
     const measurementCount = response.created.qualitative_measurements + response.created.quantitative_measurements;
 
-    defaultLog.debug({ label: 'import markings', measurements, insertedCount: measurementCount });
+    defaultLog.debug({ label: 'import measurements', measurements, insertedCount: measurementCount });
 
     return measurementCount;
   }
