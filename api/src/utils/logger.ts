@@ -61,11 +61,11 @@ export const getLogger = function (logLabel: string) {
   // Output logs to file
   transports.push(
     new DailyRotateFile({
-      dirname: 'data',
-      filename: 'sims-api-%DATE%.log',
-      datePattern: 'YYYY-MM-DD-HH',
-      maxSize: '100m', // Rotate log file when it reaches 100MB
-      maxFiles: '14d', // Keep logs for 14 days
+      dirname: process.env.LOG_FILE_DIR || 'data',
+      filename: process.env.LOG_FILE_NAME || 'sims-api-%DATE%.log',
+      datePattern: process.env.LOG_FILE_DATE_PATTERN || 'YYYY-MM-DD-HH',
+      maxSize: process.env.LOG_FILE_MAX_SIZE || '50m',
+      maxFiles: process.env.LOG_FILE_MAX_FILES || '10',
       level: process.env.LOG_LEVEL_FILE || 'debug',
       format: winston.format.combine(
         winston.format((info) => {

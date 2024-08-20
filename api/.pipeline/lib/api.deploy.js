@@ -68,6 +68,12 @@ const apiDeploy = async (settings) => {
         // Log Level
         LOG_LEVEL: phases[phase].logLevel,
         LOG_LEVEL_FILE: phases[phase].logLevelFile,
+        LOG_FILE_DIR: phases[phase].logFileDir,
+        LOG_FILE_NAME: phases[phase].logFileName,
+        LOG_FILE_DATE_PATTERN: phases[phase].logFileDatePattern,
+        LOG_FILE_MAX_SIZE: phases[phase].logFileMaxSize,
+        LOG_FILE_MAX_FILES: phases[phase].logFileMaxFiles,
+        // Api Validation
         API_RESPONSE_VALIDATION_ENABLED: phases[phase].apiResponseValidationEnabled,
         DATABASE_RESPONSE_VALIDATION_ENABLED: phases[phase].databaseResponseValidationEnabled,
         // Feature Flags
