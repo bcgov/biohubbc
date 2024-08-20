@@ -141,7 +141,7 @@ parameters:
     value: 50m
     description: Maximum size an individual log file can reach before a new file is created
   - name: LOG_FILE_MAX_FILES
-    value: 10
+    value: '10'
     description: Either the maximum number of log files to keep (10) or the maximum number of days to keep log files (10d)
   # Api Validation
   - name: API_RESPONSE_VALIDATION_ENABLED
