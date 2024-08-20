@@ -138,6 +138,59 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
   }
 
   /**
+   * Validate qualitative measurement.
+   *
+   * @param {string} cell - CSV measurement cell value
+   * @param {CBQualitativeMeasurementTypeDefinition} measurement - Found qualitative measurement match
+   * @returns {*}
+   */
+  _validateQualitativeMeasurementCell(cell: string, measurement: CBQualitativeMeasurementTypeDefinition) {
+    if (typeof cell !== 'string') {
+      return { error: 'Qualitative measurement expecting text value.', optionId: undefined };
+    }
+
+    const matchingOptionValue = measurement.options.find(
+      (option) => option.option_label.toLowerCase() === cell.toLowerCase()
+    );
+
+    // Validate cell value is an alowed qualitative measurement option
+    if (!matchingOptionValue) {
+      return {
+        error: `Incorrect qualitative measurement value. Allowed: ${measurement.options.map((option) =>
+          option.option_label.toLowerCase()
+        )}`,
+        optionId: undefined
+      };
+    }
+
+    return { error: undefined, optionId: matchingOptionValue.qualitative_option_id };
+  }
+
+  /**
+   * Validate quantitative measurement
+   *
+   * @param {number} cell - CSV measurement cell value
+   * @param {CBQuantitativeMeasurementTypeDefinition} measurement - Found quantitative measurement match
+   * @returns {*}
+   */
+  _validateQuantitativeMeasurementCell(cell: number, measurement: CBQuantitativeMeasurementTypeDefinition) {
+    if (typeof cell !== 'number') {
+      return { error: 'Quantitative measurement expecting number value.', value: undefined };
+    }
+
+    // Validate cell value is withing the measurement min max bounds
+    if (measurement.max_value != null && cell > measurement.max_value) {
+      return { error: 'Quantitative measurement out of bounds. Too small.', value: undefined };
+    }
+
+    if (measurement.min_value != null && cell < measurement.min_value) {
+      return { error: 'Quantitative measurement out of bounds. Too small.' };
+    }
+
+    return { error: undefined, value: cell };
+  }
+
+  /**
    * Validate CSV worksheet rows against reference data.
    *
    * Note: This function is longer than I would like, but moving logic into seperate methods
@@ -192,8 +245,6 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
 
         const measurements = tsnMeasurementsMap.get(tsn);
 
-        defaultLog.debug({ measurements });
-
         // Validate taxon has reference measurements in Critterbase
         if (!measurements || (!measurements.quantitative.length && !measurements.qualitative.length)) {
           rowErrors.push({ row: index, col: column, message: 'No measurements exist for this taxon.' });
@@ -204,92 +255,44 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
           (measurement) => measurement.measurement_name.toLowerCase() === column.toLowerCase()
         );
 
-        /**
-         * --------------------------------------------------------
-         *
-         * Qualitative measurement validation
-         *
-         * --------------------------------------------------------
-         */
+        // QUALITATIVE MEASUREMENT VALIDATION
         if (qualitativeMeasurement) {
-          if (typeof cellValue !== 'string') {
-            rowErrors.push({
-              row: index,
-              col: column,
-              message: 'Qualitative measurement expecting text value.'
-            });
+          const { error, optionId } = this._validateQualitativeMeasurementCell(cellValue, qualitativeMeasurement);
 
-            continue;
+          if (error !== undefined) {
+            rowErrors.push({ row: index, col: column, message: error });
+          } else {
+            // Assign qualitative measurement to validated rows
+            validatedRows.push({
+              critter_id,
+              capture_id,
+              taxon_measurement_id: qualitativeMeasurement.taxon_measurement_id,
+              qualitative_option_id: optionId
+            });
           }
 
-          const matchingOptionValue = qualitativeMeasurement.options.find(
-            (option) => option.option_label.toLowerCase() === cellValue.toLowerCase()
-          );
-
-          // Validate cell value is an alowed qualitative measurement option
-          if (!matchingOptionValue) {
-            rowErrors.push({
-              row: index,
-              col: column,
-              message: `Incorrect qualitative measurement value. Allowed: ${qualitativeMeasurement.options.map(
-                (option) => option.option_label.toLowerCase()
-              )}`
-            });
-
-            continue;
-          }
-
-          // Assign qualitative measurement to validated rows
-          validatedRows.push({
-            critter_id,
-            capture_id,
-            taxon_measurement_id: qualitativeMeasurement.taxon_measurement_id,
-            qualitative_option_id: matchingOptionValue.qualitative_option_id
-          });
+          continue;
         }
 
         const quantitativeMeasurement = measurements?.quantitative.find(
           (measurement) => measurement.measurement_name.toLowerCase() === column.toLowerCase()
         );
 
-        /**
-         * --------------------------------------------------------
-         *
-         * Quantitative measurement validation
-         *
-         * --------------------------------------------------------
-         */
+        // QUANTITATIVE MEASUREMENT VALIDATION
         if (quantitativeMeasurement) {
-          if (typeof cellValue !== 'number') {
-            rowErrors.push({ row: index, col: column, message: 'Quantitative measurement expecting number value.' });
+          const { error, value } = this._validateQuantitativeMeasurementCell(cellValue, quantitativeMeasurement);
 
-            continue;
-          }
-
-          // Validate cell value is withing the measurement min max bounds
-          if (quantitativeMeasurement.max_value != null && cellValue > quantitativeMeasurement.max_value) {
-            rowErrors.push({
-              row: index,
-              col: column,
-              message: 'Quantitative measurement out of bounds. Too large.'
+          if (error !== undefined) {
+            rowErrors.push({ row: index, col: column, message: error });
+          } else {
+            // Assign quantitative measurement to validated rows
+            validatedRows.push({
+              critter_id,
+              capture_id,
+              taxon_measurement_id: quantitativeMeasurement.taxon_measurement_id,
+              value: value
             });
           }
-
-          if (quantitativeMeasurement.min_value != null && cellValue < quantitativeMeasurement.min_value) {
-            rowErrors.push({
-              row: index,
-              col: column,
-              message: 'Quantitative measurement out of bounds. Too small.'
-            });
-          }
-
-          // Assign quantitative measurement to validated rows
-          validatedRows.push({
-            critter_id,
-            capture_id,
-            taxon_measurement_id: quantitativeMeasurement.taxon_measurement_id,
-            value: cellValue
-          });
 
           continue;
         }
