@@ -61,7 +61,7 @@ export const getLogger = function (logLabel: string) {
   // Output logs to file
   transports.push(
     new DailyRotateFile({
-      dirname: process.env.LOG_FILE_DIR || 'data',
+      dirname: process.env.LOG_FILE_DIR || 'data/logs',
       filename: process.env.LOG_FILE_NAME || 'sims-api-%DATE%.log',
       datePattern: process.env.LOG_FILE_DATE_PATTERN || 'YYYY-MM-DD-HH',
       maxSize: process.env.LOG_FILE_MAX_SIZE || '50m',
