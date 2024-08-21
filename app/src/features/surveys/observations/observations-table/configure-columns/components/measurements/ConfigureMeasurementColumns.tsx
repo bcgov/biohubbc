@@ -47,7 +47,7 @@ export interface IConfigureMeasurementColumnsProps {
 export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsProps) => {
   const { measurementColumns, onAddMeasurementColumns, onRemoveMeasurementColumns } = props;
 
-  const [isPriorityOnly, setIsPriorityOnly] = useState<boolean>(true);
+  const [isFocalSpeciesMeasurementsOnly, setIsFocalSpeciesMeasurementsOnly] = useState<boolean>(true);
 
   return (
     <Box height="100%" display="flex" flexDirection="column">
@@ -57,7 +57,7 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
       <MeasurementsSearch
         selectedMeasurements={measurementColumns}
         onAddMeasurementColumn={(measurementColumn) => onAddMeasurementColumns([measurementColumn])}
-        priorityOnly={isPriorityOnly}
+        priorityOnly={isFocalSpeciesMeasurementsOnly}
       />
       <FormGroup>
         <FormControlLabel
@@ -71,7 +71,7 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
             color: grey[600]
           }}
           label="Only show measurements applicable to focal or observed species"
-          control={<Checkbox checked={isPriorityOnly} onClick={() => setIsPriorityOnly((prev) => !prev)} />}
+          control={<Checkbox checked={isFocalSpeciesMeasurementsOnly} onClick={() => setIsFocalSpeciesMeasurementsOnly((prev) => !prev)} />}
         />
       </FormGroup>
       {measurementColumns.length ? (
