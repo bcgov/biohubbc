@@ -67,7 +67,7 @@ export const MeasurementsSearch: React.FC<IMeasurementsSearchProps> = (props) =>
       hierarchyDataLoader.load(focalOrObservedSpecies);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [hierarchyDataLoader]);
 
   const getOptions = async (inputValue: string): Promise<any[]> => {
     const response = focalOrObservedSpeciesOnly
