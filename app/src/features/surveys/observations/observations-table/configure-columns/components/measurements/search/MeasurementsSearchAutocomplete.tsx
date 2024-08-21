@@ -48,7 +48,7 @@ export interface IMeasurementsSearchAutocompleteProps {
    * @type {number[]}
    * @memberof IMeasurementsSearchAutocompleteProps
    */
-  priorityTsns?: number[];
+  applicableTsns?: number[];
   /**
    * Ornament to display on the option card, typically indicating whether focal species can have the measurement
    *
@@ -65,7 +65,7 @@ export interface IMeasurementsSearchAutocompleteProps {
  * @return {*}
  */
 export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocompleteProps) => {
-  const { selectedOptions, getOptions, onAddMeasurementColumn, ornament, priorityTsns } = props;
+  const { selectedOptions, getOptions, onAddMeasurementColumn, ornament, applicableTsns } = props;
 
   const [inputValue, setInputValue] = useState('');
   const [options, setOptions] = useState<CBMeasurementType[]>([]);
@@ -139,7 +139,7 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
         }
       }}
       renderOption={(renderProps, renderOption) => {
-        const isPriority = renderOption.itis_tsn && priorityTsns?.includes(renderOption.itis_tsn);
+        const isApplicable = renderOption.itis_tsn && applicableTsns?.includes(renderOption.itis_tsn);
 
         return (
           <ListItem
@@ -164,7 +164,7 @@ export const MeasurementsSearchAutocomplete = (props: IMeasurementsSearchAutocom
                       : ''
                   }
                 />
-                {isPriority && ornament}
+                {isApplicable && ornament}
               </Box>
               <Typography fontWeight={700} textTransform="capitalize" mb={0.25}>
                 {renderOption.measurement_name}

@@ -22,11 +22,11 @@ export interface IMeasurementsSearchProps {
    */
   onAddMeasurementColumn: (measurementColumn: CBMeasurementType) => void;
   /**
-   * Whether to only show measurements that priority species can have, such as focal species
+   * Whether to only show measurements that focal or observed species can have
    *
    * @memberof IMeasurementsSearchProps
    */
-  priorityOnly?: boolean;
+  focalOrObservedSpeciesOnly?: boolean;
 }
 
 /**
@@ -38,7 +38,7 @@ export interface IMeasurementsSearchProps {
 import React, { useEffect } from 'react';
 
 export const MeasurementsSearch: React.FC<IMeasurementsSearchProps> = (props) => {
-  const { selectedMeasurements, onAddMeasurementColumn, priorityOnly } = props;
+  const { selectedMeasurements, onAddMeasurementColumn, focalOrObservedSpeciesOnly } = props;
 
   const critterbaseApi = useCritterbaseApi();
   const surveyContext = useSurveyContext();
@@ -55,7 +55,7 @@ export const MeasurementsSearch: React.FC<IMeasurementsSearchProps> = (props) =>
     if (!observationsContext.observedSpeciesDataLoader.data) {
       observationsContext.observedSpeciesDataLoader.load();
     }
-  }, [observationsContext.observedSpeciesDataLoader.data]);
+  }, [observationsContext.observedSpeciesDataLoader]);
 
   const focalOrObservedSpecies: number[] = [
     ...(surveyContext.surveyDataLoader.data?.surveyData.species.focal_species.map((species) => species.tsn) ?? []),
@@ -66,17 +66,18 @@ export const MeasurementsSearch: React.FC<IMeasurementsSearchProps> = (props) =>
     if (focalOrObservedSpecies.length) {
       hierarchyDataLoader.load(focalOrObservedSpecies);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getOptions = async (inputValue: string): Promise<any[]> => {
-    const response = priorityOnly
+    const response = focalOrObservedSpeciesOnly
       ? await measurementsDataLoader.refresh(inputValue, focalOrObservedSpecies)
       : await measurementsDataLoader.refresh(inputValue);
 
     return response ? [...response.qualitative, ...response.quantitative] : [];
   };
 
-  const priorityTsns = [
+  const focalOrObservedSpeciesTsns = [
     ...focalOrObservedSpecies,
     ...(hierarchyDataLoader.data?.flatMap((taxon) => taxon.hierarchy) ?? [])
   ];
@@ -85,7 +86,7 @@ export const MeasurementsSearch: React.FC<IMeasurementsSearchProps> = (props) =>
     <MeasurementsSearchAutocomplete
       selectedOptions={selectedMeasurements}
       ornament={<ColouredRectangleChip label="Applicable" colour={green} />}
-      priorityTsns={priorityTsns}
+      applicableTsns={focalOrObservedSpeciesTsns}
       getOptions={getOptions}
       onAddMeasurementColumn={onAddMeasurementColumn}
     />

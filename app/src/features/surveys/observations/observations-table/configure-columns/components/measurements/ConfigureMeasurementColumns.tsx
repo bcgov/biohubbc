@@ -58,7 +58,7 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
       <MeasurementsSearch
         selectedMeasurements={measurementColumns}
         onAddMeasurementColumn={(measurementColumn) => onAddMeasurementColumns([measurementColumn])}
-        priorityOnly={isFocalSpeciesMeasurementsOnly}
+        focalOrObservedSpeciesOnly={isFocalSpeciesMeasurementsOnly}
       />
       <FormGroup>
         <FormControlLabel

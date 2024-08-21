@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": false,
+        "amount": 10
+    },
+    "auditLog": "data/.9665a2fdb2130383bc8b63279ce02d2b850bb64b-audit.json",
+    "files": [
+        {
+            "date": 1724271618550,
+            "name": "data/sims-api-2024-08-21-13.log",
+            "hash": "0791bdbecfa9598bcd927d661d51b5051498d90dbc1f9d693c24293876751994"
+        },
+        {
+            "date": 1724274079176,
+            "name": "data/sims-api-2024-08-21-14.log",
+            "hash": "2354f18efbe44defa709339fe35d44b15c82f9f8f203a293d36f306fb0aef665"
+        }
+    ],
+    "hashType": "sha256"
+}
