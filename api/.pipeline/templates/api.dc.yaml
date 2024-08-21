@@ -32,6 +32,12 @@ parameters:
   - name: API_PORT_DEFAULT_NAME
     description: Api default port name
     value: '6100-tcp'
+  # Volume (for API logs and other persistent data)
+  - description: Volume space available for data, e.g. 512Mi, 2Gi.
+    displayName: Volume Capacity
+    name: VOLUME_CAPACITY
+    required: true
+    value: '500Mi'
   # Clamav
   - name: ENABLE_FILE_VIRUS_SCAN
     value: 'true'
@@ -115,9 +121,29 @@ parameters:
     description: S3 key optional prefix
     required: false
     value: 'sims'
-  # Logging and Validation
+  # Logging
   - name: LOG_LEVEL
-    value: 'warn'
+    value: 'silent'
+    description: Log level for logs written to the console (console transport)
+  - name: LOG_LEVEL_FILE
+    value: 'debug'
+    description: Log level for logs written to log files (file transport)
+  - name: LOG_FILE_DIR
+    value: data
+    description: Directory where log files are stored
+  - name: LOG_FILE_NAME
+    value: sims-api-%DATE%.log
+    description: Name of the log file
+  - name: LOG_FILE_DATE_PATTERN
+    value: YYYY-MM-DD-HH
+    description: Date pattern for log the files
+  - name: LOG_FILE_MAX_SIZE
+    value: 50m
+    description: Maximum size an individual log file can reach before a new file is created
+  - name: LOG_FILE_MAX_FILES
+    value: '10'
+    description: Either the maximum number of log files to keep (10) or the maximum number of days to keep log files (10d)
+  # Api Validation
   - name: API_RESPONSE_VALIDATION_ENABLED
     value: 'false'
   - name: DATABASE_RESPONSE_VALIDATION_ENABLED
@@ -160,8 +186,8 @@ parameters:
   - name: REPLICAS_MAX
     value: '1'
 objects:
-  - apiVersion: image.openshift.io/v1
-    kind: ImageStream
+  - kind: ImageStream
+    apiVersion: image.openshift.io/v1
     metadata:
       annotations:
         description: Nodejs Runtime Image
@@ -174,6 +200,17 @@ objects:
         local: false
     status:
       dockerImageRepository: null
+
+  - kind: PersistentVolumeClaim
+    apiVersion: v1
+    metadata:
+      name: ${NAME}${SUFFIX}
+    spec:
+      accessModes:
+        - ReadWriteMany
+      resources:
+        requests:
+          storage: '${VOLUME_CAPACITY}'
 
   - kind: DeploymentConfig
     apiVersion: apps.openshift.io/v1
@@ -320,9 +357,22 @@ objects:
                     secretKeyRef:
                       key: object_store_bucket_name
                       name: ${OBJECT_STORE_SECRETS}
-                # Logging and Validation
+                # Logging
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
+                - name: LOG_LEVEL_FILE
+                  value: ${LOG_LEVEL_FILE}
+                - name: LOG_FILE_DIR
+                  value: ${LOG_FILE_DIR}
+                - name: LOG_FILE_NAME
+                  value: ${LOG_FILE_NAME}
+                - name: LOG_FILE_DATE_PATTERN
+                  value: ${LOG_FILE_DATE_PATTERN}
+                - name: LOG_FILE_MAX_SIZE
+                  value: ${LOG_FILE_MAX_SIZE}
+                - name: LOG_FILE_MAX_FILES
+                  value: ${LOG_FILE_MAX_FILES}
+                # Api Validation
                 - name: API_RESPONSE_VALIDATION_ENABLED
                   value: ${API_RESPONSE_VALIDATION_ENABLED}
                 - name: DATABASE_RESPONSE_VALIDATION_ENABLED
@@ -380,16 +430,17 @@ objects:
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               volumeMounts:
-                - mountPath: /opt/app-root/app
-                  name: ${NAME}${SUFFIX}
+                - name: ${NAME}${SUFFIX}
+                  mountPath: /opt/app-root/src/data
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
           securityContext: {}
           terminationGracePeriodSeconds: 30
           volumes:
-            - emptyDir: {}
-              name: ${NAME}${SUFFIX}
+            - name: ${NAME}${SUFFIX}
+              persistentVolumeClaim:
+                claimName: ${NAME}${SUFFIX}
       test: false
       triggers:
         - imageChangeParams:
@@ -421,8 +472,8 @@ objects:
       name: ${NAME}${SUFFIX}
     type: Opaque
 
-  - apiVersion: v1
-    kind: Service
+  - kind: Service
+    apiVersion: v1
     metadata:
       annotations: null
       labels: {}
