@@ -277,11 +277,9 @@ const Header: React.FC = () => {
                     Funding Sources
                   </MenuItem>
                 </SystemRoleGuard>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <MenuItem component={RouterLink} to="/standards" id="menu_standards" onClick={hideMobileMenu}>
-                    Standards
-                  </MenuItem>
-                </SystemRoleGuard>
+                <MenuItem component={RouterLink} to="/standards" id="menu_standards" onClick={hideMobileMenu}>
+                  Standards
+                </MenuItem>
                 <MenuItem component="button" onClick={showSupportDialog} sx={{ width: '100%' }}>
                   Support
                 </MenuItem>
@@ -354,11 +352,9 @@ const Header: React.FC = () => {
                     Funding Sources
                   </RouterLink>
                 </SystemRoleGuard>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <RouterLink to="/standards" id="menu_standards">
-                    Standards
-                  </RouterLink>
-                </SystemRoleGuard>
+                <RouterLink to="/standards" id="menu_standards">
+                  Standards
+                </RouterLink>
                 <Button
                   color="inherit"
                   variant="text"
