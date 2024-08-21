@@ -2,15 +2,16 @@ import { mdiArrowTopRight, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
-import { grey } from '@mui/material/colors';
+import { blueGrey, grey } from '@mui/material/colors';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
-import MeasurementStandardCard from 'features/standards/view/components/MeasurementStandardCard';
+import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { useState } from 'react';
 import { MeasurementsSearch } from './search/MeasurementsSearch';
@@ -71,7 +72,12 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
             color: grey[600]
           }}
           label="Only show measurements applicable to focal or observed species"
-          control={<Checkbox checked={isFocalSpeciesMeasurementsOnly} onClick={() => setIsFocalSpeciesMeasurementsOnly((prev) => !prev)} />}
+          control={
+            <Checkbox
+              checked={isFocalSpeciesMeasurementsOnly}
+              onClick={() => setIsFocalSpeciesMeasurementsOnly((prev) => !prev)}
+            />
+          }
         />
       </FormGroup>
       {measurementColumns.length ? (
@@ -87,11 +93,29 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
           disablePadding>
           {measurementColumns.map((measurement) => (
             <Box display="flex" alignItems="flex-start" key={`measurement_item_${measurement.taxon_measurement_id}`}>
-              <MeasurementStandardCard
-                small
+              <AccordionStandardCard
                 label={measurement.measurement_name}
-                description={measurement.measurement_desc ?? ''}
-                options={'options' in measurement ? measurement['options'] : []}
+                subtitle={measurement.measurement_desc ?? ''}
+                colour={grey[100]}
+                children={
+                  'options' in measurement ? (
+                    <Stack gap={1} my={2}>
+                      {measurement.options.map((option) => (
+                        <AccordionStandardCard
+                          key={option.option_label}
+                          label={option.option_label}
+                          subtitle={option.option_desc}
+                          colour={grey[200]}
+                        />
+                      ))}
+                    </Stack>
+                  ) : undefined
+                }
+                ornament={
+                  'unit' in measurement && measurement.unit ? (
+                    <ColouredRectangleChip colour={blueGrey} label={measurement.unit} />
+                  ) : undefined
+                }
               />
               <Box ml={1} mt={1}>
                 <IconButton

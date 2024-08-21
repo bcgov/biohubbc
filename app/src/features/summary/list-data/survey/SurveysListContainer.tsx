@@ -16,6 +16,7 @@ import { getNrmRegionColour, NrmRegionKeys } from 'constants/colours';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { NRM_REGION_APPENDED_TEXT } from 'constants/regions';
 import dayjs from 'dayjs';
+import { SurveyProgressChip } from 'features/surveys/components/SurveyProgressChip';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
@@ -25,7 +26,6 @@ import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import { SurveyProgressChip } from '../../../surveys/components/SurveyProgressChip';
 import SurveysListFilterForm, {
   ISurveyAdvancedFilters,
   SurveyAdvancedFiltersInitialValues
