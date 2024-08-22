@@ -4,10 +4,10 @@ import Typography from '@mui/material/Typography';
 import { AnimalAutocompleteField } from 'components/fields/AnimalAutocompleteField';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
-import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
+import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { Link as RouterLink } from 'react-router-dom';
 import yup from 'utils/YupSchema';
 

@@ -1,8 +1,6 @@
-import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
-import { useTelemetryApi } from 'hooks/useTelemetryApi';
-import { IAllTelemetry } from 'interfaces/useTelemetryApi.interface';
+import { IAllTelemetry, IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { createContext, PropsWithChildren, useMemo } from 'react';
 
 /**
@@ -32,10 +30,9 @@ export const TelemetryDataContext = createContext<ITelemetryDataContext | undefi
 
 export const TelemetryDataContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const biohubApi = useBiohubApi();
-  const telemetryApi = useTelemetryApi();
 
   const deploymentsDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
-  const telemetryDataLoader = useDataLoader(telemetryApi.getAllTelemetryByDeploymentIds);
+  const telemetryDataLoader = useDataLoader(biohubApi.telemetry.getAllTelemetryByDeploymentIds);
 
   const telemetryDataContext: ITelemetryDataContext = useMemo(() => {
     return {

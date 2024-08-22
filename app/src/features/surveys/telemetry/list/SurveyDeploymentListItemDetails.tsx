@@ -6,9 +6,9 @@ import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
-import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useEffect } from 'react';
 
 const dateSx = {

@@ -23,13 +23,13 @@ import { TelemetryTableI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryTable } from 'features/surveys/telemetry/table/TelemetryTable';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryTableContext } from 'hooks/useContext';
-import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useContext, useDeferredValue, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
 
 export const TelemetryTableContainer = () => {
-  const telemetryApi = useTelemetryApi();
+  const biohubApi = useBiohubApi();
 
   const dialogContext = useContext(DialogContext);
   const telemetryTableContext = useTelemetryTableContext();
@@ -58,10 +58,10 @@ export const TelemetryTableContainer = () => {
   };
 
   const handleFileImport = async (file: File) => {
-    telemetryApi.uploadCsvForImport(surveyContext.projectId, surveyContext.surveyId, file).then((response) => {
+    biohubApi.telemetry.uploadCsvForImport(surveyContext.projectId, surveyContext.surveyId, file).then((response) => {
       setShowImportDialog(false);
       setProcessingRecords(true);
-      telemetryApi
+      biohubApi.telemetry
         .processTelemetryCsvSubmission(response.submission_id)
         .then(() => {
           showSnackBar({

@@ -1,7 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { AnimalSex, ICreateCritter } from 'features/surveys/view/survey-animals/animal';
-import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
@@ -9,6 +8,7 @@ import {
   IFindSurveysResponse,
   SurveyBasicFieldsObject
 } from 'interfaces/useSurveyApi.interface';
+import { IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { ApiPaginationResponseParams } from 'types/misc';
 import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
@@ -183,20 +183,6 @@ describe('useSurveyApi', () => {
 
       expect(Array.isArray(result)).toBe(true);
       expect(result.length).toBe(1);
-      expect(result).toEqual(response);
-    });
-  });
-
-  describe('uploadSurveyKeyx', () => {
-    it('should upload a keyx file', async () => {
-      const file = new File([''], 'file.keyx', { type: 'application/keyx' });
-      const response = {
-        attachmentId: 'attachment',
-        revision_count: 1
-      };
-      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/keyx/upload`).reply(201, response);
-
-      const result = await useSurveyApi(axios).uploadSurveyKeyx(projectId, surveyId, file);
       expect(result).toEqual(response);
     });
   });

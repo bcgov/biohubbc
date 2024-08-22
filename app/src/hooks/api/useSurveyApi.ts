@@ -4,11 +4,6 @@ import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import { ISurveyCritter } from 'contexts/animalPageContext';
 import { ISurveyAdvancedFilters } from 'features/summary/list-data/survey/SurveysListFilterForm';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
-import {
-  IAllTelemetryPointCollection,
-  IAnimalDeployment,
-  ICreateAnimalDeploymentPostData
-} from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
@@ -20,6 +15,11 @@ import {
   IGetSurveyForViewResponse,
   IUpdateSurveyRequest
 } from 'interfaces/useSurveyApi.interface';
+import {
+  IAllTelemetryPointCollection,
+  IAnimalDeployment,
+  ICreateAnimalDeploymentPostData
+} from 'interfaces/useTelemetryApi.interface';
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
@@ -160,39 +160,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });
-
-    return data;
-  };
-
-  /**
-   * Upload survey keyx files.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {File} file
-   * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
-   * @return {*}  {Promise<IUploadAttachmentResponse>}
-   */
-  const uploadSurveyKeyx = async (
-    projectId: number,
-    surveyId: number,
-    file: File,
-    cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: AxiosProgressEvent) => void
-  ): Promise<IUploadAttachmentResponse> => {
-    const req_message = new FormData();
-
-    req_message.append('media', file);
-
-    const { data } = await axios.post(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/keyx/upload`,
-      req_message,
-      {
-        cancelToken: cancelTokenSource?.token,
-        onUploadProgress: onProgress
-      }
-    );
 
     return data;
   };
@@ -629,7 +596,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getDeploymentById,
     updateSurvey,
     uploadSurveyAttachments,
-    uploadSurveyKeyx,
     uploadSurveyReports,
     updateSurveyReportMetadata,
     getSurveyReportDetails,

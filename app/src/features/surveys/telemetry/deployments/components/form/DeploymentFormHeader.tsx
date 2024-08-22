@@ -7,8 +7,8 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useFormikContext } from 'formik';
+import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 

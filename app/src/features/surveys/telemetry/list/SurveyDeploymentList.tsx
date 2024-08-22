@@ -21,7 +21,6 @@ import { SurveyDeploymentListItem } from 'features/surveys/telemetry/list/Survey
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -31,15 +30,14 @@ export const SurveyDeploymentList = () => {
   const telemetryDataContext = useTelemetryDataContext();
 
   const biohubApi = useBiohubApi();
-  const telemetryApi = useTelemetryApi();
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
   const [selectedDeploymentId, setSelectedDeploymentId] = useState<number | null>();
 
-  const frequencyUnitDataLoader = useDataLoader(() => telemetryApi.devices.getCodeValues('frequency_unit'));
-  const deviceMakesDataLoader = useDataLoader(() => telemetryApi.devices.getCodeValues('device_make'));
+  const frequencyUnitDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('frequency_unit'));
+  const deviceMakesDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('device_make'));
 
   const deploymentsDataLoader = telemetryDataContext.deploymentsDataLoader;
   const deployments = deploymentsDataLoader.data ?? [];

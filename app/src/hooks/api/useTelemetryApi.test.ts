@@ -45,4 +45,43 @@ describe('useTelemetryApi', () => {
 
     expect(result).toEqual(mockResponse);
   });
+
+  describe('getCodeValues', () => {
+    it('should return a list of code values', async () => {
+      const mockCodeValues = {
+        code_header_title: 'code_header_title',
+        code_header_name: 'code_header_name',
+        id: 123,
+        description: 'description',
+        long_description: 'long_description'
+      };
+
+      mock.onGet('/api/telemetry/code?codeHeader=code_header_name').reply(200, [mockCodeValues]);
+      const result = await useTelemetryApi(axios).getCodeValues('code_header_name');
+      expect(result).toEqual([mockCodeValues]);
+    });
+
+    it('should catch errors', async () => {
+      mock.onGet('/api/telemetry/code?codeHeader=code_header_name').reply(500, 'error');
+      const result = await useTelemetryApi(axios).getCodeValues('code_header_name');
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('uploadTelemetryDeviceKeyFile', () => {
+    it('should upload a keyx file', async () => {
+      const projectId = 1;
+      const surveyId = 2;
+
+      const file = new File([''], 'file.keyx', { type: 'application/keyx' });
+      const response = {
+        attachmentId: 'attachment',
+        revision_count: 1
+      };
+      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/keyx/upload`).reply(201, response);
+
+      const result = await useTelemetryApi(axios).uploadTelemetryDeviceKeyFile(projectId, surveyId, file);
+      expect(result).toEqual(response);
+    });
+  });
 });

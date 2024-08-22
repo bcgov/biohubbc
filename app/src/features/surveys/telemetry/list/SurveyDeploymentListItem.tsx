@@ -14,8 +14,8 @@ import Typography from '@mui/material/Typography';
 import { PulsatingDot } from 'components/misc/PulsatingDot';
 import dayjs from 'dayjs';
 import { SurveyDeploymentListItemDetails } from 'features/surveys/telemetry/list/SurveyDeploymentListItemDetails';
-import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
+import { IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 
 export interface ISurveyDeploymentListItemProps {
   animal: ICritterSimpleResponse;

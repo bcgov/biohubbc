@@ -12,7 +12,6 @@ import { ScientificNameTypography } from 'features/surveys/animals/components/Sc
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryDataContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo } from 'react';
 
@@ -46,11 +45,10 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
   const telemetryDataContext = useTelemetryDataContext();
 
   const biohubApi = useBiohubApi();
-  const telemetryApi = useTelemetryApi();
 
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
   const deploymentDataLoader = telemetryDataContext.deploymentsDataLoader;
-  const frequencyUnitDataLoader = useDataLoader(() => telemetryApi.devices.getCodeValues('frequency_unit'));
+  const frequencyUnitDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('frequency_unit'));
 
   useEffect(() => {
     deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);

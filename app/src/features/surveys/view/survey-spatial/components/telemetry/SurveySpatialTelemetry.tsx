@@ -1,15 +1,14 @@
 import Box from '@mui/material/Box';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
-import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { SurveySpatialMap } from 'features/surveys/view/survey-spatial/components/map/SurveySpatialMap';
 import { SurveySpatialTelemetryPopup } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryPopup';
 import { SurveySpatialTelemetryTable } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryTable';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { Position } from 'geojson';
 import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
-import { ITelemetry } from 'hooks/useTelemetryApi';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
+import { IAnimalDeployment, ITelemetry } from 'interfaces/useTelemetryApi.interface';
 import { useCallback, useEffect, useMemo } from 'react';
 
 /**

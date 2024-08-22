@@ -7,12 +7,12 @@ import {
   DeploymentFormYupSchema
 } from 'features/surveys/telemetry/deployments/components/form/DeploymentForm';
 import { DeploymentFormHeader } from 'features/surveys/telemetry/deployments/components/form/DeploymentFormHeader';
-import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 

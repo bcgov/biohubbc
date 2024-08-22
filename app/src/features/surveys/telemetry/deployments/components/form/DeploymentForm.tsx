@@ -20,12 +20,11 @@ import {
   DeploymentTimelineFormInitialValues,
   DeploymentTimelineFormYupSchema
 } from 'features/surveys/telemetry/deployments/components/form/timeline/DeploymentTimelineForm';
-import { ICreateAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { useTelemetryApi } from 'hooks/useTelemetryApi';
+import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useEffect } from 'react';
 import { useHistory } from 'react-router';
 
@@ -59,16 +58,14 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
 
   const biohubApi = useBiohubApi();
 
-  const telemetryApi = useTelemetryApi();
-
   const history = useHistory();
 
   const critterDataLoader = useDataLoader((critterId: number) =>
     biohubApi.survey.getCritterById(surveyContext.projectId, surveyContext.surveyId, critterId)
   );
 
-  const frequencyUnitDataLoader = useDataLoader(() => telemetryApi.devices.getCodeValues('frequency_unit'));
-  const deviceMakesDataLoader = useDataLoader(() => telemetryApi.devices.getCodeValues('device_make'));
+  const frequencyUnitDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('frequency_unit'));
+  const deviceMakesDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('device_make'));
 
   // Fetch frequency unit and device make code values from BCTW on component mount
   useEffect(() => {

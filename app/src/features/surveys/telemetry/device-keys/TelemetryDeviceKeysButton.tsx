@@ -22,7 +22,15 @@ export const TelemetryDeviceKeysButton = (props: ITelemetryDeviceKeysButtonProps
       <Button variant="outlined" color="primary" onClick={() => setOpen(true)} disabled={disabled}>
         Manage Device Keys
       </Button>
-      <TelemetryDeviceKeysDialog open={open} />
+      <TelemetryDeviceKeysDialog
+        open={open}
+        onSave={() => {
+          setOpen(false);
+        }}
+        onCancel={() => {
+          setOpen(false);
+        }}
+      />
     </>
   );
 };

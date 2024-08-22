@@ -15,9 +15,9 @@ import { SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { usePersistentState } from 'hooks/usePersistentState';
-import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
@@ -155,9 +155,9 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
 
   const _muiDataGridApiRef = useGridApiRef();
 
-  const telemetryApi = useTelemetryApi();
+  const biohubApi = useBiohubApi();
 
-  const telemetryDataLoader = useDataLoader(telemetryApi.getAllTelemetryByDeploymentIds);
+  const telemetryDataLoader = useDataLoader(biohubApi.telemetry.getAllTelemetryByDeploymentIds);
   const dialogContext = useContext(DialogContext);
 
   // The data grid rows
@@ -451,7 +451,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
 
       try {
         if (modifiedRowIdsToDelete.length) {
-          await telemetryApi.deleteManualTelemetry(modifiedRowIdsToDelete);
+          await biohubApi.telemetry.deleteManualTelemetry(modifiedRowIdsToDelete);
         }
 
         // Remove row IDs from validation model
@@ -500,7 +500,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
         });
       }
     },
-    [dialogContext, telemetryApi]
+    [biohubApi, dialogContext]
   );
 
   /**
@@ -633,11 +633,11 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
         }));
 
         if (createData.length) {
-          await telemetryApi.createManualTelemetry(createData);
+          await biohubApi.telemetry.createManualTelemetry(createData);
         }
 
         if (updateData.length) {
-          await telemetryApi.updateManualTelemetry(updateData);
+          await biohubApi.telemetry.updateManualTelemetry(updateData);
         }
 
         revertRecords();
@@ -667,7 +667,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
         _isSavingData.current = false;
       }
     },
-    [dialogContext, _updateRowsMode, _isSavingData, revertRecords, refreshRecords, telemetryApi]
+    [dialogContext, _updateRowsMode, _isSavingData, revertRecords, refreshRecords, biohubApi]
   );
 
   /**
