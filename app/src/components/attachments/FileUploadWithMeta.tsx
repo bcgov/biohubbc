@@ -8,12 +8,12 @@ import {
   IUploadHandler,
   UploadFileStatus
 } from 'components/file-upload/FileUploadItem';
-import { AttachmentType, ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
+import { AttachmentType, AttachmentTypeFileExtensions } from 'constants/attachments';
 import { useFormikContext } from 'formik';
 import React from 'react';
 
 export interface IFileUploadWithMetaProps {
-  attachmentType: AttachmentType.REPORT | AttachmentType.KEYX | AttachmentType.OTHER;
+  attachmentType: AttachmentType.REPORT | AttachmentType.KEYX | AttachmentType.CFG | AttachmentType.OTHER;
   uploadHandler: IUploadHandler;
   fileHandler?: IFileHandler;
   onSuccess?: IOnUploadSuccess;
@@ -52,7 +52,7 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
             dropZoneProps={{
               maxNumFiles: 1,
               multiple: false,
-              acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.REPORT
+              acceptedFileExtensions: AttachmentTypeFileExtensions.REPORT
             }}
             status={UploadFileStatus.STAGED}
             replace={true}
@@ -71,7 +71,7 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
           fileHandler={fileHandler}
           onSuccess={props.onSuccess}
           dropZoneProps={{
-            acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.KEYX
+            acceptedFileExtensions: AttachmentTypeFileExtensions.KEYX
           }}
           enableErrorDetails={true}
         />

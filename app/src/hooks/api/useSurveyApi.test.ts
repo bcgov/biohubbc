@@ -1,6 +1,5 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { AttachmentType } from 'constants/attachments';
 import { AnimalSex, ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import {
@@ -101,10 +100,10 @@ describe('useSurveyApi', () => {
 
       const result = await useSurveyApi(axios).createDeployment(projectId, surveyId, critterId, {
         device_id: 1,
-        device_make: 'ATS',
+        device_make: 22,
         device_model: 'E',
         frequency: 1,
-        frequency_unit: 'Hz',
+        frequency_unit: 33,
         critterbase_start_capture_id: '',
         critterbase_end_capture_id: '',
         critterbase_end_mortality_id: '',
@@ -126,17 +125,17 @@ describe('useSurveyApi', () => {
         critterbase_start_capture_id: '',
         critterbase_end_capture_id: '',
         critterbase_end_mortality_id: '',
+        attachment_start_date: '',
+        attachment_start_time: '',
         attachment_end_date: '',
         attachment_end_time: '',
         deployment_id: 123,
         bctw_deployment_id: v4(),
         device_id: 123,
-        device_make: '',
+        device_make: 22,
         device_model: 'a',
         frequency: 1,
-        frequency_unit: 'Hz',
-        attachment_file: null,
-        attachment_type: 'Other' as AttachmentType
+        frequency_unit: 33
       };
 
       mock.onGet(`/api/project/${projectId}/survey/${surveyId}/deployments`).reply(200, [response]);
@@ -160,9 +159,9 @@ describe('useSurveyApi', () => {
         attachment_end_date: '',
         attachment_end_time: '',
         frequency: 10.5,
-        frequency_unit: '',
+        frequency_unit: 44,
         device_id: 1,
-        device_make: '',
+        device_make: 22,
         device_model: ''
       });
 

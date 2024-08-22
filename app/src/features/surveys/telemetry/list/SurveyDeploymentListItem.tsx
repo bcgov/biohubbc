@@ -19,14 +19,14 @@ import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 
 export interface ISurveyDeploymentListItemProps {
   animal: ICritterSimpleResponse;
-  deployment: IAnimalDeployment;
+  deployment: Omit<IAnimalDeployment, 'frequency_unit'> & { frequency_unit: string | null };
   isChecked: boolean;
   handleDeploymentMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, deploymentId: number) => void;
   handleCheckboxChange: (deploymentId: number) => void;
 }
 
 /**
- * Renders a list item for a single sampling site.
+ * Renders a list item for a single deployment record.
  *
  * @param {ISurveyDeploymentListItemProps} props
  * @return {*}
@@ -101,9 +101,9 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
                   textOverflow: 'ellipsis'
                 }}>
                 {deployment.device_id}
-                <Typography component="span" variant="body2" title="Device frequency">
-                  {deployment.frequency}&nbsp;{deployment.frequency_unit}
-                </Typography>
+              </Typography>
+              <Typography component="span" variant="body2" title="Device frequency">
+                {deployment.frequency}&nbsp;{deployment.frequency_unit}
               </Typography>
               <Typography variant="body2" color="textSecondary" title="Animal">
                 {animal.animal_id}
@@ -130,7 +130,7 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
           onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
             handleDeploymentMenuClick(event, deployment.deployment_id)
           }
-          aria-label="sample-site-settings">
+          aria-label="deployment-settings">
           <Icon path={mdiDotsVertical} size={1}></Icon>
         </IconButton>
       </Box>

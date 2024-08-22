@@ -15,10 +15,13 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { SurveyDeploymentListItem } from 'features/surveys/telemetry/list/SurveyDeploymentListItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
+import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -28,25 +31,48 @@ export const SurveyDeploymentList = () => {
   const telemetryDataContext = useTelemetryDataContext();
 
   const biohubApi = useBiohubApi();
+  const telemetryApi = useTelemetryApi();
 
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
   const [selectedDeploymentId, setSelectedDeploymentId] = useState<number | null>();
 
+  const frequencyUnitDataLoader = useDataLoader(() => telemetryApi.devices.getCodeValues('frequency_unit'));
+  const deviceMakesDataLoader = useDataLoader(() => telemetryApi.devices.getCodeValues('device_make'));
+
   const deploymentsDataLoader = telemetryDataContext.deploymentsDataLoader;
+  const deployments = deploymentsDataLoader.data ?? [];
+  const deploymentCount = deployments?.length ?? 0;
 
   useEffect(() => {
+    frequencyUnitDataLoader.load();
+    deviceMakesDataLoader.load();
     deploymentsDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [deploymentsDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+  }, [
+    deploymentsDataLoader,
+    deviceMakesDataLoader,
+    frequencyUnitDataLoader,
+    surveyContext.projectId,
+    surveyContext.surveyId
+  ]);
 
-  const deployments = deploymentsDataLoader.data ?? [];
-
+  /**
+   * Callback for when a deployment action menu is clicked.
+   *
+   * @param {React.MouseEvent<HTMLButtonElement, MouseEvent>} event
+   * @param {number} deploymentId
+   */
   const handledDeploymentMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, deploymentId: number) => {
     setAnchorEl(event.currentTarget);
     setSelectedDeploymentId(deploymentId);
   };
 
+  /**
+   * Callback for when a checkbox is toggled.
+   *
+   * @param {number} deploymentId
+   */
   const handleCheckboxChange = (deploymentId: number) => {
     setCheckboxSelectedIds((prev) => {
       if (prev.includes(deploymentId)) {
@@ -58,8 +84,7 @@ export const SurveyDeploymentList = () => {
   };
 
   /**
-   * Handle the delete Deployment API call.
-   *
+   * Callback for when the delete deployment action is confirmed.
    */
   const handleDeleteDeployment = async () => {
     await biohubApi.survey
@@ -89,10 +114,9 @@ export const SurveyDeploymentList = () => {
   };
 
   /**
-   * Display the delete deployment dialog.
-   *
+   * Display the delete deployment confirmation dialog.
    */
-  const deleteDeploymentDialog = () => {
+  const renderDeleteDeploymentDialog = () => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Delete Deployment?',
       dialogContent: (
@@ -116,8 +140,6 @@ export const SurveyDeploymentList = () => {
       }
     });
   };
-
-  const deploymentCount = deployments?.length ?? 0;
 
   return (
     <>
@@ -146,7 +168,7 @@ export const SurveyDeploymentList = () => {
         </MenuItem>
         <MenuItem
           onClick={() => {
-            deleteDeploymentDialog();
+            renderDeleteDeploymentDialog();
             setAnchorEl(null);
           }}>
           <ListItemIcon>
@@ -173,7 +195,7 @@ export const SurveyDeploymentList = () => {
           <Typography variant="h3" component="h2" flexGrow={1}>
             Deployments &zwnj;
             <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-              ({deploymentCount ?? 0})
+              ({deploymentCount})
             </Typography>
           </Typography>
           <Button
@@ -199,9 +221,30 @@ export const SurveyDeploymentList = () => {
         <Divider flexItem />
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
           <Box position="absolute" top="0" right="0" bottom="0" left="0">
-            {deploymentsDataLoader.isLoading ? (
-              <SkeletonList />
-            ) : (
+            <LoadingGuard
+              isLoading={deploymentsDataLoader.isLoading}
+              isLoadingFallback={<SkeletonList />}
+              isLoadingFallbackDelay={100}
+              hasNoData={!deploymentCount}
+              hasNoDataFallback={
+                <Stack
+                  sx={{
+                    background: grey[100]
+                  }}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  flex="1 1 auto"
+                  position="absolute"
+                  top={0}
+                  right={0}
+                  left={0}
+                  bottom={0}
+                  height="100%">
+                  <Typography variant="body2">No Deployments</Typography>
+                </Stack>
+              }
+              hasNoDataFallbackDelay={100}>
               <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
                 <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
                   <FormGroup>
@@ -246,45 +289,38 @@ export const SurveyDeploymentList = () => {
                   sx={{
                     background: grey[100]
                   }}>
-                  {!deploymentCount && (
-                    <Stack
-                      sx={{
-                        background: grey[100]
-                      }}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      flex="1 1 auto"
-                      position="absolute"
-                      top={0}
-                      right={0}
-                      left={0}
-                      bottom={0}
-                      height="100%">
-                      <Typography variant="body2">No Deployments</Typography>
-                    </Stack>
-                  )}
-
                   {deployments.map((deployment) => {
                     const animal = surveyContext.critterDataLoader.data?.find(
                       (animal) => animal.critterbase_critter_id === deployment.critterbase_critter_id
                     );
-                    if (animal) {
-                      return (
-                        <SurveyDeploymentListItem
-                          key={deployment.deployment_id}
-                          animal={animal}
-                          deployment={deployment}
-                          isChecked={checkboxSelectedIds.includes(deployment.deployment_id)}
-                          handleDeploymentMenuClick={handledDeploymentMenuClick}
-                          handleCheckboxChange={handleCheckboxChange}
-                        />
-                      );
+
+                    if (!animal) {
+                      return null;
                     }
+
+                    // Replace the deployment frequency_unit IDs with their human readable codes
+                    const hydratedDeployment = {
+                      ...deployment,
+                      frequency_unit:
+                        frequencyUnitDataLoader.data?.find(
+                          (frequencyUnitOption) => frequencyUnitOption.id === deployment.frequency_unit
+                        )?.code ?? null
+                    };
+
+                    return (
+                      <SurveyDeploymentListItem
+                        key={deployment.deployment_id}
+                        animal={animal}
+                        deployment={hydratedDeployment}
+                        isChecked={checkboxSelectedIds.includes(deployment.deployment_id)}
+                        handleDeploymentMenuClick={handledDeploymentMenuClick}
+                        handleCheckboxChange={handleCheckboxChange}
+                      />
+                    );
                   })}
                 </Stack>
               </Stack>
-            )}
+            </LoadingGuard>
           </Box>
         </Box>
       </Paper>

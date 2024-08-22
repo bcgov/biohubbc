@@ -152,3 +152,31 @@ export function checkFileForKeyx(file: Express.Multer.File): boolean {
   // Return false if any of the files in the zip are not keyx files
   return zipEntries.every((zipEntry) => zipEntry.fileName.endsWith('.keyx'));
 }
+
+/**
+ * Returns true if the file is a cfg file, or a zip that contains only cfg files.
+ *
+ * @export
+ * @param {Express.Multer.File} file
+ * @return {*}  {boolean}
+ */
+export function checkFileForCfg(file: Express.Multer.File): boolean {
+  // File is a cfg file if it ends in '.cfg'
+  if (file?.originalname.endsWith('.cfg')) {
+    return true;
+  }
+  const mimeType = mime.getType(file.originalname) ?? '';
+  if (!isZipMimetype(mimeType)) {
+    // File cannot be a cfg file, since it is not an archive nor does it have a .cfg extension
+    return false;
+  }
+
+  const zipEntries = parseUnknownZipFile(file.buffer);
+  if (zipEntries.length === 0) {
+    // File is a zip file, but it is empty
+    return false;
+  }
+
+  // Return false if any of the files in the zip are not cfg files
+  return zipEntries.every((zipEntry) => zipEntry.fileName.endsWith('.cfg'));
+}

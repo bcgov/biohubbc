@@ -134,7 +134,7 @@ export const EditDeploymentPage = () => {
             breadcrumb="Edit Deployment"
           />
           <Box display="flex" flex="1 1 auto">
-            <DeploymentForm isSubmitting={isSubmitting} />
+            <DeploymentForm isSubmitting={isSubmitting} isEdit={true} />
           </Box>
         </Box>
       </Formik>

@@ -22,8 +22,9 @@ const timeSx = {
 };
 
 interface ISurveyDeploymentListItemDetailsProps {
-  deployment: IAnimalDeployment;
+  deployment: Omit<IAnimalDeployment, 'frequency_unit'> & { frequency_unit: string | null };
 }
+
 export const SurveyDeploymentListItemDetails = (props: ISurveyDeploymentListItemDetailsProps) => {
   const { deployment } = props;
   const critterbaseApi = useCritterbaseApi();

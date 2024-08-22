@@ -1,5 +1,5 @@
 import { getKnex } from '../database/db';
-import { IPostSurveyDeployment, SurveyDeployment } from '../models/survey-deployment';
+import { ICreateSurveyDeployment, IUpdateSurveyDeployment, SurveyDeployment } from '../models/survey-deployment';
 import { getLogger } from '../utils/logger';
 import { BaseRepository } from './base-repository';
 
@@ -105,18 +105,20 @@ export class DeploymentRepository extends BaseRepository {
   /**
    * Insert a new deployment record.
    *
-   * @param {IPostSurveyDeployment} deployment
+   * @param {ICreateSurveyDeployment} deployment
    * @return {*}  {Promise<void>}
    * @memberof DeploymentRepository
    */
-  async insertDeployment(deployment: IPostSurveyDeployment): Promise<void> {
-    defaultLog.debug({ label: 'insertDeployment', deploymentId: deployment.bctw_deployment_id });
+  async insertDeployment(deployment: ICreateSurveyDeployment): Promise<void> {
+    defaultLog.debug({ label: 'insertDeployment', bctw_deployment_id: deployment.bctw_deployment_id });
 
-    const { critter_id, ...deploymentData } = deployment;
-
-    const queryBuilder = getKnex()
-      .table('deployment')
-      .insert({ ...deploymentData, critter_id: critter_id });
+    const queryBuilder = getKnex().table('deployment').insert({
+      critter_id: deployment.critter_id,
+      bctw_deployment_id: deployment.bctw_deployment_id,
+      critterbase_start_capture_id: deployment.critterbase_start_capture_id,
+      critterbase_end_capture_id: deployment.critterbase_end_capture_id,
+      critterbase_end_mortality_id: deployment.critterbase_end_mortality_id
+    });
 
     await this.connection.knex(queryBuilder);
   }
@@ -124,20 +126,22 @@ export class DeploymentRepository extends BaseRepository {
   /**
    * Update an existing deployment record.
    *
-   * @param {number} deploymentId
-   * @param {IPostSurveyDeployment} deployment
+   * @param {IUpdateSurveyDeployment} deployment
    * @return {*}  {Promise<string>}
    * @memberof DeploymentRepository
    */
-  async updateDeployment(deploymentId: number, deployment: IPostSurveyDeployment): Promise<string> {
-    defaultLog.debug({ label: 'updateDeployment', deploymentId: deployment.bctw_deployment_id });
-
-    const { critter_id, ...deploymentData } = deployment;
+  async updateDeployment(deployment: IUpdateSurveyDeployment): Promise<string> {
+    defaultLog.debug({ label: 'updateDeployment', deployment_id: deployment.deployment_id });
 
     const queryBuilder = getKnex()
       .table('deployment')
-      .where('deployment_id', deploymentId)
-      .update({ ...deploymentData, critter_id: critter_id })
+      .where('deployment_id', deployment.deployment_id)
+      .update({
+        critter_id: deployment.critter_id,
+        critterbase_start_capture_id: deployment.critterbase_start_capture_id,
+        critterbase_end_capture_id: deployment.critterbase_end_capture_id,
+        critterbase_end_mortality_id: deployment.critterbase_end_mortality_id
+      })
       .returning('bctw_deployment_id');
 
     const response = await this.connection.knex(queryBuilder);

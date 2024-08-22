@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
@@ -149,8 +150,18 @@ export function getDeploymentsInSurvey(): RequestHandler {
           // BCTW properties
           assignment_id: matchingBctwDeployments[0].assignment_id,
           collar_id: matchingBctwDeployments[0].collar_id,
-          attachment_start: matchingBctwDeployments[0].attachment_start,
-          attachment_end: matchingBctwDeployments[0].attachment_end,
+          attachment_start_date: matchingBctwDeployments[0].attachment_start
+            ? dayjs(matchingBctwDeployments[0].attachment_start).format('YYYY-MM-DD')
+            : null,
+          attachment_start_time: matchingBctwDeployments[0].attachment_start
+            ? dayjs(matchingBctwDeployments[0].attachment_start).format('HH:mm:ss')
+            : null,
+          attachment_end_date: matchingBctwDeployments[0].attachment_end
+            ? dayjs(matchingBctwDeployments[0].attachment_end).format('YYYY-MM-DD')
+            : null,
+          attachment_end_time: matchingBctwDeployments[0].attachment_end
+            ? dayjs(matchingBctwDeployments[0].attachment_end).format('HH:mm:ss')
+            : null,
           bctw_deployment_id: matchingBctwDeployments[0].deployment_id,
           device_id: matchingBctwDeployments[0].device_id,
           device_make: matchingBctwDeployments[0].device_make,

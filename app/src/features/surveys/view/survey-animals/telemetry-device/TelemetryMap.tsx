@@ -45,13 +45,6 @@ const Legend = ({ hasData, colourMap }: ILegend) => {
                     width: '16px'
                   }}
                 />
-                {/* <Typography>{`Device ID: ${deploymentAndColour.device_id}, deployed from ${dayjs(
-                  deploymentAndColour.attachment_start
-                ).format('DD-MM-YYYY')} to ${
-                  deploymentAndColour.attachment_end
-                    ? dayjs(deploymentAndColour.attachment_end).format('DD-MM-YYYY')
-                    : 'indefinite'
-                }`}</Typography> */}
               </Box>
             ))
           ) : (
@@ -63,6 +56,12 @@ const Legend = ({ hasData, colourMap }: ILegend) => {
   );
 };
 
+/**
+ * TODO: unused?
+ *
+ * @param {IAllTelemetryMapProps} { deploymentData, telemetryData }
+ * @return {*}  {JSX.Element}
+ */
 const TelemetryMap = ({ deploymentData, telemetryData }: IAllTelemetryMapProps): JSX.Element => {
   const [legendColours, setLegendColours] = useState<ColourDeployment[]>([]);
 

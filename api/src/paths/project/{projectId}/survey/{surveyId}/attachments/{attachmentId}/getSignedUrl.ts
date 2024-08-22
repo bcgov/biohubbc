@@ -74,7 +74,7 @@ GET.apiDoc = {
       name: 'attachmentType',
       schema: {
         type: 'string',
-        enum: ['Report', 'KeyX', 'Other']
+        enum: ['Report', 'KeyX', 'Cfg', 'Other']
       },
       required: true
     }

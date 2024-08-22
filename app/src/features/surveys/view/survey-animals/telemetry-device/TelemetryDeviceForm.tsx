@@ -4,7 +4,8 @@ import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import TelemetrySelectField from 'components/fields/TelemetrySelectField';
 import FormikDevDebugger from 'components/formik/FormikDevDebugger';
-import { AttachmentType } from 'constants/attachments';
+import { AttachmentType, AttachmentTypeFileExtensions } from 'constants/attachments';
+import { DeploymentDeviceKeyField } from 'features/surveys/telemetry/deployments/components/form/device-details/DeploymentDeviceKeyField';
 import { Field, useFormikContext } from 'formik';
 import useDataLoader from 'hooks/useDataLoader';
 import { useTelemetryApi } from 'hooks/useTelemetryApi';
@@ -12,12 +13,17 @@ import { useEffect } from 'react';
 import { ANIMAL_FORM_MODE } from '../animal';
 import { DeploymentForm } from './DeploymentForm';
 import { IAnimalTelemetryDevice } from './device';
-import TelemetryFileUpload from './TelemetryFileUpload';
 
 export interface IAllTelemetryDeviceFormProps {
   mode: ANIMAL_FORM_MODE;
 }
 
+/**
+ * TODO: unused?
+ *
+ * @param {IAllTelemetryDeviceFormProps} props
+ * @return {*}
+ */
 const TelemetryDeviceForm = (props: IAllTelemetryDeviceFormProps) => {
   const { mode } = props;
 
@@ -119,8 +125,9 @@ const TelemetryDeviceForm = (props: IAllTelemetryDeviceFormProps) => {
                   mt: -1,
                   mb: 3
                 }}>{`Vectronic KeyX File (Optional)`}</Typography>
-              <TelemetryFileUpload
+              <DeploymentDeviceKeyField
                 attachmentType={AttachmentType.KEYX}
+                attachmentTypeFileExtensions={AttachmentTypeFileExtensions.KEYX}
                 fileKey="attachmentFile"
                 typeKey="attachmentType"
               />
@@ -134,9 +141,10 @@ const TelemetryDeviceForm = (props: IAllTelemetryDeviceFormProps) => {
                 sx={{
                   mt: -1,
                   mb: 3
-                }}>{`Lotek Config File (Optional)`}</Typography>
-              <TelemetryFileUpload
-                attachmentType={AttachmentType.OTHER}
+                }}>{`Lotek Cfg File (Optional)`}</Typography>
+              <DeploymentDeviceKeyField
+                attachmentType={AttachmentType.CFG}
+                attachmentTypeFileExtensions={AttachmentTypeFileExtensions.CFG}
                 fileKey="attachmentFile"
                 typeKey="attachmentType"
               />

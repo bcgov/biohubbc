@@ -26,6 +26,8 @@ const useDeviceApi = (axios: AxiosInstance) => {
   /**
    * Returns a list of supported collar vendors.
    *
+   * TODO: unused?
+   *
    * @return {*}  {Promise<string[]>}
    */
   const getCollarVendors = async (): Promise<string[]> => {

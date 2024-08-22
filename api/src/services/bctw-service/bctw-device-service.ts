@@ -5,9 +5,24 @@ export type BctwDevice = Omit<BctwDeployDevice, 'attachment_start' | 'attachment
   collar_id: string;
 };
 
+export type BctwUpdateCollarRequest = {
+  /**
+   * The ID of the collar record to update.
+   *
+   * @type {string}
+   */
+  collar_id: string;
+  device_make?: number | null;
+  device_model?: string | null;
+  frequency?: number | null;
+  frequency_unit?: number | null;
+};
+
 export class BctwDeviceService extends BctwService {
   /**
    * Get a list of all supported collar vendors.
+   *
+   * TODO: unused?
    *
    * @return {*}  {Promise<string[]>}
    * @memberof  BctwDeviceService
@@ -20,6 +35,8 @@ export class BctwDeviceService extends BctwService {
 
   /**
    * Get device hardware details by device id and device make.
+   *
+   * TODO: unused?
    *
    * @param {number} deviceId
    * @param {deviceMake} deviceMake
@@ -47,6 +64,19 @@ export class BctwDeviceService extends BctwService {
     if (data.errors.length) {
       throw Error(JSON.stringify(data.errors));
     }
+
+    return data;
+  }
+
+  /**
+   * Update collar details in BCTW.
+   *
+   * @param {BctwUpdateCollarRequest} collar - The collar details to update.
+   * @return {*}  {Promise<void>}
+   * @memberof BctwDeviceService
+   */
+  async updateCollar(collar: BctwUpdateCollarRequest): Promise<void> {
+    const { data } = await this.axiosInstance.patch('/update-collar', collar);
 
     return data;
   }

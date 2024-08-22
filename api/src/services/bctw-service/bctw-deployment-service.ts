@@ -42,11 +42,12 @@ export type BctwDeploymentRecord = z.infer<typeof BctwDeploymentRecord>;
 export const BctwDeploymentUpdate = z.object({
   deployment_id: z.string(),
   attachment_start: z.string(),
-  attachment_end: z.string()
+  attachment_end: z.string().nullable()
 });
 export type BctwDeploymentUpdate = z.infer<typeof BctwDeploymentUpdate>;
 
 export const BctwDeployDevice = z.object({
+  deployment_id: z.string().uuid(),
   device_id: z.number(),
   frequency: z.number().optional(),
   frequency_unit: z.string().optional(),
@@ -104,10 +105,10 @@ export class BctwDeploymentService extends BctwService {
    * Update the start and end dates of an existing deployment.
    *
    * @param {BctwDeploymentUpdate} deployment
-   * @return {*}  {Promise<BctwDeploymentRecord>}
+   * @return {*}  {Promise<BctwDeploymentRecord[]>}
    * @memberof BctwDeploymentService
    */
-  async updateDeployment(deployment: BctwDeploymentUpdate): Promise<BctwDeploymentRecord> {
+  async updateDeployment(deployment: BctwDeploymentUpdate): Promise<Omit<BctwDeploymentRecord, 'device_id'>[]> {
     const { data } = await this.axiosInstance.patch('/update-deployment', deployment);
 
     return data;

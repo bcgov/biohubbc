@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { IPostSurveyDeployment, SurveyDeployment } from '../models/survey-deployment';
+import { ICreateSurveyDeployment, IUpdateSurveyDeployment, SurveyDeployment } from '../models/survey-deployment';
 import { DeploymentRepository } from '../repositories/deployment-repository';
 import { DBService } from './db-service';
 
@@ -56,24 +56,23 @@ export class DeploymentService extends DBService {
   /**
    * Create a new deployment
    *
-   * @param {IPostSurveyDeployment} deployment
+   * @param {ICreateSurveyDeployment} deployment
    * @return {*}  {Promise<void>}
    * @memberof DeploymentService
    */
-  async insertDeployment(deployment: IPostSurveyDeployment): Promise<void> {
+  async insertDeployment(deployment: ICreateSurveyDeployment): Promise<void> {
     return this.deploymentRepository.insertDeployment(deployment);
   }
 
   /**
    * Update a deployment in SIMS
    *
-   * @param {IPostSurveyDeployment} deploymentId
-   * @param {IPostSurveyDeployment} deployment
+   * @param {IUpdateSurveyDeployment} deployment
    * @return {*}  {Promise<string>}
    * @memberof DeploymentService
    */
-  async updateDeployment(deploymentId: number, deployment: IPostSurveyDeployment): Promise<string> {
-    return this.deploymentRepository.updateDeployment(deploymentId, deployment);
+  async updateDeployment(deployment: IUpdateSurveyDeployment): Promise<string> {
+    return this.deploymentRepository.updateDeployment(deployment);
   }
 
   /**

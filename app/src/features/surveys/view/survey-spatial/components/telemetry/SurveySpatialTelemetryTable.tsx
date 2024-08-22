@@ -12,6 +12,7 @@ import { ScientificNameTypography } from 'features/surveys/animals/components/Sc
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryDataContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useMemo } from 'react';
 
@@ -45,14 +46,23 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
   const telemetryDataContext = useTelemetryDataContext();
 
   const biohubApi = useBiohubApi();
+  const telemetryApi = useTelemetryApi();
 
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
   const deploymentDataLoader = telemetryDataContext.deploymentsDataLoader;
+  const frequencyUnitDataLoader = useDataLoader(() => telemetryApi.devices.getCodeValues('frequency_unit'));
 
   useEffect(() => {
     deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
     critterDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [critterDataLoader, deploymentDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+    frequencyUnitDataLoader.load();
+  }, [
+    critterDataLoader,
+    deploymentDataLoader,
+    frequencyUnitDataLoader,
+    surveyContext.projectId,
+    surveyContext.surveyId
+  ]);
 
   /**
    * Merges critters with associated deployments
@@ -97,11 +107,14 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
           ? dayjs(item.deployment.attachment_end_date).format(DATE_FORMAT.MediumDateFormat)
           : '',
         frequency: item.deployment.frequency ?? null,
-        frequency_unit: item.deployment.frequency_unit ?? null,
+        frequency_unit: item.deployment.frequency_unit
+          ? frequencyUnitDataLoader.data?.find((frequencyCode) => frequencyCode.id === item.deployment.frequency_unit)
+              ?.code ?? null
+          : null,
         itis_scientific_name: item.critter.itis_scientific_name
       };
     });
-  }, [critterDeployments]);
+  }, [critterDeployments, frequencyUnitDataLoader.data]);
 
   // Define table columns
   const columns: GridColDef<ITelemetryData>[] = [

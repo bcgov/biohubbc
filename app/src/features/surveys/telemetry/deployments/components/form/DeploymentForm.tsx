@@ -31,16 +31,17 @@ import { useHistory } from 'react-router';
 
 export const DeploymentFormInitialValues = {
   ...DeploymentDetailsFormInitialValues,
-  ...DeploymentDeviceDetailsFormInitialValues,
-  ...DeploymentTimelineFormInitialValues
+  ...DeploymentTimelineFormInitialValues,
+  ...DeploymentDeviceDetailsFormInitialValues
 };
 
-export const DeploymentFormYupSchema = DeploymentDeviceDetailsFormYupSchema.concat(
-  DeploymentTimelineFormYupSchema
-).concat(DeploymentDetailsFormYupSchema);
+export const DeploymentFormYupSchema = DeploymentDetailsFormYupSchema.concat(DeploymentTimelineFormYupSchema).concat(
+  DeploymentDeviceDetailsFormYupSchema
+);
 
 interface IDeploymentFormProps {
   isSubmitting: boolean;
+  isEdit?: boolean;
 }
 
 /**
@@ -50,7 +51,7 @@ interface IDeploymentFormProps {
  * @return {*}
  */
 export const DeploymentForm = (props: IDeploymentFormProps) => {
-  const { isSubmitting } = props;
+  const { isSubmitting, isEdit } = props;
 
   const { submitForm, values } = useFormikContext<ICreateAnimalDeployment>();
 
@@ -67,14 +68,13 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
   );
 
   const frequencyUnitDataLoader = useDataLoader(() => telemetryApi.devices.getCodeValues('frequency_unit'));
-
   const deviceMakesDataLoader = useDataLoader(() => telemetryApi.devices.getCodeValues('device_make'));
 
   // Fetch frequency unit and device make code values from BCTW on component mount
   useEffect(() => {
     frequencyUnitDataLoader.load();
     deviceMakesDataLoader.load();
-  }, [critterDataLoader, deviceMakesDataLoader, frequencyUnitDataLoader]);
+  }, [deviceMakesDataLoader, frequencyUnitDataLoader]);
 
   // Fetch critter data when critter_id changes (ie. when the user selects a critter)
   useEffect(() => {
@@ -92,6 +92,7 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
             <DeploymentDetailsForm
               surveyAnimals={surveyContext.critterDataLoader.data ?? []}
               frequencyUnits={frequencyUnitDataLoader.data?.map((data) => ({ label: data.code, value: data.id })) ?? []}
+              isEdit={isEdit}
             />
           </HorizontalSplitFormComponent>
 
@@ -100,7 +101,7 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
           <HorizontalSplitFormComponent title="Timeline" summary="Enter information about when the device was deployed">
             <DeploymentTimelineForm
               captures={critterDataLoader.data?.captures ?? []}
-              mortality={critterDataLoader.data?.mortality[0]}
+              mortalities={critterDataLoader.data?.mortality ?? []}
             />
           </HorizontalSplitFormComponent>
 

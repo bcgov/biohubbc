@@ -24,7 +24,7 @@ const SurveyAttachments: React.FC = () => {
 
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
   const [attachmentType, setAttachmentType] = useState<
-    AttachmentType.REPORT | AttachmentType.OTHER | AttachmentType.KEYX
+    AttachmentType.REPORT | AttachmentType.OTHER | AttachmentType.KEYX | AttachmentType.CFG
   >(AttachmentType.OTHER);
 
   const handleUploadReportClick = () => {
@@ -66,6 +66,8 @@ const SurveyAttachments: React.FC = () => {
         return 'Upload Report';
       case AttachmentType.KEYX:
         return 'Upload KeyX';
+      case AttachmentType.CFG:
+        return 'Upload Cfg';
       case AttachmentType.OTHER:
         return 'Upload Attachments';
       default:

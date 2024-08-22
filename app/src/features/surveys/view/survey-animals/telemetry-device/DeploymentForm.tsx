@@ -20,6 +20,12 @@ interface DeploymentFormSectionProps {
   deviceDetails?: IGetDeviceDetailsResponse;
 }
 
+/**
+ * TODO: unused?
+ *
+ * @param {DeploymentFormSectionProps} props
+ * @return {*}  {JSX.Element}
+ */
 export const DeploymentForm = (props: DeploymentFormSectionProps): JSX.Element => {
   const { mode } = props;
 

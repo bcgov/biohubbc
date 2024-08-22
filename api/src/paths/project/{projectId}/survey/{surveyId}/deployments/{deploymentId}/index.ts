@@ -5,10 +5,16 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP409 } from '../../../../../../../errors/http-error';
-import { getDeploymentSchema, postDeploymentSchema } from '../../../../../../../openapi/schemas/deployment';
+import { getDeploymentSchema } from '../../../../../../../openapi/schemas/deployment';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { BctwDeploymentService } from '../../../../../../../services/bctw-service/bctw-deployment-service';
-import { CritterbaseService, ICritterbaseUser } from '../../../../../../../services/critterbase-service';
+import { BctwDeviceService } from '../../../../../../../services/bctw-service/bctw-device-service';
+import { getBctwUser } from '../../../../../../../services/bctw-service/bctw-service';
+import {
+  CritterbaseService,
+  getCritterbaseUser,
+  ICritterbaseUser
+} from '../../../../../../../services/critterbase-service';
 import { DeploymentService } from '../../../../../../../services/deployment-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
@@ -159,12 +165,24 @@ export function getDeploymentById(): RequestHandler {
         ]);
       }
 
+      console.log(bctwDeployments);
+
       const surveyDeploymentWithBctwData = {
         // BCTW properties
         assignment_id: matchingBctwDeployments[0].assignment_id,
         collar_id: matchingBctwDeployments[0].collar_id,
-        attachment_start: matchingBctwDeployments[0].attachment_start,
-        attachment_end: matchingBctwDeployments[0].attachment_end,
+        attachment_start_date: matchingBctwDeployments[0].attachment_start
+          ? dayjs(matchingBctwDeployments[0].attachment_start).format('YYYY-MM-DD')
+          : null,
+        attachment_start_time: matchingBctwDeployments[0].attachment_start
+          ? dayjs(matchingBctwDeployments[0].attachment_start).format('HH:mm:ss')
+          : null,
+        attachment_end_date: matchingBctwDeployments[0].attachment_end
+          ? dayjs(matchingBctwDeployments[0].attachment_end).format('YYYY-MM-DD')
+          : null,
+        attachment_end_time: matchingBctwDeployments[0].attachment_end
+          ? dayjs(matchingBctwDeployments[0].attachment_end).format('HH:mm:ss')
+          : null,
         bctw_deployment_id: matchingBctwDeployments[0].deployment_id,
         device_id: matchingBctwDeployments[0].device_id,
         device_make: matchingBctwDeployments[0].device_make,
@@ -253,7 +271,77 @@ PUT.apiDoc = {
     description: 'Specifies a deployment id and the new timerange to update it with.',
     content: {
       'application/json': {
-        schema: postDeploymentSchema
+        schema: {
+          title: 'Deploy device request object',
+          type: 'object',
+          additionalProperties: false,
+          required: [
+            'critter_id',
+            'device_id',
+            'attachment_end_date',
+            'attachment_end_time',
+            'device_make',
+            'device_model',
+            'frequency',
+            'frequency_unit',
+            'critterbase_start_capture_id',
+            'critterbase_end_capture_id',
+            'critterbase_end_mortality_id'
+          ],
+          properties: {
+            critter_id: {
+              type: 'integer',
+              minimum: 1
+            },
+            attachment_end_date: {
+              type: 'string',
+              description: 'End date of the deployment, without time.',
+              nullable: true
+            },
+            attachment_end_time: {
+              type: 'string',
+              description: 'End time of the deployment.',
+              nullable: true
+            },
+            device_id: {
+              type: 'integer',
+              minimum: 1
+            },
+            device_make: {
+              type: 'number',
+              nullable: true
+            },
+            device_model: {
+              type: 'string',
+              nullable: true
+            },
+            frequency: {
+              type: 'number'
+            },
+            frequency_unit: {
+              type: 'number',
+              nullable: true
+            },
+            critterbase_start_capture_id: {
+              type: 'string',
+              description: 'Critterbase capture record when the deployment started',
+              format: 'uuid',
+              nullable: true
+            },
+            critterbase_end_capture_id: {
+              type: 'string',
+              description: 'Critterbase capture record when the deployment ended',
+              format: 'uuid',
+              nullable: true
+            },
+            critterbase_end_mortality_id: {
+              type: 'string',
+              description: 'Critterbase mortality record when the deployment ended',
+              format: 'uuid',
+              nullable: true
+            }
+          }
+        }
       }
     }
   },
@@ -287,45 +375,58 @@ export function updateDeployment(): RequestHandler {
 
     const {
       critter_id,
-      critterbase_start_capture_id,
-      critterbase_end_capture_id,
-      critterbase_end_mortality_id,
       attachment_end_date,
       attachment_end_time,
-      ...bctwRequestObject
+      // device_id, // Do not allow the device_id to be updated
+      device_make,
+      device_model,
+      frequency,
+      frequency_unit,
+      critterbase_start_capture_id,
+      critterbase_end_capture_id,
+      critterbase_end_mortality_id
     } = req.body;
 
     try {
       await connection.open();
 
-      const user: ICritterbaseUser = {
-        keycloak_guid: connection.systemUserGUID(),
-        username: connection.systemUserIdentifier()
-      };
-
-      const deploymentService = new DeploymentService(connection);
-      const bctwDeploymentService = new BctwDeploymentService(user);
-      const critterbaseService = new CritterbaseService(user);
-
       // Update the deployment in SIMS
-      const bctw_deployment_id = await deploymentService.updateDeployment(deploymentId, {
+      const deploymentService = new DeploymentService(connection);
+      const bctw_deployment_id = await deploymentService.updateDeployment({
+        deployment_id: deploymentId,
         critter_id: critter_id,
-        bctw_deployment_id: bctwRequestObject.bctw_deployment_id,
         critterbase_start_capture_id,
         critterbase_end_capture_id,
         critterbase_end_mortality_id
       });
 
       // TODO: Decide whether to explicitly record attachment start date, or just reference the capture. Might remove this line.
+      const critterbaseService = new CritterbaseService(getCritterbaseUser(req));
       const capture = await critterbaseService.getCaptureById(critterbase_start_capture_id);
 
-      // Update the deployment in BCTW, which works by soft deleting and inserting a new deployment record (hence createDeployment)
-      await bctwDeploymentService.updateDeployment({
-        ...bctwRequestObject,
+      // Create attachment end date from provided end date (if not null) and end time (if not null).
+      const attachmentEnd = attachment_end_date
+        ? attachment_end_time
+          ? dayjs(`${attachment_end_date} ${attachment_end_time}`).toISOString()
+          : dayjs(`${attachment_end_date}`).toISOString()
+        : null;
+
+      // Update the deployment (collar_animal_assignment) in BCTW
+      const bctwDeploymentService = new BctwDeploymentService(getBctwUser(req));
+      const bctwDeploymentRecords = await bctwDeploymentService.updateDeployment({
+        deployment_id: bctw_deployment_id,
         attachment_start: capture.capture_date,
-        attachment_end: dayjs(`${attachment_end_date} ${attachment_end_time}`), // TODO: ADD SEPARATE DATE AND TIME TO BCTW
-        critter_id: capture.critter_id,
-        deployment_id: bctw_deployment_id
+        attachment_end: attachmentEnd // TODO: ADD SEPARATE DATE AND TIME TO BCTW
+      });
+
+      // Update the collar details in BCTW
+      const bctwDeviceService = new BctwDeviceService(getBctwUser(req));
+      await bctwDeviceService.updateCollar({
+        collar_id: bctwDeploymentRecords[0].collar_id,
+        device_make: device_make,
+        device_model: device_model,
+        frequency: frequency,
+        frequency_unit: frequency_unit
       });
 
       await connection.commit();

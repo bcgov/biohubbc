@@ -87,7 +87,6 @@ PATCH.apiDoc = {
           type: 'object',
           additionalProperties: false,
           required: [
-            'deployment_id',
             'bctw_deployment_id',
             'critterbase_start_capture_id',
             'critterbase_end_capture_id',
@@ -187,7 +186,6 @@ export function patchDeployment(): RequestHandler {
     const connection = getDBConnection(req.keycloak_token);
 
     const {
-      deployment_id,
       bctw_deployment_id,
       critterbase_start_capture_id,
       critterbase_end_capture_id,
@@ -208,9 +206,9 @@ export function patchDeployment(): RequestHandler {
       const deploymentService = new DeploymentService(connection);
       const critterbaseService = new CritterbaseService(user);
 
-      await deploymentService.updateDeployment(deploymentId, {
+      await deploymentService.updateDeployment({
+        deployment_id: deploymentId,
         critter_id: critterId,
-        bctw_deployment_id: bctw_deployment_id,
         critterbase_start_capture_id,
         critterbase_end_capture_id,
         critterbase_end_mortality_id
@@ -218,11 +216,18 @@ export function patchDeployment(): RequestHandler {
 
       const capture = await critterbaseService.getCaptureById(critterbase_start_capture_id);
 
+      // Create attachment end date from provided end date (if not null) and end time (if not null).
+      const attachmentEnd = attachment_end_date
+        ? attachment_end_time
+          ? dayjs(`${attachment_end_date} ${attachment_end_time}`).toISOString()
+          : dayjs(`${attachment_end_date}`).toISOString()
+        : null;
+
       // Update the deployment in BCTW, which works by soft deleting and inserting a new deployment record
       await bctwDeploymentService.updateDeployment({
-        deployment_id,
+        deployment_id: bctw_deployment_id,
         attachment_start: capture.capture_date,
-        attachment_end: dayjs(`${attachment_end_date} ${attachment_end_time}`).toISOString() // TODO: ADD SEPARATE DATE AND TIME TO BCTW
+        attachment_end: attachmentEnd // TODO: ADD SEPARATE DATE AND TIME TO BCTW
       });
 
       await connection.commit();

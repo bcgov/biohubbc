@@ -50,12 +50,13 @@ export class BctwService {
         }
         const data: any = error.response?.data;
         const errMsg = data?.error ?? data?.errors ?? data ?? 'Unknown error';
+        const issues = data?.issues ?? [];
 
         return Promise.reject(
           new ApiError(
             ApiErrorType.UNKNOWN,
-            `API request failed with status code ${error?.response?.status}, ${errMsg}`,
-            Array.isArray(errMsg) ? errMsg : [errMsg]
+            `API request failed with status code ${error?.response?.status}: ${errMsg}`,
+            [].concat(errMsg).concat(issues)
           )
         );
       }

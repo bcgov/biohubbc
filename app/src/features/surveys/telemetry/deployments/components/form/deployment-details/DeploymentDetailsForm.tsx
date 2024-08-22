@@ -32,7 +32,7 @@ export const DeploymentDetailsFormYupSchema = yup.object({
   ),
   frequency_unit: yup.lazy(() =>
     yup
-      .string()
+      .number()
       .nullable()
       .when('frequency', {
         is: (frequency: number) => !!frequency, // when frequency is defined
@@ -44,6 +44,7 @@ export const DeploymentDetailsFormYupSchema = yup.object({
 interface IDeploymentDetailsFormProps {
   surveyAnimals: ICritterSimpleResponse[];
   frequencyUnits: IAutocompleteFieldOption<number>[];
+  isEdit?: boolean;
 }
 
 /**
@@ -53,7 +54,7 @@ interface IDeploymentDetailsFormProps {
  * @return {*}
  */
 export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
-  const { surveyAnimals, frequencyUnits } = props;
+  const { surveyAnimals, frequencyUnits, isEdit } = props;
 
   const { setFieldValue, values } = useFormikContext<ICreateAnimalDeployment>();
 
@@ -89,7 +90,8 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
             label="Device ID"
             maxLength={200}
             other={{
-              required: true
+              required: true,
+              disabled: isEdit
             }}
           />
         </Grid>

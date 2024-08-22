@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
+import { Request } from 'express';
 import qs from 'qs';
 import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
@@ -11,6 +12,11 @@ export interface ICritterbaseUser {
   username: string;
   keycloak_guid: string;
 }
+
+export const getCritterbaseUser = (req: Request): ICritterbaseUser => ({
+  keycloak_guid: req.system_user?.user_guid ?? '',
+  username: req.system_user?.user_identifier ?? ''
+});
 
 export interface QueryParam {
   key: string;
