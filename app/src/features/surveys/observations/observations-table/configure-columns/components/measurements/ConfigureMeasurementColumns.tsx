@@ -1,7 +1,9 @@
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, IconButton, Stack, Typography } from '@mui/material';
-import MeasurementStandardCard from 'features/standards/view/components/MeasurementStandardCard';
+import { blueGrey, grey } from '@mui/material/colors';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
+import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { MeasurementsSearch } from './search/MeasurementsSearch';
 
@@ -57,11 +59,29 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
                   display="flex"
                   alignItems="flex-start"
                   key={`measurement_item_${measurement.taxon_measurement_id}`}>
-                  <MeasurementStandardCard
-                    small
+                  <AccordionStandardCard
                     label={measurement.measurement_name}
-                    description={measurement.measurement_desc ?? ''}
-                    options={'options' in measurement ? measurement['options'] : []}
+                    subtitle={measurement.measurement_desc ?? ''}
+                    colour={grey[100]}
+                    children={
+                      'options' in measurement ? (
+                        <Stack gap={1} my={2}>
+                          {measurement.options.map((option) => (
+                            <AccordionStandardCard
+                              key={option.option_label}
+                              label={option.option_label}
+                              subtitle={option.option_desc}
+                              colour={grey[200]}
+                            />
+                          ))}
+                        </Stack>
+                      ) : undefined
+                    }
+                    ornament={
+                      'unit' in measurement && measurement.unit ? (
+                        <ColouredRectangleChip colour={blueGrey} label={measurement.unit} />
+                      ) : undefined
+                    }
                   />
                   <Box ml={1} mt={1}>
                     <IconButton
