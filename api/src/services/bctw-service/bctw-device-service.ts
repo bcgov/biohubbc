@@ -7,9 +7,7 @@ export type BctwDevice = Omit<BctwDeployDevice, 'attachment_start' | 'attachment
 
 export type BctwUpdateCollarRequest = {
   /**
-   * The ID of the collar record to update.
-   *
-   * @type {string}
+   * The primary ID (uuid) of the collar record to update.
    */
   collar_id: string;
   device_make?: number | null;
@@ -76,7 +74,11 @@ export class BctwDeviceService extends BctwService {
    * @memberof BctwDeviceService
    */
   async updateCollar(collar: BctwUpdateCollarRequest): Promise<void> {
-    const { data } = await this.axiosInstance.patch('/update-collar', collar);
+    const { data } = await this.axiosInstance.post('/update-collar', collar);
+
+    if (data.errors.length) {
+      throw Error(JSON.stringify(data.errors));
+    }
 
     return data;
   }

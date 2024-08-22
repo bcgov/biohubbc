@@ -6,7 +6,7 @@ import { IAnimalTelemetryDeviceFile } from '../../../../../view/survey-animals/t
 
 export interface IDeploymentDeviceKeyFieldProps {
   attachmentType: AttachmentType;
-  attachmentTypeFileExtensions: string;
+  attachmentTypeFileExtensions: string | string[];
   fileKey: string;
   typeKey: string;
 }

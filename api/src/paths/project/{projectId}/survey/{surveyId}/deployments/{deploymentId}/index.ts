@@ -413,6 +413,7 @@ export function updateDeployment(): RequestHandler {
 
       // Update the deployment (collar_animal_assignment) in BCTW
       const bctwDeploymentService = new BctwDeploymentService(getBctwUser(req));
+      // Returns an array though we only expect one record
       const bctwDeploymentRecords = await bctwDeploymentService.updateDeployment({
         deployment_id: bctw_deployment_id,
         attachment_start: capture.capture_date,
