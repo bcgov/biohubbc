@@ -38,6 +38,12 @@ export const AuthStateContext = React.createContext<IAuthState | undefined>(unde
 export const AuthStateContextProvider: React.FC<React.PropsWithChildren> = (props) => {
   const auth = useAuth();
 
+  // Add event listener for silent renew errors
+  auth.events.addSilentRenewError(() => {
+    // If the silent renew fails, ensure the user is signed out and redirect to the home page
+    auth.signoutRedirect();
+  });
+
   const simsUserWrapper = useSimsUserWrapper();
 
   const critterbaseUserWrapper = useCritterbaseUserWrapper(simsUserWrapper);

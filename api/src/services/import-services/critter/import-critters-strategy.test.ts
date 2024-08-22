@@ -4,14 +4,14 @@ import sinonChai from 'sinon-chai';
 import { WorkSheet } from 'xlsx';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { IBulkCreateResponse } from '../../critterbase-service';
-import { ImportCrittersService } from './import-critters-service';
-import { CsvCritter } from './import-critters-service.interface';
+import { ImportCrittersStrategy } from './import-critters-strategy';
+import { CsvCritter } from './import-critters-strategy.interface';
 
 chai.use(sinonChai);
 
 const mockConnection = getMockDBConnection();
 
-describe('ImportCrittersService', () => {
+describe('ImportCrittersStrategy', () => {
   describe('_getRowsToValidate', () => {
     it('it should correctly format rows', () => {
       const rows = [
@@ -25,7 +25,7 @@ describe('ImportCrittersService', () => {
           BAD_COLLECTION: 'Bad'
         }
       ];
-      const service = new ImportCrittersService(mockConnection, 1);
+      const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const parsedRow = service._getRowsToValidate(rows, ['COLLECTION'])[0];
 
@@ -51,7 +51,7 @@ describe('ImportCrittersService', () => {
         critter_comment: 'comment',
         extra_property: 'test'
       };
-      const service = new ImportCrittersService(mockConnection, 1);
+      const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const critter = service._getCritterFromRow(row);
 
@@ -78,7 +78,7 @@ describe('ImportCrittersService', () => {
         COLLECTION: 'ID1',
         HERD: 'ID2'
       };
-      const service = new ImportCrittersService(mockConnection, 1);
+      const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const collectionUnits = service._getCollectionUnitsFromRow(row);
 
@@ -95,7 +95,7 @@ describe('ImportCrittersService', () => {
     });
 
     it('should return unique list of tsns', async () => {
-      const service = new ImportCrittersService(mockConnection, 1);
+      const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const getTaxonomyStub = sinon.stub(service.platformService, 'getTaxonomyByTsns').resolves([
         { tsn: '1', scientificName: 'a' },
@@ -152,7 +152,7 @@ describe('ImportCrittersService', () => {
     ];
 
     it('should return collection unit mapping', async () => {
-      const service = new ImportCrittersService(mockConnection, 1);
+      const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
       const mockWorksheet = {} as unknown as WorkSheet;
@@ -173,7 +173,7 @@ describe('ImportCrittersService', () => {
     });
 
     it('should return empty map when no collection unit columns', async () => {
-      const service = new ImportCrittersService(mockConnection, 1);
+      const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
       const mockWorksheet = {} as unknown as WorkSheet;
@@ -216,7 +216,7 @@ describe('ImportCrittersService', () => {
     ];
 
     it('should correctly parse collection units and critters and insert into sims / critterbase', async () => {
-      const service = new ImportCrittersService(mockConnection, 1);
+      const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const critterbaseBulkCreateStub = sinon.stub(service.critterbaseService, 'bulkCreate');
       const simsAddSurveyCrittersStub = sinon.stub(service.surveyCritterService, 'addCrittersToSurvey');
@@ -255,7 +255,7 @@ describe('ImportCrittersService', () => {
     });
 
     it('should throw error if response from critterbase is less than provided critters', async () => {
-      const service = new ImportCrittersService(mockConnection, 1);
+      const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const critterbaseBulkCreateStub = sinon.stub(service.critterbaseService, 'bulkCreate');
       const simsAddSurveyCrittersStub = sinon.stub(service.surveyCritterService, 'addCrittersToSurvey');
@@ -314,7 +314,7 @@ describe('ImportCrittersService', () => {
     ];
 
     it('should return successful', async () => {
-      const service = new ImportCrittersService(mockConnection, 1);
+      const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
@@ -377,7 +377,7 @@ describe('ImportCrittersService', () => {
     });
 
     it('should return error when sex undefined', async () => {
-      const service = new ImportCrittersService(mockConnection, 1);
+      const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
@@ -415,7 +415,7 @@ describe('ImportCrittersService', () => {
     });
 
     it('should return error when wlh_id invalid regex', async () => {
-      const service = new ImportCrittersService(mockConnection, 1);
+      const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
@@ -453,7 +453,7 @@ describe('ImportCrittersService', () => {
     });
 
     it('should return error when itis_tsn invalid option or undefined', async () => {
-      const service = new ImportCrittersService(mockConnection, 1);
+      const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
@@ -491,7 +491,7 @@ describe('ImportCrittersService', () => {
     });
 
     it('should return error if alias undefined, duplicate or exists in surve', async () => {
-      const service = new ImportCrittersService(mockConnection, 1);
+      const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
@@ -545,7 +545,7 @@ describe('ImportCrittersService', () => {
     });
 
     it('should return error if collection unit invalid value', async () => {
-      const service = new ImportCrittersService(mockConnection, 1);
+      const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
