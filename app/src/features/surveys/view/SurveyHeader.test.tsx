@@ -1,4 +1,5 @@
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { ConfigContext, IConfig } from 'contexts/configContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
@@ -12,6 +13,7 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState, SystemUserAuthState } from 'test-helpers/auth-helpers';
+import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import { cleanup, fireEvent, render, waitFor } from 'test-helpers/test-utils';
@@ -26,6 +28,13 @@ const mockUseApi = {
     publishSurvey: jest.fn(),
     deleteSurvey: jest.fn()
   }
+};
+
+const mockCodesContext: ICodesContext = {
+  codesDataLoader: {
+    data: codes,
+    load: () => {}
+  } as DataLoader<any, any, any>
 };
 
 const mockSurveyContext: ISurveyContext = {
@@ -43,6 +52,9 @@ const mockSurveyContext: ISurveyContext = {
   } as DataLoader<any, any, any>,
   deploymentDataLoader: {
     data: null
+  } as DataLoader<any, any, any>,
+  techniqueDataLoader: {
+    data: []
   } as DataLoader<any, any, any>,
   critterDeployments: [],
   surveyId: 1,
@@ -101,11 +113,13 @@ describe('SurveyHeader', () => {
           <ProjectContext.Provider value={mockProjectContext}>
             <SurveyContext.Provider value={mockSurveyContext}>
               <AuthStateContext.Provider value={authState}>
-                <ProjectAuthStateContext.Provider value={projectAuthState}>
-                  <DialogContextProvider>
-                    <SurveyHeader />
-                  </DialogContextProvider>
-                </ProjectAuthStateContext.Provider>
+                <CodesContext.Provider value={mockCodesContext}>
+                  <ProjectAuthStateContext.Provider value={projectAuthState}>
+                    <DialogContextProvider>
+                      <SurveyHeader />
+                    </DialogContextProvider>
+                  </ProjectAuthStateContext.Provider>
+                </CodesContext.Provider>
               </AuthStateContext.Provider>
             </SurveyContext.Provider>
           </ProjectContext.Provider>

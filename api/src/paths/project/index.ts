@@ -12,6 +12,7 @@ import {
   makePaginationOptionsFromRequest,
   makePaginationResponse
 } from '../../utils/pagination';
+import { getSystemUserFromRequest } from '../../utils/request';
 
 const defaultLog = getLogger('paths/project/index');
 
@@ -105,7 +106,16 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: ['project_id', 'name', 'start_date', 'end_date', 'focal_species', 'regions', 'types'],
+                  required: [
+                    'project_id',
+                    'name',
+                    'start_date',
+                    'end_date',
+                    'focal_species',
+                    'regions',
+                    'types',
+                    'members'
+                  ],
                   properties: {
                     project_id: {
                       type: 'integer',
@@ -146,6 +156,19 @@ GET.apiDoc = {
                       items: {
                         type: 'integer'
                       }
+                    },
+                    members: {
+                      type: 'array',
+                      description: 'Members of the Project',
+                      items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        required: ['system_user_id', 'display_name'],
+                        properties: {
+                          system_user_id: { type: 'number' },
+                          display_name: { type: 'string' }
+                        }
+                      }
                     }
                   }
                 }
@@ -183,16 +206,18 @@ export function findProjects(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'findProjects' });
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
       const systemUserId = connection.systemUserId();
 
+      const systemUser = getSystemUserFromRequest(req);
+
       const isUserAdmin = userHasValidRole(
         [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
-        req['system_user']['role_names']
+        systemUser.role_names
       );
 
       const filterFields = parseQueryParams(req);

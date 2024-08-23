@@ -125,6 +125,8 @@ objects:
               env:
                 - name: CHANGE_VERSION
                   value: ${CHANGE_ID}
+                - name: REACT_APP_PORT
+                  value: ${APP_PORT_DEFAULT}
                 - name: REACT_APP_API_HOST
                   value: ${REACT_APP_API_HOST}
                 - name: REACT_APP_SITEMINDER_LOGOUT_URL

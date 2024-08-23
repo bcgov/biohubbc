@@ -2,6 +2,7 @@ import { Request } from 'express';
 import { decode, verify } from 'jsonwebtoken';
 import { JwksClient } from 'jwks-rsa';
 import { HTTP401 } from '../../errors/http-error';
+import { KeycloakUserInformation } from '../../utils/keycloak-utils';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('request-handlers/security/authentication');
@@ -72,7 +73,7 @@ export const authenticateRequest = async function (req: Request): Promise<true> 
     const signingKey = key.getPublicKey();
 
     // Verify token using public signing key
-    const verifiedToken = verify(tokenString, signingKey, { issuer: [KEYCLOAK_ISSUER] });
+    const verifiedToken = verify(tokenString, signingKey, { issuer: [KEYCLOAK_ISSUER] }) as KeycloakUserInformation;
 
     if (!verifiedToken) {
       defaultLog.warn({ label: 'authenticate', message: 'verified token was null' });
@@ -80,7 +81,7 @@ export const authenticateRequest = async function (req: Request): Promise<true> 
     }
 
     // Add the verified token to the request for future use, if needed
-    req['keycloak_token'] = verifiedToken;
+    req.keycloak_token = verifiedToken;
 
     return true;
   } catch (error) {

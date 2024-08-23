@@ -12,7 +12,6 @@ import { Formik } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
 import {
   IBCeIDBasicAccessRequestDataObject,
   IBCeIDBusinessAccessRequestDataObject,
@@ -66,9 +65,6 @@ export const AccessRequestPage: React.FC = () => {
   };
 
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
-
-  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
-  codesDataLoader.load();
 
   const showAccessRequestErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
@@ -146,7 +142,7 @@ export const AccessRequestPage: React.FC = () => {
     default:
       initialValues = IDIRRequestFormInitialValues;
       validationSchema = IDIRRequestFormYupSchema;
-      requestForm = <IDIRRequestForm codes={codesDataLoader.data} />;
+      requestForm = <IDIRRequestForm />;
   }
 
   return (

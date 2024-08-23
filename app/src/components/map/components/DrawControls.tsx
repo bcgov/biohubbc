@@ -4,7 +4,7 @@ import L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
-import { coloredPoint } from 'utils/mapUtils';
+import { coloredCustomMarker } from 'utils/mapUtils';
 
 /**
  * Custom subset of `L.Control.DrawConstructorOptions` that omits `edit.featureGroup` as this will be added automatically
@@ -197,7 +197,7 @@ const DrawControls = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps
               return new L.Circle([latlng.lat, latlng.lng], feature.properties.radius);
             }
 
-            return coloredPoint({ latlng });
+            return coloredCustomMarker({ latlng });
           },
           onEachFeature: function (_feature, layer) {
             featureGroup.addLayer(layer);

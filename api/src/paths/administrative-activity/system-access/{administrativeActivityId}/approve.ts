@@ -139,7 +139,7 @@ export function approveAccessRequest(): RequestHandler {
 
     const roleIds: number[] = req.body.roleIds || [];
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

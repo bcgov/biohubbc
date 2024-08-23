@@ -237,22 +237,24 @@ PATCH.apiDoc = {
 
 export function deployDevice(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
-
     const critterId = Number(req.params.critterId);
+
     const newDeploymentId = v4(); // New deployment ID
+
     const newDeploymentDevice = {
       ...req.body,
-      deploymentId: newDeploymentId
+      deployment_id: newDeploymentId
     };
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
+
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
 
       const surveyCritterService = new SurveyCritterService(connection);
       await surveyCritterService.upsertDeployment(critterId, newDeploymentId);
@@ -275,16 +277,17 @@ export function deployDevice(): RequestHandler {
 
 export function updateDeployment(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
     const critterId = Number(req.params.critterId);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
+
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
 
       const surveyCritterService = new SurveyCritterService(connection);
       const bctw = new BctwService(user);

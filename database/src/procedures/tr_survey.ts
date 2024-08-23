@@ -11,6 +11,8 @@ import { Knex } from 'knex';
  */
 export async function seed(knex: Knex): Promise<void> {
   await knex.raw(`--sql
+    SET search_path = 'biohub';
+
     CREATE OR REPLACE FUNCTION biohub.tr_survey()
     RETURNS trigger
     LANGUAGE plpgsql

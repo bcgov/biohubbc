@@ -322,6 +322,36 @@ export const CreateSamplingSiteI18N = {
     'An error has occurred while attempting to create your sampling site(s). Please try again. If the error persists, please contact your system administrator.'
 };
 
+export const CreateTechniqueI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Technique',
+  createErrorText:
+    'An error has occurred while attempting to create your technique. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditTechniqueI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Editing Technique',
+  createErrorText:
+    'An error has occurred while attempting to edit your technique. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const DeleteTechniqueI18N = {
+  deleteTitle: 'Delete Technique?',
+  deleteText: 'Are you sure you want to delete this technique?',
+  yesButtonLabel: 'Delete Technique',
+  noButtonLabel: 'Cancel'
+};
+
+export const DeleteTechniquesBulkI18N = {
+  deleteTitle: 'Delete Techniques?',
+  deleteText: 'Are you sure you want to delete these techniques?',
+  yesButtonLabel: 'Delete Techniques',
+  noButtonLabel: 'Cancel'
+};
+
 export const ObservationsTableI18N = {
   removeAllDialogTitle: 'Discard changes?',
   removeAllDialogText: 'Are you sure you want to discard all your changes? This action cannot be undone.',

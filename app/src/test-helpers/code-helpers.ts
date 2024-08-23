@@ -35,10 +35,6 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 2, name: 'Actioned' },
     { id: 3, name: 'Rejected' }
   ],
-  vantage_codes: [
-    { id: 1, name: 'Vantage Code 1' },
-    { id: 2, name: 'Vantage Code 2' }
-  ],
   intended_outcomes: [
     { id: 1, name: 'Intended Outcome 1', description: 'Description 1' },
     { id: 2, name: 'Intended Outcome 2', description: 'Description 2' }
@@ -62,5 +58,9 @@ export const codes: IGetAllCodeSetsResponse = {
   method_response_metrics: [
     { id: 1, name: 'Count', description: 'Description 1' },
     { id: 2, name: 'Presence-absence', description: 'Description 2' }
+  ],
+  attractants: [
+    { id: 1, name: 'Bait', description: 'Consumable bait or food used as a lure.' },
+    { id: 1, name: 'Scent', description: 'A scent used as a lure.' }
   ]
 };

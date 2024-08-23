@@ -30,46 +30,6 @@ interface SystemUserSeed {
 
 const systemUsers: SystemUserSeed[] = [
   {
-    identifier: 'arosenth',
-    type: SYSTEM_IDENTITY_SOURCE.IDIR,
-    role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
-    user_guid: 'DFE2CC5E345E4B1E813EC1DC10852064',
-    display_name: 'XT:Rosenthal, Alfred WLRS:IN',
-    given_name: 'Alfred',
-    family_name: 'Rosenthal',
-    email: 'alfred.rosenthal@quartech.com'
-  },
-  {
-    identifier: 'cupshall',
-    type: SYSTEM_IDENTITY_SOURCE.IDIR,
-    role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
-    user_guid: 'C42DFA74A976490A819BC85FF5E254E4',
-    display_name: 'Upshall, Curtis WLRS:EX',
-    given_name: 'Curtis',
-    family_name: 'Upshall',
-    email: 'curtis.upshall@gov.bc.ca'
-  },
-  {
-    identifier: 'jxdunsdo',
-    type: SYSTEM_IDENTITY_SOURCE.IDIR,
-    role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
-    user_guid: '82E8D3B4BAD045E8AD3980D426EA781C',
-    display_name: 'Dunsdon, Jeremy X WLRS:EX',
-    given_name: 'Jeremy',
-    family_name: 'Dunsdon',
-    email: 'jeremy.x.dunsdon@gov.bc.ca'
-  },
-  {
-    identifier: 'keinarss',
-    type: SYSTEM_IDENTITY_SOURCE.IDIR,
-    role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
-    user_guid: 'F4663727DE89489C8B7CFA81E4FA99B3',
-    display_name: 'Einarsson, Kjartan WLRS:EX',
-    given_name: 'Kjartan',
-    family_name: 'Einarsson',
-    email: 'kjartan.einarsson@gov.bc.ca'
-  },
-  {
     identifier: 'nphura',
     type: SYSTEM_IDENTITY_SOURCE.IDIR,
     role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
@@ -78,16 +38,6 @@ const systemUsers: SystemUserSeed[] = [
     given_name: 'Nick',
     family_name: 'Phura',
     email: 'nick.phura@gov.bc.ca'
-  },
-  {
-    identifier: 'zochampi',
-    type: SYSTEM_IDENTITY_SOURCE.IDIR,
-    role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
-    user_guid: '349F20767A834FB582A18E8D378973E7',
-    display_name: 'Champiri, Zohreh D WLRS:EX',
-    given_name: 'Zohreh',
-    family_name: 'Champiri',
-    email: 'zohreh.d.champiri@gov.bc.ca'
   },
   {
     identifier: 'achirico',
@@ -108,26 +58,6 @@ const systemUsers: SystemUserSeed[] = [
     given_name: 'Mac',
     family_name: 'Deluca',
     email: 'mac.deluca@gov.bc.ca'
-  },
-  {
-    identifier: 'gstewart',
-    type: SYSTEM_IDENTITY_SOURCE.IDIR,
-    role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
-    user_guid: '83245BCDC21F43A29CEDA78AE67DF223',
-    display_name: 'Stewart, Graham WLRS:EX',
-    given_name: 'Stewart',
-    family_name: 'Graham',
-    email: 'graham.stewart@gov.bc.ca'
-  },
-  {
-    identifier: 'jkissack',
-    type: SYSTEM_IDENTITY_SOURCE.IDIR,
-    role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
-    user_guid: 'A82FE250A5BC40E68ABC54A1D0618D75',
-    display_name: 'Kissack, Jeremy WLRS:EX',
-    given_name: 'Jeremy',
-    family_name: 'Kissack',
-    email: 'jeremy.kissack@gov.bc.ca'
   },
   {
     identifier: 'mauberti',

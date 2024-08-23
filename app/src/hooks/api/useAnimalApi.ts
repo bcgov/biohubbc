@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { IAnimalsAdvancedFilters } from 'features/summary/tabular-data/animal/AnimalsListFilterForm';
-import { IFindAnimalsResponse } from 'interfaces/useAnimalApi.interface';
+import { IFindAnimalsResponse, IGetCaptureMortalityGeometryResponse } from 'interfaces/useAnimalApi.interface';
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
@@ -14,6 +14,25 @@ import { ApiPaginationRequestOptions } from 'types/misc';
  * @return {*} object whose properties are supported api methods.
  */
 const useAnimalApi = (axios: AxiosInstance) => {
+  /**
+   * Fetches all geojson capture and mortalities points for all animals in survey
+   * the given survey.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<IGetSurveyObservationsGeometryResponse>}
+   */
+  const getCaptureMortalityGeometry = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<IGetCaptureMortalityGeometryResponse> => {
+    const { data } = await axios.get<IGetCaptureMortalityGeometryResponse>(
+      `/api/project/${projectId}/survey/${surveyId}/critters/spatial`
+    );
+
+    return data;
+  };
+
   /**
    * Get animals for a system user id.
    *
@@ -35,7 +54,7 @@ const useAnimalApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  return { findAnimals };
+  return { getCaptureMortalityGeometry, findAnimals };
 };
 
 export default useAnimalApi;

@@ -63,7 +63,6 @@ const useAxios = (baseUrl?: string): AxiosInstance => {
         authRefreshAttemptsRef.current++;
 
         // Attempt to refresh the keycloak token
-        // Note: updateToken called with an arbitrarily large number of seconds to guarantee the update is executed
         const user = await auth.signinSilent();
 
         if (!user) {

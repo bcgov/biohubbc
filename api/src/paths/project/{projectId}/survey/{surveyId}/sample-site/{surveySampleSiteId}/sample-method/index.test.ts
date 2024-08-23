@@ -71,7 +71,7 @@ describe('getSurveySampleMethodRecords', () => {
       survey_sample_method_id: 1,
       survey_sample_site_id: 1,
       method_response_metric_id: 1,
-      method_lookup_id: 1,
+      method_technique_id: 1,
       description: 'desc',
       create_date: 'date',
       create_user: 1,
@@ -141,7 +141,7 @@ describe('createSurveySampleSiteRecord', () => {
     const sampleMethod = {
       survey_sample_method_id: 1,
       survey_sample_site_id: 1,
-      method_lookup_id: 1,
+      method_technique_id: 1,
       description: 'desc',
       create_date: 'date',
       create_user: 1,

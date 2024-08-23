@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
-import { ReactElement } from 'react';
+import { PropsWithChildren, ReactElement } from 'react';
 
 export interface IHorizontalSplitFormComponentProps {
   /**
@@ -22,9 +22,10 @@ export interface IHorizontalSplitFormComponentProps {
    * The form component to render
    *
    * @type {ReactElement}
+   * @deprecated Prefer passing component as children
    * @memberof IHorizontalSplitFormComponentProps
    */
-  component: ReactElement;
+  component?: ReactElement;
 }
 
 /**
@@ -32,8 +33,8 @@ export interface IHorizontalSplitFormComponentProps {
  *
  * @return {*}
  */
-const HorizontalSplitFormComponent = (props: IHorizontalSplitFormComponentProps) => {
-  const { title, summary, component } = props;
+const HorizontalSplitFormComponent = (props: PropsWithChildren<IHorizontalSplitFormComponentProps>) => {
+  const { title, summary, component, children } = props;
 
   return (
     <Grid container spacing={3}>
@@ -50,7 +51,7 @@ const HorizontalSplitFormComponent = (props: IHorizontalSplitFormComponentProps)
         )}
       </Grid>
       <Grid item xs={12} lg={8}>
-        {component}
+        {component || children}
       </Grid>
     </Grid>
   );
