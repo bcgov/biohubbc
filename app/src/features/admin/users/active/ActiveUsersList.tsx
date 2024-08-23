@@ -2,6 +2,7 @@ import { mdiAccountDetailsOutline, mdiChevronDown, mdiDotsVertical, mdiPlus, mdi
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
@@ -25,7 +26,7 @@ import AddSystemUsersForm, {
   AddSystemUsersFormInitialValues,
   AddSystemUsersFormYupSchema,
   IAddSystemUsersForm
-} from './AddSystemUsersForm';
+} from '../add/AddSystemUsersForm';
 
 export interface IActiveUsersListProps {
   activeUsers: ISystemUser[];
@@ -52,8 +53,24 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
 
   const activeUsersColumnDefs: GridColDef<ISystemUser>[] = [
     {
-      field: 'user_identifier',
-      headerName: 'Username',
+      field: 'system_user_id',
+      headerName: 'ID',
+      width: 70,
+      minWidth: 70,
+      renderHeader: () => (
+        <Typography color={grey[500]} variant="body2" fontWeight={700}>
+          ID
+        </Typography>
+      ),
+      renderCell: (params) => (
+        <Typography color={grey[500]} variant="body2">
+          {params.row.system_user_id}
+        </Typography>
+      )
+    },
+    {
+      field: 'display_name',
+      headerName: 'Display Name',
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params) => {
@@ -63,9 +80,27 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
             underline="always"
             to={`/admin/users/${params.row.system_user_id}`}
             component={RouterLink}>
-            {params.row.user_identifier || 'No identifier'}
+            {params.row.display_name || 'No identifier'}
           </Link>
         );
+      }
+    },
+    {
+      field: 'identity_source',
+      headerName: 'Account Type',
+      flex: 1,
+      disableColumnMenu: true,
+      valueGetter: (params) => {
+        return params.row.identity_source;
+      }
+    },
+    {
+      field: 'user_identifier',
+      headerName: 'Username',
+      flex: 1,
+      disableColumnMenu: true,
+      valueGetter: (params) => {
+        return params.row.user_identifier;
       }
     },
     {
@@ -339,7 +374,7 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
       <Paper>
         <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
           <Typography variant="h4" component="h2">
-            Active Users{' '}
+            Active Users&nbsp;
             <Typography
               component="span"
               variant="inherit"

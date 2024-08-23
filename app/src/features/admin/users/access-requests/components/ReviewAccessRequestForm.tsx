@@ -4,10 +4,11 @@ import Typography from '@mui/material/Typography';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import dayjs from 'dayjs';
 import { useFormikContext } from 'formik';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import React from 'react';
-import { getFormattedDate, getFormattedIdentitySource } from 'utils/Utils';
+import { getFormattedIdentitySource } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 
 export interface IReviewAccessRequestForm {
@@ -79,7 +80,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
                 Date of Request
               </Typography>
               <Typography component="dd" variant="body1">
-                {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, props.request.create_date)}
+                {dayjs(props.request.create_date).format(DATE_FORMAT.ShortMediumDateTimeFormat)}
               </Typography>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -109,7 +110,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
           sx={{
             marginBottom: '18px'
           }}>
-          Requested System Role
+          System Role
         </Typography>
         <form onSubmit={handleSubmit}>
           <AutocompleteField id="system_role" name="system_role" label={'System Role'} options={props.system_roles} />

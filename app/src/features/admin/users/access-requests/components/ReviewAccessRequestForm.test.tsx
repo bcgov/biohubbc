@@ -1,12 +1,12 @@
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
-import ReviewAccessRequestForm, {
-  ReviewAccessRequestFormInitialValues,
-  ReviewAccessRequestFormYupSchema
-} from 'features/admin/users/ReviewAccessRequestForm';
 import { Formik } from 'formik';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { codes } from 'test-helpers/code-helpers';
 import { render, waitFor } from 'test-helpers/test-utils';
+import ReviewAccessRequestForm, {
+  ReviewAccessRequestFormInitialValues,
+  ReviewAccessRequestFormYupSchema
+} from './ReviewAccessRequestForm';
 
 describe('ReviewAccessRequestForm', () => {
   describe('IDIR Request', () => {
@@ -20,6 +20,8 @@ describe('ReviewAccessRequestForm', () => {
         description: 'test description',
         notes: 'test node',
         create_date: '2021-04-18',
+        updated_by: 'Doe, John WLRS:EX',
+        update_date: '2021-04-20',
         data: {
           name: 'test data name',
           username: 'test data username',
@@ -70,6 +72,8 @@ describe('ReviewAccessRequestForm', () => {
         description: 'test description',
         notes: 'test node',
         create_date: '2021-04-18',
+        updated_by: 'Doe, John WLRS:EX',
+        update_date: '2021-04-20',
         data: {
           name: 'test data name',
           username: 'test data username',

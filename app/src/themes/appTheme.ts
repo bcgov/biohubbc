@@ -210,7 +210,8 @@ const appTheme = createTheme({
     MuiDialogTitle: {
       styleOverrides: {
         root: {
-          paddingTop: '24px'
+          paddingTop: '24px',
+          paddingBottom: '8px'
         }
       }
     },
