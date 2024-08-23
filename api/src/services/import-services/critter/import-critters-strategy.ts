@@ -49,9 +49,9 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
    */
   columnValidator = {
     ITIS_TSN: { type: 'number', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
-    SEX: { type: 'string' },
+    SEX: { type: 'string', optional: true },
     ALIAS: { type: 'string', aliases: CSV_COLUMN_ALIASES.ALIAS },
-    WLH_ID: { type: 'string' },
+    WLH_ID: { type: 'string', optional: true },
     DESCRIPTION: { type: 'string', aliases: CSV_COLUMN_ALIASES.DESCRIPTION }
   } satisfies IXLSXCSVValidator;
 
@@ -207,12 +207,13 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
    * Validate CSV worksheet rows against reference data.
    *
    * @async
-   * @param {Row[]} rows - Invalidated CSV rows
+   * @param {Row[]} rows - Unvalidated CSV rows
    * @param {WorkSheet} worksheet - Xlsx worksheet
    * @returns {Promise<Validation<CsvCritter>>} Conditional validation object
    */
   async validateRows(rows: Row[], worksheet: WorkSheet): Promise<Validation<CsvCritter>> {
     const nonStandardColumns = this._getNonStandardColumns(worksheet);
+
     const rowsToValidate = this._getRowsToValidate(rows, nonStandardColumns);
 
     // Retrieve the dynamic validation config
@@ -236,8 +237,8 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
        * --------------------------------------------------------------------
        */
 
-      // SEX is a required property and must be a correct value
-      const invalidSex = !row.sex || !CSV_CRITTER_SEX_OPTIONS.includes(toUpper(row.sex));
+      // If SEX is provided, validate its value. Otherwise SEX will default to UNKNOWN.
+      const invalidSex = row.sex && !CSV_CRITTER_SEX_OPTIONS.includes(toUpper(row.sex));
       // WLH_ID must follow regex pattern
       const invalidWlhId = row.wlh_id && !/^\d{2}-.+/.exec(row.wlh_id);
       // ITIS_TSN is required and be a valid TSN
@@ -261,8 +262,8 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
         errors.push({ row: index, message: `Invalid ALIAS. Must be unique in Survey and CSV.` });
       }
 
-      // Covert `sex` to expected casing for Critterbase
-      row.sex = startCase(row.sex?.toLowerCase());
+      // Covert `sex` to expected casing for Critterbase. If SEX is not given, default to UNKNOWN.
+      row.sex = startCase(row.sex?.toLowerCase() ?? 'unknown');
 
       /**
        * --------------------------------------------------------------------
