@@ -62,8 +62,6 @@ const phases = {
   dev: {
     namespace: 'af2668-dev',
     name: `${name}`,
-    dbServiceName: `${name}-postgresql${phases[phase].suffix}`,
-    dbSecretName: `${name}-postgresql${phases[phase].suffix}`,
     phase: 'dev',
     changeId: deployChangeId,
     suffix: `-dev-${deployChangeId}`,
@@ -83,8 +81,6 @@ const phases = {
   test: {
     namespace: 'af2668-test',
     name: `${name}`,
-    dbServiceName: `${name}-postgresql${phases[phase].suffix}`,
-    dbSecretName: `${name}-postgresql${phases[phase].suffix}`,
     phase: 'test',
     changeId: deployChangeId,
     suffix: `-test`,
@@ -104,11 +100,9 @@ const phases = {
   'test-spi': {
     namespace: 'af2668-test',
     name: `${name}-spi`,
-    dbServiceName: 'spi-migrate-primary.af2668-test.svc',
-    dbSecretName: 'biohubbc-db-postgresql-test-spi',
     phase: 'test-spi',
     changeId: deployChangeId,
-    suffix: `-test-spi`,
+    suffix: '-test-spi',
     instance: `${name}-spi-test-spi`,
     version: `${version}`,
     tag: `test-spi-${version}`,
@@ -125,8 +119,6 @@ const phases = {
   prod: {
     namespace: 'af2668-prod',
     name: `${name}`,
-    dbServiceName: `${name}-postgresql${phases[phase].suffix}`,
-    dbSecretName: `${name}-postgresql${phases[phase].suffix}`,
     phase: 'prod',
     changeId: deployChangeId,
     suffix: `-prod`,

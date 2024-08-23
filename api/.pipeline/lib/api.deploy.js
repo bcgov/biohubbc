@@ -34,8 +34,6 @@ const apiDeploy = async (settings) => {
         // Node
         NODE_ENV: phases[phase].nodeEnv,
         NODE_OPTIONS: phases[phase].nodeOptions,
-        // Persistent Volume
-        VOLUME_CAPACITY: phases[phase].volumeCapacity,
         // BioHub Platform (aka: Backbone)
         BACKBONE_INTERNAL_API_HOST: phases[phase].backboneInternalApiHost,
         BACKBONE_INTAKE_PATH: phases[phase].backboneIntakePath,
@@ -49,8 +47,7 @@ const apiDeploy = async (settings) => {
         S3_KEY_PREFIX: phases[phase].s3KeyPrefix,
         // Database
         TZ: phases[phase].tz,
-        DB_SERVICE_NAME: phases[phase].dbServiceName,
-        DB_SECRET_NAME: phases[phase].dbSecretName,
+        DB_SERVICE_NAME: `${phases[phase].dbName}-postgresql${phases[phase].suffix}`,
         // Keycloak
         KEYCLOAK_HOST: phases[phase].sso.host,
         KEYCLOAK_REALM: phases[phase].sso.realm,
@@ -68,13 +65,6 @@ const apiDeploy = async (settings) => {
         KEYCLOAK_API_ENVIRONMENT: phases[phase].sso.cssApi.cssApiEnvironment,
         // Log Level
         LOG_LEVEL: phases[phase].logLevel,
-        LOG_LEVEL_FILE: phases[phase].logLevelFile,
-        LOG_FILE_DIR: phases[phase].logFileDir,
-        LOG_FILE_NAME: phases[phase].logFileName,
-        LOG_FILE_DATE_PATTERN: phases[phase].logFileDatePattern,
-        LOG_FILE_MAX_SIZE: phases[phase].logFileMaxSize,
-        LOG_FILE_MAX_FILES: phases[phase].logFileMaxFiles,
-        // Api Validation
         API_RESPONSE_VALIDATION_ENABLED: phases[phase].apiResponseValidationEnabled,
         DATABASE_RESPONSE_VALIDATION_ENABLED: phases[phase].databaseResponseValidationEnabled,
         // Feature Flags
