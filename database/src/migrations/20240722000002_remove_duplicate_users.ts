@@ -12,8 +12,7 @@ import { Knex } from 'knex';
  * - administrative_activity: Delete duplicate administrative_activity records.
  *
  * Updates/fixes several constraints:
- * - system_user_nuk1: Don't allow more than 1 active record with the same user_guid.
- * - system_user_nuk2: Don't allow more than 1 active record with the same user_identifier (case-insensitive) AND user_identity_source_id.
+ * - system_user_uk2: Don't allow more than 1 record with the same user_identifier (case-insensitive) AND user_identity_source_id.
  *
  * Does not update the following tables:
  * - audit_log: This table tracks the history of all changes to the database, including changes from this migration.
@@ -32,7 +31,6 @@ export async function up(knex: Knex): Promise<void> {
 
     SET SEARCH_PATH = 'biohub';
 
-    DROP INDEX IF EXISTS system_user_uk1;
     DROP INDEX IF EXISTS system_user_nuk1;
 
     -- Drop old out-dated unique index
@@ -173,7 +171,7 @@ export async function up(knex: Knex): Promise<void> {
         WHERE sp.system_user_id = ANY(w_system_user_3.duplicate_system_user_ids)
     ),
     -- Update duplicate system_user_ids in the webform_draft table to the canonical system_user_id
-    w_end_date_duplicate_webform_draft as (
+    w_update_duplicate_webform_draft as (
         UPDATE webform_draft  
         SET 
           system_user_id = wsu3.system_user_id
@@ -181,18 +179,15 @@ export async function up(knex: Knex): Promise<void> {
         WHERE webform_draft.system_user_id = ANY(wsu3.duplicate_system_user_ids)
     ),
     -- Delete duplicate system_user_role records for duplicate system_user_ids
-    w_end_date_duplicate_system_user_role AS (
+    w_delete_duplicate_system_user_role AS (
       DELETE FROM system_user_role
       USING w_system_user_3 wsu3
       WHERE system_user_role.system_user_id = ANY(wsu3.duplicate_system_user_ids)
     ),
-    -- End date all duplicate system_user records for duplicate system_user_ids
-    w_end_date_duplicate_system_user AS (
-      UPDATE system_user su
-      SET
-        record_end_date = NOW(),
-        notes = 'Duplicate user record; merged into system_user_id ' || wsu3.system_user_id || '.'
-      FROM w_system_user_3 wsu3
+    -- Delete duplicate system_user records for duplicate system_user_ids
+    w_delete_duplicate_system_user AS (
+      DELETE FROM system_user su
+      USING w_system_user_3 wsu3
       WHERE su.system_user_id = ANY(wsu3.duplicate_system_user_ids)
     ),
     -- Update the user details for the canonical system user record
@@ -245,11 +240,8 @@ export async function up(knex: Knex): Promise<void> {
     -- Add updated constraints
     ----------------------------------------------------------------------------------------
 
-    -- Don't allow more than 1 active record with the same user_guid.
-    CREATE UNIQUE INDEX system_user_nuk1 ON system_user (user_guid, (record_end_date is null)) WHERE record_end_date is null;
-
-    -- Don't allow more than 1 active record with the same user_identifier (case-insensitive) AND user_identity_source_id.
-    CREATE UNIQUE INDEX system_user_nuk2 ON system_user(LOWER(user_identifier), user_identity_source_id, (record_end_date is null)) WHERE record_end_date is null;
+    -- Don't allow more than 1 record with the same user_identifier (case-insensitive) AND user_identity_source_id.
+    CREATE UNIQUE INDEX system_user_uk2 ON system_user(LOWER(user_identifier), user_identity_source_id);
 
     -- Don't allow the same system user to have more than one project role within a project.
     ALTER TABLE biohub.project_participation ADD CONSTRAINT project_participation_uk1 UNIQUE (system_user_id, project_id);
