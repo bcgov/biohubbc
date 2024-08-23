@@ -26,6 +26,7 @@ import {
   ISamplePeriodOption,
   ISampleSiteOption,
   ObservationCountColDef,
+  ObservationSubcountSignColDef,
   SampleMethodColDef,
   SamplePeriodColDef,
   SampleSiteColDef,
@@ -90,6 +91,12 @@ const ObservationsTableContainer = () => {
       }`
     }));
 
+  const observationSubcountSignOptions =
+    codesContext.codesDataLoader.data?.observation_subcount_signs.map((option) => ({
+      observation_subcount_sign_id: option.id,
+      name: option.name
+    })) ?? [];
+
   // The column definitions of the columns to render in the observations table
   const columns: GridColDef<IObservationTableRow>[] = [
     // Add standard observation columns to the table
@@ -97,6 +104,7 @@ const ObservationsTableContainer = () => {
     SampleSiteColDef({ sampleSiteOptions, hasError: observationsTableContext.hasError }),
     SampleMethodColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
     SamplePeriodColDef({ samplePeriodOptions, hasError: observationsTableContext.hasError }),
+    ObservationSubcountSignColDef({ observationSubcountSignOptions, hasError: observationsTableContext.hasError }),
     ObservationCountColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
     GenericDateColDef({ field: 'observation_date', headerName: 'Date', hasError: observationsTableContext.hasError }),
     GenericTimeColDef({ field: 'observation_time', headerName: 'Time', hasError: observationsTableContext.hasError }),
@@ -181,7 +189,8 @@ const ObservationsTableContainer = () => {
             isLoading={
               observationsTableContext.isLoading ||
               observationsTableContext.isSaving ||
-              observationsTableContext.isDisabled
+              observationsTableContext.isDisabled ||
+              codesContext.codesDataLoader.isLoading
             }
             columns={columns}
           />

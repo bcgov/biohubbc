@@ -1,6 +1,7 @@
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { IObservationAdvancedFilters } from '../models/observation-view';
+import { CodeRepository } from '../repositories/code-repository';
 import {
   InsertObservation,
   ObservationGeometryRecord,
@@ -75,6 +76,7 @@ const defaultLog = getLogger('services/observation-service');
 export const observationStandardColumnValidator = {
   ITIS_TSN: { type: 'string', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
   COUNT: { type: 'number' },
+  SIGN: { type: 'string' },
   DATE: { type: 'date' },
   TIME: { type: 'string' },
   LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE },
@@ -85,6 +87,7 @@ export const getCellValue = generateCellGetterFromColumnValidator(observationSta
 
 export interface InsertSubCount {
   observation_subcount_id: number | null;
+  observation_subcount_sign_id: number | null;
   subcount: number;
   qualitative_measurements: {
     measurement_id: string;
@@ -125,10 +128,12 @@ export type AllObservationSupplementaryData = ObservationCountSupplementaryData 
 
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
+  codeRepository: CodeRepository;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.observationRepository = new ObservationRepository(connection);
+    this.codeRepository = new CodeRepository(connection);
   }
 
   /**
@@ -180,17 +185,19 @@ export class ObservationService extends DBService {
       // Delete old observation subcount records (critters, measurements and subcounts)
       await subCountService.deleteObservationSubCountRecords(surveyId, [surveyObservationId]);
 
-      // Insert observation subcount record
-      const observationSubCountRecord = await subCountService.insertObservationSubCount({
-        survey_observation_id: surveyObservationId,
-        subcount: observation.standardColumns.count
-      });
-
-      if (!observation.subcounts.length) {
-        return;
-      }
-
       for (const subcount of observation.subcounts) {
+        // Insert observation subcount record for each subcount.
+        const observationSubCountRecord = await subCountService.insertObservationSubCount({
+          survey_observation_id: surveyObservationId,
+          //  NOTE: The UI currently only allows one subcount per observation, so the standardColumns count can be used
+          subcount: observation.subcounts.length === 1 ? observation.standardColumns.count : subcount.subcount,
+          observation_subcount_sign_id: subcount.observation_subcount_sign_id
+        });
+
+        if (!observation.subcounts.length) {
+          return;
+        }
+
         // TODO: Update process to fetch and find differences between incoming and existing data to only add, update or delete records as needed
         if (subcount.qualitative_measurements.length) {
           const qualitativeData: InsertObservationSubCountQualitativeMeasurementRecord[] =
@@ -574,10 +581,17 @@ export class ObservationService extends DBService {
       );
     }
 
+    const observationSubcountSignOptionDefinitions = await this.codeRepository.getObservationSubcountSigns();
+
     // Merge all the table rows into an array of InsertUpdateObservations[]
     const newRowData: InsertUpdateObservations[] = worksheetRowObjects.map((row) => {
+      const observationSubcountSignId = observationSubcountSignOptionDefinitions.find(
+        (option) => option.name.toLowerCase() === getCellValue(row, 'SIGN').toLowerCase()
+      )?.id;
+
       const newSubcount: InsertSubCount = {
         observation_subcount_id: null,
+        observation_subcount_sign_id: observationSubcountSignId ?? null,
         subcount: getCellValue(row, 'COUNT') as number,
         qualitative_measurements: [],
         quantitative_measurements: [],

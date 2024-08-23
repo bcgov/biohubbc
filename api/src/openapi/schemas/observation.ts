@@ -94,6 +94,7 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
               required: [
                 'observation_subcount_id',
                 'subcount',
+                'observation_subcount_sign_id',
                 'qualitative_measurements',
                 'quantitative_measurements',
                 'qualitative_environments',
@@ -102,6 +103,12 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
               properties: {
                 observation_subcount_id: {
                   type: 'integer'
+                },
+                observation_subcount_sign_id: {
+                  type: 'integer',
+                  minimum: 1,
+                  description:
+                    'The observation subcount sign ID, indicating whether the subcount was a direct sighting, footprints, scat, etc.'
                 },
                 subcount: {
                   type: 'number'

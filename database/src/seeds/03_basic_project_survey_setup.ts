@@ -601,7 +601,7 @@ const insertObservationSubCount = (surveyObservationId: number) => `
   (
     ${surveyObservationId},
     $$${faker.number.int({ min: 1, max: 20 })}$$,
-    $$${faker.number.int({ min: 1, max: 3 })}$$
+    $$${faker.number.int({ min: 1, max: 5 })}$$
   );
 `;
 

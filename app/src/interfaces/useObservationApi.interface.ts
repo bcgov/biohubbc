@@ -45,6 +45,7 @@ export type StandardObservationColumns = {
 
 export type SubcountObservationColumns = {
   observation_subcount_id: number | null;
+  observation_subcount_sign_id: number;
   subcount: number | null;
   qualitative_measurements: {
     field: string;
@@ -142,6 +143,7 @@ type ObservationSubcountQuantitativeEnvironmentObject = Pick<
 type ObservationSubcountRecord = {
   observation_subcount_id: number;
   survey_observation_id: number;
+  observation_subcount_sign_id: number;
   subcount: number | null;
   create_date: string;
   create_user: number;
@@ -152,6 +154,7 @@ type ObservationSubcountRecord = {
 
 type ObservationSubcountObject = {
   observation_subcount_id: ObservationSubcountRecord['observation_subcount_id'];
+  observation_subcount_sign_id: ObservationSubcountRecord['observation_subcount_sign_id']
   subcount: ObservationSubcountRecord['subcount'];
   qualitative_measurements: ObservationSubcountQualitativeMeasurementObject[];
   quantitative_measurements: ObservationSubcountQuantitativeMeasurementObject[];

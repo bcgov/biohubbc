@@ -32,6 +32,11 @@ export type ISamplePeriodOption = {
   sample_period_name: string;
 };
 
+type IObservationSubcountSignOption = {
+  observation_subcount_sign_id: number;
+  name: string;
+};
+
 export const TaxonomyColDef = (props: {
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
@@ -257,6 +262,44 @@ export const ObservationCountColDef = (props: {
             },
             error
           }}
+        />
+      );
+    }
+  };
+};
+
+export const ObservationSubcountSignColDef = (props: {
+  observationSubcountSignOptions: IObservationSubcountSignOption[];
+  hasError: (params: GridCellParams) => boolean;
+}): GridColDef<IObservationTableRow> => {
+  const { observationSubcountSignOptions, hasError } = props;
+
+  return {
+    field: 'observation_subcount_sign_id',
+    headerName: 'Sign',
+    editable: true,
+    hideable: true,
+    minWidth: 110,
+    disableColumnMenu: true,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => (
+      <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
+        {observationSubcountSignOptions.find((option) => option.observation_subcount_sign_id === params.value)?.name}
+      </Typography>
+    ),
+    renderEditCell: (params) => {
+      return (
+        <ConditionalAutocompleteDataGridEditCell<IObservationTableRow, IObservationSubcountSignOption, number>
+          dataGridProps={params}
+          optionsGetter={(_, allOptions) => {
+            return allOptions.map((item) => ({
+              label: item.name,
+              value: item.observation_subcount_sign_id
+            }));
+          }}
+          allOptions={observationSubcountSignOptions}
+          error={hasError(params)}
         />
       );
     }
