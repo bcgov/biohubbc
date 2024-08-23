@@ -5,7 +5,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { GridColDef } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { getAccessRequestColour } from 'constants/colours';
+import { getAccessRequestStatusColour } from 'constants/colours';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
@@ -16,6 +16,12 @@ interface IAccessRequestActionedListProps {
   accessRequests: IGetAccessRequestsListResponse[];
 }
 
+/**
+ * Returns a data grid component displaying approved access requests
+ *
+ * @param props {IAccessRequestActionedListProps}
+ * @returns
+ */
 const AccessRequestActionedList = (props: IAccessRequestActionedListProps) => {
   const { accessRequests } = props;
 
@@ -59,7 +65,7 @@ const AccessRequestActionedList = (props: IAccessRequestActionedListProps) => {
         return (
           <ColouredRectangleChip
             label="Approved"
-            colour={getAccessRequestColour(params.row.status_name as 'Actioned')}
+            colour={getAccessRequestStatusColour(params.row.status_name as 'Actioned')}
           />
         );
       }

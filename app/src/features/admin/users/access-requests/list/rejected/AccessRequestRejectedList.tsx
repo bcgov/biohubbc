@@ -5,7 +5,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import { GridColDef } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { getAccessRequestColour } from 'constants/colours';
+import { getAccessRequestStatusColour } from 'constants/colours';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
@@ -16,6 +16,12 @@ interface IAccessRequestRejectedListProps {
   accessRequests: IGetAccessRequestsListResponse[];
 }
 
+/**
+ * Returns a data grid component displaying denied access requests
+ *
+ * @param props {IAccessRequestRejectedListProps}
+ * @returns
+ */
 const AccessRequestRejectedList = (props: IAccessRequestRejectedListProps) => {
   const { accessRequests } = props;
 
@@ -59,7 +65,7 @@ const AccessRequestRejectedList = (props: IAccessRequestRejectedListProps) => {
         return (
           <ColouredRectangleChip
             label={params.row.status_name}
-            colour={getAccessRequestColour(params.row.status_name as 'Rejected')}
+            colour={getAccessRequestStatusColour(params.row.status_name as 'Rejected')}
           />
         );
       }

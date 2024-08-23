@@ -69,7 +69,7 @@ const NRM_REGION_COLOUR_MAP = {
  * Colour map for access request chips.
  *
  */
-const ACCESS_REQUEST_COLOUR_MAP = {
+const ACCESS_REQUEST_STATUS_COLOUR_MAP = {
   Pending: { colour: purple },
   Actioned: { colour: green },
   Rejected: { colour: red }
@@ -96,10 +96,10 @@ const generateColourMapGetter = <T extends ColourMap>(colourMap: T, fallbackColo
 };
 
 /**
- * Get survey progress colour mapping.
+ * Get access request status colour mapping.
  *
  */
-export const getAccessRequestColour = generateColourMapGetter(ACCESS_REQUEST_COLOUR_MAP);
+export const getAccessRequestStatusColour = generateColourMapGetter(ACCESS_REQUEST_STATUS_COLOUR_MAP);
 
 /**
  * Get survey progress colour mapping.

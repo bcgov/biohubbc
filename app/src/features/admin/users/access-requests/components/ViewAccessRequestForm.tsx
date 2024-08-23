@@ -17,7 +17,7 @@ export interface IViewAccessReuqestFormProps {
 }
 
 /**
- * Component to review system access requests.
+ * Component to view system access requests without the ability to edit the user's system role
  *
  * @return {*}
  */

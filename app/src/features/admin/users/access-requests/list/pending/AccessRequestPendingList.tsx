@@ -1,16 +1,18 @@
 import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import RequestDialog from 'components/dialog/RequestDialog';
-import { getAccessRequestColour } from 'constants/colours';
+import { getAccessRequestStatusColour } from 'constants/colours';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { AccessApprovalDispatchI18N, AccessDenialDispatchI18N, ReviewAccessRequestI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
+import { ReviewAccessRequestI18N } from 'constants/i18n';
+import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import dayjs from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { useContext, useState } from 'react';
 import ReviewAccessRequestForm, {
   IReviewAccessRequestForm,
@@ -20,10 +22,16 @@ import ReviewAccessRequestForm, {
 
 interface IAccessRequestPendingListProps {
   accessRequests: IGetAccessRequestsListResponse[];
-  codes: any; // Define this type based on your codes structure
+  codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
 
+/**
+ * Returns a data grid component displaying pending access requests
+ *
+ * @param props {IAccessRequestPendingListProps}
+ * @returns
+ */
 const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
   const { accessRequests, codes, refresh } = props;
 
@@ -32,6 +40,10 @@ const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
 
   const [showReviewDialog, setShowReviewDialog] = useState<boolean>(false);
   const [activeReview, setActiveReview] = useState<IGetAccessRequestsListResponse | null>(null);
+
+  const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
+    dialogContext.setSnackbar({ ...textDialogProps, open: true });
+  };
 
   const accessRequestsColumnDefs: GridColDef<IGetAccessRequestsListResponse>[] = [
     {
@@ -70,7 +82,7 @@ const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
         return (
           <ColouredRectangleChip
             label={params.row.status_name}
-            colour={getAccessRequestColour(params.row.status_name as 'Pending')}
+            colour={getAccessRequestStatusColour(params.row.status_name as 'Pending')}
           />
         );
       }
@@ -110,30 +122,6 @@ const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
     }
   };
 
-  const dispatchApprovalErrorDialogProps = {
-    dialogTitle: AccessApprovalDispatchI18N.reviewErrorTitle,
-    dialogText: AccessApprovalDispatchI18N.reviewErrorText,
-    open: false,
-    onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
-    },
-    onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
-    }
-  };
-
-  const dispatchDenialErrorDialogProps = {
-    dialogTitle: AccessDenialDispatchI18N.reviewErrorTitle,
-    dialogText: AccessDenialDispatchI18N.reviewErrorText,
-    open: false,
-    onClose: () => {
-      dialogContext.setErrorDialog({ open: false });
-    },
-    onOk: () => {
-      dialogContext.setErrorDialog({ open: false });
-    }
-  };
-
   const handleReviewDialogApprove = async (values: IReviewAccessRequestForm) => {
     if (!activeReview) {
       return;
@@ -149,6 +137,14 @@ const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
         email: activeReview.data.email,
         displayName: activeReview.data.displayName,
         roleIds: (values.system_role && [values.system_role]) || []
+      });
+
+      showSnackBar({
+        snackbarMessage: (
+          <Typography variant="body2" component="div">
+            Approved access request
+          </Typography>
+        )
       });
 
       try {
@@ -167,10 +163,12 @@ const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
           }
         );
       } catch (error) {
-        dialogContext.setErrorDialog({
-          ...dispatchApprovalErrorDialogProps,
-          open: true,
-          dialogErrorDetails: (error as APIError).errors
+        showSnackBar({
+          snackbarMessage: (
+            <Typography variant="body2" component="div">
+              Approved access request, but failed to email notification
+            </Typography>
+          )
         });
       } finally {
         refresh();
@@ -194,6 +192,14 @@ const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
     try {
       await biohubApi.admin.denyAccessRequest(activeReview.id);
 
+      showSnackBar({
+        snackbarMessage: (
+          <Typography variant="body2" component="div">
+            Approved access request
+          </Typography>
+        )
+      });
+
       try {
         await biohubApi.admin.sendGCNotification(
           {
@@ -210,10 +216,12 @@ const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
           }
         );
       } catch (error) {
-        dialogContext.setErrorDialog({
-          ...dispatchDenialErrorDialogProps,
-          open: true,
-          dialogErrorDetails: (error as APIError).errors
+        showSnackBar({
+          snackbarMessage: (
+            <Typography variant="body2" component="div">
+              Denied access request, but failed to email notification
+            </Typography>
+          )
         });
       } finally {
         refresh();

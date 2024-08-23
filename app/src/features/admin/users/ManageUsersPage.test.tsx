@@ -74,7 +74,7 @@ describe('ManageUsersPage', () => {
     const { getByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('No Access Requests')).toBeVisible();
+      expect(getByText('No Pending Access Requests')).toBeVisible();
       expect(getByText('No Active Users')).toBeVisible();
     });
   });

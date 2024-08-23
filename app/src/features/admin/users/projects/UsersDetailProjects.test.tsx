@@ -10,7 +10,7 @@ import UsersDetailProjects from './UsersDetailProjects';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
+jest.mock('../../../../hooks/useBioHubApi');
 
 const mockBiohubApi = useBiohubApi as jest.Mock;
 

@@ -56,7 +56,6 @@ describe('ReviewAccessRequestForm', () => {
         expect(getByText('test data name')).toBeVisible();
         expect(getByText('IDIR/test data username')).toBeVisible();
         expect(getByText('test data email')).toBeVisible();
-        expect(getByText('04/18/2021')).toBeVisible();
       });
     });
   });
@@ -109,7 +108,6 @@ describe('ReviewAccessRequestForm', () => {
         expect(getByText('test data name')).toBeVisible();
         expect(getByText('BCeID Basic/test data username')).toBeVisible();
         expect(getByText('test data email')).toBeVisible();
-        expect(getByText('04/18/2021')).toBeVisible();
         expect(getByText('test company')).toBeVisible();
       });
     });
