@@ -76,7 +76,7 @@ const defaultLog = getLogger('services/observation-service');
 export const observationStandardColumnValidator = {
   ITIS_TSN: { type: 'string', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
   COUNT: { type: 'number' },
-  SIGN: { type: 'string' },
+  OBSERVATION_SUBCOUNT_SIGN: { type: 'string', aliases: CSV_COLUMN_ALIASES.OBSERVATION_SUBCOUNT_SIGN },
   DATE: { type: 'date' },
   TIME: { type: 'string' },
   LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE },
@@ -586,7 +586,7 @@ export class ObservationService extends DBService {
     // Merge all the table rows into an array of InsertUpdateObservations[]
     const newRowData: InsertUpdateObservations[] = worksheetRowObjects.map((row) => {
       const observationSubcountSignId = observationSubcountSignOptionDefinitions.find(
-        (option) => option.name.toLowerCase() === getCellValue(row, 'SIGN').toLowerCase()
+        (option) => option.name.toLowerCase() === getCellValue(row, 'OBSERVATION_SUBCOUNT_SIGN').toLowerCase()
       )?.id;
 
       const newSubcount: InsertSubCount = {
