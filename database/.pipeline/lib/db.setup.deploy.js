@@ -25,7 +25,7 @@ const dbSetupDeploy = async (settings) => {
   const instance = `${isName}-${changeId}`;
   const isVersion = `${phases[phase].tag}-setup`;
   const imageStreamName = `${isName}:${isVersion}`;
-  const dbName = `${phases[phase].name}-postgresql${phases[phase].suffix}`;
+  const dbServiceName = phases[phase].dbServiceName;
 
   const objects = [];
   const imageStreamObjects = [];
@@ -67,7 +67,8 @@ const dbSetupDeploy = async (settings) => {
         VERSION: phases[phase].tag,
         CHANGE_ID: changeId,
         NODE_ENV: phases[phase].nodeEnv,
-        DB_SERVICE_NAME: dbName,
+        DB_SERVICE_NAME: dbServiceName,
+        DB_SECRET_NAME: phases[phase].dbSecretName,
         DB_SCHEMA: 'biohub',
         DB_SCHEMA_DAPI_V1: 'biohub_dapi_v1',
         IMAGE: dbSetupImageStream.image.dockerImageReference,
@@ -86,7 +87,7 @@ const dbSetupDeploy = async (settings) => {
 
   // Wait to confirm if the db pod deployed successfully
   await waitForResourceToMeetCondition(
-    () => getResourceByRaw(`name=${dbName}`, 'pod', settings, oc),
+    () => getResourceByRaw(`name=${dbServiceName}`, 'pod', settings, oc),
     isResourceRunning,
     30,
     5,

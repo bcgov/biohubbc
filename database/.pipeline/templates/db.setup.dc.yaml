@@ -22,6 +22,9 @@ parameters:
   - name: DB_SERVICE_NAME
     description: 'Database service name associated  with deployment'
     required: true
+  - name: DB_SECRET_NAME
+    description: 'Database secret name associated with deployment'
+    required: true
   - name: DB_SCHEMA
     description: 'Database schema'
     required: true
@@ -57,27 +60,27 @@ objects:
               valueFrom:
                 secretKeyRef:
                   key: database-admin
-                  name: ${DB_SERVICE_NAME}
+                  name: ${DB_SECRET_NAME}
             - name: DB_ADMIN_PASS
               valueFrom:
                 secretKeyRef:
                   key: database-admin-password
-                  name: ${DB_SERVICE_NAME}
+                  name: ${DB_SECRET_NAME}
             - name: DB_USER_API
               valueFrom:
                 secretKeyRef:
                   key: database-user-api
-                  name: ${DB_SERVICE_NAME}
+                  name: ${DB_SECRET_NAME}
             - name: DB_USER_API_PASS
               valueFrom:
                 secretKeyRef:
                   key: database-user-api-password
-                  name: ${DB_SERVICE_NAME}
+                  name: ${DB_SECRET_NAME}
             - name: DB_DATABASE
               valueFrom:
                 secretKeyRef:
                   key: database-name
-                  name: ${DB_SERVICE_NAME}
+                  name: ${DB_SECRET_NAME}
             - name: DB_PORT
               value: '5432'
             - name: CHANGE_VERSION

@@ -49,7 +49,8 @@ const apiDeploy = async (settings) => {
         S3_KEY_PREFIX: phases[phase].s3KeyPrefix,
         // Database
         TZ: phases[phase].tz,
-        DB_SERVICE_NAME: `${phases[phase].dbName}-postgresql${phases[phase].suffix}`,
+        DB_SERVICE_NAME: phases[phase].dbServiceName,
+        DB_SECRET_NAME: phases[phase].dbSecretName,
         // Keycloak
         KEYCLOAK_HOST: phases[phase].sso.host,
         KEYCLOAK_REALM: phases[phase].sso.realm,
