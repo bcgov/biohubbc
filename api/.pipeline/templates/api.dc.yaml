@@ -129,7 +129,7 @@ parameters:
     value: 'debug'
     description: Log level for logs written to log files (file transport)
   - name: LOG_FILE_DIR
-    value: data
+    value: data/logs
     description: Directory where log files are stored
   - name: LOG_FILE_NAME
     value: sims-api-%DATE%.log
