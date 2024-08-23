@@ -8,13 +8,12 @@ export const transformSurveyStratums = async (connection: IDBConnection): Promis
 -- Create stratum
 -------------------------------------------------------------------------------------------------
     INSERT INTO 
-        biohub.survey_stratum (survey_id, name, description, create_date, update_date)
+        biohub.survey_stratum (survey_id, name, description, create_date)
     SELECT 
         s.survey_id,
         st.stratum_name,
         st.stratum_description,
-        st.when_created,
-        st.when_updated
+        st.when_created
     FROM 
         public.spi_survey_stratums st
     JOIN 

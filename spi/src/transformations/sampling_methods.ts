@@ -6,8 +6,6 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
   
     const sql = SQL`
 -------------------------------------------------------------------------------------------------
--- Methods is gonna be a tricky one
--------------------------------------------------------------------------------------------------
     INSERT INTO 
         biohub.target_sampling_site
     SELECT *
@@ -19,8 +17,9 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
     ON 
         s.spi_survey_id = st.survey_id;
 
+    `;
 
-  await connection.sql(sql);`
+  await connection.sql(transformSampleSitesSql);
 
-  console.log('Successfully transformed sampling methods');
+  console.log('Successfully transformed Sampling Methods');
 };
