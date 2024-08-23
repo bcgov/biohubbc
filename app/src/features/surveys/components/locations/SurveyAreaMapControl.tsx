@@ -31,10 +31,11 @@ export interface ISurveyAreMapControlProps {
   formik_props: FormikContextType<ISurveyLocationForm>;
   draw_controls_ref: React.RefObject<IDrawControlsRef>;
   toggle_delete_dialog: (isOpen: boolean) => void;
+  label: string;
 }
 
 export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
-  const { map_id, formik_key, formik_props, draw_controls_ref, toggle_delete_dialog } = props;
+  const { map_id, formik_key, formik_props, draw_controls_ref, toggle_delete_dialog, label } = props;
   const { setFieldValue, setFieldError, values } = formik_props;
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   const [isOpen, setIsOpen] = useState(false);
@@ -81,10 +82,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
           sx={{
             flex: '1 1 auto'
           }}>
-          Study Areas
-          <Typography component="span" color="textSecondary" sx={{ ml: 0.5, flex: '1 1 auto' }}>
-            ({values.locations.length})
-          </Typography>
+          {label}
         </Typography>
         <Box display="flex">
           <Button

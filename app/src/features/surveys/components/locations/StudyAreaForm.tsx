@@ -196,6 +196,7 @@ const StudyAreaForm = () => {
             formik_props={formikProps}
             draw_controls_ref={drawRef}
             toggle_delete_dialog={setIsDeleteOpen}
+            label={activeView}
           />
 
           <Box
