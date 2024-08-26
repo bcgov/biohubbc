@@ -651,4 +651,37 @@ export class ObservationRepository extends BaseRepository {
 
     return response.rows[0].count;
   }
+
+  /**
+   * Retrieves observation records count for the given survey and method technique ids.
+   *
+   * @param {number[]} methodTechniqueIds
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
+   */
+  async getObservationsCountByTechniqueIds(surveyId: number, methodTechniqueIds: number[]): Promise<number> {
+    const knex = getKnex();
+    const sqlStatement = knex
+      .queryBuilder()
+      .select(knex.raw('COUNT(survey_observation_id)::integer as count'))
+      .from('survey_observation')
+      .innerJoin(
+        'survey_sample_method',
+        'survey_observation.survey_sample_method_id',
+        'survey_sample_method.survey_sample_method_id'
+      )
+      .where('survey_observation.survey_id', surveyId)
+      .whereIn('survey_sample_method.method_technique_id', methodTechniqueIds);
+
+    const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
+
+    if (response?.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to get observations count', [
+        'ObservationRepository->getObservationsCountBySampleTechniqueId',
+        'response.rowCount was !== 1, expected rowCount === 1'
+      ]);
+    }
+
+    return response.rows[0].count;
+  }
 }

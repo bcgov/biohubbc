@@ -32,7 +32,7 @@
     "@turf/circle": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "@turf/meta": "^6.5.0",
-    "adm-zip": "^0.5.5",
+    "adm-zip": "0.5.12",
     "ajv": "^8.12.0",
     "axios": "^1.6.7",
     "clamscan": "^2.2.1",
@@ -47,7 +47,7 @@
     "form-data": "^4.0.0",
     "http-proxy-middleware": "^2.0.6",
     "jsonpath-plus": "^7.2.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.2",
     "jwks-rsa": "^3.1.0",
     "knex": "^2.4.2",
     "lodash": "^4.17.21",
@@ -62,9 +62,9 @@
     "utm": "^1.1.1",
     "uuid": "^8.3.2",
     "winston": "^3.3.3",
+    "winston-daily-rotate-file": "^5.0.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz",
-    "xml2js": "^0.4.23",
-    "zod": "^3.22.4"
+    "zod": "^3.23.0"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
@@ -85,7 +85,6 @@
     "@types/swagger-ui-express": "^4.1.6",
     "@types/utm": "^1.1.1",
     "@types/uuid": "^8.3.1",
-    "@types/xml2js": "^0.4.9",
     "@types/yamljs": "^0.2.31",
     "@typescript-eslint/eslint-plugin": "~7.6.0",
     "@typescript-eslint/parser": "~7.6.0",

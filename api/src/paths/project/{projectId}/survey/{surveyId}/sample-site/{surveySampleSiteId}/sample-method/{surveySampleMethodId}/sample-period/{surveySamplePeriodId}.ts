@@ -17,7 +17,7 @@ export const PUT: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -147,7 +147,7 @@ export function updateSurveySamplePeriod(): RequestHandler {
     }
 
     const surveyId = Number(req.params.surveyId);
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const samplePeriod: UpdateSamplePeriodRecord = {
@@ -180,7 +180,7 @@ export const DELETE: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -280,7 +280,7 @@ export function deleteSurveySamplePeriodRecord(): RequestHandler {
       throw new HTTP400('Missing required param `surveySamplePeriodId`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

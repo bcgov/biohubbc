@@ -18,6 +18,7 @@ import useSpatialApi from './api/useSpatialApi';
 import useStandardsApi from './api/useStandardsApi';
 import useSurveyApi from './api/useSurveyApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
+import useTechniqueApi from './api/useTechniqueApi';
 import useTelemetryApi from './api/useTelemetryApi';
 import useUserApi from './api/useUserApi';
 
@@ -58,6 +59,8 @@ export const useBiohubApi = () => {
 
   const samplingSite = useSamplingSiteApi(apiAxios);
 
+  const technique = useTechniqueApi(apiAxios);
+
   const standards = useStandardsApi(apiAxios);
 
   const reference = useReferenceApi(apiAxios);
@@ -81,6 +84,7 @@ export const useBiohubApi = () => {
       external,
       publish,
       spatial,
+      technique,
       funding,
       samplingSite,
       standards,

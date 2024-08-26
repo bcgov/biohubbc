@@ -6,7 +6,9 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { FindProjectsResponse } from '../../models/project-view';
+import { SystemUser } from '../../repositories/user-repository';
 import { ProjectService } from '../../services/project-service';
+import { KeycloakUserInformation } from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { findProjects } from './index';
 
@@ -26,7 +28,8 @@ describe('findProjects', () => {
         end_date: '2021-12-31',
         regions: ['region1'],
         focal_species: [123, 456],
-        types: [1, 2, 3]
+        types: [1, 2, 3],
+        members: [{ system_user_id: 1, display_name: 'John Doe' }]
       }
     ];
 
@@ -55,10 +58,10 @@ describe('findProjects', () => {
       sort: undefined,
       order: undefined
     };
-    mockReq['keycloak_token'] = {};
-    mockReq['system_user'] = {
+    mockReq.keycloak_token = {} as KeycloakUserInformation;
+    mockReq.system_user = {
       role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
-    };
+    } as SystemUser;
 
     const requestHandler = findProjects();
 
@@ -85,7 +88,8 @@ describe('findProjects', () => {
         end_date: '2021-12-31',
         regions: ['region1'],
         focal_species: [123, 456],
-        types: [1, 2, 3]
+        types: [1, 2, 3],
+        members: [{ system_user_id: 1, display_name: 'John Doe' }]
       }
     ];
 
@@ -117,10 +121,10 @@ describe('findProjects', () => {
       sort: undefined,
       order: undefined
     };
-    mockReq['keycloak_token'] = {};
-    mockReq['system_user'] = {
+    mockReq.keycloak_token = {} as KeycloakUserInformation;
+    mockReq.system_user = {
       role_names: [SYSTEM_ROLE.PROJECT_CREATOR]
-    };
+    } as SystemUser;
 
     const requestHandler = findProjects();
 

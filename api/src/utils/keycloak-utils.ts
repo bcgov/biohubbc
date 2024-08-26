@@ -1,3 +1,4 @@
+import { JwtPayload } from 'jsonwebtoken';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 
 /**
@@ -73,12 +74,14 @@ export type DatabaseUserInformation = {
 /**
  * User information from either an IDIR or BCeID Basic or BCeID Business Keycloak token.
  */
-export type KeycloakUserInformation =
-  | IdirUserInformation
-  | BceidBasicUserInformation
-  | BceidBusinessUserInformation
-  | ServiceClientUserInformation
-  | DatabaseUserInformation;
+export type KeycloakUserInformation = JwtPayload &
+  (
+    | IdirUserInformation
+    | BceidBasicUserInformation
+    | BceidBusinessUserInformation
+    | ServiceClientUserInformation
+    | DatabaseUserInformation
+  );
 
 /**
  * Returns the user information guid.

@@ -10,6 +10,7 @@ import {
   IDeploymentTimespan,
   ITelemetryPointCollection
 } from 'features/surveys/view/survey-animals/telemetry-device/device';
+import { ICritterDetailedResponse } from 'interfaces/useCritterApi.interface';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
   ICreateSurveyRequest,
@@ -19,7 +20,7 @@ import {
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
   ISimpleCritterWithInternalId,
-  SurveyUpdateObject
+  IUpdateSurveyRequest
 } from 'interfaces/useSurveyApi.interface';
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
@@ -126,10 +127,10 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {SurveyUpdateObject} surveyData
+   * @param {IUpdateSurveyRequest} surveyData
    * @return {*}  {Promise<any>}
    */
-  const updateSurvey = async (projectId: number, surveyId: number, surveyData: SurveyUpdateObject): Promise<any> => {
+  const updateSurvey = async (projectId: number, surveyId: number, surveyData: IUpdateSurveyRequest): Promise<any> => {
     const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/update`, surveyData);
 
     return data;
@@ -400,6 +401,22 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Retrieve a list of critters associated with the given survey with details from critterbase, including
+   * additional information such as captures and mortality
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {ICritterDetailedResponse[]}
+   */
+  const getSurveyCrittersDetailed = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<ICritterDetailedResponse[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/critters?format=detailed`);
+    return data;
+  };
+
+  /**
    * Create a critter and add it to the list of critters associated with this survey. This will create a new critter in Critterbase.
    *
    * @param {number} projectId
@@ -576,6 +593,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyCritters,
     createCritterAndAddToSurvey,
     removeCrittersFromSurvey,
+    getSurveyCrittersDetailed,
     addDeployment,
     getDeploymentsInSurvey,
     updateDeployment,

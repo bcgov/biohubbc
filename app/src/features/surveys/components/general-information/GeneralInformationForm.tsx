@@ -1,15 +1,10 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
+import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
-import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
-import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
+import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
-import AncillarySpeciesComponent from 'components/species/AncillarySpeciesComponent';
-import FocalSpeciesComponent from 'components/species/FocalSpeciesComponent';
-import { useFormikContext } from 'formik';
-import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import React from 'react';
 import yup from 'utils/YupSchema';
 import SurveyPermitForm, { SurveyPermitFormYupSchema } from '../../SurveyPermitForm';
@@ -37,13 +32,9 @@ export interface IGeneralInformationForm {
     survey_name: string;
     start_date: string;
     end_date: string;
-    progress_id: number | null;
+    progress_id: number;
     survey_types: number[];
     revision_count: number;
-  };
-  species: {
-    focal_species: ITaxonomy[];
-    ancillary_species: ITaxonomy[];
   };
   permit: {
     permits: {
@@ -59,13 +50,9 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
     survey_name: '',
     start_date: '',
     end_date: '',
-    progress_id: null,
+    progress_id: null as unknown as number,
     survey_types: [],
     revision_count: 0
-  },
-  species: {
-    focal_species: [],
-    ancillary_species: []
   },
   permit: {
     permits: []
@@ -80,26 +67,21 @@ export const GeneralInformationYupSchema = () => {
         survey_name: yup.string().required('Survey Name is Required'),
         start_date: yup.string().isValidDateString().required('Start Date is Required'),
         end_date: yup.string().nullable().isValidDateString(),
-        survey_types: yup
-          .array(yup.number())
-          .min(1, 'One or more Types are required')
-          .required('One or more Types are required'),
         progress_id: yup
           .number()
           .min(1, 'Survey Progress is Required')
           .required('Survey Progress is Required')
-          .nullable()
-      }),
-      species: yup.object().shape({
-        focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
-        ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique')
+          .nullable(),
+        survey_types: yup
+          .array(yup.number())
+          .min(1, 'One or more data types are required')
+          .required('One or more data types are required')
       })
     })
     .concat(SurveyPermitFormYupSchema);
 };
 
 export interface IGeneralInformationFormProps {
-  type: IMultiAutocompleteFieldOption[];
   progress: ISelectWithSubtextFieldOption[];
 }
 
@@ -109,8 +91,6 @@ export interface IGeneralInformationFormProps {
  * @return {*}
  */
 const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) => {
-  const formikProps = useFormikContext<IGeneralInformationForm>();
-
   return (
     <>
       <Grid container spacing={3}>
@@ -125,25 +105,16 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           />
         </Grid>
         <Grid item xs={12}>
-          <MultiAutocompleteFieldVariableSize
-            id={'survey_details.survey_types'}
-            label={'Type'}
-            options={props.type}
-            required={true}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <SelectWithSubtextField
+          <AutocompleteField
             id={'survey_details.progress_id'}
             name={'survey_details.progress_id'}
             label={'Progress'}
+            required
             options={props.progress}
-            required={true}
           />
         </Grid>
         <Grid item xs={12}>
           <StartEndDateFields
-            formikProps={formikProps}
             startName="survey_details.start_date"
             endName="survey_details.end_date"
             startRequired={true}
@@ -151,24 +122,9 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           />
         </Grid>
       </Grid>
-
       <Box component="fieldset" mt={5}>
         <Typography component="legend" variant="h5">
-          Species
-        </Typography>
-        <Grid container spacing={3}>
-          <Grid item xs={12}>
-            <FocalSpeciesComponent />
-          </Grid>
-          <Grid item xs={12}>
-            <AncillarySpeciesComponent />
-          </Grid>
-        </Grid>
-      </Box>
-
-      <Box component="fieldset" mt={5}>
-        <Typography component="legend" variant="h5">
-          Permits
+          Were any permits used for this work?
         </Typography>
         <Box>
           <SurveyPermitForm />

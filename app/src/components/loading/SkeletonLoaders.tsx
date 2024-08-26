@@ -70,17 +70,7 @@ const SkeletonHorizontalStack = (props: IMultipleSkeletonProps) => (
 );
 
 const SkeletonTable = (props: IMultipleSkeletonProps) => (
-  <Box
-    sx={{
-      position: 'absolute',
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      zIndex: '999',
-      background: '#fff',
-      borderRadius: '4px'
-    }}>
+  <Box>
     <Paper elevation={0}>
       {Array.from(Array(props.numberOfLines ?? 3).keys()).map((key: number) => (
         <SkeletonRow key={key} />
@@ -120,34 +110,21 @@ const SkeletonRow = () => (
 const SkeletonMap = () => (
   <Box
     sx={{
-      position: 'absolute',
-      top: 0,
-      right: 0,
-      bottom: 0,
-      left: 0,
-      zIndex: 1001,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
+      width: '100%',
+      height: '100%',
       background: '#fff',
       '& svg': {
         color: grey[300]
       }
     }}>
-    <Skeleton
-      variant="rectangular"
-      width="100%"
-      height="100%"
-      sx={{
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        bottom: 0,
-        left: 0
-      }}
-    />
-    <Icon path={mdiMapSearchOutline} size={2} />
+    <Box sx={{ position: 'absolute', margin: 'auto' }}>
+      <Icon path={mdiMapSearchOutline} size={2} />
+    </Box>
+    <Skeleton variant="rectangular" sx={{ width: '100%', height: '100%' }} />
   </Box>
 );
 
-export { SkeletonList, SkeletonListStack, SkeletonRow, SkeletonTable, SkeletonMap, SkeletonHorizontalStack };
+export { SkeletonHorizontalStack, SkeletonList, SkeletonListStack, SkeletonMap, SkeletonRow, SkeletonTable };

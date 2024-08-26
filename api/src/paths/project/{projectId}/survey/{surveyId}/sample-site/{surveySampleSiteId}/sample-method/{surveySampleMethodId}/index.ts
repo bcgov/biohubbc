@@ -17,7 +17,7 @@ export const PUT: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -79,7 +79,7 @@ PUT.apiDoc = {
               type: 'object',
               additionalProperties: false,
               properties: {
-                method_lookup_id: {
+                method_technique_id: {
                   type: 'integer'
                 },
                 description: {
@@ -129,7 +129,7 @@ export function updateSurveySampleMethod(): RequestHandler {
     }
 
     const surveyId = Number(req.params.surveyId);
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const sampleMethod: UpdateSampleMethodRecord = {
@@ -161,7 +161,7 @@ export const DELETE: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -243,7 +243,7 @@ export function deleteSurveySampleMethodRecord(): RequestHandler {
     }
 
     const surveyId = Number(req.params.surveyId);
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

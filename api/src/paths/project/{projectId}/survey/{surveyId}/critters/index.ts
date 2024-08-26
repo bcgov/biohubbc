@@ -2,8 +2,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { HTTP500 } from '../../../../../../errors/http-error';
+import { critterSchema } from '../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
+import { CritterbaseService, ICritter, ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../utils/logger';
 
@@ -71,7 +73,8 @@ GET.apiDoc = {
       in: 'query',
       name: 'format',
       schema: {
-        type: 'string'
+        type: 'string',
+        enum: ['detailed']
       }
     }
   ],
@@ -81,12 +84,9 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            title: 'Bulk creation response object',
+            title: 'Array of critters in survey.',
             type: 'array',
-            items: {
-              title: 'Default critter response',
-              type: 'object'
-            }
+            items: critterSchema
           }
         }
       }
@@ -111,7 +111,7 @@ GET.apiDoc = {
 
 POST.apiDoc = {
   description:
-    'Creates a new critter in critterbase, and if successful, adds the a link to the critter_id under this survey.',
+    'Creates a new critter in CritterBase, and if successful, adds a corresponding SIMS critter record under this survey.',
   tags: ['critterbase'],
   security: [
     {
@@ -201,20 +201,22 @@ POST.apiDoc = {
   }
 };
 
+/**
+ * Get all critters under this survey that have a corresponding Critterbase critter record.
+ *
+ * @export
+ * @return {*}  {RequestHandler}
+ */
 export function getCrittersFromSurvey(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
-
     const surveyId = Number(req.params.surveyId);
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
       const surveyService = new SurveyCritterService(connection);
+
       const surveyCritters = await surveyService.getCrittersInSurvey(surveyId);
 
       // Exit early if surveyCritters list is empty
@@ -222,24 +224,41 @@ export function getCrittersFromSurvey(): RequestHandler {
         return res.status(200).json([]);
       }
 
-      const critterIds = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
+      const critterbaseCritterId = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
 
-      const critterbaseService = new CritterbaseService(user);
-      const result = await critterbaseService.getMultipleCrittersByIds(critterIds);
+      const critterbaseService = new CritterbaseService({
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      });
 
-      const critterMap = new Map();
-      for (const item of result) {
-        critterMap.set(item.critter_id, item);
-      }
+      // Fetch critters from the service based on the Critterbase critter ids
+      const critterbaseCritters =
+        req.query.format === 'detailed'
+          ? await critterbaseService.getMultipleCrittersByIdsDetailed(critterbaseCritterId)
+          : await critterbaseService.getMultipleCrittersByIds(critterbaseCritterId);
 
-      for (const surveyCritter of surveyCritters) {
-        if (critterMap.has(surveyCritter.critterbase_critter_id)) {
-          critterMap.get(surveyCritter.critterbase_critter_id).survey_critter_id = surveyCritter.critter_id;
+      // For each Critterbase critter record, find the corresponding survey critter record, and add the corresponding
+      // survey critter ID to the Critterbase critter record.
+      const mergedCritterbaseCritters: (ICritter & { survey_critter_id: number })[] = critterbaseCritters.map(
+        (critterbaseCritter) => {
+          const surveyCritter = surveyCritters.find(
+            (surveyCritter) => surveyCritter.critterbase_critter_id === critterbaseCritter.critter_id
+          );
+
+          if (!surveyCritter) {
+            throw new HTTP500('Failed to find survey critters');
+          }
+
+          return {
+            ...critterbaseCritter,
+            survey_critter_id: surveyCritter.critter_id
+          };
         }
-      }
-      return res.status(200).json([...critterMap.values()]);
+      );
+
+      return res.status(200).json(mergedCritterbaseCritters);
     } catch (error) {
-      defaultLog.error({ label: 'createCritter', message: 'error', error });
+      defaultLog.error({ label: 'getCrittersFromSurvey', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -250,18 +269,18 @@ export function getCrittersFromSurvey(): RequestHandler {
 
 export function addCritterToSurvey(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
-
     const surveyId = Number(req.params.surveyId);
     let critterId = req.body.critter_id;
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
+
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
 
       const critterbaseService = new CritterbaseService(user);
 

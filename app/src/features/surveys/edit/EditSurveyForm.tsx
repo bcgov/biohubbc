@@ -1,4 +1,5 @@
 import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -7,15 +8,17 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
 import SamplingStrategyForm from 'features/surveys/components/sampling-strategy/SamplingStrategyForm';
+import { ISurveyPermitForm } from 'features/surveys/SurveyPermitForm';
 import SurveyPartnershipsForm, {
   SurveyPartnershipsFormYupSchema
 } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
-import { ICreateSurveyRequest, IEditSurveyRequest, SurveyUpdateObject } from 'interfaces/useSurveyApi.interface';
-import React, { useContext } from 'react';
+import { ICreateSurveyRequest, IUpdateSurveyRequest } from 'interfaces/useSurveyApi.interface';
+import React, { useContext, useEffect } from 'react';
 import AgreementsForm, { AgreementsYupSchema } from '../components/agreements/AgreementsForm';
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/agreements/ProprietaryDataForm';
 import SurveyFundingSourceForm, {
+  ISurveyFundingSourceForm,
   SurveyFundingSourceFormYupSchema
 } from '../components/funding/SurveyFundingSourceForm';
 import GeneralInformationForm, {
@@ -27,11 +30,16 @@ import PurposeAndMethodologyForm, {
 } from '../components/methodology/PurposeAndMethodologyForm';
 import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/participants/SurveyUserForm';
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
+import SpeciesForm, { SpeciesYupSchema } from '../components/species/SpeciesForm';
 
-export interface IEditSurveyForm {
-  initialSurveyData: SurveyUpdateObject | ICreateSurveyRequest;
-  handleSubmit: (formikData: IEditSurveyRequest) => void;
-  formikRef: React.RefObject<FormikProps<IEditSurveyRequest>>;
+export interface IEditSurveyForm<
+  T extends
+    | (IUpdateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm)
+    | (ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm)
+> {
+  initialSurveyData: T;
+  handleSubmit: (formikData: T) => void;
+  formikRef: React.RefObject<FormikProps<T>>;
 }
 
 /**
@@ -39,15 +47,25 @@ export interface IEditSurveyForm {
  *
  * @return {*}
  */
-const EditSurveyForm = (props: IEditSurveyForm) => {
+const EditSurveyForm = <
+  T extends
+    | (IUpdateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm)
+    | (ICreateSurveyRequest & ISurveyPermitForm & ISurveyFundingSourceForm)
+>(
+  props: IEditSurveyForm<T>
+) => {
   const projectContext = useContext(ProjectContext);
   const projectData = projectContext.projectDataLoader.data?.projectData;
 
   const codesContext = useContext(CodesContext);
   const codes = codesContext.codesDataLoader.data;
 
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
+
   if (!projectData || !codes) {
-    return <></>;
+    return <CircularProgress className="pageProgress" size={40} />;
   }
 
   const surveyEditYupSchemas = GeneralInformationYupSchema()
@@ -58,12 +76,13 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
     .concat(SurveyUserJobYupSchema)
     .concat(SurveyLocationYupSchema)
     .concat(SurveySiteSelectionYupSchema)
-    .concat(SurveyPartnershipsFormYupSchema);
+    .concat(SurveyPartnershipsFormYupSchema)
+    .concat(SpeciesYupSchema);
 
   return (
-    <Formik
+    <Formik<T>
       innerRef={props.formikRef}
-      initialValues={props.initialSurveyData as IEditSurveyRequest}
+      initialValues={props.initialSurveyData}
       validationSchema={surveyEditYupSchemas}
       validateOnBlur={false}
       validateOnChange={false}
@@ -72,13 +91,9 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
           title="General Information"
+          summary="Enter information about the survey"
           component={
             <GeneralInformationForm
-              type={
-                codes?.type?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
               progress={
                 codes?.survey_progress?.map((item) => {
                   return { value: item.id, label: item.name, subText: item.description };
@@ -90,7 +105,15 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
         <Divider />
 
         <HorizontalSplitFormComponent
+          title="Focal species"
+          summary="Enter focal species that were targetted in the survey"
+          component={<SpeciesForm />}></HorizontalSplitFormComponent>
+
+        <Divider />
+
+        <HorizontalSplitFormComponent
           title="Purpose and Methodology"
+          summary="Select the types of data collected and describe the survey objectives"
           component={
             <PurposeAndMethodologyForm
               intended_outcomes={
@@ -98,8 +121,8 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
                   return { value: item.id, label: item.name, subText: item.description };
                 }) || []
               }
-              vantage_codes={
-                codes.vantage_codes.map((item) => {
+              type={
+                codes?.type?.map((item) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }
@@ -110,7 +133,7 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
 
         <HorizontalSplitFormComponent
           title="Survey Participants"
-          summary="Specify the people who participated in this survey."
+          summary="Specify people who participated in this survey. Only people who have signed up for SIMS can be selected."
           component={<SurveyUserForm jobs={codes.survey_jobs} />}
         />
 
@@ -118,17 +141,11 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
 
         <HorizontalSplitFormComponent
           title="Funding Sources"
-          summary="Specify funding sources for this survey."
+          summary="Specify funding sources for this survey"
           component={
-            <Box>
-              <Box component="fieldset">
-                <Typography component="legend">Add Funding Sources</Typography>
-                <SurveyFundingSourceForm />
-              </Box>
-              <Box component="fieldset" mt={5}>
-                <Typography component="legend">Additional Partnerships</Typography>
-                <SurveyPartnershipsForm />
-              </Box>
+            <Box component="fieldset">
+              <Typography component="legend">Does a funding agency require this survey to be submitted?</Typography>
+              <SurveyFundingSourceForm />
             </Box>
           }
         />
@@ -136,8 +153,16 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
         <Divider />
 
         <HorizontalSplitFormComponent
+          title="Partnerships"
+          summary="Enter any partners involved in the survey"
+          component={<SurveyPartnershipsForm />}
+        />
+
+        <Divider />
+
+        <HorizontalSplitFormComponent
           title="Sampling Strategy"
-          summary="Specify site selection methods, stratums and optional sampling blocks for this survey."
+          summary="Specify site selection methods, stratums and optional sampling blocks for this survey"
           component={<SamplingStrategyForm />}
         />
 
@@ -145,41 +170,39 @@ const EditSurveyForm = (props: IEditSurveyForm) => {
 
         <HorizontalSplitFormComponent
           title="Study Area"
-          component={
-            <Box component="fieldset">
-              <Typography component="legend">Define Survey Study Area</Typography>
-              <Stack gap={3}>
-                <Typography variant="body1" color="textSecondary">
-                  Import, draw or select a feature from an existing layer to define the study areas for this survey.
-                </Typography>
-                <StudyAreaForm />
-              </Stack>
-            </Box>
-          }
+          summary="Import, draw or select a feature from an existing layer to define the study areas for this survey"
+          component={<StudyAreaForm />}
         />
 
         <Divider />
 
         <HorizontalSplitFormComponent
           title="Proprietary Data"
+          summary="Indicate whether any data is proprietary"
           component={
-            <ProprietaryDataForm
-              proprietary_data_category={
-                codes.proprietor_type?.map((item) => {
-                  return { value: item.id, label: item.name, is_first_nation: item.is_first_nation };
-                }) || []
-              }
-              first_nations={
-                codes.first_nations?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-            />
+            <Box component="fieldset">
+              <Typography component="legend">Is any data in this survey proprietary?</Typography>
+              <ProprietaryDataForm
+                proprietary_data_category={
+                  codes.proprietor_type?.map((item) => {
+                    return { value: item.id, label: item.name, is_first_nation: item.is_first_nation };
+                  }) || []
+                }
+                first_nations={
+                  codes.first_nations?.map((item) => {
+                    return { value: item.id, label: item.name };
+                  }) || []
+                }
+              />
+            </Box>
           }></HorizontalSplitFormComponent>
 
         <Divider />
 
-        <HorizontalSplitFormComponent title="Agreements" component={<AgreementsForm />}></HorizontalSplitFormComponent>
+        <HorizontalSplitFormComponent
+          title="Agreements"
+          summary="Confirm that you understand the SEDIS procedures and how they relate to data in the survey"
+          component={<AgreementsForm />}></HorizontalSplitFormComponent>
 
         <Divider />
       </Stack>

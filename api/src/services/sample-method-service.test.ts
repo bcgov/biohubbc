@@ -36,7 +36,7 @@ describe('SampleMethodService', () => {
         {
           survey_sample_method_id: 1,
           survey_sample_site_id: 2,
-          method_lookup_id: 3,
+          method_technique_id: 3,
           method_response_metric_id: 1,
           description: 'description',
           create_date: '2023-05-06',
@@ -64,6 +64,28 @@ describe('SampleMethodService', () => {
     });
   });
 
+  describe('getSampleMethodsCountForTechniqueIds', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('Gets a count of sample methods for a method technique ID', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      const getSampleMethodsCountForTechniqueIdsStub = sinon
+        .stub(SampleMethodRepository.prototype, 'getSampleMethodsCountForTechniqueIds')
+        .resolves(0);
+
+      const techniqueIds = [1, 2];
+      const sampleMethodService = new SampleMethodService(mockDBConnection);
+
+      const response = await sampleMethodService.getSampleMethodsCountForTechniqueIds(techniqueIds);
+
+      expect(getSampleMethodsCountForTechniqueIdsStub).to.be.calledOnceWith(techniqueIds);
+      expect(response).to.eql(0);
+    });
+  });
+
   describe('deleteSampleMethodRecord', () => {
     afterEach(() => {
       sinon.restore();
@@ -79,7 +101,7 @@ describe('SampleMethodService', () => {
       const mockSampleMethodRecord: SampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
-        method_lookup_id: 3,
+        method_technique_id: 3,
         method_response_metric_id: 1,
         description: 'description',
         create_date: '2023-05-06',
@@ -119,7 +141,7 @@ describe('SampleMethodService', () => {
       const mockSampleMethodRecord: SampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
-        method_lookup_id: 3,
+        method_technique_id: 3,
         method_response_metric_id: 1,
         description: 'description',
         create_date: '2023-05-06',
@@ -151,7 +173,7 @@ describe('SampleMethodService', () => {
 
       const sampleMethod: InsertSampleMethodRecord = {
         survey_sample_site_id: 2,
-        method_lookup_id: 3,
+        method_technique_id: 3,
         method_response_metric_id: 1,
         description: 'description',
         sample_periods: [
@@ -204,7 +226,7 @@ describe('SampleMethodService', () => {
       const mockSampleMethodRecord: SampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
-        method_lookup_id: 3,
+        method_technique_id: 3,
         method_response_metric_id: 1,
         description: 'description',
         create_date: '2023-05-06',
@@ -225,7 +247,7 @@ describe('SampleMethodService', () => {
       const sampleMethod: UpdateSampleMethodRecord = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
-        method_lookup_id: 3,
+        method_technique_id: 3,
         method_response_metric_id: 1,
         description: 'description',
         sample_periods: [
@@ -268,7 +290,7 @@ describe('SampleMethodService', () => {
       const mockSampleMethodRecord: SampleMethodRecord = {
         survey_sample_method_id: mockSampleMethodId,
         survey_sample_site_id: 2,
-        method_lookup_id: 3,
+        method_technique_id: 3,
         method_response_metric_id: 1,
         description: 'description',
         create_date: '2023-05-06',

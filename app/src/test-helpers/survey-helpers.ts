@@ -20,8 +20,7 @@ export const surveyObject: SurveyViewObject = {
   blocks: [],
   purpose_and_methodology: {
     intended_outcome_ids: [1],
-    additional_details: 'details',
-    vantage_code_ids: [1, 2]
+    additional_details: 'details'
   },
   proprietor: {
     proprietary_data_category_name: 'proprietor type',
@@ -65,15 +64,6 @@ export const surveyObject: SurveyViewObject = {
         rank: 'species',
         kingdom: 'animalia'
       }
-    ],
-    ancillary_species: [
-      {
-        tsn: 2,
-        commonNames: ['focal species 2'],
-        scientificName: 'scientific name 2',
-        rank: 'species',
-        kingdom: 'animalia'
-      }
     ]
   },
   site_selection: {
@@ -97,7 +87,6 @@ export const surveyObject: SurveyViewObject = {
       name: 'study area',
       description: 'study area description',
       geometry: [geoJsonFeature],
-      geography: null,
       geojson: [geoJsonFeature],
       revision_count: 0
     }

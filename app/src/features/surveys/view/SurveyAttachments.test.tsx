@@ -120,7 +120,9 @@ describe('SurveyAttachments', () => {
     const mockSurveyContext: ISurveyContext = {
       artifactDataLoader: {
         data: null,
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1,
@@ -152,7 +154,7 @@ describe('SurveyAttachments', () => {
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
-    const { getByText } = render(
+    const { getByTestId } = render(
       <ConfigContext.Provider value={{} as IConfig}>
         <AuthStateContext.Provider value={authState}>
           <Router history={history}>
@@ -168,7 +170,7 @@ describe('SurveyAttachments', () => {
       </ConfigContext.Provider>
     );
     await waitFor(() => {
-      expect(getByText('No documents found')).toBeInTheDocument();
+      expect(getByTestId('survey-attachments-list-no-data-overlay')).toBeInTheDocument();
     });
   });
 
@@ -185,7 +187,9 @@ describe('SurveyAttachments', () => {
             }
           ]
         },
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1,
@@ -263,13 +267,17 @@ describe('SurveyAttachments', () => {
             }
           ]
         },
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
@@ -356,13 +364,17 @@ describe('SurveyAttachments', () => {
             }
           ]
         },
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 
@@ -448,13 +460,17 @@ describe('SurveyAttachments', () => {
             }
           ]
         },
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>,
       surveyId: 1,
       projectId: 1,
       surveyDataLoader: {
         data: { surveyData: { survey_details: { survey_name: 'name' } } },
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>
     } as unknown as ISurveyContext;
 

@@ -4,8 +4,9 @@ import FormData from 'form-data';
 import { GeometryCollection } from 'geojson';
 import { URLSearchParams } from 'url';
 import { z } from 'zod';
-import { ApiError, ApiErrorType } from '../errors/api-error';
+import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
 import { HTTP500 } from '../errors/http-error';
+import { getSystemUserFromRequest } from '../utils/request';
 import { KeycloakService } from './keycloak-service';
 
 export const IDeployDevice = z.object({
@@ -179,10 +180,25 @@ export const VENDOR_TELEMETRY = '/vendor-telemetry';
 export const DELETE_MANUAL_TELEMETRY = '/manual-telemetry/delete';
 export const MANUAL_AND_VENDOR_TELEMETRY = '/all-telemetry';
 
-export const getBctwUser = (req: Request): IBctwUser => ({
-  keycloak_guid: req['system_user']?.user_guid,
-  username: req['system_user']?.user_identifier
-});
+/**
+ * Safely attempt to retrieve system user fields for BCTW user dependency.
+ *
+ * @param {Request} req
+ * @throws {ApiGeneralError} - Missing required fields
+ * @returns {IBctwUser}
+ */
+export const getBctwUser = (req: Request): IBctwUser => {
+  const systemUser = getSystemUserFromRequest(req);
+
+  if (!systemUser.user_guid || !systemUser.user_identifier) {
+    throw new ApiGeneralError('System user missing required fields', ['bctw-service->getBctwUser']);
+  }
+
+  return {
+    keycloak_guid: systemUser.user_guid,
+    username: systemUser.user_identifier
+  };
+};
 
 export class BctwService {
   user: IBctwUser;

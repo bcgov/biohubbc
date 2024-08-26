@@ -114,23 +114,12 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Box component="fieldset">
-        <Typography component="legend">Add Participants</Typography>
-        <Typography
-          variant="body1"
-          color="textSecondary"
-          sx={{
-            maxWidth: '72ch'
-          }}>
-          Add particpants to this survey and assign each a role.
-        </Typography>
-      </Box>
       {errors?.['participants'] && values.participants.length > 0 && (
         <Box mt={3}>
           <AlertBar severity="error" variant="outlined" title={alertBarText().title} text={alertBarText().text} />
         </Box>
       )}
-      <Box mt={3}>
+      <Box>
         <Autocomplete
           id={'autocomplete-user-role-search'}
           data-testid={'autocomplete-user-role-search'}
@@ -188,8 +177,8 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
                     borderTop: '1px solid' + grey[300]
                   }
                 }}
-                key={renderOption.system_user_id}
-                {...renderProps}>
+                {...renderProps}
+                key={renderOption.system_user_id}>
                 <Box py={0.5} width="100%">
                   <UserCard
                     name={renderOption.display_name}

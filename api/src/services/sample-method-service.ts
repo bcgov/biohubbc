@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/http-error';
+import { HTTP409 } from '../errors/http-error';
 import {
   InsertSampleMethodRecord,
   SampleMethodRecord,
@@ -38,6 +38,17 @@ export class SampleMethodService extends DBService {
     surveySampleSiteId: number
   ): Promise<SampleMethodRecord[]> {
     return this.sampleMethodRepository.getSampleMethodsForSurveySampleSiteId(surveyId, surveySampleSiteId);
+  }
+
+  /**
+   * Gets count of sample methods associated with one or more method technique Ids
+   *
+   * @param {number[]} techniqueIds
+   * @return {*}  {Promise<number>}
+   * @memberof SampleMethodService
+   */
+  async getSampleMethodsCountForTechniqueIds(techniqueIds: number[]): Promise<number> {
+    return this.sampleMethodRepository.getSampleMethodsCountForTechniqueIds(techniqueIds);
   }
 
   /**
@@ -128,7 +139,8 @@ export class SampleMethodService extends DBService {
         existingSampleMethodIds
       );
       if (samplingMethodObservationsCount > 0) {
-        throw new HTTP400('Cannot delete a sample method that is associated with an observation');
+        // TODO services should not throw HTTP errors (only endpoints should)
+        throw new HTTP409('Cannot delete a sample method that is associated with an observation');
       }
 
       await Promise.all(

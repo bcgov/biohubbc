@@ -18,13 +18,6 @@ const focalTaxonIdOptions = [
   { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
 ];
 
-const ancillaryTaxonIdOptions = [
-  { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
-  { itis_tsn: 180596, itis_scientific_name: 'Canis lupus' }, // Wolf
-  { itis_tsn: 180713, itis_scientific_name: 'Oreamnos americanus' }, // Rocky Mountain goat
-  { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
-];
-
 const surveyRegionsA = ['Kootenay-Boundary Natural Resource Region', 'West Coast Natural Resource Region'];
 const surveyRegionsB = ['Cariboo Natural Resource Region', 'South Coast Natural Resource Region'];
 
@@ -75,17 +68,16 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveyTypeData(surveyId)}
           ${insertSurveyPermitData(surveyId)}
           ${insertSurveyFocalSpeciesData(surveyId)}
-          ${insertSurveyAncillarySpeciesData(surveyId)}
           ${insertSurveyFundingData(surveyId)}
           ${insertSurveyProprietorData(surveyId)}
           ${insertSurveyFirstNationData(surveyId)}
           ${insertSurveyStakeholderData(surveyId)}
-          ${insertSurveyVantageData(surveyId)}
           ${insertSurveyParticipationData(surveyId)}
           ${insertSurveyLocationData(surveyId)}
           ${insertSurveySiteStrategy(surveyId)}
           ${insertSurveyIntendedOutcome(surveyId)}
           ${insertSurveySamplingSiteData(surveyId)}
+          ${insertMethodTechnique(surveyId)}
           ${insertSurveySamplingMethodData(surveyId)}
           ${insertSurveySamplePeriodData(surveyId)}
         `);
@@ -179,22 +171,6 @@ const insertSurveyParticipationData = (surveyId: number) => `
 `;
 
 /**
- * SQL to insert Survey Vantage data
- *
- */
-const insertSurveyVantageData = (surveyId: number) => `
-  INSERT into survey_vantage
-    (
-      survey_id,
-      vantage_id
-    )
-  VALUES (
-    ${surveyId},
-    (select vantage_id from vantage order by random() limit 1)
-  );
-`;
-
-/**
  * SQL to insert Survey Proprietor data
  *
  */
@@ -266,23 +242,6 @@ const insertSurveyFocalSpeciesData = (surveyId: number) => {
       ${surveyId},
       ${focalSpecies.itis_tsn},
       'Y'
-    );
-  `;
-};
-
-const insertSurveyAncillarySpeciesData = (surveyId: number) => {
-  const ancillarySpecies = ancillaryTaxonIdOptions[Math.floor(Math.random() * ancillaryTaxonIdOptions.length)];
-  return `
-    INSERT into study_species
-      (
-        survey_id,
-        itis_tsn,
-        is_focal
-      )
-    VALUES (
-      ${surveyId},
-      ${ancillarySpecies.itis_tsn},
-      'N'
     );
   `;
 };
@@ -560,6 +519,30 @@ const insertSurveySamplingSiteData = (surveyId: number) =>
   );`;
 
 /**
+ * SQL to insert method_technique. Requires method lookup.
+ *
+ */
+const insertMethodTechnique = (surveyId: number) =>
+  `
+ INSERT INTO method_technique
+ (
+  survey_id,
+  method_lookup_id,
+  name,
+  description,
+  distance_threshold
+ )
+ VALUES
+ (
+    ${surveyId},
+    (SELECT method_lookup_id FROM method_lookup ORDER BY random() LIMIT 1),
+    $$${faker.lorem.word(10)}$$,
+    $$${faker.lorem.sentences(2)}$$,
+    $$${faker.number.int({ min: 1, max: 50 })}$$
+ );
+`;
+
+/**
  * SQL to insert survey sampling method data. Requires sampling site.
  *
  */
@@ -568,16 +551,16 @@ const insertSurveySamplingMethodData = (surveyId: number) =>
  INSERT INTO survey_sample_method
  (
   survey_sample_site_id,
-  method_lookup_id,
   description,
-  method_response_metric_id
+  method_response_metric_id,
+  method_technique_id
  )
  VALUES
  (
     (SELECT survey_sample_site_id FROM survey_sample_site WHERE survey_id = ${surveyId} LIMIT 1),
-    (SELECT method_lookup_id FROM method_lookup ORDER BY random() LIMIT 1),
     $$${faker.lorem.sentences(2)}$$,
-    $$${faker.number.int({ min: 1, max: 4 })}$$
+    $$${faker.number.int({ min: 1, max: 4 })}$$,
+    (SELECT method_technique_id FROM method_technique WHERE survey_id = ${surveyId} LIMIT 1)
  );
 `;
 
