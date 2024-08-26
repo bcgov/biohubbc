@@ -625,22 +625,26 @@ describe('importMeasurementsStrategy', () => {
       const conn = getMockDBConnection();
       const strategy = new ImportMeasurementsStrategy(conn, 1);
 
+      const bulkCreateStub = sinon.stub(strategy.surveyCritterService.critterbaseService, 'bulkCreate');
+
       const rows = [
         { critter_id: 'A', capture_id: 'B', taxon_measurement_id: 'C', qualitative_option_id: 'D' },
-        { critter_id: 'E', capture_id: 'F', taxon_measurement_id: 'G', qualitative_option_id: 'H' }
+        { critter_id: 'E', capture_id: 'F', taxon_measurement_id: 'G', value: 0 }
       ];
 
-      const result = strategy.insert(rows);
+      bulkCreateStub.resolves({
+        created: { qualitative_measurements: 1, quantitative_measurements: 1 }
+      } as IBulkCreateResponse);
 
-      expect(result).to.be.deep.equal([
-        {
-          critter_id: 'A',
-          capture_id: 'B',
-          taxon_measurement_id: 'C',
-          qualitative_option_id: 'D',
-          survey_id: 1
-        }
-      ]);
+      const result = await strategy.insert(rows);
+
+      expect(bulkCreateStub).to.have.been.calledOnceWithExactly({
+        qualitative_measurements: [
+          { critter_id: 'A', capture_id: 'B', taxon_measurement_id: 'C', qualitative_option_id: 'D' }
+        ],
+        quantitative_measurements: [{ critter_id: 'E', capture_id: 'F', taxon_measurement_id: 'G', value: 0 }]
+      });
+      expect(result).to.be.eql(2);
     });
   });
 });
