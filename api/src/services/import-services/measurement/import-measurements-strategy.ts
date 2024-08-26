@@ -297,6 +297,7 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
 
           continue;
         }
+        console.log('here1');
 
         // Validate the column header is a known Critterbase measurement
         rowErrors.push({

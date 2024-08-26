@@ -1,13 +1,153 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { MediaFile } from '../../../utils/media/media-file';
+import * as worksheetUtils from '../../../utils/xlsx-utils/worksheet-utils';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import {
   CBQualitativeMeasurementTypeDefinition,
-  CBQuantitativeMeasurementTypeDefinition
+  CBQuantitativeMeasurementTypeDefinition,
+  IBulkCreateResponse
 } from '../../critterbase-service';
+import { importCSV } from '../import-csv';
 import { ImportMeasurementsStrategy } from './import-measurements-strategy';
 
-describe.only('importMeasurementsStrategy', () => {
+describe('importMeasurementsStrategy', () => {
+  describe('importCSV', () => {
+    beforeEach(() => {
+      sinon.restore();
+    });
+
+    it('should import the csv file correctly', async () => {
+      const worksheet = {
+        A1: { t: 's', v: 'ALIAS' },
+        B1: { t: 's', v: 'CAPTURE_DATE' },
+        C1: { t: 's', v: 'CAPTURE_TIME' },
+        D1: { t: 's', v: 'tail length' },
+        E1: { t: 's', v: 'skull condition' },
+        F1: { t: 's', v: 'unknown' },
+        A2: { t: 's', v: 'carl' },
+        B2: { z: 'm/d/yy', t: 'd', v: '2024-10-10T07:00:00.000Z', w: '10/10/24' },
+        C2: { t: 's', v: '10:10:12' },
+        D2: { t: 'n', w: '2', v: 2 },
+        E2: { t: 'n', w: '0', v: 'good' },
+        A3: { t: 's', v: 'carlita' },
+        B3: { z: 'm/d/yy', t: 'd', v: '2024-10-10T07:00:00.000Z', w: '10/10/24' },
+        C3: { t: 's', v: '10:10:12' },
+        D3: { t: 'n', w: '2', v: 2 },
+        E3: { t: 'n', w: '0', v: 'good' },
+        '!ref': 'A1:F3'
+      };
+
+      const conn = getMockDBConnection();
+      const strategy = new ImportMeasurementsStrategy(conn, 1);
+
+      const getDefaultWorksheetStub = sinon.stub(worksheetUtils, 'getDefaultWorksheet');
+      const critterbaseInsertStub = sinon.stub(strategy.surveyCritterService.critterbaseService, 'bulkCreate');
+      const nonStandardColumnsStub = sinon.stub(strategy, '_getNonStandardColumns');
+      const critterAliasMapStub = sinon.stub(strategy.surveyCritterService, 'getSurveyCritterAliasMap');
+      const getTsnMeasurementMapStub = sinon.stub(strategy, '_getTsnsMeasurementMap');
+
+      const critterAliasMap = new Map([
+        [
+          'carl',
+          {
+            critter_id: 'A',
+            animal_id: 'carl',
+            itis_tsn: 'tsn1',
+            captures: [{ capture_id: 'B', capture_date: '10/10/2024', capture_time: '10:10:12' }]
+          } as any
+        ],
+        [
+          'carlita',
+          {
+            critter_id: 'B',
+            animal_id: 'carlita',
+            itis_tsn: 'tsn2',
+            captures: [{ capture_id: 'B', capture_date: '10/10/2024', capture_time: '10:10:12' }]
+          } as any
+        ]
+      ]);
+
+      getDefaultWorksheetStub.returns(worksheet);
+      nonStandardColumnsStub.returns(['TAIL LENGTH', 'SKULL CONDITION']);
+      critterAliasMapStub.resolves(critterAliasMap);
+      critterbaseInsertStub.resolves({
+        created: { qualitative_measurements: 1, quantitative_measurements: 1 }
+      } as IBulkCreateResponse);
+      getTsnMeasurementMapStub.resolves(
+        new Map([
+          [
+            'tsn1',
+            {
+              qualitative: [
+                {
+                  taxon_measurement_id: 'Z',
+                  measurement_name: 'skull condition',
+                  options: [{ qualitative_option_id: 'C', option_label: 'good' }]
+                }
+              ],
+              quantitative: [
+                { taxon_measurement_id: 'Z', measurement_name: 'tail length', min_value: 0, max_value: 10 }
+              ]
+            } as any
+          ],
+          [
+            'tsn2',
+            {
+              qualitative: [
+                {
+                  taxon_measurement_id: 'Z',
+                  measurement_name: 'skull condition',
+
+                  options: [{ qualitative_option_id: 'C', option_label: 'good' }]
+                }
+              ],
+              quantitative: [
+                { taxon_measurement_id: 'Z', measurement_name: 'tail length', min_value: 0, max_value: 10 }
+              ]
+            } as any
+          ]
+        ])
+      );
+
+      try {
+        const data = await importCSV(new MediaFile('test', 'test', 'test' as unknown as Buffer), strategy);
+        expect(data).to.be.eql(2);
+        expect(critterbaseInsertStub).to.have.been.calledOnceWithExactly({
+          qualitative_measurements: [
+            {
+              critter_id: 'A',
+              capture_id: 'B',
+              taxon_measurement_id: 'Z',
+              qualitative_option_id: 'C'
+            },
+            {
+              critter_id: 'B',
+              capture_id: 'B',
+              taxon_measurement_id: 'Z',
+              qualitative_option_id: 'C'
+            }
+          ],
+          quantitative_measurements: [
+            {
+              critter_id: 'A',
+              capture_id: 'B',
+              taxon_measurement_id: 'Z',
+              value: 2
+            },
+            {
+              critter_id: 'B',
+              capture_id: 'B',
+              taxon_measurement_id: 'Z',
+              value: 2
+            }
+          ]
+        });
+      } catch (e: any) {
+        expect.fail();
+      }
+    });
+  });
   describe('_getTsnsMeasurementMap', () => {
     it('should return correct taxon measurement mapping', async () => {
       const conn = getMockDBConnection();
