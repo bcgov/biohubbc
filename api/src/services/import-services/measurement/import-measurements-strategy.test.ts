@@ -245,7 +245,7 @@ describe.only('importMeasurementsStrategy', () => {
       }
     });
 
-    it('should return errors when unable to map alias to critter', async () => {
+    it('should return error when unable to map alias to critter', async () => {
       const conn = getMockDBConnection();
       const strategy = new ImportMeasurementsStrategy(conn, 1);
 
@@ -279,6 +279,228 @@ describe.only('importMeasurementsStrategy', () => {
       } else {
         expect.fail();
       }
+    });
+
+    it('should return error when unable to map capture to critter', async () => {
+      const conn = getMockDBConnection();
+      const strategy = new ImportMeasurementsStrategy(conn, 1);
+
+      const nonStandardColumnsStub = sinon.stub(strategy, '_getNonStandardColumns');
+      const critterAliasMapStub = sinon.stub(strategy.surveyCritterService, 'getSurveyCritterAliasMap');
+      const getRowMetaStub = sinon.stub(strategy, '_getRowMeta');
+      const getTsnMeasurementMapStub = sinon.stub(strategy, '_getTsnsMeasurementMap');
+      const validateQualitativeMeasurementCellStub = sinon.stub(strategy, '_validateQualitativeMeasurementCell');
+
+      nonStandardColumnsStub.returns(['MEASUREMENT']);
+      critterAliasMapStub.resolves(critterAliasMap);
+      getRowMetaStub.returns({ critter_id: 'A', tsn: 'tsn1', capture_id: undefined });
+      getTsnMeasurementMapStub.resolves(
+        new Map([
+          [
+            'tsn1',
+            { qualitative: [{ taxon_measurement_id: 'Z', measurement_name: 'measurement' }], quantitative: [] } as any
+          ]
+        ])
+      );
+      validateQualitativeMeasurementCellStub.returns({ error: undefined, optionId: 'C' });
+
+      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
+
+      const result = await strategy.validateRows(rows, {});
+
+      if (!result.success) {
+        expect(result.error.issues).to.be.deep.equal([
+          { row: 0, message: 'Unable to find matching Capture with date and time.' }
+        ]);
+      } else {
+        expect.fail();
+      }
+    });
+
+    it('should return error when unable to map tsn to critter', async () => {
+      const conn = getMockDBConnection();
+      const strategy = new ImportMeasurementsStrategy(conn, 1);
+
+      const nonStandardColumnsStub = sinon.stub(strategy, '_getNonStandardColumns');
+      const critterAliasMapStub = sinon.stub(strategy.surveyCritterService, 'getSurveyCritterAliasMap');
+      const getRowMetaStub = sinon.stub(strategy, '_getRowMeta');
+      const getTsnMeasurementMapStub = sinon.stub(strategy, '_getTsnsMeasurementMap');
+      const validateQualitativeMeasurementCellStub = sinon.stub(strategy, '_validateQualitativeMeasurementCell');
+
+      nonStandardColumnsStub.returns(['MEASUREMENT']);
+      critterAliasMapStub.resolves(critterAliasMap);
+      getRowMetaStub.returns({ critter_id: 'A', tsn: undefined, capture_id: 'C' });
+      getTsnMeasurementMapStub.resolves(
+        new Map([
+          [
+            'tsn1',
+            { qualitative: [{ taxon_measurement_id: 'Z', measurement_name: 'measurement' }], quantitative: [] } as any
+          ]
+        ])
+      );
+      validateQualitativeMeasurementCellStub.returns({ error: undefined, optionId: 'C' });
+
+      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
+
+      const result = await strategy.validateRows(rows, {});
+
+      if (!result.success) {
+        expect(result.error.issues).to.be.deep.equal([{ row: 0, message: 'Unable to find ITIS TSN for Critter.' }]);
+      } else {
+        expect.fail();
+      }
+    });
+
+    it('should return error when qualitative measurement validation fails', async () => {
+      const conn = getMockDBConnection();
+      const strategy = new ImportMeasurementsStrategy(conn, 1);
+
+      const nonStandardColumnsStub = sinon.stub(strategy, '_getNonStandardColumns');
+      const critterAliasMapStub = sinon.stub(strategy.surveyCritterService, 'getSurveyCritterAliasMap');
+      const getRowMetaStub = sinon.stub(strategy, '_getRowMeta');
+      const getTsnMeasurementMapStub = sinon.stub(strategy, '_getTsnsMeasurementMap');
+      const validateQualitativeMeasurementCellStub = sinon.stub(strategy, '_validateQualitativeMeasurementCell');
+
+      nonStandardColumnsStub.returns(['MEASUREMENT']);
+      critterAliasMapStub.resolves(critterAliasMap);
+      getRowMetaStub.returns({ critter_id: 'A', tsn: 'tsn1', capture_id: 'C' });
+      getTsnMeasurementMapStub.resolves(
+        new Map([
+          [
+            'tsn1',
+            { qualitative: [{ taxon_measurement_id: 'Z', measurement_name: 'measurement' }], quantitative: [] } as any
+          ]
+        ])
+      );
+      validateQualitativeMeasurementCellStub.returns({ error: 'qualitative failed', optionId: undefined });
+
+      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
+
+      const result = await strategy.validateRows(rows, {});
+
+      if (!result.success) {
+        expect(result.error.issues).to.be.deep.equal([{ row: 0, col: 'MEASUREMENT', message: 'qualitative failed' }]);
+      } else {
+        expect.fail();
+      }
+    });
+
+    it('should return error when quantitative measurement validation fails', async () => {
+      const conn = getMockDBConnection();
+      const strategy = new ImportMeasurementsStrategy(conn, 1);
+
+      const nonStandardColumnsStub = sinon.stub(strategy, '_getNonStandardColumns');
+      const critterAliasMapStub = sinon.stub(strategy.surveyCritterService, 'getSurveyCritterAliasMap');
+      const getRowMetaStub = sinon.stub(strategy, '_getRowMeta');
+      const getTsnMeasurementMapStub = sinon.stub(strategy, '_getTsnsMeasurementMap');
+      const validateQuantitativeMeasurementCellStub = sinon.stub(strategy, '_validateQuantitativeMeasurementCell');
+
+      nonStandardColumnsStub.returns(['MEASUREMENT']);
+      critterAliasMapStub.resolves(critterAliasMap);
+      getRowMetaStub.returns({ critter_id: 'A', tsn: 'tsn1', capture_id: 'C' });
+      getTsnMeasurementMapStub.resolves(
+        new Map([
+          [
+            'tsn1',
+            { quantitative: [{ taxon_measurement_id: 'Z', measurement_name: 'measurement' }], qualitative: [] } as any
+          ]
+        ])
+      );
+      validateQuantitativeMeasurementCellStub.returns({ error: 'quantitative failed', value: undefined });
+
+      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
+
+      const result = await strategy.validateRows(rows, {});
+
+      if (!result.success) {
+        expect(result.error.issues).to.be.deep.equal([{ row: 0, col: 'MEASUREMENT', message: 'quantitative failed' }]);
+      } else {
+        expect.fail();
+      }
+    });
+
+    it('should return error when no measurements exist for taxon', async () => {
+      const conn = getMockDBConnection();
+      const strategy = new ImportMeasurementsStrategy(conn, 1);
+
+      const nonStandardColumnsStub = sinon.stub(strategy, '_getNonStandardColumns');
+      const critterAliasMapStub = sinon.stub(strategy.surveyCritterService, 'getSurveyCritterAliasMap');
+      const getRowMetaStub = sinon.stub(strategy, '_getRowMeta');
+      const getTsnMeasurementMapStub = sinon.stub(strategy, '_getTsnsMeasurementMap');
+
+      nonStandardColumnsStub.returns(['MEASUREMENT']);
+      critterAliasMapStub.resolves(critterAliasMap);
+      getRowMetaStub.returns({ critter_id: 'A', tsn: 'tsn1', capture_id: 'C' });
+      getTsnMeasurementMapStub.resolves(new Map([['tsn1', { quantitative: [], qualitative: [] } as any]]));
+
+      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
+
+      const result = await strategy.validateRows(rows, {});
+
+      if (!result.success) {
+        expect(result.error.issues).to.be.deep.equal([
+          { row: 0, col: 'MEASUREMENT', message: 'No measurements exist for this taxon.' }
+        ]);
+      } else {
+        expect.fail();
+      }
+    });
+
+    it('should return error when no measurements exist for taxon', async () => {
+      const conn = getMockDBConnection();
+      const strategy = new ImportMeasurementsStrategy(conn, 1);
+
+      const nonStandardColumnsStub = sinon.stub(strategy, '_getNonStandardColumns');
+      const critterAliasMapStub = sinon.stub(strategy.surveyCritterService, 'getSurveyCritterAliasMap');
+      const getRowMetaStub = sinon.stub(strategy, '_getRowMeta');
+      const getTsnMeasurementMapStub = sinon.stub(strategy, '_getTsnsMeasurementMap');
+
+      nonStandardColumnsStub.returns(['MEASUREMENT']);
+      critterAliasMapStub.resolves(critterAliasMap);
+      getRowMetaStub.returns({ critter_id: 'A', tsn: 'tsn1', capture_id: 'C' });
+      getTsnMeasurementMapStub.resolves(
+        new Map([
+          [
+            'tsn1',
+            { quantitative: [{ measurement_name: 'notfound' }], qualitative: [{ measurement_name: 'notfound' }] } as any
+          ]
+        ])
+      );
+
+      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
+
+      const result = await strategy.validateRows(rows, {});
+
+      if (!result.success) {
+        expect(result.error.issues).to.be.deep.equal([
+          { row: 0, col: 'MEASUREMENT', message: 'Unable to match column name to an existing measurement.' }
+        ]);
+      } else {
+        expect.fail();
+      }
+    });
+  });
+  describe('insert', () => {
+    it('should correctly format the insert payload for critterbase bulk insert', async () => {
+      const conn = getMockDBConnection();
+      const strategy = new ImportMeasurementsStrategy(conn, 1);
+
+      const rows = [
+        { critter_id: 'A', capture_id: 'B', taxon_measurement_id: 'C', qualitative_option_id: 'D' },
+        { critter_id: 'E', capture_id: 'F', taxon_measurement_id: 'G', qualitative_option_id: 'H' }
+      ];
+
+      const result = strategy.insert(rows);
+
+      expect(result).to.be.deep.equal([
+        {
+          critter_id: 'A',
+          capture_id: 'B',
+          taxon_measurement_id: 'C',
+          qualitative_option_id: 'D',
+          survey_id: 1
+        }
+      ]);
     });
   });
 });
