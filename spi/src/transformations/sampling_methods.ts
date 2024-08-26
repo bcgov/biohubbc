@@ -6,6 +6,7 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
   
     const sql = SQL`
 -------------------------------------------------------------------------------------------------
+INSERT INTO biohub.survey_sample_method (survey_sample_site_id, method_lookup_id)
 SELECT 
     sss.survey_sample_site_id,
     ml.method_lookup_id
@@ -34,7 +35,7 @@ JOIN
         WHEN sp.method_type_cd = 'HAN_BIRD_CAPF_2.1' THEN 'Mist Net'
         WHEN sp.method_type_cd = 'OBS_PSAL_CAPS_2.0' THEN 'Pitfall Trap'
         WHEN sp.method_type_cd = 'OBS_PSAL_TRAN_2.0' THEN 'Visual Encounter'
-        WHEN sp.method_type_cd = 'OBS_BAPT_SRCA_2.0' THEN 'Visual Encounter'
+        WHEN sp.method_type_cd = git'OBS_BAPT_SRCA_2.0' THEN 'Visual Encounter'
         WHEN sp.method_type_cd = 'HAN_WOCO_CAPF_2.0' THEN 'Placeholder Gun Net'
         WHEN sp.method_type_cd = 'OBS_BAPT_LARV_2.0' THEN 'Handheld net'
         WHEN sp.method_type_cd = 'OBS_BAPT_AUDI_2.0' THEN 'Placeholder Audio Encounter'
