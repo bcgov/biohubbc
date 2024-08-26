@@ -236,7 +236,8 @@ export class ImportMeasurementsStrategy extends DBService implements CSVImportSt
 
       // Loop through all non-standard (measurement) columns
       for (const column of nonStandardColumns) {
-        const cellValue = row[column];
+        // Get the cell value from the row (case insensitive)
+        const cellValue = row[column] ?? row[column.toLowerCase()] ?? row[column.toUpperCase()];
 
         // If the cell value is null or undefined - skip validation
         if (cellValue == null) {
