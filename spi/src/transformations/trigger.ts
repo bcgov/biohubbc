@@ -17,7 +17,7 @@ export async function up(knex: Knex): Promise<void> {
     -- Insert SPI user which will perform the transform and be recorded in the audit columns (eg. created by)
     ----------------------------------------------------------------------------------------
     -- Inserting a new system user record for SPI data transformation, referencing audit columns.
-    INSERT INTO system_user (user_identity_source_id, user_identifier, display_name, user_guid, email, record_effective_date) 
+    INSERT INTO biohub.system_user (user_identity_source_id, user_identifier, display_name, user_guid, email, record_effective_date) 
     VALUES (
         (SELECT user_identity_source_id FROM user_identity_source WHERE name = 'DATABASE'),
         'spi',
@@ -85,15 +85,6 @@ export async function up(knex: Knex): Promise<void> {
     ON public.migrate_spi_user_deduplication
     FOR EACH ROW
     EXECUTE FUNCTION public.migrate_populate_project_ids();
-
-    DROP TRIGGER IF EXISTS populate_project_ids ON biohub.migrate_spi_user_deduplication;
-    DROP FUNCTION IF EXISTS biohub.migrate_populate_project_ids();
-    ALTER TABLE biohub.project DROP COLUMN IF EXISTS spi_project_id;
-    ALTER TABLE biohub.study_species DROP COLUMN IF EXISTS spi_wldtaxonomic_units_id;
-    ALTER TABLE biohub.survey DROP COLUMN IF EXISTS spi_survey_id;
-    ALTER TABLE biohub.study_species DROP COLUMN IF EXISTS is_spi_import;
-    DROP TABLE IF EXISTS biohub.migrate_spi_user_deduplication;
-
   `);
 }
 

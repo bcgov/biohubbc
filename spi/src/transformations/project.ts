@@ -1,15 +1,17 @@
-git pulimport SQL from 'sql-template-strings';
+import SQL from 'sql-template-strings';
 import { IDBConnection } from '../db';
 
 export const transformProjects = async (connection: IDBConnection): Promise<void> => {
   console.log('Transforming projects');
 
   const sql = SQL`
+    set search_path = biohub,public;
+
     -------------------------------------------------------------------------------------------------
     -- Transforms SPI projects into SIMS projects
     -------------------------------------------------------------------------------------------------
     INSERT INTO 
-        project (spi_project_id, name, objectives, location_description, create_date)
+        biohub.project (spi_project_id, name, objectives, location_description, create_date)
     SELECT 
         spi_project_id,
         project_name,
@@ -17,19 +19,19 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
         location_description,
         when_created
     FROM 
-        spi_projects;
+        public.spi_projects;
 
     -------------------------------------------------------------------------------------------------
     -- Determines project associations of each user and inserts associations into project_participation
     -------------------------------------------------------------------------------------------------
-    WITH mapping AS
+    WITH w_mapping AS
         (
             SELECT 
                 p.spi_project_id, 
                 pp.person_id, 
                 b.project_id
             FROM 
-                spi_projects p
+                public.spi_projects p
             INNER JOIN 
                 biohub.project b ON p.spi_project_id = b.spi_project_id
             INNER JOIN 
@@ -38,12 +40,12 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
     INSERT INTO
         biohub.project_participation (project_id, system_user_id, project_role_id, create_user)
     SELECT DISTINCT
-        mapping.project_id,
-        (SELECT biohub_user_id FROM migrate_spi_user_deduplication WHERE mapping.person_id = ANY (spi_person_ids)),
-        (SELECT project_role_id FROM project_role WHERE name = 'Collaborator'),
+        w_mapping.project_id,
+        (SELECT biohub_user_id FROM public.migrate_spi_user_deduplication WHERE w_mapping.person_id = ANY (spi_person_ids)),
+        (SELECT project_role_id FROM biohub.project_role WHERE name = 'Collaborator'),
         (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'spi')
     FROM 
-        mapping
+        w_mapping
     ON CONFLICT DO NOTHING;
   `;
 

@@ -2,16 +2,18 @@ import SQL from 'sql-template-strings';
 import { IDBConnection } from '../db';
 
 export const transformSamplingStratums = async (connection: IDBConnection): Promise<void> => {
-    console.log('Transforming Sampling Stratums');
-  
-    const sql = SQL`
--------------------------------------------------------------------------------------------------
--- Moving stratum data from SPI to SIMS to show the stratum that a Design Component is in for a particular survey.
+  console.log('Transforming Sampling Stratums');
 
--- This is all the columns in SPI right now. doubt we will need all of them(?) so Ive commented out update date, but this is just a start.
+  const sql = SQL`
+    set search_path = biohub,public;
 
--- Create stratum
--------------------------------------------------------------------------------------------------
+    -------------------------------------------------------------------------------------------------
+    -- Moving stratum data from SPI to SIMS to show the stratum that a Design Component is in for a particular survey.
+
+    -- This is all the columns in SPI right now. doubt we will need all of them(?) so Ive commented out update date, but this is just a start.
+
+    -- Create stratum
+    -------------------------------------------------------------------------------------------------
     INSERT INTO 
         biohub.survey_stratum (survey_id, name, description, create_date, update_date)
     SELECT 
@@ -26,9 +28,9 @@ export const transformSamplingStratums = async (connection: IDBConnection): Prom
         biohub.survey s 
     ON 
         s.spi_survey_id = st.survey_id;
+  `;
 
-
-  await connection.sql(sql);`
+  await connection.sql(sql);
 
   console.log('Successfully transformed sampling stratums');
 };

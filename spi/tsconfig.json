@@ -2,7 +2,6 @@
   "compilerOptions": {
     "module": "commonjs",
     "lib": ["es2020"],
-    "baseUrl": "src",
     "outDir": "dist",
     "target": "es2018",
     "sourceMap": true,
@@ -24,5 +23,5 @@
     "strict": true,
     "typeRoots": ["node_modules/@types"]
   },
-  "include": ["src", "survey-permits.ts"],
+  "include": ["src"]
 }

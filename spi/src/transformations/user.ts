@@ -5,10 +5,12 @@ export const transformUsers = async (connection: IDBConnection): Promise<void> =
   console.log('Transforming users');
 
   const sql = SQL`
+    set search_path = biohub,public;
+
     -------------------------------------------------------------------------------------------------
     -- Creates a table in the public schema with unique users
     -------------------------------------------------------------------------------------------------
-    INSERT INTO migrate_spi_user_deduplication(family_name, given_name, display_name, when_created, when_updated, spi_project_ids, spi_person_ids)
+    INSERT INTO public.migrate_spi_user_deduplication(family_name, given_name, display_name, when_created, when_updated, spi_project_ids, spi_person_ids)
     SELECT 
       surname,
       regexp_replace(concat(trim(first_given_name), ' ', trim(second_given_name)), '\s+', ' ', 'g') as given_name,
@@ -24,16 +26,13 @@ export const transformUsers = async (connection: IDBConnection): Promise<void> =
       regexp_replace(concat(trim(first_given_name), ' ', trim(second_given_name), ' ', trim(surname)), '\s+', ' ', 'g');
 
       
-  -------------------------------------------------------------------------------------------------
-  -- Turn deduplicated users into SIMS users
-  -------------------------------------------------------------------------------------------------
+    -------------------------------------------------------------------------------------------------
+    -- Turn deduplicated users into SIMS users
+    -------------------------------------------------------------------------------------------------
     INSERT INTO biohub.system_user (
       user_identity_source_id,
       user_identifier,
       record_effective_date,
-      create_date,
-      create_user,
-      update_date,
       display_name,
       given_name,
       family_name,
@@ -41,12 +40,9 @@ export const transformUsers = async (connection: IDBConnection): Promise<void> =
       email
     )
     SELECT 
-      (SELECT user_identity_source_id FROM user_identity_source WHERE name = 'UNVERIFIED'),
+      (SELECT user_identity_source_id FROM biohub.user_identity_source WHERE name = 'UNVERIFIED'),
       'spi-' || id,
-      when_created,
-      when_created,
-      (SELECT system_user_id FROM system_user WHERE user_identifier = 'spi'),
-      when_updated,
+      now(),
       display_name,
       given_name,
       family_name,
@@ -55,14 +51,17 @@ export const transformUsers = async (connection: IDBConnection): Promise<void> =
     FROM 
       migrate_spi_user_deduplication;
 
-  -------------------------------------------------------------------------------------------------
-  -- Update deduplicated users table with the system_user_id
-  -------------------------------------------------------------------------------------------------
-  UPDATE migrate_spi_user_deduplication AS m
-  SET biohub_user_id = su.system_user_id
-  FROM biohub.system_user AS su
-  WHERE 
-    su.user_identifier = 'spi-' || m.id;
+    -------------------------------------------------------------------------------------------------
+    -- Update deduplicated users table with the system_user_id
+    -------------------------------------------------------------------------------------------------
+    UPDATE 
+      migrate_spi_user_deduplication AS m
+    SET 
+      biohub_user_id = su.system_user_id
+    FROM 
+      biohub.system_user AS su
+    WHERE 
+      su.user_identifier = 'spi-' || m.id;
   `;
 
   await connection.sql(sql);

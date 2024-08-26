@@ -2,13 +2,14 @@ import SQL from 'sql-template-strings';
 import { IDBConnection } from '../db';
 
 export const transformSampleSites = async (connection: IDBConnection): Promise<void> => {
-    
   const transformSampleSitesSql = SQL`
+    set search_path = biohub,public;
+
     -------------------------------------------------------------------------------------------------
     -- Create sampling sites from spi design components
     -- This might have issues with non-null constraints; geojson or geometry might be required in SIMS
     -------------------------------------------------------------------------------------------------
-    WITH inserted AS (
+    WITH w_inserted AS (
         INSERT INTO 
             biohub.survey_sample_site_id (name, description, survey_id, create_date, update_date)
         SELECT 
@@ -35,7 +36,7 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
       survey_sample_site_id,
       design_component_id
     FROM 
-        inserted;
+        w_inserted;
 
     -------------------------------------------------------------------------------------------------
     -- Insert SPI Design Component Stratums into SIMS Survey Sample Stratums (the instance of a survey stratum)
@@ -47,7 +48,7 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
         mssdc.survey_sample_site_id,
         (
             SELECT survey_stratum_id 
-            FROM survey_stratum ss 
+            FROM biohub.survey_stratum ss 
             JOIN survey s ON s.spi_survey_id = scs.survey_id
             WHERE s.survey_id = scs.survey_id
             AND ss.stratum_name = scs.stratum_name
