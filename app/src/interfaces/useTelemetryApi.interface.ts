@@ -199,3 +199,16 @@ export interface ICodeResponse {
   description: string;
   long_description: string;
 }
+
+export type TelemetryDeviceKeyFile = {
+  survey_telemetry_credential_attachment_id: number;
+  uuid: string;
+  file_name: string;
+  file_type: string;
+  file_size: number;
+  create_date: string;
+  update_date: string | null;
+  title: string | null;
+  description: string | null;
+  key: string;
+};

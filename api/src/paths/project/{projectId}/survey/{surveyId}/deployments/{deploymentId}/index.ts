@@ -165,8 +165,6 @@ export function getDeploymentById(): RequestHandler {
         ]);
       }
 
-      console.log(bctwDeployments);
-
       const surveyDeploymentWithBctwData = {
         // BCTW properties
         assignment_id: matchingBctwDeployments[0].assignment_id,

@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { postSurveyTelemetryCredentialAttachment } from '.';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
@@ -9,11 +10,10 @@ import { BctwKeyxService } from '../../../../../../../services/bctw-service/bctw
 import * as file_utils from '../../../../../../../utils/file-utils';
 import * as media_utils from '../../../../../../../utils/media/media-utils';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
-import * as upload from './upload';
 
 chai.use(sinonChai);
 
-describe('uploadMedia', () => {
+describe('postSurveyTelemetryCredentialAttachment', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -52,7 +52,7 @@ describe('uploadMedia', () => {
     sinon.stub(file_utils, 'scanFileForVirus').resolves(false);
 
     try {
-      const result = upload.uploadKeyxMedia();
+      const result = postSurveyTelemetryCredentialAttachment();
 
       await result(mockReq, null as unknown as any, null as unknown as any);
       expect.fail();
@@ -74,7 +74,7 @@ describe('uploadMedia', () => {
     sinon.stub(media_utils, 'checkFileForKeyx').returns(false);
 
     try {
-      const result = upload.uploadKeyxMedia();
+      const result = postSurveyTelemetryCredentialAttachment();
 
       await result(mockReq, null as unknown as any, null as unknown as any);
       expect.fail();
@@ -100,7 +100,7 @@ describe('uploadMedia', () => {
     sinon.stub(BctwKeyxService.prototype, 'uploadKeyX').rejects(expectedError);
 
     try {
-      const result = upload.uploadKeyxMedia();
+      const result = postSurveyTelemetryCredentialAttachment();
 
       await result(mockReq, null as unknown as any, null as unknown as any);
       expect.fail();
@@ -138,7 +138,7 @@ describe('uploadMedia', () => {
       .stub(AttachmentService.prototype, 'upsertSurveyAttachment')
       .resolves({ survey_attachment_id: 1, revision_count: 1, key: 'string' });
 
-    const result = upload.uploadKeyxMedia();
+    const result = postSurveyTelemetryCredentialAttachment();
 
     await result(mockReq, sampleRes as unknown as any, null as unknown as any);
     expect(actualResult).to.eql(expectedResponse);

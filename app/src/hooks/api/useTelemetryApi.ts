@@ -7,7 +7,8 @@ import {
   ICreateManualTelemetry,
   IFindTelemetryResponse,
   IManualTelemetry,
-  IUpdateManualTelemetry
+  IUpdateManualTelemetry,
+  TelemetryDeviceKeyFile
 } from 'interfaces/useTelemetryApi.interface';
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
@@ -155,7 +156,7 @@ const useTelemetryApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Upload a telemetry device key file.
+   * Upload a telemetry device credential file.
    *
    * @param {number} projectId
    * @param {number} surveyId
@@ -164,7 +165,7 @@ const useTelemetryApi = (axios: AxiosInstance) => {
    * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<IUploadAttachmentResponse>}
    */
-  const uploadTelemetryDeviceKeyFile = async (
+  const uploadTelemetryDeviceCredentialFile = async (
     projectId: number,
     surveyId: number,
     file: File,
@@ -176,7 +177,7 @@ const useTelemetryApi = (axios: AxiosInstance) => {
     req_message.append('media', file);
 
     const { data } = await axios.post(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/keyx/upload`,
+      `/api/project/${projectId}/survey/${surveyId}/attachments/telemetry`,
       req_message,
       {
         cancelToken: cancelTokenSource?.token,
@@ -185,6 +186,21 @@ const useTelemetryApi = (axios: AxiosInstance) => {
     );
 
     return data;
+  };
+
+  /**
+   * Get all uploaded telemetry device credential key files.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<TelemetryDeviceKeyFile[]>}
+   */
+  const getTelemetryDeviceKeyFiles = async (projectId: number, surveyId: number): Promise<TelemetryDeviceKeyFile[]> => {
+    const { data } = await axios.get<{ telemetryAttachments: TelemetryDeviceKeyFile[] }>(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/telemetry`
+    );
+
+    return data.telemetryAttachments;
   };
 
   return {
@@ -196,7 +212,8 @@ const useTelemetryApi = (axios: AxiosInstance) => {
     uploadCsvForImport,
     processTelemetryCsvSubmission,
     getCodeValues,
-    uploadTelemetryDeviceKeyFile
+    uploadTelemetryDeviceCredentialFile,
+    getTelemetryDeviceKeyFiles
   };
 };
 

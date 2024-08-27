@@ -232,80 +232,44 @@ describe('checkFileForKeyx', () => {
   } as unknown as Express.Multer.File;
 
   it('should return true if the file extension is .keyx', () => {
-    expect(media_utils.checkFileForKeyx(validKeyxFile)).to.equal(true);
+    expect(media_utils.checkFileForKeyx(validKeyxFile)).to.equal({
+      type: 'keyx'
+    });
   });
 
   it('should return false if the file is not a .keyx or zip mimetype', () => {
     const multerFile = { ...invalidFile, buffer: Buffer.alloc(0) };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.equal(false);
+    expect(media_utils.checkFileForKeyx(multerFile)).to.equal({
+      type: 'unknown',
+      error: 'File is neither a .keyx file nor an archive containing only .keyx files'
+    });
   });
 
   it('should return false if the file is an empty zip file', () => {
     const emptyZipFile = new AdmZip();
     const multerFile = { ...zipFile, buffer: emptyZipFile.toBuffer() };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.equal(false);
+    expect(media_utils.checkFileForKeyx(multerFile)).to.equal({
+      type: 'keyx',
+      error: 'File is an archive that contains no content'
+    });
   });
 
   it('should return false if the zip file contains any non-keyx files', () => {
     const invalidZipFile = new AdmZip();
     invalidZipFile.addFile('test.txt', Buffer.alloc(0));
     const multerFile = { ...zipFile, buffer: invalidZipFile.toBuffer() };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.equal(false);
+    expect(media_utils.checkFileForKeyx(multerFile)).to.equal({
+      type: 'keyx',
+      error: 'File is an archive that contains non .keyx files'
+    });
   });
 
   it('should return true if the zip file contains only .keyx files', () => {
     const validZipFile = new AdmZip();
     validZipFile.addFile('test.keyx', Buffer.alloc(0));
     const multerFile = { ...zipFile, buffer: validZipFile.toBuffer() };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.equal(true);
-  });
-});
-
-describe('checkFileForCfg', () => {
-  const validCfgFile = {
-    originalname: 'test.cfg',
-    mimetype: 'application/octet-stream',
-    buffer: Buffer.alloc(0)
-  } as unknown as Express.Multer.File;
-
-  const invalidFile = {
-    originalname: 'test.txt',
-    mimetype: 'text/plain',
-    buffer: Buffer.alloc(0)
-  } as unknown as Express.Multer.File;
-
-  const zipFile = {
-    originalname: 'test.zip',
-    mimetype: 'application/zip',
-    buffer: Buffer.alloc(0)
-  } as unknown as Express.Multer.File;
-
-  it('should return true if the file extension is .cfg', () => {
-    expect(media_utils.checkFileForCfg(validCfgFile)).to.equal(true);
-  });
-
-  it('should return false if the file is not a .cfg or zip mimetype', () => {
-    const multerFile = { ...invalidFile, buffer: Buffer.alloc(0) };
-    expect(media_utils.checkFileForCfg(multerFile)).to.equal(false);
-  });
-
-  it('should return false if the file is an empty zip file', () => {
-    const emptyZipFile = new AdmZip();
-    const multerFile = { ...zipFile, buffer: emptyZipFile.toBuffer() };
-    expect(media_utils.checkFileForCfg(multerFile)).to.equal(false);
-  });
-
-  it('should return false if the zip file contains any non-cfg files', () => {
-    const invalidZipFile = new AdmZip();
-    invalidZipFile.addFile('test.txt', Buffer.alloc(0));
-    const multerFile = { ...zipFile, buffer: invalidZipFile.toBuffer() };
-    expect(media_utils.checkFileForCfg(multerFile)).to.equal(false);
-  });
-
-  it('should return true if the zip file contains only .cfg files', () => {
-    const validZipFile = new AdmZip();
-    validZipFile.addFile('test.cfg', Buffer.alloc(0));
-    const multerFile = { ...zipFile, buffer: validZipFile.toBuffer() };
-    expect(media_utils.checkFileForCfg(multerFile)).to.equal(true);
+    expect(media_utils.checkFileForKeyx(multerFile)).to.equal({
+      type: 'keyx'
+    });
   });
 });

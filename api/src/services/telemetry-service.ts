@@ -15,6 +15,7 @@ import {
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
+import { AttachmentService } from './attachment-service';
 import { BctwDeploymentRecord, BctwDeploymentService } from './bctw-service/bctw-deployment-service';
 import { BctwTelemetryService, IAllTelemetry, ICreateManualTelemetry } from './bctw-service/bctw-telemetry-service';
 import { ICritter, ICritterbaseUser } from './critterbase-service';
@@ -42,9 +43,14 @@ const telemetryCSVColumnValidator: IXLSXCSVValidator = {
 export class TelemetryService extends DBService {
   telemetryRepository: TelemetryRepository;
 
+  attachmentService: AttachmentService;
+
   constructor(connection: IDBConnection) {
     super(connection);
+
     this.telemetryRepository = new TelemetryRepository(connection);
+
+    this.attachmentService = new AttachmentService(connection);
   }
 
   /**

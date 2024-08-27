@@ -68,7 +68,7 @@ describe('useTelemetryApi', () => {
     });
   });
 
-  describe('uploadTelemetryDeviceKeyFile', () => {
+  describe('uploadTelemetryDeviceCredentialFile', () => {
     it('should upload a keyx file', async () => {
       const projectId = 1;
       const surveyId = 2;
@@ -80,7 +80,7 @@ describe('useTelemetryApi', () => {
       };
       mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/keyx/upload`).reply(201, response);
 
-      const result = await useTelemetryApi(axios).uploadTelemetryDeviceKeyFile(projectId, surveyId, file);
+      const result = await useTelemetryApi(axios).uploadTelemetryDeviceCredentialFile(projectId, surveyId, file);
       expect(result).toEqual(response);
     });
   });

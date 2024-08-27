@@ -1,6 +1,7 @@
 import FormData from 'form-data';
 import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../../errors/api-error';
+import { checkFileForKeyx } from '../../utils/media/media-utils';
 import { BctwService } from './bctw-service';
 
 export const BctwUploadKeyxResponse = z.object({
@@ -47,6 +48,12 @@ export class BctwKeyxService extends BctwService {
    * @memberof BctwKeyxService
    */
   async uploadKeyX(keyX: Express.Multer.File) {
+    const isValidKeyX = checkFileForKeyx(keyX);
+
+    if (isValidKeyX.error) {
+      throw new ApiError(ApiErrorType.GENERAL, isValidKeyX.error);
+    }
+
     const formData = new FormData();
 
     formData.append('xml', keyX.buffer, keyX.originalname);

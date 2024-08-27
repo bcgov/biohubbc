@@ -1,19 +1,19 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
+import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { AxiosProgressEvent, CancelTokenSource } from 'axios';
 import FileUpload from 'components/file-upload/FileUpload';
 import { AttachmentTypeFileExtensions } from 'constants/attachments';
+import { TelemetryDeviceKeysList } from 'features/surveys/telemetry/device-keys/TelemetryDeviceKeysList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useIsMounted from 'hooks/useIsMounted';
-import { useState } from 'react';
 
 export interface ITelemetryDeviceKeysDialogProps {
   /**
@@ -23,18 +23,6 @@ export interface ITelemetryDeviceKeysDialogProps {
    * @memberof ITelemetryDeviceKeysDialogProps
    */
   open: boolean;
-  /**
-   * Callback fired when the file upload is initiated.
-   *
-   * @memberof ITelemetryDeviceKeysDialogProps
-   */
-  onSave: () => void;
-  /**
-   * Callback fired when the file upload is cancelled.
-   *
-   * @memberof ITelemetryDeviceKeysDialogProps
-   */
-  onCancel: () => void;
   /**
    * Callback fired when the dialog is closed.
    *
@@ -50,7 +38,7 @@ export interface ITelemetryDeviceKeysDialogProps {
  * @return {*}
  */
 export const TelemetryDeviceKeysDialog = (props: ITelemetryDeviceKeysDialogProps) => {
-  const { open, onSave, onCancel, onClose } = props;
+  const { open, onClose } = props;
 
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -60,17 +48,13 @@ export const TelemetryDeviceKeysDialog = (props: ITelemetryDeviceKeysDialogProps
 
   const isMounted = useIsMounted();
 
-  const [isSaving, setIsSaving] = useState(false);
-
   const uploadHandler = async (
     file: File,
     cancelToken: CancelTokenSource,
     handleFileUploadProgress: (progressEvent: AxiosProgressEvent) => void
   ) => {
-    setIsSaving(true);
-
     return biohubApi.telemetry
-      .uploadTelemetryDeviceKeyFile(
+      .uploadTelemetryDeviceCredentialFile(
         surveyContext.projectId,
         surveyContext.surveyId,
         file,
@@ -82,15 +66,12 @@ export const TelemetryDeviceKeysDialog = (props: ITelemetryDeviceKeysDialogProps
           return;
         }
 
-        setIsSaving(false);
         throw error;
       })
       .finally(() => {
         if (!isMounted()) {
           return;
         }
-
-        setIsSaving(false);
       });
   };
 
@@ -114,6 +95,14 @@ export const TelemetryDeviceKeysDialog = (props: ITelemetryDeviceKeysDialogProps
         <DialogTitle id="component-dialog-title">Manage Device Keys</DialogTitle>
         <DialogContent>
           <Box mb={3}>
+            <Typography color="textSecondary">
+              Device keys allow telemetry data from Vectronic to be automatically loaded into your Survey.
+            </Typography>
+            <Typography color="textSecondary">Vectronic device keys are .keyx files.</Typography>
+            <Typography color="textSecondary">Lotek device keys are .cfg files.</Typography>
+            <Typography color="textSecondary" mb={3}>
+              Telemetry data from other manufacturers must be imported manually.
+            </Typography>
             <FileUpload
               uploadHandler={uploadHandler}
               dropZoneProps={{
@@ -124,14 +113,14 @@ export const TelemetryDeviceKeysDialog = (props: ITelemetryDeviceKeysDialogProps
               hideDropZoneOnMaxFiles={true}
             />
           </Box>
+          <Box mt={0}>
+            <TelemetryDeviceKeysList />
+          </Box>
         </DialogContent>
         <DialogActions>
-          <LoadingButton loading={isSaving} onClick={onSave} color="primary" variant="contained">
-            <strong>Save</strong>
+          <LoadingButton onClick={onClose} color="primary" variant="contained">
+            <strong>Close</strong>
           </LoadingButton>
-          <Button onClick={onCancel} color="primary" variant="outlined" disabled={isSaving}>
-            Cancel
-          </Button>
         </DialogActions>
       </Box>
     </Dialog>

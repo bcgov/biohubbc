@@ -1,4 +1,6 @@
-import Button from '@mui/material/Button';
+import { mdiKeyWireless } from '@mdi/js';
+import Icon from '@mdi/react';
+import IconButton from '@mui/material/IconButton';
 import { TelemetryDeviceKeysDialog } from 'features/surveys/telemetry/device-keys/TelemetryDeviceKeysDialog';
 import { useState } from 'react';
 
@@ -9,7 +11,7 @@ export interface ITelemetryDeviceKeysButtonProps {
    * @type {boolean}
    * @memberof ITelemetryDeviceKeysButtonProps
    */
-  disabled: boolean;
+  disabled?: boolean;
 }
 
 export const TelemetryDeviceKeysButton = (props: ITelemetryDeviceKeysButtonProps) => {
@@ -19,18 +21,16 @@ export const TelemetryDeviceKeysButton = (props: ITelemetryDeviceKeysButtonProps
 
   return (
     <>
-      <Button variant="outlined" color="primary" onClick={() => setOpen(true)} disabled={disabled}>
-        Manage Device Keys
-      </Button>
       <TelemetryDeviceKeysDialog
         open={open}
-        onSave={() => {
-          setOpen(false);
-        }}
-        onCancel={() => {
+        onClose={() => {
           setOpen(false);
         }}
       />
+
+      <IconButton onClick={() => setOpen(true)} disabled={disabled} aria-label="Manage telemetry device keys">
+        <Icon path={mdiKeyWireless} size={1} />
+      </IconButton>
     </>
   );
 };

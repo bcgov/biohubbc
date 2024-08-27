@@ -17,6 +17,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
+import { TelemetryDeviceKeysButton } from 'features/surveys/telemetry/device-keys/TelemetryDeviceKeysButton';
 import { SurveyDeploymentListItem } from 'features/surveys/telemetry/list/SurveyDeploymentListItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
@@ -187,6 +188,7 @@ export const SurveyDeploymentList = () => {
           disableGutters
           sx={{
             flex: '0 0 auto',
+            gap: 1,
             pr: 3,
             pl: 2
           }}>
@@ -196,6 +198,7 @@ export const SurveyDeploymentList = () => {
               ({deploymentCount})
             </Typography>
           </Typography>
+
           <Button
             variant="contained"
             color="primary"
@@ -204,11 +207,11 @@ export const SurveyDeploymentList = () => {
             startIcon={<Icon path={mdiPlus} size={1} />}>
             Add
           </Button>
+
+          <TelemetryDeviceKeysButton />
+
           <IconButton
             edge="end"
-            sx={{
-              ml: 1
-            }}
             aria-label="header-settings"
             disabled={!checkboxSelectedIds.length}
             // onClick={handleHeaderMenuClick} // BULK ACTIONS BUTTON
