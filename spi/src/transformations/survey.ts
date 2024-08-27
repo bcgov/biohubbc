@@ -33,14 +33,14 @@ export const transformSurveys = async (connection: IDBConnection): Promise<void>
     -------------------------------------------------------------------------------------------------
     -- Inserts survey types for transformed surveys
     -------------------------------------------------------------------------------------------------
-    INSERT INTO biohub.survey_type (survey_id, type_id)
-    SELECT
-        s.survey_id,
-        (SELECT type_id FROM biohub.type WHERE name = 'Species observations')
-    FROM
-        biohub.survey s
-    JOIN 
-        public.spi_surveys ss ON ss.survey_id = s.spi_survey_id;
+    -- INSERT INTO biohub.survey_type (survey_id, type_id)
+    -- SELECT
+       --  s.survey_id,
+       --  (SELECT type_id FROM biohub.type WHERE name = 'Species observations')
+    -- FROM
+       --  biohub.survey s
+    -- JOIN 
+       --  public.spi_surveys ss ON ss.survey_id = s.spi_survey_id;
 
 
     -------------------------------------------------------------------------------------------------
@@ -58,54 +58,20 @@ export const transformSurveys = async (connection: IDBConnection): Promise<void>
     JOIN 
         survey s ON stt.survey_id = s.spi_survey_id;
 
-
-    -------------------------------------------------------------------------------------------------
-    -- Inserts permits for transformed surveys, if the permit value is a number or comma-separated list of numbers
-    -------------------------------------------------------------------------------------------------
-    WITH w_surveys AS (
-        SELECT
-            ss.survey_id,
-            trim(unnest(string_to_array(ss.wildlife_permit_label, ','))) AS permit_number
-        FROM
-            public.spi_surveys ss
-        INNER JOIN 
-            biohub.survey s ON ss.survey_id = s.spi_survey_id
-        WHERE
-            ss.wildlife_permit_label IS NOT null
-    ), w_valid_permits AS (
-      SELECT 
-        survey_id, 
-        CASE
-            WHEN permit_number ~ '^[0-9]+$' THEN permit_number::integer
-            ELSE NULL
-        END AS permit_number
-      from 
-        w_surveys
-    )
-    INSERT INTO biohub.permit (survey_id, number, type)
-    SELECT DISTINCT
-        survey_id, 
-        permit_number,
-        'Wildlife Permit - General'
-    FROM 
-        w_valid_permits
-    WHERE 
-        permit_number is not null;
-
     
     -------------------------------------------------------------------------------------------------
     -- Inserts intended outcomes (ecological variables) for transformed surveys
     -------------------------------------------------------------------------------------------------
-    INSERT INTO biohub.survey_intended_outcome (survey_id, intended_outcome_id)
-    SELECT
-        s.survey_id,
-        (SELECT intended_outcome_id FROM biohub.intended_outcome WHERE name = 'Population size')
-    FROM
-        biohub.survey s
-    JOIN 
-        public.spi_surveys ss ON ss.survey_id = s.spi_survey_id
-    WHERE 
-        s.spi_survey_id IS NOT NULL;
+    -- INSERT INTO biohub.survey_intended_outcome (survey_id, intended_outcome_id)
+    -- SELECT
+    --     s.survey_id,
+     --    (SELECT intended_outcome_id FROM biohub.intended_outcome WHERE name = 'Population size')
+    -- FROM
+    --     biohub.survey s
+    -- JOIN 
+    --     public.spi_surveys ss ON ss.survey_id = s.spi_survey_id
+   --  WHERE 
+    --     s.spi_survey_id IS NOT NULL;
 
 
     -------------------------------------------------------------------------------------------------

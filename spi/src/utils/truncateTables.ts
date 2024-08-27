@@ -5,7 +5,22 @@ export const truncateTables = async (connection: IDBConnection): Promise<void> =
   console.log('Truncating tables');
 
   const sql = SQL`
-    TRUNCATE TABLE public.migrate_spi_user_deduplication
+  SET SEARCH_PATH=biohub;
+
+  DO $$
+  DECLARE
+      _project_id integer;
+  BEGIN
+      FOR _project_id IN
+          SELECT project_id
+          FROM project
+          WHERE spi_project_id IS NOT NULL
+      LOOP
+          CALL biohub.api_delete_project(_project_id);
+      END LOOP;
+  END $$;
+
+  TRUNCATE TABLE public.migrate_spi_user_deduplication;
   `;
 
   await connection.sql(sql);

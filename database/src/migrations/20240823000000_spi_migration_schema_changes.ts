@@ -66,46 +66,6 @@ export async function up(knex: Knex): Promise<void> {
     -- Adding a new column in study_species to indicate if the data was imported from SPI
     ALTER TABLE study_species
         ADD COLUMN is_spi_import BOOLEAN NOT NULL DEFAULT FALSE;
-
-
-    ----------------------------------------------------------------------------------------
-    -- Functions and triggers
-    ----------------------------------------------------------------------------------------
-    -- Create or replace function public.migrate_populate_project_ids()
-    CREATE OR REPLACE FUNCTION public.migrate_populate_project_ids()
-    RETURNS TRIGGER
-    LANGUAGE plpgsql
-    AS $function$
-    BEGIN
-        NEW.spi_project_ids := ARRAY(
-            SELECT spi_project_id
-            FROM spi_persons
-            WHERE person_id = ANY (NEW.spi_person_ids)
-        );
-        RETURN NEW;
-    END
-    $function$;
-
-    -- Create or replace trigger populate_project_ids
-    DROP TRIGGER IF EXISTS populate_project_ids ON public.migrate_spi_user_deduplication;
-    CREATE TRIGGER populate_project_ids
-
-    AFTER INSERT OR UPDATE
-    ON public.migrate_spi_user_deduplication
-    FOR EACH ROW
-    EXECUTE FUNCTION public.migrate_populate_project_ids();
-
-    -- Drop deprecated functions/triggers applied to the biohub schema (will be replaced with new functions/triggers
-    -- that are applied to the spi tables in the public schema)
-    DROP TRIGGER IF EXISTS populate_project_ids ON biohub.migrate_spi_user_deduplication;
-    DROP FUNCTION IF EXISTS biohub.migrate_populate_project_ids();
-
-    ALTER TABLE biohub.project DROP COLUMN IF EXISTS spi_project_id;
-    ALTER TABLE biohub.study_species DROP COLUMN IF EXISTS spi_wldtaxonomic_units_id;
-    ALTER TABLE biohub.survey DROP COLUMN IF EXISTS spi_survey_id;
-    ALTER TABLE biohub.study_species DROP COLUMN IF EXISTS is_spi_import;
-
-    DROP TABLE IF EXISTS biohub.migrate_spi_user_deduplication;
   `);
 }
 
