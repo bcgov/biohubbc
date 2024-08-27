@@ -28,12 +28,12 @@ export const BctwDeploymentRecord = z.object({
   critter_id: z.string(),
   created_at: z.string(),
   created_by_user_id: z.string(),
-  updated_at: z.string(),
-  updated_by_user_id: z.string(),
+  updated_at: z.string().nullable(),
+  updated_by_user_id: z.string().nullable(),
   valid_from: z.string(),
-  valid_to: z.string(),
+  valid_to: z.string().nullable(),
   attachment_start: z.string(),
-  attachment_end: z.string(),
+  attachment_end: z.string().nullable(),
   deployment_id: z.string(),
   device_id: z.number()
 });

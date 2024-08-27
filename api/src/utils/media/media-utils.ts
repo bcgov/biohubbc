@@ -176,7 +176,7 @@ export const checkFileForKeyx = (
   error?: string;
 } => {
   // File is a KeyX file if it ends in '.keyx'
-  if (file?.originalname.endsWith('.keyx')) {
+  if (file.originalname.endsWith('.keyx')) {
     return { type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX };
   }
 

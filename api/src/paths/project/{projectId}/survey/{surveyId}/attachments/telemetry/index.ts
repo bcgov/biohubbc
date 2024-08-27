@@ -128,17 +128,17 @@ POST.apiDoc = {
  */
 export function postSurveyTelemetryCredentialAttachment(): RequestHandler {
   return async (req, res) => {
-    const rawMediaFile = getFileFromRequest(req);
-
-    defaultLog.debug({
-      label: 'postSurveyTelemetryCredentialAttachment',
-      message: 'files',
-      files: { ...rawMediaFile, buffer: 'Too big to print' }
-    });
-
     const connection = getDBConnection(req.keycloak_token);
 
     try {
+      const rawMediaFile = getFileFromRequest(req);
+
+      defaultLog.debug({
+        label: 'postSurveyTelemetryCredentialAttachment',
+        message: 'files',
+        files: { ...rawMediaFile, buffer: 'Too big to print' }
+      });
+
       // Scan file for viruses using ClamAV
       const virusScanResult = await scanFileForVirus(rawMediaFile);
 

@@ -1615,19 +1615,19 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
-   * Update Survey Telemetry Attachment
+   * Update survey telemetry credential attachment record.
    *
    * @param {number} surveyId
    * @param {string} fileName
    * @param {string} fileType
-   * @return {*}  {Promise<{ survey_telemetry_credential_attachment_id: number; revision_count: number }>}
+   * @return {*}  {Promise<{ survey_telemetry_credential_attachment_id: number }>}
    * @memberof AttachmentRepository
    */
   async updateSurveyTelemetryCredentialAttachment(
     surveyId: number,
     fileName: string,
     fileType: string
-  ): Promise<{ survey_telemetry_credential_attachment_id: number; revision_count: number }> {
+  ): Promise<{ survey_telemetry_credential_attachment_id: number }> {
     const sqlStatement = SQL`
       UPDATE
         survey_telemetry_credential_attachment
@@ -1639,11 +1639,13 @@ export class AttachmentRepository extends BaseRepository {
       AND
         survey_id = ${surveyId}
       RETURNING
-        survey_telemetry_credential_attachment_id,
-        revision_count;
+        survey_telemetry_credential_attachment_id;
     `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(
+      sqlStatement,
+      z.object({ survey_telemetry_credential_attachment_id: z.number() })
+    );
 
     if (!response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to update survey attachment data', [
@@ -1663,7 +1665,7 @@ export class AttachmentRepository extends BaseRepository {
    * @param {string} fileType
    * @param {number} surveyId
    * @param {string} key
-   * @return {*}  {Promise<{ survey_telemetry_credential_attachment_id: number; revision_count: number }>}
+   * @return {*}  {Promise<{ survey_telemetry_credential_attachment_id: number }>}
    * @memberof AttachmentRepository
    */
   async insertSurveyTelemetryCredentialAttachment(
@@ -1672,7 +1674,7 @@ export class AttachmentRepository extends BaseRepository {
     fileType: string,
     surveyId: number,
     key: string
-  ): Promise<{ survey_telemetry_credential_attachment_id: number; revision_count: number }> {
+  ): Promise<{ survey_telemetry_credential_attachment_id: number }> {
     const sqlStatement = SQL`
     INSERT INTO survey_telemetry_credential_attachment (
       survey_id,
@@ -1688,11 +1690,13 @@ export class AttachmentRepository extends BaseRepository {
       ${key}
     )
     RETURNING
-      survey_telemetry_credential_attachment_id,
-      revision_count;
+      survey_telemetry_credential_attachment_id;
   `;
 
-    const response = await this.connection.sql(sqlStatement);
+    const response = await this.connection.sql(
+      sqlStatement,
+      z.object({ survey_telemetry_credential_attachment_id: z.number() })
+    );
 
     if (!response?.rows?.[0]) {
       throw new ApiExecuteSQLError('Failed to insert survey attachment data', [

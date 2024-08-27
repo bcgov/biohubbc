@@ -221,7 +221,7 @@ describe('AttachmentService', () => {
           });
         });
 
-        it('should insert and return { id: number; revision_count: number; key: string }', async () => {
+        it('should insert and return { id: number; key: string }', async () => {
           const dbConnection = getMockDBConnection();
           const service = new AttachmentService(dbConnection);
 
@@ -921,7 +921,7 @@ describe('AttachmentService', () => {
           const service = new AttachmentService(dbConnection);
 
           const serviceStub1 = sinon
-            .stub(AttachmentService.prototype, 'getSurveyReportAttachmentByFileName')
+            .stub(AttachmentService.prototype, 'getSurveyAttachmentByFileName')
             .resolves({ rowCount: 1 } as unknown as QueryResult);
 
           const serviceStub2 = sinon
@@ -949,7 +949,7 @@ describe('AttachmentService', () => {
           const service = new AttachmentService(dbConnection);
 
           const serviceStub1 = sinon
-            .stub(AttachmentService.prototype, 'getSurveyReportAttachmentByFileName')
+            .stub(AttachmentService.prototype, 'getSurveyAttachmentByFileName')
             .resolves({ rowCount: 0 } as unknown as QueryResult);
 
           const serviceStub2 = sinon

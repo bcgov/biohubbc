@@ -3,6 +3,7 @@ import sinon from 'sinon';
 import { deleteDeployment, getDeploymentById, updateDeployment } from '.';
 import * as db from '../../../../../../../database/db';
 import { BctwDeploymentService } from '../../../../../../../services/bctw-service/bctw-deployment-service';
+import { BctwDeviceService } from '../../../../../../../services/bctw-service/bctw-device-service';
 import { CritterbaseService, ICapture } from '../../../../../../../services/critterbase-service';
 import { DeploymentService } from '../../../../../../../services/deployment-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
@@ -89,9 +90,29 @@ describe('updateDeployment', () => {
       release_comment: null
     };
 
+    const mockBctwDeploymentResponse = [
+      {
+        assignment_id: '666',
+        collar_id: '777',
+        critter_id: '333',
+        created_at: '2021-01-01',
+        created_by_user_id: '999',
+        updated_at: null,
+        updated_by_user_id: null,
+        valid_from: '2021-01-01',
+        valid_to: null,
+        attachment_start: '2021-01-01',
+        attachment_end: '2021-01-02',
+        deployment_id: '444'
+      }
+    ];
+
     const updateDeploymentStub = sinon.stub(DeploymentService.prototype, 'updateDeployment').resolves();
-    const updateBctwDeploymentStub = sinon.stub(BctwDeploymentService.prototype, 'updateDeployment');
     const getCaptureByIdStub = sinon.stub(CritterbaseService.prototype, 'getCaptureById').resolves(mockCapture);
+    const updateBctwDeploymentStub = sinon
+      .stub(BctwDeploymentService.prototype, 'updateDeployment')
+      .resolves(mockBctwDeploymentResponse);
+    const updateCollarStub = sinon.stub(BctwDeviceService.prototype, 'updateCollar').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -101,8 +122,9 @@ describe('updateDeployment', () => {
 
     expect(getDBConnectionStub).to.have.been.calledOnce;
     expect(updateDeploymentStub).to.have.been.calledOnce;
-    expect(updateBctwDeploymentStub).to.have.been.calledOnce;
     expect(getCaptureByIdStub).to.have.been.calledOnce;
+    expect(updateBctwDeploymentStub).to.have.been.calledOnce;
+    expect(updateCollarStub).to.have.been.calledOnce;
     expect(mockRes.status).to.have.been.calledWith(200);
   });
 
