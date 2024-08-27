@@ -7,17 +7,9 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
     const sql = SQL`
 -------------------------------------------------------------------------------------------------
 --- Inserting into technique the survey ids from sampling sites, and a name -- 
-INSERT INTO biohub.method_technique (survey_id, name)
-    SELECT 
-        sss.survey_id, 
-        'Imported SPI Survey Technique' AS name
-    FROM 
-        biohub.survey_sample_site sss;
----- Next we are creating methods dervied from the spi surveys table -- 
-UPDATE biohub.method_technique mt
-    SET 
-        method_lookup_id = (
-            SELECT ml.method_lookup_id
+-- sampling techniques are only created for surveys where sampling sites exist - since methods are dependent on sample sites ---
+
+    WITH w_method_lookups AS (SELECT ml.method_lookup_id, s.survey_id, ml.name
             FROM 
                 biohub.survey s
             JOIN 
@@ -106,19 +98,36 @@ UPDATE biohub.method_technique mt
                         WHEN sp.method_type_cd = 'Ungulate Census' THEN 'Visual Encounter'
                         ELSE 'Undetermined'
                     END = ml.name;
-                 WHERE 
-            s.survey_id = mt.survey_id
-        )
-    WHERE 
-        EXISTS (
-            SELECT 1 
-            FROM biohub.survey_sample_site sss 
-            WHERE sss.survey_id = mt.survey_id
-        );
+            )
+    INSERT INTO biohub.method_technique (survey_id, name, method_lookup_id, description)
+    SELECT 
+        sss.survey_id, 
+        ml.name,
+        method_lookup_id,
+        'Came from SPI' AS description
+    FROM 
+        biohub.survey_sample_site sss
+    LEFT JOIN w_method_lookups wml ON
+        wml.survey_id = sss.survey_id;
 
+----------------- INSERTING technique outputs INTO survey_sample_method ------
+    INSERT INTO biohub.survey_sample_method (survey_sample_site_id, method_technique_id)
+
+
+    FROM biohub.survey s
+    WHERE s.spi_survey_id IS NOT NULL
+    JOIN survey_sample_site sss ON
+    sss.survey_id = s.survey_id
+    
+  
+
+    -- survey sample site id comes from survey samples site
+    -- method_technique_id comes from joining survey sapmle site id onto survey sample site table on survey sample id, and then grabbing the survey id from that table
+    -- and using that survey id to join on method_technique table in the survey_id column and then inserting the method_technique_id into the survey_sample_method method_technique id
+    -- for each method technique, insert into method the technique into all sample sites join on biohub.survey WHERE spi_survey_id is not NULL 
     `;
 
-  await connection.sql(transformSampleSitesSql);
+  await connection.sql(transformSamplingMethods);
 
   console.log('Successfully transformed Sampling Methods');
 };
