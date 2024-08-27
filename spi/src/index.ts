@@ -17,6 +17,8 @@ async function main() {
   // Gets the database connection, connecting with the user `spi`
   connection = getDBConnection();
 
+  console.log('Got the connection', defaultPoolConfig)
+
   try {
     // Opens a database connection for the transformations
     await connection.open();
@@ -25,7 +27,7 @@ async function main() {
 
     // FOR TESTING ONLY
     // Some insert statements will fail due to duplicates unless the tables are truncated
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env.NODE_ENV === 'development' || 'test') {
       await truncateTables(connection);
     }
 
