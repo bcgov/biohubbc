@@ -1,11 +1,10 @@
 import * as pg from 'pg';
-import SQL, { SQLStatement } from 'sql-template-strings';
-import { SYSTEM_IDENTITY_SOURCE } from './constants/database';
+import { SQLStatement } from 'sql-template-strings';
 
 const getDbHost = () => process.env.DB_HOST;
 const getDbPort = () => Number(process.env.DB_PORT);
-const getDbUsername = () => process.env.DB_USER_API;
-const getDbPassword = () => process.env.DB_USER_API_PASS;
+const getDbUsername = () => process.env.DB_ADMIN;
+const getDbPassword = () => process.env.DB_ADMIN_PASS;
 const getDbDatabase = () => process.env.DB_DATABASE;
 
 const DB_POOL_SIZE: number = Number(process.env.DB_POOL_SIZE) || 20;
@@ -24,6 +23,14 @@ export const defaultPoolConfig: pg.PoolConfig = {
   connectionTimeoutMillis: DB_CONNECTION_TIMEOUT,
   idleTimeoutMillis: DB_IDLE_TIMEOUT
 };
+
+console.log('process.env.DB_HOST: ', process.env.DB_HOST);
+console.log('process.env.DB_PORT: ', process.env.DB_PORT);
+console.log('process.env.DB_ADMIN: ', process.env.DB_ADMIN);
+console.log('process.env.DB_ADMIN_PASS: ', process.env.DB_ADMIN_PASS);
+console.log('process.env.DB_DATABASE: ', process.env.DB_DATABASE);
+console.log('process.env.DB_POOL_SIZE: ', process.env.DB_POOL_SIZE);
+console.log('process.env.DB_CONNECTION_TIMEOUT: ', process.env.DB_CONNECTION_TIMEOUT);
 
 // Custom type handler for psq `DATE` type to prevent local time/zone information from being added.
 // Why? By default, node-postgres assumes local time/zone for any psql `DATE` or `TIME` types that don't have timezone information.
@@ -191,7 +198,6 @@ export const getDBConnection = function (): IDBConnection {
     _isOpen = true;
     _isReleased = false;
 
-    await _setUserContext();
     await _client.query('BEGIN');
   };
 
@@ -273,48 +279,6 @@ export const getDBConnection = function (): IDBConnection {
     const response = await _query(sqlStatement.text, sqlStatement.values);
 
     return response;
-  };
-
-  /**
-   * Set the user context.
-   *
-   * Sets the `_systemUserId` if successful.
-   *
-   * @return {*}  {Promise<void>}
-   */
-  const _setUserContext = async (): Promise<void> => {
-    // defaultLog.debug({ label: "_setUserContext", _token });
-
-    // Update the logged in user with their latest information from Keycloak (if it has changed)
-    // await _updateSystemUserInformation(_token);
-    const userGuid = 'spi';
-    const userIdentitySource = 'DATABASE' as SYSTEM_IDENTITY_SOURCE;
-
-    // Set the user context in the database, so database queries are aware of the calling user when writing to audit
-    // tables, etc.
-    await _setSystemUserContext(userGuid, userIdentitySource);
-  };
-
-  /**
-   * Set the user context for all queries made using this connection.
-   *
-   * This is necessary in order for the database audit triggers to function properly.
-   *
-   * @param {string} userGuid
-   * @param {SYSTEM_IDENTITY_SOURCE} userIdentitySource
-   * @return {*}
-   */
-  const _setSystemUserContext = async (userGuid: string, userIdentitySource: SYSTEM_IDENTITY_SOURCE) => {
-    const setSystemUserContextSQLStatement = SQL`
-      SELECT api_set_context(${userGuid}, ${userIdentitySource});
-    `;
-
-    const response = await _client.query(
-      setSystemUserContextSQLStatement.text,
-      setSystemUserContextSQLStatement.values
-    );
-
-    return response?.rows?.[0].api_set_context;
   };
 
   return {

@@ -1,11 +1,11 @@
-import { transformPermits } from './transformations/permit';
-import { transformSampleSites } from 'transformations/sampling-site';
 import { defaultPoolConfig, getDBConnection, IDBConnection, initDBPool } from './db';
+import { transformPermits } from './transformations/permit';
 import { transformProjects } from './transformations/project';
+import { transformSampleSites } from './transformations/sampling-site';
+import { transformSurveyStratums } from './transformations/stratum';
 import { transformSurveys } from './transformations/survey';
 import { transformUsers } from './transformations/user';
 import { truncateTables } from './utils/truncateTables';
-import { transformSurveyStratums } from 'transformations/stratum';
 
 let connection: IDBConnection; // Declare connection variable at the module level
 
@@ -29,8 +29,6 @@ async function main() {
       await truncateTables(connection);
     }
 
-    // TRANSFORMATIONS: Each transformation commits its changes separately, while this file opens the connection
-
     // STEP 1. Creates public.migrate_spi_user_deduplication containing deduplicated users from the public.spi_persons table
     await transformUsers(connection);
 
@@ -41,8 +39,8 @@ async function main() {
     await transformSurveys(connection);
 
     // STEP 4. Transforms SPI Permits into SIMS Permits
-    await transformPermits(connection)
-    
+    await transformPermits(connection);
+
     // STEP 5. Transforms SPI Survey Stratums into SIMS Survey Stratums
     await transformSurveyStratums(connection);
 
@@ -55,6 +53,7 @@ async function main() {
     console.log('All transformations completed successfully');
   } catch (error) {
     console.error('Error during transformations:', error);
+    await connection.rollback();
   } finally {
     await connection.release();
   }

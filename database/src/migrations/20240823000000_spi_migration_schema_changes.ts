@@ -10,14 +10,14 @@ import { Knex } from 'knex';
  * @return {*}  {Promise<void>}
  */
 export async function up(knex: Knex): Promise<void> {
-  await knex.raw(`--sql  
+  await knex.raw(`--sql
     SET SEARCH_PATH=biohub;
 
     ----------------------------------------------------------------------------------------
     -- Insert SPI user which will perform the transform and be recorded in the audit columns (eg. created by)
     ----------------------------------------------------------------------------------------
     -- Inserting a new system user record for SPI data transformation, referencing audit columns.
-    INSERT INTO system_user (user_identity_source_id, user_identifier, display_name, user_guid, email, record_effective_date) 
+    INSERT INTO system_user (user_identity_source_id, user_identifier, display_name, user_guid, email, record_effective_date)
     VALUES (
         (SELECT user_identity_source_id FROM user_identity_source WHERE name = 'DATABASE'),
         'spi',
@@ -47,27 +47,27 @@ export async function up(knex: Knex): Promise<void> {
       survey_sample_site_id      INT NOT NULL,
       design_component_id        INT NOT NULL
   );
-    
+
     ----------------------------------------------------------------------------------------
     -- Schema changes for the SPI data migration
     ----------------------------------------------------------------------------------------
     -- Adding a new column for mapping SIMS Projects to SPI Projects
     ALTER TABLE project
-    ADD COLUMN spi_project_id INTEGER NULL;
+        ADD COLUMN spi_project_id INTEGER NULL;
 
     -- Adding a new column temporarily for legacy SPI data migration, mapping spi taxon IDs to ITIS tsns
     ALTER TABLE study_species
-    ADD COLUMN spi_wldtaxonomic_units_id INTEGER;
+        ADD COLUMN spi_wldtaxonomic_units_id INTEGER;
 
     -- Adding a new column for mapping SIMS Surveys to SPI Surveys
     ALTER TABLE survey
-    ADD COLUMN spi_survey_id INTEGER NULL;
+        ADD COLUMN spi_survey_id INTEGER NULL;
 
     -- Adding a new column in study_species to indicate if the data was imported from SPI
     ALTER TABLE study_species
-    ADD COLUMN is_spi_import BOOLEAN NOT NULL DEFAULT FALSE;
+        ADD COLUMN is_spi_import BOOLEAN NOT NULL DEFAULT FALSE;
 
-    
+
     ----------------------------------------------------------------------------------------
     -- Functions and triggers
     ----------------------------------------------------------------------------------------
@@ -87,12 +87,25 @@ export async function up(knex: Knex): Promise<void> {
     $function$;
 
     -- Create or replace trigger populate_project_ids
-    CREATE OR REPLACE TRIGGER populate_project_ids
+    DROP TRIGGER IF EXISTS populate_project_ids ON public.migrate_spi_user_deduplication;
+    CREATE TRIGGER populate_project_ids
+
     AFTER INSERT OR UPDATE
     ON public.migrate_spi_user_deduplication
     FOR EACH ROW
     EXECUTE FUNCTION public.migrate_populate_project_ids();
 
+    -- Drop deprecated functions/triggers applied to the biohub schema (will be replaced with new functions/triggers
+    -- that are applied to the spi tables in the public schema)
+    DROP TRIGGER IF EXISTS populate_project_ids ON biohub.migrate_spi_user_deduplication;
+    DROP FUNCTION IF EXISTS biohub.migrate_populate_project_ids();
+
+    ALTER TABLE biohub.project DROP COLUMN IF EXISTS spi_project_id;
+    ALTER TABLE biohub.study_species DROP COLUMN IF EXISTS spi_wldtaxonomic_units_id;
+    ALTER TABLE biohub.survey DROP COLUMN IF EXISTS spi_survey_id;
+    ALTER TABLE biohub.study_species DROP COLUMN IF EXISTS is_spi_import;
+
+    DROP TABLE IF EXISTS biohub.migrate_spi_user_deduplication;
   `);
 }
 
