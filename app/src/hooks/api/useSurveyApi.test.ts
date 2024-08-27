@@ -150,7 +150,7 @@ describe('useSurveyApi', () => {
 
   describe('updateDeployment', () => {
     it('should update a deployment', async () => {
-      mock.onPatch(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`).reply(200, 1);
+      mock.onPut(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`).reply(200, 1);
       const result = await useSurveyApi(axios).updateDeployment(projectId, surveyId, deploymentId, {
         critter_id: 1,
         critterbase_start_capture_id: '',

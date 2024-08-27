@@ -85,7 +85,7 @@ POST.apiDoc = {
     }
   },
   responses: {
-    200: {
+    201: {
       description: 'Telemetry device credential file upload response.',
       content: {
         'application/json': {
@@ -179,7 +179,7 @@ export function postSurveyTelemetryCredentialAttachment(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json({
+      return res.status(201).json({
         survey_telemetry_credential_attachment_id: upsertResult.survey_telemetry_credential_attachment_id
       });
     } catch (error) {

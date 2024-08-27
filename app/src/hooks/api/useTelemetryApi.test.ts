@@ -78,7 +78,7 @@ describe('useTelemetryApi', () => {
         attachmentId: 'attachment',
         revision_count: 1
       };
-      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/keyx/upload`).reply(201, response);
+      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/telemetry`).reply(201, response);
 
       const result = await useTelemetryApi(axios).uploadTelemetryDeviceCredentialFile(projectId, surveyId, file);
       expect(result).toEqual(response);
