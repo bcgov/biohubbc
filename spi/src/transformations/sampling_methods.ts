@@ -118,7 +118,7 @@ UPDATE biohub.method_technique mt
 
     `;
 
-  await connection.sql(transformSampleSitesSql);
+  await connection.sql(sql);
 
   console.log('Successfully transformed Sampling Methods');
 };

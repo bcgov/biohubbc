@@ -5,13 +5,13 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
   const transformSampleSitesSql = SQL`
     set search_path = biohub,public;
 
-    -------------------------------------------------------------------------------------------------
+    ----------------------------------------------------------------
     -- Create sampling sites from spi design components
     -- This might have issues with non-null constraints; geojson or geometry might be required in SIMS
     -------------------------------------------------------------------------------------------------
     WITH w_inserted AS (
         INSERT INTO 
-            biohub.survey_sample_site_id (name, description, survey_id, create_date, update_date)
+            biohub.survey_sample_site(name, description, survey_id, create_date, update_date)
         SELECT 
             sdc.design_component_label,
             sdc.notes,
@@ -43,7 +43,7 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
     -- These are the actual application of a Survey stratum to a sampling site
     -------------------------------------------------------------------------------------------------
     INSERT INTO 
-        biohub.survey_sample_stratum (survey_sample_site_id, survey_stratum)
+        biohub.survey_sample_stratum (survey_sample_site_id, survey_stratum_id)
     SELECT 
         mssdc.survey_sample_site_id,
         (
