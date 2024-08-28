@@ -30,6 +30,8 @@ db-migrate: | build-db-migrate run-db-migrate ## Performs all commands necessary
 db-rollback: | build-db-rollback run-db-rollback ## Performs all commands necessary to rollback the latest database migrations
 clamav: | build-clamav run-clamav ## Performs all commands necessary to run clamav
 
+spi-transform: | build-spi-transform run-spi-transform ## Performs all commands to transform migrated SPI data
+
 fix: | lint-fix format-fix ## Performs both lint-fix and format-fix commands
 
 ## ------------------------------------------------------------------------------
@@ -343,6 +345,23 @@ log-db-setup: ## Runs `docker logs <container> -f` for the database setup contai
 	@echo "Running docker logs for the db-setup container"
 	@echo "==============================================="
 	@docker logs $(DOCKER_PROJECT_NAME)-db-setup-$(DOCKER_NAMESPACE)-container -f $(args)
+
+## ------------------------------------------------------------------------------
+## Build/Run Spi Transform Commands
+## - Transform and migrates data from the spi schema (currently public) to the biohub schema
+## ------------------------------------------------------------------------------
+
+build-spi-transform: ## Builds the spi_transform containers
+	@echo "==============================================="
+	@echo "Make: build-transform - building spi_transform images"
+	@echo "==============================================="
+	@docker compose build spi_transform
+
+run-spi-transform: ## Runs the spi_transform containers
+	@echo "==============================================="
+	@echo "Make: run-transform - running spi_transform  images"
+	@echo "==============================================="
+	@docker compose up -d spi_transform
 
 ## ------------------------------------------------------------------------------
 ## Typescript Trace Commands

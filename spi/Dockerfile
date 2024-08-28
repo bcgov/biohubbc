@@ -1,0 +1,25 @@
+# ########################################################################################################
+# This DockerFile is used for both Openshift deployments and local development (via docker-compose).
+# ########################################################################################################
+
+FROM node:20
+
+USER 0
+
+ENV HOME=/opt/app-root/src
+
+RUN mkdir -p $HOME
+
+RUN chgrp -R 0 $HOME && \
+    chmod -R g+rwX $HOME
+
+WORKDIR $HOME
+
+COPY . ./
+
+RUN npm ci --include=dev
+
+# USER 1001
+
+# run the database migrations and seeding
+CMD [ "npm", "run", "start" ]
