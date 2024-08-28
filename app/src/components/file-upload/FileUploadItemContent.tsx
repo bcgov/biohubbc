@@ -12,13 +12,35 @@ import FileUploadItemProgressBar from './FileUploadItemProgressBar';
 import FileUploadItemSubtext from './FileUploadItemSubtext';
 
 type FileUploadItemContentProps = Omit<IFileUploadItemProps, 'uploadHandler' | 'onSuccess' | 'fileHandler'> & {
+  /**
+   * The progress of the file upload.
+   *
+   * @type {number}
+   * @memberof FileUploadItemContentProps
+   */
   progress: number;
+  /**
+   * Additional error details.
+   *
+   * @type {Array<{ _id: string; message: string }>}
+   * @memberof FileUploadItemContentProps
+   */
   errorDetails?: Array<{ _id: string; message: string }>;
 };
 
+/**
+ * File upload item content. The UI layout of a file upload item.
+ *
+ * @param {FileUploadItemContentProps} props
+ * @returns {*}
+ */
 export const FileUploadItemContent = (props: FileUploadItemContentProps) => {
   const status = props.status ?? UploadFileStatus.PENDING;
 
+  /**
+   * Sensible defaults for the subtext, action button, and progress bar components.
+   *
+   **/
   const Subtext = props.SubtextComponent ?? FileUploadItemSubtext;
   const ActionButton = props.ActionButtonComponent ?? FileUploadItemActionButton;
   const ProgressBar = props.ProgressBarComponent ?? FileUploadItemProgressBar;

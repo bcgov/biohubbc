@@ -55,7 +55,7 @@ export const importCSV = async <ValidatedRow, InsertReturn>(
   // Throw error is row validation failed and inject validation errors
   // The validation errors can be either custom (Validation) or Zod (SafeParseReturn)
   if (!validation.success) {
-    throw new ApiGeneralError(`Failed to import Critter CSV. Column data validator failed.`, [
+    throw new ApiGeneralError(`Cell validator failed. Cells have invalid reference values.`, [
       { csv_row_errors: validation.error.issues },
       'importCSV->_validate->_validateRows'
     ]);

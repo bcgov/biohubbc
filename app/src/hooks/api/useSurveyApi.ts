@@ -638,6 +638,38 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Bulk upload Measurements from CSV.
+   *
+   * @async
+   * @param {File} file - Captures CSV.
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {Promise<number[]>}
+   */
+  const importMeasurementsFromCsv = async (
+    file: File,
+    projectId: number,
+    surveyId: number,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
+  ): Promise<{ survey_critter_ids: number[] }> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/critters/measurements/import`,
+      formData,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
+
+    return data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,
@@ -665,7 +697,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     removeDeployment,
     importCrittersFromCsv,
     importCapturesFromCsv,
-    importMarkingsFromCsv
+    importMarkingsFromCsv,
+    importMeasurementsFromCsv
   };
 };
 
