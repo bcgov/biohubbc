@@ -155,21 +155,41 @@ export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
             value="fell_off"
             control={<Radio color="primary" />}
             label="Fell off"
-            onClick={() => {
+            onChange={() => {
               setDeploymentEndType('fell_off');
-              setFieldValue('critterbase_end_mortality_id', null);
               setFieldValue('critterbase_end_capture_id', null);
+              setFieldValue('critterbase_end_mortality_id', null);
+            }}
+            onClick={() => {
+              if (deploymentEndType === 'fell_off') {
+                // if the user clicks on the selected radio button, unselect it
+                setDeploymentEndType(null);
+                setFieldValue('attachment_end_date', null);
+                setFieldValue('attachment_end_time', null);
+                setFieldValue('critterbase_end_capture_id', null);
+                setFieldValue('critterbase_end_mortality_id', null);
+              }
             }}
           />
           <FormControlLabel
             value="capture"
             control={<Radio color="primary" />}
             label="Capture"
-            onClick={() => {
+            onChange={() => {
               setDeploymentEndType('capture');
-              setFieldValue('critterbase_end_mortality_id', null);
               setFieldValue('attachment_end_date', null);
               setFieldValue('attachment_end_time', null);
+              setFieldValue('critterbase_end_mortality_id', null);
+            }}
+            onClick={() => {
+              if (deploymentEndType === 'capture') {
+                // if the user clicks on the selected radio button, unselect it
+                setDeploymentEndType(null);
+                setFieldValue('attachment_end_date', null);
+                setFieldValue('attachment_end_time', null);
+                setFieldValue('critterbase_end_capture_id', null);
+                setFieldValue('critterbase_end_mortality_id', null);
+              }
             }}
           />
           <FormControlLabel
@@ -177,11 +197,21 @@ export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
             control={<Radio color="primary" />}
             disabled={!mortalities.length}
             label="Mortality"
-            onClick={() => {
+            onChange={() => {
               setDeploymentEndType('mortality');
-              setFieldValue('critterbase_end_capture_id', null);
               setFieldValue('attachment_end_date', null);
               setFieldValue('attachment_end_time', null);
+              setFieldValue('critterbase_end_capture_id', null);
+            }}
+            onClick={() => {
+              if (deploymentEndType === 'mortality') {
+                // if the user clicks on the selected radio button, unselect it
+                setDeploymentEndType(null);
+                setFieldValue('attachment_end_date', null);
+                setFieldValue('attachment_end_time', null);
+                setFieldValue('critterbase_end_capture_id', null);
+                setFieldValue('critterbase_end_mortality_id', null);
+              }
             }}
           />
         </RadioGroup>

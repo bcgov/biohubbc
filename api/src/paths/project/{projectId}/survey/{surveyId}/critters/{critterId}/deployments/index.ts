@@ -6,7 +6,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constan
 import { getDBConnection } from '../../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { BctwDeploymentService } from '../../../../../../../../services/bctw-service/bctw-deployment-service';
-import { getBctwUser } from '../../../../../../../../services/bctw-service/bctw-service';
+import { BctwService, getBctwUser } from '../../../../../../../../services/bctw-service/bctw-service';
 import { CritterbaseService } from '../../../../../../../../services/critterbase-service';
 import { DeploymentService } from '../../../../../../../../services/deployment-service';
 import { getLogger } from '../../../../../../../../utils/logger';
@@ -199,7 +199,8 @@ export function createDeployment(): RequestHandler {
 
       const user = getBctwUser(req);
 
-      const bctwService = new BctwDeploymentService(user);
+      const bctwService = new BctwService(user);
+      const bctwDeploymentService = new BctwDeploymentService(user);
       const deploymentService = new DeploymentService(connection);
       const critterbaseService = new CritterbaseService(user);
 
@@ -230,7 +231,7 @@ export function createDeployment(): RequestHandler {
       const device_make_code = deviceMakeCodes.find((code) => code.id === device_make)?.code;
       const frequency_unit_code = frequencyUnitCodes.find((code) => code.id === frequency_unit)?.code;
 
-      const deployment = await bctwService.createDeployment({
+      const deployment = await bctwDeploymentService.createDeployment({
         deployment_id: newDeploymentId,
         device_id: device_id,
         critter_id: critterbaseCritter.critter_id,

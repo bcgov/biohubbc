@@ -6,6 +6,7 @@ import {
   BctwDeploymentRecord,
   BctwDeploymentService
 } from '../../../../../../../../services/bctw-service/bctw-deployment-service';
+import { BctwService } from '../../../../../../../../services/bctw-service/bctw-service';
 import { CritterbaseService, ICapture } from '../../../../../../../../services/critterbase-service';
 import { DeploymentService } from '../../../../../../../../services/deployment-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../__mocks__/db';
@@ -49,6 +50,16 @@ describe('createDeployment', () => {
       device_id: 777
     };
 
+    const getCodeStub = sinon.stub(BctwService.prototype, 'getCode').resolves([
+      {
+        code_header_title: 'device_make',
+        code_header_name: 'Device Make',
+        id: 1,
+        code: 'device_make_code',
+        description: '',
+        long_description: ''
+      }
+    ]);
     const insertDeploymentStub = sinon.stub(DeploymentService.prototype, 'insertDeployment').resolves();
     const createDeploymentStub = sinon
       .stub(BctwDeploymentService.prototype, 'createDeployment')
@@ -62,6 +73,7 @@ describe('createDeployment', () => {
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(getDBConnectionStub).to.have.been.calledOnce;
+    expect(getCodeStub).to.have.been.calledTwice;
     expect(insertDeploymentStub).to.have.been.calledOnce;
     expect(createDeploymentStub).to.have.been.calledOnce;
     expect(getCaptureByIdStub).to.have.been.calledOnce;
