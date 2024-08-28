@@ -154,7 +154,7 @@ type ObservationSubcountRecord = {
 
 type ObservationSubcountObject = {
   observation_subcount_id: ObservationSubcountRecord['observation_subcount_id'];
-  observation_subcount_sign_id: ObservationSubcountRecord['observation_subcount_sign_id']
+  observation_subcount_sign_id: ObservationSubcountRecord['observation_subcount_sign_id'];
   subcount: ObservationSubcountRecord['subcount'];
   qualitative_measurements: ObservationSubcountQualitativeMeasurementObject[];
   quantitative_measurements: ObservationSubcountQuantitativeMeasurementObject[];
