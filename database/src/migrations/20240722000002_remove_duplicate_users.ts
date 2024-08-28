@@ -31,12 +31,14 @@ export async function up(knex: Knex): Promise<void> {
 
     SET SEARCH_PATH = 'biohub';
 
+    DROP INDEX IF EXISTS system_user_uk1;
     DROP INDEX IF EXISTS system_user_nuk1;
 
     -- Drop old out-dated unique index
     DROP INDEX IF EXISTS biohub.project_participation_uk1;
     -- Drop constraint temporarily (added back at the end)
     ALTER TABLE project_participation DROP CONSTRAINT IF EXISTS project_participation_uk2;
+
 
     ----------------------------------------------------------------------------------------
     -- Find AND migrate duplicate system_user_ids
@@ -248,6 +250,9 @@ export async function up(knex: Knex): Promise<void> {
 
     -- Don't allow the same system user to have more than one survey role within a survey.
     ALTER TABLE biohub.survey_participation ADD CONSTRAINT survey_participation_uk1 UNIQUE (system_user_id, survey_id);
+
+    -- Don't allow duplicate user_guid values
+    CREATE UNIQUE INDEX system_user_uk1 ON system_user (user_guid);
   `);
 }
 
