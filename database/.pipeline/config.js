@@ -99,11 +99,11 @@ const phases = {
   },
   'test-spi': {
     namespace: 'af2668-test',
-    name: `${name}-spi`,
+    name: `${name}`,
     phase: 'test-spi',
     changeId: deployChangeId,
     suffix: '-test-spi',
-    instance: `${name}-spi-test-spi`,
+    instance: `${name}-test-spi`,
     version: `${version}`,
     tag: `test-spi-${version}`,
     nodeEnv: 'production',
