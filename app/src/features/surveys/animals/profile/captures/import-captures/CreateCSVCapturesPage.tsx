@@ -7,7 +7,7 @@ import Link from '@mui/material/Link';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import axios, { AxiosProgressEvent, CancelTokenSource } from 'axios';
+import axios, { AxiosProgressEvent } from 'axios';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import PageHeader from 'components/layout/PageHeader';
@@ -43,10 +43,12 @@ export const CreateCSVCapturesPage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
+  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+
   const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
 
-  const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const { projectId, surveyId } = surveyContext;
 
   const [files, setFiles] = useState<CSVFilesStatus>({
     captures: { file: null, status: UploadFileStatus.PENDING, progress: 0 },
@@ -54,8 +56,6 @@ export const CreateCSVCapturesPage = () => {
     markings: { file: null, status: UploadFileStatus.PENDING, progress: 0 }
   });
 
-  const { projectId, surveyId } = surveyContext;
-  const cancelToken: CancelTokenSource = axios.CancelToken.source();
   const isUploading = useMemo(() => {
     return Object.values(files).some((key) => key.status === UploadFileStatus.UPLOADING);
   }, [files]);
@@ -83,14 +83,17 @@ export const CreateCSVCapturesPage = () => {
       fileType: keyof typeof files,
       onUpload: (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => Promise<unknown>
     ) => {
+      // If the file exists and is in the `STAGED` state, upload the file.
       if (files[fileType].file && files[fileType].status === UploadFileStatus.STAGED) {
         try {
           handleFileState({ fileType, status: UploadFileStatus.UPLOADING });
 
           await onUpload(files[fileType].file as File, (progressEvent: AxiosProgressEvent) => {
-            // Get the progress of the CSV upload through the Axios event listener
+            // Get axios progress through the onProgress event listener.
             const progress = Math.round((progressEvent.loaded / (progressEvent.total || 1)) * 100);
+
             handleFileState({ fileType, progress });
+
             if (progressEvent.loaded === progressEvent.total) {
               handleFileState({ fileType, status: UploadFileStatus.FINISHING_UPLOAD });
             }
@@ -120,6 +123,8 @@ export const CreateCSVCapturesPage = () => {
    * @returns {Promise<void>}
    */
   const handleAllFileUploads = async () => {
+    const cancelToken = axios.CancelToken.source();
+
     const captureUploadStatus = await handleFileUpload('captures', (file, onProgress) =>
       biohubApi.survey.importCapturesFromCsv(file, projectId, surveyId, cancelToken, onProgress)
     );
@@ -127,18 +132,18 @@ export const CreateCSVCapturesPage = () => {
     if (captureUploadStatus !== UploadFileStatus.FAILED) {
       // Measurements / Markings can be uploaded in parallel
       await Promise.all([
+        handleFileUpload('measurements', (file, onProgress) =>
+          biohubApi.survey.importMeasurementsFromCsv(file, projectId, surveyId, cancelToken, onProgress)
+        ),
         handleFileUpload('markings', (file, onProgress) =>
           biohubApi.survey.importMarkingsFromCsv(file, projectId, surveyId, cancelToken, onProgress)
         )
-        //handleFileUpload('markings', (file, onProgress) =>
-        //  biohubApi.survey.importMarkingsFromCsv(file, projectId, surveyId, cancelToken, onProgress)
-        //)
       ]);
     }
   };
 
   const handleCancel = () => {
-    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/captures`);
+    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
   };
 
   return (
@@ -189,7 +194,15 @@ export const CreateCSVCapturesPage = () => {
               <SingleFileUpload
                 {...files.captures}
                 onChangeStatus={(status) => handleFileState({ fileType: 'captures', status })}
-                onFileDrop={(file) => handleFileState({ fileType: 'captures', file })}
+                onFileDropzone={(file) => handleFileState({ fileType: 'captures', file })}
+                onFileCancel={() =>
+                  handleFileState({
+                    fileType: 'captures',
+                    status: UploadFileStatus.PENDING,
+                    error: undefined,
+                    progress: undefined
+                  })
+                }
               />
             </HorizontalSplitFormComponent>
             <Divider />
@@ -198,7 +211,15 @@ export const CreateCSVCapturesPage = () => {
               <SingleFileUpload
                 {...files.measurements}
                 onChangeStatus={(status) => handleFileState({ fileType: 'measurements', status })}
-                onFileDrop={(file) => handleFileState({ fileType: 'measurements', file })}
+                onFileDropzone={(file) => handleFileState({ fileType: 'measurements', file })}
+                onFileCancel={() =>
+                  handleFileState({
+                    fileType: 'measurements',
+                    status: UploadFileStatus.PENDING,
+                    error: undefined,
+                    progress: undefined
+                  })
+                }
               />
             </HorizontalSplitFormComponent>
             <Divider />
@@ -207,7 +228,15 @@ export const CreateCSVCapturesPage = () => {
               <SingleFileUpload
                 {...files.markings}
                 onChangeStatus={(status) => handleFileState({ fileType: 'markings', status })}
-                onFileDrop={(file) => handleFileState({ fileType: 'markings', file })}
+                onFileDropzone={(file) => handleFileState({ fileType: 'markings', file })}
+                onFileCancel={() =>
+                  handleFileState({
+                    fileType: 'markings',
+                    status: UploadFileStatus.PENDING,
+                    error: undefined,
+                    progress: undefined
+                  })
+                }
               />
             </HorizontalSplitFormComponent>
             <Divider />

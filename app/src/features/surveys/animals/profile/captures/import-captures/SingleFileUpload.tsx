@@ -25,7 +25,8 @@ type SingleFileUploadProps = {
    * Callback to change the file once placed in the dropzone.
    *
    **/
-  onFileDrop: (file: File | null) => void;
+  onFileDropzone: (file: File | null) => void;
+  onFileCancel?: () => void;
 };
 
 /**
@@ -47,7 +48,8 @@ export const SingleFileUpload = (props: SingleFileUploadProps) => {
           status={props.status}
           onCancel={() => {
             props.onChangeStatus(UploadFileStatus.PENDING);
-            props.onFileDrop(null);
+            props.onFileDropzone(null);
+            props.onFileCancel?.();
           }}
           progress={props.progress ?? 0}
         />
@@ -56,10 +58,10 @@ export const SingleFileUpload = (props: SingleFileUploadProps) => {
           onFiles={(acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
             if (acceptedFiles.length) {
               props.onChangeStatus(UploadFileStatus.STAGED);
-              props.onFileDrop(acceptedFiles[0]);
+              props.onFileDropzone(acceptedFiles[0]);
             } else {
               props.onChangeStatus(UploadFileStatus.FAILED);
-              props.onFileDrop(rejectedFiles[0].file);
+              props.onFileDropzone(rejectedFiles[0].file);
             }
           }}
           maxNumFiles={1}
