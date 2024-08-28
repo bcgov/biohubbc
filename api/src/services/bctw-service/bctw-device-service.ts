@@ -59,7 +59,7 @@ export class BctwDeviceService extends BctwService {
   async updateDevice(device: BctwDevice): Promise<BctwDevice> {
     const { data } = await this.axiosInstance.post('/upsert-collar', device);
 
-    if (data.errors.length) {
+    if (data?.errors?.length) {
       throw Error(JSON.stringify(data.errors));
     }
 
@@ -74,9 +74,9 @@ export class BctwDeviceService extends BctwService {
    * @memberof BctwDeviceService
    */
   async updateCollar(collar: BctwUpdateCollarRequest): Promise<void> {
-    const { data } = await this.axiosInstance.post('/update-collar', collar);
+    const { data } = await this.axiosInstance.patch('/update-collar', collar);
 
-    if (data.errors.length) {
+    if (data?.errors?.length) {
       throw Error(JSON.stringify(data.errors));
     }
 

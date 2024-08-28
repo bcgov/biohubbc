@@ -1,5 +1,6 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
+import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import { CreateAnimalDeploymentI18N } from 'constants/i18n';
 import {
   DeploymentForm,
@@ -98,6 +99,7 @@ export const CreateDeploymentPage = () => {
         validateOnChange={false}
         onSubmit={handleSubmit}>
         <Box display="flex" flexDirection="column">
+          <FormikErrorSnackbar />
           <DeploymentFormHeader
             project_id={surveyContext.projectId}
             project_name={projectContext.projectDataLoader.data?.projectData.project.project_name}

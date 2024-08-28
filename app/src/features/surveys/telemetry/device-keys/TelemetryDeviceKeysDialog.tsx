@@ -106,8 +106,6 @@ export const TelemetryDeviceKeysDialog = (props: ITelemetryDeviceKeysDialogProps
             <FileUpload
               uploadHandler={uploadHandler}
               dropZoneProps={{
-                maxNumFiles: 1,
-                multiple: false,
                 acceptedFileExtensions: acceptedFileExtensions
               }}
               hideDropZoneOnMaxFiles={true}

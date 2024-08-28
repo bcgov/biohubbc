@@ -85,18 +85,21 @@ POST.apiDoc = {
               minimum: 1
             },
             frequency: {
-              type: 'number'
+              type: 'number',
+              nullable: true
             },
             frequency_unit: {
               type: 'number',
-              nullable: true
+              nullable: true,
+              description: 'The ID of a BCTW frequency code.'
             },
             device_make: {
               type: 'number',
-              nullable: true
+              description: 'The ID of a BCTW device make code.'
             },
             device_model: {
-              type: 'string'
+              type: 'string',
+              nullable: true
             },
             critterbase_start_capture_id: {
               type: 'string',

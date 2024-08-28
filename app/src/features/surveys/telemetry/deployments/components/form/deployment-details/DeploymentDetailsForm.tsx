@@ -9,6 +9,7 @@ import { useSurveyContext } from 'hooks/useContext';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { Link as RouterLink } from 'react-router-dom';
+import { isDefined } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 
 export const DeploymentDetailsFormInitialValues: yup.InferType<typeof DeploymentDetailsFormYupSchema> = {
@@ -26,7 +27,7 @@ export const DeploymentDetailsFormYupSchema = yup.object({
       .number()
       .nullable()
       .when('frequency_unit', {
-        is: (unit: string) => !!unit, // when frequency_unit is defined
+        is: (frequency_unit: number) => isDefined(frequency_unit), // when frequency_unit is defined
         then: yup.number().nullable().required('Frequency is required')
       })
   ),
@@ -35,8 +36,8 @@ export const DeploymentDetailsFormYupSchema = yup.object({
       .number()
       .nullable()
       .when('frequency', {
-        is: (frequency: number) => !!frequency, // when frequency is defined
-        then: yup.string().nullable().required('Frequency unit is required')
+        is: (frequency: number) => isDefined(frequency), // when frequency is defined
+        then: yup.number().nullable().required('Frequency unit is required')
       })
   )
 });
