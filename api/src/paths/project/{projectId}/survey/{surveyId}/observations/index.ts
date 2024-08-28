@@ -220,7 +220,7 @@ PUT.apiDoc = {
                     type: 'array',
                     items: {
                       type: 'object',
-                      // additionalProperties: false,
+                      additionalProperties: false,
                       required: [
                         'subcount',
                         'observation_subcount_sign_id',
@@ -392,8 +392,6 @@ export function getSurveyObservations(): RequestHandler {
           surveyId,
           ensureCompletePaginationOptions(paginationOptions)
         );
-
-      console.log(observationData);
 
       const observationCount = observationData.supplementaryObservationData.observationCount;
 

@@ -273,6 +273,10 @@ export const ObservationSubcountSignColDef = (props: {
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
   const { observationSubcountSignOptions, hasError } = props;
+  const signOptions = observationSubcountSignOptions.map((item) => ({
+    label: item.name,
+    value: item.observation_subcount_sign_id
+  }));
 
   return {
     field: 'observation_subcount_sign_id',
@@ -284,25 +288,11 @@ export const ObservationSubcountSignColDef = (props: {
     headerAlign: 'left',
     align: 'left',
     renderCell: (params) => (
-      <Typography variant="body2" sx={{ fontSize: 'inherit' }}>
-        {observationSubcountSignOptions.find((option) => option.observation_subcount_sign_id === params.value)?.name}
-      </Typography>
+      <AutocompleteDataGridViewCell dataGridProps={params} options={signOptions} error={hasError(params)} />
     ),
-    renderEditCell: (params) => {
-      return (
-        <ConditionalAutocompleteDataGridEditCell<IObservationTableRow, IObservationSubcountSignOption, number>
-          dataGridProps={params}
-          optionsGetter={(_, allOptions) => {
-            return allOptions.map((item) => ({
-              label: item.name,
-              value: item.observation_subcount_sign_id
-            }));
-          }}
-          allOptions={observationSubcountSignOptions}
-          error={hasError(params)}
-        />
-      );
-    }
+    renderEditCell: (params) => (
+      <AutocompleteDataGridViewCell dataGridProps={params} options={signOptions} error={hasError(params)} />
+    )
   };
 };
 

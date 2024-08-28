@@ -1239,11 +1239,11 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
           id: String(observationRow.survey_observation_id),
           ...observationRow,
 
-          // Add the subcount row data into the row
+          // Add the subcount id to the row
           observation_subcount_id: subcountRow.observation_subcount_id,
           // Add the subcount sign data into the row
-
           observation_subcount_sign_id: subcountRow.observation_subcount_sign_id,
+
           // Reduce the array of qualitative measurements into an object and spread into the row
           ...subcountRow.qualitative_measurements.reduce((acc, cur) => {
             return {
