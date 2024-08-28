@@ -123,7 +123,7 @@ const phases = {
   },
   'test-spi': {
     namespace: 'af2668-test',
-    name: `${name}-spi`,
+    name: `${name}`,
     phase: 'test-spi',
     changeId: deployChangeId,
     suffix: `-test-spi`,
