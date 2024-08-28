@@ -74,7 +74,7 @@ const defaultLog = getLogger('services/observation-service');
  * enforcing uppercase object keys.
  */
 export const observationStandardColumnValidator = {
-  ITIS_TSN: { type: 'string', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
+  ITIS_TSN: { type: 'number', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
   COUNT: { type: 'number' },
   OBSERVATION_SUBCOUNT_SIGN: { type: 'string', aliases: CSV_COLUMN_ALIASES.OBSERVATION_SUBCOUNT_SIGN },
   DATE: { type: 'date' },
