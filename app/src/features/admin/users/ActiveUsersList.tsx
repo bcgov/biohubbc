@@ -279,16 +279,16 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
   const handleAddSystemUsersSave = async (values: IAddSystemUsersForm) => {
     setOpenAddUserDialog(false);
 
+    const systemUser = values.systemUser;
+
     try {
-      for (const systemUser of values.systemUsers) {
-        await biohubApi.admin.addSystemUser(
-          systemUser.userIdentifier,
-          systemUser.identitySource,
-          systemUser.displayName,
-          systemUser.email,
-          systemUser.systemRole
-        );
-      }
+      await biohubApi.admin.addSystemUser(
+        systemUser.userIdentifier,
+        systemUser.identitySource,
+        systemUser.displayName,
+        systemUser.email,
+        systemUser.systemRole
+      );
 
       // Refresh users list
       refresh();
@@ -297,7 +297,7 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
         open: true,
         snackbarMessage: (
           <Typography variant="body2" component="div">
-            {values.systemUsers.length} system {values.systemUsers.length > 1 ? 'users' : 'user'} added.
+            Successfully added {systemUser.displayName}
           </Typography>
         )
       });
@@ -380,18 +380,25 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
       </Paper>
 
       <EditDialog
-        dialogTitle={'Add Users'}
+        dialogTitle={'Add User'}
         open={openAddUserDialog}
         dialogSaveButtonLabel={'Add'}
+        size="sm"
         component={{
           element: (
-            <AddSystemUsersForm
-              systemRoles={
-                codes?.system_roles?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-            />
+            <>
+              <Typography color="textSecondary" mb={3}>
+                This form creates a new user that will be linked to an IDIR/BCeID when an account with a matching
+                username, email, and account type logs in.
+              </Typography>
+              <AddSystemUsersForm
+                systemRoles={
+                  codes?.system_roles?.map((item) => {
+                    return { value: item.id, label: item.name };
+                  }) || []
+                }
+              />
+            </>
           ),
           initialValues: AddSystemUsersFormInitialValues,
           validationSchema: AddSystemUsersFormYupSchema
