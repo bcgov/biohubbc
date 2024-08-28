@@ -221,13 +221,22 @@ export function createDeployment(): RequestHandler {
           : dayjs(`${attachment_end_date}`).toISOString()
         : null;
 
+      // Get BCTW code values
+      const [deviceMakeCodes, frequencyUnitCodes] = await Promise.all([
+        bctwService.getCode('device_make'),
+        bctwService.getCode('frequency_unit')
+      ]);
+      // The BCTW API expects the device make and frequency unit as codes, not IDs.
+      const device_make_code = deviceMakeCodes.find((code) => code.id === device_make)?.code;
+      const frequency_unit_code = frequencyUnitCodes.find((code) => code.id === frequency_unit)?.code;
+
       const deployment = await bctwService.createDeployment({
         deployment_id: newDeploymentId,
         device_id: device_id,
         critter_id: critterbaseCritter.critter_id,
         frequency: frequency,
-        frequency_unit: frequency_unit,
-        device_make: device_make,
+        frequency_unit: frequency_unit_code,
+        device_make: device_make_code,
         device_model: device_model,
         attachment_start: critterbaseCritter.capture_date,
         attachment_end: attachmentEnd // TODO: ADD SEPARATE DATE AND TIME TO BCTW

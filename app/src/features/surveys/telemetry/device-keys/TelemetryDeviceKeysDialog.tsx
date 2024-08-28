@@ -13,20 +13,17 @@ import { AttachmentTypeFileExtensions } from 'constants/attachments';
 import { TelemetryDeviceKeysList } from 'features/surveys/telemetry/device-keys/TelemetryDeviceKeysList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import useIsMounted from 'hooks/useIsMounted';
+import { useEffect } from 'react';
 
 export interface ITelemetryDeviceKeysDialogProps {
   /**
    * Set to `true` to open the dialog, `false` to close the dialog.
-   *
-   * @type {boolean}
-   * @memberof ITelemetryDeviceKeysDialogProps
    */
   open: boolean;
   /**
    * Callback fired when the dialog is closed.
-   *
-   * @memberof ITelemetryDeviceKeysDialogProps
    */
   onClose?: () => void;
 }
@@ -61,6 +58,13 @@ export const TelemetryDeviceKeysDialog = (props: ITelemetryDeviceKeysDialogProps
         cancelToken,
         handleFileUploadProgress
       )
+      .then(() => {
+        if (!isMounted()) {
+          return;
+        }
+
+        telemetryDeviceKeyFileDataLoader.refresh();
+      })
       .catch((error) => {
         if (!isMounted()) {
           return;
@@ -78,6 +82,19 @@ export const TelemetryDeviceKeysDialog = (props: ITelemetryDeviceKeysDialogProps
   const acceptedFileExtensions = Array.from(
     new Set([...AttachmentTypeFileExtensions.KEYX, ...AttachmentTypeFileExtensions.CFG])
   );
+
+  const telemetryDeviceKeyFileDataLoader = useDataLoader(() =>
+    biohubApi.telemetry.getTelemetryDeviceKeyFiles(surveyContext.projectId, surveyContext.surveyId)
+  );
+
+  useEffect(() => {
+    if (!open) {
+      // If the dialog is not open, do not load the data
+      return;
+    }
+
+    telemetryDeviceKeyFileDataLoader.load();
+  }, [open, telemetryDeviceKeyFileDataLoader]);
 
   if (!open) {
     return <></>;
@@ -112,7 +129,10 @@ export const TelemetryDeviceKeysDialog = (props: ITelemetryDeviceKeysDialogProps
             />
           </Box>
           <Box mt={0}>
-            <TelemetryDeviceKeysList />
+            <TelemetryDeviceKeysList
+              isLoading={telemetryDeviceKeyFileDataLoader.isLoading || !telemetryDeviceKeyFileDataLoader.isReady}
+              telementryCredentialAttachments={telemetryDeviceKeyFileDataLoader?.data ?? []}
+            />
           </Box>
         </DialogContent>
         <DialogActions>

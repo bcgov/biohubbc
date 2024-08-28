@@ -14,24 +14,21 @@ import { TelemetryDeviceKeyFileI18N } from 'constants/i18n';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
-import useDataLoader from 'hooks/useDataLoader';
 import { TelemetryDeviceKeyFile } from 'interfaces/useTelemetryApi.interface';
-import { useEffect } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 
-export const TelemetryDeviceKeysList = () => {
+export interface ITelemetryDeviceKeysListProps {
+  isLoading?: boolean;
+  telementryCredentialAttachments: TelemetryDeviceKeyFile[];
+}
+
+export const TelemetryDeviceKeysList = (props: ITelemetryDeviceKeysListProps) => {
+  const { isLoading, telementryCredentialAttachments } = props;
+
   const dialogContext = useDialogContext();
   const surveyContext = useSurveyContext();
 
   const biohubApi = useBiohubApi();
-
-  const telemetryDeviceKeyFileDataLoader = useDataLoader(() =>
-    biohubApi.telemetry.getTelemetryDeviceKeyFiles(surveyContext.projectId, surveyContext.surveyId)
-  );
-
-  useEffect(() => {
-    telemetryDeviceKeyFileDataLoader.load();
-  }, [telemetryDeviceKeyFileDataLoader]);
 
   const handleDownload = async (attachment: TelemetryDeviceKeyFile) => {
     try {
@@ -61,7 +58,7 @@ export const TelemetryDeviceKeysList = () => {
     }
   };
 
-  const rows = telemetryDeviceKeyFileDataLoader.data ?? [];
+  const rows = telementryCredentialAttachments;
 
   // Define the columns for the DataGrid
   const columns: GridColDef<TelemetryDeviceKeyFile>[] = [
@@ -127,7 +124,7 @@ export const TelemetryDeviceKeysList = () => {
 
   return (
     <LoadingGuard
-      isLoading={telemetryDeviceKeyFileDataLoader.isLoading || !telemetryDeviceKeyFileDataLoader.isReady}
+      isLoading={isLoading}
       isLoadingFallback={<SkeletonList />}
       isLoadingFallbackDelay={100}
       hasNoData={false}
