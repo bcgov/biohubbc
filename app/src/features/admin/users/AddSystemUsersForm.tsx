@@ -33,9 +33,9 @@ export const AddSystemUsersFormInitialValues: IAddSystemUsersForm = {
 
 export const AddSystemUsersFormYupSchema = yup.object().shape({
   systemUser: yup.object().shape({
-    userIdentifier: yup.string().required('Username is required').min(1),
-    displayName: yup.string().required('Display Name is required').min(1),
-    email: yup.string().email('Must be a valid email').required('Email is required').min(1),
+    userIdentifier: yup.string().required('Username is required'),
+    displayName: yup.string().required('Display Name is required'),
+    email: yup.string().email('Must be a valid email').required('Email is required'),
     identitySource: yup.string().required('Account Type is required'),
     systemRole: yup.number().required('System Role is required')
   })
