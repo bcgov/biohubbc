@@ -1,5 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton';
-import { Divider } from '@mui/material';
+import { Box, Divider } from '@mui/material';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
@@ -10,6 +10,7 @@ import Typography from '@mui/material/Typography';
 import axios, { AxiosProgressEvent } from 'axios';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
+import { FileUploadSingleItem } from 'components/file-upload/FileUploadSingleItem';
 import PageHeader from 'components/layout/PageHeader';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useProjectContext, useSurveyContext } from 'hooks/useContext';
@@ -17,7 +18,33 @@ import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useCallback, useMemo, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { SingleFileUpload } from './SingleFileUpload';
+import { downloadFile, getCSVTemplate } from 'utils/file-utils';
+
+const MEASUREMENTS_CSV_HEADERS = ['ALIAS', 'CAPTURE_DATE', 'CAPTURE_TIME'];
+const CAPTURES_CSV_HEADERS = [
+  'ALIAS',
+  'CAPTURE_DATE',
+  'CAPTURE_TIME',
+  'CAPTURE_LATITUDE',
+  'CAPTURE_LONGITUDE',
+  'RELEASE_DATE',
+  'RELEASE_TIME',
+  'RELEASE_LATITUDE',
+  'RELEASE_LONGITUDE',
+  'RELEASE_COMMENT',
+  'CAPTURE_COMMENT'
+];
+const MARKINGS_CSV_HEADERS = [
+  'ALIAS',
+  'CAPTURE_DATE',
+  'CAPTURE_TIME',
+  'BODY_LOCATION',
+  'MARKING_TYPE',
+  'IDENTIFIER',
+  'PRIMARY_COLOUR',
+  'SECONDARY_COLOUR',
+  'COMMENT'
+];
 
 type CSVFilesStatus = {
   captures: { file: File | null; status: UploadFileStatus; progress: number; error?: string };
@@ -50,12 +77,14 @@ export const CreateCSVCapturesPage = () => {
 
   const { projectId, surveyId } = surveyContext;
 
+  // Initialize the file upload states
   const [files, setFiles] = useState<CSVFilesStatus>({
     captures: { file: null, status: UploadFileStatus.PENDING, progress: 0 },
     measurements: { file: null, status: UploadFileStatus.PENDING, progress: 0 },
     markings: { file: null, status: UploadFileStatus.PENDING, progress: 0 }
   });
 
+  // When any of the files are uploading
   const isUploading = useMemo(() => {
     return Object.values(files).some((key) => key.status === UploadFileStatus.UPLOADING);
   }, [files]);
@@ -89,7 +118,6 @@ export const CreateCSVCapturesPage = () => {
           handleFileState({ fileType, status: UploadFileStatus.UPLOADING });
 
           await onUpload(files[fileType].file as File, (progressEvent: AxiosProgressEvent) => {
-            // Get axios progress through the onProgress event listener.
             const progress = Math.round((progressEvent.loaded / (progressEvent.total || 1)) * 100);
 
             handleFileState({ fileType, progress });
@@ -117,7 +145,6 @@ export const CreateCSVCapturesPage = () => {
    * Handle all file uploads in order. `Captures` take precedence over `Measurements` and `Markings`.
    *
    * Why? `Measurements` and `Markings` are dependent on `Captures` existing before they can be uploaded.
-   * There is a case where `Captures` already exist and the user is creating new `Measurements` or `Markings`.
    *
    * @async
    * @returns {Promise<void>}
@@ -191,53 +218,92 @@ export const CreateCSVCapturesPage = () => {
         <Paper sx={{ p: 5 }}>
           <Stack gap={5}>
             <HorizontalSplitFormComponent title="Captures" summary="Upload the capture times and locations">
-              <SingleFileUpload
-                {...files.captures}
-                onChangeStatus={(status) => handleFileState({ fileType: 'captures', status })}
-                onFileDropzone={(file) => handleFileState({ fileType: 'captures', file })}
-                onFileCancel={() =>
-                  handleFileState({
-                    fileType: 'captures',
-                    status: UploadFileStatus.PENDING,
-                    error: undefined,
-                    progress: undefined
-                  })
-                }
-              />
+              <Box sx={{ display: 'flex', flexDirection: 'column' }} gap={2}>
+                <Button
+                  sx={{ ml: 'auto', textTransform: 'none', fontWeight: 'regular' }}
+                  variant="outlined"
+                  size="small"
+                  onClick={() => {
+                    downloadFile(getCSVTemplate(CAPTURES_CSV_HEADERS), 'Captures_template.csv');
+                  }}>
+                  Download Template
+                </Button>
+                <FileUploadSingleItem
+                  {...files.captures}
+                  onStatus={(status) => handleFileState({ fileType: 'captures', status })}
+                  onFile={(file) => handleFileState({ fileType: 'captures', file })}
+                  onError={(error) => handleFileState({ fileType: 'captures', error })}
+                  onCancel={() =>
+                    handleFileState({
+                      fileType: 'captures',
+                      status: UploadFileStatus.PENDING,
+                      error: undefined,
+                      progress: undefined
+                    })
+                  }
+                  DropZoneProps={{ acceptedFileExtensions: '.csv' }}
+                />
+              </Box>
             </HorizontalSplitFormComponent>
             <Divider />
 
             <HorizontalSplitFormComponent title="Measurements" summary="Upload measurements taken during the captures">
-              <SingleFileUpload
-                {...files.measurements}
-                onChangeStatus={(status) => handleFileState({ fileType: 'measurements', status })}
-                onFileDropzone={(file) => handleFileState({ fileType: 'measurements', file })}
-                onFileCancel={() =>
-                  handleFileState({
-                    fileType: 'measurements',
-                    status: UploadFileStatus.PENDING,
-                    error: undefined,
-                    progress: undefined
-                  })
-                }
-              />
+              <Box sx={{ display: 'flex', flexDirection: 'column' }} gap={2}>
+                <Button
+                  sx={{ ml: 'auto', textTransform: 'none', fontWeight: 'regular' }}
+                  variant="outlined"
+                  size="small"
+                  onClick={() => {
+                    downloadFile(getCSVTemplate(MEASUREMENTS_CSV_HEADERS), 'Measurements_template.csv');
+                  }}>
+                  Download Template
+                </Button>
+                <FileUploadSingleItem
+                  {...files.measurements}
+                  onStatus={(status) => handleFileState({ fileType: 'measurements', status })}
+                  onFile={(file) => handleFileState({ fileType: 'measurements', file })}
+                  onError={(error) => handleFileState({ fileType: 'measurements', error })}
+                  onCancel={() =>
+                    handleFileState({
+                      fileType: 'measurements',
+                      status: UploadFileStatus.PENDING,
+                      error: undefined,
+                      progress: undefined
+                    })
+                  }
+                  DropZoneProps={{ acceptedFileExtensions: '.csv' }}
+                />
+              </Box>
             </HorizontalSplitFormComponent>
             <Divider />
 
             <HorizontalSplitFormComponent title="Markings" summary="Upload markings applied during the captures">
-              <SingleFileUpload
-                {...files.markings}
-                onChangeStatus={(status) => handleFileState({ fileType: 'markings', status })}
-                onFileDropzone={(file) => handleFileState({ fileType: 'markings', file })}
-                onFileCancel={() =>
-                  handleFileState({
-                    fileType: 'markings',
-                    status: UploadFileStatus.PENDING,
-                    error: undefined,
-                    progress: undefined
-                  })
-                }
-              />
+              <Box sx={{ display: 'flex', flexDirection: 'column' }} gap={2}>
+                <Button
+                  sx={{ ml: 'auto', textTransform: 'none', fontWeight: 'regular' }}
+                  variant="outlined"
+                  size="small"
+                  onClick={() => {
+                    downloadFile(getCSVTemplate(MARKINGS_CSV_HEADERS), 'Markings_template.csv');
+                  }}>
+                  Download Template
+                </Button>
+                <FileUploadSingleItem
+                  {...files.markings}
+                  onStatus={(status) => handleFileState({ fileType: 'markings', status })}
+                  onFile={(file) => handleFileState({ fileType: 'markings', file })}
+                  onError={(error) => handleFileState({ fileType: 'markings', error })}
+                  onCancel={() =>
+                    handleFileState({
+                      fileType: 'markings',
+                      status: UploadFileStatus.PENDING,
+                      error: undefined,
+                      progress: undefined
+                    })
+                  }
+                  DropZoneProps={{ acceptedFileExtensions: '.csv' }}
+                />
+              </Box>
             </HorizontalSplitFormComponent>
             <Divider />
           </Stack>
