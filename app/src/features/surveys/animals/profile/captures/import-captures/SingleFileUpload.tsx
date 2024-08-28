@@ -14,6 +14,8 @@ type SingleFileUploadProps = {
    *
    **/
   status: UploadFileStatus;
+  error?: string;
+  progress?: number;
   /*
    * Callback to change the status of the file upload.
    *
@@ -41,9 +43,13 @@ export const SingleFileUpload = (props: SingleFileUploadProps) => {
       {props.file ? (
         <FileUploadItemContent
           file={props.file}
+          error={props.error}
           status={props.status}
-          onCancel={() => props.onFileDrop(null)}
-          progress={0}
+          onCancel={() => {
+            props.onChangeStatus(UploadFileStatus.PENDING);
+            props.onFileDrop(null);
+          }}
+          progress={props.progress ?? 0}
         />
       ) : (
         <DropZone

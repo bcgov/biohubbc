@@ -574,6 +574,70 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Bulk upload Captures from CSV.
+   *
+   * @async
+   * @param {File} file - Captures CSV.
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {Promise<number[]>}
+   */
+  const importCapturesFromCsv = async (
+    file: File,
+    projectId: number,
+    surveyId: number,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
+  ): Promise<{ survey_critter_ids: number[] }> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/critters/captures/import`,
+      formData,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
+
+    return data;
+  };
+
+  /**
+   * Bulk upload Markings from CSV.
+   *
+   * @async
+   * @param {File} file - Captures CSV.
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {Promise<number[]>}
+   */
+  const importMarkingsFromCsv = async (
+    file: File,
+    projectId: number,
+    surveyId: number,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
+  ): Promise<{ survey_critter_ids: number[] }> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/critters/markings/import`,
+      formData,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
+
+    return data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,
@@ -599,7 +663,9 @@ const useSurveyApi = (axios: AxiosInstance) => {
     updateDeployment,
     getCritterTelemetry,
     removeDeployment,
-    importCrittersFromCsv
+    importCrittersFromCsv,
+    importCapturesFromCsv,
+    importMarkingsFromCsv
   };
 };
 
