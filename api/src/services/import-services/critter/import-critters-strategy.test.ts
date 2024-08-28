@@ -376,7 +376,37 @@ describe('ImportCrittersStrategy', () => {
       }
     });
 
-    it('should return error when sex undefined', async () => {
+    it('should return error when sex has an invalid value', async () => {
+      const service = new ImportCrittersStrategy(mockConnection, 1);
+
+      const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
+      const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
+
+      surveyAliasesStub.resolves(new Set([]));
+      getValidTsnsStub.resolves(['1']);
+
+      const rows = [
+        {
+          ITIS_TSN: 1,
+          SEX: 'NO', // invalid value
+          ALIAS: 'Carl2',
+          WLH_ID: '10-1000',
+          DESCRIPTION: 'A'
+        }
+      ];
+
+      const validation = await service.validateRows(rows, {});
+
+      if (validation.success) {
+        expect.fail();
+      } else {
+        expect(validation.error.issues).to.deep.equal([
+          { row: 0, message: 'Invalid SEX. Expecting: UNKNOWN, MALE, FEMALE, HERMAPHRODITIC.' }
+        ]);
+      }
+    });
+
+    it('should return sex as UNKNOWN when sex is undefined in the imported csv', async () => {
       const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
@@ -395,7 +425,7 @@ describe('ImportCrittersStrategy', () => {
         },
         {
           ITIS_TSN: 1,
-          SEX: 'NO', // invalid value
+          SEX: undefined,
           ALIAS: 'Carl2',
           WLH_ID: '10-1000',
           DESCRIPTION: 'A'
@@ -405,12 +435,20 @@ describe('ImportCrittersStrategy', () => {
       const validation = await service.validateRows(rows, {});
 
       if (validation.success) {
-        expect.fail();
-      } else {
-        expect(validation.error.issues).to.deep.equal([
-          { row: 0, message: 'Invalid SEX. Expecting: UNKNOWN, MALE, FEMALE, HERMAPHRODITIC.' },
-          { row: 1, message: 'Invalid SEX. Expecting: UNKNOWN, MALE, FEMALE, HERMAPHRODITIC.' }
-        ]);
+        expect(validation.data[0]).to.contain({
+          sex: 'Unknown',
+          itis_tsn: 1,
+          animal_id: 'Carl',
+          wlh_id: '10-1000',
+          critter_comment: 'A'
+        });
+        expect(validation.data[1]).to.contain({
+          sex: 'Unknown',
+          itis_tsn: 1,
+          animal_id: 'Carl2',
+          wlh_id: '10-1000',
+          critter_comment: 'A'
+        });
       }
     });
 

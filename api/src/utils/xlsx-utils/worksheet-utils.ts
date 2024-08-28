@@ -368,7 +368,6 @@ export const prepareWorksheetCells = (worksheet: xlsx.WorkSheet) => {
  * @return {*}  {boolean}
  */
 export function validateCsvFile(xlsxWorksheet: xlsx.WorkSheet, columnValidator: IXLSXCSVValidator): boolean {
-
   // Validate the worksheet headers
   if (!validateWorksheetHeaders(xlsxWorksheet, columnValidator)) {
     defaultLog.debug({ label: 'validateCsvFile', message: 'Invalid: Headers' });
