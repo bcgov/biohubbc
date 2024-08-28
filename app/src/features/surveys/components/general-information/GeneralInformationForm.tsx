@@ -90,37 +90,35 @@ export interface IGeneralInformationFormProps {
  */
 const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) => {
   return (
-    <>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <CustomTextField
-            name="survey_details.survey_name"
-            label="Survey Name"
-            maxLength={200}
-            other={{
-              required: true
-            }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <AutocompleteField
-            id={'survey_details.progress_id'}
-            name={'survey_details.progress_id'}
-            label={'Progress'}
-            required
-            options={props.progress}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <StartEndDateFields
-            startName="survey_details.start_date"
-            endName="survey_details.end_date"
-            startRequired={true}
-            endRequired={false}
-          />
-        </Grid>
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <CustomTextField
+          name="survey_details.survey_name"
+          label="Survey Name"
+          maxLength={200}
+          other={{
+            required: true
+          }}
+        />
       </Grid>
-    </>
+      <Grid item xs={12}>
+        <AutocompleteField
+          id={'survey_details.progress_id'}
+          name={'survey_details.progress_id'}
+          label={'Progress'}
+          required
+          options={props.progress}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <StartEndDateFields
+          startName="survey_details.start_date"
+          endName="survey_details.end_date"
+          startRequired={true}
+          endRequired={false}
+        />
+      </Grid>
+    </Grid>
   );
 };
 
