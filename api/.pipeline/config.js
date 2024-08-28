@@ -154,7 +154,7 @@ const phases = {
   'test-spi': {
     namespace: 'af2668-test',
     name: `${name}`,
-    dbName: `${dbName}-spi`,
+    dbName: `${dbName}`,
     phase: 'test-spi',
     changeId: deployChangeId,
     suffix: `-test-spi`,
