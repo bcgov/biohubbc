@@ -90,21 +90,23 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
               inputProps={{ 'aria-label': 'controlled' }}
             />
             <Box>
-              <Typography
-                component="div"
-                title="Device ID"
-                variant="body2"
-                sx={{
-                  flex: '1 1 auto',
-                  fontWeight: 700,
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis'
-                }}>
-                {deployment.device_id}
-              </Typography>
-              <Typography component="span" variant="body2" title="Device frequency">
-                {deployment.frequency}&nbsp;{deployment.frequency_unit}
-              </Typography>
+              <Stack gap={1} direction="row">
+                <Typography
+                  component="div"
+                  title="Device ID"
+                  variant="body2"
+                  sx={{
+                    flex: '1 1 auto',
+                    fontWeight: 700,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis'
+                  }}>
+                  {deployment.device_id}
+                </Typography>
+                <Typography component="span" variant="body2" color="textSecondary" title="Device frequency">
+                  {deployment.frequency}&nbsp;{deployment.frequency_unit}
+                </Typography>
+              </Stack>
               <Typography variant="body2" color="textSecondary" title="Animal">
                 {animal.animal_id}
               </Typography>
@@ -141,7 +143,7 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
             mx: 4.5,
             '& .MuiListItemText-primary': {
               typography: 'body2',
-              pt: 1
+              pt: 1,
             }
           }}>
           <SurveyDeploymentListItemDetails deployment={deployment} />

@@ -25,6 +25,11 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
+/**
+ * Renders a list of all deployments in the survey
+ * 
+ * @returns {*}
+ */
 export const SurveyDeploymentList = () => {
   const dialogContext = useDialogContext();
   const surveyContext = useSurveyContext();

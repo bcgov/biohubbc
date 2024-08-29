@@ -11,62 +11,79 @@ import useDataLoader from 'hooks/useDataLoader';
 import { IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useEffect } from 'react';
 
-const dateSx = {
-  fontSize: '0.85rem',
-  color: 'textSecondary'
-};
-
-const timeSx = {
-  fontSize: '0.85rem',
-  color: 'text.secondary'
-};
-
 interface ISurveyDeploymentListItemDetailsProps {
   deployment: Omit<IAnimalDeployment, 'frequency_unit'> & { frequency_unit: string | null };
 }
 
+/**
+ * Renders information about a single telemetry deployment such as start and end dates
+ *
+ * @param props {ISurveyDeploymentListItemDetailsProps}
+ * @returns
+ */
 export const SurveyDeploymentListItemDetails = (props: ISurveyDeploymentListItemDetailsProps) => {
   const { deployment } = props;
   const critterbaseApi = useCritterbaseApi();
 
-  const captureDataLoader = useDataLoader(() =>
-    critterbaseApi.capture.getCapture(deployment.critterbase_start_capture_id)
+  const startCaptureDataLoader = useDataLoader((captureId: string) => critterbaseApi.capture.getCapture(captureId));
+  const endCaptureDataLoader = useDataLoader((captureId: string) => critterbaseApi.capture.getCapture(captureId));
+  const endMortalityDataLoader = useDataLoader((mortalityId: string) =>
+    critterbaseApi.mortality.getMortality(mortalityId)
   );
 
   useEffect(() => {
-    captureDataLoader.load();
-  }, [captureDataLoader]);
+    startCaptureDataLoader.load(deployment.critterbase_start_capture_id);
+    if (deployment.critterbase_end_capture_id) {
+      endCaptureDataLoader.load(deployment.critterbase_end_capture_id);
+    }
+    if (deployment.critterbase_end_mortality_id) {
+      endMortalityDataLoader.load(deployment.critterbase_end_mortality_id);
+    }
+  }, [startCaptureDataLoader, endCaptureDataLoader, endMortalityDataLoader]);
 
-  if (!captureDataLoader.data) {
+  if (!startCaptureDataLoader.data) {
     return <Skeleton width="100%" height="55px" />;
   }
 
-  const start_date = dayjs(captureDataLoader.data.capture_date).format(DATE_FORMAT.MediumDateFormat);
-  const start_time = captureDataLoader.data.capture_time;
-  const end_date = dayjs(captureDataLoader.data.capture_date).format(DATE_FORMAT.MediumDateFormat);
-  const end_time = captureDataLoader.data.capture_time;
+  const startDate = dayjs(startCaptureDataLoader.data.capture_date).format(DATE_FORMAT.MediumDateFormat);
+  const startTime = startCaptureDataLoader.data.capture_time;
+
+  const endDate =
+    endCaptureDataLoader.data?.capture_date ??
+    endMortalityDataLoader.data?.mortality_timestamp ??
+    deployment.attachment_end_date;
+  const endDateFormatted = endDate ? dayjs(endDate).format(DATE_FORMAT.MediumDateFormat) : null;
+
+  const endTime =
+    endCaptureDataLoader.data?.capture_time ??
+    endMortalityDataLoader.data?.mortality_timestamp ??
+    deployment.attachment_end_time;
 
   return (
     <Box width="100%" display="flex" justifyContent="space-between" p={0}>
       <Box>
-        <Typography component="dt" variant="subtitle2" sx={dateSx}>
-          {start_date}
+        <Typography component="dt" variant="subtitle2" color="textSecondary">
+          {startDate}
         </Typography>
-        <Typography component="dt" variant="subtitle2" sx={timeSx}>
-          {start_time}
-        </Typography>
-      </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', mx: 1, mt: -0.25 }}>
-        <Icon path={mdiArrowRightThin} size={1} color={grey[500]} />
-      </Box>
-      <Box flex="1 1 auto">
-        <Typography component="dt" variant="subtitle2" sx={dateSx}>
-          {end_date}
-        </Typography>
-        <Typography component="dt" variant="subtitle2" sx={timeSx}>
-          {end_time}
+        <Typography component="dt" variant="subtitle2" color="textSecondary">
+          {startTime}
         </Typography>
       </Box>
+      {endDateFormatted && (
+        <>
+          <Box sx={{ display: 'flex', justifyContent: 'center', mx: 1, mt: -0.25 }}>
+            <Icon path={mdiArrowRightThin} size={1} color={grey[500]} />
+          </Box>
+          <Box flex="1 1 auto">
+            <Typography component="dt" variant="subtitle2" color="textSecondary">
+              {endDateFormatted}
+            </Typography>
+            <Typography component="dt" variant="subtitle2" color="textSecondary">
+              {endTime}
+            </Typography>
+          </Box>
+        </>
+      )}
     </Box>
   );
 };
