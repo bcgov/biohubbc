@@ -166,7 +166,7 @@ const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
         showSnackBar({
           snackbarMessage: (
             <Typography variant="body2" component="div">
-              Approved access request, but failed to email notification
+              Approved access request, but failed to send notification
             </Typography>
           )
         });
@@ -219,7 +219,7 @@ const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
         showSnackBar({
           snackbarMessage: (
             <Typography variant="body2" component="div">
-              Denied access request, but failed to email notification
+              Denied access request, but failed to send notification
             </Typography>
           )
         });

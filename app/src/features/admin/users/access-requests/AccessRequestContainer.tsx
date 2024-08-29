@@ -28,7 +28,7 @@ enum AccessRequestViewEnum {
 }
 
 /**
- * Container for displaying a list of user access.
+ * Container for displaying a list of user access requests.
  *
  */
 const AccessRequestContainer = (props: IAccessRequestContainerProps) => {
@@ -46,79 +46,77 @@ const AccessRequestContainer = (props: IAccessRequestContainerProps) => {
   const rejectedRequests = accessRequests.filter((request) => request.status_name === 'Rejected');
 
   return (
-    <>
-      <Paper>
-        <Toolbar>
-          <Typography variant="h4" component="h2">
-            Access Requests
-          </Typography>
-        </Toolbar>
-        <Divider />
-        <Box p={2} display="flex" justifyContent="space-between">
-          <ToggleButtonGroup
-            value={activeView}
-            onChange={(_, view) => {
-              if (!view) {
-                // An active view must be selected at all times
-                return;
-              }
+    <Paper>
+      <Toolbar>
+        <Typography variant="h4" component="h2">
+          Access Requests
+        </Typography>
+      </Toolbar>
+      <Divider />
+      <Box p={2} display="flex" justifyContent="space-between">
+        <ToggleButtonGroup
+          value={activeView}
+          onChange={(_, view) => {
+            if (!view) {
+              // An active view must be selected at all times
+              return;
+            }
 
-              setActiveView(view);
-            }}
-            exclusive
-            sx={{
-              width: '100%',
-              gap: 1,
-              '& Button': {
-                py: 0.5,
-                px: 1.5,
-                border: 'none !important',
-                fontWeight: 700,
-                borderRadius: '4px !important',
-                fontSize: '0.875rem',
-                letterSpacing: '0.02rem'
+            setActiveView(view);
+          }}
+          exclusive
+          sx={{
+            width: '100%',
+            gap: 1,
+            '& Button': {
+              py: 0.5,
+              px: 1.5,
+              border: 'none !important',
+              fontWeight: 700,
+              borderRadius: '4px !important',
+              fontSize: '0.875rem',
+              letterSpacing: '0.02rem'
+            }
+          }}>
+          {views.map((view) => {
+            const getCount = () => {
+              switch (view.value) {
+                case AccessRequestViewEnum.PENDING:
+                  return pendingRequests.length;
+                case AccessRequestViewEnum.ACTIONED:
+                  return actionedRequests.length;
+                case AccessRequestViewEnum.REJECTED:
+                  return rejectedRequests.length;
+                default:
+                  return 0;
               }
-            }}>
-            {views.map((view) => {
-              const getCount = () => {
-                switch (view.value) {
-                  case AccessRequestViewEnum.PENDING:
-                    return pendingRequests.length;
-                  case AccessRequestViewEnum.ACTIONED:
-                    return actionedRequests.length;
-                  case AccessRequestViewEnum.REJECTED:
-                    return rejectedRequests.length;
-                  default:
-                    return 0;
-                }
-              };
-              return (
-                <ToggleButton
-                  key={view.value}
-                  value={view.value}
-                  component={Button}
-                  color="primary"
-                  startIcon={<Icon path={view.icon} size={0.75} />}>
-                  {view.label} ({getCount()})
-                </ToggleButton>
-              );
-            })}
-          </ToggleButtonGroup>
-        </Box>
-        <Divider />
-        <Box p={2}>
-          {activeView === AccessRequestViewEnum.PENDING && (
-            <AccessRequestPendingList accessRequests={pendingRequests} codes={codes} refresh={refresh} />
-          )}
-          {activeView === AccessRequestViewEnum.ACTIONED && (
-            <AccessRequestActionedList accessRequests={actionedRequests} />
-          )}
-          {activeView === AccessRequestViewEnum.REJECTED && (
-            <AccessRequestRejectedList accessRequests={rejectedRequests} />
-          )}
-        </Box>
-      </Paper>
-    </>
+            };
+            return (
+              <ToggleButton
+                key={view.value}
+                value={view.value}
+                component={Button}
+                color="primary"
+                startIcon={<Icon path={view.icon} size={0.75} />}>
+                {view.label} ({getCount()})
+              </ToggleButton>
+            );
+          })}
+        </ToggleButtonGroup>
+      </Box>
+      <Divider />
+      <Box p={2}>
+        {activeView === AccessRequestViewEnum.PENDING && (
+          <AccessRequestPendingList accessRequests={pendingRequests} codes={codes} refresh={refresh} />
+        )}
+        {activeView === AccessRequestViewEnum.ACTIONED && (
+          <AccessRequestActionedList accessRequests={actionedRequests} />
+        )}
+        {activeView === AccessRequestViewEnum.REJECTED && (
+          <AccessRequestRejectedList accessRequests={rejectedRequests} />
+        )}
+      </Box>
+    </Paper>
   );
 };
 
