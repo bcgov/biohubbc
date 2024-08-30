@@ -1,17 +1,25 @@
-import { mdiArrowTopRight } from '@mdi/js';
-import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import blueGrey from '@mui/material/colors/blueGrey';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridOverlay } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { ITechniqueRowData } from 'features/surveys/sampling-information/techniques/table/SamplingTechniqueTable';
 import { useCodesContext } from 'hooks/useContext';
-import { IGetTechniqueResponse, IGetTechniquesResponse } from 'interfaces/useTechniqueApi.interface';
+import { TechniqueAttractant } from 'interfaces/useTechniqueApi.interface';
 import { getCodesName } from 'utils/Utils';
 
+export interface ISurveyTechniqueRowData {
+  id: number;
+  method_lookup_id: number;
+  name: string;
+  description: string | null;
+  attractants: TechniqueAttractant[];
+  distance_threshold: number | null;
+}
+
 export interface ISurveyTechniquesTableProps {
-  techniques?: IGetTechniquesResponse;
+  techniques: ISurveyTechniqueRowData[];
 }
 
 export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
@@ -19,23 +27,15 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
 
   const codesContext = useCodesContext();
 
-  const rows =
-    techniques?.techniques.map((technique) => ({
-      id: technique.method_technique_id,
-      name: getCodesName(codesContext.codesDataLoader.data, 'sample_methods', technique.method_lookup_id) ?? '',
-      method_lookup_id: technique.method_lookup_id,
-      description: technique.description
-    })) || [];
-
-  const columns: GridColDef<IGetTechniqueResponse>[] = [
+  const columns: GridColDef<ITechniqueRowData>[] = [
     {
       field: 'name',
       headerName: 'Name',
-      flex: 0.3
+      flex: 1
     },
     {
       field: 'method_lookup_id',
-      flex: 0.3,
+      flex: 1,
       headerName: 'Method',
       renderCell: (params) => (
         <ColouredRectangleChip
@@ -68,6 +68,31 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
           </Box>
         );
       }
+    },
+    {
+      field: 'attractants',
+      flex: 1,
+      headerName: 'Attractants',
+      renderCell: (params) => (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
+          {params.row.attractants.map((attractant) => (
+            <Box key={attractant.attractant_lookup_id} mr={1} mb={1}>
+              <ColouredRectangleChip
+                label={
+                  getCodesName(codesContext.codesDataLoader.data, 'attractants', attractant.attractant_lookup_id) ?? ''
+                }
+                colour={blueGrey}
+              />
+            </Box>
+          ))}
+        </Box>
+      )
+    },
+    {
+      field: 'distance_threshold',
+      headerName: 'Distance threshold',
+      flex: 1,
+      renderCell: (params) => (params.row.distance_threshold ? <>{params.row.distance_threshold}&nbsp;m</> : <></>)
     }
   ];
 
@@ -77,36 +102,16 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
       rowSelection={false}
       autoHeight
       getRowHeight={() => 'auto'}
-      rows={rows}
+      rows={techniques}
       getRowId={(row) => row.id}
       columns={columns}
       disableRowSelectionOnClick
-      noRowsOverlay={
-        <GridOverlay>
-          <Box justifyContent="center" display="flex" flexDirection="column">
-            <Typography mb={1} variant="h4" color="textSecondary" textAlign="center">
-              Start by adding sampling information&nbsp;
-              <Icon path={mdiArrowTopRight} size={1} />
-            </Typography>
-            <Typography color="textSecondary" textAlign="center">
-              Add <strong>Techniques</strong>, then apply your techniques to <strong>Sites</strong>
-            </Typography>
-          </Box>
-        </GridOverlay>
-      }
-      sx={{
-        '& .MuiDataGrid-virtualScroller': {
-          height: rows.length === 0 ? '250px' : 'unset',
-          overflowY: 'auto !important',
-          overflowX: 'hidden'
-        },
-        '& .MuiDataGrid-overlay': {
-          height: '250px',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center'
+      initialState={{
+        pagination: {
+          paginationModel: { page: 1, pageSize: 10 }
         }
       }}
+      pageSizeOptions={[10, 25, 50]}
     />
   );
 };

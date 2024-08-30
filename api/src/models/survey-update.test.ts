@@ -150,18 +150,13 @@ describe('PutSpeciesData', () => {
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([]);
     });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([]);
-    });
   });
 
   describe('All values provided', () => {
     let data: PutSurveySpeciesData;
 
     const obj = {
-      focal_species: [1, 2],
-      ancillary_species: [3]
+      focal_species: [1, 2]
     };
 
     before(() => {
@@ -170,10 +165,6 @@ describe('PutSpeciesData', () => {
 
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([1, 2]);
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([3]);
     });
   });
 });
@@ -340,10 +331,6 @@ describe('PutPurposeAndMethodologyData', () => {
       expect(data.additional_details).to.equal(null);
     });
 
-    it('sets vantage_code_ids', () => {
-      expect(data.vantage_code_ids).to.eql([]);
-    });
-
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(null);
     });
@@ -355,7 +342,6 @@ describe('PutPurposeAndMethodologyData', () => {
     const obj = {
       intended_outcome_ids: [1],
       additional_details: 'additional_detail',
-      vantage_code_ids: [4, 5],
       revision_count: 0
     };
 
@@ -369,10 +355,6 @@ describe('PutPurposeAndMethodologyData', () => {
 
     it('sets additional_details', () => {
       expect(data.additional_details).to.equal(obj.additional_details);
-    });
-
-    it('sets vantage_code_ids', () => {
-      expect(data.vantage_code_ids).to.eql(obj.vantage_code_ids);
     });
 
     it('sets revision_count', () => {

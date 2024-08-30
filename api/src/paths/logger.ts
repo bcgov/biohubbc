@@ -1,9 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
-import { HTTP400 } from '../errors/http-error';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
-import { setLogLevel, WinstonLogLevel, WinstonLogLevels } from '../utils/logger';
+import { setLogLevel, setLogLevelFile, WinstonLogLevel, WinstonLogLevels } from '../utils/logger';
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
@@ -20,7 +19,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: "Update the log level for the API's default logger",
+  description: 'Update the logging level of the winston logger.',
   tags: ['misc'],
   security: [
     {
@@ -30,13 +29,23 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'query',
-      name: 'level',
+      name: 'logLevel',
+      description: 'Set the log level for the console transport (non-production environments only)',
       schema: {
         description: 'Log levels, from least logging to most logging',
         type: 'string',
         enum: [...WinstonLogLevels]
-      },
-      required: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'logLevelFile',
+      description: 'Set the log level for the file transport',
+      schema: {
+        description: 'Log levels, from least logging to most logging',
+        type: 'string',
+        enum: [...WinstonLogLevels]
+      }
     }
   ],
   responses: {
@@ -59,17 +68,19 @@ GET.apiDoc = {
 };
 
 /**
- * Get api version information.
+ * Update the logging level of the winston logger.
  *
  * @returns {RequestHandler}
  */
 export function updateLoggerLevel(): RequestHandler {
   return (req, res) => {
-    if (!req.query?.level) {
-      throw new HTTP400('Missing required query param `level`');
+    if (req.query.logLevel) {
+      setLogLevel(req.query.loglevel as WinstonLogLevel);
     }
 
-    setLogLevel(req.query.level as WinstonLogLevel);
+    if (req.query.logLevelFile) {
+      setLogLevelFile(req.query.logLevelFile as WinstonLogLevel);
+    }
 
     res.status(200).send();
   };

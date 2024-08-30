@@ -5,6 +5,7 @@
     "tools": "tools",
     "dev": "dev",
     "test": "test",
+    "test-spi": "test",
     "prod": "prod"
   },
   "version": "1.0.0",
@@ -20,17 +21,20 @@
   "staticUrls": {
     "dev": "dev-biohubbc.apps.silver.devops.gov.bc.ca",
     "test": "test-biohubbc.apps.silver.devops.gov.bc.ca",
+    "test-spi": "test-spi-biohubbc.apps.silver.devops.gov.bc.ca",
     "prod": "biohubbc.apps.silver.devops.gov.bc.ca",
     "prodVanityUrl": "sims.nrs.gov.bc.ca"
   },
   "staticUrlsAPI": {
     "dev": "api-dev-biohubbc.apps.silver.devops.gov.bc.ca",
     "test": "api-test-biohubbc.apps.silver.devops.gov.bc.ca",
+    "test-spi": "api-test-spi-biohubbc.apps.silver.devops.gov.bc.ca",
     "prod": "api-biohubbc.apps.silver.devops.gov.bc.ca"
   },
   "siteminderLogoutURL": {
     "dev": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
     "test": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
+    "test-spi": "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi",
     "prod": "https://logon7.gov.bc.ca/clp-cgi/logoff.cgi"
   },
   "sso": {
@@ -52,6 +56,23 @@
       }
     },
     "test": {
+      "host": "https://test.loginproxy.gov.bc.ca/auth",
+      "realm": "standard",
+      "clientId": "sims-4461",
+      "keycloakSecret": "keycloak",
+      "serviceClient": {
+        "serviceClientName": "sims-svc-4464",
+        "keycloakSecretServiceClientPasswordKey": "sims_svc_client_password"
+      },
+      "cssApi": {
+        "cssApiTokenUrl": "https://loginproxy.gov.bc.ca/auth/realms/standard/protocol/openid-connect/token",
+        "cssApiClientId": "service-account-team-1190-4229",
+        "cssApiHost": "https://api.loginproxy.gov.bc.ca/api/v1",
+        "keycloakSecretCssApiSecretKey": "css_api_client_secret",
+        "cssApiEnvironment": "test"
+      }
+    },
+    "test-spi": {
       "host": "https://test.loginproxy.gov.bc.ca/auth",
       "realm": "standard",
       "clientId": "sims-4461",

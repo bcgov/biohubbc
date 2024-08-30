@@ -1,5 +1,5 @@
 # ########################################################################################################
-# This DockerFile is used for both Openshift deployments and local development (via docker-compose).
+# This DockerFile is used for both Openshift deployments and local development (via compose.yml).
 # ########################################################################################################
 
 FROM node:20

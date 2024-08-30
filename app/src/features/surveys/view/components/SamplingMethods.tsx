@@ -5,7 +5,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
-import { IGetSurveyBlock, IGetSurveyStratum } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyBlock } from 'interfaces/useSurveyApi.interface';
 import { useContext } from 'react';
 
 /**
@@ -53,7 +53,7 @@ const SamplingMethods = () => {
         <Box className="row" component="section">
           <Typography component="h4">Stratums</Typography>
           <List disablePadding>
-            {site_selection.stratums?.map((stratum: IGetSurveyStratum) => {
+            {site_selection.stratums?.map((stratum) => {
               return (
                 <ListItem
                   key={`${stratum.name}-${stratum.description}`}

@@ -3,9 +3,8 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import { SamplingSiteListPeriod } from 'features/surveys/observations/sampling-sites/components/SamplingSiteListPeriod';
-import { useCodesContext, useObservationsContext, useObservationsPageContext } from 'hooks/useContext';
+import { useObservationsContext, useObservationsPageContext } from 'hooks/useContext';
 import { IGetSampleMethodDetails } from 'interfaces/useSamplingSiteApi.interface';
-import { useEffect } from 'react';
 
 export interface ISamplingSiteListMethodProps {
   sampleMethod: IGetSampleMethodDetails;
@@ -20,13 +19,8 @@ export interface ISamplingSiteListMethodProps {
 export const SamplingSiteListMethod = (props: ISamplingSiteListMethodProps) => {
   const { sampleMethod } = props;
 
-  const codesContext = useCodesContext();
   const observationsPageContext = useObservationsPageContext();
   const observationsContext = useObservationsContext();
-
-  useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
 
   return (
     <ListItem

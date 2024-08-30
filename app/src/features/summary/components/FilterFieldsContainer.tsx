@@ -44,8 +44,8 @@ export const FilterFieldsContainer = <FormikValues extends Record<string, string
           item
           key={`search-filters-${field.key ?? index}`}
           sx={{
-            '& .MuiOutlinedInput-root': { background: grey[50] },
-            '& .MuiInputLabel-root': { ml: -0.75, px: 1, background: grey[50] },
+            '& .MuiOutlinedInput-root': { background: '#fff' },
+            '& .MuiInputLabel-root': { ml: -0.75, px: 1, background: '#fff' },
             minWidth: '200px',
             flex: '1 1 200px',
             border: `1px solid ${grey[400]}`,

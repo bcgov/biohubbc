@@ -1,11 +1,9 @@
 import { mdiArrowTopRight } from '@mdi/js';
-import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import Typography from '@mui/material/Typography';
-import { GridColDef, GridOverlay, GridSortModel } from '@mui/x-data-grid';
+import { GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { SkeletonRow } from 'components/loading/SkeletonLoaders';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -49,7 +47,7 @@ export const SurveySpatialObservationTable = (props: ISurveyDataObservationTable
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(5);
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
-  const [tableData, setTableData] = useState<IObservationTableRow[]>([]);
+  const [rows, setTableData] = useState<IObservationTableRow[]>([]);
   const [tableColumns, setTableColumns] = useState<GridColDef<IObservationTableRow>[]>([]);
 
   const paginatedDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
@@ -161,67 +159,47 @@ export const SurveySpatialObservationTable = (props: ISurveyDataObservationTable
   }, [paginatedDataLoader.data, taxonomyContext]);
 
   return (
-    <>
-      {props.isLoading || !paginatedDataLoader.data ? (
-        <Stack>
-          <SkeletonRow />
-          <SkeletonRow />
-          <SkeletonRow />
-        </Stack>
-      ) : (
-        <StyledDataGrid
-          noRowsMessage="No observation records found"
-          columnHeaderHeight={rowHeight}
-          rowHeight={rowHeight}
-          rows={tableData}
-          rowCount={totalRows}
-          paginationModel={{ pageSize, page }}
-          onPaginationModelChange={(model) => {
-            setPage(model.page);
-            setPageSize(model.pageSize);
-          }}
-          pageSizeOptions={[5]}
-          paginationMode="server"
-          sortingMode="server"
-          sortModel={sortModel}
-          onSortModelChange={(model) => setSortModel(model)}
-          loading={paginatedDataLoader.isLoading}
-          getRowId={(row) => row.survey_observation_id}
-          columns={tableColumns}
-          rowSelection={false}
-          checkboxSelection={false}
-          disableColumnSelector
-          disableColumnFilter
-          disableColumnMenu
-          disableVirtualization
-          data-testid="survey-spatial-observation-data-table"
-          noRowsOverlay={
-            <GridOverlay sx={{ position: 'relative' }}>
-              <Box justifyContent="center" display="flex" flexDirection="column">
-                <Typography mb={1} variant="h4" color="textSecondary" textAlign="center">
-                  Add observations after sampling information&nbsp;
-                  <Icon path={mdiArrowTopRight} size={1} />
-                </Typography>
-                <Typography color="textSecondary" textAlign="center">
-                  After adding sampling information, add observations and assign them to a sampling period
-                </Typography>
-              </Box>
-            </GridOverlay>
-          }
-          sx={{
-            '& .MuiDataGrid-virtualScroller': {
-              height: '250px',
-              overflowY: 'auto !important'
-            },
-            '& .MuiDataGrid-overlay': {
-              height: '250px',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center'
-            }
-          }}
+    <LoadingGuard
+      isLoading={props.isLoading || paginatedDataLoader.isLoading || !paginatedDataLoader.isReady}
+      isLoadingFallback={<SkeletonTable />}
+      isLoadingFallbackDelay={100}
+      hasNoData={!rows.length}
+      hasNoDataFallback={
+        <NoDataOverlay
+          height="250px"
+          title="Add Observations"
+          subtitle="After adding sampling information, upload observations and link them to sampling efforts"
+          icon={mdiArrowTopRight}
         />
-      )}
-    </>
+      }
+      hasNoDataFallbackDelay={100}>
+      <StyledDataGrid
+        noRowsMessage="No observation records found"
+        columnHeaderHeight={rowHeight}
+        rowHeight={rowHeight}
+        rows={rows}
+        rowCount={totalRows}
+        paginationModel={{ pageSize, page }}
+        onPaginationModelChange={(model) => {
+          setPage(model.page);
+          setPageSize(model.pageSize);
+        }}
+        pageSizeOptions={[5]}
+        paginationMode="server"
+        sortingMode="server"
+        sortModel={sortModel}
+        onSortModelChange={(model) => setSortModel(model)}
+        loading={paginatedDataLoader.isLoading}
+        getRowId={(row) => row.survey_observation_id}
+        columns={tableColumns}
+        rowSelection={false}
+        checkboxSelection={false}
+        disableColumnSelector
+        disableColumnFilter
+        disableColumnMenu
+        disableVirtualization
+        data-testid="survey-spatial-observation-data-table"
+      />
+    </LoadingGuard>
   );
 };

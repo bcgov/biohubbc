@@ -52,7 +52,7 @@ export interface IYesNoDialogProps {
    *
    * @memberof IYesNoDialogProps
    */
-  onYes: () => void;
+  onYes: () => Promise<void> | void;
 
   /**
    * The yes button label.
