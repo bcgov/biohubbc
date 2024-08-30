@@ -27,7 +27,7 @@ import { Link as RouterLink } from 'react-router-dom';
 
 /**
  * Renders a list of all deployments in the survey
- * 
+ *
  * @returns {*}
  */
 export const SurveyDeploymentList = () => {

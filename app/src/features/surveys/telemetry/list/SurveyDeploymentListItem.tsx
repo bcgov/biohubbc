@@ -143,7 +143,7 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
             mx: 4.5,
             '& .MuiListItemText-primary': {
               typography: 'body2',
-              pt: 1,
+              pt: 1
             }
           }}>
           <SurveyDeploymentListItemDetails deployment={deployment} />

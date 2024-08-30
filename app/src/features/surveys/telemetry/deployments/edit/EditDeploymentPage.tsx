@@ -10,7 +10,7 @@ import { DeploymentFormHeader } from 'features/surveys/telemetry/deployments/com
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useProjectContext, useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
@@ -30,6 +30,7 @@ export const EditDeploymentPage = () => {
   const dialogContext = useDialogContext();
   const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
+  const telemetryDataContext = useTelemetryDataContext();
 
   const formikRef = useRef<FormikProps<ICreateAnimalDeployment>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -89,6 +90,8 @@ export const EditDeploymentPage = () => {
         attachment_end_date: values.attachment_end_date,
         attachment_end_time: values.attachment_end_time
       });
+
+      telemetryDataContext.deploymentsDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
 
       // edit complete, navigate back to telemetry page
       history.push(
