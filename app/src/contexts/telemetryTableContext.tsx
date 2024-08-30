@@ -15,15 +15,16 @@ import { SIMS_TELEMETRY_HIDDEN_COLUMNS } from 'constants/session-storage';
 import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { usePersistentState } from 'hooks/usePersistentState';
-import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
-import { TelemetryDataContext } from './telemetryDataContext';
 
 export interface IManualTelemetryRecord {
   deployment_id: string;
+  device_id: string;
   latitude: number;
   longitude: number;
   date: string;
@@ -38,7 +39,7 @@ export interface IManualTelemetryTableRow extends Partial<IManualTelemetryRecord
 export type TelemetryTableValidationModel = TableValidationModel<IManualTelemetryTableRow>;
 export type TelemetryRowValidationError = RowValidationError<IManualTelemetryTableRow>;
 
-export type ITelemetryTableContext = {
+export type IAllTelemetryTableContext = {
   /**
    * API ref used to interface with an MUI DataGrid representing the telemetry records
    */
@@ -143,20 +144,20 @@ export type ITelemetryTableContext = {
   onRowEditStart: (id: GridRowId) => void;
 };
 
-export const TelemetryTableContext = createContext<ITelemetryTableContext | undefined>(undefined);
+export const TelemetryTableContext = createContext<IAllTelemetryTableContext | undefined>(undefined);
 
-type ITelemetryTableContextProviderProps = PropsWithChildren<{
+type IAllTelemetryTableContextProviderProps = PropsWithChildren<{
   deployment_ids: string[];
 }>;
 
-export const TelemetryTableContextProvider = (props: ITelemetryTableContextProviderProps) => {
+export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextProviderProps) => {
   const { children, deployment_ids } = props;
 
   const _muiDataGridApiRef = useGridApiRef();
 
-  const telemetryApi = useTelemetryApi();
+  const biohubApi = useBiohubApi();
 
-  const telemetryDataContext = useContext(TelemetryDataContext);
+  const telemetryDataLoader = useDataLoader(biohubApi.telemetry.getAllTelemetryByDeploymentIds);
   const dialogContext = useContext(DialogContext);
 
   // The data grid rows
@@ -190,7 +191,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
   const recordCount = rows.length;
 
   // True if telemetry is fetching
-  const isLoading = telemetryDataContext.telemetryDataLoader.isLoading;
+  const isLoading = telemetryDataLoader.isLoading;
 
   // True if table has unsaved changes, deferring value to prevent ui issue with controls rendering
   const hasUnsavedChanges = _modifiedRowIds.current.length > 0 || _stagedRowIds.current.length > 0;
@@ -353,13 +354,14 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
    * @returns {Promise<void>}
    */
   const refreshRecords = useCallback(async () => {
-    const telemetry = (await telemetryDataContext.telemetryDataLoader.refresh(deployment_ids)) ?? [];
+    const telemetry = (deployment_ids.length && (await telemetryDataLoader.refresh(deployment_ids))) || [];
 
     // Format the rows to use date and time
     const rows: IManualTelemetryTableRow[] = telemetry.map((item) => {
       return {
         id: item.id,
         deployment_id: item.deployment_id,
+        device_id: item.device_id,
         latitude: item.latitude,
         longitude: item.longitude,
         date: dayjs(item.acquisition_date).format('YYYY-MM-DD'),
@@ -449,7 +451,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
 
       try {
         if (modifiedRowIdsToDelete.length) {
-          await telemetryApi.deleteManualTelemetry(modifiedRowIdsToDelete);
+          await biohubApi.telemetry.deleteManualTelemetry(modifiedRowIdsToDelete);
         }
 
         // Remove row IDs from validation model
@@ -498,7 +500,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
         });
       }
     },
-    [dialogContext, telemetryApi]
+    [biohubApi, dialogContext]
   );
 
   /**
@@ -631,11 +633,11 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
         }));
 
         if (createData.length) {
-          await telemetryApi.createManualTelemetry(createData);
+          await biohubApi.telemetry.createManualTelemetry(createData);
         }
 
         if (updateData.length) {
-          await telemetryApi.updateManualTelemetry(updateData);
+          await biohubApi.telemetry.updateManualTelemetry(updateData);
         }
 
         revertRecords();
@@ -665,7 +667,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
         _isSavingData.current = false;
       }
     },
-    [dialogContext, _updateRowsMode, _isSavingData, revertRecords, refreshRecords, telemetryApi]
+    [dialogContext, _updateRowsMode, _isSavingData, revertRecords, refreshRecords, biohubApi]
   );
 
   /**
@@ -709,7 +711,7 @@ export const TelemetryTableContextProvider = (props: ITelemetryTableContextProvi
     }
   }, [deployment_ids, refreshRecords]);
 
-  const telemetryTableContext: ITelemetryTableContext = useMemo(
+  const telemetryTableContext: IAllTelemetryTableContext = useMemo(
     () => ({
       _muiDataGridApiRef,
       rows,

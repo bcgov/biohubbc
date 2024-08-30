@@ -44,7 +44,7 @@ export const EditAnimalPage = () => {
   const taxonomyContext = useTaxonomyContext();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
-  const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
+  const surveyCritterId: number | undefined = Number(urlParams['critter_id']);
 
   const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
@@ -70,7 +70,7 @@ export const EditAnimalPage = () => {
   }, [critter?.itis_tsn, taxonomyContext]);
 
   // Loading spinner if the data later hasn't updated to the selected animal yet
-  if (!critter || animalPageContext.selectedAnimal?.critterbase_critter_id !== critter.critter_id) {
+  if (!critter || animalPageContext.selectedAnimal?.critterbase_critter_id !== critter.critterbase_critter_id) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -107,7 +107,7 @@ export const EditAnimalPage = () => {
       }
 
       const response = await critterbaseApi.critters.updateCritter({
-        critter_id: critter.critter_id,
+        critter_id: critter.critterbase_critter_id,
         itis_tsn: values.species.tsn,
         wlh_id: values.wildlife_health_id,
         animal_id: values.nickname,
@@ -130,13 +130,13 @@ export const EditAnimalPage = () => {
             .filter((unit) => unit.collection_category_id !== null && unit.collection_unit_id !== null)
             .map((unit) => ({
               critter_collection_unit_id: unit.critter_collection_unit_id,
-              critter_id: critter.critter_id,
+              critter_id: critter.critterbase_critter_id,
               collection_category_id: unit.collection_category_id as string,
               collection_unit_id: unit.collection_unit_id as string
             })),
           ...collectionsForDelete.map((collection) => ({
             ...collection,
-            critter_id: critter.critter_id,
+            critter_id: critter.critterbase_critter_id,
             _delete: true
           }))
         ]
@@ -150,8 +150,8 @@ export const EditAnimalPage = () => {
       }
 
       // Refresh the context, so the next page loads with the latest data
-      surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-      animalPageContext.critterDataLoader.refresh(critter.critter_id);
+      surveyContext.critterDataLoader.refresh(projectId, surveyId);
+      animalPageContext.critterDataLoader.refresh(projectId, surveyId, critter.critter_id);
 
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`, SKIP_CONFIRMATION_DIALOG);
     } catch (error) {
@@ -216,7 +216,7 @@ export const EditAnimalPage = () => {
         <Paper sx={{ p: 5 }}>
           <AnimalFormContainer
             initialAnimalData={{
-              critter_id: critter.critter_id,
+              critter_id: critter.critterbase_critter_id,
               nickname: critter.animal_id || '',
               sex: critter.sex as AnimalSex,
               species: {
@@ -227,7 +227,10 @@ export const EditAnimalPage = () => {
                 tsn: critter.itis_tsn,
                 scientificName: critter.itis_scientific_name
               },
-              ecological_units: critter.collection_units.map((unit) => ({ ...unit, critter_id: critter.critter_id })),
+              ecological_units: critter.collection_units.map((unit) => ({
+                ...unit,
+                critter_id: critter.critterbase_critter_id
+              })),
               wildlife_health_id: critter.wlh_id,
               critter_comment: critter.critter_comment
             }}

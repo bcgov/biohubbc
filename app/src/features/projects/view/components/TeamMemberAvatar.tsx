@@ -27,7 +27,7 @@ export const TeamMemberAvatar = (props: ITeamMemberAvatarProps) => {
         alignItems: 'center',
         justifyContent: 'center'
       }}>
-      <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 700 }}>{label}</Typography>
+      <Typography sx={{ fontSize: '0.8rem', color: '#fff', fontWeight: 700, userSelect: 'none' }}>{label}</Typography>
     </Box>
   );
 };
