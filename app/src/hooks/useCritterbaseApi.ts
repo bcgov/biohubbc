@@ -6,7 +6,6 @@ import { useAuthentication } from './cb_api/useAuthenticationApi';
 import { useCaptureApi } from './cb_api/useCaptureApi';
 import { useCollectionUnitApi } from './cb_api/useCollectionUnitApi';
 import { useCritterApi } from './cb_api/useCritterApi';
-import { useFamilyApi } from './cb_api/useFamilyApi';
 import { useLookupApi } from './cb_api/useLookupApi';
 import { useMarkingApi } from './cb_api/useMarkingApi';
 import { useMeasurementApi } from './cb_api/useMeasurementApi';
@@ -27,8 +26,6 @@ export const useCritterbaseApi = () => {
 
   const lookup = useLookupApi(apiAxios);
 
-  const family = useFamilyApi(apiAxios);
-
   const xref = useXrefApi(apiAxios);
 
   const marking = useMarkingApi(apiAxios);
@@ -46,7 +43,6 @@ export const useCritterbaseApi = () => {
       critters,
       authentication,
       lookup,
-      family,
       xref,
       marking,
       collectionUnit,

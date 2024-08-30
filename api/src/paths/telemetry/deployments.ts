@@ -1,13 +1,14 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { surveyTelemetrySchema } from '../../openapi/schemas/telemetry';
+import { AllTelemetrySchema } from '../../openapi/schemas/telemetry';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
-import { BctwService, getBctwUser } from '../../services/bctw-service';
+import { getBctwUser } from '../../services/bctw-service/bctw-service';
+import { BctwTelemetryService } from '../../services/bctw-service/bctw-telemetry-service';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('paths/telemetry/manual');
+const defaultLog = getLogger('paths/telemetry/deployments');
 
-export const POST: Operation = [
+export const GET: Operation = [
   authorizeRequestHandler(() => {
     return {
       and: [
@@ -20,12 +21,25 @@ export const POST: Operation = [
   getAllTelemetryByDeploymentIds()
 ];
 
-POST.apiDoc = {
-  description: 'Get list of manual and vendor telemetry by deployment ids',
+GET.apiDoc = {
+  description: 'Get manual and vendor telemetry for a set of deployment Ids',
   tags: ['telemetry'],
   security: [
     {
       Bearer: []
+    }
+  ],
+  parameters: [
+    {
+      in: 'query',
+      name: 'bctwDeploymentIds',
+      schema: {
+        type: 'array',
+        items: { type: 'string', format: 'uuid', minimum: 1 }
+      },
+      explode: false,
+      style: 'form',
+      required: true
     }
   ],
   responses: {
@@ -35,7 +49,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'array',
-            items: surveyTelemetrySchema
+            items: AllTelemetrySchema
           }
         }
       }
@@ -55,34 +69,20 @@ POST.apiDoc = {
     default: {
       $ref: '#/components/responses/default'
     }
-  },
-
-  requestBody: {
-    description: 'Request body',
-    required: true,
-    content: {
-      'application/json': {
-        schema: {
-          title: 'BCTW deployment ids',
-          type: 'array',
-          minItems: 1,
-          items: {
-            title: 'BCTW deployment ids',
-            type: 'string',
-            format: 'uuid'
-          }
-        }
-      }
-    }
   }
 };
 
 export function getAllTelemetryByDeploymentIds(): RequestHandler {
   return async (req, res) => {
     const user = getBctwUser(req);
-    const bctwService = new BctwService(user);
+
+    const bctwTelemetryService = new BctwTelemetryService(user);
+
     try {
-      const result = await bctwService.getAllTelemetryByDeploymentIds(req.body);
+      const bctwDeploymentIds = req.query.bctwDeploymentIds as string[];
+
+      const result = await bctwTelemetryService.getAllTelemetryByDeploymentIds(bctwDeploymentIds);
+
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'getAllTelemetryByDeploymentIds', message: 'error', error });

@@ -253,10 +253,32 @@ export async function getS3SignedURL(key: string): Promise<string | null> {
 }
 
 export interface IS3FileKey {
+  /**
+   * The project ID the file is associated with.
+   */
   projectId: number;
+  /**
+   * The survey ID the file is associated with.
+   */
   surveyId?: number;
+  /**
+   * The template submission ID the file is associated with.
+   *
+   * @deprecated
+   */
   submissionId?: number;
-  folder?: string;
+  /**
+   * The sub-folder in the project/survey where the file is stored.
+   *
+   * Note: For regular/generic file attachments, leave this undefined.
+   */
+  folder?: 'reports' | 'telemetry-credentials';
+  /**
+   * The name of the file.
+   *
+   * @type {string}
+   * @memberof IS3FileKey
+   */
   fileName: string;
 }
 
