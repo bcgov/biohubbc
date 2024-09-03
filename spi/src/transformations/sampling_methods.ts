@@ -34,10 +34,10 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
                         WHEN sp.method_type_cd = 'OBS_PSAL_CAPS_2.0' THEN 'Pitfall Trap'
                         WHEN sp.method_type_cd = 'OBS_PSAL_TRAN_2.0' THEN 'Visual Encounter'
                         WHEN sp.method_type_cd = 'OBS_BAPT_SRCA_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'HAN_WOCO_CAPF_2.0' THEN 'Placeholder Gun Net'
+                        WHEN sp.method_type_cd = 'HAN_WOCO_CAPF_2.0' THEN 'Visual Encounter'
                         WHEN sp.method_type_cd = 'OBS_BAPT_LARV_2.0' THEN 'Handheld net'
-                        WHEN sp.method_type_cd = 'OBS_BAPT_AUDI_2.0' THEN 'Placeholder Audio Encounter'
-                        WHEN sp.method_type_cd = 'TELEMETRY_DATA' THEN 'Placeholder Radio'
+                        WHEN sp.method_type_cd = 'OBS_BAPT_AUDI_2.0' THEN 'Audio Encounter'
+                        WHEN sp.method_type_cd = 'TELEMETRY_DATA' THEN 'Radio'
                         WHEN sp.method_type_cd = 'OBS_WATR_BRCO' THEN 'Visual Encounter'
                         WHEN sp.method_type_cd = 'OBS_MAMU_MVFT' THEN 'Visual Encounter'
                         WHEN sp.method_type_cd = 'OBS_WATR_PBCO' THEN 'Visual Encounter'
@@ -75,20 +75,20 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
                         WHEN sp.method_type_cd = 'OBS_SMAM_CAPS_2.0' THEN 'Box or live trap'
                         WHEN sp.method_type_cd = 'OBS_BATS_MNHT_2.0' THEN 'Mist Net'
                         WHEN sp.method_type_cd = 'BIRD_DETECTION_1.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_INIT_TEL_1.0' THEN 'Placeholder Radio'
+                        WHEN sp.method_type_cd = 'OBS_INIT_TEL_1.0' THEN 'Radio'
                         WHEN sp.method_type_cd = 'OBS_MAMU_FOSU_2.0' THEN 'Radar'
                         WHEN sp.method_type_cd = 'Wildlife Camera' THEN 'Camera trap'
                         WHEN sp.method_type_cd = 'OBS_BATS_DETC_2.0' THEN 'Visual Encounter'
                         WHEN sp.method_type_cd = 'OBS_OWL_NEST' THEN 'Visual Encounter'
                         WHEN sp.method_type_cd = 'NON_STAN_RAP_NEST' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'Bat Acoustic' THEN 'Placeholder Audio Encounter'
+                        WHEN sp.method_type_cd = 'Bat Acoustic' THEN 'Audio Encounter'
                         WHEN sp.method_type_cd = 'OBS_SONG_PTCO_2.0' THEN 'Point Count'
                         WHEN sp.method_type_cd = 'Bird Nest Descriptions' THEN 'Visual Encounter'
                         WHEN sp.method_type_cd = 'Herp Capture Or Handling Or Class Or Count' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_INIT_TEL_1.2' THEN 'Placeholder Radio'
+                        WHEN sp.method_type_cd = 'OBS_INIT_TEL_1.2' THEN 'Radio'
                         WHEN sp.method_type_cd = 'OBS_OWL_CLPB' THEN 'Visual Encounter'
                         WHEN sp.method_type_cd = 'OBS_UNGA_CENS_1.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_INIT_TEL_1.1' THEN 'Placeholder Radio'
+                        WHEN sp.method_type_cd = 'OBS_INIT_TEL_1.1' THEN 'Radio'
                         WHEN sp.method_type_cd = 'HERPETILE_INDIVIDUAL_DATA_1.0' THEN 'Visual Encounter'
                         WHEN sp.method_type_cd = 'Bird Nest Visits' THEN 'Visual Encounter'
                         WHEN sp.method_type_cd = 'OBS_RAPT_CPLB_2.0' THEN 'Visual Encounter'
@@ -805,7 +805,7 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
                             '%Marmot%',
                             '%Radar Survey%') THEN 'Radar'
 
-                        -- Gun net
+                        -- Gun net changed to Visual Encounter
                         WHEN sp.method_type_cd IN (
                             '12-Administrative Miscellaneous',
                             'HERPETILE_HABITAT_DATA_1.0',
@@ -832,7 +832,7 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
                             'Animal Capture or Marking',
                             'Results by Area',
                             'Census',
-                            'LBS') AND sp.survey_name LIKE '%Aerial Net Gunning and Collar Removal%' THEN 'Gun net'
+                            'LBS') AND sp.survey_name LIKE '%Aerial Net Gunning and Collar Removal%' THEN 'Visual Encounter'
 
                         -- Point count
                         WHEN sp.method_type_cd IN (
