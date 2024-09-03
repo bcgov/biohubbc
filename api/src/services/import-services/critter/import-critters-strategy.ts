@@ -1,13 +1,15 @@
-import { keys, omit, startCase, toUpper, uniq } from 'lodash';
+import { keys, omit, toUpper, uniq } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
 import { ApiGeneralError } from '../../../errors/api-error';
 import { getLogger } from '../../../utils/logger';
+import { getTsnMeasurementTypeDefinitionMap } from '../../../utils/observation-xlsx-utils/measurement-column-utils';
 import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
 import { generateCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { getNonStandardColumnNamesFromWorksheet, IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
 import {
+  CBQualitativeOption,
   CritterbaseService,
   IBulkCreate,
   ICollection,
@@ -21,8 +23,6 @@ import { CSVImportStrategy, Row, Validation, ValidationError } from '../import-c
 import { CsvCritter, PartialCsvCritter } from './import-critters-strategy.interface';
 
 const defaultLog = getLogger('services/import/import-critters-service');
-
-const CSV_CRITTER_SEX_OPTIONS = ['UNKNOWN', 'MALE', 'FEMALE', 'HERMAPHRODITIC'];
 
 /**
  *
@@ -93,7 +93,7 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
   _getCritterFromRow(row: CsvCritter): ICreateCritter {
     return {
       critter_id: row.critter_id,
-      sex: row.sex,
+      sex_qualitative_option_id: row.sex ?? null,
       itis_tsn: row.itis_tsn,
       animal_id: row.animal_id,
       wlh_id: row.wlh_id,
@@ -166,11 +166,50 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
 
     tsnCollectionUnits.forEach((collectionUnits, index) => {
       if (collectionUnits.length) {
+        // TODO: Is this correct?
         collectionUnitMap.set(toUpper(collectionUnits[0].category_name), { collectionUnits, tsn: Number(tsns[index]) });
       }
     });
 
     return collectionUnitMap;
+  }
+
+  /**
+   * Get a mapping of sex values for a list of tsns.
+   * Used in the zod validation.
+   *
+   * @example new Map([['180844', new Set(['Male', 'Female'])]]);
+   *
+   * @async
+   * @param {WorkSheet} worksheet - Xlsx Worksheet
+   * @param {string[]} tsns - List of unique and valid TSNS
+   * @returns {Promise<Map<string, CBQualitativeOption[]>} Sex mapping
+   */
+  async _getSpeciesSexMap(
+    worksheet: WorkSheet,
+    tsns: string[]
+  ): Promise<Map<number, { sexes: CBQualitativeOption[] }>> {
+    // Map each ITIS TSN to its sex options
+    const sexMap = new Map<number, { sexes: CBQualitativeOption[] }>();
+
+    // Fetch the measurement type definitions
+    const tsnMeasurementTypeDefinitionMap = await getTsnMeasurementTypeDefinitionMap(tsns, this.critterbaseService);
+
+    // Iterate over each TSN to populate the sexMap
+    tsns.forEach((tsn) => {
+      const measurements = tsnMeasurementTypeDefinitionMap[tsn];
+      if (measurements) {
+        const sexMeasurement = measurements.qualitative.find((qual) => qual.measurement_name.toLowerCase() === 'sex');
+
+        if (sexMeasurement) {
+          sexMap.set(Number(tsn), {
+            sexes: sexMeasurement.options
+          });
+        }
+      }
+    });
+
+    return sexMap;
   }
 
   /**
@@ -222,6 +261,9 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
     ]);
     const collectionUnitMap = await this._getCollectionUnitMap(worksheet, validRowTsns);
 
+    // Get map with valid species sexes
+    const sexMap = await this._getSpeciesSexMap(worksheet, validRowTsns);
+
     // Parse reference data for validation
     const tsnSet = new Set(validRowTsns.map((tsn) => Number(tsn)));
     const csvCritterAliases = rowsToValidate.map((row) => row.animal_id);
@@ -236,8 +278,6 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
        * --------------------------------------------------------------------
        */
 
-      // SEX is a required property and must be a correct value
-      const invalidSex = !row.sex || !CSV_CRITTER_SEX_OPTIONS.includes(toUpper(row.sex));
       // WLH_ID must follow regex pattern
       const invalidWlhId = row.wlh_id && !/^\d{2}-.+/.exec(row.wlh_id);
       // ITIS_TSN is required and be a valid TSN
@@ -248,9 +288,6 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
         surveyCritterAliases.has(row.animal_id) ||
         csvCritterAliases.filter((value) => value === row.animal_id).length > 1;
 
-      if (invalidSex) {
-        errors.push({ row: index, message: `Invalid SEX. Expecting: ${CSV_CRITTER_SEX_OPTIONS.join(', ')}.` });
-      }
       if (invalidWlhId) {
         errors.push({ row: index, message: `Invalid WLH_ID. Example format '10-1000R'.` });
       }
@@ -261,8 +298,55 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
         errors.push({ row: index, message: `Invalid ALIAS. Must be unique in Survey and CSV.` });
       }
 
-      // Covert `sex` to expected casing for Critterbase
-      row.sex = startCase(row.sex?.toLowerCase());
+      /**
+       * --------------------------------------------------------------------
+       *                      SEX VALIDATION
+       * --------------------------------------------------------------------
+       */
+      console.log('Validating sex');
+      if (row.itis_tsn) {
+        console.log('here');
+        const sexColumn = sexMap.get(row.itis_tsn);
+        console.log(row.sex);
+        console.log(row.itis_tsn);
+        console.log(sexColumn);
+
+        // Remove sex if there's no corresponding TSN or if no sex value is provided
+        if (!sexColumn || !row.sex) {
+          console.log('No sex value');
+          delete row.sex;
+        } else {
+          // Find if the provided sex value matches any option in the sexColumn
+          const sexMatch = sexColumn.sexes.find(
+            (sex) => sex.option_label.toLowerCase() === String(row.sex).toLowerCase()
+          );
+
+          if (!sexMatch) {
+            errors.push({
+              row: index,
+              message: `Invalid sex. Cell value is not valid for the species.`
+            });
+          } else {
+            console.log(sexMatch.qualitative_option_id);
+            // Update the cell to be the qualitative option id corresponding to the sex value
+            row['SEX'] = sexMatch.qualitative_option_id;
+          }
+        }
+      }
+
+      // // Get all measurement columns names from the worksheet, that match a measurement in the TSN measurements
+      // const measurementColumnNames = getMeasurementColumnNames([], tsnMeasurementTypeDefinitionMap);
+
+      // const measurementsToValidate: IMeasurementDataToValidate = measurementColumnNames.map((columnName) => ({
+      //   tsn: String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
+      //   key: columnName,
+      //   value: row[columnName]
+      // }));
+
+      // // Validate measurement column data
+      // if (!validateMeasurements(measurementsToValidate, tsnMeasurementTypeDefinitionMap)) {
+      //   throw new Error('Failed to process file for importing observations. Measurement column validator failed.');
+      // }
 
       /**
        * --------------------------------------------------------------------

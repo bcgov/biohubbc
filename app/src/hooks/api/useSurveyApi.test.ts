@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { AnimalSex, ICreateCritter } from 'features/surveys/view/survey-animals/animal';
+import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
@@ -72,7 +72,7 @@ describe('useSurveyApi', () => {
         itis_tsn: 1,
         wlh_id: '123-45',
         animal_id: 'carl',
-        sex: AnimalSex.MALE,
+        sex_qualitative_option_id: null,
         critter_comment: 'comment'
       };
 

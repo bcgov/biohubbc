@@ -4,7 +4,7 @@
  */
 export type CsvCritter = {
   critter_id: string;
-  sex: string;
+  sex?: string;
   itis_tsn: number;
   animal_id: string;
   wlh_id?: string;

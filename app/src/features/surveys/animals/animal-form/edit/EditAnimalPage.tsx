@@ -11,7 +11,6 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { EditAnimalI18N } from 'constants/i18n';
 import { AnimalFormContainer } from 'features/surveys/animals/animal-form/components/AnimalFormContainer';
-import { AnimalSex } from 'features/surveys/view/survey-animals/animal';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import {
@@ -111,7 +110,7 @@ export const EditAnimalPage = () => {
         itis_tsn: values.species.tsn,
         wlh_id: values.wildlife_health_id,
         animal_id: values.nickname,
-        sex: values.sex,
+        sex_qualitative_option_id: values.sex_qualitative_option_id,
         critter_comment: values.critter_comment
       });
 
@@ -218,7 +217,7 @@ export const EditAnimalPage = () => {
             initialAnimalData={{
               critter_id: critter.critterbase_critter_id,
               nickname: critter.animal_id || '',
-              sex: critter.sex as AnimalSex,
+              sex_qualitative_option_id: critter.sex.qualitative_option_id,
               species: {
                 commonNames: [],
                 rank: undefined,

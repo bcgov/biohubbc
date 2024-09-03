@@ -4,3 +4,9 @@ export interface IAnimalAdvancedFilters {
   itis_tsn?: number;
   system_user_id?: number;
 }
+
+
+export interface ISex {
+  qualitative_option_id: string;
+  label: string;
+}

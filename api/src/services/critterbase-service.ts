@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { getLogger } from '../utils/logger';
 import { KeycloakService } from './keycloak-service';
+import { ISex } from '../models/animal-view';
 
 // TODO: TechDebt: Audit the existing types / return types in this file.
 
@@ -27,7 +28,7 @@ export interface ICritter {
   critter_id: string;
   wlh_id: string | null;
   animal_id: string | null;
-  sex: string;
+  sex: ISex | null
   itis_tsn: number;
   itis_scientific_name: string;
   critter_comment: string | null;
@@ -42,7 +43,7 @@ export interface ICreateCritter {
   critter_id?: string;
   wlh_id?: string | null;
   animal_id: string; // NOTE: In critterbase this is optional. For SIMS it should be required.
-  sex: string;
+  sex_qualitative_option_id: string | null;
   itis_tsn: number;
   critter_comment?: string | null;
 }
