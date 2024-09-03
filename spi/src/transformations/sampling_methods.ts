@@ -17,85 +17,85 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
             JOIN 
                 biohub.method_lookup ml ON 
                 CASE 
-                        WHEN sp.method_type_cd = 'OBS_MAWE_SNTR' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_TSAL_SEQS' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_SONG_SPMA_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_MSTC_DETC_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_GAME_ENTR_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_CNFB_AERS_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'ROOS_ELK_CLASS_1.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_RIVB_TERL_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_BATS_ROST_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_WOCO_SITR_2.1' THEN 'Visual Encounter'
+                        WHEN sp.method_type_cd = 'OBS_MAWE_SNTR' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_TSAL_SEQS' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_SONG_SPMA_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_MSTC_DETC_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_GAME_ENTR_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_CNFB_AERS_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'ROOS_ELK_CLASS_1.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_RIVB_TERL_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_BATS_ROST_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_WOCO_SITR_2.1' THEN 'Visual encounter'
                         WHEN sp.method_type_cd = 'OBS_MAMU_MAFT_2.0' THEN 'Radar'
-                        WHEN sp.method_type_cd = 'OBS_MSTC_SNTR_2.1' THEN 'Visual Encounter'
+                        WHEN sp.method_type_cd = 'OBS_MSTC_SNTR_2.1' THEN 'Visual encounter'
                         WHEN sp.method_type_cd = 'HAN_BIRD_CAPF_2.0' THEN 'Mist Net'
                         WHEN sp.method_type_cd = 'HAN_BIRD_CAPF_2.1' THEN 'Mist Net'
-                        WHEN sp.method_type_cd = 'OBS_PSAL_CAPS_2.0' THEN 'Pitfall Trap'
-                        WHEN sp.method_type_cd = 'OBS_PSAL_TRAN_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_BAPT_SRCA_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'HAN_WOCO_CAPF_2.0' THEN 'Visual Encounter'
+                        WHEN sp.method_type_cd = 'OBS_PSAL_CAPS_2.0' THEN 'Pitfall trap'
+                        WHEN sp.method_type_cd = 'OBS_PSAL_TRAN_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_BAPT_SRCA_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'HAN_WOCO_CAPF_2.0' THEN 'Visual encounter'
                         WHEN sp.method_type_cd = 'OBS_BAPT_LARV_2.0' THEN 'Handheld net'
-                        WHEN sp.method_type_cd = 'OBS_BAPT_AUDI_2.0' THEN 'Audio Encounter'
+                        WHEN sp.method_type_cd = 'OBS_BAPT_AUDI_2.0' THEN 'Audio encounter'
                         WHEN sp.method_type_cd = 'TELEMETRY_DATA' THEN 'Radio'
-                        WHEN sp.method_type_cd = 'OBS_WATR_BRCO' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_MAMU_MVFT' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_WATR_PBCO' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_UNGG_TOCO_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_SNAK_TRAN_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_SNAK_HACO_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'NON_STAN_OBS_BECO' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_RAPT_ENTR_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_BEAR_SIGN_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_CNFB_NECO_2.1' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_PISC_FWTR_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_MSTC_SNTR' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_WOOD_ENTR_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_RAPT_CPLB' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_UNGA_SABL' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_BAPT_TETR_2.0' THEN 'Pitfall Trap'
-                        WHEN sp.method_type_cd = 'OBS_PSAL_TCQS_2.0' THEN 'Visual Encounter'
+                        WHEN sp.method_type_cd = 'OBS_WATR_BRCO' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_MAMU_MVFT' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_WATR_PBCO' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_UNGG_TOCO_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_SNAK_TRAN_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_SNAK_HACO_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'NON_STAN_OBS_BECO' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_RAPT_ENTR_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_BEAR_SIGN_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_CNFB_NECO_2.1' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_PISC_FWTR_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_MSTC_SNTR' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_WOOD_ENTR_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_RAPT_CPLB' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_UNGA_SABL' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_BAPT_TETR_2.0' THEN 'Pitfall trap'
+                        WHEN sp.method_type_cd = 'OBS_PSAL_TCQS_2.0' THEN 'Visual encounter'
                         WHEN sp.method_type_cd = 'OBS_SMAM_CAPS_2.1' THEN 'Box or live trap'
-                        WHEN sp.method_type_cd = 'OBS_UNGG_SLCO_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_WOOD_CPLB_2.0' THEN 'Visual Encounter'
+                        WHEN sp.method_type_cd = 'OBS_UNGG_SLCO_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_WOOD_CPLB_2.0' THEN 'Visual encounter'
                         WHEN sp.method_type_cd = 'OBS_BATS_TRAP' THEN 'Mist Net'
-                        WHEN sp.method_type_cd = 'OBS_WATR_NBCO' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'HERPETILE_GROUP_DATA_1.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'NON_STAN_BAIT_SIGN' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_UNGG_CLASS_2.0' THEN 'Visual Encounter'
+                        WHEN sp.method_type_cd = 'OBS_WATR_NBCO' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'HERPETILE_GROUP_DATA_1.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'NON_STAN_BAIT_SIGN' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_UNGG_CLASS_2.0' THEN 'Visual encounter'
                         WHEN sp.method_type_cd = 'OBS_BATS_MNHT_2.1' THEN 'Mist Net'
-                        WHEN sp.method_type_cd = 'Bird Call Playback' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_TFPG_HACO_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_RAPT_STWA_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_UNGA_EFWT_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_SONG_ENTR_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_UNGG_PECO_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'NON_STAN_COUNT' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_UNGA_CLASS_2.0' THEN 'Visual Encounter'
+                        WHEN sp.method_type_cd = 'Bird Call Playback' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_TFPG_HACO_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_RAPT_STWA_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_UNGA_EFWT_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_SONG_ENTR_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_UNGG_PECO_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'NON_STAN_COUNT' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_UNGA_CLASS_2.0' THEN 'Visual encounter'
                         WHEN sp.method_type_cd = 'OBS_SMAM_CAPS_2.0' THEN 'Box or live trap'
                         WHEN sp.method_type_cd = 'OBS_BATS_MNHT_2.0' THEN 'Mist Net'
-                        WHEN sp.method_type_cd = 'BIRD_DETECTION_1.0' THEN 'Visual Encounter'
+                        WHEN sp.method_type_cd = 'BIRD_DETECTION_1.0' THEN 'Visual encounter'
                         WHEN sp.method_type_cd = 'OBS_INIT_TEL_1.0' THEN 'Radio'
                         WHEN sp.method_type_cd = 'OBS_MAMU_FOSU_2.0' THEN 'Radar'
                         WHEN sp.method_type_cd = 'Wildlife Camera' THEN 'Camera trap'
-                        WHEN sp.method_type_cd = 'OBS_BATS_DETC_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_OWL_NEST' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'NON_STAN_RAP_NEST' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'Bat Acoustic' THEN 'Audio Encounter'
+                        WHEN sp.method_type_cd = 'OBS_BATS_DETC_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_OWL_NEST' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'NON_STAN_RAP_NEST' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'Bat Acoustic' THEN 'Audio encounter'
                         WHEN sp.method_type_cd = 'OBS_SONG_PTCO_2.0' THEN 'Point Count'
-                        WHEN sp.method_type_cd = 'Bird Nest Descriptions' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'Herp Capture Or Handling Or Class Or Count' THEN 'Visual Encounter'
+                        WHEN sp.method_type_cd = 'Bird Nest Descriptions' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'Herp Capture Or Handling Or Class Or Count' THEN 'Visual encounter'
                         WHEN sp.method_type_cd = 'OBS_INIT_TEL_1.2' THEN 'Radio'
-                        WHEN sp.method_type_cd = 'OBS_OWL_CLPB' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_UNGA_CENS_1.0' THEN 'Visual Encounter'
+                        WHEN sp.method_type_cd = 'OBS_OWL_CLPB' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_UNGA_CENS_1.0' THEN 'Visual encounter'
                         WHEN sp.method_type_cd = 'OBS_INIT_TEL_1.1' THEN 'Radio'
-                        WHEN sp.method_type_cd = 'HERPETILE_INDIVIDUAL_DATA_1.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'Bird Nest Visits' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_RAPT_CPLB_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'OBS_UNGA_SABL_2.0' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'NON_STAN_OBS_SGN' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'Rare Plants and Fungi' THEN 'Visual Encounter'
-                        WHEN sp.method_type_cd = 'Ungulate Census' THEN 'Visual Encounter'
+                        WHEN sp.method_type_cd = 'HERPETILE_INDIVIDUAL_DATA_1.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'Bird Nest Visits' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_RAPT_CPLB_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'OBS_UNGA_SABL_2.0' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'NON_STAN_OBS_SGN' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'Rare Plants and Fungi' THEN 'Visual encounter'
+                        WHEN sp.method_type_cd = 'Ungulate Census' THEN 'Visual encounter'
                         -- Visual Encounter
                         WHEN sp.method_type_cd IN (
                             '12-Administrative Miscellaneous',
@@ -334,7 +334,7 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
                             '%Point Count Observations%',
                             '%Spring Spotlight Counts%',
                             '%Aerial Sticknest Survey%',
-                            '%Aerial Observations%') THEN 'Visual Encounter'
+                            '%Aerial Observations%') THEN 'Visual encounter'
                             -- Radio
                         WHEN sp.method_type_cd IN (
                             '12-Administrative Miscellaneous',
@@ -537,7 +537,7 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
                             '%Spadefoot Toad Auditory Survey%', 
                             '%Call playback inventory%',
                             '%Call Playback%',
-                            '%2006 Williamsons Sapsucker Call Playback%') THEN 'Audio Encounter'
+                            '%2006 Williamsons Sapsucker Call Playback%') THEN 'Audio encounter'
                             -- Drone
                         WHEN sp.method_type_cd IN (
                             '12-Administrative Miscellaneous',
@@ -599,7 +599,7 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
                             'LBS') AND sp.survey_name IN (
                             '%Electrofishing%',
                             '%TCS and Electrofishing%') THEN 'Electrofishing'
-                            -- Camera Trap
+                            -- Camera trap
                         WHEN sp.method_type_cd IN (
                             '12-Administrative Miscellaneous',
                             'HERPETILE_HABITAT_DATA_1.0',
@@ -637,7 +637,7 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
                             '%General Survey Auditory%',
                             '%Remote Cameras and Hair Snag%',
                             '%Camera%',
-                            '%Telemetry and Wildlife Cameras%') THEN 'Camera Trap'
+                            '%Telemetry and Wildlife Cameras%') THEN 'Camera trap'
 
                         -- Handheld net
                         WHEN sp.method_type_cd IN (
@@ -708,7 +708,7 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
                             '%1996 -1998 - Kermode Bear Hair Snare Suveys%',
                             '%Hair Collection for Genetic Population Assignment%',
                             '%2000-ongoing - Grizzly Bear Detection and Identification%',
-                            '%Hair Snag DNA Survey%') THEN 'Hair Snag'
+                            '%Hair Snag DNA Survey%') THEN 'Hair snag'
 
                         -- Angling
                         WHEN sp.method_type_cd IN (
@@ -832,7 +832,7 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
                             'Animal Capture or Marking',
                             'Results by Area',
                             'Census',
-                            'LBS') AND sp.survey_name LIKE '%Aerial Net Gunning and Collar Removal%' THEN 'Visual Encounter'
+                            'LBS') AND sp.survey_name LIKE '%Aerial Net Gunning and Collar Removal%' THEN 'Visual encounter'
 
                         -- Point count
                         WHEN sp.method_type_cd IN (
