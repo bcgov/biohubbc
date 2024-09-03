@@ -17,15 +17,29 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
         swo.longitude, 
         swo.wlo_count, 
         -- date/time may need to be retrieved from sampling site visit 
-        swo.when_created
-        -- join tables for ids for period, method, site
-        -- need to drop the not null constraint for itis tsn, then need to insert the swo.taxonimic_unit_id into biohub.study_species.spi_wldtaxonomic_units_id
+        swo.when_created, 
+        mssdc.survey_sample_site_id, 
+        ssm.survey_sample_method_id, 
+        ssp.survey_sample_period_id
+ 
     FROM 
         public.spi_wildlife_observations swo
     JOIN 
         biohub.survey s
     ON 
-        s.spi_survey_id = swo.survey_id;
+        s.spi_survey_id = swo.survey_id
+    JOIN 
+        public.migrate_spi_sample_design_component mssdc
+    ON 
+        swo.design_component_id = mssdc.design_component_id
+    JOIN 
+        biohub.survey_sample_method ssm
+    ON 
+        ssm.survey_sample_site_id = mssdc.survey_sample_site_id
+    JOIN 
+        biohub.survey_sample_period ssp
+    ON 
+        ssp.survey_sample_method_id = ssm.survey_sample_method_id;
   `;
 
   await connection.sql(transformWildlifeObservationsSql);
