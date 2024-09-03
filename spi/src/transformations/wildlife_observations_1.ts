@@ -15,7 +15,7 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
         s.survey_id,
         swo.latitude,
         swo.longitude, 
-        swo.wlo_coun, 
+        swo.wlo_count, 
         -- date/time may need to be retrieved from sampling site visit 
         swo.when_created
         -- join tables for ids for period, method, site
