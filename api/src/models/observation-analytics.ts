@@ -59,7 +59,7 @@ export type ObservationCountByGroupSQLResponse = {
   individual_percentage: number;
   [key: string]: any; // To accommodate dynamic columns
   quant_measurements: { [measurementId: string]: number | null };
-  qual_measurements: { [measurementId: string]: string };
+  qual_measurements: { [measurementId: string]: string | null };
 };
 
 export interface ObservationAnalyticsResponse

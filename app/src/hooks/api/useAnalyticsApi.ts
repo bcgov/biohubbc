@@ -23,17 +23,10 @@ const useAnalyticsApi = (axios: AxiosInstance) => {
     groupByQuantitativeMeasurements: string[],
     groupByQualitativeMeasurements: string[]
   ): Promise<IObservationCountByGroup[]> => {
-    let url = `/api/analytics/observations?surveyIds=${surveyIds.join(',')}&groupByColumns=${groupByColumns.join(',')}`;
+    const { data } = await axios.get('/api/analytics/observations', {
+      params: { surveyIds, groupByColumns, groupByQuantitativeMeasurements, groupByQualitativeMeasurements }
+    });
 
-    if (groupByQualitativeMeasurements.length) {
-      url = `${url}&groupByQualitativeMeasurements=${groupByQualitativeMeasurements.join(',').trim()}`;
-    }
-
-    if (groupByQuantitativeMeasurements.length) {
-      url = `${url}&groupByQuantitativeMeasurements=${groupByQuantitativeMeasurements.join(',').trim()}`;
-    }
-
-    const { data } = await axios.get(url);
     return data;
   };
 

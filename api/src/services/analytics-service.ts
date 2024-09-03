@@ -15,22 +15,37 @@ import {
 } from './critterbase-service';
 import { DBService } from './db-service';
 
+/**
+ * Handles all business logic related to data analytics.
+ *
+ * @export
+ * @class AnalyticsService
+ * @extends {DBService}
+ */
 export class AnalyticsService extends DBService {
-  private analyticsRepository: AnalyticsRepository;
+  analyticsRepository: AnalyticsRepository;
+
+  critterbaseService: CritterbaseService;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.analyticsRepository = new AnalyticsRepository(connection);
+
+    this.critterbaseService = new CritterbaseService({
+      keycloak_guid: this.connection.systemUserGUID(),
+      username: this.connection.systemUserIdentifier()
+    });
   }
 
   /**
    * Gets observation counts by group for given survey IDs and groupings.
    *
-   * @param surveyIds Array of survey IDs
-   * @param groupByColumns Columns to group by
-   * @param groupByQuantitativeMeasurements Quantitative measurements to group by
-   * @param groupByQualitativeMeasurements Qualitative measurements to group by
-   * @returns Array of ObservationCountByGroupWithNamedMeasurements
+   * @param {number[]} surveyIds Array of survey IDs
+   * @param {string[]} groupByColumns Columns to group by
+   * @param {string[]} groupByQuantitativeMeasurements Quantitative measurements to group by
+   * @param {string[]} groupByQualitativeMeasurements Qualitative measurements to group by
+   * @return {Promise<ObservationAnalyticsResponse[]>} Array of ObservationCountByGroupWithNamedMeasurements
+   * @memberof AnalyticsService
    */
   async getObservationCountByGroup(
     surveyIds: number[],
@@ -38,80 +53,135 @@ export class AnalyticsService extends DBService {
     groupByQuantitativeMeasurements: string[],
     groupByQualitativeMeasurements: string[]
   ): Promise<ObservationAnalyticsResponse[]> {
-    const critterbaseService = new CritterbaseService({
-      keycloak_guid: this.connection.systemUserGUID(),
-      username: this.connection.systemUserIdentifier()
-    });
+    // Fetch observation counts from repository
+    const counts = await this.analyticsRepository.getObservationCountByGroup(
+      surveyIds,
+      this._filterNonEmptyColumns(groupByColumns),
+      this._filterNonEmptyColumns(groupByQuantitativeMeasurements),
+      this._filterNonEmptyColumns(groupByQualitativeMeasurements)
+    );
 
-    try {
-      // Fetch observation counts from repository
-      const counts = await this.analyticsRepository.getObservationCountByGroup(
-        surveyIds,
-        this._filterNonEmptyColumns(groupByColumns),
-        this._filterNonEmptyColumns(groupByQuantitativeMeasurements),
-        this._filterNonEmptyColumns(groupByQualitativeMeasurements)
-      );
+    // Fetch measurement definitions in parallel
+    const [qualitativeDefinitions, quantitativeDefinitions] = await Promise.all([
+      this._fetchQualitativeDefinitions(counts),
+      this._fetchQuantitativeDefinitions(counts)
+    ]);
 
-      // Fetch measurement definitions in parallel
-      const [qualitativeDefinitions, quantitativeDefinitions] = await Promise.all([
-        this._fetchQualitativeDefinitions(critterbaseService, counts),
-        this._fetchQuantitativeDefinitions(critterbaseService, counts)
-      ]);
+    const transformedCounts = this._transformMeasurementObjectKeysToArrays(counts);
 
-      const transformedCounts = this._transformMeasurementObjectKeysToArrays(counts);
-
-      return this._processCounts(transformedCounts, qualitativeDefinitions, quantitativeDefinitions);
-    } catch (error) {
-      console.error('Error fetching observation counts:', error);
-      throw error;
-    }
+    return this._processCounts(transformedCounts, qualitativeDefinitions, quantitativeDefinitions);
   }
 
+  /**
+   * Filters out empty columns.
+   *
+   * @param {string[]} columns
+   * @return {*}  {string[]}
+   * @memberof AnalyticsService
+   */
   _filterNonEmptyColumns(columns: string[]): string[] {
     return columns.filter((column) => column.trim() !== '');
   }
 
+  /**
+   * Fetches qualitative measurement definitions for given counts.
+   *
+   * @param {ObservationCountByGroupSQLResponse[]} counts
+   * @return {*}  {Promise<CBQualitativeMeasurementTypeDefinition[]>}
+   * @memberof AnalyticsService
+   */
   async _fetchQualitativeDefinitions(
-    critterbaseService: CritterbaseService,
     counts: ObservationCountByGroupSQLResponse[]
   ): Promise<CBQualitativeMeasurementTypeDefinition[]> {
-    const qualTaxonMeasurementIds = this._extractMeasurementIds(counts, 'qual_measurements');
-    return critterbaseService.getQualitativeMeasurementTypeDefinition(qualTaxonMeasurementIds);
+    const qualTaxonMeasurementIds = this._getQualitativeMeasurementIds(counts);
+
+    if (qualTaxonMeasurementIds.length === 0) {
+      return [];
+    }
+
+    return this.critterbaseService.getQualitativeMeasurementTypeDefinition(qualTaxonMeasurementIds);
   }
 
+  /**
+   * Fetches quantitative measurement definitions for given counts.
+   *
+   * @param {ObservationCountByGroupSQLResponse[]} counts
+   * @return {*}  {Promise<CBQuantitativeMeasurementTypeDefinition[]>}
+   * @memberof AnalyticsService
+   */
   async _fetchQuantitativeDefinitions(
-    critterbaseService: CritterbaseService,
     counts: ObservationCountByGroupSQLResponse[]
   ): Promise<CBQuantitativeMeasurementTypeDefinition[]> {
-    const quantTaxonMeasurementIds = this._extractMeasurementIds(counts, 'quant_measurements');
-    return critterbaseService.getQuantitativeMeasurementTypeDefinition(quantTaxonMeasurementIds);
+    const quantTaxonMeasurementIds = this._getQuantitativeMeasurementIds(counts);
+
+    if (quantTaxonMeasurementIds.length === 0) {
+      return [];
+    }
+
+    return this.critterbaseService.getQuantitativeMeasurementTypeDefinition(quantTaxonMeasurementIds);
   }
 
-  _extractMeasurementIds(
-    counts: ObservationCountByGroupSQLResponse[],
-    measurementType: 'quant_measurements' | 'qual_measurements'
-  ): string[] {
-    return Object.keys(counts[0]?.[measurementType] ?? {}).map((id) => id);
+  /**
+   * Returns array of unique qualitative measurement IDs from given counts.
+   *
+   * @param {ObservationCountByGroupSQLResponse[]} counts
+   * @return {*}  {string[]}
+   * @memberof AnalyticsService
+   */
+  _getQualitativeMeasurementIds(counts: ObservationCountByGroupSQLResponse[]): string[] {
+    return Array.from(new Set(counts.flatMap((count) => Object.keys(count.qual_measurements))));
   }
 
+  /**
+   * Returns array of unique quantitative measurement IDs from given counts.
+   *
+   * @param {ObservationCountByGroupSQLResponse[]} counts
+   * @return {*}  {string[]}
+   * @memberof AnalyticsService
+   */
+  _getQuantitativeMeasurementIds(counts: ObservationCountByGroupSQLResponse[]): string[] {
+    return Array.from(new Set(counts.flatMap((count) => Object.keys(count.quant_measurements))));
+  }
+
+  /**
+   * Parses the raw counts object, stripping out extra fields, and maps measurements to their definitions.
+   *
+   * @param {((ObservationCountByGroupWithMeasurements & ObservationCountByGroup)[])} counts
+   * @param {CBQualitativeMeasurementTypeDefinition[]} qualitativeDefinitions
+   * @param {CBQuantitativeMeasurementTypeDefinition[]} quantitativeDefinitions
+   * @return {*}  {ObservationAnalyticsResponse[]}
+   * @memberof AnalyticsService
+   */
   _processCounts(
     counts: (ObservationCountByGroupWithMeasurements & ObservationCountByGroup)[],
     qualitativeDefinitions: CBQualitativeMeasurementTypeDefinition[],
     quantitativeDefinitions: CBQuantitativeMeasurementTypeDefinition[]
   ): ObservationAnalyticsResponse[] {
     const newCounts: ObservationAnalyticsResponse[] = [];
+
     for (const count of counts) {
-      const { qual_measurements, quant_measurements, ...rest } = count;
+      const { row_count, individual_count, individual_percentage, qual_measurements, quant_measurements } = count;
 
       newCounts.push({
-        ...rest,
+        row_count,
+        individual_count,
+        individual_percentage,
         qualitative_measurements: this._mapQualitativeMeasurements(qual_measurements, qualitativeDefinitions),
         quantitative_measurements: this._mapQuantitativeMeasurements(quant_measurements, quantitativeDefinitions)
       });
     }
+
     return newCounts;
   }
 
+  /**
+   * Maps qualitative measurements to their definitions.
+   *
+   * @param {({ option_id: string | null; critterbase_taxon_measurement_id: string }[])} qualMeasurements
+   * @param {CBQualitativeMeasurementTypeDefinition[]} definitions
+   * @return {*}  {QualitativeMeasurementAnalytics[]}
+   * @memberof AnalyticsService
+   */
   _mapQualitativeMeasurements(
     qualMeasurements: { option_id: string | null; critterbase_taxon_measurement_id: string }[],
     definitions: CBQualitativeMeasurementTypeDefinition[]
@@ -140,6 +210,14 @@ export class AnalyticsService extends DBService {
       .filter((item): item is QualitativeMeasurementAnalytics => item !== null);
   }
 
+  /**
+   * Maps quantitative measurements to their definitions.
+   *
+   * @param {({ value: number | null; critterbase_taxon_measurement_id: string }[])} quantMeasurements
+   * @param {CBQuantitativeMeasurementTypeDefinition[]} definitions
+   * @return {*}  {QuantitativeMeasurementAnalytics[]}
+   * @memberof AnalyticsService
+   */
   _mapQuantitativeMeasurements(
     quantMeasurements: { value: number | null; critterbase_taxon_measurement_id: string }[],
     definitions: CBQuantitativeMeasurementTypeDefinition[]
@@ -163,11 +241,18 @@ export class AnalyticsService extends DBService {
       .filter((item): item is QuantitativeMeasurementAnalytics => item !== null);
   }
 
+  /**
+   * Transforms the keys of the measurement objects to arrays.
+   *
+   * @param {ObservationCountByGroupSQLResponse[]} counts
+   * @return {*}  {((ObservationCountByGroupWithMeasurements & ObservationCountByGroup)[])}
+   * @memberof AnalyticsService
+   */
   _transformMeasurementObjectKeysToArrays(
     counts: ObservationCountByGroupSQLResponse[]
   ): (ObservationCountByGroupWithMeasurements & ObservationCountByGroup)[] {
     return counts.map((count) => {
-      const { quant_measurements, qual_measurements, ...rest } = count;
+      const { row_count, individual_count, individual_percentage, quant_measurements, qual_measurements } = count;
 
       // Transform quantitative measurements
       const quantitative = Object.entries(quant_measurements).map(([measurementId, value]) => ({
@@ -182,7 +267,9 @@ export class AnalyticsService extends DBService {
       }));
 
       return {
-        ...rest,
+        row_count,
+        individual_count,
+        individual_percentage,
         qual_measurements: qualitative,
         quant_measurements: quantitative
       };

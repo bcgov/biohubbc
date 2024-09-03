@@ -45,7 +45,7 @@ export const SurveySpatialObservationTable = (props: ISurveyDataObservationTable
 
   const [totalRows, setTotalRows] = useState<number>(0);
   const [page, setPage] = useState<number>(0);
-  const [pageSize, setPageSize] = useState<number>(5);
+  const [pageSize, setPageSize] = useState<number>(10);
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
   const [rows, setTableData] = useState<IObservationTableRow[]>([]);
   const [tableColumns, setTableColumns] = useState<GridColDef<IObservationTableRow>[]>([]);
@@ -184,7 +184,7 @@ export const SurveySpatialObservationTable = (props: ISurveyDataObservationTable
           setPage(model.page);
           setPageSize(model.pageSize);
         }}
-        pageSizeOptions={[5]}
+        pageSizeOptions={[10, 25, 50]}
         paginationMode="server"
         sortingMode="server"
         sortModel={sortModel}

@@ -125,9 +125,9 @@ GET.apiDoc = {
 };
 
 export function getObservationCountByGroup(): RequestHandler {
-  defaultLog.debug({ label: 'getObservationCountByGroup' });
-
   return async (req, res) => {
+    defaultLog.debug({ label: 'getObservationCountByGroup' });
+
     const { surveyIds, groupByColumns, groupByQuantitativeMeasurements, groupByQualitativeMeasurements } = req.query;
 
     const connection = getDBConnection(req.keycloak_token);

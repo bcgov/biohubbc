@@ -1,5 +1,4 @@
 import { getKnex } from '../database/db';
-import { ApiExecuteSQLError } from '../errors/api-error';
 import { ObservationCountByGroupSQLResponse } from '../models/observation-analytics';
 import { BaseRepository } from './base-repository';
 
@@ -96,13 +95,6 @@ export class AnalyticsRepository extends BaseRepository {
       .orderBy('individual_count', 'desc');
 
     const response = await this.connection.knex(sqlStatement);
-
-    if (!response.rows) {
-      throw new ApiExecuteSQLError('Failed to get observation count by group', [
-        'AnalyticsRepository->getObservationCountByGroup',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
 
     return response.rows;
   }

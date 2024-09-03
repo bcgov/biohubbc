@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
-import SurveyObservationTabularDataContainer from 'features/surveys/view/components/data-container/SurveyObservationTabularDataContainer.tsx';
+import SurveyObservationTabularDataContainer from 'features/surveys/view/components/data-container/SurveyObservationTabularDataContainer';
 import { SurveySpatialMap } from 'features/surveys/view/survey-spatial/components/map/SurveySpatialMap';
 import { SurveySpatialObservationPointPopup } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservationPointPopup';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';

@@ -69,7 +69,8 @@ const ObservationAnalyticsDataTable = (props: IObservationAnalyticsDataTableProp
       groupByQuantitativeMeasurements,
       groupByQualitativeMeasurements
     );
-  }, [surveyId, groupByColumns, groupByQuantitativeMeasurements, groupByQualitativeMeasurements]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [groupByColumns, groupByQualitativeMeasurements, groupByQuantitativeMeasurements, surveyId]);
 
   if (!analyticsDataLoader.data?.length) {
     return (
