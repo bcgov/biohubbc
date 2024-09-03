@@ -18,33 +18,8 @@ import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useCallback, useMemo, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { downloadFile, getCSVTemplate } from 'utils/file-utils';
-
-const MEASUREMENTS_CSV_HEADERS = ['ALIAS', 'CAPTURE_DATE', 'CAPTURE_TIME'];
-const CAPTURES_CSV_HEADERS = [
-  'ALIAS',
-  'CAPTURE_DATE',
-  'CAPTURE_TIME',
-  'CAPTURE_LATITUDE',
-  'CAPTURE_LONGITUDE',
-  'RELEASE_DATE',
-  'RELEASE_TIME',
-  'RELEASE_LATITUDE',
-  'RELEASE_LONGITUDE',
-  'RELEASE_COMMENT',
-  'CAPTURE_COMMENT'
-];
-const MARKINGS_CSV_HEADERS = [
-  'ALIAS',
-  'CAPTURE_DATE',
-  'CAPTURE_TIME',
-  'BODY_LOCATION',
-  'MARKING_TYPE',
-  'IDENTIFIER',
-  'PRIMARY_COLOUR',
-  'SECONDARY_COLOUR',
-  'COMMENT'
-];
+import { downloadFile } from 'utils/file-utils';
+import { getCapturesCSVTemplate, getMarkingsCSVTemplate, getMeasurementsCSVTemplate } from './utils/templates';
 
 type CSVFilesStatus = {
   captures: { file: File | null; status: UploadFileStatus; progress: number; error?: string };
@@ -224,7 +199,7 @@ export const CreateCSVCapturesPage = () => {
                   variant="outlined"
                   size="small"
                   onClick={() => {
-                    downloadFile(getCSVTemplate(CAPTURES_CSV_HEADERS), 'Captures_template.csv');
+                    downloadFile(getCapturesCSVTemplate(), 'SIMS-captures-template.csv');
                   }}>
                   Download Template
                 </Button>
@@ -254,7 +229,7 @@ export const CreateCSVCapturesPage = () => {
                   variant="outlined"
                   size="small"
                   onClick={() => {
-                    downloadFile(getCSVTemplate(MEASUREMENTS_CSV_HEADERS), 'Measurements_template.csv');
+                    downloadFile(getMeasurementsCSVTemplate(), 'SIMS-measurements-template.csv');
                   }}>
                   Download Template
                 </Button>
@@ -284,7 +259,7 @@ export const CreateCSVCapturesPage = () => {
                   variant="outlined"
                   size="small"
                   onClick={() => {
-                    downloadFile(getCSVTemplate(MARKINGS_CSV_HEADERS), 'Markings_template.csv');
+                    downloadFile(getMarkingsCSVTemplate(), 'SIMS-markings-template.csv');
                   }}>
                   Download Template
                 </Button>

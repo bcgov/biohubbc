@@ -117,7 +117,7 @@ export const FileUploadSingleItem = (props: FileUploadSingleItemProps) => {
                 props.onFile(acceptedFiles[0]);
               } else {
                 props.onStatus?.(UploadFileStatus.FAILED);
-                props.onFile(rejectedFiles[0].file);
+                props.onFile(null);
                 props.onError?.(rejectedFiles[0].errors[0].message);
               }
             }}
