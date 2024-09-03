@@ -217,7 +217,7 @@ export const EditAnimalPage = () => {
             initialAnimalData={{
               critter_id: critter.critterbase_critter_id,
               nickname: critter.animal_id || '',
-              sex_qualitative_option_id: critter.sex.qualitative_option_id,
+              sex_qualitative_option_id: critter.sex?.qualitative_option_id ?? null,
               species: {
                 commonNames: [],
                 rank: undefined,

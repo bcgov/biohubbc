@@ -281,7 +281,7 @@ export type ICritterDetailedResponse = {
   itis_scientific_name: string;
   wlh_id: string | null;
   animal_id: string | null;
-  sex: ISex;
+  sex: ISex | null;
   responsible_region_nr_id: string;
   critter_comment: string | null;
   collection_units: ICritterCollectionUnitResponse[];
