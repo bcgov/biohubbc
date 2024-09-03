@@ -1,5 +1,6 @@
 import { mdiEye, mdiPaw, mdiWifiMarker } from '@mdi/js';
 import Paper from '@mui/material/Paper';
+import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import { SurveySpatialAnimal } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimal';
 import { SurveySpatialObservation } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservation';
 import {
@@ -72,7 +73,11 @@ export const SurveySpatialContainer = (): JSX.Element => {
 
       {/* Display the corresponding dataset view based on the selected active view */}
       {isEqual(SurveySpatialDatasetViewEnum.OBSERVATIONS, activeView) && <SurveySpatialObservation />}
-      {isEqual(SurveySpatialDatasetViewEnum.TELEMETRY, activeView) && <SurveySpatialTelemetry />}
+      {isEqual(SurveySpatialDatasetViewEnum.TELEMETRY, activeView) && (
+        <TelemetryDataContextProvider>
+          <SurveySpatialTelemetry />
+        </TelemetryDataContextProvider>
+      )}
       {isEqual(SurveySpatialDatasetViewEnum.ANIMALS, activeView) && <SurveySpatialAnimal />}
     </Paper>
   );

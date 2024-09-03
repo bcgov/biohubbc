@@ -64,17 +64,16 @@ const TeamMembers = () => {
               <TeamMemberAvatar color={member.avatarColor} label={member.initials} />
             </Box>
 
-            {/* Member Display Name and Roles */}
+            {/* Member Display Name */}
             <Typography variant="body2" color="textSecondary" display="flex" alignItems="center">
               {member.display_name}
-
-              {/* Roles with Icons */}
-              {member.roles.map((role) => (
-                <Box key={role} ml={0.75} mt={0.5}>
-                  <Icon path={PROJECT_ROLE_ICONS[role] ?? ''} size={0.75} color={grey[600]} />
-                </Box>
-              ))}
             </Typography>
+            {/* Member Roles with Icons */}
+            {member.roles.map((role) => (
+              <Box key={role} ml={0.75} mt={0.5}>
+                <Icon path={PROJECT_ROLE_ICONS[role] ?? ''} size={0.75} color={grey[600]} />
+              </Box>
+            ))}
           </Box>
         );
       })}

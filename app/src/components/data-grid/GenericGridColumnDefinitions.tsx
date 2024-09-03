@@ -1,8 +1,5 @@
-import { mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { GridCellParams, GridColDef, GridRowParams, GridValidRowModel } from '@mui/x-data-grid';
+import { GridCellParams, GridColDef, GridValidRowModel } from '@mui/x-data-grid';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -244,31 +241,5 @@ export const GenericLongitudeColDef = <T extends GridValidRowModel>(props: {
         />
       );
     }
-  };
-};
-
-export const GenericActionsColDef = <T extends GridValidRowModel>(props: {
-  disabled: boolean | ((params: GridRowParams<T>) => boolean);
-  onDelete: (records: T[]) => void;
-}): GridColDef<T> => {
-  return {
-    field: 'actions',
-    headerName: '',
-    type: 'actions',
-    width: 70,
-    disableColumnMenu: true,
-    align: 'right',
-    resizable: false,
-    cellClassName: 'pinnedColumn',
-    getActions: (params) => [
-      <IconButton
-        onClick={() => {
-          props.onDelete([params.row]);
-        }}
-        disabled={typeof props.disabled === 'function' ? props.disabled(params) : props.disabled}
-        key={`actions[${params.id}].handleDeleteRow`}>
-        <Icon path={mdiTrashCanOutline} size={1} />
-      </IconButton>
-    ]
   };
 };
