@@ -394,6 +394,6 @@ export type CBMeasurementSearchByTsnResponse = {
  * Response object when searching for measurement type definitions by search term.
  */
 export type CBMeasurementSearchByTermResponse = {
-  qualitative: (CBQualitativeMeasurementTypeDefinition & { tsnHierarchy: number[] })[];
-  quantitative: (CBQuantitativeMeasurementTypeDefinition & { tsnHierarchy: number[] })[];
+  qualitative: CBQualitativeMeasurementTypeDefinition[];
+  quantitative: CBQuantitativeMeasurementTypeDefinition[];
 };
