@@ -17,11 +17,13 @@ import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCodesContext } from 'hooks/useContext';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
+import { getCodesName } from 'utils/Utils';
 import AddSystemUsersForm, {
   AddSystemUsersFormInitialValues,
   AddSystemUsersFormYupSchema,
@@ -50,6 +52,12 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
   const dialogContext = useContext(DialogContext);
 
   const [openAddUserDialog, setOpenAddUserDialog] = useState(false);
+
+  const codesContext = useCodesContext();
+
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   const activeUsersColumnDefs: GridColDef<ISystemUser>[] = [
     {
@@ -314,16 +322,16 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
   const handleAddSystemUsersSave = async (values: IAddSystemUsersForm) => {
     setOpenAddUserDialog(false);
 
+    const systemUser = values.systemUser;
+
     try {
-      for (const systemUser of values.systemUsers) {
-        await biohubApi.admin.addSystemUser(
-          systemUser.userIdentifier,
-          systemUser.identitySource,
-          systemUser.displayName,
-          systemUser.email,
-          systemUser.systemRole
-        );
-      }
+      await biohubApi.admin.addSystemUser(
+        systemUser.userIdentifier,
+        systemUser.identitySource,
+        systemUser.displayName,
+        systemUser.email,
+        systemUser.systemRole
+      );
 
       // Refresh users list
       refresh();
@@ -332,7 +340,7 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
         open: true,
         snackbarMessage: (
           <Typography variant="body2" component="div">
-            {values.systemUsers.length} system {values.systemUsers.length > 1 ? 'users' : 'user'} added.
+            Successfully added {systemUser.displayName}
           </Typography>
         )
       });
@@ -342,8 +350,12 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
       if (apiError.status === 409) {
         dialogContext.setErrorDialog({
           open: true,
-          dialogTitle: 'Failed to create users',
-          dialogText: 'One of the users you added already exists.',
+          dialogTitle: 'User already exists',
+          dialogText: `${systemUser.displayName} already exists as a ${getCodesName(
+            codesContext.codesDataLoader.data,
+            'system_roles',
+            systemUser.systemRole
+          )}`,
           onClose: () => {
             dialogContext.setErrorDialog({ open: false });
           },
@@ -415,21 +427,29 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
       </Paper>
 
       <EditDialog
-        dialogTitle={'Add Users'}
+        dialogTitle={'Add User'}
         open={openAddUserDialog}
         dialogSaveButtonLabel={'Add'}
+        size="sm"
         component={{
           element: (
-            <AddSystemUsersForm
-              systemRoles={
-                codes?.system_roles?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-            />
+            <>
+              <Typography color="textSecondary" mb={3}>
+                This form creates a new user that will be linked to an IDIR/BCeID when an account with a matching
+                username, email, and account type logs in.
+              </Typography>
+              <AddSystemUsersForm
+                systemRoles={
+                  codes?.system_roles?.map((item) => {
+                    return { value: item.id, label: item.name };
+                  }) || []
+                }
+              />
+            </>
           ),
           initialValues: AddSystemUsersFormInitialValues,
-          validationSchema: AddSystemUsersFormYupSchema
+          validationSchema: AddSystemUsersFormYupSchema,
+          validateOnBlur: false
         }}
         onCancel={() => setOpenAddUserDialog(false)}
         onSave={(values) => {

@@ -1,6 +1,8 @@
 import { AuthStateContext } from 'contexts/authStateContext';
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { codes } from 'test-helpers/code-helpers';
@@ -19,7 +21,17 @@ const mockUseApi = {
   },
   admin: {
     addSystemUser: jest.fn()
+  },
+  codes: {
+    getAllCodeSets: jest.fn()
   }
+};
+
+const mockCodesContext: ICodesContext = {
+  codesDataLoader: {
+    data: codes,
+    load: () => {}
+  } as DataLoader<any, any, any>
 };
 
 const renderContainer = (props: IActiveUsersListProps) => {
@@ -27,9 +39,11 @@ const renderContainer = (props: IActiveUsersListProps) => {
 
   return render(
     <AuthStateContext.Provider value={authState}>
-      <Router history={history}>
-        <ActiveUsersList {...props} />
-      </Router>
+      <CodesContext.Provider value={mockCodesContext}>
+        <Router history={history}>
+          <ActiveUsersList {...props} />
+        </Router>
+      </CodesContext.Provider>
     </AuthStateContext.Provider>
   );
 };
