@@ -1,7 +1,7 @@
 import { Knex } from 'knex';
 
 /**
- * Update method_lookup vlaues and associated attributes to accomodate spi-migration data and for other future data. 
+ * Update method_lookup vlaues and associated attributes to accomodate spi-migration data and for other future data.
  *
  * This migration file updates  values into method lookup table, technique attribute qual and quant tables,
  * method lookup quant and qual and qualitative options and attractants
