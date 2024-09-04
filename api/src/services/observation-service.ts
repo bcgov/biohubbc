@@ -7,6 +7,7 @@ import {
   ObservationRecord,
   ObservationRecordWithSamplingAndSubcountData,
   ObservationRepository,
+  ObservationSpecies,
   ObservationSubmissionRecord,
   UpdateObservation
 } from '../repositories/observation-repository/observation-repository';
@@ -73,7 +74,7 @@ const defaultLog = getLogger('services/observation-service');
  * enforcing uppercase object keys.
  */
 export const observationStandardColumnValidator = {
-  ITIS_TSN: { type: 'string', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
+  ITIS_TSN: { type: 'number', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
   COUNT: { type: 'number' },
   DATE: { type: 'date' },
   TIME: { type: 'string' },
@@ -244,6 +245,17 @@ export class ObservationService extends DBService {
    */
   async getAllSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
     return this.observationRepository.getAllSurveyObservations(surveyId);
+  }
+
+  /**
+   * Retrieves all species observed in a given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ObservationSpecies[]>}
+   * @memberof ObservationRepository
+   */
+  async getObservedSpeciesForSurvey(surveyId: number): Promise<ObservationSpecies[]> {
+    return this.observationRepository.getObservedSpeciesForSurvey(surveyId);
   }
 
   /**

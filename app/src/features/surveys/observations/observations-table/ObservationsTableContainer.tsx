@@ -39,7 +39,7 @@ import {
   IGetSampleMethodDetails,
   IGetSamplePeriodRecord
 } from 'interfaces/useSamplingSiteApi.interface';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { getCodesName } from 'utils/Utils';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
@@ -91,22 +91,48 @@ const ObservationsTableContainer = () => {
     }));
 
   // The column definitions of the columns to render in the observations table
-  const columns: GridColDef<IObservationTableRow>[] = [
-    // Add standard observation columns to the table
-    TaxonomyColDef({ hasError: observationsTableContext.hasError }),
-    SampleSiteColDef({ sampleSiteOptions, hasError: observationsTableContext.hasError }),
-    SampleMethodColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
-    SamplePeriodColDef({ samplePeriodOptions, hasError: observationsTableContext.hasError }),
-    ObservationCountColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
-    GenericDateColDef({ field: 'observation_date', headerName: 'Date', hasError: observationsTableContext.hasError }),
-    GenericTimeColDef({ field: 'observation_time', headerName: 'Time', hasError: observationsTableContext.hasError }),
-    GenericLatitudeColDef({ field: 'latitude', headerName: 'Lat', hasError: observationsTableContext.hasError }),
-    GenericLongitudeColDef({ field: 'longitude', headerName: 'Long', hasError: observationsTableContext.hasError }),
-    // Add measurement columns to the table
-    ...getMeasurementColumnDefinitions(observationsTableContext.measurementColumns, observationsTableContext.hasError),
-    // Add environment columns to the table
-    ...getEnvironmentColumnDefinitions(observationsTableContext.environmentColumns, observationsTableContext.hasError)
-  ];
+  const columns: GridColDef<IObservationTableRow>[] = useMemo(
+    () => [
+      // Add standard observation columns to the table
+      TaxonomyColDef({ hasError: observationsTableContext.hasError }),
+      SampleSiteColDef({ sampleSiteOptions, hasError: observationsTableContext.hasError }),
+      SampleMethodColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
+      SamplePeriodColDef({ samplePeriodOptions, hasError: observationsTableContext.hasError }),
+      ObservationCountColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
+      GenericDateColDef({
+        field: 'observation_date',
+        headerName: 'Date',
+        description: 'The date when the observation was made',
+        hasError: observationsTableContext.hasError
+      }),
+      GenericTimeColDef({
+        field: 'observation_time',
+        headerName: 'Time',
+        description: 'The time when the observation was made',
+        hasError: observationsTableContext.hasError
+      }),
+      GenericLatitudeColDef({
+        field: 'latitude',
+        headerName: 'Latitude',
+        description: 'The latitude where the observation was made',
+        hasError: observationsTableContext.hasError
+      }),
+      GenericLongitudeColDef({
+        field: 'longitude',
+        headerName: 'Longitude',
+        description: 'The longitude where the observation was made',
+        hasError: observationsTableContext.hasError
+      }),
+      // Add measurement columns to the table
+      ...getMeasurementColumnDefinitions(
+        observationsTableContext.measurementColumns,
+        observationsTableContext.hasError
+      ),
+      // Add environment columns to the table
+      ...getEnvironmentColumnDefinitions(observationsTableContext.environmentColumns, observationsTableContext.hasError)
+    ],
+    [observationsTableContext.environmentColumns, observationsTableContext.measurementColumns]
+  );
 
   return (
     <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">

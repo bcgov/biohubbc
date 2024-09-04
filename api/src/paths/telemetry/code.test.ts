@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { SystemUser } from '../../repositories/user-repository';
-import { BctwService } from '../../services/bctw-service';
+import { BctwService } from '../../services/bctw-service/bctw-service';
 import { getRequestHandlerMocks } from '../../__mocks__/db';
 import { getCodeValues } from './code';
 
