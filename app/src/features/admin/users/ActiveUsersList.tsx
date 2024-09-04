@@ -413,7 +413,8 @@ const ActiveUsersList = (props: IActiveUsersListProps) => {
             </>
           ),
           initialValues: AddSystemUsersFormInitialValues,
-          validationSchema: AddSystemUsersFormYupSchema
+          validationSchema: AddSystemUsersFormYupSchema,
+          validateOnBlur: false
         }}
         onCancel={() => setOpenAddUserDialog(false)}
         onSave={(values) => {

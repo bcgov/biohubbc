@@ -124,7 +124,7 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
       initialValues={props.component.initialValues}
       enableReinitialize={true}
       validationSchema={props.component.validationSchema}
-      validateOnBlur={props.component.validateOnBlur ?? false}
+      validateOnBlur={props.component.validateOnBlur ?? true}
       validateOnChange={props.component.validateOnChange ?? false}
       onSubmit={(values) => {
         props.onSave(values);
