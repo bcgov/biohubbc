@@ -14,12 +14,8 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
   SET SEARCH_PATH=biohub, public;
 
-
 ----------------------------------------------------------------------------------------
----------------------------------- TO DO LIST------------------------------------------- 
-
-----------------------------------------------------------------------------------------
----------------------------------Insert new values--------------------------------------
+---------------------------------Insert new ml values--------------------------------------
 ----------------------------------------------------------------------------------------
 -- In this sesction. I have inserted the method lookup values for drone , hair snag and undetermined. 
 -- along with all the appropriate attributes and units.
@@ -30,14 +26,20 @@ INSERT INTO method_lookup (name, description)
 VALUES
     ('Drone', 'Using drones for ecological data collection involves capturing high-resolution imagery and spatial data to monitor wildlife and habitats efficiently and non-invasively.'),
     ('Hair snag', 'Hair snag involves collecting hair samples from wildlife using specially designed devices to non-invasively monitor species presence, genetic diversity, and health.'),
-    ('Undetermined', 'Method of data collection not specified or insufficient data to determine the method.');
+    ('Undetermined', 'Method of data collection not specified or insufficient data to determine the method.'),
+    ('Audio encounter', 'A method of collecting ecological data by recording or listening to sounds in the environment to monitor and identify species presence, behavior, and interactions.');
 
 -- Insert into technique_attribute_quantitative table
 INSERT INTO technique_attribute_quantitative (name, description)
 VALUES
     ('Altitude', 'The elevation above sea level at which ecological data is collected, influencing environmental conditions and species distribution.'),
     ('Height of snag', 'The vertical distance from the ground to the placement of the hair snagging device, which can influence the likelihood of collecting hair samples from different species.'),
-    ('Number of snags', 'The total count of hair snagging devices deployed within a study area, used to estimate sampling effort and potential data coverage.');
+    ('Number of snags', 'The total count of hair snagging devices deployed within a study area, used to estimate sampling effort and potential data coverage.'),
+    ('Audio frequency range','The range of frequencies captured during the audio encounter, important for detecting different species vocalizations, from low-frequency calls to high-pitched signals.');
+
+----------------------------------------------------------------------------------------
+--Inserting quant attributtes for all the above. 
+----------------------------------------------------------------------------------------
 
 
 INSERT INTO method_lookup_attribute_quantitative (technique_attribute_quantitative_id, method_lookup_id, min, max, unit)
@@ -56,16 +58,22 @@ VALUES
         (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Number of snags'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Hair snag'),
         0, 100, 'count'
+    ),
+    (
+        (SELECT technique_attribute_quantitative_id FROM technique_attribute_quantitative WHERE name = 'Audio frequency range'),
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Audio encounter'),
+        0, 20000, 'Hz'
     );
 
--- Insert into technique_attribute_qualitative table
+
 INSERT INTO technique_attribute_qualitative (name, description)
 VALUES
     ('Drone model', 'The specific make and model of the drone used in ecological studies, important for documenting the capabilities and limitations of the equipment.'),
     ('Drone camera type', 'The type of camera mounted on the drone, such as RGB, thermal, or multispectral, which determines the kind of data captured during ecological surveys.'),
     ('Hair snag trap type', 'The specific design or material of the hair snagging device, including options like barbed wire, adhesive strips, or brush stations, which influence the effectiveness of sample collection.'),
     ('Hair snag substrate type', 'The type of surface or material on which the hair snag device is placed, such as soil, rock, or vegetation, affecting the likelihood of successful sample collection.'),
-    ('Hair snag material', 'Material the snag is comprised of.');
+    ('Hair snag material', 'Material the snag is comprised of.'),
+    ('Audio device type', 'The specific tool or equipment used to capture or detect sounds during an audio encounter, including handheld recorders, fixed microphones, parabolic microphones, or unaided human listening.');
 
 -- Insert into method_lookup_attribute_qualitative table
 INSERT INTO method_lookup_attribute_qualitative (technique_attribute_qualitative_id, method_lookup_id)
@@ -89,10 +97,13 @@ VALUES
         (
         (SELECT technique_attribute_qualitative_id FROM technique_attribute_qualitative WHERE name = 'Hair snag material'),
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Hair snag')
+    ),
+        (
+        (SELECT technique_attribute_qualitative_id FROM technique_attribute_qualitative WHERE name = 'Audio device type'),
+        (SELECT method_lookup_id FROM method_lookup WHERE name = 'Audio encounter')
     );
 
 
--- Insert options for Drone model
 INSERT INTO method_lookup_attribute_qualitative_option (method_lookup_attribute_qualitative_id, name, description)
 VALUES
     (
@@ -319,15 +330,60 @@ VALUES
         'The trap is made from natural fibers, blending into the environment and minimizing impact on the ecosystem.'
     );
 
-
-
+    INSERT INTO method_lookup_attribute_qualitative_option (method_lookup_attribute_qualitative_id, name, description)
+VALUES
+    (
+        (
+            SELECT method_lookup_attribute_qualitative_id 
+            FROM method_lookup_attribute_qualitative mlaq 
+            INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id 
+            INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
+            WHERE taq.name = 'Audio device type' AND ml.name = 'Audio encounter'
+        ),
+        'Handheld Recorder',
+        'A portable device used for capturing audio in the field, offering flexibility but potentially influenced by the operators movements.'
+    ),
+    (
+        (
+            SELECT method_lookup_attribute_qualitative_id 
+            FROM method_lookup_attribute_qualitative mlaq 
+            INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id 
+            INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
+            WHERE taq.name = 'Audio device type' AND ml.name = 'Audio encounter'
+        ),
+        'Fixed Microphone',
+        'A stationary microphone placed in a specific location to continuously capture audio, often used for long-term monitoring.'
+    ),
+    (
+        (
+            SELECT method_lookup_attribute_qualitative_id 
+            FROM method_lookup_attribute_qualitative mlaq 
+            INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id 
+            INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
+            WHERE taq.name = 'Audio device type' AND ml.name = 'Audio encounter'
+        ),
+        'Parabolic Microphone',
+        'A specialized microphone that uses a parabolic reflector to capture distant sounds with high directionality, ideal for isolating specific vocalizations.'
+    ),
+    (
+        (
+            SELECT method_lookup_attribute_qualitative_id 
+            FROM method_lookup_attribute_qualitative mlaq 
+            INNER JOIN technique_attribute_qualitative taq ON taq.technique_attribute_qualitative_id = mlaq.technique_attribute_qualitative_id 
+            INNER JOIN method_lookup ml ON ml.method_lookup_id = mlaq.method_lookup_id
+            WHERE taq.name = 'Audio device type' AND ml.name = 'Audio encounter'
+        ),
+        'Unaided Ear',
+        'Direct human auditory observation without the use of recording devices, relying on the observers hearing to detect and identify sounds in the environment.'
+    );
 
 ----------------------------------------------------------------------------------------
 ------------------------------Update Radar Tower Entry.---------------------------------
 ----------------------------------------------------------------------------------------
 --In this section, I updated the previous value of radio signal tower to incorporate handheld radios
 --Broadening the higher classifaction and creating attributes for the user to refine their modality as an attribute
-----------------------------------------------------------------------------------------
+
+
     UPDATE method_lookup
     SET name = 'Radio',
         description = 'The use of radio waves as a method to track, monitor, or communicate with tagged animals or devices, including handheld and other radio wave-based equipment.'
