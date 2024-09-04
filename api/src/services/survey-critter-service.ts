@@ -1,6 +1,6 @@
 import { IDBConnection } from '../database/db';
 import { IAnimalAdvancedFilters } from '../models/animal-view';
-import { ITelemetryAdvancedFilters } from '../models/telemetry-view';
+import { IAllTelemetryAdvancedFilters } from '../models/telemetry-view';
 import { SurveyCritterRecord, SurveyCritterRepository } from '../repositories/survey-critter-repository';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
@@ -49,15 +49,16 @@ export class SurveyCritterService extends DBService {
   }
 
   /**
-   * Get critter from a specific survey
+   * Get all critter associations for the given survey. This only gets you critter ids, which can be used to fetch
+   * details from the external system.
    *
    * @param {number} surveyId
    * @param {number} critterId
-   * @return {*}  {Promise<SurveyCritterRecord | undefined>}
+   * @return {*}  {Promise<SurveyCritterRecord[]>}
    * @memberof SurveyCritterService
    */
-  async getCritterInSurvey(surveyId: number, critterId: number): Promise<SurveyCritterRecord | undefined> {
-    return this.critterRepository.getCritterInSurvey(surveyId, critterId);
+  async getCritterById(surveyId: number, critterId: number): Promise<SurveyCritterRecord> {
+    return this.critterRepository.getCritterById(surveyId, critterId);
   }
 
   /**
@@ -130,14 +131,14 @@ export class SurveyCritterService extends DBService {
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
-   * @param {ITelemetryAdvancedFilters} [filterFields]
+   * @param {IAllTelemetryAdvancedFilters} [filterFields]
    * @return {*}  {Promise<number>}
    * @memberof SurveyCritterService
    */
   async findCrittersCount(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields?: ITelemetryAdvancedFilters
+    filterFields?: IAllTelemetryAdvancedFilters
   ): Promise<number> {
     return this.critterRepository.findCrittersCount(isUserAdmin, systemUserId, filterFields);
   }
@@ -190,30 +191,6 @@ export class SurveyCritterService extends DBService {
    */
   async removeCrittersFromSurvey(surveyId: number, critterIds: number[]): Promise<void> {
     return this.critterRepository.removeCrittersFromSurvey(surveyId, critterIds);
-  }
-
-  /**
-   * Upsert a deployment row into SIMS.
-   *
-   * @param {number} critterId
-   * @param {string} deplyomentId
-   * @return {*}  {Promise<void>}
-   * @memberof SurveyCritterService
-   */
-  async upsertDeployment(critterId: number, deplyomentId: string): Promise<void> {
-    return this.critterRepository.upsertDeployment(critterId, deplyomentId);
-  }
-
-  /**
-   * Removes the deployment in SIMS.
-   *
-   * @param {number} critterId
-   * @param {string} deploymentId the bctw deployment uuid
-   * @return {*}  {Promise<void>}
-   * @memberof SurveyCritterService
-   */
-  async removeDeployment(critterId: number, deploymentId: string): Promise<void> {
-    return this.critterRepository.removeDeployment(critterId, deploymentId);
   }
 
   /**

@@ -71,7 +71,7 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
       getOptionDisabled={props.getOptionDisabled}
       filterOptions={createFilterOptions({ limit: props.filterLimit })}
       disabled={props?.disabled || false}
-      sx={props.sx}
+      sx={{ flex: '1 1 auto', ...props.sx }}
       loading={props.loading}
       onInputChange={(_event, _value, reason) => {
         if (reason === 'reset') {

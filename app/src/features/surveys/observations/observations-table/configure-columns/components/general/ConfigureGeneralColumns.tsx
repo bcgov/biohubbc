@@ -97,18 +97,10 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
   } = props;
 
   return (
-    <Box>
-      <Typography variant="h5" mb={2}>
-        Select Columns to Show
-      </Typography>
-      <Stack
-        flexDirection="row"
-        alignItems="center"
-        justifyContent="space-between"
-        py={0.5}
-        pl={2.5}
-        pr={1.5}
-        minWidth={400}>
+    // display="flex" and flexDirection="column" is necessary for the scrollbars to be correctly positioned
+    <Box height="100%" display="flex" flexDirection="column">
+      <Stack flexDirection="row" alignItems="center" justifyContent="space-between" minWidth={400}>
+        <Typography variant="h5">Select Columns to Show</Typography>
         <FormControlLabel
           control={
             <Checkbox
@@ -116,10 +108,16 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
               checked={hiddenFields.length === 0}
               onClick={() => onToggleShowHideAll()}
               disabled={disabled}
+              sx={{ m: 0, p: 0 }}
             />
           }
           label={
-            <Typography variant="body2" sx={{ ml: 1 }} color="textSecondary" textTransform="uppercase" fontWeight={700}>
+            <Typography
+              variant="body2"
+              sx={{ ml: 0.5 }}
+              color="textSecondary"
+              textTransform="uppercase"
+              fontWeight={700}>
               Show/Hide all
             </Typography>
           }
@@ -130,12 +128,14 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
         component={Stack}
         gap={0.5}
         sx={{
+          my: 2,
           p: 0.5,
-          maxHeight: { sm: 300, md: 500 },
+          maxHeight: '100%',
           overflowY: 'auto'
         }}
         disablePadding>
         {hideableColumns.map((column) => {
+          const isSelected = !hiddenFields.includes(column.field);
           return (
             <ListItem
               key={column.field}
@@ -154,11 +154,21 @@ export const ConfigureGeneralColumns = (props: IConfigureGeneralColumnsProps) =>
                 dense
                 onClick={() => onToggleColumnVisibility(column.field)}
                 disabled={disabled}
-                sx={{ background: grey[50], borderRadius: '5px' }}>
+                sx={{
+                  background: isSelected ? grey[50] : '#fff',
+                  borderRadius: '5px',
+                  alignItems: 'flex-start',
+                  '& .MuiListItemText-root': { my: 0.25 }
+                }}>
                 <ListItemIcon>
-                  <Checkbox edge="start" checked={!hiddenFields.includes(column.field)} />
+                  <Checkbox edge="start" checked={isSelected} />
                 </ListItemIcon>
-                <ListItemText>{column.headerName}</ListItemText>
+                <Box my={1}>
+                  <ListItemText sx={{ '& .MuiTypography-root': { fontWeight: 700 } }}>{column.headerName}</ListItemText>
+                  <ListItemText sx={{ '& .MuiTypography-root': { color: grey[600] } }}>
+                    {column.description}
+                  </ListItemText>
+                </Box>
               </ListItemButton>
             </ListItem>
           );
