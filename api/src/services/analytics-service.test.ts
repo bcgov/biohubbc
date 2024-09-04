@@ -30,8 +30,9 @@ describe('AnalyticsService', () => {
 
       const analyticsService = new AnalyticsService(dbConnection);
 
-      sinon.stub(AnalyticsRepository.prototype, 'getObservationCountByGroup').resolves([
+      const mockGetObservationCountByGroupResponse: ObservationCountByGroupSQLResponse[] = [
         {
+          id: '123-456-789',
           row_count: 3,
           individual_count: 62,
           individual_percentage: 57.41,
@@ -41,6 +42,7 @@ describe('AnalyticsService', () => {
           qual_measurements: { '337f67fa-296d-43a9-88b2-ffdc77891aee': '61d1532d-b06e-4300-8da6-d195cc98f34e' }
         },
         {
+          id: '987-654-321',
           row_count: 2,
           individual_count: 46,
           individual_percentage: 42.59,
@@ -49,7 +51,11 @@ describe('AnalyticsService', () => {
           quant_measurements: {},
           qual_measurements: { '337f67fa-296d-43a9-88b2-ffdc77891aee': 'dd9a1672-ac93-4598-b166-caad463ed6f2' }
         }
-      ]);
+      ];
+
+      sinon
+        .stub(AnalyticsRepository.prototype, 'getObservationCountByGroup')
+        .resolves(mockGetObservationCountByGroupResponse);
 
       sinon.stub(CritterbaseService.prototype, 'getQualitativeMeasurementTypeDefinition').resolves([
         {
@@ -90,6 +96,7 @@ describe('AnalyticsService', () => {
 
       const expectedResponse: ObservationAnalyticsResponse[] = [
         {
+          id: '123-456-789',
           row_count: 3,
           individual_count: 62,
           individual_percentage: 57.41,
@@ -100,9 +107,12 @@ describe('AnalyticsService', () => {
               measurement_name: 'antler configuration'
             }
           ],
-          quantitative_measurements: []
+          quantitative_measurements: [],
+          survey_sample_period_id: 4,
+          survey_sample_site_id: 4
         },
         {
+          id: '987-654-321',
           row_count: 2,
           individual_count: 46,
           individual_percentage: 42.59,
@@ -113,7 +123,9 @@ describe('AnalyticsService', () => {
               measurement_name: 'antler configuration'
             }
           ],
-          quantitative_measurements: []
+          quantitative_measurements: [],
+          survey_sample_period_id: 4,
+          survey_sample_site_id: 4
         }
       ];
 
@@ -164,6 +176,7 @@ describe('AnalyticsService', () => {
 
       const counts: ObservationCountByGroupSQLResponse[] = [
         {
+          id: '123-456-789',
           row_count: 1,
           individual_count: 1,
           individual_percentage: 1,
@@ -208,9 +221,10 @@ describe('AnalyticsService', () => {
 
       const counts: ObservationCountByGroupSQLResponse[] = [
         {
+          id: '123-456-789',
           row_count: 5,
           individual_count: 10,
-          individual_percentage: 0.46,
+          individual_percentage: 46,
           life_stage: 'adult',
           antler_length: 20,
           quant_measurements: {
@@ -236,6 +250,7 @@ describe('AnalyticsService', () => {
 
       const counts: ObservationCountByGroupSQLResponse[] = [
         {
+          id: '123-456-789',
           row_count: 1,
           individual_count: 1,
           individual_percentage: 1,
@@ -266,6 +281,7 @@ describe('AnalyticsService', () => {
 
       const counts: ObservationCountByGroupSQLResponse[] = [
         {
+          id: '123-456-789',
           row_count: 1,
           individual_count: 1,
           individual_percentage: 1,
@@ -382,6 +398,14 @@ describe('AnalyticsService', () => {
             option_id: '1',
             option_label: 'option_label'
           }
+        },
+        {
+          taxon_measurement_id: '22',
+          measurement_name: 'measurement_name',
+          option: {
+            option_id: null,
+            option_label: ''
+          }
         }
       ]);
     });
@@ -432,6 +456,11 @@ describe('AnalyticsService', () => {
           taxon_measurement_id: '11',
           measurement_name: 'measurement_name',
           value: 1
+        },
+        {
+          measurement_name: 'measurement_name',
+          taxon_measurement_id: '22',
+          value: null
         }
       ]);
     });
@@ -445,6 +474,7 @@ describe('AnalyticsService', () => {
 
       const counts: ObservationCountByGroupSQLResponse[] = [
         {
+          id: '123-456-789',
           row_count: 1,
           individual_count: 1,
           individual_percentage: 1,
@@ -463,6 +493,7 @@ describe('AnalyticsService', () => {
 
       expect(result).to.eql([
         {
+          id: '123-456-789',
           row_count: 1,
           individual_count: 1,
           individual_percentage: 1,
@@ -477,7 +508,9 @@ describe('AnalyticsService', () => {
               critterbase_taxon_measurement_id: '1',
               value: 1
             }
-          ]
+          ],
+          antler_length: 20,
+          life_stage: 'adult'
         }
       ]);
     });

@@ -2,7 +2,6 @@ import { Operation } from 'express-openapi';
 import { RequestHandler } from 'http-proxy-middleware';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { getObservationAnalyticsSchema } from '../../openapi/schemas/analytics';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { AnalyticsService } from '../../services/analytics-service';
 import { getLogger } from '../../utils/logger';
@@ -55,9 +54,7 @@ GET.apiDoc = {
           minimum: 1
         }
       },
-      required: true,
-      style: 'simple',
-      explode: false
+      required: true
     },
     {
       in: 'query',
@@ -68,9 +65,7 @@ GET.apiDoc = {
           type: 'string'
         }
       },
-      required: true,
-      style: 'simple',
-      explode: false
+      required: true
     },
     {
       in: 'query',
@@ -80,9 +75,7 @@ GET.apiDoc = {
         items: {
           type: 'string'
         }
-      },
-      style: 'simple',
-      explode: false
+      }
     },
     {
       in: 'query',
@@ -92,9 +85,7 @@ GET.apiDoc = {
         items: {
           type: 'string'
         }
-      },
-      style: 'simple',
-      explode: false
+      }
     }
   ],
   responses: {
@@ -102,7 +93,99 @@ GET.apiDoc = {
       description: 'Analytics calculated OK.',
       content: {
         'application/json': {
-          schema: getObservationAnalyticsSchema
+          schema: {
+            title: 'Observation analytics response object',
+            type: 'array',
+            items: {
+              type: 'object',
+              required: [
+                'id',
+                'row_count',
+                'individual_count',
+                'individual_percentage',
+                'quantitative_measurements',
+                'qualitative_measurements'
+              ],
+              // Additional properties is intentionally true to allow for dynamic key-value measurement pairs
+              additionalProperties: true,
+              properties: {
+                id: {
+                  type: 'string',
+                  format: 'uuid',
+                  description: 'Unique identifier for the group. Will not be consistent between requests.'
+                },
+                row_count: {
+                  type: 'number',
+                  description: 'Number of rows in the group'
+                },
+                individual_count: {
+                  type: 'number',
+                  description: 'Sum of subcount values across all rows in the group'
+                },
+                individual_percentage: {
+                  type: 'number',
+                  description:
+                    'Sum of subcount values across the group divided by the sum of subcount values across all observations in the specified surveys'
+                },
+                quantitative_measurements: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    description: 'Quantitative measurement groupings',
+                    required: ['taxon_measurement_id', 'measurement_name', 'value'],
+                    additionalProperties: false,
+                    properties: {
+                      taxon_measurement_id: {
+                        type: 'string',
+                        format: 'uuid'
+                      },
+                      measurement_name: {
+                        type: 'string'
+                      },
+                      value: {
+                        type: 'number',
+                        nullable: true
+                      }
+                    }
+                  }
+                },
+                qualitative_measurements: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    description: 'Qualitative measurement groupings',
+                    required: ['taxon_measurement_id', 'measurement_name', 'option'],
+                    additionalProperties: false,
+                    properties: {
+                      taxon_measurement_id: {
+                        type: 'string',
+                        format: 'uuid'
+                      },
+                      measurement_name: {
+                        type: 'string'
+                      },
+                      option: {
+                        type: 'object',
+                        required: ['option_id', 'option_label'],
+                        additionalProperties: false,
+                        properties: {
+                          option_id: {
+                            type: 'string',
+                            format: 'uuid',
+                            nullable: true
+                          },
+                          option_label: {
+                            type: 'string',
+                            nullable: true
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -128,16 +211,16 @@ export function getObservationCountByGroup(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'getObservationCountByGroup' });
 
-    const { surveyIds, groupByColumns, groupByQuantitativeMeasurements, groupByQualitativeMeasurements } = req.query;
-
     const connection = getDBConnection(req.keycloak_token);
 
     try {
+      const { surveyIds, groupByColumns, groupByQuantitativeMeasurements, groupByQualitativeMeasurements } = req.query;
+
       await connection.open();
 
       const analyticsService = new AnalyticsService(connection);
 
-      const count = await analyticsService.getObservationCountByGroup(
+      const response = await analyticsService.getObservationCountByGroup(
         (surveyIds as string[]).map(Number),
         groupByColumns as string[],
         (groupByQuantitativeMeasurements as string[]) || [],
@@ -146,7 +229,7 @@ export function getObservationCountByGroup(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json(count);
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getObservationCountByGroup', message: 'error', error });
       await connection.rollback();

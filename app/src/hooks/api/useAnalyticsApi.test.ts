@@ -17,11 +17,12 @@ describe('useAnalyticsApi', () => {
   it('getObservationCountByGroup works as expected', async () => {
     const response: IObservationCountByGroup[] = [
       {
+        id: '123-456-789',
         row_count: 10,
         individual_count: 40,
         individual_percentage: 1,
         itis_tsn: 123456,
-        date: '2021-01-01',
+        observation_date: '2021-01-01',
         survey_sample_site_id: 1,
         survey_sample_method_id: 2,
         survey_sample_period_id: 3,
@@ -35,7 +36,13 @@ describe('useAnalyticsApi', () => {
             }
           }
         ],
-        quantitative_measurements: [{ taxon_measurement_id: '77', measurement_name: 'b', value: 1 }]
+        quantitative_measurements: [
+          {
+            taxon_measurement_id: '77',
+            measurement_name: 'b',
+            value: 1
+          }
+        ]
       }
     ];
 

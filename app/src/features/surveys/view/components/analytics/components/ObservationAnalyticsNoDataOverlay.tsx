@@ -4,12 +4,11 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 /**
- *
- Returns an overlay with instructions on how to use the analytics feature.
+ * Returns an overlay with instructions on how to use the analytics feature.
  *
  * @return {*}
  */
-export const SurveyObservationAnalyticsOverlay = () => {
+export const ObservationAnalyticsNoDataOverlay = () => {
   return (
     <Box
       position="relative"

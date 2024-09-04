@@ -7,53 +7,62 @@ import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
+import { ObservationAnalyticsDataTableContainer } from 'features/surveys/view/components/analytics/components/ObservationAnalyticsDataTableContainer';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { useState } from 'react';
-import { SurveyObservationAnalyticsOverlay } from './components/SurveyObservationAnalyticsOverlay';
-import ObservationAnalyticsDataTable from './ObservationAnalyticsDataTable';
+import startCase from 'lodash-es/startCase';
+import { useEffect, useState } from 'react';
+import { ObservationAnalyticsNoDataOverlay } from './components/ObservationAnalyticsNoDataOverlay';
 type GroupByColumnType = 'column' | 'quantitative_measurement' | 'qualitative_measurement';
 
-interface IGroupByOption {
+export type IGroupByOption = {
   label: string;
-  value: string;
+  field: string;
   type: GroupByColumnType;
-}
+};
 
-const groupByColumnOptions: IGroupByOption[] = [
-  { label: 'Sampling Site', value: 'survey_sample_site_id', type: 'column' },
-  { label: 'Sampling Method', value: 'survey_sample_method_id', type: 'column' },
-  { label: 'Sampling Period', value: 'survey_sample_period_id', type: 'column' },
-  { label: 'Species', value: 'itis_tsn', type: 'column' },
-  { label: 'Date', value: 'observation_date', type: 'column' }
+const initialGroupByColumnOptions: IGroupByOption[] = [
+  { label: 'Sampling Site', field: 'survey_sample_site_id', type: 'column' }
 ];
 
-const SurveyObservationAnalytics = () => {
+const allGroupByColumnOptions: IGroupByOption[] = [
+  ...initialGroupByColumnOptions,
+  { label: 'Sampling Method', field: 'survey_sample_method_id', type: 'column' },
+  { label: 'Sampling Period', field: 'survey_sample_period_id', type: 'column' },
+  { label: 'Species', field: 'itis_tsn', type: 'column' },
+  { label: 'Date', field: 'observation_date', type: 'column' }
+];
+
+export const SurveyObservationAnalytics = () => {
   const biohubApi = useBiohubApi();
 
   const { surveyId, projectId } = useSurveyContext();
 
-  const [groupByColumns, setGroupByColumns] = useState<string[]>([groupByColumnOptions[0].value]);
-  const [groupByQualitativeMeasurements, setGroupByQualitativeMeasurements] = useState<string[]>([]);
-  const [groupByQuantitativeMeasurements, setGroupByQuantitativeMeasurements] = useState<string[]>([]);
+  const [groupByColumns, setGroupByColumns] = useState<IGroupByOption[]>(initialGroupByColumnOptions);
+  const [groupByQualitativeMeasurements, setGroupByQualitativeMeasurements] = useState<IGroupByOption[]>([]);
+  const [groupByQuantitativeMeasurements, setGroupByQuantitativeMeasurements] = useState<IGroupByOption[]>([]);
 
   const measurementDefinitionsDataLoader = useDataLoader(() =>
     biohubApi.observation.getObservationMeasurementDefinitions(projectId, surveyId)
   );
-  measurementDefinitionsDataLoader.load();
+
+  useEffect(() => {
+    measurementDefinitionsDataLoader.load();
+  }, [measurementDefinitionsDataLoader]);
 
   const groupByOptions: IGroupByOption[] = [
-    ...groupByColumnOptions,
+    ...allGroupByColumnOptions,
     ...(measurementDefinitionsDataLoader.data?.qualitative_measurements.map((measurement) => ({
-      label: measurement.measurement_name,
-      value: measurement.taxon_measurement_id,
+      label: startCase(measurement.measurement_name),
+      field: measurement.taxon_measurement_id,
       type: 'qualitative_measurement' as GroupByColumnType
     })) ?? []),
     ...(measurementDefinitionsDataLoader.data?.quantitative_measurements.map((measurement) => ({
-      label: measurement.measurement_name,
-      value: measurement.taxon_measurement_id,
+      label: startCase(measurement.measurement_name),
+      field: measurement.taxon_measurement_id,
       type: 'quantitative_measurement' as GroupByColumnType
     })) ?? [])
   ];
@@ -73,26 +82,26 @@ const SurveyObservationAnalytics = () => {
     }
   };
 
-  const updateGroupBy = (value: IGroupByOption, setGroupBy: React.Dispatch<React.SetStateAction<string[]>>) =>
+  const updateGroupBy = (value: IGroupByOption, setGroupBy: React.Dispatch<React.SetStateAction<IGroupByOption[]>>) =>
     setGroupBy((groupBy) =>
-      groupBy.includes(value.value) ? groupBy.filter((item) => item !== value.value) : [...groupBy, value.value]
+      groupBy.some((item) => item.field === value.field)
+        ? groupBy.filter((item) => item.field !== value.field)
+        : [...groupBy, value]
     );
 
-  const combinedGroupByColumns = [
-    ...groupByColumns,
-    ...groupByQualitativeMeasurements,
-    ...groupByQuantitativeMeasurements
-  ];
+  const allGroupByColumns = [...groupByColumns, ...groupByQualitativeMeasurements, ...groupByQuantitativeMeasurements];
 
   return (
     <Box height="100%" flex="1 1 auto">
       <Stack gap={2} direction="row" height="500px" position="relative">
-        {/* Skeleton loaders for pending requests */}
-        {measurementDefinitionsDataLoader.isLoading ? (
-          <Box minWidth="30%">
-            <SkeletonList />
-          </Box>
-        ) : (
+        <LoadingGuard
+          isLoading={measurementDefinitionsDataLoader.isLoading || !measurementDefinitionsDataLoader.isReady}
+          isLoadingFallback={
+            <Box minWidth="30%">
+              <SkeletonList />
+            </Box>
+          }
+          isLoadingFallbackDelay={100}>
           <Box minWidth="250px">
             {/* Group by header */}
             <Typography
@@ -109,10 +118,8 @@ const SurveyObservationAnalytics = () => {
                 orientation="vertical"
                 onChange={handleToggleChange}
                 sx={{
-                  bgcolor: grey[50],
                   width: '100%',
                   '& .MuiToggleButton-root': {
-                    bgcolor: grey[50],
                     border: 'none',
                     outline: 'none',
                     borderRadius: '4px !important',
@@ -127,7 +134,7 @@ const SurveyObservationAnalytics = () => {
                 {/* Render toggle buttons for each group by option */}
                 {groupByOptions.map((option) => (
                   <ToggleButton
-                    key={option.value}
+                    key={option.field}
                     component={Button}
                     color="primary"
                     value={option}
@@ -145,17 +152,17 @@ const SurveyObservationAnalytics = () => {
                       }
                     }}
                     selected={
-                      groupByColumns.includes(option.value) ||
-                      groupByQualitativeMeasurements.includes(option.value) ||
-                      groupByQuantitativeMeasurements.includes(option.value)
+                      groupByColumns.some((item) => item.field === option.field) ||
+                      groupByQualitativeMeasurements.some((item) => item.field === option.field) ||
+                      groupByQuantitativeMeasurements.some((item) => item.field === option.field)
                     }>
                     <Box display="flex" alignItems="center">
                       <Checkbox
                         sx={{ pl: 0, py: 0 }}
                         checked={
-                          groupByColumns.includes(option.value) ||
-                          groupByQualitativeMeasurements.includes(option.value) ||
-                          groupByQuantitativeMeasurements.includes(option.value)
+                          groupByColumns.some((item) => item.field === option.field) ||
+                          groupByQualitativeMeasurements.some((item) => item.field === option.field) ||
+                          groupByQuantitativeMeasurements.some((item) => item.field === option.field)
                         }
                       />
                       {option.label}
@@ -165,18 +172,18 @@ const SurveyObservationAnalytics = () => {
               </ToggleButtonGroup>
             </Box>
           </Box>
-        )}
+        </LoadingGuard>
 
         <Divider orientation="vertical" />
 
         {/* Overlay for when no group by columns are selected */}
-        {combinedGroupByColumns.length === 0 && !measurementDefinitionsDataLoader.isLoading && (
-          <SurveyObservationAnalyticsOverlay />
+        {allGroupByColumns.length === 0 && !measurementDefinitionsDataLoader.isLoading && (
+          <ObservationAnalyticsNoDataOverlay />
         )}
 
         {/* Data grid displaying fetched data */}
-        {measurementDefinitionsDataLoader.data && combinedGroupByColumns.length > 0 && (
-          <ObservationAnalyticsDataTable
+        {measurementDefinitionsDataLoader.data && allGroupByColumns.length > 0 && (
+          <ObservationAnalyticsDataTableContainer
             groupByColumns={groupByColumns}
             groupByQuantitativeMeasurements={groupByQuantitativeMeasurements}
             groupByQualitativeMeasurements={groupByQualitativeMeasurements}
@@ -186,5 +193,3 @@ const SurveyObservationAnalytics = () => {
     </Box>
   );
 };
-
-export default SurveyObservationAnalytics;

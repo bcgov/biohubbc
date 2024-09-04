@@ -6,7 +6,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useState } from 'react';
 import { SurveySpatialObservationTable } from '../../survey-spatial/components/observation/SurveySpatialObservationTable';
-import SurveyObservationAnalytics from '../analytics/SurveyObservationAnalytics';
+import { SurveyObservationAnalytics } from '../analytics/SurveyObservationAnalytics';
 
 export enum SurveyObservationTabularDataContainerViewEnum {
   COUNTS = 'COUNTS',

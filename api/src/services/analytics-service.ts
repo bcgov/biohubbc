@@ -160,12 +160,14 @@ export class AnalyticsService extends DBService {
     const newCounts: ObservationAnalyticsResponse[] = [];
 
     for (const count of counts) {
-      const { row_count, individual_count, individual_percentage, qual_measurements, quant_measurements } = count;
+      const { row_count, individual_count, individual_percentage, qual_measurements, quant_measurements, ...rest } =
+        count;
 
       newCounts.push({
         row_count,
         individual_count,
         individual_percentage,
+        ...rest,
         qualitative_measurements: this._mapQualitativeMeasurements(qual_measurements, qualitativeDefinitions),
         quantitative_measurements: this._mapQuantitativeMeasurements(quant_measurements, quantitativeDefinitions)
       });
@@ -192,20 +194,20 @@ export class AnalyticsService extends DBService {
           (def) => def.taxon_measurement_id === measurement.critterbase_taxon_measurement_id
         );
 
-        if (definition && measurement.option_id) {
-          return {
-            option: {
-              option_id: measurement.option_id,
-              option_label:
-                definition.options.find((option) => option.qualitative_option_id === measurement.option_id)
-                  ?.option_label ?? ''
-            },
-            taxon_measurement_id: measurement.critterbase_taxon_measurement_id,
-            measurement_name: definition.measurement_name ?? ''
-          };
+        if (!definition) {
+          return null;
         }
 
-        return null;
+        return {
+          taxon_measurement_id: measurement.critterbase_taxon_measurement_id,
+          measurement_name: definition.measurement_name ?? '',
+          option: {
+            option_id: measurement.option_id,
+            option_label:
+              definition.options.find((option) => option.qualitative_option_id === measurement.option_id)
+                ?.option_label ?? ''
+          }
+        };
       })
       .filter((item): item is QualitativeMeasurementAnalytics => item !== null);
   }
@@ -228,15 +230,15 @@ export class AnalyticsService extends DBService {
           (def) => def.taxon_measurement_id === measurement.critterbase_taxon_measurement_id
         );
 
-        if (definition && measurement.value !== null) {
-          return {
-            value: measurement.value,
-            taxon_measurement_id: measurement.critterbase_taxon_measurement_id,
-            measurement_name: definition.measurement_name ?? ''
-          };
+        if (!definition) {
+          return null;
         }
 
-        return null;
+        return {
+          taxon_measurement_id: measurement.critterbase_taxon_measurement_id,
+          measurement_name: definition.measurement_name ?? '',
+          value: measurement.value
+        };
       })
       .filter((item): item is QuantitativeMeasurementAnalytics => item !== null);
   }
@@ -252,7 +254,8 @@ export class AnalyticsService extends DBService {
     counts: ObservationCountByGroupSQLResponse[]
   ): (ObservationCountByGroupWithMeasurements & ObservationCountByGroup)[] {
     return counts.map((count) => {
-      const { row_count, individual_count, individual_percentage, quant_measurements, qual_measurements } = count;
+      const { row_count, individual_count, individual_percentage, quant_measurements, qual_measurements, ...rest } =
+        count;
 
       // Transform quantitative measurements
       const quantitative = Object.entries(quant_measurements).map(([measurementId, value]) => ({
@@ -270,6 +273,7 @@ export class AnalyticsService extends DBService {
         row_count,
         individual_count,
         individual_percentage,
+        ...rest,
         qual_measurements: qualitative,
         quant_measurements: quantitative
       };

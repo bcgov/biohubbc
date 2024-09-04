@@ -44,7 +44,7 @@ export class AnalyticsRepository extends BaseRepository {
       )
     );
 
-    const sqlStatement = knex
+    const queryBuilder = knex
       .with('temp_observations', (qb) => {
         qb.select(
           'os.subcount',
@@ -69,6 +69,7 @@ export class AnalyticsRepository extends BaseRepository {
           .whereIn('so.survey_id', surveyIds)
           .groupBy('os.subcount', 'os.observation_subcount_id', 'so.survey_id', ...groupByColumns);
       })
+      .select(knex.raw('public.gen_random_uuid() as id')) // Generate a unique ID for the row
       .select(knex.raw('COUNT(subcount)::NUMERIC as row_count'))
       .select(knex.raw('SUM(subcount)::NUMERIC as individual_count'))
       .select(knex.raw(`ROUND(SUM(os.subcount)::NUMERIC / (${totalCountSubquery}) * 100, 2) as individual_percentage`))
@@ -94,7 +95,7 @@ export class AnalyticsRepository extends BaseRepository {
       .groupBy(combinedColumns)
       .orderBy('individual_count', 'desc');
 
-    const response = await this.connection.knex(sqlStatement);
+    const response = await this.connection.knex(queryBuilder, ObservationCountByGroupSQLResponse);
 
     return response.rows;
   }
