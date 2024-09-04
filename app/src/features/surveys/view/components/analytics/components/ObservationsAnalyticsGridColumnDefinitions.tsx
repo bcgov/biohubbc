@@ -132,7 +132,6 @@ export const getSamplingMethodColDef = (
   headerName: 'Method',
   minWidth: 180,
   renderCell: (params) => {
-    console.log('params', params);
     if (!params.row.survey_sample_method_id) {
       return null;
     }
@@ -140,7 +139,6 @@ export const getSamplingMethodColDef = (
     const method = sampleSites
       .flatMap((site) => site.sample_methods)
       .find((method) => isEqual(params.row.survey_sample_method_id, method.survey_sample_method_id));
-    console.log('method', method);
 
     if (!method) {
       return null;
@@ -218,6 +216,6 @@ export const getBasicGroupByColDefs = (groupByOptions: IGroupByOption[]): GridCo
   return groupByOptions.map((item) => ({
     field: item.field,
     headerName: item.label,
-    minWidth: 100
+    minWidth: 180
   }));
 };

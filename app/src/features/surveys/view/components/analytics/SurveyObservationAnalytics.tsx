@@ -8,7 +8,7 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
-import { SkeletonList } from 'components/loading/SkeletonLoaders';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { ObservationAnalyticsDataTableContainer } from 'features/surveys/view/components/analytics/components/ObservationAnalyticsDataTableContainer';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
@@ -92,87 +92,86 @@ export const SurveyObservationAnalytics = () => {
   const allGroupByColumns = [...groupByColumns, ...groupByQualitativeMeasurements, ...groupByQuantitativeMeasurements];
 
   return (
-    <Box height="100%" flex="1 1 auto">
-      <Stack gap={2} direction="row" height="500px" position="relative">
-        <LoadingGuard
-          isLoading={measurementDefinitionsDataLoader.isLoading || !measurementDefinitionsDataLoader.isReady}
-          isLoadingFallback={
-            <Box minWidth="30%">
-              <SkeletonList />
-            </Box>
-          }
-          isLoadingFallbackDelay={100}>
-          <Box minWidth="250px">
-            {/* Group by header */}
+    <Stack direction="row" height="100%">
+      <LoadingGuard
+        isLoading={measurementDefinitionsDataLoader.isLoading || !measurementDefinitionsDataLoader.isReady}
+        isLoadingFallback={
+          <Box width="100%">
+            <SkeletonTable />
+          </Box>
+        }
+        isLoadingFallbackDelay={100}>
+        <Box minWidth="250px" display="flex" flexDirection="column">
+          {/* Group by header */}
+          <Box flex="0 0 auto">
             <Typography
               variant="body2"
               fontWeight={700}
               py={1.8}
-              px={3}
+              pl={2}
               bgcolor={grey[50]}
               borderBottom={`1px solid ${grey[300]}`}>
               GROUP BY
             </Typography>
-            <Box sx={{ height: '90%', overflowY: 'auto' }}>
-              <ToggleButtonGroup
-                orientation="vertical"
-                onChange={handleToggleChange}
-                sx={{
-                  width: '100%',
-                  '& .MuiToggleButton-root': {
+          </Box>
+          <Box flex="1 1 auto" overflow="auto">
+            <ToggleButtonGroup
+              orientation="vertical"
+              onChange={handleToggleChange}
+              sx={{
+                width: '100%',
+                '& .MuiToggleButton-root': {
+                  border: 'none',
+                  outline: 'none',
+                  borderRadius: '4px !important',
+                  fontSize: '0.875rem',
+                  letterSpacing: '0.02rem',
+                  textTransform: 'none',
+                  '&::first-letter': {
+                    textTransform: 'capitalize !important'
+                  }
+                }
+              }}>
+              {/* Render toggle buttons for each group by option */}
+              {groupByOptions.map((option) => (
+                <ToggleButton
+                  key={option.field}
+                  component={Button}
+                  color="primary"
+                  value={option}
+                  sx={{
+                    textAlign: 'left',
+                    display: 'block',
                     border: 'none',
                     outline: 'none',
-                    borderRadius: '4px !important',
-                    fontSize: '0.875rem',
-                    letterSpacing: '0.02rem',
-                    textTransform: 'none',
-                    '&::first-letter': {
-                      textTransform: 'capitalize !important'
-                    }
-                  }
-                }}>
-                {/* Render toggle buttons for each group by option */}
-                {groupByOptions.map((option) => (
-                  <ToggleButton
-                    key={option.field}
-                    component={Button}
-                    color="primary"
-                    value={option}
-                    sx={{
-                      textAlign: 'left',
-                      display: 'block',
-                      border: 'none',
+                    fontWeight: 700,
+                    my: 1,
+                    ':focus': {
                       outline: 'none',
-                      fontWeight: 700,
-                      my: 1,
-                      mx: 1,
-                      ':focus': {
-                        outline: 'none',
-                        border: 'none'
+                      border: 'none'
+                    }
+                  }}
+                  selected={
+                    groupByColumns.some((item) => item.field === option.field) ||
+                    groupByQualitativeMeasurements.some((item) => item.field === option.field) ||
+                    groupByQuantitativeMeasurements.some((item) => item.field === option.field)
+                  }>
+                  <Box display="flex" alignItems="center">
+                    <Checkbox
+                      sx={{ pl: 0, py: 0 }}
+                      checked={
+                        groupByColumns.some((item) => item.field === option.field) ||
+                        groupByQualitativeMeasurements.some((item) => item.field === option.field) ||
+                        groupByQuantitativeMeasurements.some((item) => item.field === option.field)
                       }
-                    }}
-                    selected={
-                      groupByColumns.some((item) => item.field === option.field) ||
-                      groupByQualitativeMeasurements.some((item) => item.field === option.field) ||
-                      groupByQuantitativeMeasurements.some((item) => item.field === option.field)
-                    }>
-                    <Box display="flex" alignItems="center">
-                      <Checkbox
-                        sx={{ pl: 0, py: 0 }}
-                        checked={
-                          groupByColumns.some((item) => item.field === option.field) ||
-                          groupByQualitativeMeasurements.some((item) => item.field === option.field) ||
-                          groupByQuantitativeMeasurements.some((item) => item.field === option.field)
-                        }
-                      />
-                      {option.label}
-                    </Box>
-                  </ToggleButton>
-                ))}
-              </ToggleButtonGroup>
-            </Box>
+                    />
+                    {option.label}
+                  </Box>
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
           </Box>
-        </LoadingGuard>
+        </Box>
 
         <Divider orientation="vertical" />
 
@@ -189,7 +188,7 @@ export const SurveyObservationAnalytics = () => {
             groupByQualitativeMeasurements={groupByQualitativeMeasurements}
           />
         )}
-      </Stack>
-    </Box>
+      </LoadingGuard>
+    </Stack>
   );
 };

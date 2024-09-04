@@ -193,6 +193,7 @@ export const SurveySpatialObservationTable = (props: ISurveyDataObservationTable
         getRowId={(row) => row.survey_observation_id}
         columns={tableColumns}
         rowSelection={false}
+        autoHeight={false}
         checkboxSelection={false}
         disableColumnSelector
         disableColumnFilter

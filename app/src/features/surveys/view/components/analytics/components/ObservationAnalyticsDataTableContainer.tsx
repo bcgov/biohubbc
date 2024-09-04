@@ -1,4 +1,3 @@
-import Box from '@mui/material/Box';
 import { GridColumnVisibilityModel } from '@mui/x-data-grid';
 import { ObservationAnalyticsDataTable } from 'features/surveys/view/components/analytics/components/ObservationAnalyticsDataTable';
 import { IGroupByOption } from 'features/surveys/view/components/analytics/SurveyObservationAnalytics';
@@ -145,13 +144,11 @@ export const ObservationAnalyticsDataTableContainer = (props: IObservationAnalyt
   }, [allGroupByColumns, columns]);
 
   return (
-    <Box height="100%" overflow="auto" flex="1 1 auto">
-      <ObservationAnalyticsDataTable
-        isLoading={!analyticsDataLoader.data}
-        columns={columns}
-        rows={rows}
-        columnVisibilityModel={columnVisibilityModel}
-      />
-    </Box>
+    <ObservationAnalyticsDataTable
+      isLoading={!analyticsDataLoader.data}
+      columns={columns}
+      rows={rows}
+      columnVisibilityModel={columnVisibilityModel}
+    />
   );
 };

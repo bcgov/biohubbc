@@ -30,16 +30,18 @@ const SurveyObservationTabularDataContainer = (props: ISurveyObservationTabularD
   ];
 
   return (
-    <Box
-      sx={{
-        width: '100%',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-      <Box pb={2} display="flex" justifyContent="space-between">
+    <>
+      <Box flex="0 0 auto" pb={2}>
         <ToggleButtonGroup
           value={activeDataView}
-          onChange={(_, value) => setActiveDataView(value)}
+          onChange={(_, view) => {
+            if (!view) {
+              // An active view must be selected at all times
+              return;
+            }
+
+            setActiveDataView(view);
+          }}
           exclusive
           sx={{
             display: 'flex',
@@ -66,13 +68,13 @@ const SurveyObservationTabularDataContainer = (props: ISurveyObservationTabularD
           ))}
         </ToggleButtonGroup>
       </Box>
-      <Box position="relative">
+      <Box flex="1 1 auto" overflow="hidden">
         {activeDataView === SurveyObservationTabularDataContainerViewEnum.COUNTS && (
           <SurveySpatialObservationTable isLoading={isLoading} />
         )}
         {activeDataView === SurveyObservationTabularDataContainerViewEnum.ANALYTICS && <SurveyObservationAnalytics />}
       </Box>
-    </Box>
+    </>
   );
 };
 

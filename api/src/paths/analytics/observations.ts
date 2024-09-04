@@ -65,7 +65,7 @@ GET.apiDoc = {
           type: 'string'
         }
       },
-      required: true
+      description: 'An array of column names to group the observations data by'
     },
     {
       in: 'query',
@@ -75,7 +75,8 @@ GET.apiDoc = {
         items: {
           type: 'string'
         }
-      }
+      },
+      description: 'An array of quantitative taxon_measurement_ids to group the observations data by'
     },
     {
       in: 'query',
@@ -85,7 +86,8 @@ GET.apiDoc = {
         items: {
           type: 'string'
         }
-      }
+      },
+      description: 'An array of qualitative taxon_measurement_ids to group the observations data by'
     }
   ],
   responses: {
@@ -222,9 +224,9 @@ export function getObservationCountByGroup(): RequestHandler {
 
       const response = await analyticsService.getObservationCountByGroup(
         (surveyIds as string[]).map(Number),
-        groupByColumns as string[],
-        (groupByQuantitativeMeasurements as string[]) || [],
-        (groupByQualitativeMeasurements as string[]) || []
+        (groupByColumns as string[]) ?? [],
+        (groupByQuantitativeMeasurements as string[]) ?? [],
+        (groupByQualitativeMeasurements as string[]) ?? []
       );
 
       await connection.commit();
