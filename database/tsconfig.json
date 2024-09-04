@@ -24,7 +24,7 @@
     "strict": true,
     "typeRoots": ["node_modules/@types"]
   },
-  "include": ["src", "20240722000002_remove_duplicate_users.ts", "20240722000002_remove_duplicate_users.ts"],
+  "include": ["src"],
   "ts-node": {
     "swc": true
   }
