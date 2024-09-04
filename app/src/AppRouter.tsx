@@ -83,7 +83,9 @@ const AppRouter: React.FC = () => {
           <AuthenticatedRouteGuard>
             <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
               <DialogContextProvider>
-                <AdminUsersRouter />
+                <CodesContextProvider>
+                  <AdminUsersRouter />
+                </CodesContextProvider>
               </DialogContextProvider>
             </SystemRoleRouteGuard>
           </AuthenticatedRouteGuard>
