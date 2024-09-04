@@ -40,7 +40,7 @@ export const EditCapturePage = () => {
 
   const urlParams: Record<string, string | number | undefined> = useParams();
 
-  const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
+  const surveyCritterId: number | undefined = Number(urlParams['critter_id']);
   const captureId: string | undefined = String(urlParams['capture_id']);
 
   const { locationChangeInterceptor } = useUnsavedChangesDialog();
@@ -164,7 +164,9 @@ export const EditCapturePage = () => {
       }
 
       // Refresh page
-      animalPageContext.critterDataLoader.refresh(critterbaseCritterId);
+      if (surveyCritterId) {
+        animalPageContext.critterDataLoader.refresh(projectId, surveyId, surveyCritterId);
+      }
 
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`, SKIP_CONFIRMATION_DIALOG);
     } catch (error) {
