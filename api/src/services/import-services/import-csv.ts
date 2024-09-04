@@ -49,6 +49,10 @@ export const importCSV = async <ValidatedRow, InsertReturn>(
   // Convert the worksheet into an array of records
   const worksheetRows = getWorksheetRowObjects(worksheet);
 
+  if (!worksheetRows.length) {
+    throw new ApiGeneralError(`Row validator failed. No rows found in the CSV file.`);
+  }
+
   // Validate the CSV rows with reference data
   const validation = await importer.validateRows(worksheetRows, worksheet);
 
