@@ -110,7 +110,7 @@ export const AnimalFormContainer = (props: IAnimalFormProps) => {
         <HorizontalSplitFormComponent
           title="General Information"
           summary="Enter information to identify the animal"
-          component={<AnimalGeneralInformationForm isEdit={isEdit}/>}
+          component={<AnimalGeneralInformationForm isEdit={isEdit} />}
         />
         <HorizontalSplitFormComponent
           title="Ecological Units"

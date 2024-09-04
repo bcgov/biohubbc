@@ -23,7 +23,7 @@ describe('findAnimals', () => {
       {
         wlh_id: null,
         animal_id: '456-456-456',
-        sex: {qualitative_option_id: 'uuid', label: 'male'},
+        sex: { qualitative_option_id: 'uuid', label: 'male' },
         itis_tsn: 123456,
         itis_scientific_name: 'scientific name',
         critter_comment: '',
@@ -87,7 +87,7 @@ describe('findAnimals', () => {
       {
         wlh_id: null,
         animal_id: '456-456-456',
-        sex: {qualitative_option_id: 'uuid', label: 'male'},
+        sex: { qualitative_option_id: 'uuid', label: 'male' },
         itis_tsn: 123456,
         itis_scientific_name: 'scientific name',
         critter_comment: '',

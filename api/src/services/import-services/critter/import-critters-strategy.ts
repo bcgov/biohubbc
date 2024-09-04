@@ -49,10 +49,10 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
    */
   columnValidator = {
     ITIS_TSN: { type: 'number', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
-    SEX: { type: 'string' },
+    SEX: { type: 'string', optional: true },
     ALIAS: { type: 'string', aliases: CSV_COLUMN_ALIASES.ALIAS },
-    WLH_ID: { type: 'string' },
-    DESCRIPTION: { type: 'string', aliases: CSV_COLUMN_ALIASES.DESCRIPTION }
+    WLH_ID: { type: 'string', optional: true },
+    DESCRIPTION: { type: 'string', aliases: CSV_COLUMN_ALIASES.DESCRIPTION, optional: true }
   } satisfies IXLSXCSVValidator;
 
   /**
@@ -111,7 +111,12 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
     const critterId = row.critter_id;
 
     // Get portion of row object that is not a critter
-    const partialRow: { [key: string]: any } = omit(row, keys(this._getCritterFromRow(row)));
+    const partialRow: { [key: keyof ICreateCritter | keyof CsvCritter]: any } = omit(row, [
+      ...keys(this._getCritterFromRow(row)),
+      'sex' as keyof CsvCritter
+    ]);
+
+    console.log(partialRow);
 
     // Keys of collection units
     const collectionUnitKeys = keys(partialRow);
@@ -181,15 +186,11 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
    * @example new Map([['180844', new Set(['Male', 'Female'])]]);
    *
    * @async
-   * @param {WorkSheet} worksheet - Xlsx Worksheet
    * @param {string[]} tsns - List of unique and valid TSNS
    * @returns {Promise<Map<string, CBQualitativeOption[]>} Sex mapping
    */
-  async _getSpeciesSexMap(
-    worksheet: WorkSheet,
-    tsns: string[]
-  ): Promise<Map<number, { sexes: CBQualitativeOption[] }>> {
-    // Map each ITIS TSN to its sex options
+  async _getSpeciesSexMap(tsns: string[]): Promise<Map<number, { sexes: CBQualitativeOption[] }>> {
+    // Initialize the sex map
     const sexMap = new Map<number, { sexes: CBQualitativeOption[] }>();
 
     // Fetch the measurement type definitions
@@ -197,16 +198,16 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
 
     // Iterate over each TSN to populate the sexMap
     tsns.forEach((tsn) => {
+      // Get the sex options for the current species
       const measurements = tsnMeasurementTypeDefinitionMap[tsn];
-      if (measurements) {
-        const sexMeasurement = measurements.qualitative.find((qual) => qual.measurement_name.toLowerCase() === 'sex');
 
-        if (sexMeasurement) {
-          sexMap.set(Number(tsn), {
-            sexes: sexMeasurement.options
-          });
-        }
-      }
+      // Look for a measurement called "sex" (case insensitive)
+      const sexMeasurement = measurements.qualitative.find((qual) => qual.measurement_name.toLowerCase() === 'sex');
+
+      // If there is a measurement called sex, add the options to the sexMap
+      sexMap.set(Number(tsn), {
+        sexes: sexMeasurement?.options ?? []
+      });
     });
 
     return sexMap;
@@ -261,8 +262,8 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
     ]);
     const collectionUnitMap = await this._getCollectionUnitMap(worksheet, validRowTsns);
 
-    // Get map with valid species sexes
-    const sexMap = await this._getSpeciesSexMap(worksheet, validRowTsns);
+    // Get sex options for each species being imported
+    const sexMap = await this._getSpeciesSexMap(validRowTsns);
 
     // Parse reference data for validation
     const tsnSet = new Set(validRowTsns.map((tsn) => Number(tsn)));
@@ -272,6 +273,8 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
     const errors: ValidationError[] = [];
 
     const csvCritters = rowsToValidate.map((row, index) => {
+      const tsn = row.itis_tsn;
+
       /**
        * --------------------------------------------------------------------
        *                      STANDARD ROW VALIDATION
@@ -281,7 +284,7 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
       // WLH_ID must follow regex pattern
       const invalidWlhId = row.wlh_id && !/^\d{2}-.+/.exec(row.wlh_id);
       // ITIS_TSN is required and be a valid TSN
-      const invalidTsn = !row.itis_tsn || !tsnSet.has(row.itis_tsn);
+      const invalidTsn = !tsn || !tsnSet.has(tsn);
       // ALIAS is required and must not already exist in Survey or CSV
       const invalidAlias =
         !row.animal_id ||
@@ -289,13 +292,19 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
         csvCritterAliases.filter((value) => value === row.animal_id).length > 1;
 
       if (invalidWlhId) {
-        errors.push({ row: index, message: `Invalid WLH_ID. Example format '10-1000R'.` });
+        errors.push({
+          row: index,
+          message: `Wildlife health ID ${row.wlh_id} is incorrectly formatted. Expected a 2-digit hyphenated prefix like '18-98491'.`
+        });
       }
       if (invalidTsn) {
-        errors.push({ row: index, message: `Invalid ITIS_TSN.` });
+        errors.push({ row: index, message: `Species TSN ${tsn} does not exist.` });
       }
       if (invalidAlias) {
-        errors.push({ row: index, message: `Invalid ALIAS. Must be unique in Survey and CSV.` });
+        errors.push({
+          row: index,
+          message: `Animal ${row.animal_id} already exists in the Survey. Duplicate names are not allowed.`
+        });
       }
 
       /**
@@ -303,50 +312,43 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
        *                      SEX VALIDATION
        * --------------------------------------------------------------------
        */
-      console.log('Validating sex');
-      if (row.itis_tsn) {
-        console.log('here');
-        const sexColumn = sexMap.get(row.itis_tsn);
-        console.log(row.sex);
-        console.log(row.itis_tsn);
-        console.log(sexColumn);
+      if (tsn) {
+        // Get the sex options from the sexMap
+        const sexOptionsForTsn = sexMap.get(tsn);
 
-        // Remove sex if there's no corresponding TSN or if no sex value is provided
-        if (!sexColumn || !row.sex) {
-          console.log('No sex value');
+        // If no sex value is given, delete the sex column
+        if (!row.sex) {
           delete row.sex;
-        } else {
-          // Find if the provided sex value matches any option in the sexColumn
-          const sexMatch = sexColumn.sexes.find(
-            (sex) => sex.option_label.toLowerCase() === String(row.sex).toLowerCase()
+        }
+
+        // If a sex value is given but sex is not allowed for the tsn, add an error message
+        if (!sexOptionsForTsn && row.sex) {
+          errors.push({
+            row: index,
+            message: `Sex is not a supported attribute for TSN ${tsn}. Please contact a system administrator if it should be.`
+          });
+        }
+
+        // If sex is allowed and a value is given, look for a matching quantitative_option_id
+        if (sexOptionsForTsn && row.sex) {
+          const sexMatch = sexOptionsForTsn.sexes.find(
+            (sex) => sex.option_label.toLowerCase() === row.sex?.toLowerCase()
           );
 
+          // If the given value is not valid, add an error message
           if (!sexMatch) {
             errors.push({
               row: index,
-              message: `Invalid sex. Cell value is not valid for the species.`
+              message: `${sexMatch} is not a valid sex option for TSN ${tsn}. Did you mean one of ${sexOptionsForTsn.sexes.join(
+                ','
+              )}`
             });
           } else {
-            console.log(sexMatch.qualitative_option_id);
-            // Update the cell to be the qualitative option id corresponding to the sex value
-            row['SEX'] = sexMatch.qualitative_option_id;
+            // If the value is valid, update the cell with the qualitative_option_id
+            row.sex = sexMatch.qualitative_option_id;
           }
         }
       }
-
-      // // Get all measurement columns names from the worksheet, that match a measurement in the TSN measurements
-      // const measurementColumnNames = getMeasurementColumnNames([], tsnMeasurementTypeDefinitionMap);
-
-      // const measurementsToValidate: IMeasurementDataToValidate = measurementColumnNames.map((columnName) => ({
-      //   tsn: String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
-      //   key: columnName,
-      //   value: row[columnName]
-      // }));
-
-      // // Validate measurement column data
-      // if (!validateMeasurements(measurementsToValidate, tsnMeasurementTypeDefinitionMap)) {
-      //   throw new Error('Failed to process file for importing observations. Measurement column validator failed.');
-      // }
 
       /**
        * --------------------------------------------------------------------

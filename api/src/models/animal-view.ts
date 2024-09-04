@@ -5,7 +5,6 @@ export interface IAnimalAdvancedFilters {
   system_user_id?: number;
 }
 
-
 export interface ISex {
   qualitative_option_id: string;
   label: string;

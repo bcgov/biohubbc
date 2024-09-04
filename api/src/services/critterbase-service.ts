@@ -3,9 +3,9 @@ import { Request } from 'express';
 import qs from 'qs';
 import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
+import { ISex } from '../models/animal-view';
 import { getLogger } from '../utils/logger';
 import { KeycloakService } from './keycloak-service';
-import { ISex } from '../models/animal-view';
 
 // TODO: TechDebt: Audit the existing types / return types in this file.
 
@@ -28,7 +28,7 @@ export interface ICritter {
   critter_id: string;
   wlh_id: string | null;
   animal_id: string | null;
-  sex: ISex | null
+  sex: ISex | null;
   itis_tsn: number;
   itis_scientific_name: string;
   critter_comment: string | null;

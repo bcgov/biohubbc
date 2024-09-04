@@ -83,7 +83,13 @@ export const AnimalGeneralInformationForm = (props: IAnimalGeneralInformationFor
           />
         </Grid>
         <Grid item xs={12}>
-          <AutocompleteField id="sex_qualitative_option_id" name="sex_qualitative_option_id" label="Sex" options={sexOptions} disabled={!sexOptions.length} />
+          <AutocompleteField
+            id="sex_qualitative_option_id"
+            name="sex_qualitative_option_id"
+            label="Sex"
+            options={sexOptions}
+            disabled={!sexOptions.length}
+          />
         </Grid>
         <Grid item xs={12}>
           <CustomTextField
