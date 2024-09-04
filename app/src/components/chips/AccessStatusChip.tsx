@@ -9,15 +9,18 @@ const useStyles = () => {
   return {
     chipPending: {
       color: '#fff',
-      backgroundColor: theme.palette.error.main
+      backgroundColor: theme.palette.error.main,
+      userSelect: 'none'
     },
     chipActioned: {
       color: '#fff',
-      backgroundColor: theme.palette.success.main
+      backgroundColor: theme.palette.success.main,
+      userSelect: 'none'
     },
     chipRejected: {
       color: '#fff',
-      backgroundColor: theme.palette.error.main
+      backgroundColor: theme.palette.error.main,
+      userSelect: 'none'
     }
   };
 };

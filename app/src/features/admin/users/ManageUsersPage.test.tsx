@@ -1,8 +1,11 @@
 import { AuthStateContext } from 'contexts/authStateContext';
+import { CodesContext, ICodesContext } from 'contexts/codesContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DataLoader } from 'hooks/useDataLoader';
 import { Router } from 'react-router';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
+import { codes } from 'test-helpers/code-helpers';
 import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import ManageUsersPage from './ManageUsersPage';
 
@@ -11,11 +14,20 @@ const history = createMemoryHistory();
 const renderContainer = () => {
   const authState = getMockAuthState({ base: SystemAdminAuthState });
 
+  const mockCodesContext: ICodesContext = {
+    codesDataLoader: {
+      data: codes,
+      load: () => {}
+    } as DataLoader<any, any, any>
+  };
+
   return render(
     <AuthStateContext.Provider value={authState}>
-      <Router history={history}>
-        <ManageUsersPage />
-      </Router>
+      <CodesContext.Provider value={mockCodesContext}>
+        <Router history={history}>
+          <ManageUsersPage />
+        </Router>
+      </CodesContext.Provider>
     </AuthStateContext.Provider>
   );
 };

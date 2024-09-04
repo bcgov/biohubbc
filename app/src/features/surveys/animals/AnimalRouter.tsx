@@ -56,7 +56,7 @@ export const AnimalRouter: React.FC = () => {
 
       <RouteWithTitle
         exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/:survey_critter_id/edit'}
+        path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/edit'}
         title={getTitle('Edit Animal')}>
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
@@ -69,7 +69,7 @@ export const AnimalRouter: React.FC = () => {
 
       <RouteWithTitle
         exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/:survey_critter_id/capture/create'}
+        path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/capture/create'}
         title={getTitle('Create Capture')}>
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
@@ -82,7 +82,7 @@ export const AnimalRouter: React.FC = () => {
 
       <RouteWithTitle
         exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/:survey_critter_id/capture/:capture_id/edit'}
+        path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/capture/:capture_id/edit'}
         title={getTitle('Edit Capture')}>
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
@@ -95,7 +95,7 @@ export const AnimalRouter: React.FC = () => {
 
       <RouteWithTitle
         exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/:survey_critter_id/mortality/create'}
+        path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/mortality/create'}
         title={getTitle('Report Mortality')}>
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
@@ -108,7 +108,7 @@ export const AnimalRouter: React.FC = () => {
 
       <RouteWithTitle
         exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/:survey_critter_id/mortality/:mortality_id/edit'}
+        path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/mortality/:mortality_id/edit'}
         title={getTitle('Edit Mortality')}>
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}

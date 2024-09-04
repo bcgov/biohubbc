@@ -173,10 +173,13 @@ describe('SampleLocationService', () => {
         .stub(SampleStratumService.prototype, 'deleteSampleStratumRecords')
         .resolves();
 
+      const mockSurveySampleSiteId = 1;
+      const mockSurveyId = 1;
+
       // Site
       sinon.stub(SampleLocationRepository.prototype, 'deleteSampleSiteRecord').resolves({
-        survey_sample_site_id: 1,
-        survey_id: 1,
+        survey_sample_site_id: mockSurveySampleSiteId,
+        survey_id: mockSurveyId,
         name: 'Sample Site 1',
         description: '',
         geometry: null,
@@ -189,18 +192,17 @@ describe('SampleLocationService', () => {
         revision_count: 0
       });
 
-      const mockSurveyId = 1;
       const { survey_sample_site_id } = await service.deleteSampleSiteRecord(mockSurveyId, 1);
 
-      expect(getSampleBlocksForSurveySampleSiteIdStub).to.be.calledOnceWith(survey_sample_site_id);
-      expect(deleteSampleBlockRecordsStub).to.be.calledOnceWith([survey_sample_site_id]);
+      expect(getSampleBlocksForSurveySampleSiteIdStub).to.be.calledOnceWith(mockSurveySampleSiteId);
+      expect(deleteSampleBlockRecordsStub).to.be.calledOnceWith([mockSurveySampleSiteId]);
 
-      expect(getSampleStratumsForSurveySampleSiteIdStub).to.be.calledOnceWith(survey_sample_site_id);
-      expect(deleteSampleStratumRecordsStub).to.be.calledOnceWith([survey_sample_site_id]);
+      expect(getSampleStratumsForSurveySampleSiteIdStub).to.be.calledOnceWith(mockSurveySampleSiteId);
+      expect(deleteSampleStratumRecordsStub).to.be.calledOnceWith([mockSurveySampleSiteId]);
 
-      expect(survey_sample_site_id).to.be.eq(survey_sample_site_id);
-      expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(survey_sample_site_id);
-      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(survey_sample_site_id);
+      expect(survey_sample_site_id).to.be.eq(mockSurveySampleSiteId);
+      expect(getSampleMethodsForSurveySampleSiteIdStub).to.be.calledOnceWith(mockSurveySampleSiteId);
+      expect(deleteSampleMethodRecordStub).to.be.calledOnceWith(mockSurveySampleSiteId);
     });
   });
 

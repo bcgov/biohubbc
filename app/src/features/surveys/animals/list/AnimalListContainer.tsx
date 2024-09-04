@@ -113,7 +113,7 @@ export const AnimalListContainer = () => {
         dialogContext.setYesNoDialog({ open: false });
 
         // If the selected animal is the deleted animal, unset the selected animal
-        if (checkboxSelectedIds.some((id) => id == selectedAnimal?.survey_critter_id)) {
+        if (checkboxSelectedIds.some((id) => id == selectedAnimal?.critter_id)) {
           setSelectedAnimal();
         }
 
@@ -164,11 +164,11 @@ export const AnimalListContainer = () => {
       },
       open: true,
       onYes: () => {
-        if (selectedCritterMenu?.survey_critter_id) {
-          handleDeleteCritter(selectedCritterMenu?.survey_critter_id);
+        if (selectedCritterMenu?.critter_id) {
+          handleDeleteCritter(selectedCritterMenu?.critter_id);
         }
         // If the selected animal is the deleted animal, unset the selected animal
-        if (selectedCritterMenu?.survey_critter_id == selectedAnimal?.survey_critter_id) {
+        if (selectedCritterMenu?.critter_id == selectedAnimal?.critter_id) {
           setSelectedAnimal();
         }
       }
@@ -234,7 +234,7 @@ export const AnimalListContainer = () => {
               }
             }}>
             <RouterLink
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedCritterMenu.survey_critter_id}/edit`}
+              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedCritterMenu.critter_id}/edit`}
               onClick={() => {
                 setSelectedAnimal(selectedCritterMenu);
               }}>
@@ -323,7 +323,7 @@ export const AnimalListContainer = () => {
                               return;
                             }
 
-                            const critterIds = critters.map((critter) => critter.survey_critter_id);
+                            const critterIds = critters.map((critter) => critter.critter_id);
                             setCheckboxSelectedIds(critterIds);
                           }}
                           inputProps={{ 'aria-label': 'controlled' }}
@@ -355,7 +355,7 @@ export const AnimalListContainer = () => {
                   )}
                   {critters.map((critter) => (
                     <Stack
-                      key={critter.critter_id}
+                      key={critter.critterbase_critter_id}
                       direction="row"
                       display="flex"
                       alignItems="center"
@@ -367,7 +367,7 @@ export const AnimalListContainer = () => {
                       }}>
                       <CritterListItem
                         critter={critter}
-                        isChecked={checkboxSelectedIds.includes(critter.survey_critter_id)}
+                        isChecked={checkboxSelectedIds.includes(critter.critter_id)}
                         handleCheckboxChange={handleCheckboxChange}
                       />
                       <IconButton
@@ -375,8 +375,8 @@ export const AnimalListContainer = () => {
                         edge="end"
                         onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
                           handleCritterMenuClick(event, {
-                            critterbase_critter_id: critter.critter_id,
-                            survey_critter_id: critter.survey_critter_id
+                            critterbase_critter_id: critter.critterbase_critter_id,
+                            critter_id: critter.critter_id
                           })
                         }
                         aria-label="animal-settings">

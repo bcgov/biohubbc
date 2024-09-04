@@ -5,7 +5,6 @@ import { ObservationsContextProvider } from 'contexts/observationsContext';
 import { ProjectAuthStateContextProvider } from 'contexts/projectAuthStateContext';
 import { ProjectContextProvider } from 'contexts/projectContext';
 import { SurveyContextProvider } from 'contexts/surveyContext';
-import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import ProjectPage from 'features/projects/view/ProjectPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
 import SurveyRouter from 'features/surveys/SurveyRouter';
@@ -95,9 +94,7 @@ const ProjectsRouter: React.FC = () => {
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <SurveyContextProvider>
                     <ObservationsContextProvider>
-                      <TelemetryDataContextProvider>
-                        <SurveyRouter />
-                      </TelemetryDataContextProvider>
+                      <SurveyRouter />
                     </ObservationsContextProvider>
                   </SurveyContextProvider>
                 </ProjectRoleRouteGuard>

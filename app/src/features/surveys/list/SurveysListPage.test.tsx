@@ -10,7 +10,7 @@ import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helper
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForListResponse } from 'test-helpers/survey-helpers';
-import { cleanup, render, screen, waitFor } from 'test-helpers/test-utils';
+import { cleanup, render, waitFor } from 'test-helpers/test-utils';
 import SurveysListPage from './SurveysListPage';
 
 const history = createMemoryHistory();
@@ -81,7 +81,6 @@ describe('SurveysListPage', () => {
       </AuthStateContext.Provider>
     );
 
-    screen.debug();
     await waitFor(() => {
       expect(getByTestId('survey-list-no-data-overlay')).toBeInTheDocument();
     });
