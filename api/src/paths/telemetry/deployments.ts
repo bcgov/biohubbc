@@ -37,8 +37,6 @@ GET.apiDoc = {
         type: 'array',
         items: { type: 'string', format: 'uuid', minimum: 1 }
       },
-      explode: false,
-      style: 'form',
       required: true
     }
   ],
