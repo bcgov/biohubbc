@@ -2,6 +2,7 @@ import { Divider } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
+import FileUpload from 'components/file-upload/FileUpload';
 import { Formik, FormikProps } from 'formik';
 import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
 import { isDefined } from 'utils/Utils';
@@ -156,6 +157,12 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
           title="Capture Location"
           summary="Enter where the animal was captured"
           component={<CaptureLocationForm />}
+        />
+        <Divider />
+        <HorizontalSplitFormComponent
+          title="Attachments"
+          summary="Upload attachments related to the capture"
+          component={<FileUpload />}
         />
         <Divider />
         <HorizontalSplitFormComponent
