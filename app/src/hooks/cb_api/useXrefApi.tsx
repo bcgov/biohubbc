@@ -22,13 +22,21 @@ export const useXrefApi = (axios: AxiosInstance) => {
   /**
    * Get measurement definitions by search term.
    *
-   * @param {string} searchTerm
+   * @param {string} name
+   * @param {string[]} tsns
    * @return {*}  {Promise<CBMeasurementSearchByTermResponse>}
    */
   const getMeasurementTypeDefinitionsBySearchTerm = async (
-    searchTerm: string
+    name: string,
+    tsns?: number[]
   ): Promise<CBMeasurementSearchByTermResponse> => {
-    const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements/search?name=${searchTerm}`);
+    const t = tsns?.map((tsn) => Number(tsn));
+    const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements/search`, {
+      params: { name, tsns: t },
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
     return data;
   };
 

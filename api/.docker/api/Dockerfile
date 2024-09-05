@@ -21,6 +21,9 @@ ENV PATH ${HOME}/node_modules/.bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/us
 # Copy the rest of the files
 COPY . ./
 
+# Update log directory file permissions, prevents permission errors for linux environments
+RUN chmod -R a+rw data/logs/*
+
 VOLUME ${HOME}
 
 # start api with live reload

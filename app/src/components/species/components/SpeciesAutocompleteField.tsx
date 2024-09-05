@@ -186,7 +186,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       id={formikFieldName}
       disabled={disabled}
       data-testid={formikFieldName}
-      noOptionsText="No matching options"
+      noOptionsText={isLoading ? 'Loading...' : 'No matching options'}
       options={options}
       getOptionLabel={(option) => option.scientificName}
       filterOptions={(item) => item}

@@ -4,17 +4,17 @@ import { FilterFieldsContainer } from 'features/summary/components/FilterFieldsC
 import { Formik } from 'formik';
 import { useTaxonomyContext } from 'hooks/useContext';
 
-export type ITelemetryAdvancedFilters = {
+export type IAllTelemetryAdvancedFilters = {
   itis_tsn?: number;
 };
 
-export const TelemetryAdvancedFiltersInitialValues: ITelemetryAdvancedFilters = {
+export const TelemetryAdvancedFiltersInitialValues: IAllTelemetryAdvancedFilters = {
   itis_tsn: undefined
 };
 
-export interface ITelemetryListFilterFormProps {
-  handleSubmit: (filterValues: ITelemetryAdvancedFilters) => void;
-  initialValues?: ITelemetryAdvancedFilters;
+export interface IAllTelemetryListFilterFormProps {
+  handleSubmit: (filterValues: IAllTelemetryAdvancedFilters) => void;
+  initialValues?: IAllTelemetryAdvancedFilters;
 }
 
 /**
@@ -23,10 +23,10 @@ export interface ITelemetryListFilterFormProps {
  * TODO: The filter fields are disabled for now. The fields are functional (the values are captured and passed to the
  * backend), but the backend does not currently use them for filtering.
  *
- * @param {ITelemetryListFilterFormProps} props
+ * @param {IAllTelemetryListFilterFormProps} props
  * @return {*}
  */
-const TelemetryListFilterForm = (props: ITelemetryListFilterFormProps) => {
+const TelemetryListFilterForm = (props: IAllTelemetryListFilterFormProps) => {
   const { handleSubmit, initialValues } = props;
 
   const taxonomyContext = useTaxonomyContext();

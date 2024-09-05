@@ -17,7 +17,6 @@ import {
   SurveyObject,
   SurveySupplementaryData
 } from '../models/survey-view';
-import { AttachmentRepository } from '../repositories/attachment-repository';
 import { PostSurveyBlock, SurveyBlockRecordWithCount } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { ISurveyProprietorModel, SurveyBasicFields, SurveyRepository } from '../repositories/survey-repository';
@@ -34,7 +33,6 @@ import { SurveyLocationService } from './survey-location-service';
 import { SurveyParticipationService } from './survey-participation-service';
 
 export class SurveyService extends DBService {
-  attachmentRepository: AttachmentRepository;
   surveyRepository: SurveyRepository;
   platformService: PlatformService;
   historyPublishService: HistoryPublishService;
@@ -46,7 +44,6 @@ export class SurveyService extends DBService {
   constructor(connection: IDBConnection) {
     super(connection);
 
-    this.attachmentRepository = new AttachmentRepository(connection);
     this.surveyRepository = new SurveyRepository(connection);
     this.platformService = new PlatformService(connection);
     this.historyPublishService = new HistoryPublishService(connection);

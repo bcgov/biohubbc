@@ -13,6 +13,7 @@ import { ISpeciesForm, ITaxonomyWithEcologicalUnits } from 'features/surveys/com
 import { ISurveyPartnershipsForm } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Feature } from 'geojson';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { ApiPaginationResponseParams, StringBoolean } from 'types/misc';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from './useCritterApi.interface';
 
@@ -450,12 +451,13 @@ export interface IGetSurveyForUpdateResponse {
   };
 }
 
-export interface ISimpleCritterWithInternalId extends ICritterSimpleResponse {
-  survey_critter_id: number;
+export interface IDetailedCritterWithInternalId extends ICritterDetailedResponse {
+  critter_id: number; //The internal critter_id in the SIMS DB. Called this to distinguish against the critterbase UUID of the same name.
 }
 
-export interface IDetailedCritterWithInternalId extends ICritterDetailedResponse {
-  survey_critter_id: number; //The internal critter_id in the SIMS DB. Called this to distinguish against the critterbase UUID of the same name.
+export interface IAnimalDeploymentWithCritter {
+  deployment: IAnimalDeployment;
+  critter: ICritterSimpleResponse;
 }
 
 export type IEditSurveyRequest = IGeneralInformationForm &

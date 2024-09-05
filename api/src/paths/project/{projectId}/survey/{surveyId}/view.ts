@@ -20,8 +20,6 @@ import { authorizeRequestHandler } from '../../../../../request-handlers/securit
 import { SurveyService } from '../../../../../services/survey-service';
 import { getLogger } from '../../../../../utils/logger';
 
-('../../../../../openapi/schemas/survey');
-
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/view');
 
 export const GET: Operation = [

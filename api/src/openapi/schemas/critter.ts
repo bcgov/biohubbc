@@ -33,11 +33,11 @@ export const critterSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
   properties: {
-    critter_id: {
+    critterbase_critter_id: {
       type: 'string',
       format: 'uuid'
     },
-    survey_critter_id: {
+    critter_id: {
       type: 'integer',
       minimum: 1
     },
