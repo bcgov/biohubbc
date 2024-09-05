@@ -16,26 +16,19 @@ describe('logger', () => {
 
     beforeEach(() => {
       currentLogLevel = process.env.LOG_LEVEL;
-      console.log({ initialLogLevel: currentLogLevel });
 
       // Set initial log level value
       process.env.LOG_LEVEL = 'info';
-      console.log({ before: process.env.LOG_LEVEL });
     });
 
     afterEach(() => {
       // Restore the original log level
       process.env.LOG_LEVEL = currentLogLevel;
-      console.log({ after: process.env.LOG_LEVEL });
     });
 
     it('sets the log level for the console transport', () => {
-      console.log({ test: process.env.LOG_LEVEL });
-
       //const myLogger1 = require('./logger').getLogger('myLoggerA');
       const myLogger1 = getLogger('myLoggerA');
-
-      console.log({ transport: myLogger1.transports[1].level });
 
       expect(myLogger1.transports[1].level).to.equal('info');
 

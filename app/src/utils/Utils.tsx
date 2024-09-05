@@ -1,4 +1,5 @@
 import Typography from '@mui/material/Typography';
+import { AxiosProgressEvent } from 'axios';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
@@ -479,3 +480,15 @@ export const getRandomHexColor = (seed: number, min = 120, max = 180): string =>
  * @return {*}  {value is T}
  */
 export const isDefined = <T,>(value: T | undefined | null): value is T => value !== undefined && value !== null;
+
+/**
+ * Gets the progress percentage from an Axios ProgressEvent.
+ *
+ * Note: Axios will fire a `progress event` 3 times a second.
+ *
+ * @param {AxiosProgressEvent} progressEvent - Axios progress event
+ *
+ */
+export const getAxiosProgress = (progressEvent: AxiosProgressEvent) => {
+  return Math.round((progressEvent.loaded / (progressEvent.total || 1)) * 100);
+};

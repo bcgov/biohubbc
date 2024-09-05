@@ -19,6 +19,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { downloadFile } from 'utils/file-utils';
+import { getAxiosProgress } from 'utils/Utils';
 import { getCapturesCSVTemplate, getMarkingsCSVTemplate, getMeasurementsCSVTemplate } from './utils/templates';
 
 type CSVFilesStatus = {
@@ -92,10 +93,10 @@ export const CreateCSVCapturesPage = () => {
         try {
           handleFileState({ fileType, status: UploadFileStatus.UPLOADING });
 
+          // Pass the file and the onProgress callback to the upload handler
           await onUpload(files[fileType].file as File, (progressEvent: AxiosProgressEvent) => {
-            const progress = Math.round((progressEvent.loaded / (progressEvent.total || 1)) * 100);
-
-            handleFileState({ fileType, progress });
+            // Update the progress of the file upload
+            handleFileState({ fileType, progress: getAxiosProgress(progressEvent) });
 
             if (progressEvent.loaded === progressEvent.total) {
               handleFileState({ fileType, status: UploadFileStatus.FINISHING_UPLOAD });
@@ -104,7 +105,7 @@ export const CreateCSVCapturesPage = () => {
 
           handleFileState({ fileType, status: UploadFileStatus.COMPLETE });
 
-          return UploadFileStatus.COMPLETE;
+          return UploadFileStatus.COMPLETE; // Return the final status to prevent race conditions with state
         } catch (error: any) {
           handleFileState({ fileType, status: UploadFileStatus.FAILED, error: error.message ?? 'Unknown error' });
 
@@ -144,7 +145,12 @@ export const CreateCSVCapturesPage = () => {
     }
   };
 
-  const handleCancel = () => {
+  /**
+   * On cancel, navigate back to the animals page.
+   *
+   * @returns {void}
+   */
+  const handleCancel = (): void => {
     history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
   };
 
