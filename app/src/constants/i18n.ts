@@ -450,6 +450,31 @@ export const TelemetryTableI18N = {
     `Deleted ${count} telemetry ${p(count, 'record')} successfully.`
 };
 
+export const TelemetryDeviceKeyFileI18N = {
+  uploadErrorTitle: 'Error Uploading Telemetry Device Key File',
+  uploadErrorText:
+    'An error has occurred while attempting to upload the device key file, please try again. If the error persists, please contact your system administrator.',
+  downloadErrorTitle: 'Error Downloading Telemetry Device Key File',
+  downloadErrorText:
+    'An error has occurred while attempting to download the device key file, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const CreateAnimalDeploymentI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Deployment',
+  createErrorText:
+    'An error has occurred while attempting to create your deployment. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditAnimalDeploymentI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Deployment',
+  createErrorText:
+    'An error has occurred while attempting to create your deployment. Please try again. If the error persists, please contact your system administrator.'
+};
+
 export const SurveyExportI18N = {
   exportErrorTitle: 'Error Exporting Survey Data',
   exportErrorText:

@@ -3,24 +3,12 @@ import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
 import { systemUserSchema } from '../../openapi/schemas/user';
-import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('paths/user/{userId}');
+const defaultLog = getLogger('paths/user/self');
 
-export const GET: Operation = [
-  authorizeRequestHandler(() => {
-    return {
-      and: [
-        {
-          discriminator: 'SystemUser'
-        }
-      ]
-    };
-  }),
-  getUser()
-];
+export const GET: Operation = [getSelf()];
 
 GET.apiDoc = {
   description: 'Get user details for the currently authenticated user.',
@@ -64,29 +52,29 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getUser(): RequestHandler {
+export function getSelf(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
-      const userId = connection.systemUserId();
+      const systemUserId = connection.systemUserId();
 
-      if (!userId) {
+      if (!systemUserId) {
         throw new HTTP400('Failed to identify system user ID');
       }
 
       const userService = new UserService(connection);
 
       // Fetch system user record
-      const userObject = await userService.getUserById(userId);
+      const userObject = await userService.getUserById(systemUserId);
 
       await connection.commit();
 
       return res.status(200).json(userObject);
     } catch (error) {
-      defaultLog.error({ label: 'getUser', message: 'error', error });
+      defaultLog.error({ label: 'getSelf', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

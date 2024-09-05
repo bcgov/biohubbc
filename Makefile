@@ -6,7 +6,7 @@
 
 -include .env
 
-# Apply the contents of the .env to the terminal, so that the docker-compose file can use them in its builds
+# Apply the contents of the .env to the terminal, so that the compose file can use them in its builds
 export $(shell sed 's/=.*//' .env)
 
 ## ------------------------------------------------------------------------------
@@ -45,13 +45,13 @@ close: ## Closes all project containers
 	@echo "==============================================="
 	@echo "Make: close - closing Docker containers"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml down
+	@docker compose down
 
 clean: ## Closes and cleans (removes) all project containers
 	@echo "==============================================="
 	@echo "Make: clean - closing and cleaning Docker containers"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
+	@docker compose down -v --rmi all --remove-orphans
 
 prune: ## Deletes ALL docker artifacts (even those not associated to this project)
 	@echo -n "Delete ALL docker artifacts? [y/n] " && read ans && [ $${ans:-n} = y ]
@@ -76,13 +76,13 @@ build-postgres: ## Builds the postgres db containers
 	@echo "==============================================="
 	@echo "Make: build-postgres - building postgres db  images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup
+	@docker compose build db db_setup
 
 run-postgres: ## Runs the postgres db containers
 	@echo "==============================================="
 	@echo "Make: run-postgres - running postgres db  images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup
+	@docker compose up -d db db_setup
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend Commands
@@ -93,13 +93,13 @@ build-backend: ## Builds all backend containers
 	@echo "==============================================="
 	@echo "Make: build-backend - building backend images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup api
+	@docker compose build db db_setup api
 
 run-backend: ## Runs all backend containers
 	@echo "==============================================="
 	@echo "Make: run-backend - running backend images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup api
+	@docker compose up -d db db_setup api
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Web Commands (backend + web frontend)
@@ -110,13 +110,13 @@ build-web: ## Builds all backend+web containers
 	@echo "==============================================="
 	@echo "Make: build-web - building web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup api app
+	@docker compose build db db_setup api app
 
 run-web: ## Runs all backend+web containers
 	@echo "==============================================="
 	@echo "Make: run-web - running web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup api app
+	@docker compose up -d db db_setup api app
 
 ## ------------------------------------------------------------------------------
 ## Commands to shell into the target container
@@ -127,19 +127,19 @@ db-container: ## Executes into database container.
 	@echo "Make: Shelling into database container"
 	@echo "==============================================="
 	@export PGPASSWORD=$(DB_ADMIN_PASS)
-	@docker-compose exec db psql -U $(DB_ADMIN) -d $(DB_DATABASE)
+	@docker compose exec db psql -U $(DB_ADMIN) -d $(DB_DATABASE)
 
 app-container: ## Executes into the app container.
 	@echo "==============================================="
 	@echo "Shelling into app container"
 	@echo "==============================================="
-	@docker-compose exec app bash
+	@docker compose exec app bash
 
 api-container: ## Executes into the api container.
 	@echo "==============================================="
 	@echo "Shelling into api container"
 	@echo "==============================================="
-	@docker-compose exec api bash
+	@docker compose exec api bash
 
 ## ------------------------------------------------------------------------------
 ## Database migration commands
@@ -149,13 +149,13 @@ build-db-setup: ## Build the db knex setup (migrations + seeding) image
 	@echo "==============================================="
 	@echo "Make: build-db-setup - building db knex setup image"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db_setup
+	@docker compose build db_setup
 
 run-db-setup: ## Run the database migrations and seeding
 	@echo "==============================================="
 	@echo "Make: run-db-setup - running database migrations and seeding"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db_setup
+	@docker compose up db_setup
 
 ## ------------------------------------------------------------------------------
 ## clamav commands
@@ -165,13 +165,13 @@ build-clamav: ## Build the clamav image
 	@echo "==============================================="
 	@echo "Make: build-clamav - building clamav image"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build clamav
+	@docker compose build clamav
 
 run-clamav: ## Run clamav
 	@echo "==============================================="
 	@echo "Make: run-clamav - running clamav"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d clamav
+	@docker compose up -d clamav
 
 ## ------------------------------------------------------------------------------
 ## Run `npm` commands for all projects
@@ -289,11 +289,11 @@ pipeline-install: ## Runs `npm install` for all projects
 
 args ?= --tail 2000 ## Default args if none are provided
 
-log: ## Runs `docker-compose logs -f` for all containers
+log: ## Runs `docker compose logs -f` for all containers
 	@echo "==============================================="
 	@echo "Running docker logs for the app container"
 	@echo "==============================================="
-	@docker-compose logs -f $(args)
+	@docker compose logs -f $(args)
 
 log-app: ## Runs `docker logs <container> -f` for the app container
 	@echo "==============================================="

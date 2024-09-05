@@ -22,7 +22,7 @@ export const SurveySpatialAnimal = () => {
   const crittersApi = useCritterbaseApi();
 
   const critterIds = useMemo(
-    () => surveyContext.critterDataLoader.data?.map((critter) => critter.critter_id) ?? [],
+    () => surveyContext.critterDataLoader.data?.map((critter) => critter.critterbase_critter_id) ?? [],
     [surveyContext.critterDataLoader.data]
   );
 

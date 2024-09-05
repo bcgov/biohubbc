@@ -6,7 +6,7 @@ import { deleteTechnique, updateTechnique } from '.';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
 import { AttractantService } from '../../../../../../../services/attractants-service';
-import { ObservationService } from '../../../../../../../services/observation-service';
+import { SampleMethodService } from '../../../../../../../services/sample-method-service';
 import { TechniqueAttributeService } from '../../../../../../../services/technique-attributes-service';
 import { TechniqueService } from '../../../../../../../services/technique-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
@@ -30,8 +30,8 @@ describe('deleteTechnique', () => {
       techniqueId: '3'
     };
 
-    const getObservationsCountByTechniqueIdsStub = sinon
-      .stub(ObservationService.prototype, 'getObservationsCountByTechniqueIds')
+    const getSampleMethodsCountForTechniqueIdsStub = sinon
+      .stub(SampleMethodService.prototype, 'getSampleMethodsCountForTechniqueIds')
       .resolves(0);
 
     const deleteTechniqueStub = sinon
@@ -44,14 +44,14 @@ describe('deleteTechnique', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(getObservationsCountByTechniqueIdsStub).to.have.been.calledOnceWith(2, [3]);
+      expect(getSampleMethodsCountForTechniqueIdsStub).to.have.been.calledOnceWith([3]);
       expect(deleteTechniqueStub).to.have.been.calledOnceWith(2, 3);
 
       expect((actualError as HTTPError).message).to.equal('a test error');
     }
   });
 
-  it('throws an error if any technique records are associated to an observation record', async () => {
+  it('throws an error if any technique records are associated to a sampling site', async () => {
     const mockDBConnection = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
@@ -63,8 +63,8 @@ describe('deleteTechnique', () => {
       techniqueId: '3'
     };
 
-    const getObservationsCountByTechniqueIdsStub = sinon
-      .stub(ObservationService.prototype, 'getObservationsCountByTechniqueIds')
+    const getSampleMethodsCountForTechniqueIdsStub = sinon
+      .stub(SampleMethodService.prototype, 'getSampleMethodsCountForTechniqueIds')
       .resolves(10); // technique records are associated to 10 observation records
 
     const requestHandler = deleteTechnique();
@@ -73,13 +73,13 @@ describe('deleteTechnique', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(getObservationsCountByTechniqueIdsStub).to.have.been.calledOnce;
+      expect(getSampleMethodsCountForTechniqueIdsStub).to.have.been.calledOnce;
 
       expect(mockDBConnection.rollback).to.have.been.calledOnce;
       expect(mockDBConnection.release).to.have.been.calledOnce;
 
       expect((actualError as HTTPError).message).to.equal(
-        'Cannot delete a technique that is associated with an observation'
+        'Cannot delete a technique that is associated with a sampling site'
       );
       expect((actualError as HTTPError).status).to.equal(409);
     }
@@ -97,8 +97,8 @@ describe('deleteTechnique', () => {
       techniqueId: '3'
     };
 
-    const getObservationsCountByTechniqueIdsStub = sinon
-      .stub(ObservationService.prototype, 'getObservationsCountByTechniqueIds')
+    const getSampleMethodsCountForTechniqueIdsStub = sinon
+      .stub(SampleMethodService.prototype, 'getSampleMethodsCountForTechniqueIds')
       .resolves(0);
 
     const deleteTechniqueStub = sinon.stub(TechniqueService.prototype, 'deleteTechnique').resolves();
@@ -107,7 +107,7 @@ describe('deleteTechnique', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(getObservationsCountByTechniqueIdsStub).to.have.been.calledOnceWith(2, [3]);
+    expect(getSampleMethodsCountForTechniqueIdsStub).to.have.been.calledOnceWith([3]);
     expect(deleteTechniqueStub).to.have.been.calledOnceWith(2, 3);
 
     expect(mockRes.statusValue).to.eql(200);

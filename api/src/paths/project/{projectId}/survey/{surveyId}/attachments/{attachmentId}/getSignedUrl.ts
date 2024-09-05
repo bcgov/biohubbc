@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
+import { ATTACHMENT_TYPE, TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
@@ -74,7 +74,7 @@ GET.apiDoc = {
       name: 'attachmentType',
       schema: {
         type: 'string',
-        enum: ['Report', 'KeyX', 'Other']
+        enum: ['Report', 'KeyX', 'Cfg', 'Other']
       },
       required: true
     }
@@ -122,12 +122,21 @@ export function getSurveyAttachmentSignedURL(): RequestHandler {
 
     try {
       await connection.open();
+
       let s3Key;
 
       const attachmentService = new AttachmentService(connection);
 
       if (req.query.attachmentType === ATTACHMENT_TYPE.REPORT) {
         s3Key = await attachmentService.getSurveyReportAttachmentS3Key(
+          Number(req.params.surveyId),
+          Number(req.params.attachmentId)
+        );
+      } else if (
+        req.query.attachmentType === TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX ||
+        req.query.attachmentType === TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG
+      ) {
+        s3Key = await attachmentService.getSurveyTelemetryCredentialAttachmentS3Key(
           Number(req.params.surveyId),
           Number(req.params.attachmentId)
         );

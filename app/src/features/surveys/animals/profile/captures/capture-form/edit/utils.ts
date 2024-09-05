@@ -101,7 +101,7 @@ export const formatCritterDetailsForBulkUpdate = (
         !markings.some((incomingMarking) => incomingMarking.marking_id === existingmarkingsOnCapture.marking_id)
     )
     // The remaining markings are the ones to delete from the critter for the current capture
-    .map((item) => ({ ...item, critter_id: critter.critter_id, _delete: true }));
+    .map((item) => ({ ...item, critter_id: critter.critterbase_critter_id, _delete: true }));
 
   // Find markings for create
   const markingsForCreate = markings
@@ -110,7 +110,7 @@ export const formatCritterDetailsForBulkUpdate = (
     .map((marking) => ({
       ...marking,
       marking_id: marking.marking_id,
-      critter_id: critter.critter_id,
+      critter_id: critter.critterbase_critter_id,
       capture_id: captureId
     }));
 
@@ -121,7 +121,7 @@ export const formatCritterDetailsForBulkUpdate = (
     .map((marking) => ({
       ...marking,
       marking_id: marking.marking_id,
-      critter_id: critter.critter_id,
+      critter_id: critter.critterbase_critter_id,
       capture_id: captureId
     }));
 
@@ -129,7 +129,7 @@ export const formatCritterDetailsForBulkUpdate = (
   const qualitativeMeasurementsForCreate = measurements
     .filter(isQualitativeMeasurementCreate)
     .map((measurement: IQualitativeMeasurementCreate) => ({
-      critter_id: critter.critter_id,
+      critter_id: critter.critterbase_critter_id,
       capture_id: captureId,
       taxon_measurement_id: measurement.taxon_measurement_id,
       qualitative_option_id: measurement.qualitative_option_id,
@@ -141,7 +141,7 @@ export const formatCritterDetailsForBulkUpdate = (
   const quantitativeMeasurementsForCreate = measurements
     .filter(isQuantitativeMeasurementCreate)
     .map((measurement: IQuantitativeMeasurementCreate) => ({
-      critter_id: critter.critter_id,
+      critter_id: critter.critterbase_critter_id,
       capture_id: captureId,
       taxon_measurement_id: measurement.taxon_measurement_id,
       value: measurement.value,
@@ -153,7 +153,7 @@ export const formatCritterDetailsForBulkUpdate = (
   const qualitativeMeasurementsForUpdate = measurements
     .filter(isQualitativeMeasurementUpdate)
     .map((measurement: IQualitativeMeasurementUpdate) => ({
-      //   critter_id: critter.critter_id,
+      //   critter_id: critter.critterbase_critter_id,
       capture_id: captureId,
       measurement_qualitative_id: measurement.measurement_qualitative_id,
       taxon_measurement_id: measurement.taxon_measurement_id,
@@ -166,7 +166,7 @@ export const formatCritterDetailsForBulkUpdate = (
   const quantitativeMeasurementsForUpdate = measurements
     .filter(isQuantitativeMeasurementUpdate)
     .map((measurement: IQuantitativeMeasurementUpdate) => ({
-      critter_id: critter.critter_id,
+      critter_id: critter.critterbase_critter_id,
       measurement_quantitative_id: measurement.measurement_quantitative_id,
       capture_id: captureId,
       taxon_measurement_id: measurement.taxon_measurement_id,

@@ -1,13 +1,17 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiArrowTopRight, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import { grey } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
@@ -53,7 +57,25 @@ const SurveysListPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sortModel, paginationModel]);
 
+  const surveys = projectContext.surveysListDataLoader.data?.surveys ?? [];
+
   const columns: GridColDef<SurveyBasicFieldsObject>[] = [
+    {
+      field: 'survey_id',
+      headerName: 'ID',
+      width: 70,
+      minWidth: 70,
+      renderHeader: () => (
+        <Typography color={grey[500]} variant="body2" fontWeight={700}>
+          ID
+        </Typography>
+      ),
+      renderCell: (params) => (
+        <Typography color={grey[500]} variant="body2">
+          {params.row.survey_id}
+        </Typography>
+      )
+    },
     {
       field: 'name',
       headerName: 'Name',
@@ -131,30 +153,47 @@ const SurveysListPage = () => {
           </Button>
         </ProjectRoleGuard>
       </Toolbar>
-      <Divider></Divider>
+
+      <Divider />
+
       <Box p={2}>
-        <StyledDataGrid
-          noRowsMessage="No surveys found"
-          columns={columns}
-          autoHeight
-          rows={projectContext.surveysListDataLoader.data?.surveys ?? []}
-          rowCount={projectContext.surveysListDataLoader.data?.pagination?.total ?? 0}
-          getRowId={(row) => row.survey_id}
-          pageSizeOptions={[...pageSizeOptions]}
-          paginationMode="server"
-          sortingMode="server"
-          sortModel={sortModel}
-          paginationModel={paginationModel}
-          onPaginationModelChange={setPaginationModel}
-          onSortModelChange={setSortModel}
-          rowSelection={false}
-          checkboxSelection={false}
-          disableRowSelectionOnClick
-          disableColumnSelector
-          disableColumnFilter
-          disableColumnMenu
-          sortingOrder={['asc', 'desc']}
-        />
+        <LoadingGuard
+          isLoading={projectContext.surveysListDataLoader.isLoading || !projectContext.surveysListDataLoader.isReady}
+          isLoadingFallback={<SkeletonTable data-testid="survey-list-skeleton" />}
+          isLoadingFallbackDelay={100}
+          hasNoData={!surveys.length}
+          hasNoDataFallback={
+            <NoDataOverlay
+              height="200px"
+              title="Create a Survey"
+              subtitle="Start managing ecological data by creating a survey"
+              icon={mdiArrowTopRight}
+              data-testid="survey-list-no-data-overlay"
+            />
+          }
+          hasNoDataFallbackDelay={100}>
+          <StyledDataGrid
+            noRowsMessage="No surveys found"
+            columns={columns}
+            rows={surveys}
+            rowCount={projectContext.surveysListDataLoader.data?.pagination?.total ?? 0}
+            getRowId={(row) => row.survey_id}
+            pageSizeOptions={[...pageSizeOptions]}
+            paginationMode="server"
+            sortingMode="server"
+            sortModel={sortModel}
+            paginationModel={paginationModel}
+            onPaginationModelChange={setPaginationModel}
+            onSortModelChange={setSortModel}
+            rowSelection={false}
+            checkboxSelection={false}
+            disableRowSelectionOnClick
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
+            sortingOrder={['asc', 'desc']}
+          />
+        </LoadingGuard>
       </Box>
     </>
   );

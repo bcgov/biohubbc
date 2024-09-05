@@ -9,7 +9,7 @@ import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { ITaxonomyContext, TaxonomyContext } from 'contexts/taxonomyContext';
 import { ITelemetryDataContext, TelemetryDataContext } from 'contexts/telemetryDataContext';
-import { ITelemetryTableContext, TelemetryTableContext } from 'contexts/telemetryTableContext';
+import { IAllTelemetryTableContext, TelemetryTableContext } from 'contexts/telemetryTableContext';
 import { useContext } from 'react';
 
 /**
@@ -170,7 +170,7 @@ export const useTelemetryDataContext = (): ITelemetryDataContext => {
  *
  * @return {*}  {ITelemetryTableContext}
  */
-export const useTelemetryTableContext = (): ITelemetryTableContext => {
+export const useTelemetryTableContext = (): IAllTelemetryTableContext => {
   const context = useContext(TelemetryTableContext);
 
   if (!context) {

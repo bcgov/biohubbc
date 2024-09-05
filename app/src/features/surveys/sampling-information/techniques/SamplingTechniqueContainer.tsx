@@ -1,5 +1,6 @@
 import { mdiDotsVertical, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -18,7 +19,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { SamplingTechniqueCardContainer } from './components/SamplingTechniqueCardContainer';
+import { SamplingTechniqueTable } from './table/SamplingTechniqueTable';
 
 /**
  * Renders a list of techniques.
@@ -124,7 +125,7 @@ export const SamplingTechniqueContainer = () => {
         sx={{
           flex: '0 0 auto',
           pr: 3,
-          pl: 2
+          pl: 3
         }}>
         <Typography variant="h3" component="h2" flexGrow={1}>
           Techniques &zwnj;
@@ -157,13 +158,15 @@ export const SamplingTechniqueContainer = () => {
 
       <LoadingGuard
         isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
-        fallback={<SkeletonTable />}
-        delay={200}>
-        <SamplingTechniqueCardContainer
-          techniques={techniques}
-          bulkActionTechniques={bulkActionTechniques}
-          setBulkActionTechniques={setBulkActionTechniques}
-        />
+        isLoadingFallback={<SkeletonTable />}
+        isLoadingFallbackDelay={100}>
+        <Box p={2}>
+          <SamplingTechniqueTable
+            techniques={techniques}
+            bulkActionTechniques={bulkActionTechniques}
+            setBulkActionTechniques={setBulkActionTechniques}
+          />
+        </Box>
       </LoadingGuard>
     </Stack>
   );

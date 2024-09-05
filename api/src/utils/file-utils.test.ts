@@ -55,17 +55,22 @@ describe('generateS3FileKey', () => {
   it('returns project folder file path', async () => {
     process.env.S3_KEY_PREFIX = 'some/s3/prefix';
 
-    const result = generateS3FileKey({ projectId: 1, folder: 'folder', fileName: 'testFileName' });
+    const result = generateS3FileKey({ projectId: 1, folder: 'reports', fileName: 'testFileName' });
 
-    expect(result).to.equal('some/s3/prefix/projects/1/folder/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/reports/testFileName');
   });
 
   it('returns survey folder file path', async () => {
     process.env.S3_KEY_PREFIX = 'some/s3/prefix';
 
-    const result = generateS3FileKey({ projectId: 1, surveyId: 2, folder: 'folder', fileName: 'testFileName' });
+    const result = generateS3FileKey({
+      projectId: 1,
+      surveyId: 2,
+      folder: 'telemetry-credentials',
+      fileName: 'testFileName'
+    });
 
-    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/folder/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/telemetry-credentials/testFileName');
   });
 
   it('returns survey submission folder file path when a submission ID is passed', async () => {

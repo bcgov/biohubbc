@@ -18,13 +18,6 @@ const focalTaxonIdOptions = [
   { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
 ];
 
-const ancillaryTaxonIdOptions = [
-  { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
-  { itis_tsn: 180596, itis_scientific_name: 'Canis lupus' }, // Wolf
-  { itis_tsn: 180713, itis_scientific_name: 'Oreamnos americanus' }, // Rocky Mountain goat
-  { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
-];
-
 const surveyRegionsA = ['Kootenay-Boundary Natural Resource Region', 'West Coast Natural Resource Region'];
 const surveyRegionsB = ['Cariboo Natural Resource Region', 'South Coast Natural Resource Region'];
 
@@ -75,12 +68,10 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveyTypeData(surveyId)}
           ${insertSurveyPermitData(surveyId)}
           ${insertSurveyFocalSpeciesData(surveyId)}
-          ${insertSurveyAncillarySpeciesData(surveyId)}
           ${insertSurveyFundingData(surveyId)}
           ${insertSurveyProprietorData(surveyId)}
           ${insertSurveyFirstNationData(surveyId)}
           ${insertSurveyStakeholderData(surveyId)}
-          ${insertSurveyVantageData(surveyId)}
           ${insertSurveyParticipationData(surveyId)}
           ${insertSurveyLocationData(surveyId)}
           ${insertSurveySiteStrategy(surveyId)}
@@ -180,22 +171,6 @@ const insertSurveyParticipationData = (surveyId: number) => `
 `;
 
 /**
- * SQL to insert Survey Vantage data
- *
- */
-const insertSurveyVantageData = (surveyId: number) => `
-  INSERT into survey_vantage
-    (
-      survey_id,
-      vantage_id
-    )
-  VALUES (
-    ${surveyId},
-    (select vantage_id from vantage order by random() limit 1)
-  );
-`;
-
-/**
  * SQL to insert Survey Proprietor data
  *
  */
@@ -267,23 +242,6 @@ const insertSurveyFocalSpeciesData = (surveyId: number) => {
       ${surveyId},
       ${focalSpecies.itis_tsn},
       'Y'
-    );
-  `;
-};
-
-const insertSurveyAncillarySpeciesData = (surveyId: number) => {
-  const ancillarySpecies = ancillaryTaxonIdOptions[Math.floor(Math.random() * ancillaryTaxonIdOptions.length)];
-  return `
-    INSERT into study_species
-      (
-        survey_id,
-        itis_tsn,
-        is_focal
-      )
-    VALUES (
-      ${surveyId},
-      ${ancillarySpecies.itis_tsn},
-      'N'
     );
   `;
 };

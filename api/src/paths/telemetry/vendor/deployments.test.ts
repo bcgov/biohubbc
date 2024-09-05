@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { SystemUser } from '../../../repositories/user-repository';
-import { BctwService, IVendorTelemetry } from '../../../services/bctw-service';
+import { BctwTelemetryService, IVendorTelemetry } from '../../../services/bctw-service/bctw-telemetry-service';
 import { getRequestHandlerMocks } from '../../../__mocks__/db';
 import { getVendorTelemetryByDeploymentIds } from './deployments';
 
@@ -38,7 +38,7 @@ describe('getVendorTelemetryByDeploymentIds', () => {
   });
   it('should retrieve all vendor telemetry by deployment ids', async () => {
     const mockGetTelemetry = sinon
-      .stub(BctwService.prototype, 'getVendorTelemetryByDeploymentIds')
+      .stub(BctwTelemetryService.prototype, 'getVendorTelemetryByDeploymentIds')
       .resolves(mockTelemetry);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -55,7 +55,9 @@ describe('getVendorTelemetryByDeploymentIds', () => {
   });
   it('should catch error', async () => {
     const mockError = new Error('test error');
-    const mockGetTelemetry = sinon.stub(BctwService.prototype, 'getVendorTelemetryByDeploymentIds').rejects(mockError);
+    const mockGetTelemetry = sinon
+      .stub(BctwTelemetryService.prototype, 'getVendorTelemetryByDeploymentIds')
+      .rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
