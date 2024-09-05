@@ -178,8 +178,8 @@ export interface IQualMeasurement {
   capture_id?: string;
   mortality_id?: string;
   qualitative_option_id: string;
-  measurement_comment: string;
-  measured_timestamp: string;
+  measurement_comment?: string;
+  measured_timestamp?: string;
 }
 
 export interface IQuantMeasurement {

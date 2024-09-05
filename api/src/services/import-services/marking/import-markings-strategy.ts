@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
 import { getLogger } from '../../../utils/logger';
 import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
-import { generateCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
+import { generateColumnCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
 import { IAsSelectLookup, ICritterDetailed } from '../../critterbase-service';
 import { DBService } from '../../db-service';
@@ -98,7 +98,7 @@ export class ImportMarkingsStrategy extends DBService implements CSVImportStrate
    */
   async validateRows(rows: Row[]) {
     // Generate type-safe cell getter from column validator
-    const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
+    const getColumnCell = generateColumnCellGetterFromColumnValidator(this.columnValidator);
 
     // Get validation reference data
     const [critterAliasMap, colours, markingTypes] = await Promise.all([
@@ -116,18 +116,18 @@ export class ImportMarkingsStrategy extends DBService implements CSVImportStrate
     for (const row of rows) {
       let critterId, captureId;
 
-      const alias = getCellValue<string>(row, 'ALIAS');
+      const alias = getColumnCell<string>(row, 'ALIAS');
 
       // If the alias is included attempt to retrieve the critter_id and capture_id for the row
-      if (alias) {
-        const captureDate = getCellValue(row, 'CAPTURE_DATE');
-        const captureTime = getCellValue(row, 'CAPTURE_TIME');
+      if (alias.cell) {
+        const captureDate = getColumnCell(row, 'CAPTURE_DATE');
+        const captureTime = getColumnCell(row, 'CAPTURE_TIME');
 
-        const critter = critterAliasMap.get(alias.toLowerCase());
+        const critter = critterAliasMap.get(alias.cell.toLowerCase());
 
         if (critter) {
           // Find the capture_id from the date time columns
-          const captures = findCapturesFromDateTime(critter.captures, captureDate, captureTime);
+          const captures = findCapturesFromDateTime(critter.captures, captureDate.cell, captureTime.cell);
           captureId = captures.length === 1 ? captures[0].capture_id : undefined;
           critterId = critter.critter_id;
           rowCritters.push(critter);
@@ -137,12 +137,12 @@ export class ImportMarkingsStrategy extends DBService implements CSVImportStrate
       rowsToValidate.push({
         critter_id: critterId, // Found using alias
         capture_id: captureId, // Found using capture date and time
-        body_location: getCellValue(row, 'BODY_LOCATION'),
-        marking_type: getCellValue(row, 'MARKING_TYPE'),
-        identifier: getCellValue(row, 'IDENTIFIER'),
-        primary_colour: getCellValue(row, 'PRIMARY_COLOUR'),
-        secondary_colour: getCellValue(row, 'SECONDARY_COLOUR'),
-        comment: getCellValue(row, 'DESCRIPTION')
+        body_location: getColumnCell(row, 'BODY_LOCATION').cell,
+        marking_type: getColumnCell(row, 'MARKING_TYPE').cell,
+        identifier: getColumnCell(row, 'IDENTIFIER').cell,
+        primary_colour: getColumnCell(row, 'PRIMARY_COLOUR').cell,
+        secondary_colour: getColumnCell(row, 'SECONDARY_COLOUR').cell,
+        comment: getColumnCell(row, 'DESCRIPTION').cell
       });
     }
     // Get the critter_id -> taxonBodyLocations[] Map
