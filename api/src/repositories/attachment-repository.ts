@@ -1771,4 +1771,96 @@ export class AttachmentRepository extends BaseRepository {
 
     return response.rows[0].key;
   }
+
+  /**
+   * Insert critter capture attachment record.
+   *
+   * @return {*}  {Promise<{ critter_capture_attachment_id: number }>}
+   * @memberof AttachmentRepository
+   */
+  async insertCritterCaptureAttachment(config: {
+    critter_id: string;
+    critterbase_capture_id: string;
+    fileName: string;
+    fileSize: number;
+    fileType: string;
+    key: string;
+  }): Promise<{ critter_capture_attachment_id: number }> {
+    const sqlStatement = SQL`
+    INSERT INTO critter_capture_attachment (
+      critter_id,
+      critterbase_capture_id,
+      file_name,
+      file_size,
+      file_type,
+      key
+    ) VALUES (
+      ${config.critter_id},
+      ${config.critterbase_capture_id},
+      ${config.fileName},
+      ${config.fileSize},
+      ${config.fileType},
+      ${config.key}
+    )
+    RETURNING
+      critter_capture_attachment_id;
+  `;
+
+    const response = await this.connection.sql(sqlStatement, z.object({ critter_capture_attachment_id: z.number() }));
+
+    if (!response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to insert critter capture attachment data', [
+        'AttachmentRepository->insertCritterCaptureAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  /**
+   * Insert critter mortality attachment record.
+   *
+   * @return {*}  {Promise<{ critter_mortality_attachment_id: number }>}
+   * @memberof AttachmentRepository
+   */
+  async insertCritterMortalityAttachment(config: {
+    critter_id: number;
+    critterbase_capture_id: string;
+    fileName: string;
+    fileSize: number;
+    fileType: string;
+    key: string;
+  }): Promise<{ critter_mortality_attachment_id: number }> {
+    const sqlStatement = SQL`
+    INSERT INTO critter_capture_attachment (
+      critter_id,
+      critterbase_capture_id,
+      file_name,
+      file_size,
+      file_type,
+      key
+    ) VALUES (
+      ${config.critter_id},
+      ${config.critterbase_capture_id},
+      ${config.fileName},
+      ${config.fileSize},
+      ${config.fileType},
+      ${config.key}
+    )
+    RETURNING
+      critter_mortality_attachment_id;
+  `;
+
+    const response = await this.connection.sql(sqlStatement, z.object({ critter_mortality_attachment_id: z.number() }));
+
+    if (!response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to insert critter mortalitye attachment data', [
+        'AttachmentRepository->insertCritterMortalityAttachment',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
 }
