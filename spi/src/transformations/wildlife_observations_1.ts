@@ -53,6 +53,8 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
         public.migrate_spi_sample_period_visit msspv
     ON 
         msspv.design_component_visit_id = swo.design_component_visit_id
+    WHERE 
+        swo.wlo_count != 0
     RETURNING swo.wlo_id, so.survey_observation_id;
     
 

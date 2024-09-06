@@ -25,10 +25,10 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
                 FROM biohub.observation_subcount_sign oss 
                 WHERE oss.name = 'Sound'
             )
-            WHEN swo.method_type_cd IN ('ANIMAL_OBS_SIGN_1.0', 'NON_STAN_BAIT_SIGN', 'OBS_BEAR_SIGN_2.0') THEN (
+            WHEN swo.method_type_cd IN ('OBS_BEAR_SIGN_2.0') THEN (
                 SELECT oss.observation_subcount_sign_id 
                 FROM biohub.observation_subcount_sign oss 
-                WHERE oss.name = 'Tracks'
+                WHERE oss.name = 'Rub or scratch spot'
             )
             ELSE (
                 SELECT oss.observation_subcount_sign_id 
@@ -41,7 +41,7 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
         public.spi_wildlife_observations swo
     JOIN 
         public.migrate_spi_wildlife_observations mwo 
-        ON swo.wlo_id = mwo.wlo_id;
+        ON swo.wlo_id = mwo.wlo_id; 
   `;
 
   await connection.sql(transformObservationSubcountsSql);
