@@ -135,7 +135,7 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
     // Query the platform service (taxonomy) for matching tsns
     const taxonomy = await this.platformService.getTaxonomyByTsns(critterTsns);
 
-    return taxonomy.map((taxon) => taxon.tsn);
+    return taxonomy.map((taxon) => String(taxon.tsn));
   }
 
   /**

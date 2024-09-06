@@ -47,12 +47,18 @@ export const useXrefApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<ICollectionCategory[]>}
    */
   const getTsnCollectionCategories = async (tsn: number): Promise<ICollectionCategory[]> => {
-    const { data } = await axios.get(`/api/critterbase/xref/taxon-collection-categories?tsn=${tsn}`);
+    const { data } = await axios.get('/api/critterbase/xref/taxon-collection-categories', {
+      params: { tsn },
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
+
     return data;
   };
 
   /**
-   * Get collection (ie. ecological) units that are available for a given taxon
+   * Get collection (ie. ecological) units values for a given collection unit
    *
    * @param {string} unit_id
    * @return {*}  {Promise<ICollectionUnit[]>}

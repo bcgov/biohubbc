@@ -57,12 +57,19 @@ const ObservationsTableContainer = () => {
   const observationsTableContext = useObservationsTableContext();
 
   // Collect sample sites
-  const surveySampleSites: IGetSampleLocationDetails[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
-  const sampleSiteOptions: ISampleSiteOption[] =
-    surveySampleSites.map((site) => ({
-      survey_sample_site_id: site.survey_sample_site_id,
-      sample_site_name: site.name
-    })) ?? [];
+  const surveySampleSites: IGetSampleLocationDetails[] = useMemo(
+    () => surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [],
+    [surveyContext.sampleSiteDataLoader.data?.sampleSites]
+  );
+
+  const sampleSiteOptions: ISampleSiteOption[] = useMemo(
+    () =>
+      surveySampleSites.map((site) => ({
+        survey_sample_site_id: site.survey_sample_site_id,
+        sample_site_name: site.name
+      })) ?? [],
+    [surveySampleSites]
+  );
 
   // Collect sample methods
   const surveySampleMethods: IGetSampleMethodDetails[] = surveySampleSites
@@ -131,7 +138,14 @@ const ObservationsTableContainer = () => {
       // Add environment columns to the table
       ...getEnvironmentColumnDefinitions(observationsTableContext.environmentColumns, observationsTableContext.hasError)
     ],
-    [observationsTableContext.environmentColumns, observationsTableContext.measurementColumns]
+    [
+      observationsTableContext.environmentColumns,
+      observationsTableContext.hasError,
+      observationsTableContext.measurementColumns,
+      sampleMethodOptions,
+      samplePeriodOptions,
+      sampleSiteOptions
+    ]
   );
 
   return (

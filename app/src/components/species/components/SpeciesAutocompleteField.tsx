@@ -9,7 +9,7 @@ import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import { IPartialTaxonomy, ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import { debounce, startCase } from 'lodash-es';
+import { debounce } from 'lodash-es';
 import { useEffect, useMemo, useState } from 'react';
 
 export interface ISpeciesAutocompleteFieldProps {
@@ -33,7 +33,7 @@ export interface ISpeciesAutocompleteFieldProps {
    * @type {(species: ITaxonomy | IPartialTaxonomy) => void}
    * @memberof ISpeciesAutocompleteFieldProps
    */
-  handleSpecies: (species?: ITaxonomy | IPartialTaxonomy) => void;
+  handleSpecies: (species: ITaxonomy | IPartialTaxonomy) => void;
   /**
    * Optional callback to fire on species option being cleared
    *
@@ -258,7 +258,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
           return;
         }
 
-        setInputValue(startCase(option?.commonNames?.length ? option.commonNames[0] : option.scientificName));
+        setInputValue(option?.commonNames?.length ? option.commonNames[0] : option.scientificName);
       }}
       renderOption={(renderProps, renderOption) => {
         return (
@@ -283,11 +283,6 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
           name={formikFieldName}
           required={required}
           label={label}
-          sx={{
-            '& .MuiAutocomplete-input': {
-              fontStyle: inputValue.split(' ').length > 1 ? 'italic' : 'normal'
-            }
-          }}
           variant="outlined"
           fullWidth
           placeholder={placeholder || 'Enter a species or taxon'}

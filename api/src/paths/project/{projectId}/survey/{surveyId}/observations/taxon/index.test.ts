@@ -26,9 +26,9 @@ describe('getSurveyObservedSpecies', () => {
     const mockTsns = [1, 2, 3];
     const mockSpecies = mockTsns.map((tsn) => ({ itis_tsn: tsn }));
     const mockItisResponse = [
-      { tsn: '1', commonNames: ['common name 1'], scientificName: 'scientific name 1' },
-      { tsn: '2', commonNames: ['common name 2'], scientificName: 'scientific name 2' },
-      { tsn: '3', commonNames: ['common name 3'], scientificName: 'scientific name 3' }
+      { tsn: 1, commonNames: ['common name 1'], scientificName: 'scientific name 1' },
+      { tsn: 2, commonNames: ['common name 2'], scientificName: 'scientific name 2' },
+      { tsn: 3, commonNames: ['common name 3'], scientificName: 'scientific name 3' }
     ];
     const mockFormattedItisResponse = mockItisResponse.map((species) => ({ ...species, tsn: Number(species.tsn) }));
 
