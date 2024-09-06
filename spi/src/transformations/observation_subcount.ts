@@ -14,15 +14,34 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
         mwo.survey_observation_id,
         swo.subcount, ----- this is PLACEHOLDER - we will need to tease the subcounts out of those a-series columns depending on the method_type_cd and version
         swo.when_created,
-        oss.observation_subcount_sign_id --- this is also placeholder -- will need to build casewhen statements to select the correct oss.name depending on the method_type_Cd in swo
+        CASE
+            WHEN swo.method_type_cd = 'Animal DNA Collecting' THEN (
+                SELECT oss.observation_subcount_sign_id 
+                FROM biohub.observation_subcount_sign oss 
+                WHERE oss.name = 'DNA'
+            )
+            WHEN swo.method_type_cd IN ('Bat Acoustic', 'OBS_BAPT_AUDI_2.0') THEN (
+                SELECT oss.observation_subcount_sign_id 
+                FROM biohub.observation_subcount_sign oss 
+                WHERE oss.name = 'Sound'
+            )
+            WHEN swo.method_type_cd IN ('ANIMAL_OBS_SIGN_1.0', 'NON_STAN_BAIT_SIGN', 'OBS_BEAR_SIGN_2.0') THEN (
+                SELECT oss.observation_subcount_sign_id 
+                FROM biohub.observation_subcount_sign oss 
+                WHERE oss.name = 'Tracks'
+            )
+            ELSE (
+                SELECT oss.observation_subcount_sign_id 
+                FROM biohub.observation_subcount_sign oss 
+                WHERE oss.name = 'Direct Sighting'
+            )
+        END AS observation_subcount_sign_id
+    
     FROM 
         public.spi_wildlife_observations swo
     JOIN 
         public.migrate_spi_wildlife_observations mwo 
-        ON swo.wlo_id = mwo.wlo_id 
-    JOIN 
-        biohub.observation_subcount_sign oss 
-        ON oss.name = 'Direct Sighting'; --- PLACEHOLDER join statement, will be expanded once casewhen for sign types are built above 
+        ON swo.wlo_id = mwo.wlo_id;
   `;
 
   await connection.sql(transformObservationSubcountsSql);
