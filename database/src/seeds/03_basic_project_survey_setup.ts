@@ -608,7 +608,7 @@ const insertObservationSubCount = (surveyObservationId: number) => `
   (
     ${surveyObservationId},
     $$${faker.number.int({ min: 1, max: 20 })}$$,
-    $$${faker.number.int({ min: 1, max: 5 })}$$
+    (SELECT observation_subcount_sign_id FROM observation_subcount_sign ORDER BY random() LIMIT 1)
   );
 `;
 
