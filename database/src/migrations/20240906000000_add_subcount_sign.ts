@@ -17,7 +17,7 @@ export async function up(knex: Knex): Promise<void> {
 ---------------------------------Insert new oss values--------------------------------------
 ----------------------------------------------------------------------------------------
     INSERT INTO biohub.observation_subcount_sign (create_date, name, description)
-    VALUES (now(), 'Rub or scratch spot', 'This observation was made due to evidence associated with a rubbing or scratch mark created by am animal');
+    VALUES (now(), 'Rub or scratch spot', 'This observation was made due to evidence associated with a rubbing or scratch mark created by an animal');
       
     `);
 }
