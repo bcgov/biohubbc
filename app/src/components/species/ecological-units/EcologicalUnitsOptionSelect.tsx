@@ -1,8 +1,14 @@
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import { useFormikContext } from 'formik';
-import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 
 interface IEcologicalUnitsOptionSelectProps {
+  /**
+   * Formik field name
+   *
+   * @type {string}
+   * @memberof IEcologicalUnitsOptionSelectProps
+   */
+  name: string;
   /**
    * The label to display for the select field.
    *
@@ -17,13 +23,6 @@ interface IEcologicalUnitsOptionSelectProps {
    * @memberof IEcologicalUnitsOptionSelectProps
    */
   options: IAutocompleteFieldOption<string>[];
-  /**
-   * The index of the component in the list.
-   *
-   * @type {number}
-   * @memberof IEcologicalUnitsOptionSelectProps
-   */
-  index: number;
 }
 
 /**
@@ -33,22 +32,22 @@ interface IEcologicalUnitsOptionSelectProps {
  * @return {*}
  */
 export const EcologicalUnitsOptionSelect = (props: IEcologicalUnitsOptionSelectProps) => {
-  const { label, options, index } = props;
+  const { label, options, name } = props;
 
-  const { values, setFieldValue } = useFormikContext<ICreateEditAnimalRequest>();
+  const { setFieldValue } = useFormikContext();
 
   return (
     <AutocompleteField
-      id={`ecological_units.[${index}].collection_unit_id`}
-      name={`ecological_units.[${index}].collection_unit_id`}
+      id={name}
+      name={name}
       label={label}
       options={options}
       onChange={(_, option) => {
         if (option?.value) {
-          setFieldValue(`ecological_units.[${index}].collection_unit_id`, option.value);
+          setFieldValue(name, option.value);
         }
       }}
-      disabled={Boolean(!values.ecological_units[index]?.collection_category_id)}
+      disabled={Boolean(!options.length)}
       required
       sx={{
         flex: '1 1 auto'
