@@ -3,7 +3,7 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { PostProprietorData, PostSurveyObject, TaxonomyWithEcologicalUnits } from '../models/survey-create';
+import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
   FindSurveysResponse,
@@ -117,6 +117,18 @@ export const SurveyBasicFields = z.object({
 });
 
 export type SurveyBasicFields = z.infer<typeof SurveyBasicFields>;
+
+export const SurveyTaxonomyWithEcologicalUnits = z.object({
+  itis_tsn: z.number(),
+  ecological_units: z.array(
+    z.object({
+      critterbase_collection_unit_id: z.string().uuid(),
+      critterbase_collection_category_id: z.string().uuid()
+    })
+  )
+});
+
+export type SurveyTaxonomyWithEcologicalUnits = z.infer<typeof SurveyTaxonomyWithEcologicalUnits>;
 
 export class SurveyRepository extends BaseRepository {
   /**
@@ -358,12 +370,12 @@ export class SurveyRepository extends BaseRepository {
    * Get species data for a given survey ID
    *
    * @param {number} surveyId
-   * @returns {*} {Promise<IGetSpeciesData[]>}
+   * @return {*}  {Promise<SurveyTaxonomyWithEcologicalUnits[]>}
    * @memberof SurveyRepository
    */
-  async getSpeciesData(surveyId: number): Promise<TaxonomyWithEcologicalUnits[]> {
+  async getSpeciesData(surveyId: number): Promise<SurveyTaxonomyWithEcologicalUnits[]> {
     const sqlStatement = SQL`
-    WITH ecological_units AS (
+    WITH w_ecological_units AS (
       SELECT
         ssu.study_species_id,
         json_agg(
@@ -383,16 +395,16 @@ export class SurveyRepository extends BaseRepository {
     )
     SELECT
       ss.itis_tsn,
-      COALESCE(eu.units, '[]'::json) AS ecological_units
+      COALESCE(weu.units, '[]'::json) AS ecological_units
     FROM
       study_species ss
     LEFT JOIN
-      ecological_units eu ON eu.study_species_id = ss.study_species_id
+      w_ecological_units weu ON weu.study_species_id = ss.study_species_id
     WHERE
       ss.survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql(sqlStatement, TaxonomyWithEcologicalUnits);
+    const response = await this.connection.sql(sqlStatement, SurveyTaxonomyWithEcologicalUnits);
 
     return response.rows;
   }

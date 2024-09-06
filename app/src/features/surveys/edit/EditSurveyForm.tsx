@@ -106,8 +106,9 @@ const EditSurveyForm = <
 
         <HorizontalSplitFormComponent
           title="Focal species"
-          summary="Enter focal species that were targetted in the survey"
-          component={<SpeciesForm />}></HorizontalSplitFormComponent>
+          summary="Enter focal species that were targetted in the survey">
+          <SpeciesForm />
+        </HorizontalSplitFormComponent>
 
         <Divider />
 

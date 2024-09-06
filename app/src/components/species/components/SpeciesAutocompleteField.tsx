@@ -33,7 +33,7 @@ export interface ISpeciesAutocompleteFieldProps {
    * @type {(species: ITaxonomy | IPartialTaxonomy) => void}
    * @memberof ISpeciesAutocompleteFieldProps
    */
-  handleSpecies: (species?: ITaxonomy | IPartialTaxonomy) => void;
+  handleSpecies: (species: ITaxonomy | IPartialTaxonomy) => void;
   /**
    * Optional callback to fire on species option being cleared
    *

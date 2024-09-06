@@ -168,25 +168,20 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async getSpeciesData(surveyId: number): Promise<GetFocalSpeciesData> {
+    // Fetch species data for the survey
     const studySpeciesResponse = await this.surveyRepository.getSpeciesData(surveyId);
 
-    const response = await this.platformService.getTaxonomyByTsns(
+    // Fetch taxonomy data for each survey species
+    const taxonomyResponse = await this.platformService.getTaxonomyByTsns(
       studySpeciesResponse.map((species) => species.itis_tsn)
     );
 
-    // Create a lookup map for taxonomy data, to be used for injecting ecological units for each study species
-    const taxonomyMap = new Map(
-      response.map((taxonomy) => {
-        const taxon = { ...taxonomy, tsn: Number(taxonomy.tsn) };
-        return [Number(taxonomy.tsn), taxon];
-      })
-    );
+    const focalSpecies = [];
 
-    // Combine species data with taxonomy data and ecological units
-    const focalSpecies = studySpeciesResponse.map((species) => ({
-      ...taxonomyMap.get(species.itis_tsn),
-      ecological_units: species.ecological_units
-    }));
+    for (const species of studySpeciesResponse) {
+      const taxon = taxonomyResponse.find((taxonomy) => Number(taxonomy.tsn) === species.itis_tsn) ?? {};
+      focalSpecies.push({ ...taxon, tsn: species.itis_tsn, ecological_units: species.ecological_units });
+    }
 
     // Return the combined data
     return new GetFocalSpeciesData(focalSpecies);
@@ -305,7 +300,7 @@ export class SurveyService extends DBService {
     const decoratedSurveys: SurveyBasicFields[] = [];
     for (const survey of surveys) {
       const matchingFocalSpeciesNames = focalSpecies
-        .filter((item) => survey.focal_species.includes(Number(item.tsn)))
+        .filter((item) => survey.focal_species.includes(item.tsn))
         .map((item) => [item.commonNames, `(${item.scientificName})`].filter(Boolean).join(' '));
 
       decoratedSurveys.push({ ...survey, focal_species_names: matchingFocalSpeciesNames });

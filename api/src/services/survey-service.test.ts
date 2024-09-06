@@ -7,7 +7,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiGeneralError } from '../errors/api-error';
 import { GetReportAttachmentsData } from '../models/project-view';
-import { PostProprietorData, PostSurveyObject, TaxonomyWithEcologicalUnits } from '../models/survey-create';
+import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PostSurveyLocationData, PutSurveyObject, PutSurveyPermitData } from '../models/survey-update';
 import {
   GetAttachmentsData,
@@ -24,6 +24,7 @@ import {
   ISurveyProprietorModel,
   SurveyRecord,
   SurveyRepository,
+  SurveyTaxonomyWithEcologicalUnits,
   SurveyTypeRecord
 } from '../repositories/survey-repository';
 import { getMockDBConnection } from '../__mocks__/db';
@@ -370,10 +371,10 @@ describe('SurveyService', () => {
           itis_tsn: 456,
           ecological_units: mockEcologicalUnits
         }
-      ] as unknown as TaxonomyWithEcologicalUnits[];
+      ] as unknown as SurveyTaxonomyWithEcologicalUnits[];
       const mockTaxonomyData = [
-        { tsn: '123', scientificName: 'Species 1' },
-        { tsn: '456', scientificName: 'Species 2' }
+        { tsn: 123, scientificName: 'Species 1' },
+        { tsn: 456, scientificName: 'Species 2' }
       ];
       const mockResponse = new GetFocalSpeciesData([
         { tsn: 123, scientificName: 'Species 1', ecological_units: [] },

@@ -1,4 +1,3 @@
-import { z } from 'zod';
 import { SurveyStratum } from '../repositories/site-selection-strategy-repository';
 import { PostSurveyBlock } from '../repositories/survey-block-repository';
 import { ITaxonomyWithEcologicalUnits } from '../services/platform-service';
@@ -151,15 +150,3 @@ export class PostAgreementsData {
     this.sedis_procedures_accepted = obj?.sedis_procedures_accepted === 'true' || false;
   }
 }
-
-export const TaxonomyWithEcologicalUnits = z.object({
-  itis_tsn: z.number(),
-  ecological_units: z.array(
-    z.object({
-      critterbase_collection_unit_id: z.string().uuid(),
-      critterbase_collection_category_id: z.string().uuid()
-    })
-  )
-});
-
-export type TaxonomyWithEcologicalUnits = z.infer<typeof TaxonomyWithEcologicalUnits>;
