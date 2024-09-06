@@ -27,6 +27,7 @@ import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { parseS3File } from '../utils/media/media-utils';
 import { getCodeTypeDefinitions, validateCodes } from '../utils/observation-xlsx-utils/code-column-utils';
+import { isQuantitativeValueValid } from '../utils/observation-xlsx-utils/common-utils';
 import {
   EnvironmentNameTypeDefinitionMap,
   getEnvironmentColumnsTypeDefinitionMap,
@@ -100,11 +101,11 @@ export interface InsertSubCount {
     measurement_value: number;
   }[];
   qualitative_environments: {
-    environment_qualitative_id: string;
+    environment_qualitative_id: string; // uuid
     environment_qualitative_option_id: string;
   }[];
   quantitative_environments: {
-    environment_quantitative_id: string;
+    environment_quantitative_id: string; // uuid
     value: number;
   }[];
 }
@@ -525,12 +526,7 @@ export class ObservationService extends DBService {
     const codeRepository = new CodeRepository(this.connection);
     const codeTypeDefinitions = await getCodeTypeDefinitions(codeRepository);
 
-    console.log('=================================================');
-    console.log(codeTypeDefinitions);
-
     const codesToValidate = worksheetRowObjects.flatMap((row) => getColumnCellValue(row, 'OBSERVATION_SUBCOUNT_SIGN'));
-
-    console.log(codesToValidate);
 
     // Validate code column data
     if (!validateCodes(codesToValidate, codeTypeDefinitions)) {
@@ -858,25 +854,128 @@ export class ObservationService extends DBService {
    * Processes manual observation data.
    *
    * This method:
-   * - Validates the given observations against measurement definitions found in Critterbase.
    * - Validates the given observations against environment definitions found in SIMS.
-   * - If the observations are valid, the observations are inserted into the database.
-   * - Returns a boolean value indicating if the observations are valid.
+   * - Validates the given observations against measurement definitions found in Critterbase.
+   * - Returns a boolean value indicating if the observations are valid. Returns as soon as an invalid observation is
+   * found.
    *
    * @param {InsertUpdateObservations[]} observationRows The observations to validate
-   * @param {CritterbaseService} critterBaseService Used to collection measurement definitions to validate against
+   * @param {CritterbaseService} critterBaseService Used to fetch measurement definitions to validate against
+   * @param {ObservationSubCountEnvironmentService} observationSubCountEnvironmentService Used to fetch environment
+   * definitions to validate against
    * @return {*}  {Promise<boolean>} `true` if the observations are valid, `false` otherwise
    * @memberof ObservationService
    */
   async validateSurveyObservations(
     observationRows: InsertUpdateObservations[],
-    critterBaseService: CritterbaseService
+    critterBaseService: CritterbaseService,
+    observationSubCountEnvironmentService: ObservationSubCountEnvironmentService
   ): Promise<boolean> {
+    // VALIDATE ENVIRONMENTS -----------------------------------------------------------------------------------------
+
+    // Map incoming observation subcount data objects into IEnvironmentDataToValidate arrays
+    let qualitativeEnvironmentsToValidate: IEnvironmentDataToValidate[] = [];
+    let quantitativeEnvironmentsToValidate: IEnvironmentDataToValidate[] = [];
+
+    for (const observationRow of observationRows) {
+      for (const subcount of observationRow.subcounts) {
+        qualitativeEnvironmentsToValidate = subcount.qualitative_environments.map((qualitative_environment) => {
+          return {
+            key: qualitative_environment.environment_qualitative_id,
+            value: qualitative_environment.environment_qualitative_option_id
+          };
+        });
+
+        quantitativeEnvironmentsToValidate = subcount.quantitative_environments.map((quantitative_environment) => {
+          return {
+            key: quantitative_environment.environment_quantitative_id,
+            value: quantitative_environment.value
+          };
+        });
+      }
+    }
+
+    // Fetch all environment type definitions from SIMS for all unique environment keys in the incoming data
+    const [qualitativeEnvironmentTypeDefinitions, quantitativeEnvironmentTypeDefinitions] = await Promise.all([
+      observationSubCountEnvironmentService.getQualitativeEnvironmentTypeDefinitions(
+        qualitativeEnvironmentsToValidate.map((env) => env.key)
+      ),
+      observationSubCountEnvironmentService.getQuantitativeEnvironmentTypeDefinitions(
+        quantitativeEnvironmentsToValidate.map((env) => env.key)
+      )
+    ]);
+
+    // Validated incoming qualitative environments against fetched qualitative environment definitions
+    for (const qualitativeEnvironmentToValidate of qualitativeEnvironmentsToValidate) {
+      const foundEnvironment = qualitativeEnvironmentTypeDefinitions.find(
+        (env) => env.environment_qualitative_id === qualitativeEnvironmentToValidate.key
+      );
+
+      if (!foundEnvironment) {
+        defaultLog.debug({
+          label: 'validateSurveyObservations',
+          message: 'Qualitative environments are invalid',
+          errors: ['Failed to find matching qualitative environment record']
+        });
+        // Return early if incoming environment column data is invalid
+        return false;
+      }
+
+      const validOption = foundEnvironment?.options.find(
+        (option) => option.environment_qualitative_option_id === qualitativeEnvironmentToValidate.value
+      );
+
+      if (!validOption) {
+        defaultLog.debug({
+          label: 'validateSurveyObservations',
+          message: 'Qualitative environments are invalid',
+          errors: ['Failed to find matching qualitative environment option record']
+        });
+        // Return early if incoming environment column data is invalid
+        return false;
+      }
+    }
+
+    // Validated incoming quantitative environments against fetched quantitative environment definitions
+    for (const quantitativeEnvironmentToValidate of quantitativeEnvironmentsToValidate) {
+      const foundEnvironment = quantitativeEnvironmentTypeDefinitions.find(
+        (env) => env.environment_quantitative_id === quantitativeEnvironmentToValidate.key
+      );
+
+      if (!foundEnvironment) {
+        defaultLog.debug({
+          label: 'validateSurveyObservations',
+          message: 'Quantitative environments are invalid',
+          errors: ['Failed to find matching quantitative environment record']
+        });
+        // Return early if incoming environment column data is invalid
+        return false;
+      }
+
+      const validValue = isQuantitativeValueValid(
+        Number(quantitativeEnvironmentToValidate.value),
+        foundEnvironment.min,
+        foundEnvironment.max
+      );
+
+      if (!validValue) {
+        defaultLog.debug({
+          label: 'validateSurveyObservations',
+          message: 'Quantitative environments are invalid',
+          errors: ['Quantitative environment value is out of range']
+        });
+        // Return early if incoming environment column data is invalid
+        return false;
+      }
+    }
+
+    // VALIDATE MEASUREMENTS -----------------------------------------------------------------------------------------
+
     // Fetch all measurement type definitions from Critterbase for all unique TSNs
     const tsns = observationRows.map((row) => String(row.standardColumns.itis_tsn));
     const tsnMeasurementTypeDefinitionMap = await getTsnMeasurementTypeDefinitionMap(tsns, critterBaseService);
 
-    // Map observation subcount data into objects to a IMeasurementDataToValidate array
+    // Map observation subcount data objects into a IMeasurementDataToValidate array
     const measurementsToValidate: IMeasurementDataToValidate[] = observationRows.flatMap(
       (item: InsertUpdateObservations) => {
         return item.subcounts.flatMap((subcount) => {
@@ -903,6 +1002,17 @@ export class ObservationService extends DBService {
     );
 
     // Validate measurement data against fetched measurement definition
-    return validateMeasurements(measurementsToValidate, tsnMeasurementTypeDefinitionMap);
+    const areMeasurementsValid = validateMeasurements(measurementsToValidate, tsnMeasurementTypeDefinitionMap);
+
+    if (!areMeasurementsValid) {
+      defaultLog.debug({ label: 'validateSurveyObservations', message: 'Measurements are invalid' });
+      // Return early if measurements are invalid
+      return false;
+    }
+
+    // ---------------------------------------------------------------------------------------------------------------
+
+    // Return true if both environments and measurements are valid
+    return true;
   }
 }

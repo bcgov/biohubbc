@@ -286,6 +286,7 @@ export const ObservationSubcountSignColDef = (props: {
   return {
     field: 'observation_subcount_sign_id',
     headerName: 'Sign',
+    description: 'The sign of the observation',
     editable: true,
     hideable: true,
     minWidth: 140,

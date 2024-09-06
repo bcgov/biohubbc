@@ -132,7 +132,7 @@ type ObservationSubCountQuantitativeEnvironmentRecord = {
 
 type ObservationSubcountQualitativeEnvironmentObject = Pick<
   ObservationSubCountQualitativeEnvironmentRecord,
-  'environment_qualitative_id' | 'environment_qualitative_option_id'
+  'observation_subcount_qualitative_environment_id' | 'environment_qualitative_id' | 'environment_qualitative_option_id'
 >;
 
 type ObservationSubcountQuantitativeEnvironmentObject = Pick<

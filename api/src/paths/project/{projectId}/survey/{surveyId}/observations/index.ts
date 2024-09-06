@@ -5,8 +5,9 @@ import { getDBConnection } from '../../../../../../database/db';
 import { observervationsWithSubcountDataSchema } from '../../../../../../openapi/schemas/observation';
 import { paginationRequestQueryParamSchema } from '../../../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
+import { CritterbaseService, getCritterbaseUser } from '../../../../../../services/critterbase-service';
 import { InsertUpdateObservations, ObservationService } from '../../../../../../services/observation-service';
+import { ObservationSubCountEnvironmentService } from '../../../../../../services/observation-subcount-environment-service';
 import { getLogger } from '../../../../../../utils/logger';
 import { ensureCompletePaginationOptions, makePaginationResponse } from '../../../../../../utils/pagination';
 import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
@@ -419,39 +420,40 @@ export function getSurveyObservations(): RequestHandler {
  */
 export function putObservations(): RequestHandler {
   return async (req, res) => {
-    const surveyId = Number(req.params.surveyId);
-
-    defaultLog.debug({ label: 'insertUpdateSurveyObservations', surveyId });
-
     const connection = getDBConnection(req.keycloak_token);
 
     try {
+      const surveyId = Number(req.params.surveyId);
+      const observationRows: InsertUpdateObservations[] = req.body.surveyObservations;
+
+      defaultLog.debug({ label: 'insertUpdateSurveyObservations', surveyId });
+
       await connection.open();
 
       const observationService = new ObservationService(connection);
 
-      const observationRows: InsertUpdateObservations[] = req.body.surveyObservations;
-
-      const user: ICritterbaseUser = {
-        keycloak_guid: connection.systemUserGUID(),
-        username: connection.systemUserIdentifier()
-      };
-
-      const critterBaseService = new CritterbaseService(user);
-
       // Validate measurement data against fetched measurement definition
-      const isValid = await observationService.validateSurveyObservations(observationRows, critterBaseService);
+      const critterBaseService = new CritterbaseService(getCritterbaseUser(req));
+      const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(connection);
+
+      const isValid = await observationService.validateSurveyObservations(
+        observationRows,
+        critterBaseService,
+        observationSubCountEnvironmentService
+      );
+
       if (!isValid) {
         throw new Error('Failed to save observation data, failed data validation.');
       }
 
+      // Insert/update observation records
       await observationService.insertUpdateManualSurveyObservations(surveyId, observationRows);
 
       await connection.commit();
 
       return res.status(204).send();
     } catch (error) {
-      defaultLog.error({ label: 'insertUpdateManualSurveyObservations', message: 'error', error });
+      defaultLog.error({ label: 'putObservations', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -153,7 +153,11 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
                   items: {
                     type: 'object',
                     additionalProperties: false,
-                    required: ['environment_qualitative_id', 'environment_qualitative_option_id'],
+                    required: [
+                      'observation_subcount_qualitative_environment_id',
+                      'environment_qualitative_id',
+                      'environment_qualitative_option_id'
+                    ],
                     properties: {
                       observation_subcount_qualitative_environment_id: {
                         type: 'integer'
@@ -174,8 +178,15 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
                   items: {
                     type: 'object',
                     additionalProperties: false,
-                    required: ['environment_quantitative_id', 'value'],
+                    required: [
+                      'observation_subcount_quantitative_environment_id',
+                      'environment_quantitative_id',
+                      'value'
+                    ],
                     properties: {
+                      observation_subcount_quantitative_environment_id: {
+                        type: 'integer'
+                      },
                       environment_quantitative_id: {
                         type: 'string',
                         format: 'uuid'
