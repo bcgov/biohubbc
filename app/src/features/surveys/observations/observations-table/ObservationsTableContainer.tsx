@@ -18,7 +18,6 @@ import {
   GenericTimeColDef
 } from 'components/data-grid/GenericGridColumnDefinitions';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
-import { SurveyContext } from 'contexts/surveyContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
 import { DiscardChangesButton } from 'features/surveys/observations/observations-table/discard-changes/DiscardChangesButton';
 import {
@@ -34,13 +33,18 @@ import {
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitions';
 import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-obsevations/ImportObservationsButton';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
-import { useCodesContext, useObservationsPageContext, useObservationsTableContext } from 'hooks/useContext';
+import {
+  useCodesContext,
+  useObservationsPageContext,
+  useObservationsTableContext,
+  useSurveyContext
+} from 'hooks/useContext';
 import {
   IGetSampleLocationDetails,
   IGetSampleMethodDetails,
   IGetSamplePeriodRecord
 } from 'interfaces/useSamplingSiteApi.interface';
-import { useContext } from 'react';
+import { useEffect, useMemo } from 'react';
 import { getCodesName } from 'utils/Utils';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
@@ -51,19 +55,34 @@ import {
 
 const ObservationsTableContainer = () => {
   const codesContext = useCodesContext();
-
-  const surveyContext = useContext(SurveyContext);
-
+  const surveyContext = useSurveyContext();
   const observationsPageContext = useObservationsPageContext();
   const observationsTableContext = useObservationsTableContext();
 
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+    surveyContext.sampleSiteDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+  }, [
+    codesContext.codesDataLoader,
+    surveyContext.projectId,
+    surveyContext.sampleSiteDataLoader,
+    surveyContext.surveyId
+  ]);
+
   // Collect sample sites
-  const surveySampleSites: IGetSampleLocationDetails[] = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
-  const sampleSiteOptions: ISampleSiteOption[] =
-    surveySampleSites.map((site) => ({
-      survey_sample_site_id: site.survey_sample_site_id,
-      sample_site_name: site.name
-    })) ?? [];
+  const surveySampleSites: IGetSampleLocationDetails[] = useMemo(
+    () => surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [],
+    [surveyContext.sampleSiteDataLoader.data?.sampleSites]
+  );
+
+  const sampleSiteOptions: ISampleSiteOption[] = useMemo(
+    () =>
+      surveySampleSites.map((site) => ({
+        survey_sample_site_id: site.survey_sample_site_id,
+        sample_site_name: site.name
+      })) ?? [],
+    [surveySampleSites]
+  );
 
   // Collect sample methods
   const surveySampleMethods: IGetSampleMethodDetails[] = surveySampleSites
@@ -91,30 +110,47 @@ const ObservationsTableContainer = () => {
       }`
     }));
 
-  const observationSubcountSignOptions =
-    codesContext.codesDataLoader.data?.observation_subcount_signs.map((option) => ({
-      observation_subcount_sign_id: option.id,
-      name: option.name
-    })) ?? [];
+  const observationSubcountSignOptions = useMemo(
+    () =>
+      codesContext.codesDataLoader.data?.observation_subcount_signs.map((option) => ({
+        observation_subcount_sign_id: option.id,
+        name: option.name
+      })) ?? [],
+    [codesContext.codesDataLoader.data?.observation_subcount_signs]
+  );
 
   // The column definitions of the columns to render in the observations table
-  const columns: GridColDef<IObservationTableRow>[] = [
-    // Add standard observation columns to the table
-    TaxonomyColDef({ hasError: observationsTableContext.hasError }),
-    SampleSiteColDef({ sampleSiteOptions, hasError: observationsTableContext.hasError }),
-    SampleMethodColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
-    SamplePeriodColDef({ samplePeriodOptions, hasError: observationsTableContext.hasError }),
-    ObservationSubcountSignColDef({ observationSubcountSignOptions, hasError: observationsTableContext.hasError }),
-    ObservationCountColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
-    GenericDateColDef({ field: 'observation_date', headerName: 'Date', hasError: observationsTableContext.hasError }),
-    GenericTimeColDef({ field: 'observation_time', headerName: 'Time', hasError: observationsTableContext.hasError }),
-    GenericLatitudeColDef({ field: 'latitude', headerName: 'Lat', hasError: observationsTableContext.hasError }),
-    GenericLongitudeColDef({ field: 'longitude', headerName: 'Long', hasError: observationsTableContext.hasError }),
-    // Add measurement columns to the table
-    ...getMeasurementColumnDefinitions(observationsTableContext.measurementColumns, observationsTableContext.hasError),
-    // Add environment columns to the table
-    ...getEnvironmentColumnDefinitions(observationsTableContext.environmentColumns, observationsTableContext.hasError)
-  ];
+  const columns: GridColDef<IObservationTableRow>[] = useMemo(
+    () => [
+      // Add standard observation columns to the table
+      TaxonomyColDef({ hasError: observationsTableContext.hasError }),
+      SampleSiteColDef({ sampleSiteOptions, hasError: observationsTableContext.hasError }),
+      SampleMethodColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
+      SamplePeriodColDef({ samplePeriodOptions, hasError: observationsTableContext.hasError }),
+      ObservationSubcountSignColDef({ observationSubcountSignOptions, hasError: observationsTableContext.hasError }),
+      ObservationCountColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
+      GenericDateColDef({ field: 'observation_date', headerName: 'Date', hasError: observationsTableContext.hasError }),
+      GenericTimeColDef({ field: 'observation_time', headerName: 'Time', hasError: observationsTableContext.hasError }),
+      GenericLatitudeColDef({ field: 'latitude', headerName: 'Lat', hasError: observationsTableContext.hasError }),
+      GenericLongitudeColDef({ field: 'longitude', headerName: 'Long', hasError: observationsTableContext.hasError }),
+      // Add measurement columns to the table
+      ...getMeasurementColumnDefinitions(
+        observationsTableContext.measurementColumns,
+        observationsTableContext.hasError
+      ),
+      // Add environment columns to the table
+      ...getEnvironmentColumnDefinitions(observationsTableContext.environmentColumns, observationsTableContext.hasError)
+    ],
+    [
+      observationSubcountSignOptions,
+      observationsTableContext.environmentColumns,
+      observationsTableContext.hasError,
+      observationsTableContext.measurementColumns,
+      sampleMethodOptions,
+      samplePeriodOptions,
+      sampleSiteOptions
+    ]
+  );
 
   return (
     <Paper component={Stack} flexDirection="column" flex="1 1 auto" height="100%">

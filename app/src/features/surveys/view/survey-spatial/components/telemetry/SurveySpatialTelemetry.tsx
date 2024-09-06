@@ -1,15 +1,14 @@
 import Box from '@mui/material/Box';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
-import { IAnimalDeployment } from 'features/surveys/view/survey-animals/telemetry-device/device';
 import { SurveySpatialMap } from 'features/surveys/view/survey-spatial/components/map/SurveySpatialMap';
 import { SurveySpatialTelemetryPopup } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryPopup';
 import { SurveySpatialTelemetryTable } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryTable';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { Position } from 'geojson';
 import { useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
-import { ITelemetry } from 'hooks/useTelemetryApi';
-import { ISimpleCritterWithInternalId } from 'interfaces/useSurveyApi.interface';
+import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
+import { IAnimalDeployment, ITelemetry } from 'interfaces/useTelemetryApi.interface';
 import { useCallback, useEffect, useMemo } from 'react';
 
 /**
@@ -19,40 +18,46 @@ import { useCallback, useEffect, useMemo } from 'react';
  */
 export const SurveySpatialTelemetry = () => {
   const surveyContext = useSurveyContext();
-  const telemetryContext = useTelemetryDataContext();
+  const telemetryDataContext = useTelemetryDataContext();
+
+  const deploymentDataLoader = telemetryDataContext.deploymentsDataLoader;
+  const telemetryDataLoader = telemetryDataContext.telemetryDataLoader;
 
   // Load deployments data
   useEffect(() => {
-    surveyContext.deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [surveyContext.projectId, surveyContext.surveyId]);
 
   // Load telemetry data for all deployments
   useEffect(() => {
-    if (!surveyContext.deploymentDataLoader.data?.length) {
+    if (!deploymentDataLoader.data?.length) {
       // No deployments data, therefore no telemetry data to load
       return;
     }
 
-    telemetryContext.telemetryDataLoader.refresh(
-      surveyContext.deploymentDataLoader.data?.map((deployment) => deployment.deployment_id) ?? []
-    );
+    telemetryDataLoader.load(deploymentDataLoader.data?.map((deployment) => deployment.bctw_deployment_id) ?? []);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [surveyContext.deploymentDataLoader.data]);
+  }, [deploymentDataLoader.data]);
+
+  const isLoading =
+    deploymentDataLoader.isLoading ||
+    !deploymentDataLoader.isReady ||
+    ((telemetryDataLoader.isLoading || !telemetryDataLoader.isReady) && !!deploymentDataLoader.data?.length);
 
   /**
    * Combines telemetry, deployment, and critter data into a single list of telemetry points.
    *
    * @param {ITelemetry[]} telemetry The telemetry data.
    * @param {IAnimalDeployment[]} deployments The deployment data.
-   * @param {ISimpleCritterWithInternalId[]} critters The critter data.
+   * @param {ICritterSimpleResponse[]} critters The critter data.
    * @returns {IStaticLayerFeature[]} The combined list of telemetry points.
    */
   const combineTelemetryData = useCallback(
     (
       telemetry: ITelemetry[],
       deployments: IAnimalDeployment[],
-      critters: ISimpleCritterWithInternalId[]
+      critters: ICritterSimpleResponse[]
     ): IStaticLayerFeature[] => {
       return (
         telemetry
@@ -61,13 +66,13 @@ export const SurveySpatialTelemetry = () => {
             (
               acc: {
                 deployment: IAnimalDeployment;
-                critter: ISimpleCritterWithInternalId;
+                critter: ICritterSimpleResponse;
                 telemetry: ITelemetry;
               }[],
               telemetry: ITelemetry
             ) => {
               const deployment = deployments.find(
-                (animalDeployment) => animalDeployment.deployment_id === telemetry.deployment_id
+                (animalDeployment) => animalDeployment.bctw_deployment_id === telemetry.deployment_id
               );
 
               const critter = critters.find((detailedCritter) => detailedCritter.critter_id === deployment?.critter_id);
@@ -100,17 +105,12 @@ export const SurveySpatialTelemetry = () => {
   );
 
   const telemetryPoints: IStaticLayerFeature[] = useMemo(() => {
-    const telemetry = telemetryContext.telemetryDataLoader.data ?? [];
-    const deployments = surveyContext.deploymentDataLoader.data ?? [];
+    const telemetry = telemetryDataLoader.data ?? [];
+    const deployments = deploymentDataLoader.data ?? [];
     const critters = surveyContext.critterDataLoader.data ?? [];
 
     return combineTelemetryData(telemetry, deployments, critters);
-  }, [
-    combineTelemetryData,
-    surveyContext.critterDataLoader.data,
-    surveyContext.deploymentDataLoader.data,
-    telemetryContext.telemetryDataLoader.data
-  ]);
+  }, [combineTelemetryData, surveyContext.critterDataLoader.data, deploymentDataLoader.data, telemetryDataLoader.data]);
 
   const telemetryLayer: IStaticLayer = {
     layerName: 'Telemetry',
@@ -127,13 +127,13 @@ export const SurveySpatialTelemetry = () => {
   return (
     <>
       {/* Display map with telemetry points */}
-      <Box height={{ sm: 300, md: 500 }} position="relative">
-        <SurveySpatialMap staticLayers={[telemetryLayer]} isLoading={telemetryContext.telemetryDataLoader.isLoading} />
+      <Box height={{ xs: 300, md: 500 }} position="relative">
+        <SurveySpatialMap staticLayers={[telemetryLayer]} isLoading={isLoading} />
       </Box>
 
       {/* Display data table with telemetry details */}
       <Box p={2} position="relative">
-        <SurveySpatialTelemetryTable isLoading={telemetryContext.telemetryDataLoader.isLoading} />
+        <SurveySpatialTelemetryTable isLoading={isLoading} />
       </Box>
     </>
   );

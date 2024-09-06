@@ -8,6 +8,7 @@ import {
   ObservationRecord,
   ObservationRecordWithSamplingAndSubcountData,
   ObservationRepository,
+  ObservationSpecies,
   ObservationSubmissionRecord,
   UpdateObservation
 } from '../repositories/observation-repository/observation-repository';
@@ -25,6 +26,7 @@ import { SamplePeriodHierarchyIds } from '../repositories/sample-period-reposito
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { parseS3File } from '../utils/media/media-utils';
+import { getCodeTypeDefinitions, validateCodes } from '../utils/observation-xlsx-utils/code-column-utils';
 import {
   EnvironmentNameTypeDefinitionMap,
   getEnvironmentColumnsTypeDefinitionMap,
@@ -43,7 +45,7 @@ import {
   validateMeasurements
 } from '../utils/observation-xlsx-utils/measurement-column-utils';
 import { CSV_COLUMN_ALIASES } from '../utils/xlsx-utils/column-aliases';
-import { generateCellGetterFromColumnValidator } from '../utils/xlsx-utils/column-validator-utils';
+import { generateColumnCellGetterFromColumnValidator } from '../utils/xlsx-utils/column-validator-utils';
 import {
   constructXLSXWorkbook,
   getDefaultWorksheet,
@@ -76,14 +78,14 @@ const defaultLog = getLogger('services/observation-service');
 export const observationStandardColumnValidator = {
   ITIS_TSN: { type: 'number', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
   COUNT: { type: 'number' },
-  OBSERVATION_SUBCOUNT_SIGN: { type: 'string', aliases: CSV_COLUMN_ALIASES.OBSERVATION_SUBCOUNT_SIGN },
+  OBSERVATION_SUBCOUNT_SIGN: { type: 'code', aliases: CSV_COLUMN_ALIASES.OBSERVATION_SUBCOUNT_SIGN },
   DATE: { type: 'date' },
   TIME: { type: 'string' },
   LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE },
   LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE }
 } satisfies IXLSXCSVValidator;
 
-export const getCellValue = generateCellGetterFromColumnValidator(observationStandardColumnValidator);
+export const getColumnCellValue = generateColumnCellGetterFromColumnValidator(observationStandardColumnValidator);
 
 export interface InsertSubCount {
   observation_subcount_id: number | null;
@@ -128,12 +130,10 @@ export type AllObservationSupplementaryData = ObservationCountSupplementaryData 
 
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
-  codeRepository: CodeRepository;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.observationRepository = new ObservationRepository(connection);
-    this.codeRepository = new CodeRepository(connection);
   }
 
   /**
@@ -251,6 +251,17 @@ export class ObservationService extends DBService {
    */
   async getAllSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
     return this.observationRepository.getAllSurveyObservations(surveyId);
+  }
+
+  /**
+   * Retrieves all species observed in a given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ObservationSpecies[]>}
+   * @memberof ObservationRepository
+   */
+  async getObservedSpeciesForSurvey(surveyId: number): Promise<ObservationSpecies[]> {
+    return this.observationRepository.getObservedSpeciesForSurvey(surveyId);
   }
 
   /**
@@ -504,6 +515,28 @@ export class ObservationService extends DBService {
     // Get the worksheet row objects
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheet);
 
+    // VALIDATE CODES -----------------------------------------------------------------------------------------
+
+    // TODO: This code column validation logic is specifically catered to the observation_subcount_signs code set, as
+    // it is the only code set currently being used in the observation CSVs, and is required. This logic will need to
+    // be updated to be more generic if other code sets are used in the future, or if they can be nullable.
+
+    // Validate the Code columns in CSV file
+    const codeRepository = new CodeRepository(this.connection);
+    const codeTypeDefinitions = await getCodeTypeDefinitions(codeRepository);
+
+    console.log('=================================================');
+    console.log(codeTypeDefinitions);
+
+    const codesToValidate = worksheetRowObjects.flatMap((row) => getColumnCellValue(row, 'OBSERVATION_SUBCOUNT_SIGN'));
+
+    console.log(codesToValidate);
+
+    // Validate code column data
+    if (!validateCodes(codesToValidate, codeTypeDefinitions)) {
+      throw new Error('Failed to process file for importing observations. Code column validator failed.');
+    }
+
     // VALIDATE MEASUREMENTS -----------------------------------------------------------------------------------------
 
     // Validate the Measurement columns in CSV file
@@ -581,18 +614,20 @@ export class ObservationService extends DBService {
       );
     }
 
-    const observationSubcountSignOptionDefinitions = await this.codeRepository.getObservationSubcountSigns();
-
     // Merge all the table rows into an array of InsertUpdateObservations[]
     const newRowData: InsertUpdateObservations[] = worksheetRowObjects.map((row) => {
-      const observationSubcountSignId = observationSubcountSignOptionDefinitions.find(
-        (option) => option.name.toLowerCase() === getCellValue(row, 'OBSERVATION_SUBCOUNT_SIGN').toLowerCase()
+      // TODO: This observationSubcountSignId logic is specifically catered to the observation_subcount_signs code set,
+      // as it is the only code set currently being used in the observation CSVs, and is required. This logic will need
+      // to be updated to be more generic if other code sets are used in the future, or if they can be nullable.
+      const observationSubcountSignId = codeTypeDefinitions.OBSERVATION_SUBCOUNT_SIGN.find(
+        (option) =>
+          option.name.toLowerCase() === getColumnCellValue(row, 'OBSERVATION_SUBCOUNT_SIGN')?.cell?.toLowerCase()
       )?.id;
 
       const newSubcount: InsertSubCount = {
         observation_subcount_id: null,
+        subcount: getColumnCellValue(row, 'COUNT').cell as number,
         observation_subcount_sign_id: observationSubcountSignId ?? null,
-        subcount: getCellValue(row, 'COUNT') as number,
         qualitative_measurements: [],
         quantitative_measurements: [],
         qualitative_environments: [],
@@ -618,16 +653,16 @@ export class ObservationService extends DBService {
       return {
         standardColumns: {
           survey_id: surveyId,
-          itis_tsn: getCellValue(row, 'ITIS_TSN') as number,
+          itis_tsn: getColumnCellValue(row, 'ITIS_TSN').cell as number,
           itis_scientific_name: null,
           survey_sample_site_id: samplePeriodHierarchyIds?.survey_sample_site_id ?? null,
           survey_sample_method_id: samplePeriodHierarchyIds?.survey_sample_method_id ?? null,
           survey_sample_period_id: samplePeriodHierarchyIds?.survey_sample_period_id ?? null,
-          latitude: getCellValue(row, 'LATITUDE') as number,
-          longitude: getCellValue(row, 'LONGITUDE') as number,
-          count: getCellValue(row, 'COUNT') as number,
-          observation_time: getCellValue(row, 'TIME') as string,
-          observation_date: getCellValue(row, 'DATE') as string
+          latitude: getColumnCellValue(row, 'LATITUDE').cell as number,
+          longitude: getColumnCellValue(row, 'LONGITUDE').cell as number,
+          count: getColumnCellValue(row, 'COUNT').cell as number,
+          observation_time: getColumnCellValue(row, 'TIME').cell as string,
+          observation_date: getColumnCellValue(row, 'DATE').cell as string
         },
         subcounts: [newSubcount]
       };
@@ -673,7 +708,7 @@ export class ObservationService extends DBService {
       }
 
       const measurement = getMeasurementFromTsnMeasurementTypeDefinitionMap(
-        getCellValue(row, 'ITIS_TSN') as string,
+        getColumnCellValue(row, 'ITIS_TSN').cell as string,
         mColumn,
         tsnMeasurements
       );
@@ -795,7 +830,7 @@ export class ObservationService extends DBService {
 
     return recordsToPatch.map((recordToPatch: RecordWithTaxonFields) => {
       recordToPatch.itis_scientific_name =
-        taxonomyResponse.find((taxonItem) => Number(taxonItem.tsn) === recordToPatch.itis_tsn)?.scientificName ?? null;
+        taxonomyResponse.find((taxonItem) => taxonItem.tsn === recordToPatch.itis_tsn)?.scientificName ?? null;
 
       return recordToPatch;
     });

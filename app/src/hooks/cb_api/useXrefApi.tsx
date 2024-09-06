@@ -5,6 +5,7 @@ import {
   ICollectionCategory,
   ICollectionUnit
 } from 'interfaces/useCritterApi.interface';
+import qs from 'qs';
 
 export const useXrefApi = (axios: AxiosInstance) => {
   /**
@@ -21,13 +22,21 @@ export const useXrefApi = (axios: AxiosInstance) => {
   /**
    * Get measurement definitions by search term.
    *
-   * @param {string} searchTerm
+   * @param {string} name
+   * @param {string[]} tsns
    * @return {*}  {Promise<CBMeasurementSearchByTermResponse>}
    */
   const getMeasurementTypeDefinitionsBySearchTerm = async (
-    searchTerm: string
+    name: string,
+    tsns?: number[]
   ): Promise<CBMeasurementSearchByTermResponse> => {
-    const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements/search?name=${searchTerm}`);
+    const t = tsns?.map((tsn) => Number(tsn));
+    const { data } = await axios.get(`/api/critterbase/xref/taxon-measurements/search`, {
+      params: { name, tsns: t },
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
     return data;
   };
 
@@ -38,12 +47,18 @@ export const useXrefApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<ICollectionCategory[]>}
    */
   const getTsnCollectionCategories = async (tsn: number): Promise<ICollectionCategory[]> => {
-    const { data } = await axios.get(`/api/critterbase/xref/taxon-collection-categories?tsn=${tsn}`);
+    const { data } = await axios.get('/api/critterbase/xref/taxon-collection-categories', {
+      params: { tsn },
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
+
     return data;
   };
 
   /**
-   * Get collection (ie. ecological) units that are available for a given taxon
+   * Get collection (ie. ecological) units values for a given collection unit
    *
    * @param {string} unit_id
    * @return {*}  {Promise<ICollectionUnit[]>}

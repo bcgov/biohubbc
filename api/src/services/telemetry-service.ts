@@ -1,7 +1,7 @@
 import { default as dayjs } from 'dayjs';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
-import { ITelemetryAdvancedFilters } from '../models/telemetry-view';
+import { IAllTelemetryAdvancedFilters } from '../models/telemetry-view';
 import { SurveyCritterRecord } from '../repositories/survey-critter-repository';
 import { Deployment, TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
@@ -15,16 +15,19 @@ import {
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
-import { BctwService, IAllTelemetry, ICreateManualTelemetry, IDeploymentRecord } from './bctw-service';
+import { AttachmentService } from './attachment-service';
+import { BctwDeploymentRecord, BctwDeploymentService } from './bctw-service/bctw-deployment-service';
+import { BctwTelemetryService, IAllTelemetry, ICreateManualTelemetry } from './bctw-service/bctw-telemetry-service';
 import { ICritter, ICritterbaseUser } from './critterbase-service';
 import { DBService } from './db-service';
+import { DeploymentService } from './deployment-service';
 import { SurveyCritterService } from './survey-critter-service';
 
 export type FindTelemetryResponse = { telemetry_id: string } & Pick<
   IAllTelemetry,
   'acquisition_date' | 'latitude' | 'longitude' | 'telemetry_type'
 > &
-  Pick<IDeploymentRecord, 'device_id'> &
+  Pick<BctwDeploymentRecord, 'device_id'> &
   Pick<Deployment, 'bctw_deployment_id' | 'critter_id' | 'deployment_id'> &
   Pick<SurveyCritterRecord, 'critterbase_critter_id'> &
   Pick<ICritter, 'animal_id'>;
@@ -40,9 +43,14 @@ const telemetryCSVColumnValidator: IXLSXCSVValidator = {
 export class TelemetryService extends DBService {
   telemetryRepository: TelemetryRepository;
 
+  attachmentService: AttachmentService;
+
   constructor(connection: IDBConnection) {
     super(connection);
+
     this.telemetryRepository = new TelemetryRepository(connection);
+
+    this.attachmentService = new AttachmentService(connection);
   }
 
   /**
@@ -101,13 +109,13 @@ export class TelemetryService extends DBService {
     const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheet);
 
     // step 7 fetch survey deployments
-    const bctwService = new BctwService(user);
-    const critterService = new SurveyCritterService(this.connection);
+    const deploymentService = new DeploymentService(this.connection);
+    const bctwDeploymentService = new BctwDeploymentService(user);
 
-    const critters = await critterService.getCrittersInSurvey(submission.survey_id);
-    const critterIds = critters.map((item) => item.critterbase_critter_id);
-
-    const deployments = await bctwService.getDeploymentsByCritterId(critterIds);
+    const surveyDeployments = await deploymentService.getDeploymentsForSurveyId(submission.survey_id);
+    const deployments = await bctwDeploymentService.getDeploymentsByIds(
+      surveyDeployments.map((deployment) => deployment.bctw_deployment_id)
+    );
 
     // step 8 parse file data and find deployment ids based on device id and attachment dates
     const itemsToAdd: ICreateManualTelemetry[] = [];
@@ -153,9 +161,12 @@ export class TelemetryService extends DBService {
     });
 
     // step 9 create telemetries
+
+    const bctwTelemetryService = new BctwTelemetryService(user);
+
     if (itemsToAdd.length > 0) {
       try {
-        return bctwService.createManualTelemetry(itemsToAdd);
+        return await bctwTelemetryService.createManualTelemetry(itemsToAdd);
       } catch (error) {
         throw new ApiGeneralError('Error adding Manual Telemetry');
       }
@@ -202,7 +213,7 @@ export class TelemetryService extends DBService {
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
-   * @param {ITelemetryAdvancedFilters} [filterFields]
+   * @param {IAllTelemetryAdvancedFilters} [filterFields]
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<FindTelemetryResponse[]>}
    * @memberof TelemetryService
@@ -210,7 +221,7 @@ export class TelemetryService extends DBService {
   async findTelemetry(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields?: ITelemetryAdvancedFilters,
+    filterFields?: IAllTelemetryAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<FindTelemetryResponse[]> {
     // --- Step 1 -----------------------------
@@ -262,14 +273,18 @@ export class TelemetryService extends DBService {
       return [];
     }
 
-    const bctwService = new BctwService({
+    const user = {
       keycloak_guid: this.connection.systemUserGUID(),
       username: this.connection.systemUserIdentifier()
-    });
+    };
+
+    const bctwDeploymentService = new BctwDeploymentService(user);
+    const bctwTelemetryService = new BctwTelemetryService(user);
+
     // The detailed deployment records from BCTW
     // Note: This may include records the user does not have acces to (A critter may have multiple deployments over its
     // lifespan, but the user may only have access to a subset of them).
-    const allBctwDeploymentsForCritters = await bctwService.getDeploymentsByCritterId(critterbaseCritterIds);
+    const allBctwDeploymentsForCritters = await bctwDeploymentService.getDeploymentsByCritterId(critterbaseCritterIds);
 
     // Remove records the user does not have access to
     const usersBctwDeployments = allBctwDeploymentsForCritters.filter((deployment) =>
@@ -285,7 +300,7 @@ export class TelemetryService extends DBService {
     // --- Step 4 ------------------------------
 
     // The telemetry records for the deployments the user has access to
-    const allTelemetryRecords = await bctwService.getAllTelemetryByDeploymentIds(usersBctwDeploymentIds);
+    const allTelemetryRecords = await bctwTelemetryService.getAllTelemetryByDeploymentIds(usersBctwDeploymentIds);
 
     // --- Step 5 ------------------------------
 
@@ -323,7 +338,7 @@ export class TelemetryService extends DBService {
         latitude: telemetryRecord.latitude,
         longitude: telemetryRecord.longitude,
         telemetry_type: telemetryRecord.telemetry_type,
-        // IDeploymentRecord
+        // BctwDeploymentRecord
         device_id: usersBctwDeployment.device_id,
         // Deployment
         bctw_deployment_id: telemetryRecord.deployment_id,

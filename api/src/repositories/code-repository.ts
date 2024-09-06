@@ -9,7 +9,10 @@ export const ICode = z.object({
 export type ICode = z.infer<typeof ICode>;
 
 export const CodeSet = <T extends z.ZodRawShape>(zodSchema?: T) => {
-  return (zodSchema && z.array(zodSchema.shape)) || z.array(ICode);
+  if (zodSchema) {
+    return z.array(z.object(zodSchema));
+  }
+  return z.array(ICode);
 };
 
 const InvestmentActionCategoryCode = ICode.extend({ agency_id: z.number() });

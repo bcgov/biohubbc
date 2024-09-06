@@ -493,8 +493,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
     }
 
     const requiredStandardColumns: (keyof IObservationTableRow)[] = [
-      'count',
       'observation_subcount_sign_id',
+      'count',
       'latitude',
       'longitude',
       'observation_date',
