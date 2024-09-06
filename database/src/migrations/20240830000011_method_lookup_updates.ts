@@ -1,9 +1,9 @@
 import { Knex } from 'knex';
 
 /**
- * Update method_lookup vlaues and associated attributes to accomodate spi-migration data and for other future data.
+ * Update method_lookup values and associated attributes to accomodate spi-migration data and for other future data.
  *
- * This migration file updates  values into method lookup table, technique attribute qual and quant tables,
+ * This migration file inserts or updates values into method lookup table, technique attribute qual and quant tables,
  * method lookup quant and qual and qualitative options and attractants
  *
  * @export
@@ -17,7 +17,7 @@ export async function up(knex: Knex): Promise<void> {
 ----------------------------------------------------------------------------------------
 ---------------------------------Insert new ml values--------------------------------------
 ----------------------------------------------------------------------------------------
--- In this sesction. I have inserted the method lookup values for drone , hair snag and undetermined. 
+-- In this sesction. I have inserted the method lookup values for Drone, Audio encounter, Hair snag and Undetermined. 
 -- along with all the appropriate attributes and units.
 ----------------------------------------------------------------------------------------
 
@@ -38,9 +38,8 @@ VALUES
     ('Audio frequency range','The range of frequencies captured during the audio encounter, important for detecting different species vocalizations, from low-frequency calls to high-pitched signals.');
 
 ----------------------------------------------------------------------------------------
---Inserting quant attributtes for all the above. 
+--Inserting quant attributtes, min, max and units for Drone, Audio encounter, Hair snag.
 ----------------------------------------------------------------------------------------
-
 
 INSERT INTO method_lookup_attribute_quantitative (technique_attribute_quantitative_id, method_lookup_id, min, max, unit)
 VALUES
@@ -65,6 +64,9 @@ VALUES
         0, 20000, 'Hz'
     );
 
+----------------------------------------------------------------------------------------
+--Inserting qualitative names and descriptions for Drone, Audio encounter, Hair snag.
+----------------------------------------------------------------------------------------
 
 INSERT INTO technique_attribute_qualitative (name, description)
 VALUES
@@ -74,6 +76,10 @@ VALUES
     ('Hair snag substrate type', 'The type of surface or material on which the hair snag device is placed, such as soil, rock, or vegetation, affecting the likelihood of successful sample collection.'),
     ('Hair snag material', 'Material the snag is comprised of.'),
     ('Audio device type', 'The specific tool or equipment used to capture or detect sounds during an audio encounter, including handheld recorders, fixed microphones, parabolic microphones, or unaided human listening.');
+
+----------------------------------------------------------------------------------------
+--Inserting associations for method lookups and their qualitative attributes
+----------------------------------------------------------------------------------------
 
 -- Insert into method_lookup_attribute_qualitative table
 INSERT INTO method_lookup_attribute_qualitative (technique_attribute_qualitative_id, method_lookup_id)
@@ -103,6 +109,9 @@ VALUES
         (SELECT method_lookup_id FROM method_lookup WHERE name = 'Audio encounter')
     );
 
+----------------------------------------------------------------------------------------
+--Inserting options for the above qualitative attributes 
+----------------------------------------------------------------------------------------
 
 INSERT INTO method_lookup_attribute_qualitative_option (method_lookup_attribute_qualitative_id, name, description)
 VALUES
