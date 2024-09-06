@@ -1,9 +1,9 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { useBiohubApi } from '../../../hooks/useBioHubApi';
-import { ISystemUser } from '../../../interfaces/useUserApi.interface';
 import UsersDetailHeader from './UsersDetailHeader';
 import UsersDetailProjects from './UsersDetailProjects';
 

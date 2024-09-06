@@ -24,7 +24,9 @@ export const IAdministrativeActivity = z.object({
   description: z.string().nullable(),
   data: shallowJsonSchema,
   notes: z.string().nullable(),
-  create_date: z.string()
+  create_date: z.string(),
+  updated_by: z.string().nullable(),
+  update_date: z.string().nullable()
 });
 
 export type IAdministrativeActivity = z.infer<typeof IAdministrativeActivity>;
@@ -66,7 +68,9 @@ export class AdministrativeActivityRepository extends BaseRepository {
         aa.description,
         aa.data,
         aa.notes,
-        aa.create_date
+        aa.create_date,
+        su.display_name as updated_by,
+        aa.update_date
       FROM
         administrative_activity aa
       LEFT OUTER JOIN
@@ -77,6 +81,10 @@ export class AdministrativeActivityRepository extends BaseRepository {
         administrative_activity_type aat
       ON
         aa.administrative_activity_type_id = aat.administrative_activity_type_id
+      LEFT OUTER JOIN
+        system_user su 
+      ON 
+        su.system_user_id = aa.update_user
       WHERE
         1 = 1
     `;
@@ -115,7 +123,9 @@ export class AdministrativeActivityRepository extends BaseRepository {
       sqlStatement.append(SQL`)`);
     }
 
-    sqlStatement.append(`;`);
+    sqlStatement.append(`
+      ORDER BY create_date DESC;
+    `);
 
     const response = await this.connection.sql(sqlStatement, IAdministrativeActivity);
     return response.rows;
