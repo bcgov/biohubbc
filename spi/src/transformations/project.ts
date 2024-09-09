@@ -42,7 +42,7 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
     SELECT DISTINCT
         w_mapping.project_id,
         (SELECT biohub_user_id FROM public.migrate_spi_user_deduplication WHERE w_mapping.person_id = ANY (spi_person_ids)),
-        (SELECT project_role_id FROM biohub.project_role WHERE name = 'Collaborator'),
+        (SELECT project_role_id FROM biohub.project_role WHERE name = 'Observer'),
         (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'spi')
     FROM 
         w_mapping
