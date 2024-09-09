@@ -15,11 +15,20 @@ export type ExportDataQuery = {
   fileName: string;
 };
 
+export type ExportDataStreamOptions = {
+  /**
+   * A SIMS database client.
+   *
+   * @type {PoolClient}
+   */
+  dbClient: PoolClient;
+};
+
 export type ExportDataStream = {
   /**
    * The stream that yields the exported data.
    */
-  stream: (dbClient: PoolClient) => Readable;
+  stream: (options: ExportDataStreamOptions) => Readable;
   /**
    * The file name to use for the exported data when it is saved to S3.
    */

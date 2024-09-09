@@ -101,7 +101,7 @@ export class ExportService extends DBService {
           if (exportStrategyConfig.streams) {
             for (const streamConfig of exportStrategyConfig.streams) {
               // Create the stream
-              const stream = streamConfig.stream(dbClient);
+              const stream = streamConfig.stream({ dbClient });
 
               // Add all streams to the array to destroy in case of an error
               this._trackStream(stream, allStreams);
