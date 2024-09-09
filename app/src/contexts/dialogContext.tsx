@@ -155,7 +155,7 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
         }}
         open={snackbarProps.open}
         autoHideDuration={snackbarProps?.snackbarAutoCloseMs ?? 6000}
-        onClose={() => setSnackbar({ open: false })}
+        onClose={snackbarProps.onClose}
         message={snackbarProps.snackbarMessage}
         action={
           <IconButton size="small" aria-label="close" color="inherit" onClick={() => setSnackbar({ open: false })}>

@@ -13,7 +13,7 @@ import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { FileUploadSingleItem } from 'components/file-upload/FileUploadSingleItem';
 import PageHeader from 'components/layout/PageHeader';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useCallback, useMemo, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -47,6 +47,7 @@ export const CreateCSVCapturesPage = () => {
   const biohubApi = useBiohubApi();
 
   const { locationChangeInterceptor } = useUnsavedChangesDialog();
+  const dialogContext = useDialogContext();
 
   const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
@@ -62,8 +63,12 @@ export const CreateCSVCapturesPage = () => {
 
   // When any of the files are uploading
   const isUploading = useMemo(() => {
-    return Object.values(files).some((key) => key.status === UploadFileStatus.UPLOADING);
+    return Object.values(files).some(
+      (key) => key.status === UploadFileStatus.UPLOADING || key.status === UploadFileStatus.FINISHING_UPLOAD
+    );
   }, [files]);
+
+  const cancelToken = axios.CancelToken.source();
 
   /**
    * Update a specific file's state.
@@ -126,29 +131,43 @@ export const CreateCSVCapturesPage = () => {
    * @returns {Promise<void>}
    */
   const handleAllFileUploads = async () => {
-    const cancelToken = axios.CancelToken.source();
-
     // Attempt to upload the captures first
-    const captureUploadStatus = await handleFileUpload('captures', (file, onProgress) =>
+    const captureStatus = await handleFileUpload('captures', (file, onProgress) =>
       biohubApi.survey.importCapturesFromCsv(file, projectId, surveyId, cancelToken, onProgress)
     );
 
     // If the Captures CSV upload failed, don't attempt to upload Measurements or Markings
-    if (captureUploadStatus !== UploadFileStatus.FAILED) {
-      // Measurements / Markings can be uploaded in parallel
-      const [measurementUploadStatus, markingUploadStatus] = await Promise.all([
-        handleFileUpload('measurements', (file, onProgress) =>
-          biohubApi.survey.importMeasurementsFromCsv(file, projectId, surveyId, cancelToken, onProgress)
-        ),
-        handleFileUpload('markings', (file, onProgress) =>
-          biohubApi.survey.importMarkingsFromCsv(file, projectId, surveyId, cancelToken, onProgress)
-        )
-      ]);
+    if (captureStatus === UploadFileStatus.FAILED) {
+      return;
+    }
 
-      if (measurementUploadStatus !== UploadFileStatus.FAILED || markingUploadStatus !== UploadFileStatus.FAILED) {
+    // Measurements / Markings can be uploaded in parallel
+    const [measurementStatus, markingStatus] = await Promise.all([
+      handleFileUpload('measurements', (file, onProgress) =>
+        biohubApi.survey.importMeasurementsFromCsv(file, projectId, surveyId, cancelToken, onProgress)
+      ),
+      handleFileUpload('markings', (file, onProgress) =>
+        biohubApi.survey.importMarkingsFromCsv(file, projectId, surveyId, cancelToken, onProgress)
+      )
+    ]);
+
+    if (measurementStatus === UploadFileStatus.FAILED || markingStatus === UploadFileStatus.FAILED) {
+      return;
+    }
+
+    dialogContext.setSnackbar({
+      open: true,
+      snackbarAutoCloseMs: 2000,
+      snackbarMessage: (
+        <Typography variant="body2" component="div">
+          CSV files uploaded successfully.
+        </Typography>
+      ),
+      onClose: () => {
+        dialogContext.setSnackbar({ open: false });
         history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`, SKIP_CONFIRMATION_DIALOG);
       }
-    }
+    });
   };
 
   /**
@@ -157,6 +176,7 @@ export const CreateCSVCapturesPage = () => {
    * @returns {void}
    */
   const handleCancel = (): void => {
+    cancelToken.cancel();
     history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`);
   };
 
