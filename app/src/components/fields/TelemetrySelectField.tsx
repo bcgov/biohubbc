@@ -8,7 +8,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import get from 'lodash-es/get';
 import React from 'react';
 
-interface ITelemetrySelectField {
+interface IAllTelemetrySelectField {
   name: string;
   label: string;
   id: string;
@@ -23,7 +23,7 @@ interface ISelectOption {
   label: string;
 }
 
-const TelemetrySelectField: React.FC<ITelemetrySelectField> = (props) => {
+const TelemetrySelectField: React.FC<IAllTelemetrySelectField> = (props) => {
   const bctwLookupLoader = useDataLoader(() => props.fetchData());
   const { values, touched, errors, handleChange, handleBlur } = useFormikContext<ISelectOption>();
 

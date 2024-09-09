@@ -2,7 +2,7 @@ import { v4 as uuid } from 'uuid';
 import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
 import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
-import { generateCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
+import { generateColumnCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
 import { ICapture, ILocation } from '../../critterbase-service';
 import { DBService } from '../../db-service';
@@ -64,7 +64,7 @@ export class ImportCapturesStrategy extends DBService implements CSVImportStrate
    */
   async validateRows(rows: Row[]) {
     // Generate type-safe cell getter from column validator
-    const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
+    const getColumnCell = generateColumnCellGetterFromColumnValidator(this.columnValidator);
     const critterAliasMap = await this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId);
 
     const rowsToValidate = [];
@@ -72,24 +72,24 @@ export class ImportCapturesStrategy extends DBService implements CSVImportStrate
     for (const row of rows) {
       let critterId, captureId;
 
-      const alias = getCellValue<string>(row, 'ALIAS');
+      const alias = getColumnCell<string>(row, 'ALIAS');
 
-      const releaseLatitude = getCellValue(row, 'RELEASE_LATITUDE');
-      const releaseLongitude = getCellValue(row, 'RELEASE_LONGITUDE');
-      const captureDate = getCellValue(row, 'CAPTURE_DATE');
-      const captureTime = getCellValue(row, 'CAPTURE_TIME');
-      const releaseTime = getCellValue(row, 'RELEASE_TIME');
+      const releaseLatitude = getColumnCell(row, 'RELEASE_LATITUDE');
+      const releaseLongitude = getColumnCell(row, 'RELEASE_LONGITUDE');
+      const captureDate = getColumnCell(row, 'CAPTURE_DATE');
+      const captureTime = getColumnCell(row, 'CAPTURE_TIME');
+      const releaseTime = getColumnCell(row, 'RELEASE_TIME');
 
-      const releaseLocationId = releaseLatitude && releaseLongitude ? uuid() : undefined;
-      const formattedCaptureTime = formatTimeString(captureTime);
-      const formattedReleaseTime = formatTimeString(releaseTime);
+      const releaseLocationId = releaseLatitude.cell && releaseLongitude.cell ? uuid() : undefined;
+      const formattedCaptureTime = formatTimeString(captureTime.cell);
+      const formattedReleaseTime = formatTimeString(releaseTime.cell);
 
       // If the alias is included attempt to retrieve the critterId from row
       // Checks if date time fields are unique for the critter's captures
-      if (alias) {
-        const critter = critterAliasMap.get(alias.toLowerCase());
+      if (alias.cell) {
+        const critter = critterAliasMap.get(alias.cell.toLowerCase());
         if (critter) {
-          const captures = findCapturesFromDateTime(critter.captures, captureDate, captureTime);
+          const captures = findCapturesFromDateTime(critter.captures, captureDate.cell, captureTime.cell);
           critterId = critter.critter_id;
           // Only set the captureId if a capture does not exist with matching date time
           captureId = captures.length > 0 ? undefined : uuid();
@@ -100,17 +100,17 @@ export class ImportCapturesStrategy extends DBService implements CSVImportStrate
         capture_id: captureId, // this will be undefined if capture exists with same date / time
         critter_id: critterId,
         capture_location_id: uuid(),
-        capture_date: captureDate,
+        capture_date: captureDate.cell,
         capture_time: formattedCaptureTime,
-        capture_latitude: getCellValue(row, 'CAPTURE_LATITUDE'),
-        capture_longitude: getCellValue(row, 'CAPTURE_LONGITUDE'),
+        capture_latitude: getColumnCell(row, 'CAPTURE_LATITUDE').cell,
+        capture_longitude: getColumnCell(row, 'CAPTURE_LONGITUDE').cell,
         release_location_id: releaseLocationId,
-        release_date: getCellValue(row, 'RELEASE_DATE'),
+        release_date: getColumnCell(row, 'RELEASE_DATE').cell,
         release_time: formattedReleaseTime,
-        release_latitude: getCellValue(row, 'RELEASE_LATITUDE'),
-        release_longitude: getCellValue(row, 'RELEASE_LONGITUDE'),
-        capture_comment: getCellValue(row, 'CAPTURE_COMMENT'),
-        release_comment: getCellValue(row, 'RELEASE_COMMENT')
+        release_latitude: getColumnCell(row, 'RELEASE_LATITUDE').cell,
+        release_longitude: getColumnCell(row, 'RELEASE_LONGITUDE').cell,
+        capture_comment: getColumnCell(row, 'CAPTURE_COMMENT').cell,
+        release_comment: getColumnCell(row, 'RELEASE_COMMENT').cell
       });
     }
 

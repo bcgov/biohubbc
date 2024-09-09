@@ -27,7 +27,7 @@ describe('StandardsService', () => {
 
       const getTaxonomyByTsnsStub = sinon
         .stub(standardsService.platformService, 'getTaxonomyByTsns')
-        .resolves([{ tsn: String(mockTsn), scientificName: 'caribou' }]);
+        .resolves([{ tsn: mockTsn, scientificName: 'caribou' }]);
 
       const getTaxonBodyLocationsStub = sinon
         .stub(standardsService.critterbaseService, 'getTaxonBodyLocations')

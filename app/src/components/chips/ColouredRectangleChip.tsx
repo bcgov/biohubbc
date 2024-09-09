@@ -27,7 +27,8 @@ const ColouredRectangleChip = (props: IColouredRectangleChipProps) => {
           fontSize: '0.75rem',
           p: 1,
           textTransform: 'uppercase'
-        }
+        },
+        ...props.sx
       }}
     />
   );

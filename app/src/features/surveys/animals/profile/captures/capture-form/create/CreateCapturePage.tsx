@@ -58,7 +58,7 @@ export const CreateCapturePage = () => {
   const animalPageContext = useAnimalPageContext();
 
   const urlParams: Record<string, string | number | undefined> = useParams();
-  const surveyCritterId: number | undefined = Number(urlParams['survey_critter_id']);
+  const surveyCritterId: number | undefined = Number(urlParams['critter_id']);
 
   const { locationChangeInterceptor } = useUnsavedChangesDialog();
 
@@ -106,6 +106,7 @@ export const CreateCapturePage = () => {
     setIsSaving(true);
 
     try {
+      const surveyCritterId = animalPageContext.selectedAnimal?.critter_id;
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
 
       if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
@@ -190,7 +191,10 @@ export const CreateCapturePage = () => {
       }
 
       // Refresh page
-      animalPageContext.critterDataLoader.refresh(critterbaseCritterId);
+
+      if (surveyCritterId) {
+        animalPageContext.critterDataLoader.refresh(projectId, surveyId, surveyCritterId);
+      }
 
       history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals/details`, SKIP_CONFIRMATION_DIALOG);
     } catch (error) {

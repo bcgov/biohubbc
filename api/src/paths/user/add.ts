@@ -148,10 +148,9 @@ export function addSystemRoleUser(): RequestHandler {
 
       const userService = new UserService(connection);
 
-      // If user already exists, do nothing and return early
       const user = await userService.getUserByIdentifier(userIdentifier, identitySource);
-
-      if (user) {
+      if (user?.record_end_date === null) {
+        // User already exists and is active, do nothing and return early
         throw new HTTP409('Failed to add user. User with matching identifier already exists.');
       }
 
@@ -166,12 +165,16 @@ export function addSystemRoleUser(): RequestHandler {
         family_name
       );
 
-      if (userObject) {
-        if (role_name) {
-          await userService.addUserSystemRoleByName(userObject.system_user_id, role_name);
-        } else {
-          await userService.addUserSystemRoles(userObject.system_user_id, [roleId]);
-        }
+      // Delete existin role
+      if (userObject.role_ids.length) {
+        await userService.deleteUserSystemRoles(userObject.system_user_id);
+      }
+
+      // Add the new role
+      if (role_name) {
+        await userService.addUserSystemRoleByName(userObject.system_user_id, role_name);
+      } else {
+        await userService.addUserSystemRoles(userObject.system_user_id, [roleId]);
       }
 
       await connection.commit();

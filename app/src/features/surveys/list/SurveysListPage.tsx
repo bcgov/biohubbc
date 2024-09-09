@@ -2,6 +2,7 @@ import { mdiArrowTopRight, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import { grey } from '@mui/material/colors';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
 import Toolbar from '@mui/material/Toolbar';
@@ -59,6 +60,22 @@ const SurveysListPage = () => {
   const surveys = projectContext.surveysListDataLoader.data?.surveys ?? [];
 
   const columns: GridColDef<SurveyBasicFieldsObject>[] = [
+    {
+      field: 'survey_id',
+      headerName: 'ID',
+      width: 70,
+      minWidth: 70,
+      renderHeader: () => (
+        <Typography color={grey[500]} variant="body2" fontWeight={700}>
+          ID
+        </Typography>
+      ),
+      renderCell: (params) => (
+        <Typography color={grey[500]} variant="body2">
+          {params.row.survey_id}
+        </Typography>
+      )
+    },
     {
       field: 'name',
       headerName: 'Name',

@@ -1,8 +1,5 @@
-import { mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { GridCellParams, GridColDef, GridRowParams, GridValidRowModel } from '@mui/x-data-grid';
+import { GridCellParams, GridColDef, GridValidRowModel } from '@mui/x-data-grid';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -13,13 +10,15 @@ import { getFormattedDate } from 'utils/Utils';
 export const GenericDateColDef = <T extends GridValidRowModel>(props: {
   field: string;
   headerName: string;
+  description?: string;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<T> => {
-  const { field, headerName, hasError } = props;
+  const { field, headerName, hasError, description } = props;
 
   return {
     field,
     headerName,
+    description: description ?? undefined,
     editable: true,
     hideable: true,
     type: 'date',
@@ -62,15 +61,17 @@ export const GenericDateColDef = <T extends GridValidRowModel>(props: {
 export const GenericTimeColDef = <T extends GridValidRowModel>(props: {
   field: string;
   headerName: string;
+  description?: string;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<T> => {
-  const { hasError, field, headerName } = props;
+  const { hasError, field, headerName, description } = props;
 
   return {
     field,
     headerName,
     editable: true,
     hideable: true,
+    description: description ?? undefined,
     type: 'string',
     width: 150,
     disableColumnMenu: true,
@@ -124,13 +125,15 @@ export const GenericTimeColDef = <T extends GridValidRowModel>(props: {
 export const GenericLatitudeColDef = <T extends GridValidRowModel>(props: {
   field: string;
   headerName: string;
+  description?: string;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<T> => {
-  const { hasError, field, headerName } = props;
+  const { hasError, field, headerName, description } = props;
 
   return {
     field,
     headerName,
+    description: description ?? undefined,
     editable: true,
     hideable: true,
     width: 120,
@@ -183,13 +186,15 @@ export const GenericLatitudeColDef = <T extends GridValidRowModel>(props: {
 export const GenericLongitudeColDef = <T extends GridValidRowModel>(props: {
   field: string;
   headerName: string;
+  description?: string;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<T> => {
-  const { hasError, field, headerName } = props;
+  const { hasError, field, headerName, description } = props;
 
   return {
     field,
     headerName,
+    description: description ?? undefined,
     editable: true,
     hideable: true,
     width: 120,
@@ -236,31 +241,5 @@ export const GenericLongitudeColDef = <T extends GridValidRowModel>(props: {
         />
       );
     }
-  };
-};
-
-export const GenericActionsColDef = <T extends GridValidRowModel>(props: {
-  disabled: boolean | ((params: GridRowParams<T>) => boolean);
-  onDelete: (records: T[]) => void;
-}): GridColDef<T> => {
-  return {
-    field: 'actions',
-    headerName: '',
-    type: 'actions',
-    width: 70,
-    disableColumnMenu: true,
-    align: 'right',
-    resizable: false,
-    cellClassName: 'pinnedColumn',
-    getActions: (params) => [
-      <IconButton
-        onClick={() => {
-          props.onDelete([params.row]);
-        }}
-        disabled={typeof props.disabled === 'function' ? props.disabled(params) : props.disabled}
-        key={`actions[${params.id}].handleDeleteRow`}>
-        <Icon path={mdiTrashCanOutline} size={1} />
-      </IconButton>
-    ]
   };
 };

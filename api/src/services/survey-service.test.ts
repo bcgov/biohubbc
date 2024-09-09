@@ -21,10 +21,10 @@ import { FundingSourceRepository } from '../repositories/funding-source-reposito
 import { IPermitModel } from '../repositories/permit-repository';
 import { SurveyLocationRecord, SurveyLocationRepository } from '../repositories/survey-location-repository';
 import {
-  IGetSpeciesData,
   ISurveyProprietorModel,
   SurveyRecord,
   SurveyRepository,
+  SurveyTaxonomyWithEcologicalUnits,
   SurveyTypeRecord
 } from '../repositories/survey-repository';
 import { getMockDBConnection } from '../__mocks__/db';
@@ -358,22 +358,44 @@ describe('SurveyService', () => {
   });
 
   describe('getSpeciesData', () => {
-    it('returns the first row on success', async () => {
+    it('returns combined species and taxonomy data on success', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      const data = { id: 1 } as unknown as IGetSpeciesData;
+      const mockEcologicalUnits = [
+        { critterbase_collection_category_id: 'abc', critterbase_collection_unit_id: 'xyz' }
+      ];
+      const mockSpeciesData = [
+        { itis_tsn: 123, ecological_units: [] },
+        {
+          itis_tsn: 456,
+          ecological_units: mockEcologicalUnits
+        }
+      ] as unknown as SurveyTaxonomyWithEcologicalUnits[];
+      const mockTaxonomyData = [
+        { tsn: 123, scientificName: 'Species 1' },
+        { tsn: 456, scientificName: 'Species 2' }
+      ];
+      const mockResponse = new GetFocalSpeciesData([
+        { tsn: 123, scientificName: 'Species 1', ecological_units: [] },
+        {
+          tsn: 456,
+          scientificName: 'Species 2',
+          ecological_units: mockEcologicalUnits
+        }
+      ]);
 
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSpeciesData').resolves([data]);
-      const getTaxonomyByTsnsStub = sinon.stub(PlatformService.prototype, 'getTaxonomyByTsns').resolves([]);
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'getSpeciesData').resolves(mockSpeciesData);
+      const getTaxonomyByTsnsStub = sinon
+        .stub(PlatformService.prototype, 'getTaxonomyByTsns')
+        .resolves(mockTaxonomyData);
 
       const response = await service.getSpeciesData(1);
 
+      // Assertions
       expect(repoStub).to.be.calledOnce;
-      expect(getTaxonomyByTsnsStub).to.be.calledOnce;
-      expect(response).to.eql({
-        ...new GetFocalSpeciesData([])
-      });
+      expect(getTaxonomyByTsnsStub).to.be.calledOnceWith([123, 456]);
+      expect(response.focal_species).to.eql(mockResponse.focal_species);
     });
   });
 
@@ -575,6 +597,35 @@ describe('SurveyService', () => {
     });
   });
 
+  describe('insertFocalSpeciesWithUnits', () => {
+    it('returns the first row on success', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const mockFocalSpeciesId = 1;
+      const mockFocalSpeciesData = {
+        tsn: mockFocalSpeciesId,
+        scientificName: 'name',
+        commonNames: [],
+        rank: 'species',
+        kingdom: 'Animalia',
+        ecological_units: [{ critterbase_collection_category_id: 'abc', critterbase_collection_unit_id: 'xyz' }]
+      };
+      const insertFocalSpeciesStub = sinon
+        .stub(SurveyRepository.prototype, 'insertFocalSpecies')
+        .resolves(mockFocalSpeciesId);
+      const insertFocalSpeciesUnitsStub = sinon
+        .stub(SurveyRepository.prototype, 'insertFocalSpeciesUnits')
+        .resolves(mockFocalSpeciesId);
+
+      const response = await service.insertFocalSpeciesWithUnits(mockFocalSpeciesData, 1);
+
+      expect(insertFocalSpeciesStub).to.be.calledOnce;
+      expect(insertFocalSpeciesUnitsStub).to.be.calledOnce;
+      expect(response).to.eql(mockFocalSpeciesId);
+    });
+  });
+
   describe('insertSurveyProprietor', () => {
     it('returns the first row on success', async () => {
       const dbConnection = getMockDBConnection();
@@ -684,8 +735,9 @@ describe('SurveyService', () => {
     });
 
     it('returns data if response is not null', async () => {
+      sinon.stub(SurveyService.prototype, 'deleteSurveySpeciesUnitData').resolves();
       sinon.stub(SurveyService.prototype, 'deleteSurveySpeciesData').resolves();
-      sinon.stub(SurveyService.prototype, 'insertFocalSpecies').resolves(1);
+      sinon.stub(SurveyService.prototype, 'insertFocalSpeciesWithUnits').resolves(1);
 
       const mockQueryResponse = { response: 'something', rowCount: 1 } as unknown as QueryResult<any>;
 

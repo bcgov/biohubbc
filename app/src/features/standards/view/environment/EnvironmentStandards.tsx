@@ -25,6 +25,7 @@ export const EnvironmentStandards = () => {
       debounce((value: string) => {
         environmentsDataLoader.refresh(value);
       }, 500),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     []
   );
 

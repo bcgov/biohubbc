@@ -12,6 +12,7 @@ import { isFeatureFlagPresent } from '../utils/feature-flag-utils';
 import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
+import { IPostCollectionUnit } from './critterbase-service';
 import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
@@ -44,7 +45,7 @@ export interface IArtifact {
 }
 
 export interface IItisSearchResult {
-  tsn: string;
+  tsn: number;
   commonNames?: string[];
   scientificName: string;
 }
@@ -55,6 +56,10 @@ export interface ITaxonomy {
   scientificName: string;
   rank: string;
   kingdom: string;
+}
+
+export interface ITaxonomyWithEcologicalUnits extends ITaxonomy {
+  ecological_units: IPostCollectionUnit[];
 }
 
 const getBackboneInternalApiHost = () => process.env.BACKBONE_INTERNAL_API_HOST || '';

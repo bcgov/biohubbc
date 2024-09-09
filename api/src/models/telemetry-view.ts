@@ -1,4 +1,4 @@
-export interface ITelemetryAdvancedFilters {
+export interface IAllTelemetryAdvancedFilters {
   keyword?: string;
   itis_tsns?: number[];
   itis_tsn?: number;

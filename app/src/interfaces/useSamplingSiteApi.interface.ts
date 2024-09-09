@@ -117,6 +117,7 @@ export interface IGetSampleMethodRecord {
 export interface IGetSampleMethodDetails extends IGetSampleMethodRecord {
   technique: {
     method_technique_id: number;
+    method_lookup_id: number;
     name: string;
     description: string;
     attractants: number[];
