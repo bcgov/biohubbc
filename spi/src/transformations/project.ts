@@ -41,12 +41,33 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
         biohub.project_participation (project_id, system_user_id, project_role_id, create_user)
     SELECT DISTINCT
         w_mapping.project_id,
-        (SELECT biohub_user_id FROM public.migrate_spi_user_deduplication WHERE w_mapping.person_id = ANY (spi_person_ids)),
-        (SELECT project_role_id FROM biohub.project_role WHERE name = 'Collaborator'),
-        (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'spi')
+
+        COALESCE (
+        (SELECT biohub_user_id 
+         FROM public.migrate_spi_user_deduplication 
+         WHERE w_mapping.person_id = ANY (spi_person_ids)
+        ), 
+        (SELECT system_user_id 
+         FROM biohub.system_user 
+         WHERE user_identifier = 'spi')
+        ) AS system_user_id,
+
+            CASE 
+        WHEN spp.email_address LIKE '%@gov.bc.ca%' THEN 
+            (SELECT project_role_id FROM biohub.project_role WHERE name = 'Collaborator')
+        ELSE 
+            (SELECT project_role_id FROM biohub.project_role WHERE name = 'Observer')
+        END AS project_role_id,
+
+        (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'spi') AS create_user
+        
     FROM 
         w_mapping
-    ON CONFLICT DO NOTHING;
+    JOIN 
+        public.spi_secure_persons spp
+        ON spp.first_name = pp.first_given_name
+        AND spp.last_name = pp.surname
+. 
   `;
 
   await connection.sql(sql);
