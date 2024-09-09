@@ -11,7 +11,7 @@ describe('logger', () => {
     });
   });
 
-  describe.only('setLogLevel', () => {
+  describe('setLogLevel', () => {
     let currentLogLevel: string | undefined;
 
     beforeEach(() => {

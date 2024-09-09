@@ -14,7 +14,7 @@ import { FileUploadSingleItem } from 'components/file-upload/FileUploadSingleIte
 import PageHeader from 'components/layout/PageHeader';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useProjectContext, useSurveyContext } from 'hooks/useContext';
-import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
+import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useCallback, useMemo, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
@@ -136,7 +136,7 @@ export const CreateCSVCapturesPage = () => {
     // If the Captures CSV upload failed, don't attempt to upload Measurements or Markings
     if (captureUploadStatus !== UploadFileStatus.FAILED) {
       // Measurements / Markings can be uploaded in parallel
-      await Promise.all([
+      const [measurementUploadStatus, markingUploadStatus] = await Promise.all([
         handleFileUpload('measurements', (file, onProgress) =>
           biohubApi.survey.importMeasurementsFromCsv(file, projectId, surveyId, cancelToken, onProgress)
         ),
@@ -144,6 +144,10 @@ export const CreateCSVCapturesPage = () => {
           biohubApi.survey.importMarkingsFromCsv(file, projectId, surveyId, cancelToken, onProgress)
         )
       ]);
+
+      if (measurementUploadStatus !== UploadFileStatus.FAILED || markingUploadStatus !== UploadFileStatus.FAILED) {
+        history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`, SKIP_CONFIRMATION_DIALOG);
+      }
     }
   };
 

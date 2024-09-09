@@ -13,6 +13,13 @@ import FileUploadItemSubtext from './FileUploadItemSubtext';
 
 type FileUploadItemContentProps = Omit<IFileUploadItemProps, 'uploadHandler' | 'onSuccess' | 'fileHandler'> & {
   /**
+   * The file upload status.
+   *
+   * @type {UploadFileStatus}
+   * @memberof FileUploadItemContentProps
+   */
+  status: UploadFileStatus;
+  /**
    * The progress of the file upload.
    *
    * @type {number}
@@ -35,8 +42,6 @@ type FileUploadItemContentProps = Omit<IFileUploadItemProps, 'uploadHandler' | '
  * @returns {*}
  */
 export const FileUploadItemContent = (props: FileUploadItemContentProps) => {
-  const status = props.status ?? UploadFileStatus.PENDING;
-
   /**
    * Sensible defaults for the subtext, action button, and progress bar components.
    *
@@ -48,7 +53,7 @@ export const FileUploadItemContent = (props: FileUploadItemContentProps) => {
   return (
     <ListItem
       key={props.file.name}
-      secondaryAction={<ActionButton status={status} onCancel={props.onCancel} />}
+      secondaryAction={<ActionButton status={props.status} onCancel={props.onCancel} />}
       sx={{
         flexWrap: 'wrap',
         borderStyle: 'solid',
@@ -77,7 +82,7 @@ export const FileUploadItemContent = (props: FileUploadItemContentProps) => {
       </ListItemIcon>
       <ListItemText
         primary={props.file.name}
-        secondary={<Subtext file={props.file} status={status} progress={props.progress} error={props.error} />}
+        secondary={<Subtext file={props.file} status={props.status} progress={props.progress} error={props.error} />}
         sx={{
           '& .MuiListItemText-primary': {
             fontWeight: 700
@@ -93,7 +98,7 @@ export const FileUploadItemContent = (props: FileUploadItemContentProps) => {
             mb: 1
           }
         }}>
-        <ProgressBar status={status} progress={props.progress} />
+        <ProgressBar status={props.status} progress={props.progress} />
       </Box>
       {props.enableErrorDetails && (
         <Box sx={{ mt: 1, ml: 5, width: '100%' }}>

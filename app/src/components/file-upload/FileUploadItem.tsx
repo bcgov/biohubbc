@@ -278,13 +278,15 @@ const FileUploadItem = (props: IFileUploadItemProps) => {
   return (
     <FileUploadItemContent
       file={file}
+      status={status}
       progress={progress}
       error={error}
       errorDetails={errorDetails}
+      enableErrorDetails={props.enableErrorDetails}
       onCancel={() => setInitiateCancel(true)}
-      SubtextComponent={() => <Subtext file={file} status={status} progress={progress} error={error} />}
-      ActionButtonComponent={() => <MemoizedActionButton status={status} onCancel={() => setInitiateCancel(true)} />}
-      ProgressBarComponent={() => <MemoizedProgressBar status={status} progress={progress} />}
+      SubtextComponent={Subtext}
+      ActionButtonComponent={MemoizedActionButton as any}
+      ProgressBarComponent={MemoizedProgressBar as any}
     />
   );
 };
