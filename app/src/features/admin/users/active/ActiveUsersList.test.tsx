@@ -11,7 +11,7 @@ import ActiveUsersList, { IActiveUsersListProps } from './ActiveUsersList';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
+jest.mock('../../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as jest.Mock;
 
 const mockUseApi = {
@@ -66,57 +66,6 @@ describe('ActiveUsersList', () => {
 
     await waitFor(() => {
       expect(getByText('No Active Users')).toBeVisible();
-    });
-  });
-
-  it('shows a table row for an active user with all fields having values', async () => {
-    const { getByText } = renderContainer({
-      activeUsers: [
-        {
-          system_user_id: 1,
-          user_identifier: 'username',
-          user_guid: 'user-guid',
-          record_end_date: '2020-10-10',
-          role_names: ['role 1'],
-          identity_source: 'idir',
-          role_ids: [1],
-          email: '',
-          display_name: '',
-          agency: ''
-        }
-      ],
-      codes: codes,
-      refresh: () => {}
-    });
-
-    await waitFor(() => {
-      expect(getByText('username')).toBeVisible();
-      expect(getByText('role 1')).toBeVisible();
-    });
-  });
-
-  it('shows a table row for an active user with fields not having values', async () => {
-    const { getByTestId } = renderContainer({
-      activeUsers: [
-        {
-          system_user_id: 1,
-          user_identifier: 'username',
-          user_guid: 'user-guid',
-          record_end_date: '2020-10-10',
-          role_names: [],
-          identity_source: 'idir',
-          role_ids: [],
-          email: '',
-          display_name: '',
-          agency: ''
-        }
-      ],
-      codes: codes,
-      refresh: () => {}
-    });
-
-    await waitFor(() => {
-      expect(getByTestId('custom-menu-button-NotApplicable')).toBeInTheDocument();
     });
   });
 

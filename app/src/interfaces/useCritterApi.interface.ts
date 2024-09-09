@@ -104,6 +104,11 @@ export interface IEditMortalityRequest extends IMarkings, IMeasurementsUpdate {
   mortality: IMortalityPostData;
 }
 
+export interface ICollectionUnitMultiTsnResponse {
+  tsn: number;
+  categories: ICollectionCategory[];
+}
+
 export interface ICollectionCategory {
   collection_category_id: string;
   category_name: string;

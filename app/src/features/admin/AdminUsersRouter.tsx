@@ -3,7 +3,7 @@ import { Redirect, Route, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 import ManageUsersPage from './users/ManageUsersPage';
-import UsersDetailPage from './users/UsersDetailPage';
+import UsersDetailPage from './users/projects/UsersDetailPage';
 
 /**
  * Router for all `/admin/users/*` pages.

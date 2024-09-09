@@ -793,7 +793,7 @@ export class ObservationService extends DBService {
 
     return recordsToPatch.map((recordToPatch: RecordWithTaxonFields) => {
       recordToPatch.itis_scientific_name =
-        taxonomyResponse.find((taxonItem) => Number(taxonItem.tsn) === recordToPatch.itis_tsn)?.scientificName ?? null;
+        taxonomyResponse.find((taxonItem) => taxonItem.tsn === recordToPatch.itis_tsn)?.scientificName ?? null;
 
       return recordToPatch;
     });
