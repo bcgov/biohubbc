@@ -1,3 +1,6 @@
+import { PoolClient } from 'pg';
+import QueryStream from 'pg-query-stream';
+import { PassThrough, Readable } from 'stream';
 import { getKnex, IDBConnection } from '../../../database/db';
 import { DBService } from '../../db-service';
 import { ExportStrategy, ExportStrategyConfig } from '../export-strategy';
@@ -30,14 +33,10 @@ export class ExportSurveyMetadataStrategy extends DBService implements ExportStr
    */
   async getExportStrategyConfig(): Promise<ExportStrategyConfig> {
     try {
-      const knex = getKnex();
-
-      const queryBuilder = knex.queryBuilder().select('*').from('survey').where('survey_id', this.config.surveyId);
-
       return {
-        queries: [
+        streams: [
           {
-            sql: queryBuilder,
+            stream: this._getSurveyMetadataStream,
             fileName: 'survey_metadata.json'
           }
         ]
@@ -47,4 +46,33 @@ export class ExportSurveyMetadataStrategy extends DBService implements ExportStr
       throw error;
     }
   }
+
+  /**
+   * Build and return the survey metadata data stream.
+   *
+   * @param {PoolClient} dbClient
+   * @memberof ExportSurveyMetadataStrategy
+   */
+  _getSurveyMetadataStream = (dbClient: PoolClient): Readable => {
+    const knex = getKnex();
+
+    const queryBuilder = knex.queryBuilder().select('*').from('survey').where('survey_id', this.config.surveyId);
+
+    const { sql, bindings } = queryBuilder.toSQL().toNative();
+
+    const queryStream = new QueryStream(sql, bindings as any[]);
+
+    // Create a pass through stream to ensure the query stream is stringified
+    const queryStreamPassThrough = new PassThrough({
+      objectMode: true,
+      transform(chunk, _encoding, callback) {
+        // Ensure chunk is a stringified JSON
+        callback(null, JSON.stringify(chunk));
+      }
+    });
+
+    dbClient.query(queryStream);
+
+    return queryStream.pipe(queryStreamPassThrough);
+  };
 }

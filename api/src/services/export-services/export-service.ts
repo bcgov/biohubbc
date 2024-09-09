@@ -2,7 +2,7 @@ import archiver from 'archiver';
 import { Knex } from 'knex';
 import QueryStream from 'pg-query-stream';
 import { SQLStatement } from 'sql-template-strings';
-import { PassThrough } from 'stream';
+import { PassThrough, Readable } from 'stream';
 import { IDBConnection } from '../../database/db';
 import { getS3SignedURLs, uploadStreamToS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
@@ -42,7 +42,7 @@ export class ExportService extends DBService {
     const dbClient = await this.connection.getClient();
 
     // Array to hold all streams, so they can be destroyed in case of an error
-    const allStreams = [];
+    const allStreams: Readable[] = [];
 
     const archiveStream = archiver('zip', {
       zlib: {
@@ -53,7 +53,8 @@ export class ExportService extends DBService {
     const archiveStreamPassthrough = new PassThrough();
 
     // Add all streams to the array to destroy in case of an error
-    allStreams.push(archiveStream, archiveStreamPassthrough);
+    this._trackStream(archiveStream, allStreams);
+    this._trackStream(archiveStreamPassthrough, allStreams);
 
     try {
       archiveStream.pipe(archiveStreamPassthrough);
@@ -67,34 +68,52 @@ export class ExportService extends DBService {
 
           defaultLog.silly({ label: 'export', message: 'exportStrategyConfig', exportStrategyConfig });
 
-          for (const queryConfig of exportStrategyConfig.queries) {
-            const { text, values } = this._getQueryParams(queryConfig.sql);
+          // Append and execute all export strategy queries
+          if (exportStrategyConfig.queries) {
+            for (const queryConfig of exportStrategyConfig.queries) {
+              const { text, values } = this._getQueryParams(queryConfig.sql);
 
-            // Create a query stream for the sql query
-            const queryStream = new QueryStream(text, values);
+              // Create a query stream for the sql query
+              const queryStream = new QueryStream(text, values);
 
-            // Create a pass through stream to ensure the query stream is stringified
-            const queryStreamPassThrough = new PassThrough({
-              objectMode: true,
-              transform(chunk, _encoding, callback) {
-                // Ensure chunk is a stringified JSON
-                callback(null, JSON.stringify(chunk));
-              }
-            });
+              // Create a pass through stream to ensure the query stream is stringified
+              const queryStreamPassThrough = new PassThrough({
+                objectMode: true,
+                transform(chunk, _encoding, callback) {
+                  // Ensure chunk is a stringified JSON
+                  callback(null, JSON.stringify(chunk));
+                }
+              });
 
-            // Add all streams to the array to destroy in case of an error
-            allStreams.push(queryStream, queryStreamPassThrough);
+              // Add all streams to the array to destroy in case of an error
+              this._trackStream(queryStream, allStreams);
+              this._trackStream(queryStreamPassThrough, allStreams);
 
-            // Append the file stream to the archive stream
-            archiveStream.append(queryStream.pipe(queryStreamPassThrough), { name: queryConfig.fileName });
+              // Append the file stream to the archive stream
+              archiveStream.append(queryStream.pipe(queryStreamPassThrough), { name: queryConfig.fileName });
 
-            // Execute the query and pipe the results to the file stream
-            dbClient.query(queryStream);
+              // Execute the query and pipe the results to the file stream
+              dbClient.query(queryStream);
+            }
+          }
+
+          // Append all export strategy streams
+          if (exportStrategyConfig.streams) {
+            for (const streamConfig of exportStrategyConfig.streams) {
+              // Create the stream
+              const stream = streamConfig.stream(dbClient);
+
+              // Add all streams to the array to destroy in case of an error
+              this._trackStream(stream, allStreams);
+
+              // Append the stream output to the archive stream
+              archiveStream.append(stream, { name: streamConfig.fileName });
+            }
           }
         })
       );
 
-      archiveStream.finalize();
+      await archiveStream.finalize();
 
       // Wait for the upload to complete
       await uploadPromise;
@@ -102,13 +121,16 @@ export class ExportService extends DBService {
       // Generate signed URLs for the export files
       return this._getAllSignedURLs([exportConfig.s3Key]);
     } catch (error) {
-      console.error('Error exporting data to s3.', error);
-
-      // Destroy all streams
-      allStreams.forEach((stream) => stream.destroy());
+      defaultLog.error({ label: 'export', message: 'Error exporting data.', error });
 
       throw error;
     } finally {
+      allStreams.forEach((stream) => {
+        if (!stream.destroyed) {
+          stream.destroy();
+        }
+      });
+
       // Release the client back to the pool
       dbClient.release();
     }
@@ -153,5 +175,40 @@ export class ExportService extends DBService {
     }
 
     return { text: queryText, values: queryValues };
+  }
+
+  /**
+   * Recursively track all streams that are piped to the given stream, adding them to the allStreams array.
+   *
+   * @param {Readable} stream
+   * @param {any[]} allStreams
+   * @memberof ExportService
+   */
+  _trackStream(stream: Readable, allStreams: Readable[]) {
+    allStreams.push(stream);
+
+    stream.on('error', (error) => {
+      defaultLog.debug({ label: '_handleStreamErrors', message: 'Stream error', error });
+      if (!stream.destroyed) {
+        stream.destroy();
+      }
+    });
+
+    stream.on('end', () => {
+      if (!stream.destroyed) {
+        stream.destroy();
+      }
+    });
+
+    stream.on('pipe', (item: Readable) => {
+      // Recursively track all streams that are piped to the given stream
+      this._trackStream(item, allStreams);
+    });
+
+    stream.on('unpipe', (item: Readable) => {
+      if (!item.destroyed) {
+        item.destroy();
+      }
+    });
   }
 }

@@ -58,8 +58,22 @@ export class ExportSurveyStrategy extends DBService implements ExportStrategy {
 
       const strategies = await Promise.all(strategyPromises);
 
+      const allQueries = [];
+      const allStreams = [];
+
+      for (const strategy of strategies) {
+        if (strategy.queries) {
+          allQueries.push(...strategy.queries);
+        }
+
+        if (strategy.streams) {
+          allStreams.push(...strategy.streams);
+        }
+      }
+
       return {
-        queries: strategies.flatMap((strategy) => strategy.queries).flat()
+        queries: allQueries,
+        streams: allStreams
       };
     } catch (error) {
       console.error('Error generating survey export strategy config.', error);
