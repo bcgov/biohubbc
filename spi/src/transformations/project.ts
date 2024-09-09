@@ -66,8 +66,7 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
     JOIN 
         public.spi_secure_persons spp
         ON spp.first_name = pp.first_given_name
-        AND spp.last_name = pp.surname
-. 
+        AND spp.last_name = pp.surname;
   `;
 
   await connection.sql(sql);
