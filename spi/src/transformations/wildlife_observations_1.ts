@@ -19,7 +19,7 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
     -- populating survey_observation table -- 
 
     INSERT INTO 
-        biohub.survey_observation so (survey_id, latitude, longitude, count, observation_date, observation_time, create_date, survey_sample_site_id, survey_sample_method_id, survey_sample_period_id)
+        biohub.survey_observation so (survey_id, latitude, longitude, count, observation_date, observation_time, create_date, survey_sample_site_id, survey_sample_method_id, survey_sample_period_id, itis_tsn, itis_scientific_name)
     SELECT
         s.survey_id,
         swo.latitude,
@@ -34,6 +34,7 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
         mssdc.survey_sample_site_id, 
         ssm.survey_sample_method_id, 
         ssp.survey_sample_period_id
+        -- itis_tsn and scientific name will come from biohub.study_species joined from swo on survey_id (biohub or spi survey id) and txonomic unit id 
  
     FROM 
         public.spi_wildlife_observations swo
