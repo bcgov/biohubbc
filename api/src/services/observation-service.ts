@@ -7,6 +7,7 @@ import {
   ObservationRecord,
   ObservationRecordWithSamplingAndSubcountData,
   ObservationRepository,
+  ObservationSpecies,
   ObservationSubmissionRecord,
   UpdateObservation
 } from '../repositories/observation-repository/observation-repository';
@@ -41,20 +42,14 @@ import {
   TsnMeasurementTypeDefinitionMap,
   validateMeasurements
 } from '../utils/observation-xlsx-utils/measurement-column-utils';
-import {
-  getCountFromRow,
-  getDateFromRow,
-  getLatitudeFromRow,
-  getLongitudeFromRow,
-  getTimeFromRow,
-  getTsnFromRow,
-  observationStandardColumnValidator
-} from '../utils/xlsx-utils/column-cell-utils';
+import { CSV_COLUMN_ALIASES } from '../utils/xlsx-utils/column-aliases';
+import { generateColumnCellGetterFromColumnValidator } from '../utils/xlsx-utils/column-validator-utils';
 import {
   constructXLSXWorkbook,
   getDefaultWorksheet,
   getNonStandardColumnNamesFromWorksheet,
   getWorksheetRowObjects,
+  IXLSXCSVValidator,
   validateCsvFile
 } from '../utils/xlsx-utils/worksheet-utils';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
@@ -71,6 +66,23 @@ import { SamplePeriodService } from './sample-period-service';
 import { SubCountService } from './subcount-service';
 
 const defaultLog = getLogger('services/observation-service');
+
+/**
+ * An XLSX validation config for the standard columns of an Observation CSV.
+ *
+ * Note: `satisfies` allows `keyof` to correctly infer key types, while also
+ * enforcing uppercase object keys.
+ */
+export const observationStandardColumnValidator = {
+  ITIS_TSN: { type: 'number', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
+  COUNT: { type: 'number' },
+  DATE: { type: 'date' },
+  TIME: { type: 'string' },
+  LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE },
+  LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE }
+} satisfies IXLSXCSVValidator;
+
+export const getColumnCellValue = generateColumnCellGetterFromColumnValidator(observationStandardColumnValidator);
 
 export interface InsertSubCount {
   observation_subcount_id: number | null;
@@ -233,6 +245,17 @@ export class ObservationService extends DBService {
    */
   async getAllSurveyObservations(surveyId: number): Promise<ObservationRecord[]> {
     return this.observationRepository.getAllSurveyObservations(surveyId);
+  }
+
+  /**
+   * Retrieves all species observed in a given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ObservationSpecies[]>}
+   * @memberof ObservationRepository
+   */
+  async getObservedSpeciesForSurvey(surveyId: number): Promise<ObservationSpecies[]> {
+    return this.observationRepository.getObservedSpeciesForSurvey(surveyId);
   }
 
   /**
@@ -567,7 +590,7 @@ export class ObservationService extends DBService {
     const newRowData: InsertUpdateObservations[] = worksheetRowObjects.map((row) => {
       const newSubcount: InsertSubCount = {
         observation_subcount_id: null,
-        subcount: getCountFromRow(row),
+        subcount: getColumnCellValue(row, 'COUNT').cell as number,
         qualitative_measurements: [],
         quantitative_measurements: [],
         qualitative_environments: [],
@@ -593,16 +616,16 @@ export class ObservationService extends DBService {
       return {
         standardColumns: {
           survey_id: surveyId,
-          itis_tsn: getTsnFromRow(row),
+          itis_tsn: getColumnCellValue(row, 'ITIS_TSN').cell as number,
           itis_scientific_name: null,
           survey_sample_site_id: samplePeriodHierarchyIds?.survey_sample_site_id ?? null,
           survey_sample_method_id: samplePeriodHierarchyIds?.survey_sample_method_id ?? null,
           survey_sample_period_id: samplePeriodHierarchyIds?.survey_sample_period_id ?? null,
-          latitude: getLatitudeFromRow(row),
-          longitude: getLongitudeFromRow(row),
-          count: getCountFromRow(row),
-          observation_time: getTimeFromRow(row),
-          observation_date: getDateFromRow(row)
+          latitude: getColumnCellValue(row, 'LATITUDE').cell as number,
+          longitude: getColumnCellValue(row, 'LONGITUDE').cell as number,
+          count: getColumnCellValue(row, 'COUNT').cell as number,
+          observation_time: getColumnCellValue(row, 'TIME').cell as string,
+          observation_date: getColumnCellValue(row, 'DATE').cell as string
         },
         subcounts: [newSubcount]
       };
@@ -648,7 +671,7 @@ export class ObservationService extends DBService {
       }
 
       const measurement = getMeasurementFromTsnMeasurementTypeDefinitionMap(
-        getTsnFromRow(row),
+        getColumnCellValue(row, 'ITIS_TSN').cell as string,
         mColumn,
         tsnMeasurements
       );
@@ -770,7 +793,7 @@ export class ObservationService extends DBService {
 
     return recordsToPatch.map((recordToPatch: RecordWithTaxonFields) => {
       recordToPatch.itis_scientific_name =
-        taxonomyResponse.find((taxonItem) => Number(taxonItem.tsn) === recordToPatch.itis_tsn)?.scientificName ?? null;
+        taxonomyResponse.find((taxonItem) => taxonItem.tsn === recordToPatch.itis_tsn)?.scientificName ?? null;
 
       return recordToPatch;
     });

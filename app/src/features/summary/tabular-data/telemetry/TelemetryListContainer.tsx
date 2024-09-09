@@ -1,3 +1,4 @@
+import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
@@ -5,6 +6,9 @@ import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -16,7 +20,7 @@ import { useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import TelemetryListFilterForm, {
-  ITelemetryAdvancedFilters,
+  IAllTelemetryAdvancedFilters,
   TelemetryAdvancedFiltersInitialValues
 } from './TelemetryListFilterForm';
 
@@ -34,7 +38,7 @@ type TelemetryDataTableURLParams = {
 
 const pageSizeOptions = [10, 25, 50];
 
-interface ITelemetryListContainerProps {
+interface IAllTelemetryListContainerProps {
   showSearch: boolean;
 }
 
@@ -51,7 +55,7 @@ const initialPaginationParams: ApiPaginationRequestOptions = {
  *
  * @return {*}
  */
-const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
+const TelemetryListContainer = (props: IAllTelemetryListContainerProps) => {
   const { showSearch } = props;
 
   const biohubApi = useBiohubApi();
@@ -70,7 +74,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
     }
   ]);
 
-  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ITelemetryAdvancedFilters>({
+  const [advancedFiltersModel, setAdvancedFiltersModel] = useState<IAllTelemetryAdvancedFilters>({
     itis_tsn: searchParams.get('t_itis_tsn')
       ? Number(searchParams.get('t_itis_tsn'))
       : TelemetryAdvancedFiltersInitialValues.itis_tsn
@@ -85,7 +89,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
   };
 
   const telemetryDataLoader = useDataLoader(
-    (pagination?: ApiPaginationRequestOptions, filter?: ITelemetryAdvancedFilters) =>
+    (pagination?: ApiPaginationRequestOptions, filter?: IAllTelemetryAdvancedFilters) =>
       biohubApi.telemetry.findTelemetry(pagination, filter)
   );
 
@@ -93,14 +97,13 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
     telemetryDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
-  const telemetryRows = telemetryDataLoader.data?.telemetry ?? [];
+  const rows = telemetryDataLoader.data?.telemetry ?? [];
 
   const columns: GridColDef<IFindTelementryObj>[] = [
     {
       field: 'telemetry_id',
       headerName: 'ID',
-      width: 50,
-      minWidth: 50,
+      minWidth: 200,
       sortable: false,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2" fontWeight={700}>
@@ -145,7 +148,7 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
   return (
     <>
       <Collapse in={showSearch}>
-        <Box py={2} px={3} bgcolor={grey[50]}>
+        <Box py={2} px={2}>
           <TelemetryListFilterForm
             initialValues={advancedFiltersModel}
             handleSubmit={(values) => {
@@ -156,63 +159,67 @@ const TelemetryListContainer = (props: ITelemetryListContainerProps) => {
         </Box>
         <Divider />
       </Collapse>
-      <Box height="500px">
-        <StyledDataGrid
-          noRowsMessage="No telemetry found"
-          loading={!telemetryDataLoader.isReady && !telemetryDataLoader.data}
-          // Columns
-          columns={columns}
-          // Rows
-          rows={telemetryRows}
-          rowCount={telemetryDataLoader.data?.telemetry.length ?? 0}
-          getRowId={(row: IFindTelementryObj) => row.telemetry_id}
-          // Pagination
-          paginationMode="server"
-          pageSizeOptions={pageSizeOptions}
-          paginationModel={paginationModel}
-          onPaginationModelChange={(model) => {
-            if (!model) {
-              return;
-            }
-            setSearchParams(searchParams.set('t_page', String(model.page)).set('t_limit', String(model.pageSize)));
-            setPaginationModel(model);
-          }}
-          // Sorting
-          sortingMode="server"
-          sortModel={sortModel}
-          sortingOrder={['asc', 'desc']}
-          onSortModelChange={(model) => {
-            if (!model[0]) {
-              return;
-            }
-            setSearchParams(searchParams.set('t_sort', model[0].field).set('t_order', model[0].sort ?? 'desc'));
-            setSortModel(model);
-          }}
-          // Row options
-          checkboxSelection={false}
-          disableRowSelectionOnClick
-          rowSelection={false}
-          // Column options
-          disableColumnSelector
-          disableColumnFilter
-          disableColumnMenu
-          // Styling
-          rowHeight={70}
-          getRowHeight={() => 'auto'}
-          autoHeight={false}
-          sx={{
-            '& .MuiDataGrid-overlay': {
-              background: grey[50]
-            },
-            '& .MuiDataGrid-cell': {
-              py: 0.75,
-              background: '#fff',
-              '&.MuiDataGrid-cell--editing:focus-within': {
-                outline: 'none'
+
+      <Box height="100vh" maxHeight="800px" p={2}>
+        <LoadingGuard
+          isLoading={telemetryDataLoader.isLoading || !telemetryDataLoader.isReady}
+          isLoadingFallback={<SkeletonTable />}
+          isLoadingFallbackDelay={100}
+          hasNoData={!rows.length}
+          hasNoDataFallback={
+            <NoDataOverlay
+              height="500px"
+              title="Create or Join Surveys to See Telemetry Data"
+              subtitle="You currently have no telemetry data. Once you create or join surveys with telemetry data, it will be displayed here"
+              icon={mdiArrowTopRight}
+            />
+          }
+          hasNoDataFallbackDelay={100}>
+          <StyledDataGrid
+            noRowsMessage="No telemetry found"
+            loading={telemetryDataLoader.isLoading || !telemetryDataLoader.isReady}
+            // Columns
+            columns={columns}
+            // Rows
+            rows={rows}
+            rowCount={telemetryDataLoader.data?.telemetry.length ?? 0}
+            getRowId={(row) => row.telemetry_id}
+            // Pagination
+            paginationMode="server"
+            paginationModel={paginationModel}
+            pageSizeOptions={pageSizeOptions}
+            onPaginationModelChange={(model) => {
+              if (!model) {
+                return;
               }
-            }
-          }}
-        />
+              setSearchParams(searchParams.set('t_page', String(model.page)).set('t_limit', String(model.pageSize)));
+              setPaginationModel(model);
+            }}
+            // Sorting
+            sortingMode="server"
+            sortModel={sortModel}
+            sortingOrder={['asc', 'desc']}
+            onSortModelChange={(model) => {
+              if (!model.length) {
+                return;
+              }
+              setSearchParams(searchParams.set('t_sort', model[0].field).set('t_order', model[0].sort ?? 'desc'));
+              setSortModel(model);
+            }}
+            // Row options
+            rowSelection={false}
+            checkboxSelection={false}
+            disableRowSelectionOnClick
+            // Column options
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
+            // Styling
+            rowHeight={70}
+            getRowHeight={() => 'auto'}
+            autoHeight={false}
+          />
+        </LoadingGuard>
       </Box>
     </>
   );

@@ -6,11 +6,11 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
+import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import React from 'react';
 
 interface IStartEndDateFieldsProps {
-  formikProps: any;
   startName: string;
   endName: string;
   startRequired: boolean;
@@ -30,13 +30,9 @@ const CalendarEndIcon = () => {
  *
  */
 const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
-  const {
-    formikProps: { values, errors, touched, setFieldValue },
-    startName,
-    endName,
-    startRequired,
-    endRequired
-  } = props;
+  const { startName, endName, startRequired, endRequired } = props;
+
+  const { values, errors, touched, setFieldValue } = useFormikContext();
 
   const rawStartDateValue = get(values, startName);
   const rawEndDateValue = get(values, endName);

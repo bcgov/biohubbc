@@ -1,12 +1,45 @@
 import { OpenAPIV3 } from 'openapi-types';
 
+export const collectionUnitsSchema: OpenAPIV3.SchemaObject = {
+  type: 'array',
+  items: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['collection_category_id', 'collection_unit_id'],
+    properties: {
+      critter_collection_unit_id: {
+        type: 'string',
+        format: 'uuid'
+      },
+      collection_category_id: {
+        type: 'string',
+        format: 'uuid'
+      },
+      collection_unit_id: {
+        type: 'string',
+        format: 'uuid'
+      },
+      unit_name: {
+        type: 'string'
+      },
+      category_name: {
+        type: 'string'
+      }
+    }
+  }
+};
+
 export const critterSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
   properties: {
-    critter_id: {
+    critterbase_critter_id: {
       type: 'string',
       format: 'uuid'
+    },
+    critter_id: {
+      type: 'integer',
+      minimum: 1
     },
     animal_id: {
       type: 'string',
@@ -33,7 +66,24 @@ export const critterSchema: OpenAPIV3.SchemaObject = {
     critter_comment: {
       type: 'string',
       nullable: true
-    }
+    },
+    mortality: {
+      type: 'array',
+      items: {
+        type: 'object',
+        additionalProperties: false,
+        required: ['mortality_id', 'mortality_timestamp'],
+        properties: {
+          mortality_id: {
+            type: 'string'
+          },
+          mortality_timestamp: {
+            type: 'string'
+          }
+        }
+      }
+    },
+    collection_units: collectionUnitsSchema
   }
 };
 

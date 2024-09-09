@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { IAnimalAdvancedFilters } from '../models/animal-view';
-import { ITelemetryAdvancedFilters } from '../models/telemetry-view';
+import { IAllTelemetryAdvancedFilters } from '../models/telemetry-view';
 import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
@@ -40,6 +40,24 @@ export class SurveyCritterRepository extends BaseRepository {
     const response = await this.connection.knex(queryBuilder);
 
     return response.rows;
+  }
+
+  /**
+   * Get a specific critter by its integer Id
+   *
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @return {*}  {Promise<SurveyCritterRecord[]>}
+   * @memberof SurveyCritterRepository
+   */
+  async getCritterById(surveyId: number, critterId: number): Promise<SurveyCritterRecord> {
+    defaultLog.debug({ label: 'getCritterById', critterId });
+
+    const queryBuilder = getKnex().table('critter').select().where({ survey_id: surveyId, critter_id: critterId });
+
+    const response = await this.connection.knex(queryBuilder);
+
+    return response.rows[0];
   }
 
   /**
@@ -83,7 +101,7 @@ export class SurveyCritterRepository extends BaseRepository {
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
-   * @param {ITelemetryAdvancedFilters} [filterFields]
+   * @param {IAllTelemetryAdvancedFilters} [filterFields]
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SurveyCritterRecord[]>}
    * @memberof SurveyCritterRepository
@@ -91,7 +109,7 @@ export class SurveyCritterRepository extends BaseRepository {
   async findCritters(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields?: ITelemetryAdvancedFilters,
+    filterFields?: IAllTelemetryAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<SurveyCritterRecord[]> {
     const query = this._makeFindCrittersQuery(isUserAdmin, systemUserId, filterFields);
@@ -115,14 +133,14 @@ export class SurveyCritterRepository extends BaseRepository {
    *
    * @param {boolean} isUserAdmin
    * @param {(number | null)} systemUserId The system user id of the user making the request
-   * @param {ITelemetryAdvancedFilters} [filterFields]
+   * @param {IAllTelemetryAdvancedFilters} [filterFields]
    * @return {*}  {Promise<number>}
    * @memberof SurveyCritterRepository
    */
   async findCrittersCount(
     isUserAdmin: boolean,
     systemUserId: number | null,
-    filterFields?: ITelemetryAdvancedFilters
+    filterFields?: IAllTelemetryAdvancedFilters
   ): Promise<number> {
     const findCrittersQuery = this._makeFindCrittersQuery(isUserAdmin, systemUserId, filterFields);
 
@@ -199,46 +217,6 @@ export class SurveyCritterRepository extends BaseRepository {
       .from('critter')
       .whereIn('critter_id', critterIds)
       .andWhere({ survey_id: surveyId });
-
-    await this.connection.knex(queryBuilder);
-  }
-
-  /**
-   * Will insert a new critter - deployment uuid association, or update if it already exists.
-   * This update operation intentionally changes nothing. Only really being done to trigger update audit columns.
-   *
-   * @param {number} critterId
-   * @param {string} deplyomentId
-   * @return {*}  {Promise<void>}
-   * @memberof SurveyCritterRepository
-   */
-  async upsertDeployment(critterId: number, deplyomentId: string): Promise<void> {
-    defaultLog.debug({ label: 'addDeployment', deplyomentId });
-
-    const queryBuilder = getKnex()
-      .table('deployment')
-      .insert({ critter_id: critterId, bctw_deployment_id: deplyomentId })
-      .onConflict(['critter_id', 'bctw_deployment_id'])
-      .merge(['critter_id', 'bctw_deployment_id']);
-
-    await this.connection.knex(queryBuilder);
-  }
-
-  /**
-   * Deletes a deployment row.
-   *
-   * @param {number} critterId
-   * @param {string} deploymentId
-   * @return {*}  {Promise<void>}
-   * @memberof SurveyCritterRepository
-   */
-  async removeDeployment(critterId: number, deploymentId: string): Promise<void> {
-    defaultLog.debug({ label: 'removeDeployment', deploymentId });
-
-    const queryBuilder = getKnex()
-      .table('deployment')
-      .where({ critter_id: critterId, bctw_deployment_id: deploymentId })
-      .delete();
 
     await this.connection.knex(queryBuilder);
   }

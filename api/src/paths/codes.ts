@@ -34,7 +34,6 @@ GET.apiDoc = {
               'project_roles',
               'administrative_activity_status_type',
               'intended_outcomes',
-              'vantage_codes',
               'site_selection_strategies',
               'survey_progress',
               'method_response_metrics',
@@ -247,21 +246,6 @@ GET.apiDoc = {
                       type: 'string'
                     },
                     description: {
-                      type: 'string'
-                    }
-                  }
-                }
-              },
-              vantage_codes: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
                       type: 'string'
                     }
                   }

@@ -18,15 +18,10 @@ const focalTaxonIdOptions = [
   { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
 ];
 
-const ancillaryTaxonIdOptions = [
-  { itis_tsn: 180703, itis_scientific_name: 'Alces alces' }, // Moose
-  { itis_tsn: 180596, itis_scientific_name: 'Canis lupus' }, // Wolf
-  { itis_tsn: 180713, itis_scientific_name: 'Oreamnos americanus' }, // Rocky Mountain goat
-  { itis_tsn: 180543, itis_scientific_name: 'Ursus arctos' } // Grizzly bear
-];
-
 const surveyRegionsA = ['Kootenay-Boundary Natural Resource Region', 'West Coast Natural Resource Region'];
 const surveyRegionsB = ['Cariboo Natural Resource Region', 'South Coast Natural Resource Region'];
+
+const identitySources = ['IDIR', 'BCEIDBUSINESS', 'BCEIDBASIC'];
 
 /**
  * Add spatial transform
@@ -49,6 +44,11 @@ export async function seed(knex: Knex): Promise<void> {
     await knex.raw(`
       ${insertFundingData()}
     `);
+  }
+
+  // Insert access requests
+  for (let i = 0; i < 8; i++) {
+    await knex.raw(`${insertAccessRequest()}`);
   }
 
   // Check if at least 1 project already exists
@@ -75,12 +75,10 @@ export async function seed(knex: Knex): Promise<void> {
           ${insertSurveyTypeData(surveyId)}
           ${insertSurveyPermitData(surveyId)}
           ${insertSurveyFocalSpeciesData(surveyId)}
-          ${insertSurveyAncillarySpeciesData(surveyId)}
           ${insertSurveyFundingData(surveyId)}
           ${insertSurveyProprietorData(surveyId)}
           ${insertSurveyFirstNationData(surveyId)}
           ${insertSurveyStakeholderData(surveyId)}
-          ${insertSurveyVantageData(surveyId)}
           ${insertSurveyParticipationData(surveyId)}
           ${insertSurveyLocationData(surveyId)}
           ${insertSurveySiteStrategy(surveyId)}
@@ -180,22 +178,6 @@ const insertSurveyParticipationData = (surveyId: number) => `
 `;
 
 /**
- * SQL to insert Survey Vantage data
- *
- */
-const insertSurveyVantageData = (surveyId: number) => `
-  INSERT into survey_vantage
-    (
-      survey_id,
-      vantage_id
-    )
-  VALUES (
-    ${surveyId},
-    (select vantage_id from vantage order by random() limit 1)
-  );
-`;
-
-/**
  * SQL to insert Survey Proprietor data
  *
  */
@@ -267,23 +249,6 @@ const insertSurveyFocalSpeciesData = (surveyId: number) => {
       ${surveyId},
       ${focalSpecies.itis_tsn},
       'Y'
-    );
-  `;
-};
-
-const insertSurveyAncillarySpeciesData = (surveyId: number) => {
-  const ancillarySpecies = ancillaryTaxonIdOptions[Math.floor(Math.random() * ancillaryTaxonIdOptions.length)];
-  return `
-    INSERT into study_species
-      (
-        survey_id,
-        itis_tsn,
-        is_focal
-      )
-    VALUES (
-      ${surveyId},
-      ${ancillarySpecies.itis_tsn},
-      'N'
     );
   `;
 };
@@ -771,3 +736,37 @@ const insertSurveyRegionData = (surveyId: string, region: string) => `
   WHERE
     region_name = $$${region}$$;
 `;
+
+/**
+ * SQL to insert system access requests
+ *
+ */
+const insertAccessRequest = () => `
+  INSERT INTO administrative_activity
+    (
+      administrative_activity_status_type_id,
+      administrative_activity_type_id,
+      reported_system_user_id,
+      assigned_system_user_id,
+      description,
+      data,
+      notes
+    )
+  VALUES (
+    (SELECT administrative_activity_status_type_id FROM administrative_activity_status_type ORDER BY random() LIMIT 1),
+    (SELECT administrative_activity_type_id FROM administrative_activity_type WHERE name = 'System Access'),
+    (SELECT system_user_id FROM system_user ORDER BY random() LIMIT 1),
+    (SELECT system_user_id FROM system_user ORDER BY random() LIMIT 1),
+    $$${faker.lorem.sentences(2)}$$,
+    jsonb_build_object(
+        'reason', '${faker.lorem.sentences(1)}',
+        'userGuid', '${faker.string.uuid()}',
+        'name', '${faker.lorem.words(2)}',
+        'username', '${faker.lorem.words(1)}',
+        'email', 'default',
+        'identitySource', '${identitySources[faker.number.int({ min: 0, max: identitySources.length - 1 })]}',
+        'displayName', '${faker.lorem.words(1)}'
+    ),
+    $$${faker.lorem.sentences(2)}$$
+  );
+  `;

@@ -34,10 +34,10 @@ export interface IFileUploadWithMetaDialogProps {
   /**
    * The type of attachment.
    *
-   * @type {('Report' | 'KeyX' | 'Other')}
+   * @type {('Report' | 'KeyX' | 'Cfg' | 'Other')}
    * @memberof IFileUploadWithMetaDialogProps
    */
-  attachmentType: AttachmentType.REPORT | AttachmentType.KEYX | AttachmentType.OTHER;
+  attachmentType: AttachmentType.REPORT | AttachmentType.KEYX | AttachmentType.CFG | AttachmentType.OTHER;
   /**
    * Set to `true` to open the dialog, `false` to close the dialog.
    *

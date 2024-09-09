@@ -4,7 +4,6 @@ import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PostSurveyLocationData, PutPartnershipsData, PutSurveyObject } from '../models/survey-update';
 import {
   FindSurveysResponse,
-  GetAncillarySpeciesData,
   GetAttachmentsData,
   GetFocalSpeciesData,
   GetPermitData,
@@ -18,7 +17,6 @@ import {
   SurveyObject,
   SurveySupplementaryData
 } from '../models/survey-view';
-import { AttachmentRepository } from '../repositories/attachment-repository';
 import { PostSurveyBlock, SurveyBlockRecordWithCount } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { ISurveyProprietorModel, SurveyBasicFields, SurveyRepository } from '../repositories/survey-repository';
@@ -27,7 +25,7 @@ import { DBService } from './db-service';
 import { FundingSourceService } from './funding-source-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
-import { ITaxonomy, PlatformService } from './platform-service';
+import { ITaxonomyWithEcologicalUnits, PlatformService } from './platform-service';
 import { RegionService } from './region-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyBlockService } from './survey-block-service';
@@ -35,7 +33,6 @@ import { SurveyLocationService } from './survey-location-service';
 import { SurveyParticipationService } from './survey-participation-service';
 
 export class SurveyService extends DBService {
-  attachmentRepository: AttachmentRepository;
   surveyRepository: SurveyRepository;
   platformService: PlatformService;
   historyPublishService: HistoryPublishService;
@@ -47,7 +44,6 @@ export class SurveyService extends DBService {
   constructor(connection: IDBConnection) {
     super(connection);
 
-    this.attachmentRepository = new AttachmentRepository(connection);
     this.surveyRepository = new SurveyRepository(connection);
     this.platformService = new PlatformService(connection);
     this.historyPublishService = new HistoryPublishService(connection);
@@ -168,33 +164,27 @@ export class SurveyService extends DBService {
    * Get associated species data for a survey from the taxonomic service for a given Survey ID
    *
    * @param {number} surveyId
-   * @returns {*} {Promise<GetFocalSpeciesData & GetAncillarySpeciesData>}
+   * @returns {*} {Promise<GetFocalSpeciesData>}
    * @memberof SurveyService
    */
-  async getSpeciesData(surveyId: number): Promise<GetFocalSpeciesData & GetAncillarySpeciesData> {
+  async getSpeciesData(surveyId: number): Promise<GetFocalSpeciesData> {
+    // Fetch species data for the survey
     const studySpeciesResponse = await this.surveyRepository.getSpeciesData(surveyId);
 
-    const [focalSpeciesIds, ancillarySpeciesIds] = studySpeciesResponse.reduce(
-      ([focal, ancillary]: [number[], number[]], studySpecies) => {
-        if (studySpecies.is_focal) {
-          focal.push(studySpecies.itis_tsn);
-        } else {
-          ancillary.push(studySpecies.itis_tsn);
-        }
-
-        return [focal, ancillary];
-      },
-      [[], []]
+    // Fetch taxonomy data for each survey species
+    const taxonomyResponse = await this.platformService.getTaxonomyByTsns(
+      studySpeciesResponse.map((species) => species.itis_tsn)
     );
 
-    const platformService = new PlatformService(this.connection);
+    const focalSpecies = [];
 
-    const [focalSpecies, ancillarySpecies] = await Promise.all([
-      platformService.getTaxonomyByTsns(focalSpeciesIds),
-      platformService.getTaxonomyByTsns(ancillarySpeciesIds)
-    ]);
+    for (const species of studySpeciesResponse) {
+      const taxon = taxonomyResponse.find((taxonomy) => Number(taxonomy.tsn) === species.itis_tsn) ?? {};
+      focalSpecies.push({ ...taxon, tsn: species.itis_tsn, ecological_units: species.ecological_units });
+    }
 
-    return { ...new GetFocalSpeciesData(focalSpecies), ...new GetAncillarySpeciesData(ancillarySpecies) };
+    // Return the combined data
+    return new GetFocalSpeciesData(focalSpecies);
   }
 
   /**
@@ -310,7 +300,7 @@ export class SurveyService extends DBService {
     const decoratedSurveys: SurveyBasicFields[] = [];
     for (const survey of surveys) {
       const matchingFocalSpeciesNames = focalSpecies
-        .filter((item) => survey.focal_species.includes(Number(item.tsn)))
+        .filter((item) => survey.focal_species.includes(item.tsn))
         .map((item) => [item.commonNames, `(${item.scientificName})`].filter(Boolean).join(' '));
 
       decoratedSurveys.push({ ...survey, focal_species_names: matchingFocalSpeciesNames });
@@ -390,18 +380,16 @@ export class SurveyService extends DBService {
     );
 
     // Handle focal species associated to this survey
+    // If there are ecological units, insert them
     promises.push(
       Promise.all(
-        postSurveyData.species.focal_species.map((species: ITaxonomy) => this.insertFocalSpecies(species.tsn, surveyId))
-      )
-    );
-
-    // Handle ancillary species associated to this survey
-    promises.push(
-      Promise.all(
-        postSurveyData.species.ancillary_species.map((species: ITaxonomy) =>
-          this.insertAncillarySpecies(species.tsn, surveyId)
-        )
+        postSurveyData.species.focal_species.map((species: ITaxonomyWithEcologicalUnits) => {
+          if (species.ecological_units.length) {
+            this.insertFocalSpeciesWithUnits(species, surveyId);
+          } else {
+            this.insertFocalSpecies(species.tsn, surveyId);
+          }
+        })
       )
     );
 
@@ -453,15 +441,6 @@ export class SurveyService extends DBService {
 
     // Handle survey proprietor data
     postSurveyData.proprietor && promises.push(this.insertSurveyProprietor(postSurveyData.proprietor, surveyId));
-
-    //Handle vantage codes associated to this survey
-    promises.push(
-      Promise.all(
-        postSurveyData.purpose_and_methodology.vantage_code_ids.map((vantageCode: number) =>
-          this.insertVantageCodes(vantageCode, surveyId)
-        )
-      )
-    );
 
     if (postSurveyData.locations) {
       // Insert survey locations
@@ -584,27 +563,23 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Inserts a new record and associates ancillary species to a survey
+   * Inserts a new focal species record and associates it with ecological units for a survey.
    *
-   * @param {number} ancillary_species_id
-   * @param {number} surveyId
-   * @returns {*} {Promise<number>}
+   * @param {ITaxonomyWithEcologicalUnits[]} taxonWithUnits - Array of species with ecological unit objects to associate.
+   * @param {number} surveyId - ID of the survey.
+   * @returns {Promise<number>} - The ID of the newly created focal species.
    * @memberof SurveyService
    */
-  async insertAncillarySpecies(ancillary_species_id: number, surveyId: number): Promise<number> {
-    return this.surveyRepository.insertAncillarySpecies(ancillary_species_id, surveyId);
-  }
+  async insertFocalSpeciesWithUnits(taxonWithUnits: ITaxonomyWithEcologicalUnits, surveyId: number): Promise<number> {
+    // Insert the new focal species and get its ID
+    const studySpeciesId = await this.surveyRepository.insertFocalSpecies(taxonWithUnits.tsn, surveyId);
 
-  /**
-   * Inserts new record and associated a vantage code to a survey
-   *
-   * @param {number} vantage_code_id
-   * @param {number} surveyId
-   * @returns {*} {Promise<number>}
-   * @memberof SurveyService
-   */
-  async insertVantageCodes(vantage_code_id: number, surveyId: number): Promise<number> {
-    return this.surveyRepository.insertVantageCodes(vantage_code_id, surveyId);
+    // Insert ecological units associated with the newly created focal species
+    await Promise.all(
+      taxonWithUnits.ecological_units.map((unit) => this.surveyRepository.insertFocalSpeciesUnits(unit, studySpeciesId))
+    );
+
+    return studySpeciesId;
   }
 
   /**
@@ -673,7 +648,6 @@ export class SurveyService extends DBService {
     }
 
     if (putSurveyData?.purpose_and_methodology) {
-      promises.push(this.updateSurveyVantageCodesData(surveyId, putSurveyData));
       promises.push(this.updateSurveyIntendedOutcomes(surveyId, putSurveyData));
     }
 
@@ -827,16 +801,14 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async updateSurveySpeciesData(surveyId: number, surveyData: PutSurveyObject) {
+    // Delete any ecological units associated with the focal species record
+    await this.deleteSurveySpeciesUnitData(surveyId);
     await this.deleteSurveySpeciesData(surveyId);
 
     const promises: Promise<any>[] = [];
 
-    surveyData.species.focal_species.forEach((focalSpecies: ITaxonomy) =>
-      promises.push(this.insertFocalSpecies(focalSpecies.tsn, surveyId))
-    );
-
-    surveyData.species.ancillary_species.forEach((ancillarySpecies: ITaxonomy) =>
-      promises.push(this.insertAncillarySpecies(ancillarySpecies.tsn, surveyId))
+    surveyData.species.focal_species.forEach((focalSpecies: ITaxonomyWithEcologicalUnits) =>
+      promises.push(this.insertFocalSpeciesWithUnits(focalSpecies, surveyId))
     );
 
     return Promise.all(promises);
@@ -851,6 +823,17 @@ export class SurveyService extends DBService {
    */
   async deleteSurveySpeciesData(surveyId: number) {
     return this.surveyRepository.deleteSurveySpeciesData(surveyId);
+  }
+
+  /**
+   * Delete focal ecological units for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
+  async deleteSurveySpeciesUnitData(surveyId: number) {
+    return this.surveyRepository.deleteSurveySpeciesUnitData(surveyId);
   }
 
   /**
@@ -1146,39 +1129,6 @@ export class SurveyService extends DBService {
     surveyId: number
   ): Promise<{ survey_stakeholder_partnership_id: number }[]> {
     return this.surveyRepository.insertStakeholderPartnerships(stakeholderPartners, surveyId);
-  }
-
-  /**
-   * Updates vantage codes associated to a survey
-   *
-   * @param {number} surveyId
-   * @param {PutSurveyObject} surveyData
-   * @returns {*} {Promise<void>}
-   * @memberof SurveyService
-   */
-  async updateSurveyVantageCodesData(surveyId: number, surveyData: PutSurveyObject) {
-    await this.deleteSurveyVantageCodes(surveyId);
-
-    const promises: Promise<number>[] = [];
-
-    if (surveyData.purpose_and_methodology.vantage_code_ids) {
-      surveyData.purpose_and_methodology.vantage_code_ids.forEach((vantageCodeId: number) =>
-        promises.push(this.insertVantageCodes(vantageCodeId, surveyId))
-      );
-    }
-
-    return Promise.all(promises);
-  }
-
-  /**
-   * Breaks link between vantage codes and a survey fora  given survey Id
-   *
-   * @param {number} surveyId
-   * @returns {*} {Promise<void>}
-   * @memberof SurveyService
-   */
-  async deleteSurveyVantageCodes(surveyId: number): Promise<void> {
-    return this.surveyRepository.deleteSurveyVantageCodes(surveyId);
   }
 
   /**

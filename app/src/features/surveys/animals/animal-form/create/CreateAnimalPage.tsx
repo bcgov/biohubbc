@@ -25,6 +25,7 @@ import { Link as RouterLink } from 'react-router-dom';
 export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
   nickname: '',
   species: null,
+  sex: AnimalSex.UNKNOWN,
   ecological_units: [],
   wildlife_health_id: '',
   critter_comment: ''
@@ -91,7 +92,7 @@ export const CreateAnimalPage = () => {
         itis_tsn: values.species.tsn,
         wlh_id: undefined,
         animal_id: values.nickname,
-        sex: AnimalSex.UNKNOWN,
+        sex: values.sex,
         critter_comment: values.critter_comment
       });
 
@@ -118,7 +119,7 @@ export const CreateAnimalPage = () => {
 
       animalPageContext.setSelectedAnimal({
         critterbase_critter_id: response.critterbase_critter_id,
-        survey_critter_id: response.survey_critter_id
+        critter_id: response.critter_id
       });
 
       // Refresh the context, so the next page loads with the latest data

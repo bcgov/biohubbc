@@ -42,7 +42,9 @@ describe('AdministrativeActivityService', () => {
             identitySource: 'BCEIDBASIC'
           },
           notes: null,
-          create_date: '2023-05-02T02:04:10.751Z'
+          create_date: '2023-05-02T02:04:10.751Z',
+          update_date: '2023-05-02T02:04:10.751Z',
+          updated_by: 'Doe, John WLRS:EX'
         }
       ]);
 
@@ -66,7 +68,9 @@ describe('AdministrativeActivityService', () => {
             identitySource: 'BCEIDBASIC'
           },
           notes: null,
-          create_date: '2023-05-02T02:04:10.751Z'
+          create_date: '2023-05-02T02:04:10.751Z',
+          update_date: '2023-05-02T02:04:10.751Z',
+          updated_by: 'Doe, John WLRS:EX'
         }
       ]);
     });

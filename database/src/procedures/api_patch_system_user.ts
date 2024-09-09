@@ -9,7 +9,8 @@ import { Knex } from 'knex';
  *    - Second using `p_user_identifier` and `p_user_identity_source_name`
  * 2. If no user is found, return null
  * 3. If a user is found, update the system user record with the latest information passed to this function if any of
- * the incoming values are not the same as the existing values
+ * the incoming values are not the same as the existing values (if all incoming values are the same as the existing then
+ * no update is performed).
  *
  * @export
  * @param {Knex} knex
@@ -36,7 +37,6 @@ export async function seed(knex: Knex): Promise<void> {
       AS $$
         DECLARE
           _system_user system_user%rowtype;
-          _user_identity_source_id user_identity_source.user_identity_source_id%type;
         BEGIN
           -- Attempt to find user based on guid
           SELECT * INTO _system_user FROM system_user
@@ -46,14 +46,15 @@ export async function seed(knex: Knex): Promise<void> {
 
           -- Otherwise, attempt to find user based on identifier and identity source
           IF NOT found THEN
-            SELECT user_identity_source_id INTO strict _user_identity_source_id FROM user_identity_source
-              WHERE LOWER(name) = LOWER(p_user_identity_source_name)
-              AND record_end_date IS NULL;
-
             SELECT * INTO _system_user FROM system_user
-              WHERE user_identity_source_id = _user_identity_source_id
-              AND LOWER(user_identifier) = LOWER(p_user_identifier)
-              LIMIT 1;
+            WHERE user_identity_source_id = (
+              SELECT user_identity_source_id FROM user_identity_source
+              WHERE LOWER(name) = LOWER(p_user_identity_source_name)
+              AND record_end_date IS NULL
+            )
+            AND LOWER(user_identifier) = LOWER(p_user_identifier)
+            AND record_end_date IS NULL
+            LIMIT 1;
           END IF;
 
           -- If no user found, return and do nothing
@@ -73,13 +74,13 @@ export async function seed(knex: Knex): Promise<void> {
           WHERE
             system_user_id = _system_user.system_user_id
           AND (
-            user_guid != p_system_user_guid OR
-            user_identifier != p_user_identifier OR
-            email != p_email OR
-            display_name != p_display_name OR
-            given_name != p_given_name OR
-            family_name != p_family_name OR
-            agency != p_agency
+            user_guid IS DISTINCT FROM p_system_user_guid OR
+            user_identifier IS DISTINCT FROM p_user_identifier OR
+            email IS DISTINCT FROM p_email OR
+            display_name IS DISTINCT FROM p_display_name OR
+            given_name IS DISTINCT FROM p_given_name OR
+            family_name IS DISTINCT FROM p_family_name OR
+            agency IS DISTINCT FROM p_agency
           );
 
           -- Return system user id of patched record

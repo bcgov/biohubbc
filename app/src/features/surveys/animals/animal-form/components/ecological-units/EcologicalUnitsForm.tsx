@@ -3,7 +3,7 @@ import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
-import { EcologicalUnitsSelect } from 'features/surveys/animals/animal-form/components/ecological-units/components/EcologicalUnitsSelect';
+import { EcologicalUnitsSelect } from 'components/species/ecological-units/EcologicalUnitsSelect';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -11,9 +11,9 @@ import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
 import { useEffect } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
-const initialEcologicalUnitValues = {
-  collection_category_id: null,
-  collection_unit_id: null
+export const initialEcologicalUnitValues = {
+  critterbase_collection_category_id: null,
+  critterbase_collection_unit_id: null
 };
 
 /**
@@ -46,7 +46,10 @@ export const EcologicalUnitsForm = () => {
               <Collapse key={ecological_unit.critter_collection_unit_id ?? index}>
                 <Box mb={2}>
                   <EcologicalUnitsSelect
-                    ecologicalUnits={ecologicalUnitsDataLoader.data ?? []}
+                    categoryFieldName={`ecological_units[${index}].collection_category_id`}
+                    unitFieldName={`ecological_units[${index}].collection_unit_id`}
+                    selectedCategoryIds={values.ecological_units.map((unit) => unit.collection_category_id)}
+                    ecologicalUnits={ecologicalUnitsDataLoader?.data ?? []}
                     arrayHelpers={arrayHelpers}
                     index={index}
                   />

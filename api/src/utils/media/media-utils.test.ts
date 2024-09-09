@@ -4,6 +4,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE } from '../../constants/attachments';
 import { ArchiveFile, MediaFile } from './media-file';
 import * as media_utils from './media-utils';
 
@@ -212,51 +213,296 @@ describe('parseS3File', () => {
   });
 });
 
-describe('checkFileForKeyx', () => {
-  const validKeyxFile = {
-    originalname: 'test.keyx',
-    mimetype: 'application/octet-stream',
-    buffer: Buffer.alloc(0)
-  } as unknown as Express.Multer.File;
-
-  const invalidFile = {
-    originalname: 'test.txt',
-    mimetype: 'text/plain',
-    buffer: Buffer.alloc(0)
-  } as unknown as Express.Multer.File;
-
-  const zipFile = {
-    originalname: 'test.zip',
-    mimetype: 'application/zip',
-    buffer: Buffer.alloc(0)
-  } as unknown as Express.Multer.File;
-
+describe('isValidTelementryCredentialFile', () => {
   it('should return true if the file extension is .keyx', () => {
-    expect(media_utils.checkFileForKeyx(validKeyxFile)).to.equal(true);
+    const validKeyxFile = {
+      originalname: 'test.keyx',
+      mimetype: 'application/octet-stream',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    expect(media_utils.checkFileForKeyx(validKeyxFile)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX
+    });
   });
 
   it('should return false if the file is not a .keyx or zip mimetype', () => {
+    const invalidFile = {
+      originalname: 'test.txt',
+      mimetype: 'text/plain',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
     const multerFile = { ...invalidFile, buffer: Buffer.alloc(0) };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.equal(false);
+    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
+      type: 'unknown',
+      error: 'File is neither a .keyx file, nor an archive containing only .keyx files'
+    });
   });
 
   it('should return false if the file is an empty zip file', () => {
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
     const emptyZipFile = new AdmZip();
     const multerFile = { ...zipFile, buffer: emptyZipFile.toBuffer() };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.equal(false);
+    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
+      type: 'unknown',
+      error: 'File is an archive that contains no content'
+    });
   });
 
-  it('should return false if the zip file contains any non-keyx files', () => {
+  it('should return false if the zip file contains any non .keyx files', () => {
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
     const invalidZipFile = new AdmZip();
     invalidZipFile.addFile('test.txt', Buffer.alloc(0));
     const multerFile = { ...zipFile, buffer: invalidZipFile.toBuffer() };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.equal(false);
+    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
+      type: 'unknown',
+      error: 'File is an archive that contains non .keyx files'
+    });
   });
 
   it('should return true if the zip file contains only .keyx files', () => {
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
     const validZipFile = new AdmZip();
     validZipFile.addFile('test.keyx', Buffer.alloc(0));
     const multerFile = { ...zipFile, buffer: validZipFile.toBuffer() };
-    expect(media_utils.checkFileForKeyx(multerFile)).to.equal(true);
+    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX
+    });
+  });
+
+  it('should return true if the file extension is .cfg', () => {
+    const validCfgFile = {
+      originalname: 'test.cfg',
+      mimetype: 'application/octet-stream',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    expect(media_utils.checkFileForCfg(validCfgFile)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG
+    });
+  });
+
+  it('should return false if the file is not a .cfg or zip mimetype', () => {
+    const invalidFile = {
+      originalname: 'test.txt',
+      mimetype: 'text/plain',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const multerFile = { ...invalidFile, buffer: Buffer.alloc(0) };
+    expect(media_utils.checkFileForCfg(multerFile)).to.eql({
+      type: 'unknown',
+      error: 'File is neither a .cfg file, nor an archive containing only .cfg files'
+    });
+  });
+
+  it('should return false if the file is an empty zip file', () => {
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const emptyZipFile = new AdmZip();
+    const multerFile = { ...zipFile, buffer: emptyZipFile.toBuffer() };
+    expect(media_utils.checkFileForCfg(multerFile)).to.eql({
+      type: 'unknown',
+      error: 'File is an archive that contains no content'
+    });
+  });
+
+  it('should return false if the zip file contains any non .cfg files', () => {
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const invalidZipFile = new AdmZip();
+    invalidZipFile.addFile('test.txt', Buffer.alloc(0));
+    const multerFile = { ...zipFile, buffer: invalidZipFile.toBuffer() };
+    expect(media_utils.checkFileForCfg(multerFile)).to.eql({
+      type: 'unknown',
+      error: 'File is an archive that contains non .cfg files'
+    });
+  });
+
+  it('should return true if the zip file contains only .cfg files', () => {
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const validZipFile = new AdmZip();
+    validZipFile.addFile('test.cfg', Buffer.alloc(0));
+    const multerFile = { ...zipFile, buffer: validZipFile.toBuffer() };
+    expect(media_utils.checkFileForCfg(multerFile)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG
+    });
+  });
+});
+
+describe('checkFileForKeyx', () => {
+  it('should return true if the file extension is .keyx', () => {
+    const validKeyxFile = {
+      originalname: 'test.keyx',
+      mimetype: 'application/octet-stream',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    expect(media_utils.checkFileForKeyx(validKeyxFile)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX
+    });
+  });
+
+  it('should return false if the file is not a .keyx or zip mimetype', () => {
+    const invalidFile = {
+      originalname: 'test.txt',
+      mimetype: 'text/plain',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const multerFile = { ...invalidFile, buffer: Buffer.alloc(0) };
+    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
+      type: 'unknown',
+      error: 'File is neither a .keyx file, nor an archive containing only .keyx files'
+    });
+  });
+
+  it('should return false if the file is an empty zip file', () => {
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const emptyZipFile = new AdmZip();
+    const multerFile = { ...zipFile, buffer: emptyZipFile.toBuffer() };
+    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
+      type: 'unknown',
+      error: 'File is an archive that contains no content'
+    });
+  });
+
+  it('should return false if the zip file contains any non .keyx files', () => {
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const invalidZipFile = new AdmZip();
+    invalidZipFile.addFile('test.txt', Buffer.alloc(0));
+    const multerFile = { ...zipFile, buffer: invalidZipFile.toBuffer() };
+    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
+      type: 'unknown',
+      error: 'File is an archive that contains non .keyx files'
+    });
+  });
+
+  it('should return true if the zip file contains only .keyx files', () => {
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const validZipFile = new AdmZip();
+    validZipFile.addFile('test.keyx', Buffer.alloc(0));
+    const multerFile = { ...zipFile, buffer: validZipFile.toBuffer() };
+    expect(media_utils.checkFileForKeyx(multerFile)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX
+    });
+  });
+});
+
+describe('checkFileForCfg', () => {
+  it('should return true if the file extension is .cfg', () => {
+    const validCfgFile = {
+      originalname: 'test.cfg',
+      mimetype: 'application/octet-stream',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    expect(media_utils.checkFileForCfg(validCfgFile)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG
+    });
+  });
+
+  it('should return false if the file is not a .cfg or zip mimetype', () => {
+    const invalidFile = {
+      originalname: 'test.txt',
+      mimetype: 'text/plain',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const multerFile = { ...invalidFile, buffer: Buffer.alloc(0) };
+    expect(media_utils.checkFileForCfg(multerFile)).to.eql({
+      type: 'unknown',
+      error: 'File is neither a .cfg file, nor an archive containing only .cfg files'
+    });
+  });
+
+  it('should return false if the file is an empty zip file', () => {
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const emptyZipFile = new AdmZip();
+    const multerFile = { ...zipFile, buffer: emptyZipFile.toBuffer() };
+    expect(media_utils.checkFileForCfg(multerFile)).to.eql({
+      type: 'unknown',
+      error: 'File is an archive that contains no content'
+    });
+  });
+
+  it('should return false if the zip file contains any non .cfg files', () => {
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const invalidZipFile = new AdmZip();
+    invalidZipFile.addFile('test.txt', Buffer.alloc(0));
+    const multerFile = { ...zipFile, buffer: invalidZipFile.toBuffer() };
+    expect(media_utils.checkFileForCfg(multerFile)).to.eql({
+      type: 'unknown',
+      error: 'File is an archive that contains non .cfg files'
+    });
+  });
+
+  it('should return true if the zip file contains only .cfg files', () => {
+    const zipFile = {
+      originalname: 'test.zip',
+      mimetype: 'application/zip',
+      buffer: Buffer.alloc(0)
+    } as unknown as Express.Multer.File;
+
+    const validZipFile = new AdmZip();
+    validZipFile.addFile('test.cfg', Buffer.alloc(0));
+    const multerFile = { ...zipFile, buffer: validZipFile.toBuffer() };
+    expect(media_utils.checkFileForCfg(multerFile)).to.eql({
+      type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG
+    });
   });
 });

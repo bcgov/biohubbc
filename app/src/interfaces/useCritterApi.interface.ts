@@ -1,4 +1,4 @@
-import { ICreateCritterCollectionUnit } from 'features/surveys/view/survey-animals/animal';
+import { AnimalSex, ICreateCritterCollectionUnit } from 'features/surveys/view/survey-animals/animal';
 import { Feature } from 'geojson';
 import { IPartialTaxonomy } from './useTaxonomyApi.interface';
 
@@ -6,7 +6,7 @@ export interface ICritterCreate {
   critter_id?: string;
   wlh_id?: string | null;
   animal_id?: string | null;
-  sex: string;
+  sex: AnimalSex;
   itis_tsn: number;
   responsible_region_nr_id?: string | null;
   critter_comment?: string | null;
@@ -16,6 +16,7 @@ export interface ICreateEditAnimalRequest {
   critter_id?: string;
   nickname: string;
   species: IPartialTaxonomy | null;
+  sex: AnimalSex;
   ecological_units: ICreateCritterCollectionUnit[];
   wildlife_health_id: string | null;
   critter_comment: string | null;
@@ -101,6 +102,11 @@ export interface ICreateMortalityRequest extends IMarkings, IMeasurementsCreate 
 
 export interface IEditMortalityRequest extends IMarkings, IMeasurementsUpdate {
   mortality: IMortalityPostData;
+}
+
+export interface ICollectionUnitMultiTsnResponse {
+  tsn: number;
+  categories: ICollectionCategory[];
 }
 
 export interface ICollectionCategory {
@@ -269,7 +275,8 @@ export type IFamilyChildResponse = {
 };
 
 export type ICritterDetailedResponse = {
-  critter_id: string;
+  critter_id: number;
+  critterbase_critter_id: string;
   itis_tsn: number;
   itis_scientific_name: string;
   wlh_id: string | null;
@@ -290,7 +297,8 @@ export type ICritterDetailedResponse = {
 };
 
 export interface ICritterSimpleResponse {
-  critter_id: string;
+  critter_id: number;
+  critterbase_critter_id: string;
   wlh_id: string | null;
   animal_id: string | null;
   sex: string;
@@ -386,6 +394,6 @@ export type CBMeasurementSearchByTsnResponse = {
  * Response object when searching for measurement type definitions by search term.
  */
 export type CBMeasurementSearchByTermResponse = {
-  qualitative: (CBQualitativeMeasurementTypeDefinition & { tsnHierarchy: number[] })[];
-  quantitative: (CBQuantitativeMeasurementTypeDefinition & { tsnHierarchy: number[] })[];
+  qualitative: CBQualitativeMeasurementTypeDefinition[];
+  quantitative: CBQuantitativeMeasurementTypeDefinition[];
 };

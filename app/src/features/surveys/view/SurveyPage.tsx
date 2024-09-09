@@ -8,9 +8,8 @@ import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import React, { useContext, useEffect } from 'react';
 import { SurveySamplingContainer } from './components/sampling-data/SurveySamplingContainer';
-import SurveySpatialData from './components/spatial-data/SurveySpatialData';
 import SurveyStudyArea from './components/SurveyStudyArea';
-import SurveyAnimals from './SurveyAnimals';
+import { SurveySpatialContainer } from './survey-spatial/SurveySpatialContainer';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
 
@@ -40,12 +39,10 @@ const SurveyPage: React.FC = () => {
             <SurveySamplingContainer />
           </Paper>
 
-          <TaxonomyContextProvider>
-            <SurveySpatialData />
-          </TaxonomyContextProvider>
-
           <Paper>
-            <SurveyAnimals />
+            <TaxonomyContextProvider>
+              <SurveySpatialContainer />
+            </TaxonomyContextProvider>
           </Paper>
 
           <Paper>

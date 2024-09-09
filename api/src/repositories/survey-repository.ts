@@ -13,12 +13,12 @@ import {
   GetSurveyPurposeAndMethodologyData,
   ISurveyAdvancedFilters
 } from '../models/survey-view';
+import { IPostCollectionUnit } from '../services/critterbase-service';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
 export interface IGetSpeciesData {
   itis_tsn: number;
-  is_focal: boolean;
 }
 
 export interface IObservationSubmissionInsertDetails {
@@ -117,6 +117,18 @@ export const SurveyBasicFields = z.object({
 });
 
 export type SurveyBasicFields = z.infer<typeof SurveyBasicFields>;
+
+export const SurveyTaxonomyWithEcologicalUnits = z.object({
+  itis_tsn: z.number(),
+  ecological_units: z.array(
+    z.object({
+      critterbase_collection_unit_id: z.string().uuid(),
+      critterbase_collection_category_id: z.string().uuid()
+    })
+  )
+});
+
+export type SurveyTaxonomyWithEcologicalUnits = z.infer<typeof SurveyTaxonomyWithEcologicalUnits>;
 
 export class SurveyRepository extends BaseRepository {
   /**
@@ -358,21 +370,41 @@ export class SurveyRepository extends BaseRepository {
    * Get species data for a given survey ID
    *
    * @param {number} surveyId
-   * @returns {*} {Promise<IGetSpeciesData[]>}
+   * @return {*}  {Promise<SurveyTaxonomyWithEcologicalUnits[]>}
    * @memberof SurveyRepository
    */
-  async getSpeciesData(surveyId: number): Promise<IGetSpeciesData[]> {
+  async getSpeciesData(surveyId: number): Promise<SurveyTaxonomyWithEcologicalUnits[]> {
     const sqlStatement = SQL`
+    WITH w_ecological_units AS (
       SELECT
-        itis_tsn,
-        is_focal
+        ssu.study_species_id,
+        json_agg(
+          json_build_object(
+            'critterbase_collection_category_id', ssu.critterbase_collection_category_id,
+            'critterbase_collection_unit_id', ssu.critterbase_collection_unit_id
+          )
+        ) AS units
       FROM
-        study_species
+        study_species_unit ssu
+      LEFT JOIN
+        study_species ss ON ss.study_species_id = ssu.study_species_id
       WHERE
-        survey_id = ${surveyId};
+        ss.survey_id = ${surveyId}
+      GROUP BY
+        ssu.study_species_id
+    )
+    SELECT
+      ss.itis_tsn,
+      COALESCE(weu.units, '[]'::json) AS ecological_units
+    FROM
+      study_species ss
+    LEFT JOIN
+      w_ecological_units weu ON weu.study_species_id = ss.study_species_id
+    WHERE
+      ss.survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql<IGetSpeciesData>(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, SurveyTaxonomyWithEcologicalUnits);
 
     return response.rows;
   }
@@ -387,15 +419,9 @@ export class SurveyRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         s.additional_details,
-        array_remove(array_agg(DISTINCT io.intended_outcome_id), NULL) as intended_outcome_ids,
-        array_remove(array_agg(DISTINCT sv.vantage_id), NULL) as vantage_ids
-
+        array_remove(array_agg(DISTINCT io.intended_outcome_id), NULL) as intended_outcome_ids
       FROM
         survey s
-      LEFT OUTER JOIN
-        survey_vantage sv
-      ON
-        sv.survey_id = s.survey_id
       LEFT OUTER JOIN
         survey_intended_outcome io
       ON
@@ -759,7 +785,7 @@ export class SurveyRepository extends BaseRepository {
 
     if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert focal species data', [
-        'SurveyRepository->insertSurveyData',
+        'SurveyRepository->insertFocalSpecies',
         'response was null or undefined, expected response != null'
       ]);
     }
@@ -768,67 +794,36 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Inserts a new Ancillary species record and returns the new ID
+   * Inserts focal ecological units for focal species
    *
-   * @param {number} ancillary_species_id
-   * @param {number} surveyId
+   * @param {IPostCollectionUnit} ecologicalUnitObject
+   * @param {number} studySpeciesId
    * @returns {*} Promise<number>
    * @memberof SurveyRepository
    */
-  async insertAncillarySpecies(ancillary_species_id: number, surveyId: number): Promise<number> {
+  async insertFocalSpeciesUnits(ecologicalUnitObject: IPostCollectionUnit, studySpeciesId: number): Promise<number> {
     const sqlStatement = SQL`
-      INSERT INTO study_species (
-        itis_tsn,
-        is_focal,
-        survey_id
+      INSERT INTO study_species_unit (
+        study_species_id,
+        critterbase_collection_category_id,
+        critterbase_collection_unit_id
       ) VALUES (
-        ${ancillary_species_id},
-        FALSE,
-        ${surveyId}
-      ) RETURNING study_species_id as id;
+        ${studySpeciesId},
+        ${ecologicalUnitObject.critterbase_collection_category_id},
+        ${ecologicalUnitObject.critterbase_collection_unit_id}
+      ) RETURNING study_species_id AS id;
     `;
 
     const response = await this.connection.sql(sqlStatement);
     const result = response.rows?.[0];
 
     if (!result?.id) {
-      throw new ApiExecuteSQLError('Failed to insert ancillary species data', [
-        'SurveyRepository->insertSurveyData',
+      throw new ApiExecuteSQLError('Failed to insert focal species units data', [
+        'SurveyRepository->insertFocalSpeciesUnits',
         'response was null or undefined, expected response != null'
       ]);
     }
 
-    return result.id;
-  }
-
-  /**
-   * Inserts a new vantage code record and returns the new ID
-   *
-   * @param {number} vantage_code_id
-   * @param {number} surveyId
-   * @returns {*} Promise<number>
-   * @memberof SurveyRepository
-   */
-  async insertVantageCodes(vantage_code_id: number, surveyId: number): Promise<number> {
-    const sqlStatement = SQL`
-      INSERT INTO survey_vantage (
-        vantage_id,
-        survey_id
-      ) VALUES (
-        ${vantage_code_id},
-        ${surveyId}
-      ) RETURNING survey_vantage_id as id;
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-    const result = response.rows?.[0];
-
-    if (!result?.id) {
-      throw new ApiExecuteSQLError('Failed to insert vantage codes', [
-        'SurveyRepository->insertVantageCodes',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
     return result.id;
   }
 
@@ -869,7 +864,6 @@ export class SurveyRepository extends BaseRepository {
   /**
    * Inserts a new Survey Proprietor record and returns the new ID
    *
-   * @param {number} ancillary_species_id
    * @param {number} surveyId
    * @returns {*} Promise<number>
    * @memberof SurveyRepository
@@ -1076,6 +1070,24 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
+   * Deletes ecological units data for focal species in a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<void>
+   * @memberof SurveyRepository
+   */
+  async deleteSurveySpeciesUnitData(surveyId: number) {
+    const sqlStatement = SQL`
+      DELETE FROM study_species_unit ssu
+      USING study_species ss
+      WHERE ss.study_species_id = ssu.study_species_id
+      AND ss.survey_id = ${surveyId};
+    `;
+
+    await this.connection.sql(sqlStatement);
+  }
+
+  /**
    * Breaks permit survey link for a given survey ID
    *
    * @param {number} surveyId
@@ -1106,24 +1118,6 @@ export class SurveyRepository extends BaseRepository {
     const sqlStatement = SQL`
       DELETE
         from survey_proprietor
-      WHERE
-        survey_id = ${surveyId};
-    `;
-
-    await this.connection.sql(sqlStatement);
-  }
-
-  /**
-   * Deletes Survey vantage codes for a given survey ID
-   *
-   * @param {number} surveyId
-   * @returns {*} Promise<void>
-   * @memberof SurveyRepository
-   */
-  async deleteSurveyVantageCodes(surveyId: number) {
-    const sqlStatement = SQL`
-      DELETE
-        from survey_vantage
       WHERE
         survey_id = ${surveyId};
     `;

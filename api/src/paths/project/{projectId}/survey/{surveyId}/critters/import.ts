@@ -5,7 +5,8 @@ import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/http-error';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ImportCrittersService } from '../../../../../../services/import-services/import-critters-service';
+import { ImportCrittersStrategy } from '../../../../../../services/import-services/critter/import-critters-strategy';
+import { importCSV } from '../../../../../../services/import-services/import-csv';
 import { scanFileForVirus } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
@@ -61,7 +62,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Survey critters submission file to import',
+    description: 'Survey critters csv file to import',
     content: {
       'multipart/form-data': {
         schema: {
@@ -129,7 +130,7 @@ POST.apiDoc = {
 export function importCsv(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const rawMediaFile = getFileFromRequest(req);
+    const rawFile = getFileFromRequest(req);
 
     const connection = getDBConnection(req.keycloak_token);
 
@@ -137,16 +138,16 @@ export function importCsv(): RequestHandler {
       await connection.open();
 
       // Check for viruses / malware
-      const virusScanResult = await scanFileForVirus(rawMediaFile);
+      const virusScanResult = await scanFileForVirus(rawFile);
 
       if (!virusScanResult) {
         throw new HTTP400('Malicious content detected, import cancelled.');
       }
 
-      const csvImporter = new ImportCrittersService(connection);
+      // Critter CSV import strategy - child of CSVImportStrategy
+      const importCsvCritters = new ImportCrittersStrategy(connection, surveyId);
 
-      // Pass the survey id and the csv (MediaFile) to the importer
-      const surveyCritterIds = await csvImporter.import(surveyId, parseMulterFile(rawMediaFile));
+      const surveyCritterIds = await importCSV(parseMulterFile(rawFile), importCsvCritters);
 
       defaultLog.info({ label: 'importCritterCsv', message: 'result', survey_critter_ids: surveyCritterIds });
 
@@ -154,7 +155,7 @@ export function importCsv(): RequestHandler {
 
       return res.status(200).json({ survey_critter_ids: surveyCritterIds });
     } catch (error) {
-      defaultLog.error({ label: 'uploadMedia', message: 'error', error });
+      defaultLog.error({ label: 'importCritterCsv', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
