@@ -25,7 +25,11 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
         swo.latitude,
         swo.longitude, 
         swo.wlo_count, 
-        -- date/time may need to be retrieved from sampling site visit  -- public.migrate_spi_sample_period_visit
+        CASE 
+            WHEN ssp.start_date = ssp.end_date THEN ssp.start_date 
+            ELSE NULL
+        END AS observation_date, 
+        NULL AS observation_time,
         swo.when_created, 
         mssdc.survey_sample_site_id, 
         ssm.survey_sample_method_id, 
