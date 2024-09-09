@@ -75,7 +75,8 @@ type FileUploadSingleItemProps = {
  * `FileUploadSingleItem` a stateless component with full control of the file upload process via props.
  * Implements multiple callback functions to explictly handle events during the file upload.
  *
- * Note: This is different than the `FileUpload` component where the state is handled internally.
+ * Note: This is different than the `FileUpload` component where the state is handled internally, and
+ * supports multiple file uploads.
  *
  * @param {FileUploadSingleItemProps} props
  * @returns {*}

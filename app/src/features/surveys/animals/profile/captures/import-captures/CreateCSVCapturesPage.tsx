@@ -109,7 +109,7 @@ export const CreateCSVCapturesPage = () => {
         } catch (error: any) {
           handleFileState({ fileType, status: UploadFileStatus.FAILED, error: error.message ?? 'Unknown error' });
 
-          return UploadFileStatus.FAILED;
+          return UploadFileStatus.FAILED; // Return the final status to prevent race conditions with state
         }
       }
       return files[fileType].status;
@@ -128,10 +128,12 @@ export const CreateCSVCapturesPage = () => {
   const handleAllFileUploads = async () => {
     const cancelToken = axios.CancelToken.source();
 
+    // Attempt to upload the captures first
     const captureUploadStatus = await handleFileUpload('captures', (file, onProgress) =>
       biohubApi.survey.importCapturesFromCsv(file, projectId, surveyId, cancelToken, onProgress)
     );
 
+    // If the Captures CSV upload failed, don't attempt to upload Measurements or Markings
     if (captureUploadStatus !== UploadFileStatus.FAILED) {
       // Measurements / Markings can be uploaded in parallel
       await Promise.all([
