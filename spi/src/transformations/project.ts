@@ -24,19 +24,25 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
     -------------------------------------------------------------------------------------------------
     -- Determines project associations of each user and inserts associations into project_participation
     -------------------------------------------------------------------------------------------------
-    WITH w_mapping AS
-        (
-            SELECT 
-                p.spi_project_id, 
-                pp.person_id, 
-                b.project_id
-            FROM 
-                public.spi_projects p
-            INNER JOIN 
-                biohub.project b ON p.spi_project_id = b.spi_project_id
-            INNER JOIN 
-                spi_persons pp ON pp.spi_project_id = p.spi_project_id
-        )
+    WITH w_mapping AS (
+        SELECT 
+            p.spi_project_id, 
+            pp.person_id, 
+            pp.first_name, 
+            pp.last_name, 
+            b.project_id
+        FROM 
+            public.spi_projects p
+        INNER JOIN 
+            biohub.project b ON p.spi_project_id = b.spi_project_id
+        INNER JOIN 
+            spi_persons pp ON pp.spi_project_id = p.spi_project_id
+        LEFT JOIN 
+            biohub.system_user su 
+            ON pp.first_name = su.first_name AND pp.last_name = su.last_name
+        WHERE 
+            su.system_user_id IS NULL 
+    )
     INSERT INTO
         biohub.project_participation (project_id, system_user_id, project_role_id, create_user)
     SELECT DISTINCT
