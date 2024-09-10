@@ -1,17 +1,18 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ATTACHMENT_TYPE } from '../../../../../../../../../constants/attachments';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../../../errors/http-error';
 import { fileSchema } from '../../../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../../../services/attachment-service';
-import { scanFileForVirus, uploadFileToS3 } from '../../../../../../../../../utils/file-utils';
+import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../../utils/logger';
 import { getFileFromRequest } from '../../../../../../../../../utils/request';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
+const defaultLog = getLogger(
+  '/api/project/{projectId}/survey/{surveyId}/critters/{critterId}/captures/{captureId}/upload'
+);
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -32,7 +33,7 @@ export const POST: Operation = [
   uploadMedia()
 ];
 POST.apiDoc = {
-  description: 'Upload a survey-specific attachment.',
+  description: 'Upload a Critter capture-specific attachment.',
   tags: ['attachment'],
   security: [
     {
@@ -43,11 +44,38 @@ POST.apiDoc = {
     {
       in: 'path',
       name: 'projectId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
       required: true
     },
     {
       in: 'path',
       name: 'surveyId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'critterId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'captureId',
+      schema: {
+        type: 'string',
+        format: 'uuid',
+        minimum: 1
+      },
       required: true
     }
   ],
@@ -82,10 +110,7 @@ POST.apiDoc = {
             additionalProperties: false,
             required: ['attachmentId', 'revision_count'],
             properties: {
-              attachmentId: {
-                type: 'number'
-              },
-              revision_count: {
+              critter_capture_attachment_id: {
                 type: 'number'
               }
             }
@@ -133,12 +158,20 @@ export function uploadMedia(): RequestHandler {
 
       const attachmentService = new AttachmentService(connection);
 
-      const upsertResult = await attachmentService.upsertSurveyAttachment(
-        rawMediaFile,
-        Number(req.params.projectId),
-        Number(req.params.surveyId),
-        ATTACHMENT_TYPE.OTHER
-      );
+      const upsertResult = await attachmentService.upsertCritterCaptureAttachment({
+        critter_id: Number(req.params.critterId),
+        critterbase_capture_id: req.params.captureId,
+        file_name: rawMediaFile.originalname,
+        file_size: rawMediaFile.size,
+        file_type: rawMediaFile.mimetype,
+        // Key will only be set on successful 'insert' upload
+        key: generateS3FileKey({
+          projectId: Number(req.params.projectId),
+          surveyId: Number(req.params.surveyId),
+          fileName: rawMediaFile.originalname,
+          folder: 'captures'
+        })
+      });
 
       const result = await uploadFileToS3(rawMediaFile, upsertResult.key);
 
@@ -146,9 +179,9 @@ export function uploadMedia(): RequestHandler {
 
       await connection.commit();
 
-      return res
-        .status(200)
-        .json({ attachmentId: upsertResult.survey_attachment_id, revision_count: upsertResult.revision_count });
+      return res.status(200).json({
+        critter_capture_attachment_id: upsertResult.critter_capture_attachment_id
+      });
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();

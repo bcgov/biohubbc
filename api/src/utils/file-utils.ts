@@ -272,7 +272,7 @@ export interface IS3FileKey {
    *
    * Note: For regular/generic file attachments, leave this undefined.
    */
-  folder?: 'reports' | 'telemetry-credentials';
+  folder?: 'reports' | 'telemetry-credentials' | 'captures' | 'motalities';
   /**
    * The name of the file.
    *

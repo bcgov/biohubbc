@@ -1029,17 +1029,17 @@ export class AttachmentService extends DBService {
    * @param {CritterCaptureAttachmentPayload} payload
    * @return {*} {Promise<{critter_capture_attachment_id: number}>}
    */
-  async insertCritterCaptureAttachment(payload: CritterCaptureAttachmentPayload) {
-    return this.attachmentRepository.insertCritterCaptureAttachment(payload);
+  async upsertCritterCaptureAttachment(payload: CritterCaptureAttachmentPayload) {
+    return this.attachmentRepository.upsertCritterCaptureAttachment(payload);
   }
 
   /**
-   * Insert Critter Mortality Attachment.
+   * Upsert Critter Mortality Attachment.
    *
    * @param {CritterMortalityAttachmentPayload} payload
-   * @return {*} {Promise<{critter_mortality_attachment_id: number}>}
+   * @return {*} {Promise<{critter_mortality_attachment_id: number; key: string}>}
    */
-  async insertCritterMortalityAttachment(payload: CritterMortalityAttachmentPayload) {
-    return this.attachmentRepository.insertCritterMortalityAttachment(payload);
+  async upsertCritterMortalityAttachment(payload: CritterMortalityAttachmentPayload) {
+    return this.attachmentRepository.upsertCritterMortalityAttachment(payload);
   }
 }
