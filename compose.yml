@@ -212,25 +212,17 @@ services:
     environment:
       - NODE_ENV=${NODE_ENV}
       # Database
-      # - DB_HOST=${DB_HOST}
-      # - DB_ADMIN=${DB_ADMIN}
-      # - DB_ADMIN_PASS=${DB_ADMIN_PASS}
-      # - DB_PORT=5432
-      # - DB_DATABASE=${DB_DATABASE}
-      # - DB_SCHEMA=${DB_SCHEMA}
-      # - DB_USER_API=${DB_USER_API}
-      # - DB_USER_API_PASS=${DB_USER_API_PASS}
       - DB_HOST=${SPI_DB_HOST}
-      - DB_ADMIN=${SPI_DB_ADMIN}
+      - DB_ADMIN=${DB_ADMIN}
       - DB_ADMIN_PASS=${SPI_DB_ADMIN_PASS}
       - DB_PORT=${SPI_DB_PORT}
-      - DB_DATABASE=${SPI_DB_DATABASE}
-      - DB_SCHEMA=${SPI_DB_SCHEMA}
-      - DB_USER_API=${SPI_DB_USER_API}
-      - DB_USER_API_PASS=${SPI_DB_USER_API_PASS}
-      - DB_SCHEMA_DAPI_V1=${SPI_DB_SCHEMA_DAPI_V1}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_SCHEMA=${DB_SCHEMA}
+      - DB_USER_API=${DB_USER_API}
+      - DB_USER_API_PASS=${DB_USER_API_PASS}
       - DB_CONNECTION_TIMEOUT=${DB_CONNECTION_TIMEOUT}
       - DB_POOL_SIZE=${DB_POOL_SIZE}
+      - SPI_MIGRATE_INCLUDE_SPECIES=${SPI_MIGRATE_INCLUDE_SPECIES}
     volumes:
       - /opt/app-root/src/node_modules
     networks:
