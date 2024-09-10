@@ -48,9 +48,11 @@ const SurveyRouter: React.FC = () => {
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <AnimalPageContextProvider>
-            <AnimalRouter />
-          </AnimalPageContextProvider>
+          <DialogContextProvider>
+            <AnimalPageContextProvider>
+              <AnimalRouter />
+            </AnimalPageContextProvider>
+          </DialogContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 

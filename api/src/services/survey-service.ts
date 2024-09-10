@@ -25,7 +25,7 @@ import { DBService } from './db-service';
 import { FundingSourceService } from './funding-source-service';
 import { HistoryPublishService } from './history-publish-service';
 import { PermitService } from './permit-service';
-import { ITaxonomy, PlatformService } from './platform-service';
+import { ITaxonomyWithEcologicalUnits, PlatformService } from './platform-service';
 import { RegionService } from './region-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyBlockService } from './survey-block-service';
@@ -168,14 +168,22 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async getSpeciesData(surveyId: number): Promise<GetFocalSpeciesData> {
+    // Fetch species data for the survey
     const studySpeciesResponse = await this.surveyRepository.getSpeciesData(surveyId);
 
-    const platformService = new PlatformService(this.connection);
-
-    const focalSpecies = await platformService.getTaxonomyByTsns(
+    // Fetch taxonomy data for each survey species
+    const taxonomyResponse = await this.platformService.getTaxonomyByTsns(
       studySpeciesResponse.map((species) => species.itis_tsn)
     );
 
+    const focalSpecies = [];
+
+    for (const species of studySpeciesResponse) {
+      const taxon = taxonomyResponse.find((taxonomy) => Number(taxonomy.tsn) === species.itis_tsn) ?? {};
+      focalSpecies.push({ ...taxon, tsn: species.itis_tsn, ecological_units: species.ecological_units });
+    }
+
+    // Return the combined data
     return new GetFocalSpeciesData(focalSpecies);
   }
 
@@ -292,7 +300,7 @@ export class SurveyService extends DBService {
     const decoratedSurveys: SurveyBasicFields[] = [];
     for (const survey of surveys) {
       const matchingFocalSpeciesNames = focalSpecies
-        .filter((item) => survey.focal_species.includes(Number(item.tsn)))
+        .filter((item) => survey.focal_species.includes(item.tsn))
         .map((item) => [item.commonNames, `(${item.scientificName})`].filter(Boolean).join(' '));
 
       decoratedSurveys.push({ ...survey, focal_species_names: matchingFocalSpeciesNames });
@@ -372,9 +380,16 @@ export class SurveyService extends DBService {
     );
 
     // Handle focal species associated to this survey
+    // If there are ecological units, insert them
     promises.push(
       Promise.all(
-        postSurveyData.species.focal_species.map((species: ITaxonomy) => this.insertFocalSpecies(species.tsn, surveyId))
+        postSurveyData.species.focal_species.map((species: ITaxonomyWithEcologicalUnits) => {
+          if (species.ecological_units.length) {
+            this.insertFocalSpeciesWithUnits(species, surveyId);
+          } else {
+            this.insertFocalSpecies(species.tsn, surveyId);
+          }
+        })
       )
     );
 
@@ -545,6 +560,26 @@ export class SurveyService extends DBService {
    */
   async insertFocalSpecies(focal_species_id: number, surveyId: number): Promise<number> {
     return this.surveyRepository.insertFocalSpecies(focal_species_id, surveyId);
+  }
+
+  /**
+   * Inserts a new focal species record and associates it with ecological units for a survey.
+   *
+   * @param {ITaxonomyWithEcologicalUnits[]} taxonWithUnits - Array of species with ecological unit objects to associate.
+   * @param {number} surveyId - ID of the survey.
+   * @returns {Promise<number>} - The ID of the newly created focal species.
+   * @memberof SurveyService
+   */
+  async insertFocalSpeciesWithUnits(taxonWithUnits: ITaxonomyWithEcologicalUnits, surveyId: number): Promise<number> {
+    // Insert the new focal species and get its ID
+    const studySpeciesId = await this.surveyRepository.insertFocalSpecies(taxonWithUnits.tsn, surveyId);
+
+    // Insert ecological units associated with the newly created focal species
+    await Promise.all(
+      taxonWithUnits.ecological_units.map((unit) => this.surveyRepository.insertFocalSpeciesUnits(unit, studySpeciesId))
+    );
+
+    return studySpeciesId;
   }
 
   /**
@@ -766,12 +801,14 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async updateSurveySpeciesData(surveyId: number, surveyData: PutSurveyObject) {
+    // Delete any ecological units associated with the focal species record
+    await this.deleteSurveySpeciesUnitData(surveyId);
     await this.deleteSurveySpeciesData(surveyId);
 
     const promises: Promise<any>[] = [];
 
-    surveyData.species.focal_species.forEach((focalSpecies: ITaxonomy) =>
-      promises.push(this.insertFocalSpecies(focalSpecies.tsn, surveyId))
+    surveyData.species.focal_species.forEach((focalSpecies: ITaxonomyWithEcologicalUnits) =>
+      promises.push(this.insertFocalSpeciesWithUnits(focalSpecies, surveyId))
     );
 
     return Promise.all(promises);
@@ -786,6 +823,17 @@ export class SurveyService extends DBService {
    */
   async deleteSurveySpeciesData(surveyId: number) {
     return this.surveyRepository.deleteSurveySpeciesData(surveyId);
+  }
+
+  /**
+   * Delete focal ecological units for a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} {Promise<void>}
+   * @memberof SurveyService
+   */
+  async deleteSurveySpeciesUnitData(surveyId: number) {
+    return this.surveyRepository.deleteSurveySpeciesUnitData(surveyId);
   }
 
   /**

@@ -249,6 +249,14 @@ export interface ICollectionCategory {
   itis_tsn: number;
 }
 
+/**
+ * Prefixed with critterbase_* to match SIMS database field names
+ */
+export interface IPostCollectionUnit {
+  critterbase_collection_unit_id: string;
+  critterbase_collection_category_id: string;
+}
+
 // Lookup value `asSelect` format
 export interface IAsSelectLookup {
   id: string;

@@ -98,8 +98,8 @@ describe('ImportCrittersStrategy', () => {
       const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const getTaxonomyStub = sinon.stub(service.platformService, 'getTaxonomyByTsns').resolves([
-        { tsn: '1', scientificName: 'a' },
-        { tsn: '2', scientificName: 'b' }
+        { tsn: 1, scientificName: 'a' },
+        { tsn: 2, scientificName: 'b' }
       ]);
 
       const tsns = await service._getValidTsns([

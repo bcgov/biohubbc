@@ -4,17 +4,17 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
 import PageHeader from 'components/layout/PageHeader';
+import { SystemUserI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
+import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import React, { useCallback, useContext, useMemo } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
-import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';
-import { IYesNoDialogProps } from '../../../components/dialog/YesNoDialog';
-import { SystemUserI18N } from '../../../constants/i18n';
-import { DialogContext } from '../../../contexts/dialogContext';
-import { APIError } from '../../../hooks/api/useAxios';
-import { useBiohubApi } from '../../../hooks/useBioHubApi';
-import { ISystemUser } from '../../../interfaces/useUserApi.interface';
 
 export interface IUsersHeaderProps {
   userDetails: ISystemUser;
@@ -97,11 +97,11 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
             Manage Users
           </Link>
           <Typography component="a" variant="inherit" color="textSecondary" aria-current="page">
-            {userDetails.user_identifier}
+            {userDetails.display_name}
           </Typography>
         </Breadcrumbs>
       }
-      title={userDetails.user_identifier}
+      title={userDetails.display_name}
       subTitleJSX={
         <Typography component="span" color="textSecondary">
           {userDetails.role_names[0]}

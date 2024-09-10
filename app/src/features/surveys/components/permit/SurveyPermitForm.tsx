@@ -142,30 +142,23 @@ const SurveyPermitForm: React.FC = () => {
             <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />
           </RadioGroup>
 
-          <TransitionGroup
-            component={Stack}
-            role="list"
-            gap={1}
-            sx={{
-              '&:not(:has(div[role=listitem]))': {
-                display: 'none'
-              }
-            }}>
-            {values.permit.permits?.map((permit: ISurveyPermit, index) => {
+          <TransitionGroup>
+            {values.permit.permits.map((permit: ISurveyPermit, index) => {
               const permitNumberMeta = getFieldMeta(`permit.permits.[${index}].permit_number`);
               const permitTypeMeta = getFieldMeta(`permit.permits.[${index}].permit_type`);
 
               return (
-                <Collapse role="listitem" key={index}>
+                <Collapse key={permit.permit_id ?? index}>
                   <Card
-                    component={Stack}
                     variant="outlined"
                     flexDirection="row"
+                    component={Stack}
                     alignItems="flex-start"
                     gap={2}
                     sx={{
                       width: '100%',
                       p: 2,
+                      my: 1,
                       backgroundColor: grey[100]
                     }}>
                     <CustomTextField

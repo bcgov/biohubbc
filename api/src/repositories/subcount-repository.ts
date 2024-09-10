@@ -15,7 +15,10 @@ export const ObservationSubCountRecord = z.object({
   revision_count: z.number()
 });
 export type ObservationSubCountRecord = z.infer<typeof ObservationSubCountRecord>;
-export type InsertObservationSubCount = Pick<ObservationSubCountRecord, 'survey_observation_id' | 'subcount'>;
+export type InsertObservationSubCount = Pick<
+  ObservationSubCountRecord,
+  'survey_observation_id' | 'subcount' | 'observation_subcount_sign_id'
+>;
 
 export const SubCountEventRecord = z.object({
   subcount_event_id: z.number(),

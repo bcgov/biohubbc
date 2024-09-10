@@ -129,8 +129,6 @@ POST.apiDoc = {
 
 /**
  * Uploads any media in the request to S3, adding their keys to the request.
- * Also adds the metadata to the survey_attachment DB table
- * Does nothing if no media is present in the request.
  *
  * @returns {RequestHandler}
  */
