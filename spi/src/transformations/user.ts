@@ -29,43 +29,54 @@ export const transformUsers = async (connection: IDBConnection): Promise<void> =
     -------------------------------------------------------------------------------------------------
     -- Turn deduplicated users into SIMS users
     -------------------------------------------------------------------------------------------------
+    WITH w_existing_users AS (
+        SELECT 
+            system_user_id,
+            family_name,
+            given_name
+        FROM biohub.system_user
+    )
     INSERT INTO biohub.system_user (
-      user_identity_source_id,
-      user_identifier,
-      record_effective_date,
-      display_name,
-      given_name,
-      family_name,
-      notes,
-      email
+        user_identity_source_id,
+        user_identifier,
+        record_effective_date,
+        display_name,
+        given_name,
+        family_name,
+        notes,
+        email
     )
     SELECT 
-      (SELECT user_identity_source_id FROM biohub.user_identity_source WHERE name = 'UNVERIFIED'),
-      'spi-' || id,
-      now(),
-      md.display_name,
-      md.given_name,
-      md.family_name,
-      'Migrated from SPI as user' || md.id,
-      COALESCE(spp.email_address, 'default') AS email
+        (SELECT user_identity_source_id FROM biohub.user_identity_source WHERE name = 'UNVERIFIED'),
+        'spi-' || md.id,
+        now(),
+        md.display_name,
+        md.given_name,
+        md.family_name,
+        'Migrated from SPI as user ' || md.id,
+        COALESCE(spp.email_address, 'default') AS email
     FROM 
-      migrate_spi_user_deduplication md
+        migrate_spi_user_deduplication md
     LEFT JOIN 
-      public.spi_secure_persons spp
-      ON spp.first_name = md.given_name
-      AND spp.last_name = md.family_name;
+        public.spi_secure_persons spp ON spp.first_name = md.given_name AND spp.last_name = md.family_name
+    LEFT JOIN 
+        w_existing_users eu ON eu.given_name = md.given_name AND eu.family_name = md.family_name
+    WHERE eu.system_user_id IS NULL;
 
     -------------------------------------------------------------------------------------------------
     -- Update deduplicated users table with the system_user_id
     -------------------------------------------------------------------------------------------------
-    UPDATE 
-      migrate_spi_user_deduplication AS m
-    SET 
-      biohub_user_id = su.system_user_id
-    FROM 
-      biohub.system_user AS su
-    WHERE 
-      su.user_identifier = 'spi-' || m.id;
+    UPDATE migrate_spi_user_deduplication AS m
+    SET biohub_user_id = su.system_user_id
+    FROM biohub.system_user AS su
+    WHERE su.user_identifier = 'spi-' || m.id;
+
+    -- For existing users
+    UPDATE migrate_spi_user_deduplication AS m
+    SET biohub_user_id = eu.system_user_id
+    FROM w_existing_users eu
+    WHERE eu.given_name = m.given_name
+    AND eu.family_name = m.family_name;
   `;
 
   await connection.sql(sql);
