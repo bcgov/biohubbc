@@ -39,9 +39,11 @@ const SurveyPage: React.FC = () => {
             <SurveySamplingContainer />
           </Paper>
 
-          <TaxonomyContextProvider>
-            <SurveySpatialContainer />
-          </TaxonomyContextProvider>
+          <Paper>
+            <TaxonomyContextProvider>
+              <SurveySpatialContainer />
+            </TaxonomyContextProvider>
+          </Paper>
 
           <Paper>
             <SurveyAttachments />

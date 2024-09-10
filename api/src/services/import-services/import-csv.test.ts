@@ -26,11 +26,13 @@ describe('importCSV', () => {
 
     const getWorksheetStub = sinon.stub(worksheetUtils, 'getDefaultWorksheet').returns(mockWorksheet);
     const validateCsvFileStub = sinon.stub(worksheetUtils, 'validateCsvFile').returns(true);
+    const getWorksheetRowsStub = sinon.stub(worksheetUtils, 'getWorksheetRowObjects').returns([{ ID: '1' }]);
 
     const data = await importCSV(mockCsv, importer);
 
     expect(getWorksheetStub).to.have.been.called.calledOnceWithExactly(worksheetUtils.constructXLSXWorkbook(mockCsv));
     expect(validateCsvFileStub).to.have.been.called.calledOnceWithExactly(mockWorksheet, importer.columnValidator);
+    expect(getWorksheetRowsStub).to.have.been.called.calledOnceWithExactly(mockWorksheet);
     expect(importer.insert).to.have.been.called.calledOnceWithExactly(true);
     expect(data).to.be.true;
   });
@@ -45,6 +47,7 @@ describe('importCSV', () => {
     };
 
     sinon.stub(worksheetUtils, 'validateCsvFile').returns(false);
+    sinon.stub(worksheetUtils, 'getWorksheetRowObjects').returns([{ ID: '1' }]);
 
     try {
       await importCSV(mockCsv, importer);
@@ -78,16 +81,41 @@ describe('importCSV', () => {
 
     sinon.stub(worksheetUtils, 'getDefaultWorksheet').returns(mockWorksheet);
     sinon.stub(worksheetUtils, 'validateCsvFile').returns(true);
+    sinon.stub(worksheetUtils, 'getWorksheetRowObjects').returns([{ BAD_ID: '1' }]);
 
     try {
       await importCSV(mockCsv, importer);
       expect.fail();
     } catch (err: any) {
-      expect(importer.validateRows).to.have.been.calledOnceWithExactly([], mockWorksheet);
-      expect(err.message).to.be.eql(`Failed to import Critter CSV. Column data validator failed.`);
+      expect(importer.validateRows).to.have.been.calledOnceWithExactly([{ BAD_ID: '1' }], mockWorksheet);
+      expect(err.message).to.be.eql(`Cell validator failed. Cells have invalid reference values.`);
       expect(err.errors[0]).to.be.eql({
         csv_row_errors: mockValidation.error.issues
       });
+    }
+  });
+
+  it('should throw error if CSV contains no rows', async () => {
+    const mockCsv = new MediaFile('file', 'file', Buffer.from(''));
+    const mockWorksheet = {};
+    const mockValidation = { success: false, error: { issues: [{ row: 1, message: 'invalidated' }] } };
+
+    const importer: CSVImportStrategy<any> = {
+      columnValidator: { ID: { type: 'string' } },
+      validateRows: sinon.stub().returns(mockValidation),
+      insert: sinon.stub().resolves(true)
+    };
+
+    sinon.stub(worksheetUtils, 'getDefaultWorksheet').returns(mockWorksheet);
+    sinon.stub(worksheetUtils, 'validateCsvFile').returns(true);
+    sinon.stub(worksheetUtils, 'getWorksheetRowObjects').returns([]);
+
+    try {
+      await importCSV(mockCsv, importer);
+      expect.fail();
+    } catch (err: any) {
+      expect(importer.validateRows).to.not.have.been.called;
+      expect(err.message).to.be.eql(`Row validator failed. No rows found in the CSV file.`);
     }
   });
 });

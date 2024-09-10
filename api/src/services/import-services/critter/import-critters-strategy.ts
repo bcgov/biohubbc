@@ -5,7 +5,7 @@ import { IDBConnection } from '../../../database/db';
 import { ApiGeneralError } from '../../../errors/api-error';
 import { getLogger } from '../../../utils/logger';
 import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
-import { generateCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
+import { generateColumnCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { getNonStandardColumnNamesFromWorksheet, IXLSXCSVValidator } from '../../../utils/xlsx-utils/worksheet-utils';
 import {
   CritterbaseService,
@@ -135,7 +135,7 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
     // Query the platform service (taxonomy) for matching tsns
     const taxonomy = await this.platformService.getTaxonomyByTsns(critterTsns);
 
-    return taxonomy.map((taxon) => taxon.tsn);
+    return taxonomy.map((taxon) => String(taxon.tsn));
   }
 
   /**
@@ -181,17 +181,17 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
    * @returns {PartialCsvCritter[]} CSV critters before validation
    */
   _getRowsToValidate(rows: Row[], collectionUnitColumns: string[]): PartialCsvCritter[] {
-    const getCellValue = generateCellGetterFromColumnValidator(this.columnValidator);
+    const getColumnCell = generateColumnCellGetterFromColumnValidator(this.columnValidator);
 
     return rows.map((row) => {
       // Standard critter properties from CSV
       const standardCritterRow = {
         critter_id: uuid(), // Generate a uuid for each critter for convienence
-        sex: getCellValue(row, 'SEX'),
-        itis_tsn: getCellValue(row, 'ITIS_TSN'),
-        wlh_id: getCellValue(row, 'WLH_ID'),
-        animal_id: getCellValue(row, 'ALIAS'),
-        critter_comment: getCellValue(row, 'DESCRIPTION')
+        sex: getColumnCell(row, 'SEX').cell,
+        itis_tsn: getColumnCell(row, 'ITIS_TSN').cell,
+        wlh_id: getColumnCell(row, 'WLH_ID').cell,
+        animal_id: getColumnCell(row, 'ALIAS').cell,
+        critter_comment: getColumnCell(row, 'DESCRIPTION').cell
       };
 
       // All other properties must be collection units ie: `population unit` or `herd unit` etc...

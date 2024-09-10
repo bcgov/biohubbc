@@ -32,6 +32,11 @@ export type ISamplePeriodOption = {
   sample_period_name: string;
 };
 
+type IObservationSubcountSignOption = {
+  observation_subcount_sign_id: number;
+  name: string;
+};
+
 export const TaxonomyColDef = (props: {
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
@@ -40,6 +45,7 @@ export const TaxonomyColDef = (props: {
   return {
     field: 'itis_tsn',
     headerName: 'Species',
+    description: 'The observed species, or if the species is unknown, a higher taxon',
     editable: true,
     hideable: true,
     flex: 1,
@@ -67,6 +73,7 @@ export const SampleSiteColDef = (props: {
 
   return {
     field: 'survey_sample_site_id',
+    description: 'A sampling site where the observation was made',
     headerName: 'Site',
     editable: true,
     hideable: true,
@@ -111,6 +118,7 @@ export const SampleMethodColDef = (props: {
   return {
     field: 'survey_sample_method_id',
     headerName: 'Method',
+    description: 'A method with which the observation was made',
     editable: true,
     hideable: true,
     flex: 1,
@@ -158,6 +166,7 @@ export const SamplePeriodColDef = (props: {
   return {
     field: 'survey_sample_period_id',
     headerName: 'Period',
+    description: 'A sampling period in which the observation was made',
     editable: true,
     hideable: true,
     flex: 0,
@@ -211,6 +220,7 @@ export const ObservationCountColDef = (props: {
   return {
     field: 'count',
     headerName: 'Count',
+    description: 'The number of individuals observed',
     editable: true,
     hideable: true,
     type: 'number',
@@ -263,6 +273,35 @@ export const ObservationCountColDef = (props: {
   };
 };
 
+export const ObservationSubcountSignColDef = (props: {
+  observationSubcountSignOptions: IObservationSubcountSignOption[];
+  hasError: (params: GridCellParams) => boolean;
+}): GridColDef<IObservationTableRow> => {
+  const { observationSubcountSignOptions, hasError } = props;
+  const signOptions = observationSubcountSignOptions.map((item) => ({
+    label: item.name,
+    value: item.observation_subcount_sign_id
+  }));
+
+  return {
+    field: 'observation_subcount_sign_id',
+    headerName: 'Sign',
+    description: 'The sign of the observation',
+    editable: true,
+    hideable: true,
+    minWidth: 140,
+    disableColumnMenu: true,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => {
+      return <AutocompleteDataGridViewCell dataGridProps={params} options={signOptions} error={hasError(params)} />;
+    },
+    renderEditCell: (params) => {
+      return <AutocompleteDataGridEditCell dataGridProps={params} options={signOptions} error={hasError(params)} />;
+    }
+  };
+};
+
 export const ObservationQuantitativeMeasurementColDef = (props: {
   measurement: CBMeasurementType;
   hasError: (params: GridCellParams) => boolean;
@@ -271,6 +310,7 @@ export const ObservationQuantitativeMeasurementColDef = (props: {
   return {
     field: measurement.taxon_measurement_id,
     headerName: measurement.measurement_name,
+    description: measurement.measurement_desc ?? '',
     editable: true,
     hideable: true,
     sortable: false,
@@ -326,6 +366,7 @@ export const ObservationQualitativeMeasurementColDef = (props: {
   return {
     field: measurement.taxon_measurement_id,
     headerName: measurement.measurement_name,
+    description: measurement.measurement_desc ?? '',
     editable: true,
     hideable: true,
     sortable: false,
@@ -355,6 +396,7 @@ export const ObservationQuantitativeEnvironmentColDef = (props: {
   return {
     field: String(environment.environment_quantitative_id),
     headerName: environment.name,
+    description: environment.description ?? '',
     editable: true,
     hideable: true,
     sortable: false,
@@ -409,6 +451,7 @@ export const ObservationQualitativeEnvironmentColDef = (props: {
   return {
     field: String(environment.environment_qualitative_id),
     headerName: environment.name,
+    description: environment.description ?? '',
     editable: true,
     hideable: true,
     sortable: false,

@@ -45,6 +45,12 @@ export const ObservationRecord = z.object({
 
 export type ObservationRecord = z.infer<typeof ObservationRecord>;
 
+export const ObservationSpecies = z.object({
+  itis_tsn: z.number()
+});
+
+export type ObservationSpecies = z.infer<typeof ObservationSpecies>;
+
 const ObservationSamplingData = z.object({
   survey_sample_site_name: z.string().nullable(),
   survey_sample_method_name: z.string().nullable(),
@@ -75,6 +81,7 @@ const ObservationSubcountQuantitativeEnvironmentObject = ObservationSubCountQuan
 
 const ObservationSubcountObject = z.object({
   observation_subcount_id: ObservationSubCountRecord.shape.observation_subcount_id,
+  observation_subcount_sign_id: ObservationSubCountRecord.shape.observation_subcount_sign_id,
   subcount: ObservationSubCountRecord.shape.subcount,
   qualitative_measurements: z.array(ObservationSubcountQualitativeMeasurementObject),
   quantitative_measurements: z.array(ObservationSubcountQuantitativeMeasurementObject),
@@ -413,6 +420,25 @@ export class ObservationRepository extends BaseRepository {
     const allRowsQuery = knex.queryBuilder().select('*').from('survey_observation').where('survey_id', surveyId);
 
     const response = await this.connection.knex(allRowsQuery, ObservationRecord);
+    return response.rows;
+  }
+
+  /**
+   * Retrieves species observed in a given survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<ObservationSpecies[]>}
+   * @memberof ObservationRepository
+   */
+  async getObservedSpeciesForSurvey(surveyId: number): Promise<ObservationSpecies[]> {
+    const knex = getKnex();
+    const allRowsQuery = knex
+      .queryBuilder()
+      .distinct('itis_tsn')
+      .from('survey_observation')
+      .where('survey_id', surveyId);
+
+    const response = await this.connection.knex(allRowsQuery, ObservationSpecies);
     return response.rows;
   }
 

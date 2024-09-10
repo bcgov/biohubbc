@@ -27,7 +27,9 @@ describe('logger', () => {
     });
 
     it('sets the log level for the console transport', () => {
+      //const myLogger1 = require('./logger').getLogger('myLoggerA');
       const myLogger1 = getLogger('myLoggerA');
+
       expect(myLogger1.transports[1].level).to.equal('info');
 
       setLogLevel('debug');
