@@ -17,57 +17,52 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
     survey_observation_id INTEGER);
     
     -- populating survey_observation table -- 
-
-    INSERT INTO 
-        biohub.survey_observation so (survey_id, latitude, longitude, count, observation_date, observation_time, create_date, survey_sample_site_id, survey_sample_method_id, survey_sample_period_id, itis_tsn, itis_scientific_name)
-    SELECT
-        s.survey_id,
-        swo.latitude,
-        swo.longitude, 
-        swo.wlo_count, 
-        CASE 
-            WHEN ssp.start_date = ssp.end_date THEN ssp.start_date 
-            ELSE NULL
-        END AS observation_date, 
-        NULL AS observation_time,
-        swo.when_created, 
-        mssdc.survey_sample_site_id, 
-        ssm.survey_sample_method_id, 
-        ssp.survey_sample_period_id
-        -- itis_tsn and scientific name will come from biohub.study_species joined from swo on survey_id (biohub or spi survey id) and txonomic unit id 
- 
-    FROM 
-        public.spi_wildlife_observations swo
-    JOIN 
-        biohub.survey s
-    ON 
-        s.spi_survey_id = swo.survey_id
-    JOIN 
-        public.migrate_spi_sample_design_component mssdc
-    ON 
-        swo.design_component_id = mssdc.design_component_id
-    JOIN 
-        biohub.survey_sample_method ssm
-    ON 
-        ssm.survey_sample_site_id = mssdc.survey_sample_site_id
-    JOIN 
-        biohub.survey_sample_period ssp
-    ON 
-        ssp.survey_sample_method_id = ssm.survey_sample_method_id
-    JOIN 
-        public.migrate_spi_sample_period_visit msspv
-    ON 
-        msspv.design_component_visit_id = swo.design_component_visit_id
-    WHERE 
-        swo.wlo_count != 0
-    RETURNING swo.wlo_id, so.survey_observation_id;
-    
-
     --- insert with statement 
     WITH w_inserted AS(
-    -- copy intert statement sql above through to returning and paste in brackets here)
+        INSERT INTO 
+            biohub.survey_observation so (survey_id, latitude, longitude, count, observation_date, observation_time, create_date, survey_sample_site_id, survey_sample_method_id, survey_sample_period_id, itis_tsn, itis_scientific_name)
+        SELECT
+            s.survey_id,
+            swo.latitude,
+            swo.longitude, 
+            swo.wlo_count, 
+            CASE 
+                WHEN ssp.start_date = ssp.end_date THEN ssp.start_date 
+                ELSE NULL
+            END AS observation_date, 
+            NULL AS observation_time,
+            swo.when_created, 
+            mssdc.survey_sample_site_id, 
+            ssm.survey_sample_method_id, 
+            ssp.survey_sample_period_id
+            -- itis_tsn and scientific name will come from biohub.study_species joined from swo on survey_id (biohub or spi survey id) and txonomic unit id 
+    
+        FROM 
+            public.spi_wildlife_observations swo
+        JOIN 
+            biohub.survey s
+        ON 
+            s.spi_survey_id = swo.survey_id
+        JOIN 
+            public.migrate_spi_sample_design_component mssdc
+        ON 
+            swo.design_component_id = mssdc.design_component_id
+        JOIN 
+            biohub.survey_sample_method ssm
+        ON 
+            ssm.survey_sample_site_id = mssdc.survey_sample_site_id
+        JOIN 
+            biohub.survey_sample_period ssp
+        ON 
+            ssp.survey_sample_method_id = ssm.survey_sample_method_id
+        JOIN 
+            public.migrate_spi_sample_period_visit msspv
+        ON 
+            msspv.design_component_visit_id = swo.design_component_visit_id
+        WHERE 
+            swo.wlo_count != 0
+        RETURNING swo.wlo_id, so.survey_observation_id;)
 
-    -- inserting the w_inserted into the newly created table 
     INSERT INTO 
         public.migrate_spi_wildlife_observations (wlo_id, survey_observation_id)
     SELECT 
