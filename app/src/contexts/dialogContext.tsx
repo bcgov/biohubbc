@@ -55,7 +55,7 @@ export interface IDialogContext {
 
 export interface ISnackbarProps {
   open: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   snackbarMessage: ReactNode;
   snackbarAutoCloseMs?: number; //ms
 }
@@ -89,10 +89,7 @@ export const defaultErrorDialogProps: IErrorDialogProps = {
 
 export const defaultSnackbarProps: ISnackbarProps = {
   snackbarMessage: '',
-  open: false,
-  onClose: () => {
-    // default do nothing
-  }
+  open: false
 };
 
 export const DialogContext = createContext<IDialogContext>({
@@ -128,7 +125,7 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
   };
 
   const setSnackbar = function (partialProps: Partial<ISnackbarProps>) {
-    setSnackbarProps({ ...snackbarProps, ...partialProps });
+    setSnackbarProps({ onClose: () => setSnackbar({ open: false }), ...snackbarProps, ...partialProps });
   };
 
   const setErrorDialog = function (partialProps: Partial<IErrorDialogProps>) {
@@ -158,7 +155,7 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
         onClose={snackbarProps.onClose}
         message={snackbarProps.snackbarMessage}
         action={
-          <IconButton size="small" aria-label="close" color="inherit" onClick={() => setSnackbar({ open: false })}>
+          <IconButton size="small" aria-label="close" color="inherit" onClick={snackbarProps.onClose}>
             <CloseIcon fontSize="small" />
           </IconButton>
         }

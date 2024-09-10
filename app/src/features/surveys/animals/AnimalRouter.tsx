@@ -1,6 +1,5 @@
 import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
-import { DialogContextProvider } from 'contexts/dialogContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { CreateCapturePage } from 'features/surveys/animals/profile/captures/capture-form/create/CreateCapturePage';
 import { EditCapturePage } from 'features/surveys/animals/profile/captures/capture-form/edit/EditCapturePage';
@@ -36,9 +35,7 @@ export const AnimalRouter: React.FC = () => {
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <SurveyAnimalPage />
-          </DialogContextProvider>
+          <SurveyAnimalPage />
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
@@ -49,9 +46,7 @@ export const AnimalRouter: React.FC = () => {
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <CreateAnimalPage />
-          </DialogContextProvider>
+          <CreateAnimalPage />
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
@@ -62,9 +57,7 @@ export const AnimalRouter: React.FC = () => {
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <CreateCSVCapturesPage />
-          </DialogContextProvider>
+          <CreateCSVCapturesPage />
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
@@ -88,9 +81,7 @@ export const AnimalRouter: React.FC = () => {
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <CreateCapturePage />
-          </DialogContextProvider>
+          <CreateCapturePage />
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
@@ -101,9 +92,7 @@ export const AnimalRouter: React.FC = () => {
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <EditCapturePage />
-          </DialogContextProvider>
+          <EditCapturePage />
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
@@ -114,9 +103,7 @@ export const AnimalRouter: React.FC = () => {
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <CreateMortalityPage />
-          </DialogContextProvider>
+          <CreateMortalityPage />
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 
@@ -127,9 +114,7 @@ export const AnimalRouter: React.FC = () => {
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <EditMortalityPage />
-          </DialogContextProvider>
+          <EditMortalityPage />
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
     </Switch>

@@ -13,7 +13,7 @@ import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { FileUploadSingleItem } from 'components/file-upload/FileUploadSingleItem';
 import PageHeader from 'components/layout/PageHeader';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useCallback, useMemo, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -51,6 +51,7 @@ export const CreateCSVCapturesPage = () => {
 
   const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
+  const animalPageContext = useAnimalPageContext();
 
   const { projectId, surveyId } = surveyContext;
 
@@ -157,17 +158,18 @@ export const CreateCSVCapturesPage = () => {
 
     dialogContext.setSnackbar({
       open: true,
-      snackbarAutoCloseMs: 2000,
       snackbarMessage: (
         <Typography variant="body2" component="div">
           CSV files uploaded successfully.
         </Typography>
-      ),
-      onClose: () => {
-        dialogContext.setSnackbar({ open: false });
-        history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`, SKIP_CONFIRMATION_DIALOG);
-      }
+      )
     });
+
+    if (animalPageContext.selectedAnimal) {
+      animalPageContext.critterDataLoader.refresh(projectId, surveyId, animalPageContext.selectedAnimal.critter_id);
+    }
+
+    history.push(`/admin/projects/${projectId}/surveys/${surveyId}/animals`, SKIP_CONFIRMATION_DIALOG);
   };
 
   /**
