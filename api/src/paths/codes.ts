@@ -360,6 +360,28 @@ GET.apiDoc = {
                     }
                   }
                 }
+              },
+              observation_subcount_signs: {
+                type: 'array',
+                description:
+                  'Possible observation subcount sign ids, indicating whether the subcount was a direct sighting, footprints, scat, etc.',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
               }
             }
           }

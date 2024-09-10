@@ -104,6 +104,11 @@ export interface IEditMortalityRequest extends IMarkings, IMeasurementsUpdate {
   mortality: IMortalityPostData;
 }
 
+export interface ICollectionUnitMultiTsnResponse {
+  tsn: number;
+  categories: ICollectionCategory[];
+}
+
 export interface ICollectionCategory {
   collection_category_id: string;
   category_name: string;
@@ -270,7 +275,8 @@ export type IFamilyChildResponse = {
 };
 
 export type ICritterDetailedResponse = {
-  critter_id: string;
+  critter_id: number;
+  critterbase_critter_id: string;
   itis_tsn: number;
   itis_scientific_name: string;
   wlh_id: string | null;
@@ -291,7 +297,8 @@ export type ICritterDetailedResponse = {
 };
 
 export interface ICritterSimpleResponse {
-  critter_id: string;
+  critter_id: number;
+  critterbase_critter_id: string;
   wlh_id: string | null;
   animal_id: string | null;
   sex: string;
@@ -387,6 +394,6 @@ export type CBMeasurementSearchByTsnResponse = {
  * Response object when searching for measurement type definitions by search term.
  */
 export type CBMeasurementSearchByTermResponse = {
-  qualitative: (CBQualitativeMeasurementTypeDefinition & { tsnHierarchy: number[] })[];
-  quantitative: (CBQuantitativeMeasurementTypeDefinition & { tsnHierarchy: number[] })[];
+  qualitative: CBQualitativeMeasurementTypeDefinition[];
+  quantitative: CBQuantitativeMeasurementTypeDefinition[];
 };

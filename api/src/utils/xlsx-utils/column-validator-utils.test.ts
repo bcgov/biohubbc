@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import {
-  generateCellGetterFromColumnValidator,
+  generateColumnCellGetterFromColumnValidator,
   getColumnAliasesFromValidator,
   getColumnNamesFromValidator
 } from './column-validator-utils';
@@ -26,19 +26,27 @@ describe('column-validator-utils', () => {
     });
   });
 
-  describe('generateCellGetterFromColumnValidator', () => {
-    const getCellValue = generateCellGetterFromColumnValidator(columnValidator);
+  describe('generateColumnCellGetterFromColumnValidator', () => {
+    const getCellValue = generateColumnCellGetterFromColumnValidator(columnValidator);
 
     it('should return the cell value for a known column name', () => {
-      expect(getCellValue({ NAME: 'Dr. Steve Brule' }, 'NAME')).to.be.eql('Dr. Steve Brule');
+      expect(getCellValue({ NAME: 'Dr. Steve Brule' }, 'NAME').cell).to.be.eql('Dr. Steve Brule');
     });
 
     it('should return the cell value for a known alias name', () => {
-      expect(getCellValue({ IDENTIFIER: 1 }, 'ID')).to.be.eql(1);
+      expect(getCellValue({ IDENTIFIER: 1 }, 'ID').cell).to.be.eql(1);
     });
 
     it('should return undefined if row cannot find cell value', () => {
-      expect(getCellValue({ BAD_NAME: 1 }, 'NAME')).to.be.eql(undefined);
+      expect(getCellValue({ BAD_NAME: 1 }, 'NAME').cell).to.be.eql(undefined);
+    });
+
+    it('should return column name', () => {
+      expect(getCellValue({ NAME: 1 }, 'NAME').column).to.be.eql('NAME');
+    });
+
+    it('should return column alias name', () => {
+      expect(getCellValue({ IDENTIFIER: 1 }, 'ID').column).to.be.eql('IDENTIFIER');
     });
   });
 });

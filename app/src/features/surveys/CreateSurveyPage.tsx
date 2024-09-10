@@ -13,7 +13,7 @@ import { CreateSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
-import { ISurveyPermitForm, SurveyPermitFormInitialValues } from 'features/surveys/SurveyPermitForm';
+import { ISurveyPermitForm, SurveyPermitFormInitialValues } from 'features/surveys/components/permit/SurveyPermitForm';
 import { SurveyPartnershipsFormInitialValues } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';

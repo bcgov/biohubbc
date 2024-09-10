@@ -56,7 +56,7 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   page: 0,
   limit: 10,
   sort: 'survey_observation_id',
-  order: 'desc'
+  order: 'asc'
 };
 
 /**
