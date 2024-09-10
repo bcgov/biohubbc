@@ -43,13 +43,17 @@ export const transformUsers = async (connection: IDBConnection): Promise<void> =
       (SELECT user_identity_source_id FROM biohub.user_identity_source WHERE name = 'UNVERIFIED'),
       'spi-' || id,
       now(),
-      display_name,
-      given_name,
-      family_name,
-      'Migrated from SPI as user' || id,
-      'default'
+      md.display_name,
+      md.given_name,
+      md.family_name,
+      'Migrated from SPI as user' || md.id,
+      COALESCE(spp.email_address, 'default') AS email
     FROM 
-      migrate_spi_user_deduplication;
+      migrate_spi_user_deduplication md
+    LEFT JOIN 
+      public.spi_secure_persons spp
+      ON spp.first_name = md.given_name
+      AND spp.last_name = md.family_name;
 
     -------------------------------------------------------------------------------------------------
     -- Update deduplicated users table with the system_user_id
