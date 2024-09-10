@@ -3,7 +3,7 @@ import { Knex } from 'knex';
 /**
  * Update observation_subcount_sign value to accomodate spi-migration data and for other future data.
  *
- * This migration file inserts values into observation subcount sign table, 
+ * This migration file inserts values into observation subcount sign table,
  *
  * @export
  * @param {Knex} knex
