@@ -1,10 +1,14 @@
 import { Divider } from '@mui/material';
 import Stack from '@mui/material/Stack';
+import { AxiosProgressEvent, CancelTokenSource } from 'axios';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import FileUpload from 'components/file-upload/FileUpload';
 import { Formik, FormikProps } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useSurveyContext } from 'hooks/useContext';
 import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
+import { useParams } from 'react-router';
 import { isDefined } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { MarkingsForm } from '../../../markings/MarkingsForm';
@@ -29,9 +33,15 @@ export interface IAnimalCaptureFormProps<FormikValuesType extends ICreateCapture
 export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest | IEditCaptureRequest>(
   props: IAnimalCaptureFormProps<FormikValuesType>
 ) => {
+  const biohubApi = useBiohubApi();
+  const { surveyId, projectId } = useSurveyContext();
+  const urlParams: Record<string, string | number | undefined> = useParams();
+
+  const surveyCritterId = Number(urlParams['critter_id']);
+
   const animalCaptureYupSchema = yup.object({
     capture: yup.object({
-      capture_id: yup.string().nullable(),
+      capture_id: yup.string(),
       capture_date: yup.string().required('Capture date is required'),
       capture_time: yup.string().nullable(),
       capture_comment: yup.string().required('Capture comment is required'),
@@ -137,6 +147,22 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
     )
   });
 
+  const captureAttachmentUploadHandler = async (
+    file: File,
+    cancelTokenSource: CancelTokenSource,
+    onProgress: (progressEvent: AxiosProgressEvent) => void
+  ) => {
+    return biohubApi.animal.uploadCritterCaptureAttachment({
+      critterId: surveyCritterId,
+      critterbaseCaptureId: props.initialCaptureData.capture.capture_id,
+      projectId,
+      surveyId,
+      file,
+      cancelTokenSource,
+      onProgress
+    });
+  };
+
   return (
     <Formik
       innerRef={props.formikRef}
@@ -162,7 +188,7 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
         <HorizontalSplitFormComponent
           title="Attachments"
           summary="Upload attachments related to the capture"
-          component={<FileUpload />}
+          component={<FileUpload uploadHandler={captureAttachmentUploadHandler} />}
         />
         <Divider />
         <HorizontalSplitFormComponent

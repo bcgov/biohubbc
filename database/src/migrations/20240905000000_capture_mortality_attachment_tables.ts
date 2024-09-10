@@ -72,6 +72,15 @@ export async function up(knex: Knex): Promise<void> {
 
     -- Add indexes for foreign keys
     CREATE INDEX critter_capture_attachment_idx1 ON critter_capture_attachment(critter_id);
+    CREATE UNIQUE INDEX critter_capture_attachment_idx2 ON critter_capture_attachment(critter_id, critterbase_capture_id, file_name);
+
+    ----------------------------------------------------------------------------------------
+    -- Create audit and journal triggers
+    ----------------------------------------------------------------------------------------
+
+    CREATE TRIGGER audit_critter_capture_attachment BEFORE INSERT OR UPDATE OR DELETE ON critter_capture_attachment FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_critter_capture_attachment AFTER INSERT OR UPDATE OR DELETE ON critter_capture_attachment FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
 
 
     ----------------------------------------------------------------------------------------
@@ -123,6 +132,14 @@ export async function up(knex: Knex): Promise<void> {
 
     -- Add indexes for foreign keys
     CREATE INDEX critter_mortality_attachment_idx1 ON critter_mortality_attachment(critter_id);
+    CREATE UNIQUE INDEX critter_mortality_attachment_idx2 ON critter_mortality_attachment(critter_id, critterbase_mortality_id, file_name);
+
+    ----------------------------------------------------------------------------------------
+    -- Create audit and journal triggers
+    ----------------------------------------------------------------------------------------
+
+    CREATE TRIGGER audit_critter_mortality_attachment BEFORE INSERT OR UPDATE OR DELETE ON critter_capture_attachment FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_critter_mortality_attachment AFTER INSERT OR UPDATE OR DELETE ON critter_capture_attachment FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
 
     ----------------------------------------------------------------------------------------

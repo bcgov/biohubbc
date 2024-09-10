@@ -1,14 +1,14 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../../../errors/http-error';
-import { fileSchema } from '../../../../../../../../../openapi/schemas/file';
-import { authorizeRequestHandler } from '../../../../../../../../../request-handlers/security/authorization';
-import { AttachmentService } from '../../../../../../../../../services/attachment-service';
-import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../../../utils/file-utils';
-import { getLogger } from '../../../../../../../../../utils/logger';
-import { getFileFromRequest } from '../../../../../../../../../utils/request';
+import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../../../../errors/http-error';
+import { fileSchema } from '../../../../../../../../../../openapi/schemas/file';
+import { authorizeRequestHandler } from '../../../../../../../../../../request-handlers/security/authorization';
+import { AttachmentService } from '../../../../../../../../../../services/attachment-service';
+import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../../../../utils/logger';
+import { getFileFromRequest } from '../../../../../../../../../../utils/request';
 
 const defaultLog = getLogger(
   '/api/project/{projectId}/survey/{surveyId}/critters/{critterId}/captures/{captureId}/upload'
@@ -108,7 +108,7 @@ POST.apiDoc = {
           schema: {
             type: 'object',
             additionalProperties: false,
-            required: ['attachmentId', 'revision_count'],
+            required: ['critter_capture_attachment_id'],
             properties: {
               critter_capture_attachment_id: {
                 type: 'number'

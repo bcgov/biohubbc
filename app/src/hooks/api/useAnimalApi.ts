@@ -1,4 +1,4 @@
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IAnimalsAdvancedFilters } from 'features/summary/tabular-data/animal/AnimalsListFilterForm';
 import { IFindAnimalsResponse, IGetCaptureMortalityGeometryResponse } from 'interfaces/useAnimalApi.interface';
 import qs from 'qs';
@@ -54,7 +54,32 @@ const useAnimalApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  return { getCaptureMortalityGeometry, findAnimals };
+  const uploadCritterCaptureAttachment = async (params: {
+    projectId: number;
+    surveyId: number;
+    critterId: number;
+    critterbaseCaptureId: string;
+    file: File;
+    cancelTokenSource?: CancelTokenSource;
+    onProgress?: (progressEvent: AxiosProgressEvent) => void;
+  }) => {
+    const fileData = new FormData();
+
+    fileData.append('media', params.file);
+
+    const { data } = await axios.post(
+      `/api/project/${params.projectId}/survey/${params.surveyId}/critters/${params.critterId}/captures/${params.critterbaseCaptureId}/attachments/upload`,
+      fileData,
+      {
+        cancelToken: params.cancelTokenSource?.token,
+        onUploadProgress: params.onProgress
+      }
+    );
+
+    return data;
+  };
+
+  return { getCaptureMortalityGeometry, findAnimals, uploadCritterCaptureAttachment };
 };
 
 export default useAnimalApi;

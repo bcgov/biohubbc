@@ -152,6 +152,19 @@ type ILocationResponse = {
   wmu_id: string | null;
 };
 
+export type ILocationCreate = {
+  location_id?: string;
+  latitude: number;
+  longitude: number;
+  coordinate_uncertainty?: number | null;
+  coordinate_uncertainty_unit?: string;
+  temperature?: number | null;
+  location_comment?: string | null;
+  region_env_id?: string | null;
+  region_nr_id?: string | null;
+  wmu_id?: string | null;
+};
+
 export type ICaptureResponse = {
   capture_id: string;
   capture_date: string;

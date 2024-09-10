@@ -9,8 +9,6 @@ import {
 } from '../models/project-survey-attachments';
 import {
   AttachmentRepository,
-  CritterCaptureAttachmentPayload,
-  CritterMortalityAttachmentPayload,
   IProjectAttachment,
   IProjectReportAttachment,
   IProjectReportAttachmentAuthor,
@@ -29,11 +27,11 @@ export interface IAttachmentType {
 }
 
 /**
- * A repository class for accessing project and survey attachment data.
+ * A service class for accessing project and survey attachment data.
  *
  * @export
- * @class AttachmentRepository
- * @extends {BaseRepository}
+ * @class AttachmentService
+ * @extends {DBService}
  */
 export class AttachmentService extends DBService {
   attachmentRepository: AttachmentRepository;
@@ -1021,25 +1019,5 @@ export class AttachmentService extends DBService {
    */
   async getSurveyTelemetryCredentialAttachmentS3Key(surveyId: number, attachmentId: number): Promise<string> {
     return this.attachmentRepository.getSurveyTelemetryCredentialAttachmentS3Key(surveyId, attachmentId);
-  }
-
-  /**
-   * Insert Critter Capture Attachment.
-   *
-   * @param {CritterCaptureAttachmentPayload} payload
-   * @return {*} {Promise<{critter_capture_attachment_id: number}>}
-   */
-  async upsertCritterCaptureAttachment(payload: CritterCaptureAttachmentPayload) {
-    return this.attachmentRepository.upsertCritterCaptureAttachment(payload);
-  }
-
-  /**
-   * Upsert Critter Mortality Attachment.
-   *
-   * @param {CritterMortalityAttachmentPayload} payload
-   * @return {*} {Promise<{critter_mortality_attachment_id: number; key: string}>}
-   */
-  async upsertCritterMortalityAttachment(payload: CritterMortalityAttachmentPayload) {
-    return this.attachmentRepository.upsertCritterMortalityAttachment(payload);
   }
 }

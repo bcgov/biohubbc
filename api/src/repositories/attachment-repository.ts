@@ -84,24 +84,6 @@ export const SurveyTelemetryCredentialAttachment = z.object({
 });
 export type SurveyTelemetryCredentialAttachment = z.infer<typeof SurveyTelemetryCredentialAttachment>;
 
-export type CritterMortalityAttachmentPayload = {
-  critter_id: number;
-  critterbase_mortality_id: string;
-  file_name: string;
-  file_size: number;
-  file_type: string;
-  key: string;
-};
-
-export type CritterCaptureAttachmentPayload = {
-  critter_id: number;
-  critterbase_capture_id: string;
-  file_name: string;
-  file_size: number;
-  file_type: string;
-  key: string;
-};
-
 const defaultLog = getLogger('repositories/attachment-repository');
 
 /**
@@ -1788,103 +1770,5 @@ export class AttachmentRepository extends BaseRepository {
     }
 
     return response.rows[0].key;
-  }
-
-  /**
-   * Upsert Critter Capture Attachment record.
-   *
-   * @return {*}  {Promise<{ critter_capture_attachment_id: number }>}
-   * @memberof AttachmentRepository
-   */
-  async upsertCritterCaptureAttachment(
-    payload: CritterCaptureAttachmentPayload
-  ): Promise<{ critter_capture_attachment_id: number; key: string }> {
-    const sqlStatement = SQL`
-    INSERT INTO critter_capture_attachment (
-      critter_id,
-      critterbase_capture_id,
-      file_name,
-      file_size,
-      file_type,
-      key
-    ) VALUES (
-      ${payload.critter_id},
-      ${payload.critterbase_capture_id},
-      ${payload.file_name},
-      ${payload.file_size},
-      ${payload.file_type},
-      ${payload.key}
-    )
-    ON CONFLICT (critter_id, critterbase_mortality_id, file_name)
-    DO UPDATE SET
-      file_name = ${payload.file_name},
-      file_size = ${payload.file_size},
-      file_type = ${payload.file_type},
-    RETURNING
-      critter_capture_attachment_id, key;
-  `;
-
-    const response = await this.connection.sql(
-      sqlStatement,
-      z.object({ critter_capture_attachment_id: z.number(), key: z.string() })
-    );
-
-    if (!response?.rows?.[0]) {
-      throw new ApiExecuteSQLError('Failed to upsert critter capture attachment data', [
-        'AttachmentRepository->upsertCritterCaptureAttachment',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return response.rows[0];
-  }
-
-  /**
-   * Insert Critter Mortality Attachment record.
-   *
-   * @return {*}  {Promise<{ critter_mortality_attachment_id: number }>}
-   * @memberof AttachmentRepository
-   */
-  async upsertCritterMortalityAttachment(
-    payload: CritterMortalityAttachmentPayload
-  ): Promise<{ critter_mortality_attachment_id: number; key: string }> {
-    const sqlStatement = SQL`
-    INSERT INTO critter_capture_attachment (
-      critter_id,
-      critterbase_capture_id,
-      file_name,
-      file_size,
-      file_type,
-      key
-    ) VALUES (
-      ${payload.critter_id},
-      ${payload.critterbase_mortality_id},
-      ${payload.file_name},
-      ${payload.file_size},
-      ${payload.file_type},
-      ${payload.key}
-    )
-    ON CONFLICT (critter_id, critterbase_mortality_id, file_name)
-    DO UPDATE SET
-      file_name = ${payload.file_name},
-      file_size = ${payload.file_size},
-      file_type = ${payload.file_type},
-    RETURNING
-      critter_mortality_attachment_id, key;
-  `;
-
-    const response = await this.connection.sql(
-      sqlStatement,
-      z.object({ critter_mortality_attachment_id: z.number(), key: z.string() })
-    );
-
-    if (!response?.rows?.[0]) {
-      throw new ApiExecuteSQLError('Failed to upsert critter mortality attachment data', [
-        'AttachmentRepository->insertCritterMortalityAttachment',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return response.rows[0];
   }
 }
