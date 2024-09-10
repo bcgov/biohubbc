@@ -7,75 +7,49 @@ export const transformStudyAreas = async (connection: IDBConnection): Promise<vo
   const sql = SQL`
     -------------------------------------------------------------------------------------------------
     -- Transforms SPI Study Areas into SIMS Survey Locations 
-    -------------------------------------------------------------------------------------------------
+    
+    WITH w_survey_points AS (
+        SELECT 
+            bs.survey_id, 
+            sa.study_area_name,
+            sa.study_area_description,
+            igd.geo,
+            ST_ConvexHull(ST_Collect(ST_SetSRID(ST_MakePoint(wso.longitude, wso.latitude), 4326))) AS convex_hull,
+            COUNT(wso.wlo_id) AS so_count
+        FROM biohub.survey bs
+        JOIN public.spi_survey_study_areas ssa
+            ON bs.spi_survey_id = ssa.survey_id
+        JOIN public.spi_study_areas sa
+            ON ssa.study_area_id = sa.study_area_id
+        JOIN public.spi_document_references sdr
+            ON sa.study_area_id = sdr.study_area_id
+        LEFT JOIN public.imported_geo_data igd
+            ON sdr.document_reference_id = igd.spi_document_reference
+        LEFT JOIN public.spi_wildlife_observations wso
+            ON bs.spi_survey_id = wso.survey_id
+        WHERE sa.study_area_id IS NOT NULL 
+        AND wso.longitude IS NOT NULL 
+        AND wso.latitude IS NOT NULL
+        GROUP BY bs.survey_id, sa.study_area_name, sa.study_area_description, igd.geo
+    ),
+    buffered_geographies AS (
+        SELECT 
+            sp.survey_id,
+            sp.study_area_name,
+            sp.study_area_description,
+            sp.convex_hull,
+            sp.geo,
+            sp.so_count,
+            (0.2 * sqrt(ST_Area(sp.convex_hull)) + 0.05 * pow((ST_Area(sp.convex_hull) / sp.so_count), 0.75)) AS buffer_value
+        FROM w_survey_points sp
+    )
     INSERT INTO biohub.survey_location (survey_id, name, description, geography)
     SELECT 
-        bs.survey_id, 
-        sa.study_area_name, 
-        sa.study_area_description,
-        COALESCE(igd.geo, ST_ConvexHull(ST_Collect(ST_SetSRID(ST_MakePoint(wso.longitude, wso.latitude), 4326)))) AS geography
-    FROM biohub.survey bs
-    JOIN public.spi_survey_study_areas ssa
-        ON bs.spi_survey_id = ssa.survey_id
-    JOIN public.spi_study_areas sa
-        ON ssa.study_area_id = sa.study_area_id
-    JOIN public.spi_document_references sdr
-        ON sa.study_area_id = sdr.study_area_id
-    LEFT JOIN public.imported_geo_data igd
-        ON sdr.document_reference_id = igd.spi_document_reference
-    LEFT JOIN public.spi_wildlife_observations wso
-        ON bs.spi_survey_id = wso.survey_id
-    WHERE sa.study_area_id IS NOT NULL 
-    AND wso.longitude IS NOT NULL 
-    AND wso.latitude IS NOT null
-    GROUP BY bs.survey_id, sa.study_area_name, sa.study_area_description, igd.geo;
-
-
--------------------------------------------------
---- new code below to replace code above if approved -- including buffer logic from those python scripts -- 
-------------------------------- 
-
-WITH survey_points AS (
-    SELECT 
-        bs.survey_id, 
-        sa.study_area_name,
-        sa.study_area_description,
-        COALESCE(igd.geo, ST_ConvexHull(ST_Collect(ST_SetSRID(ST_MakePoint(wso.longitude, wso.latitude), 4326)))) AS convex_hull,
-        COUNT(wso.survey_id) AS so_count
-    FROM biohub.survey bs
-    JOIN public.spi_survey_study_areas ssa
-        ON bs.spi_survey_id = ssa.survey_id
-    JOIN public.spi_study_areas sa
-        ON ssa.study_area_id = sa.study_area_id
-    JOIN public.spi_document_references sdr
-        ON sa.study_area_id = sdr.study_area_id
-    LEFT JOIN public.imported_geo_data igd
-        ON sdr.document_reference_id = igd.spi_document_reference
-    LEFT JOIN public.spi_wildlife_observations wso
-        ON bs.spi_survey_id = wso.survey_id
-    WHERE sa.study_area_id IS NOT NULL 
-    AND wso.longitude IS NOT NULL 
-    AND wso.latitude IS NOT NULL
-    GROUP BY bs.survey_id, sa.study_area_name, sa.study_area_description, igd.geo
-),
-buffered_geographies AS (
-    SELECT 
-        sp.survey_id,
-        sp.study_area_name,
-        sp.study_area_description,
-        sp.convex_hull,
-        ST_Area(sp.convex_hull) AS area_m2,
-        sp.so_count,
-        (0.2 * sqrt(ST_Area(sp.convex_hull)) + 0.05 * pow((ST_Area(sp.convex_hull) / sp.so_count), 0.75)) AS buffer_value
-    FROM survey_points sp
-)
-INSERT INTO biohub.survey_location (survey_id, name, description, geography)
-SELECT 
-    bg.survey_id, 
-    bg.study_area_name, 
-    bg.study_area_description, 
-    ST_Buffer(bg.convex_hull, bg.buffer_value) AS geography
-FROM buffered_geographies bg;
+        bg.survey_id, 
+        bg.study_area_name, 
+        bg.study_area_description, 
+        COALESCE(sp.geo, ST_Buffer(bg.convex_hull, bg.buffer_value)) AS geography
+    FROM buffered_geographies bg;
   `;
 
   await connection.sql(sql);
