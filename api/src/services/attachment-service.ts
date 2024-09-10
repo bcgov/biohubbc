@@ -9,6 +9,8 @@ import {
 } from '../models/project-survey-attachments';
 import {
   AttachmentRepository,
+  CritterCaptureAttachmentPayload,
+  CritterMortalityAttachmentPayload,
   IProjectAttachment,
   IProjectReportAttachment,
   IProjectReportAttachmentAuthor,
@@ -1019,5 +1021,25 @@ export class AttachmentService extends DBService {
    */
   async getSurveyTelemetryCredentialAttachmentS3Key(surveyId: number, attachmentId: number): Promise<string> {
     return this.attachmentRepository.getSurveyTelemetryCredentialAttachmentS3Key(surveyId, attachmentId);
+  }
+
+  /**
+   * Insert Critter Capture Attachment.
+   *
+   * @param {CritterCaptureAttachmentPayload} payload
+   * @return {*} {Promise<{critter_capture_attachment_id: number}>}
+   */
+  async insertCritterCaptureAttachment(payload: CritterCaptureAttachmentPayload) {
+    return this.attachmentRepository.insertCritterCaptureAttachment(payload);
+  }
+
+  /**
+   * Insert Critter Mortality Attachment.
+   *
+   * @param {CritterMortalityAttachmentPayload} payload
+   * @return {*} {Promise<{critter_mortality_attachment_id: number}>}
+   */
+  async insertCritterMortalityAttachment(payload: CritterMortalityAttachmentPayload) {
+    return this.attachmentRepository.insertCritterMortalityAttachment(payload);
   }
 }

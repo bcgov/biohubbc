@@ -84,6 +84,24 @@ export const SurveyTelemetryCredentialAttachment = z.object({
 });
 export type SurveyTelemetryCredentialAttachment = z.infer<typeof SurveyTelemetryCredentialAttachment>;
 
+export type CritterMortalityAttachmentPayload = {
+  critter_id: number;
+  critterbase_mortality_id: string;
+  fileName: string;
+  fileSize: number;
+  fileType: string;
+  key: string;
+};
+
+export type CritterCaptureAttachmentPayload = {
+  critter_id: number;
+  critterbase_capture_id: string;
+  fileName: string;
+  fileSize: number;
+  fileType: string;
+  key: string;
+};
+
 const defaultLog = getLogger('repositories/attachment-repository');
 
 /**
@@ -1778,14 +1796,9 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<{ critter_capture_attachment_id: number }>}
    * @memberof AttachmentRepository
    */
-  async insertCritterCaptureAttachment(config: {
-    critter_id: string;
-    critterbase_capture_id: string;
-    fileName: string;
-    fileSize: number;
-    fileType: string;
-    key: string;
-  }): Promise<{ critter_capture_attachment_id: number }> {
+  async insertCritterCaptureAttachment(
+    payload: CritterCaptureAttachmentPayload
+  ): Promise<{ critter_capture_attachment_id: number }> {
     const sqlStatement = SQL`
     INSERT INTO critter_capture_attachment (
       critter_id,
@@ -1795,12 +1808,12 @@ export class AttachmentRepository extends BaseRepository {
       file_type,
       key
     ) VALUES (
-      ${config.critter_id},
-      ${config.critterbase_capture_id},
-      ${config.fileName},
-      ${config.fileSize},
-      ${config.fileType},
-      ${config.key}
+      ${payload.critter_id},
+      ${payload.critterbase_capture_id},
+      ${payload.fileName},
+      ${payload.fileSize},
+      ${payload.fileType},
+      ${payload.key}
     )
     RETURNING
       critter_capture_attachment_id;
@@ -1824,14 +1837,9 @@ export class AttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<{ critter_mortality_attachment_id: number }>}
    * @memberof AttachmentRepository
    */
-  async insertCritterMortalityAttachment(config: {
-    critter_id: number;
-    critterbase_capture_id: string;
-    fileName: string;
-    fileSize: number;
-    fileType: string;
-    key: string;
-  }): Promise<{ critter_mortality_attachment_id: number }> {
+  async insertCritterMortalityAttachment(
+    payload: CritterMortalityAttachmentPayload
+  ): Promise<{ critter_mortality_attachment_id: number }> {
     const sqlStatement = SQL`
     INSERT INTO critter_capture_attachment (
       critter_id,
@@ -1841,12 +1849,12 @@ export class AttachmentRepository extends BaseRepository {
       file_type,
       key
     ) VALUES (
-      ${config.critter_id},
-      ${config.critterbase_capture_id},
-      ${config.fileName},
-      ${config.fileSize},
-      ${config.fileType},
-      ${config.key}
+      ${payload.critter_id},
+      ${payload.critterbase_mortality_id},
+      ${payload.fileName},
+      ${payload.fileSize},
+      ${payload.fileType},
+      ${payload.key}
     )
     RETURNING
       critter_mortality_attachment_id;
@@ -1855,7 +1863,7 @@ export class AttachmentRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement, z.object({ critter_mortality_attachment_id: z.number() }));
 
     if (!response?.rows?.[0]) {
-      throw new ApiExecuteSQLError('Failed to insert critter mortalitye attachment data', [
+      throw new ApiExecuteSQLError('Failed to insert critter mortality attachment data', [
         'AttachmentRepository->insertCritterMortalityAttachment',
         'rows was null or undefined, expected rows != null'
       ]);
