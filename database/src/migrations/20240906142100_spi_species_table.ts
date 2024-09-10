@@ -29,8 +29,8 @@ export async function up(knex: Knex): Promise<void> {
         CONSTRAINT spi_species_id_uk UNIQUE (spi_species_id)
     );
     `);
-    }
+}
 
-    export async function down(knex: Knex): Promise<void> {
-    await knex.raw(``);
-    }
+export async function down(knex: Knex): Promise<void> {
+  await knex.raw(``);
+}
