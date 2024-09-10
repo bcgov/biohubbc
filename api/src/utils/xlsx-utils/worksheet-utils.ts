@@ -23,7 +23,7 @@ export interface IXLSXCSVColumn {
    *
    * time: HH:mm:ss
    */
-  type: 'string' | 'number' | 'date';
+  type: 'string' | 'number' | 'date' | 'code';
   /**
    * Allowed aliases / mappings for column headers.
    *
@@ -252,6 +252,11 @@ export const validateWorksheetColumnTypes = (
 
       if (columnSpec.type === 'date') {
         validated = dayjs(value).isValid();
+      }
+
+      if (columnSpec.type === 'code') {
+        // Codes are always strings?
+        validated = type === 'string';
       }
 
       if (columnSpec.type === type) {

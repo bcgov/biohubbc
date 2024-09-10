@@ -32,6 +32,11 @@ export type ISamplePeriodOption = {
   sample_period_name: string;
 };
 
+type IObservationSubcountSignOption = {
+  observation_subcount_sign_id: number;
+  name: string;
+};
+
 export const TaxonomyColDef = (props: {
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
@@ -264,6 +269,35 @@ export const ObservationCountColDef = (props: {
           }}
         />
       );
+    }
+  };
+};
+
+export const ObservationSubcountSignColDef = (props: {
+  observationSubcountSignOptions: IObservationSubcountSignOption[];
+  hasError: (params: GridCellParams) => boolean;
+}): GridColDef<IObservationTableRow> => {
+  const { observationSubcountSignOptions, hasError } = props;
+  const signOptions = observationSubcountSignOptions.map((item) => ({
+    label: item.name,
+    value: item.observation_subcount_sign_id
+  }));
+
+  return {
+    field: 'observation_subcount_sign_id',
+    headerName: 'Sign',
+    description: 'The sign of the observation',
+    editable: true,
+    hideable: true,
+    minWidth: 140,
+    disableColumnMenu: true,
+    headerAlign: 'left',
+    align: 'left',
+    renderCell: (params) => {
+      return <AutocompleteDataGridViewCell dataGridProps={params} options={signOptions} error={hasError(params)} />;
+    },
+    renderEditCell: (params) => {
+      return <AutocompleteDataGridEditCell dataGridProps={params} options={signOptions} error={hasError(params)} />;
     }
   };
 };

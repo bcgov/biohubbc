@@ -3,6 +3,8 @@ import { IXLSXCSVColumn, IXLSXCSVValidator } from './worksheet-utils';
 
 // TODO: Move the IXLSXCSVValidator type to this file
 
+export type CellObject<CellType = any> = { column: string; cell: CellType | undefined };
+
 /**
  * Get column names / headers from column validator.
  *
@@ -53,7 +55,7 @@ export const getColumnValidatorSpecification = (columnValidator: IXLSXCSVValidat
 /**
  * Generate a column + cell getter from a column validator.
  *
- * Note: This will attempt to retrive the column header and cell value from the row by the known header first.
+ * Note: This will attempt to retrieve the column header and cell value from the row by the known header first.
  * If not found, it will then attempt to retrieve the value by the column header aliases.
  *
  * @example
@@ -62,12 +64,14 @@ export const getColumnValidatorSpecification = (columnValidator: IXLSXCSVValidat
  * const itis_tsn = getColumnCell(row, 'ITIS_TSN').cell
  * const tsnColumn = getColumnCell(row, 'ITIS_TSN').column
  *
- * @template T
- * @param {T} columnValidator - Column validator
+ * @template ValidatorType
+ * @param {ValidatorType} columnValidator - Column validator
  * @returns {*}
  */
-export const generateColumnCellGetterFromColumnValidator = <T extends IXLSXCSVValidator>(columnValidator: T) => {
-  return <J = any>(row: Row, validatorKey: keyof T): { column: string; cell: J | undefined } => {
+export const generateColumnCellGetterFromColumnValidator = <ValidatorType extends IXLSXCSVValidator>(
+  columnValidator: ValidatorType
+) => {
+  return <CellType = any>(row: Row, validatorKey: keyof ValidatorType): CellObject<CellType> => {
     // Cast the columnValidatorKey to a string for convienience
     const key = validatorKey as string;
 

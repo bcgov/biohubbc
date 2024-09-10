@@ -40,4 +40,5 @@ export interface IGetAllCodeSetsResponse {
   sample_methods: CodeSet<{ id: number; name: string; description: string }>;
   method_response_metrics: CodeSet<{ id: number; name: string; description: string }>;
   attractants: CodeSet<{ id: number; name: string; description: string }>;
+  observation_subcount_signs: CodeSet<{ id: number; name: string; description: string }>;
 }

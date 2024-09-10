@@ -41,6 +41,7 @@ describe('findObservations', () => {
           {
             observation_subcount_id: 9,
             subcount: 5,
+            observation_subcount_sign_id: 1,
             qualitative_measurements: [],
             quantitative_measurements: [],
             qualitative_environments: [],
@@ -131,6 +132,7 @@ describe('findObservations', () => {
           {
             observation_subcount_id: 9,
             subcount: 5,
+            observation_subcount_sign_id: 1,
             qualitative_measurements: [],
             quantitative_measurements: [],
             qualitative_environments: [],
