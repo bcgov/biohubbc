@@ -24,35 +24,49 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
     -------------------------------------------------------------------------------------------------
     -- Determines project associations of each user and inserts associations into project_participation
     -------------------------------------------------------------------------------------------------
-    WITH w_mapping AS (
-        SELECT 
-            p.spi_project_id, 
-            pp.person_id, 
-            pp.first_name, 
-            pp.last_name, 
-            b.project_id
-        FROM 
-            public.spi_projects p
-        INNER JOIN 
-            biohub.project b ON p.spi_project_id = b.spi_project_id
-        INNER JOIN 
-            spi_persons pp ON pp.spi_project_id = p.spi_project_id
-        LEFT JOIN 
-            biohub.system_user su 
-            ON pp.first_name = su.first_name AND pp.last_name = su.last_name
-        WHERE 
-            su.system_user_id IS NULL 
-    )
+    WITH w_mapping AS
+        (
+            SELECT 
+                p.spi_project_id, 
+                pp.person_id, 
+                b.project_id
+            FROM 
+                public.spi_projects p
+            INNER JOIN 
+                biohub.project b ON p.spi_project_id = b.spi_project_id
+            INNER JOIN 
+                spi_persons pp ON pp.spi_project_id = p.spi_project_id
+        )
     INSERT INTO
         biohub.project_participation (project_id, system_user_id, project_role_id, create_user)
     SELECT DISTINCT
         w_mapping.project_id,
-        (SELECT biohub_user_id FROM public.migrate_spi_user_deduplication WHERE w_mapping.person_id = ANY (spi_person_ids)),
-        (SELECT project_role_id FROM biohub.project_role WHERE name = 'Collaborator'),
-        (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'spi')
+
+        COALESCE (
+        (SELECT biohub_user_id 
+         FROM public.migrate_spi_user_deduplication 
+         WHERE w_mapping.person_id = ANY (spi_person_ids)
+        ), 
+        (SELECT system_user_id 
+         FROM biohub.system_user 
+         WHERE user_identifier = 'spi')
+        ) AS system_user_id,
+
+            CASE 
+        WHEN spp.email_address LIKE '%@gov.bc.ca%' THEN 
+            (SELECT project_role_id FROM biohub.project_role WHERE name = 'Collaborator')
+        ELSE 
+            (SELECT project_role_id FROM biohub.project_role WHERE name = 'Observer')
+        END AS project_role_id,
+
+        (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'spi') AS create_user
+        
     FROM 
         w_mapping
-    ON CONFLICT DO NOTHING;
+    JOIN 
+        public.spi_secure_persons spp
+        ON spp.first_name = pp.first_given_name
+        AND spp.last_name = pp.surname;
   `;
 
   await connection.sql(sql);
