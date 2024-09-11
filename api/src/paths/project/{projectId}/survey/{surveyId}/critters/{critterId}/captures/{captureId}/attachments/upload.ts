@@ -5,7 +5,7 @@ import { getDBConnection } from '../../../../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../../../../errors/http-error';
 import { fileSchema } from '../../../../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../../../../request-handlers/security/authorization';
-import { AttachmentService } from '../../../../../../../../../../services/attachment-service';
+import { CritterAttachmentService } from '../../../../../../../../../../services/critter-attachment-service';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../../../utils/logger';
 import { getFileFromRequest } from '../../../../../../../../../../utils/request';
@@ -154,21 +154,20 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      const attachmentService = new AttachmentService(connection);
+      const critterAttachmentService = new CritterAttachmentService(connection);
 
-      const upsertResult = await attachmentService.upsertCritterCaptureAttachment({
+      const s3Key = generateS3FileKey({
+        projectId: Number(req.params.projectId),
+        surveyId: Number(req.params.surveyId),
+        fileName: rawMediaFile.originalname,
+        folder: 'captures'
+      });
+
+      const upsertResult = await critterAttachmentService.upsertCritterCaptureAttachment({
         critter_id: Number(req.params.critterId),
         critterbase_capture_id: req.params.captureId,
-        file_name: rawMediaFile.originalname,
-        file_size: rawMediaFile.size,
-        file_type: rawMediaFile.mimetype,
-        // Key will only be set on successful 'insert' upload
-        key: generateS3FileKey({
-          projectId: Number(req.params.projectId),
-          surveyId: Number(req.params.surveyId),
-          fileName: rawMediaFile.originalname,
-          folder: 'captures'
-        })
+        file: rawMediaFile,
+        key: s3Key
       });
 
       const result = await uploadFileToS3(rawMediaFile, upsertResult.key);

@@ -5,7 +5,8 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 import {
   CritterCaptureAttachmentPayload,
-  CritterMortalityAttachmentPayload
+  CritterMortalityAttachmentPayload,
+  CritterMortalityAttachmentUpsertResponse
 } from './critter-attachment-repository.interface';
 
 /**
@@ -19,12 +20,12 @@ export class CritterAttachmentRepository extends BaseRepository {
   /**
    * Upsert Critter Capture Attachment record.
    *
-   * @return {*}  {Promise<{ critter_capture_attachment_id: number; key: string }>}
+   * @return {*}  {Promise<CritterCaptureUpsertResponse>}
    * @memberof AttachmentRepository
    */
   async upsertCritterCaptureAttachment(
     payload: CritterCaptureAttachmentPayload
-  ): Promise<{ critter_capture_attachment_id: number; key: string }> {
+  ): Promise<CritterCaptureAttachmentUpsertResponse> {
     const sqlStatement = SQL`
     INSERT INTO critter_capture_attachment (
       critter_id,
@@ -37,16 +38,16 @@ export class CritterAttachmentRepository extends BaseRepository {
     VALUES (
       ${payload.critter_id},
       ${payload.critterbase_capture_id},
-      ${payload.file_name},
-      ${payload.file_size},
-      ${payload.file_type},
+      ${payload.file.filename},
+      ${payload.file.size},
+      ${payload.file.mimetype},
       ${payload.key}
     )
     ON CONFLICT (critter_id, critterbase_capture_id, file_name)
     DO UPDATE SET
-      file_name = ${payload.file_name},
-      file_size = ${payload.file_size},
-      file_type = ${payload.file_type}
+      file_name = ${payload.file.filename},
+      file_size = ${payload.file.size},
+      file_type = ${payload.file.mimetype}
     RETURNING
       critter_capture_attachment_id,
       key;
@@ -70,12 +71,12 @@ export class CritterAttachmentRepository extends BaseRepository {
   /**
    * Insert Critter Mortality Attachment record.
    *
-   * @return {*}  {Promise<{ critter_mortality_attachment_id: number; key: string }>}
+   * @return {*}  {Promise<MortalityAttachmentUpsertResponse>}
    * @memberof AttachmentRepository
    */
   async upsertCritterMortalityAttachment(
     payload: CritterMortalityAttachmentPayload
-  ): Promise<{ critter_mortality_attachment_id: number; key: string }> {
+  ): Promise<CritterMortalityAttachmentUpsertResponse> {
     const sqlStatement = SQL`
     INSERT INTO critter_capture_attachment (
       critter_id,
@@ -88,16 +89,16 @@ export class CritterAttachmentRepository extends BaseRepository {
     VALUES (
       ${payload.critter_id},
       ${payload.critterbase_mortality_id},
-      ${payload.file_name},
-      ${payload.file_size},
-      ${payload.file_type},
+      ${payload.file.filename},
+      ${payload.file.size},
+      ${payload.file.mimetype},
       ${payload.key}
     )
     ON CONFLICT (critter_id, critterbase_mortality_id, file_name)
     DO UPDATE SET
-      file_name = ${payload.file_name},
-      file_size = ${payload.file_size},
-      file_type = ${payload.file_type}
+      file_name = ${payload.file.filename},
+      file_size = ${payload.file.size},
+      file_type = ${payload.file.mimetype}
     RETURNING
       critter_mortality_attachment_id,
       key;

@@ -1,3 +1,4 @@
+import { CritterCaptureAttachmentRecord } from '../database-models/critter_capture_attachment';
 import { IDBConnection } from '../database/db';
 import { CritterAttachmentRepository } from '../repositories/critter-attachment-repository';
 import {
@@ -26,9 +27,11 @@ export class CritterAttachmentService extends DBService {
    * Insert Critter Capture Attachment.
    *
    * @param {CritterCaptureAttachmentPayload} payload
-   * @return {*} {Promise<{critter_capture_attachment_id: number}>}
+   * @return {*} {Promise<{critter_capture_attachment_id: number; key: string}>}
    */
-  async upsertCritterCaptureAttachment(payload: CritterCaptureAttachmentPayload) {
+  async upsertCritterCaptureAttachment(
+    payload: CritterCaptureAttachmentPayload
+  ): Promise<{ critter_capture_attachment_id: number; key: string }> {
     return this.attachmentRepository.upsertCritterCaptureAttachment(payload);
   }
 
@@ -38,17 +41,19 @@ export class CritterAttachmentService extends DBService {
    * @param {CritterMortalityAttachmentPayload} payload
    * @return {*} {Promise<{critter_mortality_attachment_id: number; key: string}>}
    */
-  async upsertCritterMortalityAttachment(payload: CritterMortalityAttachmentPayload) {
+  async upsertCritterMortalityAttachment(
+    payload: CritterMortalityAttachmentPayload
+  ): Promise<{ critter_mortality_attachment_id: number; key: string }> {
     return this.attachmentRepository.upsertCritterMortalityAttachment(payload);
   }
 
   /**
-   * Get all Attachments for a Critterbase Capture ID
+   * Get all Attachments for a Critterbase Capture ID.
    *
    * @param {string} critterbaseCaptureId - the critterbase capture ID
-   * @return {*} {Promise<CritterCaptureAttachment[]>}
+   * @return {*} {Promise<CritterCaptureAttachmentRecord[]>}
    */
-  async getCaptureAttachments(critterbaseCaptureId: string) {
+  async getCaptureAttachments(critterbaseCaptureId: string): Promise<CritterCaptureAttachmentRecord[]> {
     return this.attachmentRepository.getCaptureAttachmentsByCaptureId(critterbaseCaptureId);
   }
 }
