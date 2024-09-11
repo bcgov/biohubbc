@@ -35,9 +35,8 @@ export const SamplingSiteListContainer = () => {
   const biohubApi = useBiohubApi();
 
   useEffect(() => {
-    surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    surveyContext.sampleSiteDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+  }, [surveyContext.projectId, surveyContext.sampleSiteDataLoader, surveyContext.surveyId]);
 
   const [sampleSiteAnchorEl, setSampleSiteAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [headerAnchorEl, setHeaderAnchorEl] = useState<MenuProps['anchorEl']>(null);
