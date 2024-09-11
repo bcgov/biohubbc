@@ -96,7 +96,8 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
           color="primary"
           onClick={() => setOpenImportDialog(true)}
           startIcon={<Icon path={mdiFileDocumentPlusOutline} size={1} />}
-          sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, '& .MuiButton-startIcon': { mx: 0 } }}></Button>
+          sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, '& .MuiButton-startIcon': { mx: 0 } }}
+        />
         <IconButton
           edge="end"
           sx={{ ml: 1 }}
