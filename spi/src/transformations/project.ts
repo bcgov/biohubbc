@@ -66,6 +66,7 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
             WHERE project_id = w_mapping.project_id 
               AND project_role_id = (SELECT project_role_id FROM biohub.project_role WHERE name = 'Coordinator')
         ) THEN (SELECT project_role_id FROM biohub.project_role WHERE name = 'Coordinator'), (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'spi')
+         ----- double check that when the not exists is doing what we want it to do (assign spi as coordinator when coordinator is undefined)
         WHEN spp.email_address LIKE '%@gov.bc.ca%'  
             AND NOT EXISTS (
              SELECT 1 
