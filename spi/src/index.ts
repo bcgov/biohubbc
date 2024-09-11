@@ -49,6 +49,9 @@ async function main() {
     // STEP 6. Transforms SPI Design Components into SIMS Sampling Sites
     await transformSampleSites(connection);
 
+    //STEP 7.  Transforms SPI Survey Areas into SIMS Survey Locations
+    await transformSampleSites(connection);
+
     // Commit the transactions
     connection.commit();
 
