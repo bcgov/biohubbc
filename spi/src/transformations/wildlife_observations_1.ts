@@ -59,8 +59,12 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
             public.migrate_spi_sample_period_visit msspv
         ON 
             msspv.design_component_visit_id = swo.design_component_visit_id
+        LEFT JOIN 
+            public.spi_telemetry_observations sto
+        ON 
+            swo.wlo_id = sto.wlo_id
         WHERE 
-            swo.wlo_count != 0
+            swo.wlo_count != 0 AND AND sto.wlo_id IS NULL
         RETURNING swo.wlo_id, so.survey_observation_id;)
 
     INSERT INTO 
