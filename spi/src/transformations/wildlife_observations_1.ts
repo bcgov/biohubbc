@@ -34,8 +34,9 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
             swo.when_created, 
             mssdc.survey_sample_site_id, 
             ssm.survey_sample_method_id, 
-            ssp.survey_sample_period_id
-            -- itis_tsn and scientific name will come from biohub.study_species joined from swo on survey_id (biohub or spi survey id) and txonomic unit id 
+            ssp.survey_sample_period_id,
+            mss.itis_tsn,
+            mss.itis_scientific_name
     
         FROM 
             public.spi_wildlife_observations swo
@@ -63,6 +64,10 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
             public.spi_telemetry_observations sto
         ON 
             swo.wlo_id = sto.wlo_id
+        LEFT JOIN 
+            public.migrate_spi_species mss
+        ON 
+            swo.taxonomic_unit_id = mss.spi_species_id
         WHERE 
             swo.wlo_count != 0 AND AND sto.wlo_id IS NULL
         RETURNING swo.wlo_id, so.survey_observation_id;)
