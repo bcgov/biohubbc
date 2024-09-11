@@ -104,7 +104,12 @@ const openAPIFramework = initialize({
           }
         });
 
-        await Promise.all(virusScanPromises);
+        try {
+          await Promise.all(virusScanPromises);
+        } catch (error) {
+          // If a virus is detected, return error and do not continue
+          return next(error);
+        }
 
         // Ensure `req.files` or `req.body.media` is always set to an array
         const multerFiles = req.files ?? [];
