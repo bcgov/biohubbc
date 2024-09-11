@@ -57,8 +57,6 @@ export class ExportService extends DBService {
         exportConfig.exportStrategies.map(async (exportStrategy) => {
           const exportStrategyConfig = await exportStrategy.getExportStrategyConfig(this.connection);
 
-          defaultLog.silly({ label: 'export', message: 'exportStrategyConfig', exportStrategyConfig });
-
           // Append and execute all export strategy queries
           if (exportStrategyConfig.queries) {
             for (const queryConfig of exportStrategyConfig.queries) {
