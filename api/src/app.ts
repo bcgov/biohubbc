@@ -5,7 +5,7 @@ import { OpenAPIV3 } from 'openapi-types';
 import path from 'path';
 import swaggerUIExperss from 'swagger-ui-express';
 import { defaultPoolConfig, initDBPool } from './database/db';
-import { ensureHTTPError, HTTP400, HTTP500 } from './errors/http-error';
+import { ensureHTTPError, HTTP500 } from './errors/http-error';
 import {
   authorizeAndAuthenticateMiddleware,
   getCritterbaseProxyMiddleware,
@@ -13,7 +13,6 @@ import {
 } from './middleware/critterbase-proxy';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest, authenticateRequestOptional } from './request-handlers/security/authentication';
-import { scanFileForVirus } from './utils/file-utils';
 import { getLogger } from './utils/logger';
 
 const defaultLog = getLogger('app');
@@ -76,7 +75,7 @@ const openAPIFramework = initialize({
     'application/json': express.json({ limit: MAX_REQ_BODY_SIZE }),
     'multipart/form-data': function (req, res, next) {
       const multerRequestHandler = multer({
-        storage: multer.memoryStorage(), // TOOD change to local/PVC storage and stream file uploads to S3?
+        storage: multer.memoryStorage(),
         limits: { fileSize: MAX_UPLOAD_FILE_SIZE }
       }).array('media', MAX_UPLOAD_NUM_FILES);
 
@@ -90,21 +89,10 @@ const openAPIFramework = initialize({
        *
        * @see https://www.npmjs.com/package/express-openapi#argsconsumesmiddleware
        */
-      multerRequestHandler(req, res, async (error?: any) => {
+      multerRequestHandler(req, res, (error?: any) => {
         if (error) {
           return next(error);
         }
-
-        // Scan files for malicious content, if enabled
-        const virusScanPromises = (req.files as Express.Multer.File[]).map(async function (file) {
-          const isSafe = await scanFileForVirus(file);
-
-          if (!isSafe) {
-            throw new HTTP400('Malicious file content detected.', [{ file_name: file.originalname }]);
-          }
-        });
-
-        await Promise.all(virusScanPromises);
 
         // Ensure `req.files` or `req.body.media` is always set to an array
         const multerFiles = req.files ?? [];
