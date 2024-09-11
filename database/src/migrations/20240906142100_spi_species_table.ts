@@ -19,7 +19,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE IF NOT EXISTS public.migrate_spi_species (
         id                      integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
         spi_species_id          INTEGER NOT NULL,
-        spi_species_code        VARCHAR(16),
+        spi_species_code        VARCHAR(128),
         spi_scientific_name     VARCHAR(128),
         spi_rank                VARCHAR(24),
         itis_tsn                VARCHAR(16),

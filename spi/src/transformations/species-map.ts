@@ -49,8 +49,8 @@ export const insertMappedSpecies = async (filepath: string, connection: IDBConne
     spiCodes = spiCodes.slice(0, NUMBER_OF_SPECIES_FOR_TESTING);
   }
 
-  // Create the table if it does not exist and truncate for testing
-  // This cna be removed when migrate_spi_species is added via a migration
+  // Create the mapping table if it does not yet exist, and then truncate the table in case it does exist
+  // NOTE: This can be removed when migrate_spi_species is added via a migration
   await connection.sql(SQL`
     CREATE TABLE IF NOT EXISTS public.migrate_spi_species (
         id                      integer PRIMARY KEY GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
@@ -76,12 +76,16 @@ export const insertMappedSpecies = async (filepath: string, connection: IDBConne
   // Chunk the map for database inserts. Chunks are used to limit the number of records being inserted at a time
   const chunks = _chunkArray(Array.from(speciesMap), 300);
 
-  // Insert each chunk into the database
+  const promises = [];
+
+  // Insert each chunk of species into the database
   for (const chunk of chunks) {
     if (chunk.length) {
-      await _insertItisRecords(new Map(chunk), connection);
+      promises.push(_insertItisRecords(new Map(chunk), connection));
     }
   }
+
+  await Promise.all(promises);
 
   console.log('Successfully inserted species');
 };
@@ -123,30 +127,31 @@ async function _insertItisRecords(objectsForInsert: Map<number, ISpeciesMapData>
     sqlParts.push(sqlValues);
   }
 
-  // Initialize SQL statement
   let sql = SQL``;
 
   // Only build the insert SQL if there are values to insert
   if (sqlParts.length > 0) {
+    // Initialize SQL statement
     const insertSql = SQL`
-      INSERT INTO public.migrate_spi_species (
-        spi_species_id,
-        spi_species_code,
-        spi_scientific_name,
-        spi_rank,
-        itis_tsn,
-        itis_scientific_name,
-        itis_rank
-      ) VALUES `;
+  INSERT INTO public.migrate_spi_species (
+    spi_species_id,
+    spi_species_code,
+    spi_scientific_name,
+    spi_rank,
+    itis_tsn,
+    itis_scientific_name,
+    itis_rank
+  ) VALUES `;
 
     // Append all values to the insert statement
     insertSql.append(sqlParts.join(', '));
+
+    // TODO: Remove the need for ON CONFLICT.
+    // Do nothing on conflicts, which happens when an ITIS TSN has already been inserted.
     insertSql.append(' ON CONFLICT DO NOTHING;');
 
     // Append the insert statement to the main SQL
     sql.append(insertSql);
-  } else {
-    console.log('No records to insert.');
   }
 
   // Execute the SQL statement
@@ -155,7 +160,7 @@ async function _insertItisRecords(objectsForInsert: Map<number, ISpeciesMapData>
     return response.rows;
   } catch (error) {
     console.error('Error during insert operation:', error);
-    throw error; // Rethrow the error after logging it
+    throw error;
   }
 }
 
@@ -182,7 +187,7 @@ async function _fetchItisTsns(spiCodes: ISpiSpeciesObject[]) {
 
       // Fetch data from ITIS Solr API
       const { data } = await axios.get<ItisSolrResponseBase<ItisSolrSearchResponse[]>>(url, {});
-      console.log(url, '=>', data);
+
       results = [...results, data];
     } catch (error) {
       console.error('Error fetching ITIS TSNs:', error);
@@ -206,7 +211,6 @@ async function _fetchItisTsns(spiCodes: ISpiSpeciesObject[]) {
       spi: spiCode
     });
   }
-  console.log(speciesMap);
   return speciesMap;
 }
 
