@@ -1,11 +1,10 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { CritterCaptureAttachmentRecord } from '../database-models/critter_capture_attachment';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 import {
-  CritterCaptureAttachment,
   CritterCaptureAttachmentPayload,
-  CritterCaptureAttachmentSchema,
   CritterMortalityAttachmentPayload
 } from './critter-attachment-repository.interface';
 
@@ -126,16 +125,16 @@ export class CritterAttachmentRepository extends BaseRepository {
    * @return {*}  {Promise<CritterCaptureAttachment[]>}
    * @memberof CritterAttachmentRepository
    */
-  async getCaptureAttachmentsByCaptureId(critterbaseCaptureId: string): Promise<CritterCaptureAttachment[]> {
+  async getCaptureAttachmentsByCaptureId(critterbaseCaptureId: string): Promise<CritterCaptureAttachmentRecord[]> {
     const sqlStatement = SQL`
       SELECT
         critter_capture_attachment_id,
         uuid,
         critter_id,
         critterbase_capture_id,
+        file_type,
         file_name,
         file_size,
-        file_type,
         title,
         description,
         key
@@ -143,7 +142,7 @@ export class CritterAttachmentRepository extends BaseRepository {
       WHERE critterbase_capture_id = ${critterbaseCaptureId};
     `;
 
-    const response = await this.connection.sql(sqlStatement, CritterCaptureAttachmentSchema);
+    const response = await this.connection.sql(sqlStatement, CritterCaptureAttachmentRecord);
 
     return response.rows;
   }

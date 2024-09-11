@@ -29,7 +29,7 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE TABLE critter_capture_attachment (
       critter_capture_attachment_id  integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-      uuid                           uuid               DEFAULT public.gen_random_uuid(),
+      uuid                           uuid               DEFAULT public.gen_random_uuid() NOT NULL,
       critter_id                     integer            NOT NULL,
       critterbase_capture_id         uuid               NOT NULL,
       file_type                      varchar(300)       NOT NULL,
@@ -89,7 +89,7 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE TABLE critter_mortality_attachment (
       critter_mortality_attachment_id  integer          GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-      uuid                           uuid               DEFAULT public.gen_random_uuid(),
+      uuid                           uuid               DEFAULT public.gen_random_uuid() NOT NULL,
       critter_id                     integer            NOT NULL,
       critterbase_mortality_id       uuid               NOT NULL,
       file_type                      varchar(300)       NOT NULL,
