@@ -21,7 +21,12 @@ export const transformSurveys = async (connection: IDBConnection): Promise<void>
             WHEN ss.end_date < ss.start_date THEN ss.start_date
             ELSE ss.end_date
         END AS end_date,
-        (SELECT survey_progress_id FROM biohub.survey_progress WHERE name = 'In progress'),
+        CASE
+            WHEN ss.end_date < now() THEN (SELECT survey_progress_id FROM biohub.survey_progress WHERE name = 'Completed')
+            WHEN ss.start_date > now() THEN (SELECT survey_progress_id FROM biohub.survey_progress WHERE name = 'Planning')
+            WHEN now() BETWEEN ss.start_date AND ss.end_date THEN (SELECT survey_progress_id FROM biohub.survey_progress WHERE name = 'In progress')
+            ELSE (SELECT survey_progress_id FROM biohub.survey_progress WHERE name = 'In progress')
+        END AS progress_id,
         'Start: ' || ss.start_date || '. End: ' || ss.end_date
     FROM 
         public.spi_surveys ss
