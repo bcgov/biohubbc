@@ -48,12 +48,17 @@ export class CritterAttachmentService extends DBService {
   }
 
   /**
-   * Get all Attachments for a Critterbase Capture ID.
+   * Get all Attachments for a Critterbase Critter ID.
    *
-   * @param {string} critterbaseCaptureId - the critterbase capture ID
-   * @return {*} {Promise<CritterCaptureAttachmentRecord[]>}
+   * TODO: Include mortality attachments.
+   *
+   * @param {number} critterId - SIMS Critter ID
+   * @return {*} {Promise<{captureAttachments: CritterCaptureAttachmentRecord[]}>}
    */
-  async getCaptureAttachments(critterbaseCaptureId: string): Promise<CritterCaptureAttachmentRecord[]> {
-    return this.attachmentRepository.getCaptureAttachmentsByCaptureId(critterbaseCaptureId);
+  async getAllCritterAttachments(critterId: number): Promise<{ captureAttachments: CritterCaptureAttachmentRecord[] }> {
+    const [captureAttachments] = await Promise.all([
+      this.attachmentRepository.getCaptureAttachmentsByCritterId(critterId)
+    ]);
+    return { captureAttachments };
   }
 }

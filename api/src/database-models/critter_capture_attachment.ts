@@ -8,7 +8,7 @@ import { z } from 'zod';
 export const CritterCaptureAttachmentModel = z.object({
   critter_capture_attachment_id: z.number(),
   uuid: z.string().nullable(),
-  critter_id: z.string(),
+  critter_id: z.number(),
   critterbase_capture_id: z.string(),
   file_type: z.string(),
   file_name: z.string().nullable(),
