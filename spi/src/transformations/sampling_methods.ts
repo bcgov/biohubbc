@@ -127,11 +127,7 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
     -- for each method technique, insert into method the technique into all sample sites join on biohub.survey WHERE spi_survey_id is not NULL 
     `;
 
-<<<<<<< HEAD
-  await connection.sql(transformSamplingMethods);
-=======
   await connection.sql(sql);
->>>>>>> 7da2dd8bc4e8ae79bd8ba7d5fe88f728a08518aa
 
   console.log('Successfully transformed Sampling Methods');
 };
