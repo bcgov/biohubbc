@@ -17,6 +17,7 @@ import {
 } from 'features/surveys/animals/profile/measurements/utils';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { SKIP_CONFIRMATION_DIALOG, useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
@@ -27,6 +28,9 @@ import { Link as RouterLink } from 'react-router-dom';
 import { v4 } from 'uuid';
 
 export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
+  attachments: {
+    capture_attachments: {}
+  },
   capture: {
     capture_id: v4(),
     capture_date: '',
@@ -51,6 +55,7 @@ export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
 export const CreateCapturePage = () => {
   const history = useHistory();
 
+  const biohubApi = useBiohubApi();
   const critterbaseApi = useCritterbaseApi();
 
   const surveyContext = useSurveyContext();
@@ -107,8 +112,8 @@ export const CreateCapturePage = () => {
     setIsSaving(true);
 
     try {
-      const surveyCritterId = animalPageContext.selectedAnimal?.critter_id;
-      const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
+      const surveyCritterId = Number(animalPageContext.selectedAnimal?.critter_id);
+      const critterbaseCritterId = String(animalPageContext.selectedAnimal?.critterbase_critter_id);
 
       if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
         return;
@@ -133,6 +138,26 @@ export const CreateCapturePage = () => {
           coordinate_uncertainty_unit: 'm'
         });
       }
+
+      // TODO: Allow endpoint to accept multiple attachments
+      const uploadCaptureAttachments = Object.values(values.attachments.capture_attachments).map((file) => {
+        return biohubApi.animal.uploadCritterCaptureAttachment({
+          critterId: surveyCritterId,
+          critterbaseCaptureId: values.capture.capture_id,
+          projectId,
+          surveyId,
+          file
+        });
+      });
+
+      // Upload all the capture attachments
+      await Promise.all(uploadCaptureAttachments).catch(() => {
+        showCreateErrorDialog({
+          dialogError: 'An error occurred while attempting to upload the Capture attachments.',
+          dialogErrorDetails: ['Upload failed when uploading attachments']
+        });
+        return;
+      });
 
       /**
        * Create the Capture, Markings, and Measurements and Locations in Critterbase.

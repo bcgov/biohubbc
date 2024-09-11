@@ -89,6 +89,9 @@ export interface IMeasurementsUpdate {
 }
 
 export interface ICreateCaptureRequest extends IMarkings, IMeasurementsCreate {
+  attachments: {
+    capture_attachments: Record<string, File>;
+  };
   capture: ICapturePostData;
 }
 
