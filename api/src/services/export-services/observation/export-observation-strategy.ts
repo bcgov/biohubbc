@@ -4,6 +4,7 @@ import { ExportStrategy, ExportStrategyConfig } from '../export-strategy';
 
 export type ExportObservationConfig = {
   surveyId: number;
+  isUserAdmin: boolean;
 };
 
 /**
@@ -11,6 +12,8 @@ export type ExportObservationConfig = {
  *
  * @export
  * @class ExportObservationStrategy
+ * @extends {DBService}
+ * @implements {ExportStrategy}
  */
 export class ExportObservationStrategy extends DBService implements ExportStrategy {
   config: ExportObservationConfig;
@@ -29,18 +32,10 @@ export class ExportObservationStrategy extends DBService implements ExportStrate
    */
   async getExportStrategyConfig(): Promise<ExportStrategyConfig> {
     try {
-      const knex = getKnex();
-
-      const queryBuilder = knex
-        .queryBuilder()
-        .select('*')
-        .from('survey_observation')
-        .where('survey_id', this.config.surveyId);
-
       return {
         queries: [
           {
-            sql: queryBuilder,
+            sql: this._getSql(),
             fileName: 'observations.json'
           }
         ]
@@ -50,4 +45,21 @@ export class ExportObservationStrategy extends DBService implements ExportStrate
       throw error;
     }
   }
+
+  /**
+   * Build and return the observation data sql query.
+   *
+   * @memberof ExportObservationStrategy
+   */
+  _getSql = () => {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .queryBuilder()
+      .select('*')
+      .from('survey_observation')
+      .where('survey_id', this.config.surveyId);
+
+    return queryBuilder;
+  };
 }

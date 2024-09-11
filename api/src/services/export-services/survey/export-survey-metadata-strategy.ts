@@ -1,19 +1,19 @@
-import QueryStream from 'pg-query-stream';
-import { PassThrough, Readable } from 'stream';
 import { getKnex, IDBConnection } from '../../../database/db';
 import { DBService } from '../../db-service';
-import { ExportDataStreamOptions, ExportStrategy, ExportStrategyConfig } from '../export-strategy';
+import { ExportStrategy, ExportStrategyConfig } from '../export-strategy';
 
 export type ExportSurveyMetadataConfig = {
   surveyId: number;
+  isUserAdmin: boolean;
 };
 
 /**
  * Provides functionality for exporting survey metadata data.
  *
  * @export
- * @class ExportSurveyStrategy
+ * @class ExportSurveyMetadataStrategy
  * @extends {DBService}
+ * @implements {ExportStrategy}
  */
 export class ExportSurveyMetadataStrategy extends DBService implements ExportStrategy {
   config: ExportSurveyMetadataConfig;
@@ -33,9 +33,9 @@ export class ExportSurveyMetadataStrategy extends DBService implements ExportStr
   async getExportStrategyConfig(): Promise<ExportStrategyConfig> {
     try {
       return {
-        streams: [
+        queries: [
           {
-            stream: this._getSurveyMetadataStream,
+            sql: this._getSql(),
             fileName: 'survey_metadata.json'
           }
         ]
@@ -47,31 +47,15 @@ export class ExportSurveyMetadataStrategy extends DBService implements ExportStr
   }
 
   /**
-   * Build and return the survey metadata data stream.
+   * Build and return the survey metadata data sql query.
    *
-   * @param {ExportDataStreamOptions} options
    * @memberof ExportSurveyMetadataStrategy
    */
-  _getSurveyMetadataStream = (options: ExportDataStreamOptions): Readable => {
+  _getSql = () => {
     const knex = getKnex();
 
     const queryBuilder = knex.queryBuilder().select('*').from('survey').where('survey_id', this.config.surveyId);
 
-    const { sql, bindings } = queryBuilder.toSQL().toNative();
-
-    const queryStream = new QueryStream(sql, bindings as any[]);
-
-    // Create a pass through stream to ensure the query stream is stringified
-    const queryStreamPassThrough = new PassThrough({
-      objectMode: true,
-      transform(chunk, _encoding, callback) {
-        // Ensure chunk is a stringified JSON
-        callback(null, JSON.stringify(chunk));
-      }
-    });
-
-    options.dbClient.query(queryStream);
-
-    return queryStream.pipe(queryStreamPassThrough);
+    return queryBuilder;
   };
 }

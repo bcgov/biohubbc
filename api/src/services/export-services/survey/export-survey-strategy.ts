@@ -2,8 +2,37 @@ import { IDBConnection } from '../../../database/db';
 import { DBService } from '../../db-service';
 import { ExportStrategy, ExportStrategyConfig } from '../export-strategy';
 import { ExportObservationStrategy } from '../observation/export-observation-strategy';
+import { ExportTelemetryStrategy } from '../telemetry/export-telemetry-strategy';
 import { ExportSurveyMetadataStrategy } from './export-survey-metadata-strategy';
 
+export type ExportSurveyStrategyConfig = {
+  /**
+   * The survey id.
+   *
+   * @type {number}
+   */
+  surveyId: number;
+  /**
+   * The export configuration.
+   *
+   * @type {ExportSurveyConfig}
+   */
+  config: ExportSurveyConfig;
+  /**
+   * The database connection.
+   *
+   * @type {IDBConnection}
+   */
+  connection: IDBConnection;
+  /**
+   * Indicates if the user is an admin.
+   */
+  isUserAdmin: boolean;
+};
+
+/**
+ * Configure which data to include in the export.
+ */
 export type ExportSurveyConfig = {
   metadata: boolean;
   sampling_data: boolean;
@@ -19,16 +48,19 @@ export type ExportSurveyConfig = {
  * @export
  * @class ExportSurveyStrategy
  * @extends {DBService}
+ * @implements {ExportStrategy}
  */
 export class ExportSurveyStrategy extends DBService implements ExportStrategy {
   surveyId: number;
   config: ExportSurveyConfig;
+  isUserAdmin: boolean;
 
-  constructor(surveyId: number, config: ExportSurveyConfig, connection: IDBConnection) {
-    super(connection);
+  constructor(options: ExportSurveyStrategyConfig) {
+    super(options.connection);
 
-    this.surveyId = surveyId;
-    this.config = config;
+    this.surveyId = options.surveyId;
+    this.config = options.config;
+    this.isUserAdmin = options.isUserAdmin;
   }
 
   /**
@@ -42,18 +74,27 @@ export class ExportSurveyStrategy extends DBService implements ExportStrategy {
       const strategyPromises = [];
 
       if (this.config.metadata) {
-        const exportSurveyMetadataStrategy = new ExportSurveyMetadataStrategy(
-          { surveyId: this.surveyId },
+        const strategy = new ExportSurveyMetadataStrategy(
+          { surveyId: this.surveyId, isUserAdmin: this.isUserAdmin },
           this.connection
         );
-
-        strategyPromises.push(exportSurveyMetadataStrategy.getExportStrategyConfig());
+        strategyPromises.push(strategy.getExportStrategyConfig());
       }
 
       if (this.config.observation_data) {
-        const exportObservationStrategy = new ExportObservationStrategy({ surveyId: this.surveyId }, this.connection);
+        const strategy = new ExportObservationStrategy(
+          { surveyId: this.surveyId, isUserAdmin: this.isUserAdmin },
+          this.connection
+        );
+        strategyPromises.push(strategy.getExportStrategyConfig());
+      }
 
-        strategyPromises.push(exportObservationStrategy.getExportStrategyConfig());
+      if (this.config.telemetry_data) {
+        const strategy = new ExportTelemetryStrategy(
+          { surveyId: this.surveyId, isUserAdmin: this.isUserAdmin },
+          this.connection
+        );
+        strategyPromises.push(strategy.getExportStrategyConfig());
       }
 
       const strategies = await Promise.all(strategyPromises);

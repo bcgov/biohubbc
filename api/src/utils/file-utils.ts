@@ -15,7 +15,7 @@ import {
 import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import NodeClam from 'clamscan';
-import { Readable, Transform } from 'stream';
+import { Readable } from 'stream';
 import { getLogger } from './logger';
 
 const defaultLog = getLogger('/api/src/utils/file-utils');
@@ -181,14 +181,14 @@ export async function uploadBufferToS3(
  * Upload a stream to S3.
  *
  * @export
- * @param {Transform} transform the stream to upload
+ * @param {stream} Readable the stream to upload
  * @param {string} mimetype the mimetype of the stream data
  * @param {string} key the path where S3 will store the file
  * @param {Record<string, string>} [metadata={}] A metadata object to store additional information with the file
  * @return {*}  {Promise<CompleteMultipartUploadCommandOutput>} the response from S3
  */
 export async function uploadStreamToS3(
-  transform: Transform,
+  stream: Readable,
   mimetype: string,
   key: string,
   metadata: Record<string, string> = {}
@@ -198,7 +198,7 @@ export async function uploadStreamToS3(
     params: {
       Bucket: _getObjectStoreBucketName(),
       Key: key,
-      Body: transform,
+      Body: stream,
       ContentType: mimetype,
       Metadata: metadata
     }

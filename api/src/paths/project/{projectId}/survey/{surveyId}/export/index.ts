@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+import { authorizeRequestHandler, userHasValidRole } from '../../../../../../request-handlers/security/authorization';
 import { ExportService } from '../../../../../../services/export-services/export-service';
 import {
   ExportSurveyConfig,
@@ -10,6 +10,7 @@ import {
 } from '../../../../../../services/export-services/survey/export-survey-strategy';
 import { generateS3ExportKey } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
+import { getSystemUserFromRequest } from '../../../../../../utils/request';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/export/index.ts');
 
@@ -148,13 +149,19 @@ export function exportData(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const surveyId = Number(req.params.surveyId);
-    const config = req.body.config as ExportSurveyConfig;
-
     try {
+      const surveyId = Number(req.params.surveyId);
+      const config = req.body.config as ExportSurveyConfig;
+
+      const systemUser = getSystemUserFromRequest(req);
+      const isUserAdmin = userHasValidRole(
+        [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+        systemUser.role_names
+      );
+
       await connection.open();
 
-      const exportSurveyStrategy = new ExportSurveyStrategy(surveyId, config, connection);
+      const exportSurveyStrategy = new ExportSurveyStrategy({ surveyId, config, connection, isUserAdmin });
 
       const exportService = new ExportService(connection);
 

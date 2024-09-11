@@ -71,7 +71,9 @@ export class SurveyCritterRepository extends BaseRepository {
    * @memberof SurveyCritterRepository
    */
   _makeFindCrittersQuery(isUserAdmin: boolean, systemUserId: number | null, filterFields?: IAnimalAdvancedFilters) {
-    const query = getKnex().select(['critter_id', 'survey_id', 'critterbase_critter_id']).from('critter');
+    const query = getKnex()
+      .select(['critter.critter_id', 'critter.survey_id', 'critter.critterbase_critter_id'])
+      .from('critter');
 
     if (!isUserAdmin) {
       query
@@ -88,6 +90,10 @@ export class SurveyCritterRepository extends BaseRepository {
           .from('project_participation')
           .where('system_user_id', filterFields.system_user_id);
       });
+    }
+
+    if (filterFields?.survey_ids) {
+      query.whereIn('critter.survey_id', filterFields.survey_ids);
     }
 
     return query;
