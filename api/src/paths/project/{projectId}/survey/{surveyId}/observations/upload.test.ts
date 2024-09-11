@@ -44,8 +44,6 @@ describe('uploadMedia', () => {
       }
     });
 
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(false);
-
     try {
       const result = upload.uploadMedia();
 
@@ -64,8 +62,6 @@ describe('uploadMedia', () => {
         return 20;
       }
     });
-
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
 
     const expectedError = new Error('cannot process request');
     sinon.stub(ObservationService.prototype, 'insertSurveyObservationSubmission').rejects(expectedError);
@@ -88,7 +84,6 @@ describe('uploadMedia', () => {
       }
     });
 
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(file_utils, 'uploadFileToS3').resolves();
 
     const expectedResponse = { submissionId: 1 };
