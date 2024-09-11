@@ -104,6 +104,11 @@ export interface IEditMortalityRequest extends IMarkings, IMeasurementsUpdate {
   mortality: IMortalityPostData;
 }
 
+export interface ICollectionUnitMultiTsnResponse {
+  tsn: number;
+  categories: ICollectionCategory[];
+}
+
 export interface ICollectionCategory {
   collection_category_id: string;
   category_name: string;
@@ -389,6 +394,6 @@ export type CBMeasurementSearchByTsnResponse = {
  * Response object when searching for measurement type definitions by search term.
  */
 export type CBMeasurementSearchByTermResponse = {
-  qualitative: (CBQualitativeMeasurementTypeDefinition & { tsnHierarchy: number[] })[];
-  quantitative: (CBQuantitativeMeasurementTypeDefinition & { tsnHierarchy: number[] })[];
+  qualitative: CBQualitativeMeasurementTypeDefinition[];
+  quantitative: CBQuantitativeMeasurementTypeDefinition[];
 };

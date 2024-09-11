@@ -3,13 +3,13 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import PageHeader from 'components/layout/PageHeader';
 import { AdministrativeActivityStatusType, AdministrativeActivityType } from 'constants/misc';
-import AccessRequestList from 'features/admin/users/AccessRequestList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import React, { useEffect, useState } from 'react';
-import ActiveUsersList from './ActiveUsersList';
+import AccessRequestContainer from './access-requests/AccessRequestContainer';
+import ActiveUsersList from './active/ActiveUsersList';
 
 /**
  * Page to display user management data/functionality.
@@ -33,7 +33,11 @@ const ManageUsersPage: React.FC = () => {
   const refreshAccessRequests = async () => {
     const accessResponse = await biohubApi.admin.getAdministrativeActivities(
       [AdministrativeActivityType.SYSTEM_ACCESS],
-      [AdministrativeActivityStatusType.PENDING, AdministrativeActivityStatusType.REJECTED]
+      [
+        AdministrativeActivityStatusType.PENDING,
+        AdministrativeActivityStatusType.REJECTED,
+        AdministrativeActivityStatusType.ACTIONED
+      ]
     );
 
     setAccessRequests(accessResponse);
@@ -43,7 +47,11 @@ const ManageUsersPage: React.FC = () => {
     const getAccessRequests = async () => {
       const accessResponse = await biohubApi.admin.getAdministrativeActivities(
         [AdministrativeActivityType.SYSTEM_ACCESS],
-        [AdministrativeActivityStatusType.PENDING, AdministrativeActivityStatusType.REJECTED]
+        [
+          AdministrativeActivityStatusType.PENDING,
+          AdministrativeActivityStatusType.REJECTED,
+          AdministrativeActivityStatusType.ACTIONED
+        ]
       );
 
       setAccessRequests(() => {
@@ -120,7 +128,7 @@ const ManageUsersPage: React.FC = () => {
     <>
       <PageHeader title="Manage Users" />
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <AccessRequestList
+        <AccessRequestContainer
           accessRequests={accessRequests}
           codes={codes}
           refresh={() => {

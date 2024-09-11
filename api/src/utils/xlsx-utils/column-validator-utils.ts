@@ -3,6 +3,8 @@ import { IXLSXCSVColumn, IXLSXCSVValidator } from './worksheet-utils';
 
 // TODO: Move the IXLSXCSVValidator type to this file
 
+export type CellObject<CellType = any> = { column: string; cell: CellType | undefined };
+
 /**
  * Get column names / headers from column validator.
  *
@@ -51,29 +53,31 @@ export const getColumnValidatorSpecification = (columnValidator: IXLSXCSVValidat
 };
 
 /**
- * Generate a cell getter from a column validator.
+ * Generate a column + cell getter from a column validator.
  *
- * Note: This will attempt to retrive the cell value from the row by the known header first.
+ * Note: This will attempt to retrieve the column header and cell value from the row by the known header first.
  * If not found, it will then attempt to retrieve the value by the column header aliases.
  *
- * TODO: Can the internal typing for this be improved (without the `as` cast)?
- *
  * @example
- * const getCellValue = generateCellGetterFromColumnValidator(columnValidator)
- * const itis_tsn = getCellValue(row, 'ITIS_TSN')
+ * const getColumnCell = generateColumnCellGetterFromColumnValidator(columnValidator)
  *
- * @template T
- * @param {T} columnValidator - Column validator
+ * const itis_tsn = getColumnCell(row, 'ITIS_TSN').cell
+ * const tsnColumn = getColumnCell(row, 'ITIS_TSN').column
+ *
+ * @template ValidatorType
+ * @param {ValidatorType} columnValidator - Column validator
  * @returns {*}
  */
-export const generateCellGetterFromColumnValidator = <T extends IXLSXCSVValidator>(columnValidator: T) => {
-  return <J = any>(row: Row, validatorKey: keyof T): J | undefined => {
+export const generateColumnCellGetterFromColumnValidator = <ValidatorType extends IXLSXCSVValidator>(
+  columnValidator: ValidatorType
+) => {
+  return <CellType = any>(row: Row, validatorKey: keyof ValidatorType): CellObject<CellType> => {
     // Cast the columnValidatorKey to a string for convienience
     const key = validatorKey as string;
 
-    // Attempt to retrieve the cell value from the default column name
+    // Attempt to retrieve the column and cell value from the default column name
     if (row[key]) {
-      return row[key];
+      return { column: key, cell: row[key] };
     }
 
     const columnSpec = columnValidator[validatorKey] as IXLSXCSVColumn;
@@ -81,11 +85,14 @@ export const generateCellGetterFromColumnValidator = <T extends IXLSXCSVValidato
     // Get the column aliases
     const aliases = columnSpec.aliases ?? [];
 
-    // Loop through the aliases and attempt to retrieve the cell value
+    // Loop through the aliases and attempt to retrieve the column and cell value
     for (const alias of aliases) {
       if (row[alias]) {
-        return row[alias];
+        return { column: alias, cell: row[alias] };
       }
     }
+
+    // Returning the provided key when no match
+    return { column: key, cell: undefined };
   };
 };

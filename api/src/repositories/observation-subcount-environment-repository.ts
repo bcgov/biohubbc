@@ -156,6 +156,75 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
   }
 
   /**
+   * Get all distinct qualitative environment type definition records for the given qualitative environment record ids
+   * (uuid).
+   *
+   * @param {string[]} environmentQualitativeIds
+   * @return {*}  {Promise<QualitativeEnvironmentTypeDefinition[]>}
+   * @memberof ObservationSubCountEnvironmentRepository
+   */
+  async getQualitativeEnvironmentTypeDefinitions(
+    environmentQualitativeIds: string[]
+  ): Promise<QualitativeEnvironmentTypeDefinition[]> {
+    const sqlStatement = SQL`
+      SELECT
+        environment_qualitative.environment_qualitative_id,
+        environment_qualitative.name,
+        environment_qualitative.description,
+        json_agg(
+          json_build_object(
+            'environment_qualitative_option_id', environment_qualitative_option.environment_qualitative_option_id,
+            'environment_qualitative_id', environment_qualitative_option.environment_qualitative_id,
+            'name', environment_qualitative_option.name,
+            'description', environment_qualitative_option.description
+          )
+        ) AS options
+      FROM
+        environment_qualitative
+        INNER JOIN environment_qualitative_option ON environment_qualitative.environment_qualitative_id = environment_qualitative_option.environment_qualitative_id
+      WHERE
+        environment_qualitative.environment_qualitative_id = ANY(${environmentQualitativeIds})
+      GROUP BY
+        environment_qualitative.environment_qualitative_id,
+        environment_qualitative.name,
+        environment_qualitative.description;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, QualitativeEnvironmentTypeDefinition);
+
+    return response.rows;
+  }
+
+  /**
+   * Get all quantitative environment type definition records for the given quantitative environment record ids (uuid).
+   *
+   * @param {string[]} environmentQuantitativeIds
+   * @return {*}  {Promise<QuantitativeEnvironmentTypeDefinition[]>}
+   * @memberof ObservationSubCountEnvironmentRepository
+   */
+  async getQuantitativeEnvironmentTypeDefinitions(
+    environmentQuantitativeIds: string[]
+  ): Promise<QuantitativeEnvironmentTypeDefinition[]> {
+    const sqlStatement = SQL`
+      SELECT
+        environment_quantitative_id,
+        name,
+        description,
+        min,
+        max,
+        unit
+      FROM
+        environment_quantitative
+      WHERE
+        environment_quantitative_id = ANY(${environmentQuantitativeIds});
+  `;
+
+    const response = await this.connection.sql(sqlStatement, QuantitativeEnvironmentTypeDefinition);
+
+    return response.rows;
+  }
+
+  /**
    * Get all distinct qualitative environment type definition records for all unique qualitative environment records
    * associated to a given survey.
    *
@@ -163,7 +232,9 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    * @return {*}  {Promise<QualitativeEnvironmentTypeDefinition[]>}
    * @memberof ObservationSubCountEnvironmentRepository
    */
-  async getQualitativeEnvironmentTypeDefinitions(surveyId: number): Promise<QualitativeEnvironmentTypeDefinition[]> {
+  async getQualitativeEnvironmentTypeDefinitionsForSurvey(
+    surveyId: number
+  ): Promise<QualitativeEnvironmentTypeDefinition[]> {
     const sqlStatement = SQL`
       WITH w_observation_subcount_qualitative_environment AS (
         SELECT DISTINCT
@@ -210,7 +281,9 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
    * @return {*}  {Promise<QuantitativeEnvironmentTypeDefinition[]>}
    * @memberof ObservationSubCountEnvironmentRepository
    */
-  async getQuantitativeEnvironmentTypeDefinitions(surveyId: number): Promise<QuantitativeEnvironmentTypeDefinition[]> {
+  async getQuantitativeEnvironmentTypeDefinitionsForSurvey(
+    surveyId: number
+  ): Promise<QuantitativeEnvironmentTypeDefinition[]> {
     const sqlStatement = SQL`
       SELECT
         environment_quantitative.environment_quantitative_id,
@@ -317,15 +390,13 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
         'environment_quantitative.max',
         'environment_quantitative.unit'
       )
-      .from('environment_quantitative')
-      .whereIn(
-        'environment_quantitative.name',
-        searchTerms.map((term) => `%${term}%`)
-      )
-      .orWhereIn(
-        'environment_quantitative.description',
-        searchTerms.map((term) => `%${term}%`)
-      );
+      .from('environment_quantitative');
+
+    for (const searchTerm of searchTerms) {
+      queryBuilder
+        .where('environment_quantitative.name', 'ILIKE', `%${searchTerm}%`)
+        .orWhere('environment_quantitative.description', 'ILIKE', `%${searchTerm}%`);
+    }
 
     const response = await this.connection.knex(queryBuilder, QuantitativeEnvironmentTypeDefinition);
 

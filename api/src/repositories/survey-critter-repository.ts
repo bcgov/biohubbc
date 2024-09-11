@@ -71,7 +71,9 @@ export class SurveyCritterRepository extends BaseRepository {
    * @memberof SurveyCritterRepository
    */
   _makeFindCrittersQuery(isUserAdmin: boolean, systemUserId: number | null, filterFields?: IAnimalAdvancedFilters) {
-    const query = getKnex().select(['critter_id', 'survey_id', 'critterbase_critter_id']).from('critter');
+    const query = getKnex()
+      .select(['critter.critter_id', 'critter.survey_id', 'critter.critterbase_critter_id'])
+      .from('critter');
 
     if (!isUserAdmin) {
       query
