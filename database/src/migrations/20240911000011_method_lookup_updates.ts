@@ -168,7 +168,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     -- Drop the radio signal tower option and reassign existing data to the radar option
     ----------------------------------------------------------------------------------------
-
+    
     -- Reassign existing attributes for radio signal tower to the radar option
     UPDATE method_technique
     SET method_lookup_id = (SELECT method_lookup_id FROM method_lookup WHERE name = 'Radar')
