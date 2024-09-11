@@ -29,13 +29,18 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
             SELECT 
                 p.spi_project_id, 
                 pp.person_id, 
-                b.project_id
+                b.project_id, 
+                CONCAT(pp.first_given_name, ' ', pp.surname) AS full_name,
+                spp.email_address
             FROM 
                 public.spi_projects p
-            INNER JOIN 
-                biohub.project b ON p.spi_project_id = b.spi_project_id
-            INNER JOIN 
-                spi_persons pp ON pp.spi_project_id = p.spi_project_id
+            INNER JOIN biohub.project b 
+                ON p.spi_project_id = b.spi_project_id
+            INNER JOIN spi_persons pp 
+                ON pp.spi_project_id = p.spi_project_id
+            LEFT JOIN public.spi_secure_persons spp 
+                ON spp.first_name = pp.first_given_name
+                AND spp.last_name = pp.surname
         )
     INSERT INTO
         biohub.project_participation (project_id, system_user_id, project_role_id, create_user)
@@ -52,8 +57,23 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
          WHERE user_identifier = 'spi')
         ) AS system_user_id,
 
-            CASE 
-        WHEN spp.email_address LIKE '%@gov.bc.ca%' THEN 
+        CASE 
+        WHEN p.coordinator IS NOT NULL AND w_mapping.full_name LIKE '%' || TRIM(BOTH ', ' FROM p.coordinator) || '%' AND spp.email_address LIKE '%@gov.bc.ca%' THEN 
+            (SELECT project_role_id FROM biohub.project_role WHERE name = 'Coordinator')
+        WHEN NOT EXISTS (
+            SELECT 1 
+            FROM biohub.project_participation 
+            WHERE project_id = w_mapping.project_id 
+              AND project_role_id = (SELECT project_role_id FROM biohub.project_role WHERE name = 'Coordinator')
+        ) THEN (SELECT project_role_id FROM biohub.project_role WHERE name = 'Coordinator'), (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'spi')
+         ----- double check that when the not exists is doing what we want it to do (assign spi as coordinator when coordinator is undefined)
+        WHEN spp.email_address LIKE '%@gov.bc.ca%'  
+            AND NOT EXISTS (
+             SELECT 1 
+             FROM biohub.project_participation 
+             WHERE project_id = w_mapping.project_id 
+               AND project_role_id = (SELECT project_role_id FROM biohub.project_role WHERE name = 'Coordinator')
+         ) THEN 
             (SELECT project_role_id FROM biohub.project_role WHERE name = 'Collaborator')
         ELSE 
             (SELECT project_role_id FROM biohub.project_role WHERE name = 'Observer')
@@ -63,8 +83,9 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
         
     FROM 
         w_mapping
-    JOIN 
-        public.spi_secure_persons spp
+    JOIN public.spi_projects p 
+        ON p.spi_project_id = w_mapping.spi_project_id
+    JOIN public.spi_secure_persons spp
         ON spp.first_name = pp.first_given_name
         AND spp.last_name = pp.surname;
   `;
