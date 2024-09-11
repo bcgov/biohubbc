@@ -94,19 +94,17 @@ export const SurveyExportForm = (props: ISurveyExportFormProps) => {
   return (
     <Box component="fieldset">
       <Typography component="legend">Select Data to Export</Typography>
-      <Typography variant="body1" color="textSecondary">
-        Select the data you wish to include in the export.
-      </Typography>
-      <Box flex="0 0 auto" display="flex" alignItems="center" height={55}>
+      <Box flex="0 0 auto" display="flex" alignItems="center" height={35} mb={2}>
         <FormGroup>
           <FormControlLabel
+            disabled
             label={
               <Typography
                 variant="body2"
                 component="span"
                 color="textSecondary"
                 fontWeight={700}
-                sx={{ textTransform: 'uppercase' }}>
+                sx={{ textTransform: 'uppercase', ml: 1 }}>
                 Select All
               </Typography>
             }
@@ -127,10 +125,10 @@ export const SurveyExportForm = (props: ISurveyExportFormProps) => {
         </FormGroup>
       </Box>
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-        <FormControl sx={classes.exportInput} component="fieldset">
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+        <FormControl sx={classes.exportInput} component="fieldset" disabled>
           <FormControlLabel
-            label="Survey Metadata"
+            label="Survey metadata"
             control={
               <Checkbox
                 checked={surveyExportConfig.metadata}
@@ -138,15 +136,15 @@ export const SurveyExportForm = (props: ISurveyExportFormProps) => {
               />
             }
           />
-          <FormHelperText>
-            <Typography variant="body1" color="textSecondary">
-              Survey basic information (title, participants, species, funding sources, etc).
+          <FormHelperText sx={{ ml: 5, mt: -1 }}>
+            <Typography variant="body2" color="textSecondary">
+              Basic information about the survey, including its name, objectives, and focal species.
             </Typography>
           </FormHelperText>
         </FormControl>
-        <FormControl sx={classes.exportInput} component="fieldset">
+        <FormControl sx={classes.exportInput} component="fieldset" disabled>
           <FormControlLabel
-            label="Sampling Data"
+            label="Sampling information"
             control={
               <Checkbox
                 checked={surveyExportConfig.sampling_data}
@@ -154,15 +152,15 @@ export const SurveyExportForm = (props: ISurveyExportFormProps) => {
               />
             }
           />
-          <FormHelperText>
-            <Typography variant="body1" color="textSecondary">
+          <FormHelperText sx={{ ml: 5, mt: -1 }}>
+            <Typography variant="body2" color="textSecondary">
               Survey sampling information (sites, methods, periods, blocks, etc).
             </Typography>
           </FormHelperText>
         </FormControl>
-        <FormControl sx={classes.exportInput} component="fieldset">
+        <FormControl sx={classes.exportInput} component="fieldset" disabled>
           <FormControlLabel
-            label="Observation Data"
+            label="Species observations"
             control={
               <Checkbox
                 checked={surveyExportConfig.observation_data}
@@ -170,15 +168,15 @@ export const SurveyExportForm = (props: ISurveyExportFormProps) => {
               />
             }
           />
-          <FormHelperText>
-            <Typography variant="body1" color="textSecondary">
+          <FormHelperText sx={{ ml: 5, mt: -1 }}>
+            <Typography variant="body2" color="textSecondary">
               Observation data recorded during this survey.
             </Typography>
           </FormHelperText>
         </FormControl>
         <FormControl sx={classes.exportInput} component="fieldset">
           <FormControlLabel
-            label="Telemetry Data"
+            label="Telemetry"
             control={
               <Checkbox
                 checked={surveyExportConfig.telemetry_data}
@@ -186,15 +184,15 @@ export const SurveyExportForm = (props: ISurveyExportFormProps) => {
               />
             }
           />
-          <FormHelperText>
-            <Typography variant="body1" color="textSecondary">
+          <FormHelperText sx={{ ml: 5, mt: -1 }}>
+            <Typography variant="body2" color="textSecondary">
               Telemetry data for all devices registered to this survey.
             </Typography>
           </FormHelperText>
         </FormControl>
-        <FormControl sx={classes.exportInput} component="fieldset">
+        <FormControl sx={classes.exportInput} component="fieldset" disabled>
           <FormControlLabel
-            label="Animal Data"
+            label="Animals"
             control={
               <Checkbox
                 checked={surveyExportConfig.animal_data}
@@ -202,15 +200,15 @@ export const SurveyExportForm = (props: ISurveyExportFormProps) => {
               />
             }
           />
-          <FormHelperText>
-            <Typography variant="body1" color="textSecondary">
+          <FormHelperText sx={{ ml: 5, mt: -1 }}>
+            <Typography variant="body2" color="textSecondary">
               Animal data recorded during this survey.
             </Typography>
           </FormHelperText>
         </FormControl>
-        <FormControl sx={classes.exportInput} component="fieldset">
+        <FormControl sx={classes.exportInput} component="fieldset" disabled>
           <FormControlLabel
-            label="Artifacts"
+            label="Attachments"
             control={
               <Checkbox
                 checked={surveyExportConfig.artifacts}
@@ -218,8 +216,8 @@ export const SurveyExportForm = (props: ISurveyExportFormProps) => {
               />
             }
           />
-          <FormHelperText>
-            <Typography variant="body1" color="textSecondary">
+          <FormHelperText sx={{ ml: 5, mt: -1 }}>
+            <Typography variant="body2" color="textSecondary">
               Survey artifact information (file names, report authors, etc).
             </Typography>
           </FormHelperText>

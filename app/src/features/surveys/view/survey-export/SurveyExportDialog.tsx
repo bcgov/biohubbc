@@ -6,6 +6,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import useTheme from '@mui/system/useTheme';
+import AlertBar from 'components/alert/AlertBar';
 import { SurveyExportI18N } from 'constants/i18n';
 import { SurveyExportConfig, SurveyExportForm } from 'features/surveys/view/survey-export/SurveyExportForm';
 import { APIError } from 'hooks/api/useAxios';
@@ -73,7 +74,13 @@ export const SurveyExportDialog = (props: ISurveyExportDialogProps) => {
       aria-labelledby="export-dialog-title"
       aria-describedby="export-dialog-description">
       <DialogTitle id="export-dialog-title">{'Export Survey Data'}</DialogTitle>
-      <DialogContent>
+      <DialogContent sx={{ minWidth: '50vw' }}>
+        <AlertBar
+          severity="info"
+          variant="standard"
+          title="Experimental"
+          text="This feature is still being worked on and some data cannot be exported at this time. Check back in a few weeks."
+        />
         <SurveyExportForm onExportConfig={setExportConfig} />
       </DialogContent>
       <DialogActions>
