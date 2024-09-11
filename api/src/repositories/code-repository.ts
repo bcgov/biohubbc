@@ -59,6 +59,7 @@ export class CodeRepository extends BaseRepository {
         name, 
         description 
       FROM method_lookup
+      WHERE record_end_date < now()
       ORDER BY name ASC;
     `;
 
