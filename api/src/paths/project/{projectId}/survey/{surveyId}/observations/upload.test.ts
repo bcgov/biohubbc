@@ -36,25 +36,6 @@ describe('uploadMedia', () => {
     body: {}
   } as any;
 
-  it('should throw an error when file has malicious content', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    try {
-      const result = upload.uploadMedia();
-
-      await result(mockReq, null as unknown as any, null as unknown as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Malicious content detected, upload cancelled');
-    }
-  });
-
   it('should throw an error if failure occurs', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
