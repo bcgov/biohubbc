@@ -6,7 +6,7 @@ import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { ICreateProjectRequest, IFindProjectsResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import { ISurveyPermitForm } from '../../features/surveys/SurveyPermitForm';
+import { ISurveyPermitForm } from '../../features/surveys/components/permit/SurveyPermitForm';
 import useProjectApi from './useProjectApi';
 
 describe('useProjectApi', () => {

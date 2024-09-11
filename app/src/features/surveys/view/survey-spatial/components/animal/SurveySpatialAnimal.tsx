@@ -90,7 +90,7 @@ export const SurveySpatialAnimal = () => {
   return (
     <>
       {/* Display map with animal capture points */}
-      <Box height={{ sm: 300, md: 500 }} position="relative">
+      <Box height={{ xs: 300, md: 500 }} position="relative">
         <SurveySpatialMap staticLayers={[captureLayer, mortalityLayer]} isLoading={geometryDataLoader.isLoading} />
       </Box>
 

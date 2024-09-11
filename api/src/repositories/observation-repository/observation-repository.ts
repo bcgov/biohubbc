@@ -81,6 +81,7 @@ const ObservationSubcountQuantitativeEnvironmentObject = ObservationSubCountQuan
 
 const ObservationSubcountObject = z.object({
   observation_subcount_id: ObservationSubCountRecord.shape.observation_subcount_id,
+  observation_subcount_sign_id: ObservationSubCountRecord.shape.observation_subcount_sign_id,
   subcount: ObservationSubCountRecord.shape.subcount,
   qualitative_measurements: z.array(ObservationSubcountQualitativeMeasurementObject),
   quantitative_measurements: z.array(ObservationSubcountQuantitativeMeasurementObject),

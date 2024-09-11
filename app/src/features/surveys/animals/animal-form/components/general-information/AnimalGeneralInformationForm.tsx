@@ -3,12 +3,12 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/system/Box';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
-import SelectedSpecies from 'components/species/components/SelectedSpecies';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import { useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICreateEditAnimalRequest } from 'interfaces/useCritterApi.interface';
+import SelectedAnimalSpecies from './components/SelectedAnimalSpecies';
 
 export interface IAnimalGeneralInformationFormProps {
   isEdit?: boolean;
@@ -64,7 +64,7 @@ export const AnimalGeneralInformationForm = (props: IAnimalGeneralInformationFor
           />
           {values.species && (
             <Collapse in={Boolean(values.species)} key={values.species.tsn}>
-              <SelectedSpecies
+              <SelectedAnimalSpecies
                 selectedSpecies={[values.species]}
                 // Disable remove button if editing
                 handleRemoveSpecies={isEdit ? undefined : () => setFieldValue('species', null)}

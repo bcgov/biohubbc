@@ -75,7 +75,15 @@ export const getLogger = function (logLabel: string) {
         })(),
         winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
         winston.format.prettyPrint({ colorize: false, depth: 10 })
-      )
+      ),
+      options: {
+        // https://nodejs.org/api/fs.html#file-system-flags
+        // Open file for reading and appending. The file is created if it does not exist.
+        flags: 'a+',
+        // https://nodejs.org/api/fs.html#fs_fs_createwritestream_path_options
+        // Set the file mode to be readable and writable by all users.
+        mode: 0o666
+      }
     })
   );
 

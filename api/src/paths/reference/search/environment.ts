@@ -4,7 +4,7 @@ import { getAPIUserDBConnection } from '../../../database/db';
 import { CodeService } from '../../../services/code-service';
 import { getLogger } from '../../../utils/logger';
 
-const defaultLog = getLogger('paths/reference');
+const defaultLog = getLogger('paths/reference/search/environment');
 
 export const GET: Operation = [findSubcountEnvironments()];
 

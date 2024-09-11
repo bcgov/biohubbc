@@ -179,8 +179,8 @@ export interface IQualMeasurement {
   capture_id?: string;
   mortality_id?: string;
   qualitative_option_id: string;
-  measurement_comment: string;
-  measured_timestamp: string;
+  measurement_comment?: string;
+  measured_timestamp?: string;
 }
 
 export interface IQuantMeasurement {
@@ -248,6 +248,14 @@ export interface ICollectionCategory {
   category_name: string;
   description: string | null;
   itis_tsn: number;
+}
+
+/**
+ * Prefixed with critterbase_* to match SIMS database field names
+ */
+export interface IPostCollectionUnit {
+  critterbase_collection_unit_id: string;
+  critterbase_collection_category_id: string;
 }
 
 // Lookup value `asSelect` format
