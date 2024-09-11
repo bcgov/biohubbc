@@ -4,7 +4,12 @@ import { getS3SignedURLs, uploadStreamToS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { DBService } from '../db-service';
 import { ExportConfig } from './export-strategy';
-import { getArchiveStream, getJsonStringifyTransformStream, getQueryStream, handleStreamEvents } from './export-utils';
+import {
+  getArchiveStream,
+  getJsonStringifyTransformStream,
+  getQueryStream,
+  registerStreamErrorHandler
+} from './export-utils';
 
 const defaultLog = getLogger('/api/src/services/export-services/export-service.ts');
 
@@ -41,11 +46,11 @@ export class ExportService extends DBService {
     try {
       const archiveStream = getArchiveStream();
 
-      handleStreamEvents(archiveStream);
+      registerStreamErrorHandler(archiveStream);
 
       const s3UploadStream = new PassThrough();
 
-      handleStreamEvents(s3UploadStream);
+      registerStreamErrorHandler(s3UploadStream);
 
       // Pipe the archive stream to the s3 upload stream
       archiveStream.pipe(s3UploadStream);
@@ -62,11 +67,11 @@ export class ExportService extends DBService {
             for (const queryConfig of exportStrategyConfig.queries) {
               const queryStream = getQueryStream(queryConfig.sql);
 
-              handleStreamEvents(queryStream);
+              registerStreamErrorHandler(queryStream);
 
               const jsonStringifyTransformStream = getJsonStringifyTransformStream();
 
-              handleStreamEvents(jsonStringifyTransformStream);
+              registerStreamErrorHandler(jsonStringifyTransformStream);
 
               queryStream.pipe(jsonStringifyTransformStream);
 
@@ -86,11 +91,11 @@ export class ExportService extends DBService {
               // Create the stream
               const stream = streamConfig.stream({ dbClient });
 
-              handleStreamEvents(stream);
+              registerStreamErrorHandler(stream);
 
               const jsonStringifyTransformStream = getJsonStringifyTransformStream();
 
-              handleStreamEvents(jsonStringifyTransformStream);
+              registerStreamErrorHandler(jsonStringifyTransformStream);
 
               stream.pipe(jsonStringifyTransformStream);
 
@@ -102,16 +107,12 @@ export class ExportService extends DBService {
       );
 
       // Finalize the archive stream (finished appending streams)
-      await archiveStream.finalize().catch((error) => {
-        defaultLog.debug({ label: 'export', message: 'archiveStream - error', error });
-      });
+      await archiveStream.finalize();
 
       // Wait for the S3 upload to complete
-      await uploadPromise.catch((error) => {
-        defaultLog.debug({ label: 'export', message: 'uploadPromise - error', error });
-      });
+      await uploadPromise;
 
-      // Generate signed URLs for the export files
+      // Generate signed URLs for the export file
       return this._getAllSignedURLs([exportConfig.s3Key]);
     } catch (error) {
       defaultLog.error({ label: 'export', message: 'Error exporting data.', error });

@@ -74,7 +74,14 @@ export function getJsonStringifyTransformStream(): Transform {
   return transformStream;
 }
 
-export function handleStreamEvents(stream: Readable): Readable {
+/**
+ * Adds error handling to a stream to prevent memory leaks.
+ *
+ * @export
+ * @param {Readable} stream
+ * @return {*}  {Readable}
+ */
+export function registerStreamErrorHandler(stream: Readable): Readable {
   stream.on('error', (error) => {
     defaultLog.debug({ label: 'handleStreamEvents', message: 'error', error, stream: stream.constructor.name });
 
