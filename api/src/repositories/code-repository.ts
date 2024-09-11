@@ -62,9 +62,8 @@ export class CodeRepository extends BaseRepository {
       SELECT 
         method_lookup_id as id, 
         name, 
-        description 
+        description
       FROM method_lookup
-      WHERE record_end_date < now()
       ORDER BY name ASC;
     `;
 

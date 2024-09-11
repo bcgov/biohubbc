@@ -30,11 +30,14 @@ export const TechniqueGeneralInformationForm = <
   }, [codesContext.codesDataLoader]);
 
   const methodOptions: ISelectWithSubtextFieldOption[] =
-    codesContext.codesDataLoader.data?.sample_methods.map((option) => ({
-      value: option.id,
-      label: option.name,
-      subText: option.description
-    })) ?? [];
+    codesContext.codesDataLoader.data?.sample_methods
+      .map((option) => ({
+        value: option.id,
+        label: option.name,
+        subText: option.description
+      }))
+      // Undetermined is a possible option, but filter from the list to discourage its use
+      .filter((option) => option.label.toLowerCase() !== 'undetermined') ?? [];
 
   if (!codesContext.codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
