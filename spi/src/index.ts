@@ -6,6 +6,9 @@ import { transformSurveyStratums } from './transformations/stratum';
 import { transformSurveys } from './transformations/survey';
 import { transformUsers } from './transformations/user';
 import { truncateTables } from './utils/truncateTables';
+import { transformStudyAreas } from './transformations/study-area';
+import { transformSamplingMethods } from './transformations/sampling_methods';
+import { transformSampleVisits } from './transformations/sampling_period';
 
 let connection: IDBConnection; // Declare connection variable at the module level
 
@@ -50,7 +53,13 @@ async function main() {
     await transformSampleSites(connection);
 
     //STEP 7.  Transforms SPI Survey Areas into SIMS Survey Locations
-    await transformSampleSites(connection);
+    await transformStudyAreas(connection);
+
+    //STEP 8.  Transforms SPI Sampling Method 
+    await transformSamplingMethods(connection);
+
+    //STEP 9.  Transforms SPI Sampling Period
+    await transformSampleVisits(connection);
 
     // Commit the transactions
     connection.commit();

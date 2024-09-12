@@ -40,7 +40,7 @@ export const transformStudyAreas = async (connection: IDBConnection): Promise<vo
             sp.convex_hull,
             sp.geo,
             sp.so_count,
-            (0.2 * sqrt(ST_Area(sp.convex_hull)) + 0.05 * pow((ST_Area(sp.convex_hull) / sp.so_count), 0.75)) AS buffer_value
+            (0.2 * sqrt(ST_Area(sp.convex_hull)) + 0.05 * pow((ST_Area(sp.convex_hull) / sp.so_count), 0.75)) AS buffer_value -- these constants came from the python tool commissioned by our team from Chartwell project to create spi study areas
         FROM w_survey_points sp
     )
     INSERT INTO biohub.survey_location (survey_id, name, description, geography)
