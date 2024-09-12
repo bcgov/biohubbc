@@ -63,9 +63,9 @@ export const transformUsers = async (connection: IDBConnection): Promise<void> =
         w_existing_users eu ON eu.given_name = md.given_name AND eu.family_name = md.family_name
     WHERE eu.system_user_id IS NULL;
 
-    -------------------------------------------------------------------------------------------------
+    ------------------------------------------------------------------------------------------------
     -- Update deduplicated users table with the system_user_id
-    -------------------------------------------------------------------------------------------------
+    ------------------------------------------------------------------------------------------------
     UPDATE migrate_spi_user_deduplication AS m
     SET biohub_user_id = su.system_user_id
     FROM biohub.system_user AS su
