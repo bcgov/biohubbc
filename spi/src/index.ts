@@ -3,7 +3,7 @@ import { defaultPoolConfig, getDBConnection, IDBConnection, initDBPool } from '.
 import { transformPermits } from './transformations/permit';
 import { transformProjects } from './transformations/project';
 import { transformSampleSites } from './transformations/sampling-site';
-import { transformSamplingMethods } from './transformations/sampling_methods';
+import { transformSamplingMethods } from './transformations/sampling-methods';
 import { transformSampleVisits } from './transformations/sampling_period';
 import { insertMappedSpecies } from './transformations/species-map';
 import { transformSurveyStratums } from './transformations/stratum';
