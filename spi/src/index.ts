@@ -10,7 +10,7 @@ import { transformSurveyStratums } from './transformations/stratum';
 import { transformStudyAreas } from './transformations/study-area';
 import { transformSurveys } from './transformations/survey';
 import { transformUsers } from './transformations/user';
-import { truncateTables } from './utils/truncateTables';
+import { truncateTables } from './utils/truncate-tables';
 
 let connection: IDBConnection; // Declare connection variable at the module level
 
