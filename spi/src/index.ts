@@ -11,6 +11,7 @@ import { truncateTables } from './utils/truncateTables';
 import { transformStudyAreas } from './transformations/study-area';
 import { transformSamplingMethods } from './transformations/sampling_methods';
 import { transformSampleVisits } from './transformations/sampling_period';
+import { transformStudySpecies } from './transformations/study-species';
 
 let connection: IDBConnection; // Declare connection variable at the module level
 
@@ -66,6 +67,9 @@ async function main() {
 
     //STEP 9.  Transforms SPI Sampling Period
     await transformSampleVisits(connection);
+
+    // STEP 10. Transforms Target taxa into Study Species
+    await transformStudySpecies(connection);
 
     // Commit the transactions
     connection.commit();
