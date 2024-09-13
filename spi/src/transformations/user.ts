@@ -29,12 +29,12 @@ export const transformUsers = async (connection: IDBConnection): Promise<void> =
     -------------------------------------------------------------------------------------------------
     -- Turn deduplicated users into SIMS users
     -------------------------------------------------------------------------------------------------
-    WITH w_existing_users AS (
-        SELECT 
-            system_user_id,
-            family_name,
-            given_name
-        FROM biohub.system_user
+    CREATE TEMP TABLE temp_existing_users AS
+    SELECT 
+        system_user_id,
+        family_name,
+        given_name
+    FROM biohub.system_user;
     )
     INSERT INTO biohub.system_user (
         user_identity_source_id,
@@ -60,7 +60,7 @@ export const transformUsers = async (connection: IDBConnection): Promise<void> =
     LEFT JOIN 
         public.spi_secure_persons spp ON spp.first_name = md.given_name AND spp.last_name = md.family_name
     LEFT JOIN 
-        w_existing_users eu ON eu.given_name = md.given_name AND eu.family_name = md.family_name
+        temp_existing_users eu ON eu.given_name = md.given_name AND eu.family_name = md.family_name
     WHERE eu.system_user_id IS NULL;
 
     ------------------------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ export const transformUsers = async (connection: IDBConnection): Promise<void> =
     -- For existing users
     UPDATE migrate_spi_user_deduplication AS m
     SET biohub_user_id = eu.system_user_id
-    FROM w_existing_users eu
+    FROM temp_existing_users eu
     WHERE eu.given_name = m.given_name
     AND eu.family_name = m.family_name;
   `;
