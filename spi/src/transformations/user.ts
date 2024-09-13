@@ -35,7 +35,7 @@ export const transformUsers = async (connection: IDBConnection): Promise<void> =
         family_name,
         given_name
     FROM biohub.system_user;
-    )
+  
     INSERT INTO biohub.system_user (
         user_identity_source_id,
         user_identifier,
