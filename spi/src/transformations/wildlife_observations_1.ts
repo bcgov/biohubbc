@@ -69,7 +69,7 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
         ON 
             swo.taxonomic_unit_id = mss.spi_species_id
         WHERE 
-            swo.wlo_count != 0 AND AND sto.wlo_id IS NULL
+            swo.wlo_count != 0 AND AND sto.wlo_id IS NULL AND mss.itis_tsn IS NOT NULL -- remove this not null constraint once spi_migrate_species table is fully filled out
         RETURNING swo.wlo_id, so.survey_observation_id;)
 
     INSERT INTO 
