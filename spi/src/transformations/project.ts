@@ -74,6 +74,8 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
                 w_mapping
             JOIN public.spi_projects p 
                 ON p.spi_project_id = w_mapping.spi_project_id
+            INNER JOIN spi_persons pp 
+                ON pp.spi_project_id = p.spi_project_id
             JOIN public.spi_secure_persons spp
                 ON spp.first_name = pp.first_given_name
                 AND spp.last_name = pp.surname
