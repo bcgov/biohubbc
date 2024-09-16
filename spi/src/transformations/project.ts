@@ -60,7 +60,7 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
                 ) AS system_user_id,
 
                 CASE 
-                WHEN TRIM(p.coordinator) = w_mapping.full_name AND spp.email_address LIKE '%@gov.bc.ca%' THEN 
+                WHEN TRIM(p.coordinator) LIKE '%' || w_mapping.full_name || '%' AND spp.email_address LIKE '%@gov.bc.ca%' THEN 
                     (SELECT project_role_id FROM biohub.project_role WHERE name = 'Coordinator')
                 WHEN spp.email_address LIKE '%@gov.bc.ca%' THEN 
                     (SELECT project_role_id FROM biohub.project_role WHERE name = 'Collaborator')
@@ -79,6 +79,22 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
             JOIN public.spi_secure_persons spp
                 ON spp.first_name = pp.first_given_name
                 AND spp.last_name = pp.surname
+                ------- TESTING TO NOT VIOLATE CONSTRAINTS HERE -- 
+                   AND spp.last_name = w_mapping.surname
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM biohub.project_participation pp
+                WHERE pp.project_id = w_mapping.project_id
+                AND pp.system_user_id = COALESCE (
+                    (SELECT biohub_user_id 
+                    FROM public.migrate_spi_user_deduplication 
+                    WHERE w_mapping.person_id = ANY (spi_person_ids)
+                    ), 
+                    (SELECT system_user_id 
+                    FROM biohub.system_user 
+                    WHERE user_identifier = 'spi')
+                )
+            )   
             RETURNING project_id, system_user_id, project_role_id, create_user
                 ),
          w_assign_coordinator AS
