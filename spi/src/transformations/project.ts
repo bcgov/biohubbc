@@ -94,7 +94,7 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
             )   
             RETURNING project_id, system_user_id, project_role_id, create_user
                 ),
-         w_assign_coordinator AS
+                  w_assign_coordinator AS
         (
                 INSERT INTO biohub.project_participation
                 (project_id, system_user_id, project_role_id, create_user)
