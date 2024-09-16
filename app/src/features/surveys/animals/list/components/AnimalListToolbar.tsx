@@ -4,8 +4,7 @@ import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import FileUploadDialog from 'components/dialog/FileUploadDialog';
-import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
+import { FileUploadSingleItemDialog } from 'components/dialog/attachments/FileUploadSingleItemDialog';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -58,16 +57,13 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
 
   return (
     <>
-      <FileUploadDialog
+      <FileUploadSingleItemDialog
         open={openImportDialog}
-        dialogTitle="Import Animals CSV"
+        dialogTitle="Import Animal CSV"
         onClose={() => setOpenImportDialog(false)}
         onUpload={handleImportAnimals}
         uploadButtonLabel="Import"
-        FileUploadProps={{
-          dropZoneProps: { maxNumFiles: 1, acceptedFileExtensions: '.csv' },
-          status: UploadFileStatus.STAGED
-        }}
+        dropZoneProps={{ acceptedFileExtensions: '.csv' }}
       />
       <Toolbar
         disableGutters

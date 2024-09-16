@@ -4,79 +4,94 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
-import { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import { FileUploadDialog } from 'components/dialog/attachments/FileUploadDialog';
+import { ReportFileUploadDialog } from 'components/dialog/attachments/ReportFileUploadDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
+import { AttachmentsI18N, ReportI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useDialogContext } from 'hooks/useContext';
 import { useContext, useState } from 'react';
-import { AttachmentType } from '../../../constants/attachments';
 import SurveyAttachmentsList from './SurveyAttachmentsList';
 
 const SurveyAttachments = () => {
   const biohubApi = useBiohubApi();
 
+  const dialogContext = useDialogContext();
   const surveyContext = useContext(SurveyContext);
 
   const { projectId, surveyId } = surveyContext;
 
-  const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
-  const [attachmentType, setAttachmentType] = useState<AttachmentType.REPORT | AttachmentType.OTHER>(
-    AttachmentType.OTHER
-  );
+  const [openUploadDialog, setOpenUploadDialog] = useState<'Attachment' | 'Report' | false>(false);
 
-  const handleUploadReportClick = () => {
-    setAttachmentType(AttachmentType.REPORT);
-    setOpenUploadAttachments(true);
+  const onSubmitReport = async (fileMeta: IReportMetaForm) => {
+    try {
+      await biohubApi.survey.uploadSurveyReports(projectId, surveyId, fileMeta.attachmentFile, fileMeta);
+    } catch (error) {
+      const apiError = error as APIError;
+
+      dialogContext.setErrorDialog({
+        open: true,
+        dialogTitle: ReportI18N.uploadErrorTitle,
+        dialogText: ReportI18N.uploadErrorText,
+        dialogError: apiError.message,
+        dialogErrorDetails: apiError.errors,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        }
+      });
+    }
   };
 
-  const handleUploadAttachmentClick = () => {
-    setAttachmentType(AttachmentType.OTHER);
-    setOpenUploadAttachments(true);
-  };
+  const handleUploadAttachments = async (file: File) => {
+    try {
+      await biohubApi.survey.uploadSurveyAttachments(projectId, surveyId, file);
+    } catch (error) {
+      const apiError = error as APIError;
 
-  const getUploadHandler = (): IUploadHandler => {
-    return (file, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.survey.uploadSurveyAttachments(projectId, surveyId, file, cancelToken, handleFileUploadProgress);
-    };
-  };
-
-  const getFinishHandler = () => {
-    return async (fileMeta: IReportMetaForm) => {
-      return biohubApi.survey
-        .uploadSurveyReports(projectId, surveyId, fileMeta.attachmentFile, fileMeta)
-        .finally(() => {
-          setOpenUploadAttachments(false);
-        });
-    };
-  };
-
-  const getDialogTitle = () => {
-    switch (attachmentType) {
-      case AttachmentType.REPORT:
-        return 'Upload Report';
-      case AttachmentType.OTHER:
-        return 'Upload Attachments';
-      default:
-        return '';
+      dialogContext.setErrorDialog({
+        open: true,
+        dialogTitle: AttachmentsI18N.uploadErrorTitle,
+        dialogText: AttachmentsI18N.uploadErrorText,
+        dialogError: apiError.message,
+        dialogErrorDetails: apiError.errors,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        }
+      });
     }
   };
 
   return (
     <>
-      <FileUploadWithMetaDialog
-        open={openUploadAttachments}
-        dialogTitle={getDialogTitle()}
-        attachmentType={attachmentType}
-        onFinish={getFinishHandler()}
+      <ReportFileUploadDialog
+        open={openUploadDialog === 'Report'}
+        onSubmit={onSubmitReport}
         onClose={() => {
-          setOpenUploadAttachments(false);
           surveyContext.artifactDataLoader.refresh(projectId, surveyId);
+          setOpenUploadDialog(false);
         }}
-        uploadHandler={getUploadHandler()}
       />
+
+      <FileUploadDialog
+        open={openUploadDialog === 'Attachment'}
+        dialogTitle="Upload Attachments"
+        uploadHandler={handleUploadAttachments}
+        onClose={() => {
+          surveyContext.artifactDataLoader.refresh(projectId, surveyId);
+          setOpenUploadDialog(false);
+        }}
+      />
+
       <Box>
         <H2MenuToolbar
           label="Documents"
@@ -88,12 +103,12 @@ const SurveyAttachments = () => {
             {
               menuLabel: 'Upload a Report',
               menuIcon: <Icon path={mdiFilePdfBox} size={1} />,
-              menuOnClick: handleUploadReportClick
+              menuOnClick: () => setOpenUploadDialog('Report')
             },
             {
               menuLabel: 'Upload Attachments',
               menuIcon: <Icon path={mdiAttachment} size={1} />,
-              menuOnClick: handleUploadAttachmentClick
+              menuOnClick: () => setOpenUploadDialog('Attachment')
             }
           ]}
           renderButton={(buttonProps) => (
@@ -104,7 +119,9 @@ const SurveyAttachments = () => {
             </ProjectRoleGuard>
           )}
         />
-        <Divider></Divider>
+
+        <Divider />
+
         <Box p={2}>
           <SurveyAttachmentsList />
         </Box>
