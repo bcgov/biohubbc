@@ -72,10 +72,36 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
                 w_mapping
             JOIN public.spi_projects p 
                 ON p.spi_project_id = w_mapping.spi_project_id
+            INNER JOIN spi_persons pp 
+                ON pp.spi_project_id = p.spi_project_id
             JOIN public.spi_secure_persons spp
                 ON spp.first_name = pp.first_given_name
                 AND spp.last_name = pp.surname
-                );
+            RETURNING project_id, system_user_id, project_role_id, create_user
+                ),
+         w_assign_coordinator AS
+        (
+                INSERT INTO biohub.project_participation
+                (project_id, system_user_id, project_role_id, create_user)
+            SELECT
+                b.project_id,
+                (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'spi') AS system_user_id,
+                (SELECT project_role_id FROM biohub.project_role WHERE name = 'Coordinator') AS project_role_id,
+                (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'spi') AS create_user
+            FROM 
+                biohub.project b
+            WHERE NOT EXISTS (
+                SELECT 1
+                FROM biohub.project_participation pp
+                JOIN biohub.project_role pr 
+                    ON pp.project_role_id = pr.project_role_id
+                WHERE b.project_id = pp.project_id
+                AND pr.name = 'Coordinator'
+            )
+            AND b.spi_project_id IS NOT NULL
+        )
+    SELECT * FROM w_insert_participation;
+    SELECT * FROM w_assign_coordinator;
   `;
 
   await connection.sql(sql);
