@@ -61,9 +61,9 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
 
                 CASE 
                 WHEN TRIM(p.coordinator) LIKE '%' || w_mapping.full_name || '%' AND spp.email_address LIKE '%@gov.bc.ca%' THEN 
-                    (SELECT project_role_id FROM biohub.project_role WHERE name = 'Coordinator')
+                    (SELECT project_role_id FROM biohub.project_role WHERE name = 'Observer')
                 WHEN spp.email_address LIKE '%@gov.bc.ca%' THEN 
-                    (SELECT project_role_id FROM biohub.project_role WHERE name = 'Collaborator')
+                    (SELECT project_role_id FROM biohub.project_role WHERE name = 'Observer')
                 ELSE 
                     (SELECT project_role_id FROM biohub.project_role WHERE name = 'Observer')
                 END AS project_role_id,
@@ -79,26 +79,12 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
             JOIN public.spi_secure_persons spp
                 ON spp.first_name = pp.first_given_name
                 AND spp.last_name = pp.surname
-                ------- TESTING TO NOT VIOLATE CONSTRAINTS HERE -- 
-            WHERE NOT EXISTS (
-                SELECT 1
-                FROM biohub.project_participation pp
-                WHERE pp.project_id = w_mapping.project_id
-                AND pp.system_user_id = COALESCE (
-                    (SELECT biohub_user_id 
-                    FROM public.migrate_spi_user_deduplication 
-                    WHERE w_mapping.person_id = ANY (spi_person_ids)
-                    ), 
-                    (SELECT system_user_id 
-                    FROM biohub.system_user 
-                    WHERE user_identifier = 'spi')
-                )
-            )   
             RETURNING project_id, system_user_id, project_role_id, create_user
-                ),
-                  w_assign_coordinator AS
-        (
-                INSERT INTO biohub.project_participation
+                )
+
+        ------ ensuring that SPI becomes coordinator in cases where no coordinator is assigned ---- 
+
+            INSERT INTO biohub.project_participation
                 (project_id, system_user_id, project_role_id, create_user)
             SELECT
                 b.project_id,
@@ -116,9 +102,7 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
                 AND pr.name = 'Coordinator'
             )
             AND b.spi_project_id IS NOT NULL
-        )
-    SELECT * FROM w_insert_participation;
-    SELECT * FROM w_assign_coordinator;
+        RETURNING project_id, system_user_id, project_role_id, create_user;
   `;
 
   await connection.sql(sql);
