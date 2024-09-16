@@ -1,5 +1,6 @@
 import { PassThrough } from 'stream';
 import { IDBConnection } from '../../database/db';
+import { ApiGeneralError } from '../../errors/api-error';
 import { getS3SignedURLs, uploadStreamToS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { DBService } from '../db-service';
@@ -38,7 +39,7 @@ export class ExportService extends DBService {
     defaultLog.debug({ label: 'export', message: 'exportConfig', exportConfig });
 
     if (exportConfig.exportStrategies.length === 0) {
-      throw new Error('No export strategies have been.');
+      throw new ApiGeneralError('No export strategies have been defined.');
     }
 
     const dbClient = await this.connection.getClient();
@@ -136,7 +137,7 @@ export class ExportService extends DBService {
     const signedURLs = await getS3SignedURLs(s3Keys);
 
     if (signedURLs.some((item) => item === null)) {
-      throw new Error('Failed to generate signed URLs for all export files.');
+      throw new ApiGeneralError('Failed to generate signed URLs for all export files.');
     }
 
     return signedURLs as string[];
