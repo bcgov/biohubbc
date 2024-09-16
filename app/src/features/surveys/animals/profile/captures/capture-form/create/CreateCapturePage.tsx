@@ -34,7 +34,7 @@ export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
     }
   },
   capture: {
-    capture_id: v4(),
+    capture_id: '',
     capture_date: '',
     capture_method_id: '',
     capture_time: '',
@@ -116,6 +116,7 @@ export const CreateCapturePage = () => {
     try {
       const surveyCritterId = Number(animalPageContext.selectedAnimal?.critter_id);
       const critterbaseCritterId = String(animalPageContext.selectedAnimal?.critterbase_critter_id);
+      const critterbaseCaptureId = v4(); // Generate a static UUID for the capture and attachments
       const captureAttachments = Object.values(values.attachments.capture_attachments.create);
 
       if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
@@ -152,7 +153,7 @@ export const CreateCapturePage = () => {
         captures: [
           {
             critter_id: critterbaseCritterId,
-            capture_id: values.capture.capture_id,
+            capture_id: critterbaseCaptureId,
             capture_date: values.capture.capture_date,
             capture_time: values.capture.capture_time || undefined,
             release_date: values.capture.release_date || values.capture.capture_date,
@@ -168,14 +169,14 @@ export const CreateCapturePage = () => {
           ...marking,
           marking_id: marking.marking_id,
           critter_id: critterbaseCritterId,
-          capture_id: values.capture.capture_id
+          capture_id: critterbaseCaptureId
         })),
         qualitative_measurements: values.measurements
           .filter(isQualitativeMeasurementCreate)
           // Format qualitative measurements for create
           .map((measurement) => ({
             critter_id: critterbaseCritterId,
-            capture_id: values.capture.capture_id,
+            capture_id: critterbaseCaptureId,
             taxon_measurement_id: measurement.taxon_measurement_id,
             qualitative_option_id: measurement.qualitative_option_id
           })),
@@ -184,7 +185,7 @@ export const CreateCapturePage = () => {
           // Format quantitative measurements for create
           .map((measurement) => ({
             critter_id: critterbaseCritterId,
-            capture_id: values.capture.capture_id,
+            capture_id: critterbaseCaptureId,
             taxon_measurement_id: measurement.taxon_measurement_id,
             value: measurement.value
           }))
@@ -205,7 +206,7 @@ export const CreateCapturePage = () => {
             projectId,
             surveyId,
             critterId: surveyCritterId,
-            critterbaseCaptureId: values.capture.capture_id,
+            critterbaseCaptureId: critterbaseCaptureId,
             files: captureAttachments
           })
           .catch(() => {

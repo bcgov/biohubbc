@@ -160,7 +160,8 @@ export function uploadCaptureAttachments(): RequestHandler {
         const upsertResult = await critterAttachmentService.upsertCritterCaptureAttachment({
           critter_id: Number(req.params.critterId),
           critterbase_capture_id: req.params.captureId,
-          file: file,
+          file_name: file.originalname,
+          file_size: file.size,
           key: s3Key
         });
 

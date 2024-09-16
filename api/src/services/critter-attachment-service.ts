@@ -24,7 +24,7 @@ export class CritterAttachmentService extends DBService {
   }
 
   /**
-   * Insert Critter Capture Attachment.
+   * Upsert Critter Capture Attachment.
    *
    * @param {CritterCaptureAttachmentPayload} payload
    * @return {*} {Promise<{critter_capture_attachment_id: number; key: string}>}

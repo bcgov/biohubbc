@@ -37,15 +37,15 @@ export class CritterAttachmentRepository extends BaseRepository {
     VALUES (
       ${payload.critter_id},
       ${payload.critterbase_capture_id},
-      ${payload.file.filename},
-      ${payload.file.size},
+      ${payload.file_name},
+      ${payload.file_size},
       'other',
       ${payload.key}
     )
     ON CONFLICT (critter_id, critterbase_capture_id, file_name)
     DO UPDATE SET
-      file_name = ${payload.file.filename},
-      file_size = ${payload.file.size}
+      file_name = ${payload.file_name},
+      file_size = ${payload.file_size}
     RETURNING
       critter_capture_attachment_id,
       key;
@@ -87,15 +87,15 @@ export class CritterAttachmentRepository extends BaseRepository {
     VALUES (
       ${payload.critter_id},
       ${payload.critterbase_mortality_id},
-      ${payload.file.filename},
-      ${payload.file.size},
+      ${payload.file_name},
+      ${payload.file_size},
       'other',
       ${payload.key}
     )
     ON CONFLICT (critter_id, critterbase_mortality_id, file_name)
     DO UPDATE SET
-      file_name = ${payload.file.filename},
-      file_size = ${payload.file.size}
+      file_name = ${payload.file_name},
+      file_size = ${payload.file_size}
     RETURNING
       critter_mortality_attachment_id,
       key;
