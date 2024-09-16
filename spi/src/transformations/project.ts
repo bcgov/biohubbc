@@ -80,7 +80,6 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
                 ON spp.first_name = pp.first_given_name
                 AND spp.last_name = pp.surname
                 ------- TESTING TO NOT VIOLATE CONSTRAINTS HERE -- 
-                   AND spp.last_name = w_mapping.surname
             WHERE NOT EXISTS (
                 SELECT 1
                 FROM biohub.project_participation pp
