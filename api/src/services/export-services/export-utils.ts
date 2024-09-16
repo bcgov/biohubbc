@@ -77,6 +77,9 @@ export function getJsonStringifyTransformStream(): Transform {
 /**
  * Adds error handling to a stream to prevent memory leaks.
  *
+ * Registers an 'error' event handler on the stream that emits am 'end' event and destroys the stream, if not already
+ * destroyed.
+ *
  * @export
  * @param {Readable} stream
  * @return {*}  {Readable}

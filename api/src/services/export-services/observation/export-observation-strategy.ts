@@ -1,6 +1,9 @@
 import { getKnex, IDBConnection } from '../../../database/db';
+import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
 import { ExportStrategy, ExportStrategyConfig } from '../export-strategy';
+
+const defaultLog = getLogger('services/export-observation-strategy');
 
 export type ExportObservationConfig = {
   surveyId: number;
@@ -41,7 +44,12 @@ export class ExportObservationStrategy extends DBService implements ExportStrate
         ]
       };
     } catch (error) {
-      console.error('Error generating observation export strategy config.', error);
+      defaultLog.error({
+        label: 'getExportStrategyConfig',
+        message: 'Error generating export strategy config.',
+        error
+      });
+
       throw error;
     }
   }

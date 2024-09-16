@@ -1,6 +1,9 @@
 import { getKnex, IDBConnection } from '../../../database/db';
+import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
 import { ExportStrategy, ExportStrategyConfig } from '../export-strategy';
+
+const defaultLog = getLogger('services/export-survey-metadata-strategy');
 
 export type ExportSurveyMetadataConfig = {
   surveyId: number;
@@ -41,7 +44,12 @@ export class ExportSurveyMetadataStrategy extends DBService implements ExportStr
         ]
       };
     } catch (error) {
-      console.error('Error generating survey metadata export strategy config.', error);
+      defaultLog.error({
+        label: 'getExportStrategyConfig',
+        message: 'Error generating export strategy config.',
+        error
+      });
+
       throw error;
     }
   }

@@ -1,9 +1,12 @@
 import { IDBConnection } from '../../../database/db';
+import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
 import { ExportStrategy, ExportStrategyConfig } from '../export-strategy';
 import { ExportObservationStrategy } from '../observation/export-observation-strategy';
 import { ExportTelemetryStrategy } from '../telemetry/export-telemetry-strategy';
 import { ExportSurveyMetadataStrategy } from './export-survey-metadata-strategy';
+
+const defaultLog = getLogger('services/export-survey-strategy');
 
 export type ExportSurveyStrategyConfig = {
   /**
@@ -117,7 +120,12 @@ export class ExportSurveyStrategy extends DBService implements ExportStrategy {
         streams: allStreams
       };
     } catch (error) {
-      console.error('Error generating survey export strategy config.', error);
+      defaultLog.error({
+        label: 'getExportStrategyConfig',
+        message: 'Error generating export strategy config.',
+        error
+      });
+
       throw error;
     }
   }

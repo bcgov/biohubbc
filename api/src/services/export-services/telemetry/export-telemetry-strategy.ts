@@ -1,10 +1,11 @@
 import { Readable } from 'stream';
 import { IDBConnection } from '../../../database/db';
+import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
 import { TelemetryService } from '../../telemetry-service';
 import { ExportDataStreamOptions, ExportStrategy, ExportStrategyConfig } from '../export-strategy';
 
-// const defaultLog = getLogger('ExportTelemetryStrategy');
+const defaultLog = getLogger('services/export-telemetry-strategy');
 
 export type ExportTelemetryConfig = {
   surveyId: number;
@@ -45,7 +46,12 @@ export class ExportTelemetryStrategy extends DBService implements ExportStrategy
         ]
       };
     } catch (error) {
-      console.error('Error generating observation export strategy config.', error);
+      defaultLog.error({
+        label: 'getExportStrategyConfig',
+        message: 'Error generating export strategy config.',
+        error
+      });
+
       throw error;
     }
   }
