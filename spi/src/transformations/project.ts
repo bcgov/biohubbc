@@ -79,6 +79,7 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
             JOIN public.spi_secure_persons spp
                 ON spp.first_name = pp.first_given_name
                 AND spp.last_name = pp.surname
+            RETURNING project_id, system_user_id, project_role_id, create_user
                 ),
          w_assign_coordinator AS
         (
