@@ -29,8 +29,8 @@ import { v4 } from 'uuid';
 
 export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
   attachments: {
-    new: {
-      capture_attachments: {}
+    capture_attachments: {
+      create: {}
     }
   },
   capture: {
@@ -116,7 +116,7 @@ export const CreateCapturePage = () => {
     try {
       const surveyCritterId = Number(animalPageContext.selectedAnimal?.critter_id);
       const critterbaseCritterId = String(animalPageContext.selectedAnimal?.critterbase_critter_id);
-      const captureAttachments = Object.values(values.attachments.new.capture_attachments);
+      const captureAttachments = Object.values(values.attachments.capture_attachments.create);
 
       if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
         return;
@@ -139,17 +139,6 @@ export const CreateCapturePage = () => {
           latitude: values.capture.release_location.geometry.coordinates[1],
           coordinate_uncertainty: 0,
           coordinate_uncertainty_unit: 'm'
-        });
-      }
-
-      // Upload Capture attachments
-      if (captureAttachments.length) {
-        await biohubApi.animal.uploadCritterCaptureAttachments({
-          projectId,
-          surveyId,
-          critterId: surveyCritterId,
-          critterbaseCaptureId: values.capture.capture_id,
-          files: captureAttachments
         });
       }
 
@@ -209,8 +198,25 @@ export const CreateCapturePage = () => {
         return;
       }
 
-      // Refresh page
+      // Upload Capture attachments
+      if (captureAttachments.length) {
+        await biohubApi.animal
+          .uploadCritterCaptureAttachments({
+            projectId,
+            surveyId,
+            critterId: surveyCritterId,
+            critterbaseCaptureId: values.capture.capture_id,
+            files: captureAttachments
+          })
+          .catch(() => {
+            showCreateErrorDialog({
+              dialogError: 'Failed to upload capture attachments',
+              dialogErrorDetails: ['Failed to upload capture attachments']
+            });
+          });
+      }
 
+      // Refresh page
       if (surveyCritterId) {
         animalPageContext.critterDataLoader.refresh(projectId, surveyId, surveyCritterId);
       }

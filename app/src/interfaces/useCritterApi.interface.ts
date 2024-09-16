@@ -90,11 +90,9 @@ export interface IMeasurementsUpdate {
 
 export interface ICreateCaptureRequest extends IMarkings, IMeasurementsCreate {
   attachments: {
-    // Create capture request does not have any current attachments yet
-    current?: undefined;
-    new: {
-      // Key is the file name
-      capture_attachments: Record<string, File>;
+    capture_attachments: {
+      create: Record<string, File>;
+      delete?: never;
     };
   };
   capture: ICapturePostData;
@@ -102,11 +100,9 @@ export interface ICreateCaptureRequest extends IMarkings, IMeasurementsCreate {
 
 export interface IEditCaptureRequest extends IMarkings, IMeasurementsUpdate {
   attachments: {
-    current: {
-      capture_attachments: ICritterCaptureAttachment[];
-    };
-    new: {
-      capture_attachments: Record<string, File>;
+    capture_attachments: {
+      create: Record<string, File>;
+      delete: string[];
     };
   };
   capture: ICapturePostData;

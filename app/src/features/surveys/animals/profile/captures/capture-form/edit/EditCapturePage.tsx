@@ -192,8 +192,10 @@ export const EditCapturePage = () => {
   // Initial formik values
   const initialFormikValues: IEditCaptureRequest = {
     attachments: {
-      current: { capture_attachments: critter.attachments.capture_attachments },
-      new: { capture_attachments: {} }
+      capture_attachments: {
+        create: {},
+        delete: []
+      }
     },
     capture: {
       capture_id: capture.capture_id,
@@ -317,6 +319,9 @@ export const EditCapturePage = () => {
             initialCaptureData={initialFormikValues}
             handleSubmit={(formikData) => handleSubmit(formikData)}
             formikRef={formikRef}
+            captureAttachments={critter.attachments.capture_attachments.filter(
+              (attachment) => attachment.critterbase_capture_id === capture.capture_id
+            )}
           />
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
             <LoadingButton

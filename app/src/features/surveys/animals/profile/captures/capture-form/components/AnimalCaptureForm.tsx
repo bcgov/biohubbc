@@ -1,11 +1,16 @@
-import { Divider } from '@mui/material';
+import { Divider, Typography } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import FileUpload from 'components/file-upload/FileUpload';
 import { IFileHandler, UploadFileStatus } from 'components/file-upload/FileUploadItem';
+import { FileUploadItemContent } from 'components/file-upload/FileUploadItemContent';
 import { Formik, FormikProps } from 'formik';
-import { ICreateCaptureRequest, IEditCaptureRequest } from 'interfaces/useCritterApi.interface';
+import {
+  ICreateCaptureRequest,
+  ICritterCaptureAttachment,
+  IEditCaptureRequest
+} from 'interfaces/useCritterApi.interface';
 import { isDefined } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { MarkingsForm } from '../../../markings/MarkingsForm';
@@ -18,6 +23,7 @@ export interface IAnimalCaptureFormProps<FormikValuesType extends ICreateCapture
   initialCaptureData: FormikValuesType;
   handleSubmit: (formikData: FormikValuesType) => void;
   formikRef: React.RefObject<FormikProps<FormikValuesType>>;
+  captureAttachments?: ICritterCaptureAttachment[];
 }
 
 /**
@@ -32,7 +38,10 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
 ) => {
   const animalCaptureYupSchema = yup.object({
     attachments: yup.object({
-      capture_attachments: yup.mixed() // key-value object of file names and files
+      capture_attachments: yup.object({
+        create: yup.mixed(),
+        delete: yup.array().of(yup.number())
+      })
     }),
     capture: yup.object({
       capture_id: yup.string(),
@@ -142,23 +151,39 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
   });
 
   /**
-   * Add a file to the formik form.
+   * Add the file to the create attachments list. (Create)
    *
    * @param {File | null} file - Uploaded file
+   * @return {void}
    */
-  const addFileHandler: IFileHandler = (file) => {
+  const addFile: IFileHandler = (file) => {
     if (!file) return;
-    props.formikRef.current?.setFieldValue(`attachments.capture_attachments[${file}]`, file);
+
+    props.formikRef.current?.setFieldValue(`attachments.capture_attachments.create[${file}]`, file);
   };
 
   /**
-   * Remove a file from the formik form.
+   * Remove a staged file. (Create)
    *
    * @param {string} fileName
+   * @return {void}
    */
-  const removeFileHandler = (fileName: string) => {
-    // TODO: Remove file from S3 and attachment table
-    props.formikRef.current?.setFieldValue(`attachments.capture_attachments[${fileName}]`, undefined);
+  const removeStagedFile = (fileName: string) => {
+    props.formikRef.current?.setFieldValue(`attachments.capture_attachments.create[${fileName}]`, null);
+  };
+
+  /**
+   * Flag uploaded file for delete. (Edit)
+   *
+   * @param {number} attachmentId
+   * @return {void}
+   */
+  const flagUploadedFileForDelete = (attachmentId: string) => {
+    const deleteIds = props.formikRef.current?.values.attachments.capture_attachments.delete;
+    // If the attachment is not already flagged for deletion, add it to the list
+    if (deleteIds && !deleteIds.includes(attachmentId)) {
+      props.formikRef.current?.setFieldValue(`attachments.capture_attachments.delete`, [...deleteIds, attachmentId]);
+    }
   };
 
   return (
@@ -188,10 +213,24 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
           summary="Upload attachments related to the capture"
           component={
             <>
-              <FileUpload fileHandler={addFileHandler} onRemove={removeFileHandler} status={UploadFileStatus.STAGED} />
-              {props.formikRef.current?.values.attachments.current?.capture_attachments.map((attachment) => {
-                return <div>{attachment.file_name}</div>;
-              })}
+              <FileUpload fileHandler={addFile} onRemove={removeStagedFile} status={UploadFileStatus.STAGED} />
+
+              {props.captureAttachments?.map((attachment) => (
+                <FileUploadItemContent
+                  key={attachment.critter_capture_attachment_id}
+                  status={UploadFileStatus.STAGED}
+                  progress={100}
+                  onCancel={() => {
+                    flagUploadedFileForDelete(attachment.critter_capture_attachment_id);
+                  }}
+                  file={new File([], attachment.file_name ?? 'Unknown')}
+                  SubtextComponent={() => (
+                    <Typography variant="caption" component="span">
+                      File Uploaded
+                    </Typography>
+                  )}
+                />
+              ))}
             </>
           }
         />
