@@ -191,6 +191,10 @@ export const EditCapturePage = () => {
 
   // Initial formik values
   const initialFormikValues: IEditCaptureRequest = {
+    attachments: {
+      current: { capture_attachments: critter.attachments.capture_attachments },
+      new: { capture_attachments: {} }
+    },
     capture: {
       capture_id: capture.capture_id,
       capture_method_id: capture.capture_method_id ?? '',

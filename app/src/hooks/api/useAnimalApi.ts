@@ -54,20 +54,29 @@ const useAnimalApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  const uploadCritterCaptureAttachment = async (params: {
+  /**
+   * Uploads attachments for a Critter Capture.
+   *
+   * @async
+   * @param {*} params - Upload parameters.
+   * @returns {Promise<void>}
+   */
+  const uploadCritterCaptureAttachments = async (params: {
     projectId: number;
     surveyId: number;
     critterId: number;
     critterbaseCaptureId: string;
-    file: File;
+    files: File[];
     cancelTokenSource?: CancelTokenSource;
     onProgress?: (progressEvent: AxiosProgressEvent) => void;
   }) => {
     const fileData = new FormData();
 
-    fileData.append('media', params.file);
+    params.files.forEach((file) => {
+      fileData.append('media', file);
+    });
 
-    const { data } = await axios.post(
+    await axios.post(
       `/api/project/${params.projectId}/survey/${params.surveyId}/critters/${params.critterId}/captures/${params.critterbaseCaptureId}/attachments/upload`,
       fileData,
       {
@@ -75,11 +84,9 @@ const useAnimalApi = (axios: AxiosInstance) => {
         onUploadProgress: params.onProgress
       }
     );
-
-    return data;
   };
 
-  return { getCaptureMortalityGeometry, findAnimals, uploadCritterCaptureAttachment };
+  return { getCaptureMortalityGeometry, findAnimals, uploadCritterCaptureAttachments };
 };
 
 export default useAnimalApi;

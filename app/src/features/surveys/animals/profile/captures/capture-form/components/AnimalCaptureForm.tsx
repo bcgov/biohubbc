@@ -157,6 +157,7 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
    * @param {string} fileName
    */
   const removeFileHandler = (fileName: string) => {
+    // TODO: Remove file from S3 and attachment table
     props.formikRef.current?.setFieldValue(`attachments.capture_attachments[${fileName}]`, undefined);
   };
 
@@ -186,7 +187,12 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
           title="Attachments"
           summary="Upload attachments related to the capture"
           component={
-            <FileUpload fileHandler={addFileHandler} onRemove={removeFileHandler} status={UploadFileStatus.STAGED} />
+            <>
+              <FileUpload fileHandler={addFileHandler} onRemove={removeFileHandler} status={UploadFileStatus.STAGED} />
+              {props.formikRef.current?.values.attachments.current?.capture_attachments.map((attachment) => {
+                return <div>{attachment.file_name}</div>;
+              })}
+            </>
           }
         />
         <Divider />

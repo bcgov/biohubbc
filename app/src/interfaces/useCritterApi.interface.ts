@@ -90,12 +90,25 @@ export interface IMeasurementsUpdate {
 
 export interface ICreateCaptureRequest extends IMarkings, IMeasurementsCreate {
   attachments: {
-    capture_attachments: Record<string, File>;
+    // Create capture request does not have any current attachments yet
+    current?: undefined;
+    new: {
+      // Key is the file name
+      capture_attachments: Record<string, File>;
+    };
   };
   capture: ICapturePostData;
 }
 
 export interface IEditCaptureRequest extends IMarkings, IMeasurementsUpdate {
+  attachments: {
+    current: {
+      capture_attachments: ICritterCaptureAttachment[];
+    };
+    new: {
+      capture_attachments: Record<string, File>;
+    };
+  };
   capture: ICapturePostData;
 }
 
@@ -111,6 +124,22 @@ export interface ICollectionUnitMultiTsnResponse {
   tsn: number;
   categories: ICollectionCategory[];
 }
+
+interface ICritterAttachmentBase {
+  uuid: string;
+  critter_id: number;
+  file_type: string;
+  file_name: string;
+  file_size: number;
+  title: string | null;
+  description: string | null;
+  key: string;
+}
+
+export type ICritterCaptureAttachment = {
+  critter_capture_attachment_id: string;
+  critterbase_capture_id: string;
+} & ICritterAttachmentBase;
 
 export interface ICollectionCategory {
   collection_category_id: string;
@@ -310,6 +339,9 @@ export type ICritterDetailedResponse = {
   };
   family_parent: IFamilyParentResponse[];
   family_child: IFamilyChildResponse[];
+  attachments: {
+    capture_attachments: ICritterCaptureAttachment[];
+  };
 };
 
 export interface ICritterSimpleResponse {

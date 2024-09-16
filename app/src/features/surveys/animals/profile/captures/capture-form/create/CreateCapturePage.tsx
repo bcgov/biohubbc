@@ -29,7 +29,9 @@ import { v4 } from 'uuid';
 
 export const defaultAnimalCaptureFormValues: ICreateCaptureRequest = {
   attachments: {
-    capture_attachments: {}
+    new: {
+      capture_attachments: {}
+    }
   },
   capture: {
     capture_id: v4(),
@@ -114,6 +116,7 @@ export const CreateCapturePage = () => {
     try {
       const surveyCritterId = Number(animalPageContext.selectedAnimal?.critter_id);
       const critterbaseCritterId = String(animalPageContext.selectedAnimal?.critterbase_critter_id);
+      const captureAttachments = Object.values(values.attachments.new.capture_attachments);
 
       if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
         return;
@@ -139,25 +142,16 @@ export const CreateCapturePage = () => {
         });
       }
 
-      // TODO: Allow endpoint to accept multiple attachments
-      const uploadCaptureAttachments = Object.values(values.attachments.capture_attachments).map((file) => {
-        return biohubApi.animal.uploadCritterCaptureAttachment({
-          critterId: surveyCritterId,
-          critterbaseCaptureId: values.capture.capture_id,
+      // Upload Capture attachments
+      if (captureAttachments.length) {
+        await biohubApi.animal.uploadCritterCaptureAttachments({
           projectId,
           surveyId,
-          file
+          critterId: surveyCritterId,
+          critterbaseCaptureId: values.capture.capture_id,
+          files: captureAttachments
         });
-      });
-
-      // Upload all the capture attachments
-      await Promise.all(uploadCaptureAttachments).catch(() => {
-        showCreateErrorDialog({
-          dialogError: 'An error occurred while attempting to upload the Capture attachments.',
-          dialogErrorDetails: ['Upload failed when uploading attachments']
-        });
-        return;
-      });
+      }
 
       /**
        * Create the Capture, Markings, and Measurements and Locations in Critterbase.
@@ -225,7 +219,7 @@ export const CreateCapturePage = () => {
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
-        dialogTitle: 'Error Creating Survey',
+        dialogTitle: CreateCaptureI18N.createErrorTitle,
         dialogError: apiError?.message,
         dialogErrorDetails: apiError?.errors
       });
