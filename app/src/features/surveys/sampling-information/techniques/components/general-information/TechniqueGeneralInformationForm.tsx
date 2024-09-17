@@ -36,6 +36,7 @@ export const TechniqueGeneralInformationForm = <
         label: option.name,
         subText: option.description
       }))
+      // TODO https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-615 - Replace filter with more generic solution
       // Undetermined is a possible option, but filter from the list to discourage its use
       .filter((option) => option.label.toLowerCase() !== 'undetermined') ?? [];
 
