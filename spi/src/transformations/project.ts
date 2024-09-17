@@ -41,7 +41,7 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
             LEFT JOIN public.spi_secure_persons spp 
                 ON spp.first_name = pp.first_given_name
                 AND spp.last_name = pp.surname
-        ), 
+        )
             INSERT INTO
                 biohub.project_participation (project_id, system_user_id, project_role_id, create_user)
             SELECT DISTINCT
@@ -77,8 +77,7 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
             JOIN public.spi_secure_persons spp
                 ON spp.first_name = pp.first_given_name
                 AND spp.last_name = pp.surname
-            RETURNING project_id, system_user_id, project_role_id, create_user
-                )
+            RETURNING project_id, system_user_id, project_role_id, create_user;
 
         ------ ensuring that SPI becomes coordinator in cases where no coordinator is assigned ---- 
 

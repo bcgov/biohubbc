@@ -2,6 +2,7 @@ import SQL from 'sql-template-strings';
 import { IDBConnection } from '../db';
 
 export const transformSampleSites = async (connection: IDBConnection): Promise<void> => {
+    console.log('Transforming Sampling Sites');
   const transformSampleSitesSql = SQL`
     set search_path = biohub,public;
 

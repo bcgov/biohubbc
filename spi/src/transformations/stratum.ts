@@ -14,7 +14,7 @@ export const transformSurveyStratums = async (connection: IDBConnection): Promis
     SELECT 
         s.survey_id,
         st.stratum_name,
-        st.stratum_description,
+        COALESCE(st.stratum_description, 'Migrated from SPI'),
         st.when_created
     FROM 
         public.spi_survey_stratums st
