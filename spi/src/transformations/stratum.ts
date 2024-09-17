@@ -7,7 +7,7 @@ export const transformSurveyStratums = async (connection: IDBConnection): Promis
     set search_path = biohub,public;
 
     -------------------------------------------------------------------------------------------------
-    -- Create stratum
+    -- Create stratum to do
     -------------------------------------------------------------------------------------------------
     INSERT INTO 
         biohub.survey_stratum (survey_id, name, description, create_date)

@@ -21,13 +21,16 @@
     "npm": ">= 10.0.0"
   },
   "dependencies": {
-    "pg": "^8.7.1",
+    "axios": "^1.7.7",
     "knex": "^2.4.2",
+    "pg": "^8.7.1",
     "sql-template-strings": "^2.2.2",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
-    "@types/node": "^20.14.11",
+    "@types/axios": "^0.14.0",
+    "@types/node": "^20.16.5",
     "@types/pg": "^8.11.6",
     "@typescript-eslint/eslint-plugin": "~7.6.0",
     "@typescript-eslint/parser": "~7.6.0",
