@@ -6,7 +6,7 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
   const transformSampleSitesSql = SQL`
     set search_path = biohub,public;
 
-    ----------------------------------------------------------------
+    -------------------------------------------------------------------------------------------------
     -- Create sampling sites from spi design components
     -- This might have issues with non-null constraints; geojson or geometry might be required in SIMS
     -------------------------------------------------------------------------------------------------
@@ -37,7 +37,7 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
       survey_sample_site_id,
       design_component_id
     FROM 
-        w_inserted wi;
+        w_inserted;
 
     -------------------------------------------------------------------------------------------------
     -- Insert SPI Design Component Stratums into SIMS Survey Sample Stratums (the instance of a survey stratum)
