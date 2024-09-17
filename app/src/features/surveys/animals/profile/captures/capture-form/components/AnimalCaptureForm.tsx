@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import FileUpload from 'components/file-upload/FileUpload';
-import { IFileHandler, UploadFileStatus } from 'components/file-upload/FileUploadItem';
+import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { FileUploadItemContent } from 'components/file-upload/FileUploadItemContent';
 import { Formik, FormikProps } from 'formik';
 import {
@@ -11,7 +11,7 @@ import {
   ICritterCaptureAttachment,
   IEditCaptureRequest
 } from 'interfaces/useCritterApi.interface';
-import { isDefined } from 'utils/Utils';
+import { getFormattedFileSize, isDefined } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { MarkingsForm } from '../../../markings/MarkingsForm';
 import { MeasurementsForm } from '../../../measurements/MeasurementsForm';
@@ -156,7 +156,7 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
    * @param {File | null} file - Uploaded file
    * @return {void}
    */
-  const addFile: IFileHandler = (file) => {
+  const addStagedFile = (file: File | null) => {
     if (!file) return;
 
     props.formikRef.current?.setFieldValue(`attachments.capture_attachments.create[${file}]`, file);
@@ -164,12 +164,12 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
 
   /**
    * Remove a staged file. (Create)
-   *
+
    * @param {string} fileName
    * @return {void}
    */
   const removeStagedFile = (fileName: string) => {
-    props.formikRef.current?.setFieldValue(`attachments.capture_attachments.create[${fileName}]`, null);
+    props.formikRef.current?.setFieldValue(`attachments.capture_attachments.create[${fileName}]`, undefined);
   };
 
   /**
@@ -180,6 +180,7 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
    */
   const flagUploadedFileForDelete = (attachmentId: string) => {
     const deleteIds = props.formikRef.current?.values.attachments.capture_attachments.delete;
+
     // If the attachment is not already flagged for deletion, add it to the list
     if (deleteIds && !deleteIds.includes(attachmentId)) {
       props.formikRef.current?.setFieldValue(`attachments.capture_attachments.delete`, [...deleteIds, attachmentId]);
@@ -213,7 +214,7 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
           summary="Upload attachments related to the capture"
           component={
             <>
-              <FileUpload fileHandler={addFile} onRemove={removeStagedFile} status={UploadFileStatus.STAGED} />
+              <FileUpload fileHandler={addStagedFile} onRemove={removeStagedFile} status={UploadFileStatus.STAGED} />
 
               {props.captureAttachments?.map((attachment) => (
                 <FileUploadItemContent
@@ -226,7 +227,7 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
                   file={new File([], attachment.file_name ?? 'Unknown')}
                   SubtextComponent={() => (
                     <Typography variant="caption" component="span">
-                      File Uploaded
+                      {getFormattedFileSize(attachment.file_size)}
                     </Typography>
                   )}
                 />

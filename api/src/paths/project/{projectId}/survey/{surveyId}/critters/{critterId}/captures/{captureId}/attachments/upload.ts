@@ -92,6 +92,14 @@ POST.apiDoc = {
               type: 'array',
               minItems: 1,
               items: fileSchema
+            },
+            delete_ids: {
+              description: 'Critter Capture Attachment IDs to delete.',
+              type: 'array',
+              minItems: 1,
+              items: {
+                type: 'string'
+              }
             }
           }
         }
@@ -132,12 +140,14 @@ POST.apiDoc = {
 
 /**
  * Uploads any media in the request to S3, adding their keys to the request.
+ * Optionally deletes any attachments flagged for deletion.
  *
  * @returns {RequestHandler}
  */
 export function uploadCaptureAttachments(): RequestHandler {
   return async (req, res) => {
     const rawMediaFiles = req.files as Express.Multer.File[];
+    const deleteIds = req.body.delete_ids as string[];
 
     const connection = getDBConnection(req.keycloak_token);
 
@@ -145,6 +155,11 @@ export function uploadCaptureAttachments(): RequestHandler {
       await connection.open();
 
       const critterAttachmentService = new CritterAttachmentService(connection);
+
+      // Delete any flagged attachments
+      if (deleteIds && deleteIds.length > 0) {
+        await critterAttachmentService.deleteCritterCaptureAttachments(deleteIds);
+      }
 
       // Upload each file to S3 and store the file details in the database
       const uploadPromises = rawMediaFiles.map(async (file) => {

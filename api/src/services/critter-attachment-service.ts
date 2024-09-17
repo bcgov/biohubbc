@@ -36,6 +36,17 @@ export class CritterAttachmentService extends DBService {
   }
 
   /**
+   * Delete Critter Capture Attachments.
+   *
+   * @param {string[]} deleteIds
+   * @return {*} {Promise<void>}
+   *
+   */
+  async deleteCritterCaptureAttachments(deleteIds: string[]): Promise<void> {
+    return this.attachmentRepository.deleteCritterCaptureAttachments(deleteIds);
+  }
+
+  /**
    * Upsert Critter Mortality Attachment.
    *
    * @param {CritterMortalityAttachmentPayload} payload

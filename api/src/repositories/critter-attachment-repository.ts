@@ -144,4 +144,19 @@ export class CritterAttachmentRepository extends BaseRepository {
 
     return response.rows;
   }
+
+  /**
+   * Delete Critter Capture Attachments by ID.
+   *
+   * @param {string[]} deleteIds
+   * @return {*}  {Promise<void>}
+   */
+  async deleteCritterCaptureAttachments(deleteIds: string[]): Promise<void> {
+    const sqlStatement = SQL`
+      DELETE FROM critter_capture_attachment
+      WHERE critter_capture_attachment_id IN (${deleteIds.join(',')});
+    `;
+
+    await this.connection.sql(sqlStatement);
+  }
 }
