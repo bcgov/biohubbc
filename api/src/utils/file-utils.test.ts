@@ -5,12 +5,12 @@ import {
   deleteFileFromS3,
   generateS3FileKey,
   getS3HostUrl,
+  getS3KeyPrefix,
   getS3SignedURL,
   _getClamAvScanner,
   _getObjectStoreBucketName,
   _getObjectStoreUrl,
-  _getS3Client,
-  _getS3KeyPrefix
+  _getS3Client
 } from './file-utils';
 
 describe('deleteFileFromS3', () => {
@@ -219,7 +219,7 @@ describe('_getObjectStoreUrl', () => {
   });
 });
 
-describe('_getS3KeyPrefix', () => {
+describe('getS3KeyPrefix', () => {
   const OLD_S3_KEY_PREFIX = process.env.S3_KEY_PREFIX;
 
   afterEach(() => {
@@ -229,14 +229,14 @@ describe('_getS3KeyPrefix', () => {
   it('should return an s3 key prefix', () => {
     process.env.S3_KEY_PREFIX = 'test-sims';
 
-    const result = _getS3KeyPrefix();
+    const result = getS3KeyPrefix();
     expect(result).to.equal('test-sims');
   });
 
   it('should return its default value', () => {
     delete process.env.S3_KEY_PREFIX;
 
-    const result = _getS3KeyPrefix();
+    const result = getS3KeyPrefix();
     expect(result).to.equal('sims');
   });
 });

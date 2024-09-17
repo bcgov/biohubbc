@@ -92,6 +92,10 @@ export class SurveyCritterRepository extends BaseRepository {
       });
     }
 
+    if (filterFields?.survey_ids) {
+      query.whereIn('critter.survey_id', filterFields.survey_ids);
+    }
+
     return query;
   }
 
