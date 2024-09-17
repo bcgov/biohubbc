@@ -186,4 +186,23 @@ describe('useSurveyApi', () => {
       expect(result).toEqual(response);
     });
   });
+
+  describe('exportData', () => {
+    it('should get critters', async () => {
+      const mockResponse = { presignedS3Urls: ['signed-url-for:path/to/file/key'] };
+
+      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/export`).reply(200, mockResponse);
+
+      const result = await useSurveyApi(axios).exportData(projectId, surveyId, {
+        metadata: true,
+        sampling_data: false,
+        observation_data: true,
+        telemetry_data: true,
+        animal_data: false,
+        artifacts: false
+      });
+
+      expect(result).toEqual(mockResponse);
+    });
+  });
 });

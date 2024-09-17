@@ -2,11 +2,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/http-error';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
-import { scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
+import { uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { getFileFromRequest } from '../../../../../../utils/request';
 
@@ -120,13 +119,6 @@ export function uploadMedia(): RequestHandler {
 
     try {
       await connection.open();
-
-      // Scan file for viruses using ClamAV
-      const virusScanResult = await scanFileForVirus(rawMediaFile);
-
-      if (!virusScanResult) {
-        throw new HTTP400('Malicious content detected, upload cancelled');
-      }
 
       // Insert a new record in the `survey_observation_submission` table
       const observationService = new ObservationService(connection);
