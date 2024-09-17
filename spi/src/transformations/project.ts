@@ -15,7 +15,7 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
     SELECT 
         spi_project_id,
         project_name,
-        COALESCE(project_objectives, ''),  -- Null values will be changed to an empty string
+        COALESCE(project_objectives, ''), 
         location_description,
         when_created
     FROM 
@@ -36,51 +36,48 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
                 public.spi_projects p
             INNER JOIN biohub.project b 
                 ON p.spi_project_id = b.spi_project_id
-            INNER JOIN spi_persons pp 
+            INNER JOIN public.spi_persons pp 
                 ON pp.spi_project_id = p.spi_project_id
             LEFT JOIN public.spi_secure_persons spp 
                 ON spp.first_name = pp.first_given_name
                 AND spp.last_name = pp.surname
-        ), 
-        w_insert_participation AS 
-        (
+        )
             INSERT INTO
                 biohub.project_participation (project_id, system_user_id, project_role_id, create_user)
             SELECT DISTINCT
                 w_mapping.project_id,
 
-                COALESCE (
                 (SELECT biohub_user_id 
                 FROM public.migrate_spi_user_deduplication 
                 WHERE w_mapping.person_id = ANY (spi_person_ids)
-                ), 
-                (SELECT system_user_id 
-                FROM biohub.system_user 
-                WHERE user_identifier = 'spi')
-                ) AS system_user_id,
+                ) as system_user_id,
 
                 CASE 
-                WHEN TRIM(p.coordinator) = w_mapping.full_name AND spp.email_address LIKE '%@gov.bc.ca%' THEN 
+                WHEN TRIM(p.coordinator) LIKE '%' || w_mapping.full_name || '%' THEN 
                     (SELECT project_role_id FROM biohub.project_role WHERE name = 'Coordinator')
-                WHEN spp.email_address LIKE '%@gov.bc.ca%' THEN 
+                ELSE
                     (SELECT project_role_id FROM biohub.project_role WHERE name = 'Collaborator')
-                ELSE 
-                    (SELECT project_role_id FROM biohub.project_role WHERE name = 'Observer')
                 END AS project_role_id,
-
+				
                 (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'spi') AS create_user
                 
             FROM 
                 w_mapping
             JOIN public.spi_projects p 
                 ON p.spi_project_id = w_mapping.spi_project_id
+            INNER JOIN spi_persons pp 
+                ON pp.spi_project_id = p.spi_project_id
             JOIN public.spi_secure_persons spp
                 ON spp.first_name = pp.first_given_name
                 AND spp.last_name = pp.surname
-                ),
-         w_assign_coordinator AS
-        (
-                INSERT INTO biohub.project_participation
+            where spp.email_address like '%@gov.bc.ca%'
+            RETURNING project_id, system_user_id, project_role_id, create_user;
+
+    -------------------------------------------------------------------------------------------------
+    -- Assign SPI user as coordinator to projects without coordinators
+    -------------------------------------------------------------------------------------------------
+
+            INSERT INTO biohub.project_participation
                 (project_id, system_user_id, project_role_id, create_user)
             SELECT
                 b.project_id,
@@ -98,9 +95,7 @@ export const transformProjects = async (connection: IDBConnection): Promise<void
                 AND pr.name = 'Coordinator'
             )
             AND b.spi_project_id IS NOT NULL
-        )
-    SELECT * FROM w_insert_participation;
-    SELECT * FROM w_assign_coordinator;
+        RETURNING project_id, system_user_id, project_role_id, create_user;
   `;
 
   await connection.sql(sql);

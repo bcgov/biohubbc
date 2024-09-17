@@ -3,15 +3,22 @@ import { defaultPoolConfig, getDBConnection, IDBConnection, initDBPool } from '.
 import { transformPermits } from './transformations/permit';
 import { transformProjects } from './transformations/project';
 import { transformSampleSites } from './transformations/sampling-site';
+import { transformSamplingMethods } from './transformations/sampling-methods';
+import { transformSampleVisits } from './transformations/sampling_period';
 import { insertMappedSpecies } from './transformations/species-map';
 import { transformSurveyStratums } from './transformations/stratum';
+import { transformStudyAreas } from './transformations/study-area';
 import { transformSurveys } from './transformations/survey';
 import { transformUsers } from './transformations/user';
+<<<<<<< HEAD
 import { truncateTables } from './utils/truncateTables';
 import { transformStudyAreas } from './transformations/study-area';
 import { transformSamplingMethods } from './transformations/sampling_methods';
 import { transformSampleVisits } from './transformations/sampling_period';
 import { transformStudySpecies } from './transformations/study-species';
+=======
+import { truncateTables } from './utils/truncate-tables';
+>>>>>>> 727b63b94d4a043d28c0465b80a6f50ab0165960
 
 let connection: IDBConnection; // Declare connection variable at the module level
 
@@ -62,7 +69,7 @@ async function main() {
     //STEP 7.  Transforms SPI Survey Areas into SIMS Survey Locations
     await transformStudyAreas(connection);
 
-    //STEP 8.  Transforms SPI Sampling Method 
+    //STEP 8.  Transforms SPI Sampling Method
     await transformSamplingMethods(connection);
 
     //STEP 9.  Transforms SPI Sampling Period

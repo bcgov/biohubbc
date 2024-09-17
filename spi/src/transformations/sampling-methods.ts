@@ -2,9 +2,9 @@ import SQL from 'sql-template-strings';
 import { IDBConnection } from '../db';
 
 export const transformSamplingMethods = async (connection: IDBConnection): Promise<void> => {
-    console.log('Transforming Sampling Methods');
-  
-    const sql = SQL`
+  console.log('Transforming Sampling Methods');
+
+  const transformSamplingMethods = SQL`
 -------------------------------------------------------------------------------------------------
 --- Inserting into technique the survey ids from sampling sites, and a name -- 
 -- sampling techniques are only created for surveys where sampling sites exist - since methods are dependent on sample sites ---
@@ -900,7 +900,6 @@ WHERE
     `;
 
   await connection.sql(transformSamplingMethods);
-  await connection.sql(sql);
 
   console.log('Successfully transformed Sampling Methods');
 };

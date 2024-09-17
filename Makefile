@@ -259,6 +259,9 @@ lint-fix: ## Runs `npm run lint-fix ` for all projects
 	@echo "Running /database lint-fix"
 	@echo "==============================================="
 	@cd database && npm run lint-fix && cd ..
+	@echo "Running /spi lint-fix"
+	@echo "==============================================="
+	@cd spi && npm run lint-fix && cd ..
 
 format: ## Runs `npm run format` for all projects
 	@echo "==============================================="
@@ -273,6 +276,9 @@ format: ## Runs `npm run format` for all projects
 	@echo "Running /database format"
 	@echo "==============================================="
 	@cd database && npm run format && cd ..
+	@echo "Running /spi format"
+	@echo "==============================================="
+	@cd spi && npm run format && cd ..
 
 format-fix: ## Runs `npm run format-fix` for all projects
 	@echo "==============================================="
@@ -287,6 +293,9 @@ format-fix: ## Runs `npm run format-fix` for all projects
 	@echo "Running /database format-fix"
 	@echo "==============================================="
 	@cd database && npm run format-fix && cd ..
+	@echo "Running /spi format-fix"
+	@echo "==============================================="
+	@cd spi && npm run format-fix && cd ..
 
 ## ------------------------------------------------------------------------------
 ## Run `npm` commands for all projects ./.pipeline

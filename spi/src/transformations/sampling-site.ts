@@ -2,10 +2,11 @@ import SQL from 'sql-template-strings';
 import { IDBConnection } from '../db';
 
 export const transformSampleSites = async (connection: IDBConnection): Promise<void> => {
+    console.log('Transforming Sampling Sites');
   const transformSampleSitesSql = SQL`
     set search_path = biohub,public;
 
-    ----------------------------------------------------------------
+    -------------------------------------------------------------------------------------------------
     -- Create sampling sites from spi design components
     -- This might have issues with non-null constraints; geojson or geometry might be required in SIMS
     -------------------------------------------------------------------------------------------------
@@ -14,7 +15,7 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
             biohub.survey_sample_site(name, description, survey_id, create_date, update_date)
         SELECT 
             sdc.design_component_label,
-            sdc.notes,
+            sdc.note,
             s.survey_id,
             sdc.when_created,
             sdc.when_updated
