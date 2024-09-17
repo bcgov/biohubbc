@@ -26,8 +26,7 @@ backend: | close build-backend run-backend ## Performs all commands necessary to
 web: | close build-web check-env run-web ## Performs all commands necessary to run all backend+web projects (db, api, app) in docker
 
 db-setup: | build-db-setup run-db-setup ## Performs all commands necessary to run the database migrations and seeding
-db-migrate: | build-db-migrate run-db-migrate ## Performs all commands necessary to run the database migrations
-db-rollback: | build-db-rollback run-db-rollback ## Performs all commands necessary to rollback the latest database migrations
+
 clamav: | build-clamav run-clamav ## Performs all commands necessary to run clamav
 
 fix: | lint-fix format-fix ## Performs both lint-fix and format-fix commands
@@ -157,30 +156,6 @@ run-db-setup: ## Run the database migrations and seeding
 	@echo "Make: run-db-setup - running database migrations and seeding"
 	@echo "==============================================="
 	@docker compose up db_setup
-
-build-db-migrate: ## Build the db knex migrations image
-	@echo "==============================================="
-	@echo "Make: build-db-migrate - building db knex migrate image"
-	@echo "==============================================="
-	@docker compose build db_migrate
-
-run-db-migrate: ## Run the database migrations
-	@echo "==============================================="
-	@echo "Make: run-db-migrate - running database migrations"
-	@echo "==============================================="
-	@docker compose up db_migrate
-
-build-db-rollback: ## Build the db knex rollback image
-	@echo "==============================================="
-	@echo "Make: build-db-rollback - building db knex rollback image"
-	@echo "==============================================="
-	@docker compose build db_rollback
-
-run-db-rollback: ## Rollback the latest database migrations
-	@echo "==============================================="
-	@echo "Make: run-db-rollback - rolling back the latest database migrations"
-	@echo "==============================================="
-	@docker compose up db_rollback
 
 ## ------------------------------------------------------------------------------
 ## clamav commands

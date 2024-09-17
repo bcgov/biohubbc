@@ -474,3 +474,9 @@ export const EditAnimalDeploymentI18N = {
   createErrorText:
     'An error has occurred while attempting to create your deployment. Please try again. If the error persists, please contact your system administrator.'
 };
+
+export const SurveyExportI18N = {
+  exportErrorTitle: 'Error Exporting Survey Data',
+  exportErrorText:
+    'An error has occurred while attempting to export survey data. Please try again. If the error persists, please contact your system administrator.'
+};
