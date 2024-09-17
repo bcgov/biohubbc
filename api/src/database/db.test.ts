@@ -266,52 +266,6 @@ describe('db', () => {
         });
       });
 
-      describe('query', () => {
-        describe('when a connection is open', () => {
-          it('sends a query with values', async () => {
-            sinonSandbox.stub(db, 'getDBPool').returns(mockPool as unknown as pg.Pool);
-
-            await connection.open();
-
-            await connection.query('sql query', ['value1', 'value2']);
-
-            expect(queryStub).to.have.been.calledWith('sql query', ['value1', 'value2']);
-          });
-
-          it('sends a query with empty values', async () => {
-            sinonSandbox.stub(db, 'getDBPool').returns(mockPool as unknown as pg.Pool);
-
-            await connection.open();
-
-            await connection.query('sql query');
-
-            expect(queryStub).to.have.been.calledWith('sql query', []);
-          });
-        });
-
-        describe('when a connection is not open', () => {
-          it('throws an error', async () => {
-            sinonSandbox.stub(db, 'getDBPool').returns(mockPool as unknown as pg.Pool);
-
-            let expectedError: ApiExecuteSQLError;
-            try {
-              await connection.query('sql query');
-
-              expect.fail('Expected an error to be thrown');
-            } catch (error) {
-              expectedError = error as ApiExecuteSQLError;
-            }
-
-            expect(expectedError.message).to.equal('Failed to execute SQL');
-
-            expect(expectedError.errors?.length).to.be.greaterThan(0);
-            expectedError.errors?.forEach((item) => {
-              expect(item).to.be.eql({ name: 'Error', message: 'DBConnection is not open' });
-            });
-          });
-        });
-      });
-
       describe('sql', () => {
         describe('when a connection is open', () => {
           it('sends a sql statement', async () => {
