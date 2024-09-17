@@ -40,8 +40,6 @@ describe('uploadMedia', () => {
       }
     } as any;
 
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-
     const expectedError = new Error('cannot process request');
     sinon.stub(AttachmentService.prototype, 'upsertSurveyReportAttachment').rejects(expectedError);
 
@@ -59,7 +57,6 @@ describe('uploadMedia', () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(file_utils, 'uploadFileToS3').resolves();
 
     const mockReq = {
