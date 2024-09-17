@@ -19,45 +19,9 @@ describe('postSurveyTelemetryCredentialAttachment', () => {
     sinon.restore();
   });
 
-  it('should throw an error when file has malicious content', async () => {
-    const dbConnectionObj = getMockDBConnection();
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(false); // fail virus scan
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.keycloak_token = {} as KeycloakUserInformation;
-    mockReq.params = {
-      projectId: '1',
-      surveyId: '2'
-    };
-    mockReq.files = [
-      {
-        fieldname: 'media',
-        originalname: 'test.keyx',
-        encoding: '7bit',
-        mimetype: 'text/plain',
-        size: 340
-      }
-    ] as Express.Multer.File[];
-
-    const requestHandler = postSurveyTelemetryCredentialAttachment();
-
-    try {
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Malicious content detected, upload cancelled');
-    }
-  });
-
   it('should throw an error when file type is invalid', async () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -92,8 +56,6 @@ describe('postSurveyTelemetryCredentialAttachment', () => {
   it('succeeds and uploads a KeyX file to BCTW', async () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
 
     const upsertSurveyTelemetryCredentialAttachmentStub = sinon
       .stub(AttachmentService.prototype, 'upsertSurveyTelemetryCredentialAttachment')
@@ -134,8 +96,6 @@ describe('postSurveyTelemetryCredentialAttachment', () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-
     const upsertSurveyTelemetryCredentialAttachmentStub = sinon
       .stub(AttachmentService.prototype, 'upsertSurveyTelemetryCredentialAttachment')
       .resolves({ survey_telemetry_credential_attachment_id: 44, key: 'path/to/file/test.keyx' });
@@ -174,8 +134,6 @@ describe('postSurveyTelemetryCredentialAttachment', () => {
   it('should catch and re-throw an error', async () => {
     const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
 
     const upsertSurveyTelemetryCredentialAttachmentStub = sinon
       .stub(AttachmentService.prototype, 'upsertSurveyTelemetryCredentialAttachment')

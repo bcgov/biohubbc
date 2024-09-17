@@ -9,7 +9,7 @@ import { authorizeRequestHandler } from '../../../../../../../request-handlers/s
 import { AttachmentService } from '../../../../../../../services/attachment-service';
 import { BctwKeyxService } from '../../../../../../../services/bctw-service/bctw-keyx-service';
 import { getBctwUser } from '../../../../../../../services/bctw-service/bctw-service';
-import { scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
+import { uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { isValidTelementryCredentialFile } from '../../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../../utils/request';
@@ -138,13 +138,6 @@ export function postSurveyTelemetryCredentialAttachment(): RequestHandler {
         message: 'files',
         files: { ...rawMediaFile, buffer: 'Too big to print' }
       });
-
-      // Scan file for viruses using ClamAV
-      const virusScanResult = await scanFileForVirus(rawMediaFile);
-
-      if (!virusScanResult) {
-        throw new HTTP400('Malicious content detected, upload cancelled');
-      }
 
       const isTelemetryCredentialFile = isValidTelementryCredentialFile(rawMediaFile);
 
