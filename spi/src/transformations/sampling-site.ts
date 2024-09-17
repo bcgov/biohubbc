@@ -15,7 +15,7 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
             biohub.survey_sample_site(name, description, survey_id, create_date, update_date)
         SELECT 
             sdc.design_component_label,
-            sdc.notes,
+            sdc.note,
             s.survey_id,
             sdc.when_created,
             sdc.when_updated
@@ -37,7 +37,7 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
       survey_sample_site_id,
       design_component_id
     FROM 
-        w_inserted;
+        w_inserted wi;
 
     -------------------------------------------------------------------------------------------------
     -- Insert SPI Design Component Stratums into SIMS Survey Sample Stratums (the instance of a survey stratum)
