@@ -27,6 +27,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import { useContext, useDeferredValue, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
+import { TelemetryDeviceKeysButton } from '../device-keys/TelemetryDeviceKeysButton';
 
 export const TelemetryTableContainer = () => {
   const biohubApi = useBiohubApi();
@@ -132,6 +133,7 @@ export const TelemetryTableContainer = () => {
           </Typography>
 
           <Stack flexDirection="row" alignItems="center" gap={1} overflow="hidden" whiteSpace="nowrap">
+            <TelemetryDeviceKeysButton />
             <Button
               variant="contained"
               color="primary"
