@@ -39,17 +39,16 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
                     public.imported_geo_data igd
                 ON 
                     igd.spi_document_reference = sdr.document_reference_id
-                    
-
             ),
             w_inserted AS (
-                INSERT INTO biohub.survey_sample_site(name, description, survey_id, create_date, geography)
+                INSERT INTO biohub.survey_sample_site(name, description, survey_id, create_date, geography, geojson)
                 SELECT 
                     ws.design_component_label,
                     ws.note,
                     ws.survey_id,
                     ws.when_created, 
-                    COALESCE(ST_SetSRID(ST_MakePoint(ws.longitude, ws.latitude), 4326), ws.geo) AS geography
+                    COALESCE(ST_SetSRID(ST_MakePoint(ws.longitude, ws.latitude), 4326), ws.geo) AS geography,
+                    COALESCE(ST_SetSRID(ST_MakePoint(ws.longitude, ws.latitude), 4326), ws.geo) AS geojson
                 FROM w_select ws
                 RETURNING survey_sample_site_id
             ),
