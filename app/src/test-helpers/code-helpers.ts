@@ -12,7 +12,7 @@ export const codes: IGetAllCodeSetsResponse = {
   ],
   iucn_conservation_action_level_1_classification: [
     { id: 1, name: 'IUCN class 1' },
-    { id: 12, name: 'IUCN class 2' }
+    { id: 2, name: 'IUCN class 2' }
   ],
   iucn_conservation_action_level_2_subclassification: [
     { id: 1, iucn1_id: 1, name: 'IUCN subclass 1 - 1' },
@@ -61,6 +61,10 @@ export const codes: IGetAllCodeSetsResponse = {
   ],
   attractants: [
     { id: 1, name: 'Bait', description: 'Consumable bait or food used as a lure.' },
-    { id: 1, name: 'Scent', description: 'A scent used as a lure.' }
+    { id: 2, name: 'Scent', description: 'A scent used as a lure.' }
+  ],
+  observation_subcount_signs: [
+    { id: 1, name: 'Scat', description: 'Scat left by the species.' },
+    { id: 2, name: 'Direct sighting', description: 'A direct sighting of the species.' }
   ]
 };

@@ -2,12 +2,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/http-error';
 import { csvFileSchema } from '../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { ImportCapturesStrategy } from '../../../../../../../services/import-services/capture/import-captures-strategy';
 import { importCSV } from '../../../../../../../services/import-services/import-csv';
-import { scanFileForVirus } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../../utils/request';
@@ -134,13 +132,6 @@ export function importCsv(): RequestHandler {
 
     try {
       await connection.open();
-
-      // Check for viruses / malware
-      const virusScanResult = await scanFileForVirus(rawFile);
-
-      if (!virusScanResult) {
-        throw new HTTP400('Malicious content detected, import cancelled.');
-      }
 
       const importCsvCaptures = new ImportCapturesStrategy(connection, surveyId);
 

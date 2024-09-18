@@ -94,6 +94,7 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
               required: [
                 'observation_subcount_id',
                 'subcount',
+                'observation_subcount_sign_id',
                 'qualitative_measurements',
                 'quantitative_measurements',
                 'qualitative_environments',
@@ -102,6 +103,12 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
               properties: {
                 observation_subcount_id: {
                   type: 'integer'
+                },
+                observation_subcount_sign_id: {
+                  type: 'integer',
+                  minimum: 1,
+                  description:
+                    'The observation subcount sign ID, indicating whether the subcount was a direct sighting, footprints, scat, etc.'
                 },
                 subcount: {
                   type: 'number'
@@ -146,7 +153,11 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
                   items: {
                     type: 'object',
                     additionalProperties: false,
-                    required: ['environment_qualitative_id', 'environment_qualitative_option_id'],
+                    required: [
+                      'observation_subcount_qualitative_environment_id',
+                      'environment_qualitative_id',
+                      'environment_qualitative_option_id'
+                    ],
                     properties: {
                       observation_subcount_qualitative_environment_id: {
                         type: 'integer'
@@ -167,8 +178,15 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
                   items: {
                     type: 'object',
                     additionalProperties: false,
-                    required: ['environment_quantitative_id', 'value'],
+                    required: [
+                      'observation_subcount_quantitative_environment_id',
+                      'environment_quantitative_id',
+                      'value'
+                    ],
                     properties: {
+                      observation_subcount_quantitative_environment_id: {
+                        type: 'integer'
+                      },
                       environment_quantitative_id: {
                         type: 'string',
                         format: 'uuid'
