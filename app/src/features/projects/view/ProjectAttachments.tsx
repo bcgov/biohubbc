@@ -8,7 +8,7 @@ import { FileUploadDialog } from 'components/dialog/attachments/FileUploadDialog
 import { ReportFileUploadDialog } from 'components/dialog/attachments/ReportFileUploadDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
-import { AttachmentsI18N, ReportI18N } from 'constants/i18n';
+import { ReportI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
 import { APIError } from 'hooks/api/useAxios';
@@ -18,7 +18,7 @@ import { useContext, useEffect, useState } from 'react';
 import ProjectAttachmentsList from './ProjectAttachmentsList';
 
 /**
- * Project attachments content for a project.
+ * Project attachments component.
  *
  * @return {*}
  */
@@ -53,25 +53,7 @@ const ProjectAttachments = () => {
   };
 
   const handleUploadAttachments = async (file: File) => {
-    try {
-      await biohubApi.project.uploadProjectAttachments(projectContext.projectId, file);
-    } catch (error) {
-      const apiError = error as APIError;
-
-      dialogContext.setErrorDialog({
-        open: true,
-        dialogTitle: AttachmentsI18N.uploadErrorTitle,
-        dialogText: AttachmentsI18N.uploadErrorText,
-        dialogError: apiError.message,
-        dialogErrorDetails: apiError.errors,
-        onClose: () => {
-          dialogContext.setErrorDialog({ open: false });
-        },
-        onOk: () => {
-          dialogContext.setErrorDialog({ open: false });
-        }
-      });
-    }
+    return biohubApi.project.uploadProjectAttachments(projectContext.projectId, file);
   };
 
   useEffect(() => {

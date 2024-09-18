@@ -44,9 +44,7 @@ export interface IReportFileUploadDialogProps {
 }
 
 /**
- * A dialog to wrap any component(s) that need to be displayed as a modal.
- *
- * Any component(s) passed in `props.children` will be rendered as the content of the dialog.
+ * Wraps the `FileUploadWithMeta` component in a dialog.
  *
  * @param {*} props
  * @return {*}

@@ -8,7 +8,7 @@ import { FileUploadDialog } from 'components/dialog/attachments/FileUploadDialog
 import { ReportFileUploadDialog } from 'components/dialog/attachments/ReportFileUploadDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
-import { AttachmentsI18N, ReportI18N } from 'constants/i18n';
+import { ReportI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
 import { APIError } from 'hooks/api/useAxios';
@@ -17,6 +17,11 @@ import { useDialogContext } from 'hooks/useContext';
 import { useContext, useState } from 'react';
 import SurveyAttachmentsList from './SurveyAttachmentsList';
 
+/**
+ * Survey attachments component.
+ *
+ * @return {*}
+ */
 const SurveyAttachments = () => {
   const biohubApi = useBiohubApi();
 
@@ -50,25 +55,7 @@ const SurveyAttachments = () => {
   };
 
   const handleUploadAttachments = async (file: File) => {
-    try {
-      await biohubApi.survey.uploadSurveyAttachments(projectId, surveyId, file);
-    } catch (error) {
-      const apiError = error as APIError;
-
-      dialogContext.setErrorDialog({
-        open: true,
-        dialogTitle: AttachmentsI18N.uploadErrorTitle,
-        dialogText: AttachmentsI18N.uploadErrorText,
-        dialogError: apiError.message,
-        dialogErrorDetails: apiError.errors,
-        onClose: () => {
-          dialogContext.setErrorDialog({ open: false });
-        },
-        onOk: () => {
-          dialogContext.setErrorDialog({ open: false });
-        }
-      });
-    }
+    return biohubApi.survey.uploadSurveyAttachments(projectId, surveyId, file);
   };
 
   return (

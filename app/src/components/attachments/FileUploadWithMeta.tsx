@@ -6,6 +6,11 @@ import { FileUploadSingleItem } from 'components/file-upload/FileUploadSingleIte
 import { AttachmentTypeFileExtensions } from 'constants/attachments';
 import { useFormikContext } from 'formik';
 
+/**
+ * File upload with meta form. Used to upload a report with accompanying meta data.
+ *
+ * @return {*}
+ */
 export const FileUploadWithMeta = () => {
   const { handleSubmit, setFieldValue, setFieldError, values, errors } = useFormikContext<IReportMetaForm>();
 

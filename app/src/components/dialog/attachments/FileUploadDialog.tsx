@@ -19,7 +19,9 @@ interface IFileUploadDialogProps extends IComponentDialogProps {
 }
 
 /**
+ * Wraps the standard `FileUpload` component in a dialog.
  *
+ * The wrapped `FileUpload` component allows for drag-and-drop file uploads of any number of files with any file type.
  *
  * @param {IFileUploadDialogProps} props
  * @return {*}
