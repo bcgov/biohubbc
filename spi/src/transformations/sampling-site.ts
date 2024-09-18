@@ -10,35 +10,45 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
     -- Create sampling sites from spi design components
     -- This might have issues with non-null constraints; geojson or geometry might be required in SIMS
     -------------------------------------------------------------------------------------------------
-    WITH w_inserted AS (
-        INSERT INTO 
-            biohub.survey_sample_site(name, description, survey_id, create_date, update_date)
-        SELECT 
-            sdc.design_component_label,
-            sdc.note,
-            s.survey_id,
-            sdc.when_created,
-            sdc.when_updated
-        FROM 
-            public.spi_design_components sdc
-        JOIN 
-            biohub.project p
-        ON
-            p.spi_project_id = sdc.spi_project_id
-        JOIN
-            biohub.survey s
-        ON
-            p.project_id = s.project_id
-        RETURNING *
-        )
-    INSERT INTO 
-        public.migrate_spi_sample_design_component (survey_sample_site_id, design_component_id)
-    SELECT 
-      survey_sample_site_id,
-      design_component_id
-    FROM 
-        w_inserted;
-
+        WITH w_select AS (
+                SELECT 
+                    sdc.design_component_id,
+                    sdc.design_component_label,
+                    sdc.note,
+                    s.survey_id,
+                    sdc.when_created,
+                    sdc.when_updated
+                FROM 
+                    public.spi_design_components sdc
+                JOIN 
+                    biohub.project p
+                ON
+                    p.spi_project_id = sdc.spi_project_id
+                JOIN
+                    biohub.survey s
+                ON
+                    p.project_id = s.project_id
+            ),
+            w_inserted AS (
+                INSERT INTO biohub.survey_sample_site(name, description, survey_id, create_date)
+                SELECT 
+                    ws.design_component_label,
+                    ws.note,
+                    ws.survey_id,
+                    ws.when_created
+                FROM w_select ws
+                RETURNING survey_sample_site_id
+            ),
+            w_combined AS (
+                SELECT wi.survey_sample_site_id, ws.design_component_id
+                FROM w_inserted wi
+                CROSS JOIN w_select ws
+            )
+            INSERT INTO public.migrate_spi_sample_design_component (survey_sample_site_id, design_component_id)
+            SELECT 
+                wc.survey_sample_site_id,
+                wc.design_component_id
+            FROM w_combined wc;
     -------------------------------------------------------------------------------------------------
     -- Insert SPI Design Component Stratums into SIMS Survey Sample Stratums (the instance of a survey stratum)
     -- These are the actual application of a Survey stratum to a sampling site
@@ -64,5 +74,5 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
 
   await connection.sql(transformSampleSitesSql);
 
-  console.log('Successfully transformed stratums');
+  console.log('Successfully transformed Sampling Sites and stratums');
 };
