@@ -11,10 +11,40 @@ import { IUploadHandler } from 'components/file-upload/FileUploadItem';
 import { IComponentDialogProps } from '../ComponentDialog';
 
 interface IFileUploadDialogProps extends IComponentDialogProps {
+  /**
+   * Set to `true` to open the dialog, `false` to close the dialog.
+   *
+   * @type {boolean}
+   * @memberof IFileUploadDialogProps
+   */
   open: boolean;
+  /**
+   * The title of the dialog.
+   *
+   * @type {string}
+   * @memberof IFileUploadDialogProps
+   */
   dialogTitle: string;
+  /**
+   * Callback fired when a file is added.
+   *
+   * @memberof IReportFileUploadDialogProps
+   */
   uploadHandler: IUploadHandler;
+  /**
+   * Callback fired when the dialog is closed.
+   *
+   * This function does not need to handle any errors, as the `FileUpload` component handles errors internally.
+   *
+   * @memberof IFileUploadDialogProps
+   */
   onClose: () => void;
+  /**
+   * Drop zone configuration properties.
+   *
+   * @type {IDropZoneConfigProps}
+   * @memberof IFileUploadDialogProps
+   */
   dropZoneProps?: IDropZoneConfigProps;
 }
 

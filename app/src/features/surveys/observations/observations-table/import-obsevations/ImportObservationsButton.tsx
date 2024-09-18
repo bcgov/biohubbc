@@ -6,6 +6,7 @@ import { FileUploadSingleItemDialog } from 'components/dialog/attachments/FileUp
 import { ObservationsTableI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useState } from 'react';
 
@@ -89,11 +90,14 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
       });
 
       onSuccess?.();
-    } catch (apiError: any) {
+    } catch (error) {
+      const apiError = error as APIError;
+
       dialogContext.setErrorDialog({
         dialogTitle: ObservationsTableI18N.importRecordsErrorDialogTitle,
         dialogText: ObservationsTableI18N.importRecordsErrorDialogText,
-        dialogErrorDetails: [apiError.message],
+        dialogError: apiError.message,
+        dialogErrorDetails: apiError.errors,
         open: true,
         onClose: () => {
           dialogContext.setErrorDialog({ open: false });

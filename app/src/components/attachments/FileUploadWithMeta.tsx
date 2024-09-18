@@ -14,12 +14,9 @@ import { useFormikContext } from 'formik';
 export const FileUploadWithMeta = () => {
   const { handleSubmit, setFieldValue, setFieldError, values, errors } = useFormikContext<IReportMetaForm>();
 
-  const onStatus = (status: UploadFileStatus) => {
-    console.log(status);
-  };
-
   const onFile = (file: File | null) => {
     setFieldValue('attachmentFile', file);
+    setFieldError('attachmentFile', '');
   };
 
   const onError = (error: string) => {
@@ -37,7 +34,6 @@ export const FileUploadWithMeta = () => {
         </Typography>
         <FileUploadSingleItem
           file={values.attachmentFile}
-          onStatus={onStatus}
           onFile={onFile}
           onError={onError}
           DropZoneProps={{

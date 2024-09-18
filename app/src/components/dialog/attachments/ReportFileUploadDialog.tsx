@@ -32,6 +32,8 @@ export interface IReportFileUploadDialogProps {
   /**
    * Callback fired if the dialog is submitted (user clicks 'Save' or 'Submit', etc).
    *
+   * The function should handle any errors thrown.
+   *
    * @memberof IReportFileUploadDialogProps
    */
   onSubmit: (reportMeta: IReportMetaForm) => Promise<void>;
@@ -61,9 +63,12 @@ export const ReportFileUploadDialog: React.FC<IReportFileUploadDialogProps> = (p
   const onSubmit = (values: IReportMetaForm) => {
     setIsSubmitting(true);
 
-    props.onSubmit(values).finally(() => {
-      setIsSubmitting(false);
-    });
+    props
+      .onSubmit(values)
+      .catch() // Errors should be handled in the onSubmit function, squash errors here to prevent unhandled errors
+      .finally(() => {
+        setIsSubmitting(false);
+      });
   };
 
   if (!props.open) {

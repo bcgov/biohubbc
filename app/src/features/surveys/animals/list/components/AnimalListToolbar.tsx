@@ -7,6 +7,7 @@ import Typography from '@mui/material/Typography';
 import { FileUploadSingleItemDialog } from 'components/dialog/attachments/FileUploadSingleItemDialog';
 import { SurveyAnimalsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import { useContext, useState } from 'react';
@@ -37,11 +38,14 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
     try {
       await biohubApi.survey.importCrittersFromCsv(file, surveyContext.projectId, surveyContext.surveyId);
       surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    } catch (err: any) {
+    } catch (error) {
+      const apiError = error as APIError;
+
       dialogContext.setErrorDialog({
         dialogTitle: SurveyAnimalsI18N.importRecordsErrorDialogTitle,
         dialogText: SurveyAnimalsI18N.importRecordsErrorDialogText,
-        dialogErrorDetails: [err.message],
+        dialogError: apiError.message,
+        dialogErrorDetails: apiError.errors,
         open: true,
         onClose: () => {
           dialogContext.setErrorDialog({ open: false });
