@@ -17,7 +17,9 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
                     sdc.note,
                     s.survey_id,
                     sdc.when_created,
-                    sdc.when_updated
+                    sdc.when_updated, 
+                    sdc.latitude, 
+                    sdc.longitude
                 FROM 
                     public.spi_design_components sdc
                 JOIN 
@@ -30,12 +32,13 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
                     p.project_id = s.project_id
             ),
             w_inserted AS (
-                INSERT INTO biohub.survey_sample_site(name, description, survey_id, create_date)
+                INSERT INTO biohub.survey_sample_site(name, description, survey_id, create_date, geography)
                 SELECT 
                     ws.design_component_label,
                     ws.note,
                     ws.survey_id,
-                    ws.when_created
+                    ws.when_created, 
+                    ST_SetSRID(ST_MakePoint(ws.longitude, ws.latitude), 4326) AS geography
                 FROM w_select ws
                 RETURNING survey_sample_site_id
             ),
