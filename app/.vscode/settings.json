@@ -1,4 +1,0 @@
-{
-  "typescript.preferences.importModuleSpecifier": "non-relative",
-  "editor.defaultFormatter": "esbenp.prettier-vscode"
-}

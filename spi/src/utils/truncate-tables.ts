@@ -21,6 +21,10 @@ export const truncateTables = async (connection: IDBConnection): Promise<void> =
   END $$;
 
   TRUNCATE TABLE public.migrate_spi_user_deduplication;
+
+  -- The table must exist first
+  TRUNCATE TABLE public.migrate_spi_sample_design_component
+
   `;
 
   await connection.sql(sql);

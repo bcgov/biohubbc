@@ -1,16 +1,25 @@
 import path from 'path';
-import { defaultPoolConfig, getDBConnection, IDBConnection, initDBPool } from './db';
+import { IDBConnection, initDBPool, defaultPoolConfig, getDBConnection } from './db';
 import { transformPermits } from './transformations/permit';
 import { transformProjects } from './transformations/project';
-import { transformSampleSites } from './transformations/sampling-site';
 import { transformSamplingMethods } from './transformations/sampling-methods';
+import { transformSampleSites } from './transformations/sampling-site';
 import { transformSampleVisits } from './transformations/sampling_period';
 import { insertMappedSpecies } from './transformations/species-map';
 import { transformSurveyStratums } from './transformations/stratum';
 import { transformStudyAreas } from './transformations/study-area';
+import { transformStudySpecies } from './transformations/study-species';
 import { transformSurveys } from './transformations/survey';
 import { transformUsers } from './transformations/user';
+<<<<<<< Updated upstream
 import { truncateTables } from './utils/truncate-tables';
+
+=======
+import { transformStudyAreas } from './transformations/study-area';
+import { transformSampleVisits } from './transformations/sampling_period';
+import { transformSamplingMethods } from './transformations/sampling-methods';
+import { truncateTables } from './utils/truncate-tables';
+>>>>>>> Stashed changes
 
 let connection: IDBConnection; // Declare connection variable at the module level
 
@@ -66,6 +75,9 @@ async function main() {
 
     //STEP 9.  Transforms SPI Sampling Period
     await transformSampleVisits(connection);
+
+    // STEP 10. Transforms Target taxa into Study Species
+    await transformStudySpecies(connection);
 
     // Commit the transactions
     connection.commit();

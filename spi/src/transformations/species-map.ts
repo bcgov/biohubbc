@@ -127,7 +127,7 @@ async function _insertItisRecords(objectsForInsert: Map<number, ISpeciesMapData>
     sqlParts.push(sqlValues);
   }
 
-  let sql = SQL``;
+  const sql = SQL``;
 
   // Only build the insert SQL if there are values to insert
   if (sqlParts.length > 0) {
