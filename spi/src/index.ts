@@ -11,8 +11,15 @@ import { transformStudyAreas } from './transformations/study-area';
 import { transformStudySpecies } from './transformations/study-species';
 import { transformSurveys } from './transformations/survey';
 import { transformUsers } from './transformations/user';
+<<<<<<< Updated upstream
 import { truncateTables } from './utils/truncate-tables';
 
+=======
+import { transformStudyAreas } from './transformations/study-area';
+import { transformSampleVisits } from './transformations/sampling_period';
+import { transformSamplingMethods } from './transformations/sampling-methods';
+import { truncateTables } from './utils/truncate-tables';
+>>>>>>> Stashed changes
 
 let connection: IDBConnection; // Declare connection variable at the module level
 
