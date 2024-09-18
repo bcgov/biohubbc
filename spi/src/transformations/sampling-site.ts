@@ -19,7 +19,8 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
                     sdc.when_created,
                     sdc.when_updated, 
                     sdc.latitude, 
-                    sdc.longitude
+                    sdc.longitude, 
+                    igd.geo
                 FROM 
                     public.spi_design_components sdc
                 JOIN 
@@ -30,6 +31,16 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
                     biohub.survey s
                 ON
                     p.project_id = s.project_id
+                JOIN 
+                    public.spi_document_references sdr
+                ON 
+                    sdr.design_component_id = sdc.design_component_id
+                JOIN 
+                    public.imported_geo_data igd
+                ON 
+                    igd.spi_document_reference = sdr.document_reference_id
+                    
+
             ),
             w_inserted AS (
                 INSERT INTO biohub.survey_sample_site(name, description, survey_id, create_date, geography)
@@ -38,7 +49,7 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
                     ws.note,
                     ws.survey_id,
                     ws.when_created, 
-                    ST_SetSRID(ST_MakePoint(ws.longitude, ws.latitude), 4326) AS geography
+                    COALESCE(ST_SetSRID(ST_MakePoint(ws.longitude, ws.latitude), 4326), ws.geo) AS geography
                 FROM w_select ws
                 RETURNING survey_sample_site_id
             ),
