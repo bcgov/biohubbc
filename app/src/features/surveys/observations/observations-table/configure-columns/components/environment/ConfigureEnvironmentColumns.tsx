@@ -53,7 +53,7 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
       />
       {hasEnvironmentColumns ? (
         <>
-          <Typography variant="h5" sx={{ fontWeight: 500 }} color="textSecondary" mb={2}>
+          <Typography variant="h5" sx={{ fontWeight: 500 }} color="textSecondary" my={2}>
             Selected environments
           </Typography>
           <Stack gap={2} sx={{ overflowY: 'auto' }} maxHeight={400}>
