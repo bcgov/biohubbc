@@ -2,24 +2,16 @@ import path from 'path';
 import { IDBConnection, initDBPool, defaultPoolConfig, getDBConnection } from './db';
 import { transformPermits } from './transformations/permit';
 import { transformProjects } from './transformations/project';
-import { transformSamplingMethods } from './transformations/sampling-methods';
 import { transformSampleSites } from './transformations/sampling-site';
-import { transformSampleVisits } from './transformations/sampling_period';
 import { insertMappedSpecies } from './transformations/species-map';
 import { transformSurveyStratums } from './transformations/stratum';
-import { transformStudyAreas } from './transformations/study-area';
 import { transformStudySpecies } from './transformations/study-species';
 import { transformSurveys } from './transformations/survey';
 import { transformUsers } from './transformations/user';
-<<<<<<< Updated upstream
-import { truncateTables } from './utils/truncate-tables';
-
-=======
 import { transformStudyAreas } from './transformations/study-area';
 import { transformSampleVisits } from './transformations/sampling_period';
 import { transformSamplingMethods } from './transformations/sampling-methods';
 import { truncateTables } from './utils/truncate-tables';
->>>>>>> Stashed changes
 
 let connection: IDBConnection; // Declare connection variable at the module level
 
