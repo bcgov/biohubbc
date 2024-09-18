@@ -1,6 +1,7 @@
 import { mdiRuler, mdiTag } from '@mdi/js';
 import { Box, Divider, Stack, Typography } from '@mui/material';
-import { grey } from '@mui/material/colors';
+import { blueGrey, grey } from '@mui/material/colors';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { ISpeciesStandards } from 'interfaces/useStandardsApi.interface';
@@ -77,6 +78,9 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
                 key={measurement.taxon_measurement_id}
                 label={measurement.measurement_name}
                 subtitle={measurement.measurement_desc}
+                ornament={
+                  measurement.unit ? <ColouredRectangleChip label={measurement.unit} colour={blueGrey} /> : <></>
+                }
                 colour={grey[100]}
               />
             ))}

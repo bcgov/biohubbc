@@ -1,5 +1,6 @@
-import { grey } from '@mui/material/colors';
+import { blueGrey, grey } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { IEnvironmentStandards } from 'interfaces/useStandardsApi.interface';
 
@@ -22,6 +23,7 @@ export const EnvironmentStandardsResults = (props: ISpeciesStandardsResultsProps
           key={environment.name}
           label={environment.name}
           subtitle={environment.description}
+          ornament={<ColouredRectangleChip label={environment.unit} colour={blueGrey} />}
           colour={grey[100]}
         />
       ))}
