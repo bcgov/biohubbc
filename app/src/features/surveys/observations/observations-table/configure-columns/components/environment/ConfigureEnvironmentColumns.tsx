@@ -62,24 +62,19 @@ export const ConfigureEnvironmentColumns = (props: IConfigureEnvironmentColumnsP
                 display="flex"
                 alignItems="flex-start"
                 key={`qualitative_environment_item_${environment.environment_qualitative_id}`}>
-                <AccordionStandardCard
-                  label={environment.name}
-                  subtitle={environment.description}
-                  colour={grey[100]}
-                  children={
-                    <Stack gap={1} my={2}>
-                      {environment.options.map((option) => (
-                        <AccordionStandardCard
-                          key={option.environment_qualitative_option_id}
-                          label={option.name}
-                          subtitle={option.description}
-                          colour={grey[200]}
-                          disableCollapse
-                        />
-                      ))}
-                    </Stack>
-                  }
-                />
+                <AccordionStandardCard label={environment.name} subtitle={environment.description} colour={grey[100]}>
+                  <Stack gap={1} my={2}>
+                    {environment.options.map((option) => (
+                      <AccordionStandardCard
+                        key={option.environment_qualitative_option_id}
+                        label={option.name}
+                        subtitle={option.description}
+                        colour={grey[200]}
+                        disableCollapse
+                      />
+                    ))}
+                  </Stack>
+                </AccordionStandardCard>
                 <Box ml={1} mt={1}>
                   <IconButton
                     aria-label="Remove environment column"

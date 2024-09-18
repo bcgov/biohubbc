@@ -57,21 +57,19 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
                 key={measurement.taxon_measurement_id}
                 label={measurement.measurement_name}
                 subtitle={measurement.measurement_desc}
-                colour={grey[100]}
-                children={
-                  <Stack gap={2} my={2}>
-                    {measurement.options.map((option) => (
-                      <AccordionStandardCard
-                        key={option.qualitative_option_id}
-                        label={option.option_label}
-                        subtitle={option.option_desc}
-                        colour={grey[200]}
-                        disableCollapse
-                      />
-                    ))}
-                  </Stack>
-                }
-              />
+                colour={grey[100]}>
+                <Stack gap={2} my={2}>
+                  {measurement.options.map((option) => (
+                    <AccordionStandardCard
+                      key={option.qualitative_option_id}
+                      label={option.option_label}
+                      subtitle={option.option_desc}
+                      colour={grey[200]}
+                      disableCollapse
+                    />
+                  ))}
+                </Stack>
+              </AccordionStandardCard>
             ))}
             {props.data.measurements.quantitative.map((measurement) => (
               <AccordionStandardCard

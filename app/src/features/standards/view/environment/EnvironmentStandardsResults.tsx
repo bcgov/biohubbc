@@ -32,21 +32,19 @@ export const EnvironmentStandardsResults = (props: ISpeciesStandardsResultsProps
           key={environment.name}
           label={environment.name}
           subtitle={environment.description}
-          colour={grey[100]}
-          children={
-            <Stack gap={2} my={2}>
-              {environment.options.map((option) => (
-                <AccordionStandardCard
-                  key={option.name}
-                  label={option.name}
-                  subtitle={option.description}
-                  colour={grey[200]}
-                  disableCollapse
-                />
-              ))}
-            </Stack>
-          }
-        />
+          colour={grey[100]}>
+          <Stack gap={2} my={2}>
+            {environment.options.map((option) => (
+              <AccordionStandardCard
+                key={option.name}
+                label={option.name}
+                subtitle={option.description}
+                colour={grey[200]}
+                disableCollapse
+              />
+            ))}
+          </Stack>
+        </AccordionStandardCard>
       ))}
     </Stack>
   );
