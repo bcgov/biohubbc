@@ -48,7 +48,7 @@ export const transformStudyAreas = async (connection: IDBConnection): Promise<vo
         bg.survey_id, 
         bg.study_area_name, 
         bg.study_area_description, 
-        COALESCE(sp.geo, ST_Buffer(bg.convex_hull, bg.buffer_value)) AS geography
+        COALESCE(bg.geo, ST_Buffer(bg.convex_hull, bg.buffer_value)) AS geography
     FROM buffered_geographies bg;
   `;
 

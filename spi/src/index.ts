@@ -59,9 +59,6 @@ async function main() {
     // STEP 7. Transforms SPI Design Components into SIMS Sampling Sites
     await transformSampleSites(connection);
 
-    //STEP 7.  Transforms SPI Survey Areas into SIMS Survey Locations
-    await transformStudyAreas(connection);
-
     //STEP 8.  Transforms SPI Sampling Method
     await transformSamplingMethods(connection);
 
@@ -70,6 +67,9 @@ async function main() {
 
     // STEP 10. Transforms Target taxa into Study Species
     await transformStudySpecies(connection);
+
+    //STEP 7.  Transforms SPI Survey Areas into SIMS Survey Locations
+    await transformStudyAreas(connection);
 
     // Commit the transactions
     connection.commit();

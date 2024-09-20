@@ -871,18 +871,20 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
                             '%Point Count and Nest Surveys%',
                             '%Point Counts%') THEN 'Point count'
                         ELSE 'Undetermined'
-                    END = ml.name;
+                    END = ml.name
             )
+
     INSERT INTO biohub.method_technique (survey_id, name, method_lookup_id, description)
     SELECT 
         sss.survey_id, 
-        ml.name,
+        wml.name,
         method_lookup_id,
         'Came from SPI' AS description
     FROM 
         biohub.survey_sample_site sss
-    LEFT JOIN w_method_lookups wml ON
+    JOIN w_method_lookups wml ON
         wml.survey_id = sss.survey_id;
+
 
 ----------------- INSERTING technique outputs INTO survey_sample_method where spi survey id is not null (ie only for spi migration surveys) ------
 INSERT INTO biohub.survey_sample_method (survey_sample_site_id, method_technique_id)
