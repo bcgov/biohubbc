@@ -74,6 +74,9 @@ async function main() {
     //STEP 7.  Transforms SPI Survey Areas into SIMS Survey Locations
     await transformStudyAreas(connection);
 
+    //STEP 7.  Transforms SPI Survey Areas into SIMS Survey Locations
+    await transformStudyAreas(connection);
+
     // Commit the transactions
     connection.commit();
 
