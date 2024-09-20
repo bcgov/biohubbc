@@ -12,6 +12,7 @@ import { transformStudyAreas } from './transformations/study-area';
 import { transformSampleVisits } from './transformations/sampling_period';
 import { transformSamplingMethods } from './transformations/sampling-methods';
 import { truncateTables } from './utils/truncate-tables';
+import { transformWildlifeObservations } from './transformations/wildlife_observations_1';
 
 let connection: IDBConnection; // Declare connection variable at the module level
 
@@ -67,6 +68,8 @@ async function main() {
 
     // STEP 10. Transforms Target taxa into Study Species
     await transformStudySpecies(connection);
+    // STEP 11
+    await transformWildlifeObservations(connection);
 
     //STEP 7.  Transforms SPI Survey Areas into SIMS Survey Locations
     await transformStudyAreas(connection);

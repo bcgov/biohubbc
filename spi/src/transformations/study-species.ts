@@ -19,7 +19,7 @@ export const transformStudySpecies = async (connection: IDBConnection): Promise<
         END AS is_focal, 
         stt.when_created,
         (SELECT system_user_id FROM biohub.system_user WHERE user_identifier = 'spi') AS create_user, 
-        mss.itis_tsn, 
+        CAST(mss.itis_tsn AS INTEGER) AS itis_tsn, 
         stt.taxonomic_unit_id,
         TRUE as is_spi_import
     FROM public.spi_target_taxa stt
@@ -27,7 +27,8 @@ export const transformStudySpecies = async (connection: IDBConnection): Promise<
         ON stt.survey_id = bs.spi_survey_id
     JOIN public.migrate_spi_species mss
         ON mss.spi_species_id = stt.taxonomic_unit_id
-    WHERE mss.itis_tsn IS NULL;
+    WHERE mss.itis_tsn IS NOT NULL;
+
 
   `;
 

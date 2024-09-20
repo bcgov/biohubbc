@@ -20,7 +20,7 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
     --- insert with statement 
     WITH w_inserted AS(
         INSERT INTO 
-            biohub.survey_observation so (survey_id, latitude, longitude, count, observation_date, observation_time, create_date, survey_sample_site_id, survey_sample_method_id, survey_sample_period_id, itis_tsn, itis_scientific_name)
+            biohub.survey_observation (survey_id, latitude, longitude, count, observation_date, observation_time, create_date, survey_sample_site_id, survey_sample_method_id, survey_sample_period_id, itis_tsn, itis_scientific_name)
         SELECT
             s.survey_id,
             swo.latitude,
@@ -35,7 +35,7 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
             mssdc.survey_sample_site_id, 
             ssm.survey_sample_method_id, 
             ssp.survey_sample_period_id,
-            mss.itis_tsn,
+            CAST(mss.itis_tsn AS INTEGER) AS itis_tsn,
             mss.itis_scientific_name
     
         FROM 
@@ -69,8 +69,8 @@ export const transformWildlifeObservations = async (connection: IDBConnection): 
         ON 
             swo.taxonomic_unit_id = mss.spi_species_id
         WHERE 
-            swo.wlo_count != 0 AND AND sto.wlo_id IS NULL AND mss.itis_tsn IS NOT NULL -- remove this not null constraint once spi_migrate_species table is fully filled out
-        RETURNING swo.wlo_id, so.survey_observation_id;)
+            swo.wlo_count != 0 AND sto.wlo_id IS NULL AND mss.itis_tsn IS NOT NULL -- remove this not null constraint once spi_migrate_species table is fully filled out
+        RETURNING swo.wlo_id, biohub.survey_observation.survey_observation_id)
 
     INSERT INTO 
         public.migrate_spi_wildlife_observations (wlo_id, survey_observation_id)

@@ -2,6 +2,7 @@ import SQL from 'sql-template-strings';
 import { IDBConnection } from '../db';
 
 export const transformSampleVisits = async (connection: IDBConnection): Promise<void> => {
+    console.log('Transforming Sampling Periods');
   const transformSampleVisitsSql = SQL`
     set search_path = biohub,public;
 
@@ -33,7 +34,10 @@ export const transformSampleVisits = async (connection: IDBConnection): Promise<
         sdcv.when_created, 
         sdcv.start_time, 
         sdcv.end_time, 
-        ssm.survey_sample_method_id;
+        ssm.survey_sample_method_id,
+        sdcv.visit_date,
+        sdcv.visit_end_date;
+
 
     -- possibility to create another temporary table that houses the design component visit id and the survey sample period id
     -- ensures that we can properly attribute spi_wildlife_observations to the appropriate sampling period to get dates 
@@ -66,5 +70,5 @@ export const transformSampleVisits = async (connection: IDBConnection): Promise<
 
   await connection.sql(transformSampleVisitsSql);
 
-  console.log('Successfully transformed design component visits');
+  console.log('Successfully transformed Sampling Periods');
 };

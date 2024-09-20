@@ -1,7 +1,7 @@
 import SQL from 'sql-template-strings';
 import { IDBConnection } from '../db';
 
-export const transformWildlifeObservations = async (connection: IDBConnection): Promise<void> => {
+export const transformWildlifeObservationsSubcount = async (connection: IDBConnection): Promise<void> => {
   console.log('Transforming Observation Subcounts');
   const transformObservationSubcountsSql = SQL`
     set search_path = biohub,public;
