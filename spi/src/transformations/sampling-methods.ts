@@ -887,18 +887,29 @@ export const transformSamplingMethods = async (connection: IDBConnection): Promi
 
 
 ----------------- INSERTING technique outputs INTO survey_sample_method where spi survey id is not null (ie only for spi migration surveys) ------
-INSERT INTO biohub.survey_sample_method (survey_sample_site_id, method_technique_id)
+INSERT INTO biohub.survey_sample_method (survey_sample_site_id, method_technique_id, method_response_metric_id)
 SELECT 
     sss.survey_sample_site_id,
-    mt.method_technique_id 
+    mt.method_technique_id,
+    CASE 
+        WHEN spi.species_inventory_intensity IN ('RA', 'AA') THEN 
+            (SELECT mrm.method_response_metric_id FROM biohub.method_response_metric mrm WHERE mrm.name = 'Count' LIMIT 1)
+        WHEN spi.species_inventory_intensity = 'PN' THEN 
+            (SELECT mrm.method_response_metric_id FROM biohub.method_response_metric mrm WHERE mrm.name = 'Presence-absence' LIMIT 1)
+        ELSE 
+            (SELECT mrm.method_response_metric_id FROM biohub.method_response_metric mrm WHERE mrm.name = 'Count' LIMIT 1)
+    END AS method_response_metric_id
 FROM 
     biohub.survey s
 JOIN 
     biohub.survey_sample_site sss ON s.survey_id = sss.survey_id
 JOIN 
     biohub.method_technique mt ON mt.survey_id = s.survey_id
+JOIN 
+    public.spi_surveys spi ON spi.spi_project_id = s.spi_survey_id
 WHERE 
     s.spi_survey_id IS NOT NULL;
+
     `;
 
   await connection.sql(transformSamplingMethods);
