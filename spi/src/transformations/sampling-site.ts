@@ -20,7 +20,8 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
                     sdc.when_updated, 
                     sdc.latitude, 
                     sdc.longitude, 
-                    igd.geo
+                    igd.geo, 
+                    ROW_NUMBER() OVER () AS row_num
                 FROM 
                     public.spi_design_components sdc
                 JOIN 
@@ -52,37 +53,39 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
                 FROM w_select ws
                 RETURNING survey_sample_site_id
             ),
-            w_combined AS (
-                SELECT wi.survey_sample_site_id, ws.design_component_id
-                FROM w_inserted wi
-                CROSS JOIN w_select ws
+            w_numbered_inserted AS (
+                SELECT survey_sample_site_id, ROW_NUMBER() OVER () AS row_num
+                FROM w_inserted
             )
+
             INSERT INTO public.migrate_spi_sample_design_component (survey_sample_site_id, design_component_id)
             SELECT 
-                wc.survey_sample_site_id,
-                wc.design_component_id
-            FROM w_combined wc;
+                wi.survey_sample_site_id,
+                ws.design_component_id
+            FROM w_numbered_inserted wi
+            JOIN w_select ws
+            ON wi.row_num = ws.row_num;
     -------------------------------------------------------------------------------------------------
     -- Insert SPI Design Component Stratums into SIMS Survey Sample Stratums (the instance of a survey stratum)
     -- These are the actual application of a Survey stratum to a sampling site
     -------------------------------------------------------------------------------------------------
-    INSERT INTO 
-        biohub.survey_sample_stratum (survey_sample_site_id, survey_stratum_id)
-    SELECT 
-        mssdc.survey_sample_site_id,
-        (
-            SELECT survey_stratum_id 
-            FROM biohub.survey_stratum ss 
-            JOIN survey s ON s.spi_survey_id = scs.survey_id
-            WHERE s.survey_id = scs.survey_id
-            AND ss.stratum_name = scs.stratum_name
-        )
-    FROM 
-        public.spi_component_stratums scs
-    JOIN 
-        public.migrate_spi_sample_design_component mssdc
-    ON 
-        s.design_component_id = mssdc.design_component_id;
+        INSERT INTO 
+            biohub.survey_sample_stratum (survey_sample_site_id, survey_stratum_id)
+        SELECT 
+            mssdc.survey_sample_site_id,
+            ss.survey_stratum_id
+        FROM 
+            public.spi_component_stratums scs
+        JOIN 
+            public.migrate_spi_sample_design_component mssdc
+            ON scs.design_component_id = mssdc.design_component_id
+        JOIN 
+            biohub.survey_stratum ss
+            ON ss.name = scs.stratum_name
+        JOIN 
+            survey s
+            ON s.spi_survey_id = scs.survey_id
+            AND s.survey_id = ss.survey_id;
     `;
 
   await connection.sql(transformSampleSitesSql);
