@@ -1,18 +1,18 @@
 import path from 'path';
-import { IDBConnection, initDBPool, defaultPoolConfig, getDBConnection } from './db';
+import { defaultPoolConfig, getDBConnection, IDBConnection, initDBPool } from './db';
 import { transformPermits } from './transformations/permit';
 import { transformProjects } from './transformations/project';
+import { transformSamplingMethods } from './transformations/sampling-methods';
 import { transformSampleSites } from './transformations/sampling-site';
+import { transformSampleVisits } from './transformations/sampling_period';
 import { insertMappedSpecies } from './transformations/species-map';
 import { transformSurveyStratums } from './transformations/stratum';
+import { transformStudyAreas } from './transformations/study-area';
 import { transformStudySpecies } from './transformations/study-species';
 import { transformSurveys } from './transformations/survey';
 import { transformUsers } from './transformations/user';
-import { transformStudyAreas } from './transformations/study-area';
-import { transformSampleVisits } from './transformations/sampling_period';
-import { transformSamplingMethods } from './transformations/sampling-methods';
-import { truncateTables } from './utils/truncate-tables';
 import { transformWildlifeObservations } from './transformations/wildlife_observations_1';
+import { truncateTables } from './utils/truncate-tables';
 
 let connection: IDBConnection; // Declare connection variable at the module level
 
@@ -77,8 +77,10 @@ async function main() {
     //STEP 7.  Transforms SPI Survey Areas into SIMS Survey Locations
     await transformStudyAreas(connection);
 
+    connection.rollback();
+
     // Commit the transactions
-    connection.commit();
+    // connection.commit();
 
     console.log('All transformations completed successfully');
   } catch (error) {
