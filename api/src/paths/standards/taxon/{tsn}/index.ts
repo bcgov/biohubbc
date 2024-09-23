@@ -21,7 +21,6 @@ GET.apiDoc = {
       required: true
     }
   ],
-  security: [],
   responses: {
     200: {
       description: 'Species data standards response object.',

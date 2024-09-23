@@ -9,7 +9,7 @@ import { useState } from 'react';
 import SpeciesStandardsToolbar, { SpeciesStandardsViewEnum } from './components/SpeciesStandardsToolbar';
 
 interface ISpeciesStandardsResultsProps {
-  data: ISpeciesStandards;
+  data?: ISpeciesStandards;
 }
 
 /**
@@ -19,6 +19,11 @@ interface ISpeciesStandardsResultsProps {
  */
 const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
   const [activeView, setActiveView] = useState<SpeciesStandardsViewEnum>(SpeciesStandardsViewEnum.MEASUREMENTS);
+
+  if (!props.data) {
+    // No data to display, return null
+    return null;
+  }
 
   return (
     <>

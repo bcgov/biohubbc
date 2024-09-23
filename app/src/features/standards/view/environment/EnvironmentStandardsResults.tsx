@@ -5,7 +5,7 @@ import { AccordionStandardCard } from 'features/standards/view/components/Accord
 import { IEnvironmentStandards } from 'interfaces/useStandardsApi.interface';
 
 interface ISpeciesStandardsResultsProps {
-  data: IEnvironmentStandards;
+  data?: IEnvironmentStandards;
 }
 
 /**
@@ -15,6 +15,11 @@ interface ISpeciesStandardsResultsProps {
  */
 export const EnvironmentStandardsResults = (props: ISpeciesStandardsResultsProps) => {
   const { data } = props;
+
+  if (!data) {
+    // No data to display, return null
+    return null;
+  }
 
   return (
     <Stack gap={2}>
