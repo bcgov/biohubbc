@@ -8,6 +8,7 @@ import useTheme from '@mui/material/styles/useTheme';
 import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { AxiosProgressEvent, CancelTokenSource } from 'axios';
+import AlertBar from 'components/alert/AlertBar';
 import FileUpload from 'components/file-upload/FileUpload';
 import { AttachmentTypeFileExtensions } from 'constants/attachments';
 import { TelemetryDeviceKeysList } from 'features/surveys/telemetry/device-keys/TelemetryDeviceKeysList';
@@ -103,7 +104,7 @@ export const TelemetryDeviceKeysDialog = (props: ITelemetryDeviceKeysDialogProps
   return (
     <Dialog
       fullScreen={fullScreen}
-      maxWidth="xl"
+      maxWidth="md"
       open={open}
       onClose={onClose}
       aria-labelledby="component-dialog-title"
@@ -112,14 +113,20 @@ export const TelemetryDeviceKeysDialog = (props: ITelemetryDeviceKeysDialogProps
         <DialogTitle id="component-dialog-title">Manage Device Keys</DialogTitle>
         <DialogContent>
           <Box mb={3}>
-            <Typography color="textSecondary">
-              Device keys allow telemetry data from Vectronic to be automatically loaded into your Survey.
-            </Typography>
-            <Typography color="textSecondary">Vectronic device keys are .keyx files.</Typography>
-            <Typography color="textSecondary">Lotek device keys are .cfg files.</Typography>
-            <Typography color="textSecondary" mb={3}>
-              Telemetry data from other manufacturers must be imported manually.
-            </Typography>
+            <AlertBar
+              severity="info"
+              variant="standard"
+              title="Automatic Data Retrievals"
+              text={
+                <Typography variant="body2">
+                  Telemetry data can be imported manually or, for Vectronic and Lotek devices, retrieved automatically
+                  after&nbsp;<strong>uploading device keys</strong>&nbsp;(.keyx or .cfg files). Automatic data
+                  retrievals happen nightly. For Vectronic devices, you should see new telemetry data for a deployment
+                  within 24 hours of uploading the device's .keyx file. For Lotek devices, you should see telemetry data
+                  after a system administrator has processed your .cfg file.
+                </Typography>
+              }
+            />
             <FileUpload
               uploadHandler={uploadHandler}
               dropZoneProps={{

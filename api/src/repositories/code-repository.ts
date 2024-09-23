@@ -62,7 +62,7 @@ export class CodeRepository extends BaseRepository {
       SELECT 
         method_lookup_id as id, 
         name, 
-        description 
+        description
       FROM method_lookup
       ORDER BY name ASC;
     `;

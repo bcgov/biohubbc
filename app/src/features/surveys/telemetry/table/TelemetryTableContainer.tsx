@@ -16,17 +16,18 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
-import FileUploadDialog from 'components/dialog/FileUploadDialog';
+import { FileUploadSingleItemDialog } from 'components/dialog/attachments/FileUploadSingleItemDialog';
 import YesNoDialog from 'components/dialog/YesNoDialog';
-import { UploadFileStatus } from 'components/file-upload/FileUploadItem';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TelemetryTable } from 'features/surveys/telemetry/table/TelemetryTable';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import { useContext, useDeferredValue, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
+import { TelemetryDeviceKeysButton } from '../device-keys/TelemetryDeviceKeysButton';
 
 export const TelemetryTableContainer = () => {
   const biohubApi = useBiohubApi();
@@ -57,49 +58,61 @@ export const TelemetryTableContainer = () => {
     setColumnVisibilityMenuAnchorEl(null);
   };
 
-  const handleFileImport = async (file: File) => {
-    biohubApi.telemetry.uploadCsvForImport(surveyContext.projectId, surveyContext.surveyId, file).then((response) => {
+  const handleImportTelemetry = async (file: File) => {
+    try {
+      const uploadResponse = await biohubApi.telemetry.uploadCsvForImport(
+        surveyContext.projectId,
+        surveyContext.surveyId,
+        file
+      );
+
       setShowImportDialog(false);
+
       setProcessingRecords(true);
-      biohubApi.telemetry
-        .processTelemetryCsvSubmission(response.submission_id)
-        .then(() => {
-          showSnackBar({
-            snackbarMessage: (
-              <Typography variant="body2" component="div">
-                Telemetry imported successfully.
-              </Typography>
-            )
-          });
-          telemetryTableContext.refreshRecords().then(() => {
-            setProcessingRecords(false);
-          });
-        })
-        .catch((error) => {
-          showSnackBar({
-            snackbarMessage: (
-              <Typography variant="body2" component="div">
-                {error.message}
-              </Typography>
-            )
-          });
+
+      await biohubApi.telemetry.processTelemetryCsvSubmission(uploadResponse.submission_id);
+
+      showSnackBar({
+        snackbarMessage: (
+          <Typography variant="body2" component="div">
+            Telemetry imported successfully.
+          </Typography>
+        )
+      });
+
+      telemetryTableContext.refreshRecords().then(() => {
+        setProcessingRecords(false);
+      });
+    } catch (error) {
+      const apiError = error as APIError;
+
+      dialogContext.setErrorDialog({
+        dialogTitle: TelemetryTableI18N.importRecordsErrorDialogTitle,
+        dialogText: TelemetryTableI18N.importRecordsErrorDialogText,
+        dialogError: apiError.message,
+        dialogErrorDetails: apiError.errors,
+        open: true,
+        onClose: () => {
           setProcessingRecords(false);
-        });
-    });
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          setProcessingRecords(false);
+          dialogContext.setErrorDialog({ open: false });
+        }
+      });
+    }
   };
 
   return (
     <>
-      <FileUploadDialog
+      <FileUploadSingleItemDialog
         open={showImportDialog}
         dialogTitle="Import Telemetry CSV"
         onClose={() => setShowImportDialog(false)}
-        onUpload={handleFileImport}
+        onUpload={handleImportTelemetry}
         uploadButtonLabel="Import"
-        FileUploadProps={{
-          dropZoneProps: { maxNumFiles: 1, acceptedFileExtensions: '.csv' },
-          status: UploadFileStatus.STAGED
-        }}
+        dropZoneProps={{ acceptedFileExtensions: '.csv' }}
       />
       <YesNoDialog
         dialogTitle={TelemetryTableI18N.removeAllDialogTitle}
@@ -132,6 +145,7 @@ export const TelemetryTableContainer = () => {
           </Typography>
 
           <Stack flexDirection="row" alignItems="center" gap={1} overflow="hidden" whiteSpace="nowrap">
+            <TelemetryDeviceKeysButton />
             <Button
               variant="contained"
               color="primary"
