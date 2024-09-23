@@ -102,7 +102,7 @@ export interface IEditCaptureRequest extends IMarkings, IMeasurementsUpdate {
   attachments: {
     capture_attachments: {
       create: Record<string, File>;
-      delete: string[];
+      delete: number[];
     };
   };
   capture: ICapturePostData;
@@ -133,7 +133,7 @@ interface ICritterAttachmentBase {
 }
 
 export type ICritterCaptureAttachment = {
-  critter_capture_attachment_id: string;
+  critter_capture_attachment_id: number;
   critterbase_capture_id: string;
 } & ICritterAttachmentBase;
 

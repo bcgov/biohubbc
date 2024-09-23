@@ -56,7 +56,7 @@ pg.types.setTypeParser(pg.types.builtins.TIMESTAMP, (stringValue: string) => {
 // Adding a TIMESTAMPTZ type parser to keep all dates used in the system consistent
 pg.types.setTypeParser(pg.types.builtins.TIMESTAMPTZ, (stringValue: string) => {
   return stringValue; // 1082 for `DATE` type
-});
+}
 // NUMERIC column types return as strings to maintain precision. Converting this to a float so it is usable by the system
 // Explanation of why Numeric returns as a string: https://github.com/brianc/node-postgres/issues/811
 pg.types.setTypeParser(pg.types.builtins.NUMERIC, (stringValue: string) => {
