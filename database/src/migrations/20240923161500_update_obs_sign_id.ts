@@ -9,7 +9,7 @@ import { Knex } from 'knex';
  * @return {*}  {Promise<void>}
  */
 export async function up(knex: Knex): Promise<void> {
-  await knex.raw(`--sql
+  await knex.raw(`
     SET SEARCH_PATH=biohub;
 
     UPDATE observation_subcount
