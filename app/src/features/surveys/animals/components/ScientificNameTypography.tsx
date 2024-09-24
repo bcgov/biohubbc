@@ -16,7 +16,7 @@ export const ScientificNameTypography = (props: IScientificNameTypographyProps) 
 
   if (terms.length > 1) {
     return (
-      <Typography {...props} sx={{ textTransform: 'none' }}>
+      <Typography {...props} sx={{ textTransform: 'none', ...props.sx }}>
         <i>{props.name}</i>
       </Typography>
     );

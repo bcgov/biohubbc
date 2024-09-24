@@ -45,7 +45,6 @@ export const EnvironmentStandardsResults = (props: ISpeciesStandardsResultsProps
                 label={option.name}
                 subtitle={option.description}
                 colour={grey[200]}
-                disableCollapse
               />
             ))}
           </Stack>
