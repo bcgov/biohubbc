@@ -81,7 +81,7 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
       hasNoData={!animals.length || !rows.length}
       hasNoDataFallback={
         <NoDataOverlay
-          height="250px"
+          height="100%"
           title="Add Animals"
           subtitle="Add animals that you have captured, individually identified, or found deceased"
           icon={mdiArrowTopRight}

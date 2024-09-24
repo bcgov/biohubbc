@@ -176,7 +176,7 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
       hasNoData={!rows.length}
       hasNoDataFallback={
         <NoDataOverlay
-          height="250px"
+          height="100%"
           title="Add Telemetry"
           subtitle="Add telemetry devices to animals and upload device data"
           icon={mdiArrowTopRight}

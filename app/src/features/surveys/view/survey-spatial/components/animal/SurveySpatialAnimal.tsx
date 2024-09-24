@@ -95,7 +95,7 @@ export const SurveySpatialAnimal = () => {
       </Box>
 
       {/* Display data table with animal capture details */}
-      <Box p={2} position="relative">
+      <Box height={{ xs: 300, md: 500 }} p={2} position="relative">
         <SurveySpatialAnimalTable isLoading={geometryDataLoader.isLoading} />
       </Box>
     </>
