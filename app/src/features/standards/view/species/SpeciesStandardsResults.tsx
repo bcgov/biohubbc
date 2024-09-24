@@ -2,6 +2,7 @@ import { mdiRuler, mdiTag } from '@mdi/js';
 import { Box, Divider, Stack, Typography } from '@mui/material';
 import { blueGrey, grey } from '@mui/material/colors';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { ISpeciesStandards } from 'interfaces/useStandardsApi.interface';
@@ -21,8 +22,12 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
   const [activeView, setActiveView] = useState<SpeciesStandardsViewEnum>(SpeciesStandardsViewEnum.MEASUREMENTS);
 
   if (!props.data) {
-    // No data to display, return null
-    return null;
+    // No data to display
+    return (
+      <Box minHeight="250px" display="flex" alignItems="center" justifyContent="center">
+        <NoDataOverlay subtitle="No records were found" />
+      </Box>
+    );
   }
 
   return (

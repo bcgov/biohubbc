@@ -1,6 +1,8 @@
+import Box from '@mui/material/Box';
 import { blueGrey, grey } from '@mui/material/colors';
 import Stack from '@mui/material/Stack';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { IMethodStandard } from 'interfaces/useStandardsApi.interface';
 import { AccordionStandardCard } from '../components/AccordionStandardCard';
 
@@ -16,9 +18,13 @@ interface ISpeciesStandardsResultsProps {
 export const MethodStandardsResults = (props: ISpeciesStandardsResultsProps) => {
   const { data } = props;
 
-  if (!data) {
-    // No data to display, return null
-    return null;
+  if (!data || !data.length) {
+    // No data to display
+    return (
+      <Box minHeight="250px" display="flex" alignItems="center" justifyContent="center">
+        <NoDataOverlay subtitle="No matching records were found" />
+      </Box>
+    );
   }
 
   return (
