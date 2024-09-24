@@ -60,7 +60,11 @@ export const EnvironmentStandards = () => {
             </Stack>
           }
           isLoadingFallbackDelay={100}
-          hasNoData={!environmentsDataLoader.data && environmentsDataLoader.isReady}
+          hasNoData={
+            !(environmentsDataLoader.data?.qualitative.length || environmentsDataLoader.data?.quantitative.length) &&
+            !environmentsDataLoader.data &&
+            environmentsDataLoader.isReady
+          }
           hasNoDataFallback={
             <Box minHeight="200px" display="flex" alignItems="center" justifyContent="center">
               <Typography color="textSecondary">No environment standards found</Typography>

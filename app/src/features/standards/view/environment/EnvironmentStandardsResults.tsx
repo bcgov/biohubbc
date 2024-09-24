@@ -18,8 +18,6 @@ interface ISpeciesStandardsResultsProps {
 export const EnvironmentStandardsResults = (props: ISpeciesStandardsResultsProps) => {
   const { data } = props;
 
-  console.log(data)
-
   if (!data || !(data.qualitative.length || data.quantitative.length)) {
     // No data to display
     return (
