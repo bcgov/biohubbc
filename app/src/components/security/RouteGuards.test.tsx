@@ -34,10 +34,6 @@ const nullAuthState = getMockAuthState({
       refresh: () => {
         // do nothing
       }
-    },
-    critterbaseUserWrapper: {
-      isLoading: false,
-      critterbaseUserUuid: 'fakeguid'
     }
   }
 });
