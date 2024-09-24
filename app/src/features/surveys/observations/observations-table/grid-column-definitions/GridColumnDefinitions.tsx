@@ -307,7 +307,7 @@ export const ObservationQuantitativeMeasurementColDef = (props: {
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
   const { measurement, hasError } = props;
-  console.log(measurement.measurement_desc)
+  console.log(measurement.measurement_desc);
   return {
     field: measurement.taxon_measurement_id,
     headerName: measurement.measurement_name,

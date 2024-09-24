@@ -66,7 +66,7 @@ export const SurveySpatialObservation = () => {
       </Box>
 
       {/* Display data table with observation details */}
-      <Box height="500px" display="flex" flexDirection="column" p={2}>
+      <Box height="500px" display="flex" flexDirection="column" px={2} pt={2}>
         <SurveyObservationTabularDataContainer isLoading={observationsGeometryDataLoader.isLoading} />
       </Box>
     </>

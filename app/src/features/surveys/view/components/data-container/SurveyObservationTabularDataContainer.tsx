@@ -70,7 +70,7 @@ const SurveyObservationTabularDataContainer = (props: ISurveyObservationTabularD
         </ToggleButtonGroup>
       </Box>
       <Divider />
-      <Box flex="1 1 auto" overflow="hidden">
+      <Box flex="1 1 auto" overflow="hidden" mt={1}>
         {activeDataView === SurveyObservationTabularDataContainerViewEnum.COUNTS && (
           <SurveySpatialObservationTable isLoading={isLoading} />
         )}
