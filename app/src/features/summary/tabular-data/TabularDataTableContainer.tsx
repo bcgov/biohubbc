@@ -98,7 +98,7 @@ export const TabularDataTableContainer = () => {
         ))}
       </ToggleButtonGroup>
       <Divider flexItem orientation="vertical" />
-      <Box flex="1 1 auto">
+      <Box flex="1 1 auto" overflow="hidden">
         {activeView === ACTIVE_VIEW_VALUE.observations && <ObservationsListContainer showSearch={showSearch} />}
         {activeView === ACTIVE_VIEW_VALUE.animals && <AnimalsListContainer showSearch={showSearch} />}
         {activeView === ACTIVE_VIEW_VALUE.telemetry && <TelemetryListContainer showSearch={showSearch} />}

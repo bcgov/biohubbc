@@ -51,8 +51,8 @@ export class StandardsRepository extends BaseRepository {
             eq.description
         )
       SELECT 
-        (SELECT json_agg(json_build_object('name', quant_name, 'description', quant_description, 'unit', unit)) FROM quan) as quantitative,
-        (SELECT json_agg(json_build_object('name', qual_name, 'description', qual_description, 'options', options)) FROM qual) as qualitative;
+        (SELECT COALESCE(json_agg(json_build_object('name', quant_name, 'description', quant_description, 'unit', unit)), '[]'::json) FROM quan) as quantitative,
+        (SELECT COALESCE(json_agg(json_build_object('name', qual_name, 'description', qual_description, 'options', options)), '[]'::json) FROM qual) as qualitative;
     `;
 
     const response = await this.connection.sql(sql, EnvironmentStandardsSchema);

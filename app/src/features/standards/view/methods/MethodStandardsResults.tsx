@@ -5,7 +5,7 @@ import { IMethodStandard } from 'interfaces/useStandardsApi.interface';
 import { AccordionStandardCard } from '../components/AccordionStandardCard';
 
 interface ISpeciesStandardsResultsProps {
-  data?: IMethodStandard[];
+  data: IMethodStandard[];
 }
 
 /**
@@ -15,11 +15,6 @@ interface ISpeciesStandardsResultsProps {
  */
 export const MethodStandardsResults = (props: ISpeciesStandardsResultsProps) => {
   const { data } = props;
-
-  if (!data) {
-    // No data to display, return null
-    return null;
-  }
 
   return (
     <Stack gap={2}>
