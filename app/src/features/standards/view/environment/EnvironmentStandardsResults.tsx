@@ -16,8 +16,8 @@ interface ISpeciesStandardsResultsProps {
 export const EnvironmentStandardsResults = (props: ISpeciesStandardsResultsProps) => {
   const { data } = props;
 
-  if (!data) {
-    // No data to display, return null
+  if (!data || !(data.qualitative.length || data.quantitative.length)) {
+    // No data to display
     return null;
   }
 
@@ -45,7 +45,6 @@ export const EnvironmentStandardsResults = (props: ISpeciesStandardsResultsProps
                 label={option.name}
                 subtitle={option.description}
                 colour={grey[200]}
-                disableCollapse
               />
             ))}
           </Stack>

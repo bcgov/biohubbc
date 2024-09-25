@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
@@ -6,7 +6,7 @@ import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
-import IconButton from '@mui/material/IconButton';
+import List from '@mui/material/List';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
@@ -14,14 +14,15 @@ import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { ISurveyCritter } from 'contexts/animalPageContext';
+import { CritterListItem } from 'features/surveys/animals/list/components/CritterListItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useAnimalPageContext, useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
+import { useAnimalPageContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { AnimalListToolbar } from './components/AnimalListToolbar';
-import { CritterListItem } from './components/CritterListItem';
 
 /**
  * Returns a list of all animals (critters) in the survey
@@ -34,7 +35,6 @@ export const AnimalListContainer = () => {
   const [headerAnchorEl, setHeaderAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [selectedCritterMenu, setSelectedCritterMenu] = useState<ISurveyCritter>();
 
-  const codesContext = useCodesContext();
   const surveyContext = useSurveyContext();
   const dialogContext = useDialogContext();
 
@@ -46,15 +46,7 @@ export const AnimalListContainer = () => {
 
   const critters = surveyContext.critterDataLoader.data;
 
-  if (!critters) {
-    return (
-      <Box flex="1 1 auto">
-        <SkeletonList numberOfLines={8} />
-      </Box>
-    );
-  }
-
-  const crittersCount = critters.length;
+  const crittersCount = critters?.length ?? 0;
 
   const handleCheckboxChange = (critterId: number) => {
     setCheckboxSelectedIds((prev) => {
@@ -287,15 +279,37 @@ export const AnimalListContainer = () => {
         }}>
         <AnimalListToolbar
           handleHeaderMenuClick={handleHeaderMenuClick}
-          animalCount={critters.length}
+          animalCount={crittersCount}
           checkboxSelectedIdsLength={checkboxSelectedIds.length}
         />
         <Divider flexItem />
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
           <Box position="absolute" top="0" right="0" bottom="0" left="0" flex="1 1 auto">
-            {surveyContext.critterDataLoader.isLoading || codesContext.codesDataLoader.isLoading ? (
-              <SkeletonList />
-            ) : (
+            <LoadingGuard
+              isLoading={surveyContext.critterDataLoader.isLoading}
+              isLoadingFallback={<SkeletonList />}
+              isLoadingFallbackDelay={100}
+              hasNoData={!critters?.length}
+              hasNoDataFallback={
+                <Stack
+                  sx={{
+                    background: grey[100]
+                  }}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  flex="1 1 auto"
+                  overflow="hidden"
+                  position="absolute"
+                  top={0}
+                  right={0}
+                  left={0}
+                  bottom={0}
+                  height="100%">
+                  <Typography variant="body2">No Animals</Typography>
+                </Stack>
+              }
+              hasNoDataFallbackDelay={100}>
               <Stack height="100%" position="relative" sx={{ overflowY: 'auto', flex: '1 1 auto' }}>
                 <Box display="flex" alignItems="center" px={2} height={55} width="100%">
                   <FormGroup>
@@ -313,7 +327,7 @@ export const AnimalListContainer = () => {
                       control={
                         <Checkbox
                           sx={{
-                            mr: 0.75
+                            mr: 1.3
                           }}
                           checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === crittersCount}
                           indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < crittersCount}
@@ -323,7 +337,8 @@ export const AnimalListContainer = () => {
                               return;
                             }
 
-                            const critterIds = critters.map((critter) => critter.critter_id);
+                            const critterIds = critters?.map((critter) => critter.critter_id) ?? [];
+
                             setCheckboxSelectedIds(critterIds);
                           }}
                           inputProps={{ 'aria-label': 'controlled' }}
@@ -334,59 +349,21 @@ export const AnimalListContainer = () => {
                 </Box>
                 <Divider flexItem></Divider>
                 <Box flex="1 1 auto">
-                  {!critters.length && (
-                    <Stack
-                      sx={{
-                        background: grey[100]
-                      }}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      flex="1 1 auto"
-                      overflow="hidden"
-                      position="absolute"
-                      top={0}
-                      right={0}
-                      left={0}
-                      bottom={0}
-                      height="100%">
-                      <Typography variant="body2">No Animals</Typography>
-                    </Stack>
-                  )}
-                  {critters.map((critter) => (
-                    <Stack
-                      key={critter.critterbase_critter_id}
-                      direction="row"
-                      display="flex"
-                      alignItems="center"
-                      overflow="hidden"
-                      flex="1 1 auto"
-                      sx={{
-                        m: 0.5,
-                        borderRadius: '5px'
-                      }}>
+                  <List>
+                    {critters?.map((critter) => (
                       <CritterListItem
                         critter={critter}
-                        isChecked={checkboxSelectedIds.includes(critter.critter_id)}
-                        handleCheckboxChange={handleCheckboxChange}
+                        isSelectedAnimal={selectedAnimal?.critter_id === critter.critter_id}
+                        onAnimalClick={setSelectedAnimal}
+                        isCheckboxSelected={checkboxSelectedIds.includes(critter.critter_id)}
+                        onCheckboxClick={handleCheckboxChange}
+                        onMenuClick={handleCritterMenuClick}
                       />
-                      <IconButton
-                        sx={{ position: 'absolute', right: '24px' }}
-                        edge="end"
-                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                          handleCritterMenuClick(event, {
-                            critterbase_critter_id: critter.critterbase_critter_id,
-                            critter_id: critter.critter_id
-                          })
-                        }
-                        aria-label="animal-settings">
-                        <Icon path={mdiDotsVertical} size={1} />
-                      </IconButton>
-                    </Stack>
-                  ))}
+                    ))}
+                  </List>
                 </Box>
               </Stack>
-            )}
+            </LoadingGuard>
           </Box>
         </Box>
       </Paper>
