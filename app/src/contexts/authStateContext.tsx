@@ -1,4 +1,3 @@
-import { default as useCritterbaseUserWrapper } from 'hooks/useCritterbaseUserWrapper';
 import useSimsUserWrapper, { ISimsUserWrapper } from 'hooks/useSimsUserWrapper';
 import React from 'react';
 import { AuthContextProps, useAuth } from 'react-oidc-context';
@@ -18,13 +17,6 @@ export interface IAuthState {
    * @memberof IAuthState
    */
   simsUserWrapper: ISimsUserWrapper;
-  /**
-   * THe logged in user's Critterbase user information.
-   *
-   * @type {ReturnType<typeof useCritterbaseUserWrapper>}
-   * @memberof IAuthState
-   */
-  critterbaseUserWrapper: ReturnType<typeof useCritterbaseUserWrapper>;
 }
 
 export const AuthStateContext = React.createContext<IAuthState | undefined>(undefined);
@@ -46,14 +38,11 @@ export const AuthStateContextProvider: React.FC<React.PropsWithChildren> = (prop
 
   const simsUserWrapper = useSimsUserWrapper();
 
-  const critterbaseUserWrapper = useCritterbaseUserWrapper(simsUserWrapper);
-
   return (
     <AuthStateContext.Provider
       value={{
         auth,
-        simsUserWrapper,
-        critterbaseUserWrapper
+        simsUserWrapper
       }}>
       {props.children}
     </AuthStateContext.Provider>
