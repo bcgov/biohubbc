@@ -48,8 +48,8 @@ export const transformSampleSites = async (connection: IDBConnection): Promise<v
                     ws.note,
                     ws.survey_id,
                     ws.when_created, 
-                    COALESCE(ST_SetSRID(ST_MakePoint(ws.longitude, ws.latitude), 4326), ws.geo) AS geography,
-                    ST_AsGeoJSON(COALESCE(ST_SetSRID(ST_MakePoint(ws.longitude, ws.latitude), 4326), ws.geo))::jsonb AS geojson
+                    COALESCE(ws.geo, ST_SetSRID(ST_MakePoint(ws.longitude, ws.latitude), 4326)) AS geography,
+                    ST_AsGeoJSON(COALESCE(ws.geo, ST_SetSRID(ST_MakePoint(ws.longitude, ws.latitude), 4326)))::jsonb AS geojson
                 FROM w_select ws
                 RETURNING survey_sample_site_id
             ),
