@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
@@ -6,7 +6,6 @@ import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
-import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
@@ -16,12 +15,12 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { ISurveyCritter } from 'contexts/animalPageContext';
+import { CritterListItem } from 'features/surveys/animals/list/components/CritterListItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { AnimalListToolbar } from './components/AnimalListToolbar';
-import { CritterListItem } from './components/CritterListItem';
 
 /**
  * Returns a list of all animals (critters) in the survey
@@ -354,35 +353,14 @@ export const AnimalListContainer = () => {
                     </Stack>
                   )}
                   {critters.map((critter) => (
-                    <Stack
-                      key={critter.critterbase_critter_id}
-                      direction="row"
-                      display="flex"
-                      alignItems="center"
-                      overflow="hidden"
-                      flex="1 1 auto"
-                      sx={{
-                        m: 0.5,
-                        borderRadius: '5px'
-                      }}>
-                      <CritterListItem
-                        critter={critter}
-                        isChecked={checkboxSelectedIds.includes(critter.critter_id)}
-                        handleCheckboxChange={handleCheckboxChange}
-                      />
-                      <IconButton
-                        sx={{ position: 'absolute', right: '24px' }}
-                        edge="end"
-                        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-                          handleCritterMenuClick(event, {
-                            critterbase_critter_id: critter.critterbase_critter_id,
-                            critter_id: critter.critter_id
-                          })
-                        }
-                        aria-label="animal-settings">
-                        <Icon path={mdiDotsVertical} size={1} />
-                      </IconButton>
-                    </Stack>
+                    <CritterListItem
+                      critter={critter}
+                      isSelectedAnimal={selectedAnimal?.critter_id === critter.critter_id}
+                      onAnimalClick={setSelectedAnimal}
+                      isCheckboxSelected={checkboxSelectedIds.includes(critter.critter_id)}
+                      onCheckboxClick={handleCheckboxChange}
+                      onMenuClick={handleCritterMenuClick}
+                    />
                   ))}
                 </Box>
               </Stack>
