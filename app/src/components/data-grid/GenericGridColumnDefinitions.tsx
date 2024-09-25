@@ -1,9 +1,14 @@
+import { mdiCommentOutline, mdiCommentText } from '@mdi/js';
+import Icon from '@mdi/react';
+import { IconButton } from '@mui/material';
+import grey from '@mui/material/colors/grey';
 import Typography from '@mui/material/Typography';
 import { GridCellParams, GridColDef, GridValidRowModel } from '@mui/x-data-grid';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
+import { useObservationsTableContext } from 'hooks/useContext';
 import { round } from 'lodash-es';
 import { getFormattedDate } from 'utils/Utils';
 
@@ -18,7 +23,7 @@ export const GenericDateColDef = <T extends GridValidRowModel>(props: {
   return {
     field,
     headerName,
-    description: description ?? undefined,
+    description: description,
     editable: true,
     hideable: true,
     type: 'date',
@@ -71,7 +76,7 @@ export const GenericTimeColDef = <T extends GridValidRowModel>(props: {
     headerName,
     editable: true,
     hideable: true,
-    description: description ?? undefined,
+    description: description,
     type: 'string',
     width: 150,
     disableColumnMenu: true,
@@ -133,7 +138,7 @@ export const GenericLatitudeColDef = <T extends GridValidRowModel>(props: {
   return {
     field,
     headerName,
-    description: description ?? undefined,
+    description: description,
     editable: true,
     hideable: true,
     width: 120,
@@ -194,7 +199,7 @@ export const GenericLongitudeColDef = <T extends GridValidRowModel>(props: {
   return {
     field,
     headerName,
-    description: description ?? undefined,
+    description: description,
     editable: true,
     hideable: true,
     width: 120,
@@ -239,6 +244,41 @@ export const GenericLongitudeColDef = <T extends GridValidRowModel>(props: {
             error
           }}
         />
+      );
+    }
+  };
+};
+
+export const GenericCommentColDef = <T extends GridValidRowModel>(props: {
+  field: string;
+  headerName: string;
+  description?: string;
+  hasError: (params: GridCellParams) => boolean;
+}): GridColDef<T> => {
+  const { field, headerName, description } = props;
+  const observationsTableContext = useObservationsTableContext();
+
+  return {
+    field,
+    headerName,
+    description: description,
+    width: 75,
+    disableColumnMenu: true,
+    headerAlign: 'right',
+    align: 'right',
+    renderCell: (params) => {
+      return (
+        <IconButton
+          aria-label="comment"
+          onClick={() => {
+            observationsTableContext.openCommentDialog(params.row.id);
+          }}>
+          {params.value ? (
+            <Icon path={mdiCommentText} size={1} color={'primary'} />
+          ) : (
+            <Icon path={mdiCommentOutline} size={1} color={grey[400]} />
+          )}
+        </IconButton>
       );
     }
   };

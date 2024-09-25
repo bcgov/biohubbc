@@ -12,6 +12,7 @@ import Typography from '@mui/material/Typography';
 import { GridColDef } from '@mui/x-data-grid';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
 import {
+  GenericCommentColDef,
   GenericDateColDef,
   GenericLatitudeColDef,
   GenericLongitudeColDef,
@@ -47,6 +48,7 @@ import {
 import { useEffect, useMemo } from 'react';
 import { getCodesName } from 'utils/Utils';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
+import { ObservationCommentDialog } from './edit-dialog/ObservationCommentDialog';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
 import {
   getEnvironmentColumnDefinitions,
@@ -139,7 +141,11 @@ const ObservationsTableContainer = () => {
         observationsTableContext.hasError
       ),
       // Add environment columns to the table
-      ...getEnvironmentColumnDefinitions(observationsTableContext.environmentColumns, observationsTableContext.hasError)
+      ...getEnvironmentColumnDefinitions(
+        observationsTableContext.environmentColumns,
+        observationsTableContext.hasError
+      ),
+      GenericCommentColDef({ field: 'comment', headerName: '', hasError: observationsTableContext.hasError })
     ],
     [
       observationSubcountSignOptions,
@@ -217,6 +223,17 @@ const ObservationsTableContainer = () => {
       <DataGridValidationAlert
         validationModel={observationsTableContext.validationModel}
         muiDataGridApiRef={observationsTableContext._muiDataGridApiRef.current}
+      />
+
+      <ObservationCommentDialog
+        open={Boolean(observationsTableContext.commentDialogRowId)}
+        onClose={(comment: string | null) => {
+          // Add the comment to the staged rows? Save the observation?
+          if (comment) {
+            console.log(comment);
+          }
+          observationsTableContext.closeCommentDialog();
+        }}
       />
 
       <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
