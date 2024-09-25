@@ -64,6 +64,7 @@ export const CritterListItem = (props: ICritterListItemProps) => {
       <ListItemButton
         onClick={() => onAnimalClick(critter)}
         sx={{
+          paddingLeft: '0px',
           '&.MuiButtonBase-root:hover': {
             bgcolor: 'transparent'
           },

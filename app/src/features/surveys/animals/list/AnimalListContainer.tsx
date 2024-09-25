@@ -327,7 +327,7 @@ export const AnimalListContainer = () => {
                       control={
                         <Checkbox
                           sx={{
-                            mr: 0.75
+                            mr: 1.3
                           }}
                           checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === crittersCount}
                           indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < crittersCount}
