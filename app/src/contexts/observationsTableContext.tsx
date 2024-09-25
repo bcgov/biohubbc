@@ -3,6 +3,7 @@ import {
   GridCellParams,
   GridColumnVisibilityModel,
   GridPaginationModel,
+  GridRenderEditCellParams,
   GridRowId,
   GridRowModes,
   GridRowModesModel,
@@ -235,7 +236,7 @@ export type IObservationsTableContext = {
   /**
    * Opens the dialog for adding a comment to an observation.
    */
-  openCommentDialog: (rowId: number) => void;
+  openCommentDialog: (params: GridRenderEditCellParams) => void;
   /**
    * Closes the dialog for adding a comment to an observation
    */
@@ -243,7 +244,7 @@ export type IObservationsTableContext = {
   /**
    * The row Id of the observation being commented on
    */
-  commentDialogRowId: number | null;
+  commentDialogParams: GridRenderEditCellParams | null;
 };
 
 export type IObservationsTableContextProviderProps = PropsWithChildren;
@@ -317,7 +318,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   const [_isDisabled, setIsDisabled] = useState(false);
 
   // Stores the id of an observation row being commented on. When not null, the comment dialog is open.
-  const [commentDialogRowId, setCommentDialogRowId] = useState<number | null>(null);
+  const [commentDialogParams, setCommentDialogParams] = useState<GridRenderEditCellParams | null>(null);
 
   // Global disabled state for the observations table
   const isDisabled = useMemo(() => {
@@ -767,18 +768,18 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   }, [_muiDataGridApiRef, rowSelectionModel]);
 
   /**
-   * Opens the comment dialog
+   * Opens the dialog for adding a comment to a subcount
    */
-  const openCommentDialog = useCallback((rowId: number) => {
-    setCommentDialogRowId(rowId);
-  }, []);
+  const openCommentDialog = (params: GridRenderEditCellParams) => {
+    setCommentDialogParams(params);
+  };
 
   /**
-   * Closes the comment dialog
+   * Closes the dialog for adding a comment to a subcount
    */
-  const closeCommentDialog = useCallback(() => {
-    setCommentDialogRowId(null);
-  }, []);
+  const closeCommentDialog = () => {
+    setCommentDialogParams(null);
+  };
 
   /**
    * Renders a dialog that prompts the user to delete the given records.
@@ -942,7 +943,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       latitude: null as unknown as number,
       longitude: null as unknown as number,
       itis_tsn: null as unknown as number,
-      itis_scientific_name: ''
+      itis_scientific_name: '',
+      comment: ''
     };
 
     // Append new record to start of staged rows
@@ -1185,6 +1187,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         // Why?: Currently there is no UI support for setting a subcount value.
         // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
         subcount: row.count,
+        comment: row.comment,
         observation_subcount_sign_id: row.observation_subcount_sign_id,
         qualitative_measurements: measurementsToSave.qualitative,
         quantitative_measurements: measurementsToSave.quantitative,
@@ -1263,6 +1266,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         // Note: This code currently assumes that each observation record has exactly 1 subcount record.
         // Why? Currently there is no UI support for handling multiple subcount records per observation record.
         // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
+        console.log('getrowstodisplay called');
         return {
           // Spread the standard observation row data into the row
           id: String(observationRow.survey_observation_id),
@@ -1272,6 +1276,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
           observation_subcount_id: subcountRow.observation_subcount_id,
           // Add the subcount sign data into the row
           observation_subcount_sign_id: subcountRow.observation_subcount_sign_id,
+          // // Add the subcount comment into the row
+          comment: subcountRow.comment,
 
           // Reduce the array of qualitative measurements into an object and spread into the row
           ...subcountRow.qualitative_measurements.reduce((acc, cur) => {
@@ -1554,7 +1560,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       setIsDisabled,
       openCommentDialog,
       closeCommentDialog,
-      commentDialogRowId
+      commentDialogParams
     }),
     [
       _muiDataGridApiRef,
@@ -1586,8 +1592,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       environmentColumns,
       isDisabled,
       openCommentDialog,
-      closeCommentDialog,
-      commentDialogRowId
+      closeCommentDialog
     ]
   );
 

@@ -1,15 +1,15 @@
 import { mdiCommentOutline, mdiCommentText } from '@mdi/js';
 import Icon from '@mdi/react';
-import { IconButton } from '@mui/material';
-import grey from '@mui/material/colors/grey';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { GridCellParams, GridColDef, GridValidRowModel } from '@mui/x-data-grid';
+import { GridCellParams, GridColDef, GridRenderEditCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
-import { useObservationsTableContext } from 'hooks/useContext';
 import { round } from 'lodash-es';
+import appTheme from 'themes/appTheme';
 import { getFormattedDate } from 'utils/Utils';
 
 export const GenericDateColDef = <T extends GridValidRowModel>(props: {
@@ -254,9 +254,10 @@ export const GenericCommentColDef = <T extends GridValidRowModel>(props: {
   headerName: string;
   description?: string;
   hasError: (params: GridCellParams) => boolean;
+  handleClose: () => void;
+  handleOpen: (params: GridRenderEditCellParams) => void;
 }): GridColDef<T> => {
   const { field, headerName, description } = props;
-  const observationsTableContext = useObservationsTableContext();
 
   return {
     field,
@@ -264,21 +265,42 @@ export const GenericCommentColDef = <T extends GridValidRowModel>(props: {
     description: description,
     width: 75,
     disableColumnMenu: true,
+    editable: true,
     headerAlign: 'right',
     align: 'right',
-    renderCell: (params) => {
+    renderEditCell: (params) => {
       return (
         <IconButton
-          aria-label="comment"
+          aria-label="observation-subcount-comment"
           onClick={() => {
-            observationsTableContext.openCommentDialog(params.row.id);
+            props.handleOpen(params);
           }}>
-          {params.value ? (
-            <Icon path={mdiCommentText} size={1} color={'primary'} />
-          ) : (
-            <Icon path={mdiCommentOutline} size={1} color={grey[400]} />
-          )}
+          <Tooltip title={params.row.value}>
+            <IconButton aria-label="observation-subcount-comment" disabled>
+              {params.value ? (
+                // The key props is necessary for the color to correctly change when a value is set
+                <Icon path={mdiCommentText} size={1} key="comment-view-id" color={appTheme.palette.primary.dark} />
+              ) : (
+                <Icon path={mdiCommentOutline} size={1} key="comment-view-empty" color={appTheme.palette.primary.dark} />
+              )}
+            </IconButton>
+          </Tooltip>
         </IconButton>
+      );
+    },
+    renderCell: (params) => {
+      return (
+        <Tooltip title={params.value} arrow>
+          <span>
+            <IconButton aria-label="observation-subcount-comment" disabled>
+              {params.value ? (
+                <Icon path={mdiCommentText} size={1} key="comment-view-id" color={appTheme.palette.primary.dark} />
+              ) : (
+                <Icon path={mdiCommentOutline} size={1} key="comment-view-empty" />
+              )}
+            </IconButton>
+          </span>
+        </Tooltip>
       );
     }
   };

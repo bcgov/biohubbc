@@ -9,7 +9,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef, GridRenderEditCellParams } from '@mui/x-data-grid';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
 import {
   GenericCommentColDef,
@@ -48,8 +48,8 @@ import {
 import { useEffect, useMemo } from 'react';
 import { getCodesName } from 'utils/Utils';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
-import { ObservationCommentDialog } from './edit-dialog/ObservationCommentDialog';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
+import { ObservationSubcountCommentDialog } from './grid-column-definitions/comment/ObservationSubcountCommentDialog';
 import {
   getEnvironmentColumnDefinitions,
   getMeasurementColumnDefinitions
@@ -145,7 +145,13 @@ const ObservationsTableContainer = () => {
         observationsTableContext.environmentColumns,
         observationsTableContext.hasError
       ),
-      GenericCommentColDef({ field: 'comment', headerName: '', hasError: observationsTableContext.hasError })
+      GenericCommentColDef({
+        field: 'comment',
+        headerName: '',
+        hasError: observationsTableContext.hasError,
+        handleOpen: (params: GridRenderEditCellParams) => observationsTableContext.openCommentDialog(params),
+        handleClose: observationsTableContext.closeCommentDialog
+      })
     ],
     [
       observationSubcountSignOptions,
@@ -225,16 +231,7 @@ const ObservationsTableContainer = () => {
         muiDataGridApiRef={observationsTableContext._muiDataGridApiRef.current}
       />
 
-      <ObservationCommentDialog
-        open={Boolean(observationsTableContext.commentDialogRowId)}
-        onClose={(comment: string | null) => {
-          // Add the comment to the staged rows? Save the observation?
-          if (comment) {
-            console.log(comment);
-          }
-          observationsTableContext.closeCommentDialog();
-        }}
-      />
+      <ObservationSubcountCommentDialog open={Boolean(observationsTableContext.commentDialogParams)} />
 
       <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
         <Box position="absolute" width="100%" height="100%">
