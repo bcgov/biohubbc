@@ -1,9 +1,11 @@
 import { mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';
-import Button from '@mui/material/Button';
+import { ListItemIcon } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { ISurveyCritter } from 'contexts/animalPageContext';
@@ -26,63 +28,54 @@ interface ICritterListItemProps {
  * @return {*}
  */
 export const CritterListItem = (props: ICritterListItemProps) => {
-  const { critter, isSelectedAnimal, onAnimalClick, isCheckboxSelected, onCheckboxClick, onMenuClick } = props;
+  const { critter, onAnimalClick, isSelectedAnimal, isCheckboxSelected, onCheckboxClick, onMenuClick } = props;
 
   return (
-    <Stack
-      key={critter.critterbase_critter_id}
-      direction="row"
-      display="flex"
-      alignItems="center"
-      overflow="hidden"
-      flex="1 1 auto"
-      justifyItems="space-between"
+    <ListItem
       sx={{
-        m: 0.5,
-        borderRadius: '5px',
-        bgcolor: isSelectedAnimal ? grey[100] : undefined
-      }}>
-      <Checkbox
-        sx={{ mr: 0.5 }}
-        checked={isCheckboxSelected}
-        onClick={(event) => {
-          event.stopPropagation();
-          onCheckboxClick(critter.critter_id);
-        }}
-        inputProps={{ 'aria-label': 'controlled' }}
-      />
-      <Button
+        backgroundColor: isSelectedAnimal ? grey[100] : undefined,
+        '&:hover': {
+          backgroundColor: grey[100]
+        }
+      }}
+      secondaryAction={
+        <IconButton
+          onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+            onMenuClick(event, {
+              critterbase_critter_id: critter.critterbase_critter_id,
+              critter_id: critter.critter_id
+            })
+          }
+          aria-label="animal-settings">
+          <Icon path={mdiDotsVertical} size={1} />
+        </IconButton>
+      }>
+      <ListItemIcon>
+        <Checkbox
+          edge="start"
+          checked={isCheckboxSelected}
+          onClick={(event) => {
+            event.stopPropagation();
+            onCheckboxClick(critter.critter_id);
+          }}
+          inputProps={{ 'aria-label': 'controlled' }}
+        />
+      </ListItemIcon>
+      <ListItemButton
         onClick={() => onAnimalClick(critter)}
         sx={{
-          flex: '1 1 auto',
           '&.MuiButtonBase-root:hover': {
             bgcolor: 'transparent'
           },
           outline: 'none !important'
         }}>
-        <Stack
-          flexDirection="row"
-          alignItems="flex-start"
-          sx={{
-            px: 1.25,
-            flex: '1 1 auto',
-            maxWidth: '100%'
-          }}>
-          <Typography
-            sx={{
-              whiteSpace: 'nowrap',
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              textAlign: 'left',
-              flex: '0.9',
-              mt: 1
-            }}>
+        <Stack flexDirection="row" alignItems="flex-start" sx={{ flex: '1 1 auto' }}>
+          <Typography sx={{ flex: '1 1 auto' }}>
             <Typography
               component="span"
               variant="body2"
               textAlign="left"
               sx={{
-                mr: 1,
                 fontWeight: 700,
                 whiteSpace: 'nowrap',
                 display: 'block',
@@ -98,7 +91,6 @@ export const CritterListItem = (props: ICritterListItemProps) => {
               component="span"
               name={critter.itis_scientific_name}
               sx={{
-                mr: 1,
                 whiteSpace: 'nowrap',
                 display: 'block',
                 textOverflow: 'ellipsis',
@@ -110,17 +102,7 @@ export const CritterListItem = (props: ICritterListItemProps) => {
             />
           </Typography>
         </Stack>
-      </Button>
-      <IconButton
-        onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-          onMenuClick(event, {
-            critterbase_critter_id: critter.critterbase_critter_id,
-            critter_id: critter.critter_id
-          })
-        }
-        aria-label="animal-settings">
-        <Icon path={mdiDotsVertical} size={1} />
-      </IconButton>
-    </Stack>
+      </ListItemButton>
+    </ListItem>
   );
 };
