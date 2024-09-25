@@ -93,7 +93,7 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
   _getCritterFromRow(row: CsvCritter): ICreateCritter {
     return {
       critter_id: row.critter_id,
-      sex_qualitative_option_id: row.sex ?? null,
+      sex_qualitative_option_id: row.sex,
       itis_tsn: row.itis_tsn,
       animal_id: row.animal_id,
       wlh_id: row.wlh_id,

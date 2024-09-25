@@ -43,7 +43,7 @@ export interface ICreateCritter {
   critter_id?: string;
   wlh_id?: string | null;
   animal_id: string; // NOTE: In critterbase this is optional. For SIMS it should be required.
-  sex_qualitative_option_id: string | null;
+  sex_qualitative_option_id?: string | null;
   itis_tsn: number;
   critter_comment?: string | null;
 }
