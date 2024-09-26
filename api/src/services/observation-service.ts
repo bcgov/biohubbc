@@ -84,7 +84,7 @@ export const observationStandardColumnValidator = {
   TIME: { type: 'string' },
   LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE },
   LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE },
-  COMMENT: {type: 'string', aliases: CSV_COLUMN_ALIASES.COMMENT}
+  COMMENT: { type: 'string', aliases: CSV_COLUMN_ALIASES.COMMENT }
 } satisfies IXLSXCSVValidator;
 
 export const getColumnCellValue = generateColumnCellGetterFromColumnValidator(observationStandardColumnValidator);
@@ -627,7 +627,7 @@ export class ObservationService extends DBService {
         observation_subcount_id: null,
         subcount: getColumnCellValue(row, 'COUNT').cell as number,
         observation_subcount_sign_id: observationSubcountSignId ?? null,
-        comment: getColumnCellValue(row, 'COMMENT').cell as string ?? null,
+        comment: (getColumnCellValue(row, 'COMMENT').cell as string) ?? null,
         qualitative_measurements: [],
         quantitative_measurements: [],
         qualitative_environments: [],

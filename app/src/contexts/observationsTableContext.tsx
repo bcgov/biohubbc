@@ -1266,7 +1266,6 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         // Note: This code currently assumes that each observation record has exactly 1 subcount record.
         // Why? Currently there is no UI support for handling multiple subcount records per observation record.
         // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
-        console.log('getrowstodisplay called');
         return {
           // Spread the standard observation row data into the row
           id: String(observationRow.survey_observation_id),

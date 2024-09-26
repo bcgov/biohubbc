@@ -1,4 +1,5 @@
 import LoadingButton from '@mui/lab/LoadingButton';
+import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -34,7 +35,6 @@ export const ObservationSubcountCommentDialog = (props: IObservationSubcountComm
 
   const handleSave = () => {
     if (params) {
-      console.log(comment);
       // Update the row in the DataGrid
       params.api.setEditCellValue({ id: params.id, field: params.field, value: comment });
     }
@@ -43,7 +43,7 @@ export const ObservationSubcountCommentDialog = (props: IObservationSubcountComm
 
   return (
     <Dialog
-      maxWidth="md"
+      maxWidth="xl"
       open={props.open}
       onClose={observationsTableContext.closeCommentDialog}
       aria-labelledby="component-dialog-title"
@@ -54,15 +54,20 @@ export const ObservationSubcountCommentDialog = (props: IObservationSubcountComm
           fullWidth
           placeholder="Add a comment to the observation"
           value={comment}
-          rows={4}
+          sx={{ minWidth: '300px' }}
+          rows={5}
           multiline
           onChange={handleChange}
+          autoFocus
         />
       </DialogContent>
-      <DialogActions>
-        <LoadingButton onClick={handleSave} color="primary" variant="contained" autoFocus>
+      <DialogActions sx={{ pt: 0 }}>
+        <LoadingButton onClick={handleSave} color="primary" variant="contained">
           Save & close
         </LoadingButton>
+        <Button onClick={observationsTableContext.closeCommentDialog} color="primary" variant="outlined">
+          Cancel
+        </Button>
       </DialogActions>
     </Dialog>
   );
