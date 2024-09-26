@@ -234,17 +234,13 @@ export type IObservationsTableContext = {
    */
   setIsDisabled: React.Dispatch<React.SetStateAction<boolean>>;
   /**
-   * Opens the dialog for adding a comment to an observation.
-   */
-  openCommentDialog: (params: GridRenderEditCellParams) => void;
-  /**
-   * Closes the dialog for adding a comment to an observation
-   */
-  closeCommentDialog: () => void;
-  /**
    * The row Id of the observation being commented on
    */
   commentDialogParams: GridRenderEditCellParams | null;
+  /**
+   * Sets the row Id of the observation being commented on
+   */
+  setCommentDialogParams: React.Dispatch<React.SetStateAction<GridRenderEditCellParams | null>>;
 };
 
 export type IObservationsTableContextProviderProps = PropsWithChildren;
@@ -766,20 +762,6 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       rowSelectionModel.includes((row as IObservationTableRow).id)
     );
   }, [_muiDataGridApiRef, rowSelectionModel]);
-
-  /**
-   * Opens the dialog for adding a comment to a subcount
-   */
-  const openCommentDialog = (params: GridRenderEditCellParams) => {
-    setCommentDialogParams(params);
-  };
-
-  /**
-   * Closes the dialog for adding a comment to a subcount
-   */
-  const closeCommentDialog = () => {
-    setCommentDialogParams(null);
-  };
 
   /**
    * Renders a dialog that prompts the user to delete the given records.
@@ -1557,9 +1539,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       setEnvironmentColumns,
       isDisabled,
       setIsDisabled,
-      openCommentDialog,
-      closeCommentDialog,
-      commentDialogParams
+      commentDialogParams,
+      setCommentDialogParams
     }),
     [
       _muiDataGridApiRef,
@@ -1590,8 +1571,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       measurementColumns,
       environmentColumns,
       isDisabled,
-      openCommentDialog,
-      closeCommentDialog
+      commentDialogParams
     ]
   );
 

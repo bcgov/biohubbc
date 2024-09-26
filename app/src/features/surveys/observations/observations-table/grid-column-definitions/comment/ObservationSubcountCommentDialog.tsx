@@ -23,7 +23,7 @@ export const ObservationSubcountCommentDialog = (props: IObservationSubcountComm
 
   const params = observationsTableContext.commentDialogParams;
 
-  const [comment, setComment] = useState(params?.value);
+  const [comment, setComment] = useState(params?.value ?? '');
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setComment(event.currentTarget.value);
@@ -31,21 +31,21 @@ export const ObservationSubcountCommentDialog = (props: IObservationSubcountComm
 
   useEffect(() => {
     setComment(params?.value);
-  }, [params?.id]);
+  }, [params?.value]);
 
   const handleSave = () => {
     if (params) {
       // Update the row in the DataGrid
       params.api.setEditCellValue({ id: params.id, field: params.field, value: comment });
     }
-    observationsTableContext.closeCommentDialog();
+    observationsTableContext.setCommentDialogParams(null);
   };
 
   return (
     <Dialog
       maxWidth="xl"
       open={props.open}
-      onClose={observationsTableContext.closeCommentDialog}
+      onClose={() => observationsTableContext.setCommentDialogParams(null)}
       aria-labelledby="component-dialog-title"
       aria-describedby="component-dialog-description">
       <DialogTitle id="component-dialog-title">Add Comment</DialogTitle>
@@ -65,7 +65,10 @@ export const ObservationSubcountCommentDialog = (props: IObservationSubcountComm
         <LoadingButton onClick={handleSave} color="primary" variant="contained">
           Save & close
         </LoadingButton>
-        <Button onClick={observationsTableContext.closeCommentDialog} color="primary" variant="outlined">
+        <Button
+          onClick={() => observationsTableContext.setCommentDialogParams(null)}
+          color="primary"
+          variant="outlined">
           Cancel
         </Button>
       </DialogActions>

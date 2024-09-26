@@ -269,13 +269,13 @@ export const GenericCommentColDef = <T extends GridValidRowModel>(props: {
     align: 'center',
     renderEditCell: (params) => {
       return (
-        <IconButton
-          aria-label="observation-subcount-comment"
-          onClick={() => {
-            props.handleOpen(params);
-          }}>
-          <Tooltip title={params.row.value}>
-            <IconButton aria-label="observation-subcount-comment" disabled>
+        <Tooltip title={params.value} arrow>
+          <span>
+            <IconButton
+              aria-label="observation-subcount-comment"
+              onClick={() => {
+                props.handleOpen(params);
+              }}>
               {params.value ? (
                 // The key prop is necessary for the color to correctly change when a value is set
                 <Icon path={mdiCommentText} size={1} key="comment-view-id" color={appTheme.palette.primary.dark} />
@@ -288,8 +288,8 @@ export const GenericCommentColDef = <T extends GridValidRowModel>(props: {
                 />
               )}
             </IconButton>
-          </Tooltip>
-        </IconButton>
+          </span>
+        </Tooltip>
       );
     },
     renderCell: (params) => {

@@ -149,15 +149,18 @@ const ObservationsTableContainer = () => {
         field: 'comment',
         headerName: '',
         hasError: observationsTableContext.hasError,
-        handleOpen: (params: GridRenderEditCellParams) => observationsTableContext.openCommentDialog(params),
-        handleClose: observationsTableContext.closeCommentDialog
+        handleOpen: (params: GridRenderEditCellParams) => observationsTableContext.setCommentDialogParams(params),
+        handleClose: () => observationsTableContext.setCommentDialogParams(null)
       })
     ],
+    // observationsTableContext is listed as a missing dependency
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       observationSubcountSignOptions,
       observationsTableContext.environmentColumns,
       observationsTableContext.hasError,
       observationsTableContext.measurementColumns,
+      observationsTableContext.setCommentDialogParams,
       sampleMethodOptions,
       samplePeriodOptions,
       sampleSiteOptions
