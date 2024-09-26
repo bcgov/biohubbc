@@ -84,7 +84,7 @@ export const observationStandardColumnValidator = {
   TIME: { type: 'string' },
   LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE },
   LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE },
-  COMMENT: { type: 'string', aliases: CSV_COLUMN_ALIASES.COMMENT }
+  COMMENT: { type: 'string', aliases: CSV_COLUMN_ALIASES.COMMENT, optional: true }
 } satisfies IXLSXCSVValidator;
 
 export const getColumnCellValue = generateColumnCellGetterFromColumnValidator(observationStandardColumnValidator);
