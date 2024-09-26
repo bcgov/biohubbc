@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getDBConnection } from '../../../../database/db';
+import { getAPIUserDBConnection } from '../../../../database/db';
 import { StandardsService } from '../../../../services/standards-service';
 import { getLogger } from '../../../../utils/logger';
 
@@ -21,7 +21,6 @@ GET.apiDoc = {
       required: true
     }
   ],
-  security: [],
   responses: {
     200: {
       description: 'Species data standards response object.',
@@ -185,9 +184,7 @@ GET.apiDoc = {
  */
 export function getSpeciesStandards(): RequestHandler {
   return async (req, res) => {
-    // API user DB connection does not work, possible because user does not exist in Critterbase?
-    // const connection = getAPIUserDBConnection();
-    const connection = getDBConnection(req.keycloak_token);
+    const connection = getAPIUserDBConnection();
 
     try {
       const tsn = Number(req.params.tsn);

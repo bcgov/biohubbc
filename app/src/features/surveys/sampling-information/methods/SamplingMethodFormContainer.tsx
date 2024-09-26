@@ -130,7 +130,7 @@ export const SamplingMethodFormContainer = () => {
 
       <Box component="fieldset">
         <form>
-          <Typography component="legend">Add Sampling Methods</Typography>
+          <Typography component="legend">Add Sampling Techniques</Typography>
           <Typography
             variant="body1"
             color="textSecondary"
@@ -138,7 +138,7 @@ export const SamplingMethodFormContainer = () => {
               mb: 3,
               maxWidth: '92ch'
             }}>
-            Methods added here will be applied to ALL sampling locations. These can be modified later if required.
+            Techniques added here will be applied to ALL sampling locations. These can be modified later if required.
           </Typography>
           {errors.sample_methods && !Array.isArray(errors.sample_methods) && (
             <Alert
@@ -146,7 +146,7 @@ export const SamplingMethodFormContainer = () => {
                 mb: 2
               }}
               severity="error">
-              <AlertTitle>Missing sampling method</AlertTitle>
+              <AlertTitle>Missing sampling technique</AlertTitle>
               {errors.sample_methods}
             </Alert>
           )}
@@ -249,7 +249,7 @@ export const SamplingMethodFormContainer = () => {
               onClick={() => {
                 setIsCreateModalOpen(true);
               }}>
-              Add Method
+              Add Technique
             </Button>
           </Stack>
         </form>

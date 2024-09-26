@@ -3,7 +3,7 @@ import Box, { BoxProps } from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
 interface INoDataOverlayProps extends BoxProps {
-  title: string;
+  title?: string;
   subtitle?: string;
   icon?: string;
 }

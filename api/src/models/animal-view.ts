@@ -35,3 +35,8 @@ export interface IAnimalAdvancedFilters {
    */
   survey_ids?: number[];
 }
+
+export interface ISex {
+  qualitative_option_id: string;
+  label: string;
+}

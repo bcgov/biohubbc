@@ -132,7 +132,7 @@ export const SurveySpatialTelemetry = () => {
       </Box>
 
       {/* Display data table with telemetry details */}
-      <Box p={2} position="relative">
+      <Box height={{ xs: 300, md: 500 }} p={2} position="relative">
         <SurveySpatialTelemetryTable isLoading={isLoading} />
       </Box>
     </>

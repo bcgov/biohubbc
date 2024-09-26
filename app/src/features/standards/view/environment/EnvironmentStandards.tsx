@@ -2,6 +2,8 @@ import Box from '@mui/material/Box';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { debounce } from 'lodash-es';
@@ -46,18 +48,31 @@ export const EnvironmentStandards = () => {
         }}
       />
       <Box my={2}>
-        {environmentsDataLoader.data ? (
+        <LoadingGuard
+          isLoading={environmentsDataLoader.isLoading || !environmentsDataLoader.isReady}
+          isLoadingFallback={
+            <Stack gap={2}>
+              <Skeleton variant="rectangular" height="56px" sx={{ borderRadius: '5px' }} />
+              <Skeleton variant="rectangular" height="56px" sx={{ borderRadius: '5px' }} />
+              <Skeleton variant="rectangular" height="56px" sx={{ borderRadius: '5px' }} />
+              <Skeleton variant="rectangular" height="56px" sx={{ borderRadius: '5px' }} />
+              <Skeleton variant="rectangular" height="56px" sx={{ borderRadius: '5px' }} />
+            </Stack>
+          }
+          isLoadingFallbackDelay={100}
+          hasNoData={
+            !(environmentsDataLoader.data?.qualitative.length || environmentsDataLoader.data?.quantitative.length) &&
+            !environmentsDataLoader.data &&
+            environmentsDataLoader.isReady
+          }
+          hasNoDataFallback={
+            <Box minHeight="200px" display="flex" alignItems="center" justifyContent="center">
+              <Typography color="textSecondary">No environment standards found</Typography>
+            </Box>
+          }
+          hasNoDataFallbackDelay={100}>
           <EnvironmentStandardsResults data={environmentsDataLoader.data} />
-        ) : (
-          <Stack gap={1}>
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-          </Stack>
-        )}
+        </LoadingGuard>
       </Box>
     </>
   );

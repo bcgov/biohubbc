@@ -97,26 +97,24 @@ export const ConfigureMeasurementColumns = (props: IConfigureMeasurementColumnsP
                 label={measurement.measurement_name}
                 subtitle={measurement.measurement_desc ?? ''}
                 colour={grey[100]}
-                children={
-                  'options' in measurement ? (
-                    <Stack gap={1} my={2}>
-                      {measurement.options.map((option) => (
-                        <AccordionStandardCard
-                          key={option.option_label}
-                          label={option.option_label}
-                          subtitle={option.option_desc}
-                          colour={grey[200]}
-                        />
-                      ))}
-                    </Stack>
-                  ) : undefined
-                }
                 ornament={
                   'unit' in measurement && measurement.unit ? (
                     <ColouredRectangleChip colour={blueGrey} label={measurement.unit} />
                   ) : undefined
-                }
-              />
+                }>
+                {'options' in measurement && (
+                  <Stack gap={1} my={2}>
+                    {measurement.options.map((option) => (
+                      <AccordionStandardCard
+                        key={option.option_label}
+                        label={option.option_label}
+                        subtitle={option.option_desc}
+                        colour={grey[200]}
+                      />
+                    ))}
+                  </Stack>
+                )}
+              </AccordionStandardCard>
               <Box ml={1} mt={1}>
                 <IconButton
                   aria-label="Remove measurement column"

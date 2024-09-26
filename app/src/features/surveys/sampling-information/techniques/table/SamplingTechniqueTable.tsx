@@ -274,6 +274,8 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
         <StyledDataGrid
           rows={rows}
           columns={columns}
+          autoHeight
+          getRowHeight={() => 'auto'}
           disableRowSelectionOnClick
           disableColumnMenu
           checkboxSelection

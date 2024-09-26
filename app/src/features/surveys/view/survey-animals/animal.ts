@@ -18,13 +18,6 @@ export enum ANIMAL_FORM_MODE {
   EDIT = 'edit'
 }
 
-export enum AnimalSex {
-  MALE = 'Male',
-  FEMALE = 'Female',
-  UNKNOWN = 'Unknown',
-  HERM = 'Hermaphroditic'
-}
-
 export enum AnimalRelationship {
   CHILD = 'children',
   PARENT = 'parents'
@@ -94,7 +87,7 @@ export const CreateCritterSchema = yup.object({
   itis_tsn: yup.number().required('Required'),
   animal_id: yup.string().required('Required'),
   wlh_id: yup.string().optional().nullable(),
-  sex: yup.mixed<AnimalSex>().oneOf(Object.values(AnimalSex)).required('Required'),
+  sex_qualitative_option_id: yup.string().uuid().nullable(),
   critter_comment: yup.string().optional().nullable()
 });
 
