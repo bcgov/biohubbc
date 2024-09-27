@@ -71,15 +71,19 @@ export const SurveyBadDeploymentListItem = (props: ISurveyBadDeploymentListItemP
                   component="div"
                   title="Device ID"
                   variant="body2"
+                  color="textSecondary"
                   sx={{
                     flex: '1 1 auto',
                     fontWeight: 700,
                     overflow: 'hidden',
                     textOverflow: 'ellipsis'
                   }}>
-                  {data.name}
+                  Unknown Deployment
                 </Typography>
               </Stack>
+              <Typography variant="body2" color="textSecondary" title="Animal">
+                Something went wrong...
+              </Typography>
             </Box>
           </Stack>
         </AccordionSummary>
@@ -95,14 +99,10 @@ export const SurveyBadDeploymentListItem = (props: ISurveyBadDeploymentListItemP
             }
           }}>
           <Box width="100%" display="flex" justifyContent="space-between" p={0}>
-            <Box>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                SIMS Deployment ID: {data.data.sims_deployment_id as string}
-              </Typography>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                BCTW Deployment ID: {data.data.bctw_deployment_id as string}
-              </Typography>
-            </Box>
+            <Typography component="dt" variant="subtitle2" color="error">
+              Deployment&nbsp;{data.data.bctw_deployment_id as string}&nbsp;does not exist. You can remove this
+              deployment from your Survey.
+            </Typography>
           </Box>
         </List>
       </AccordionDetails>
