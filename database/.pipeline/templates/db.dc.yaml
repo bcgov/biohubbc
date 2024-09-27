@@ -47,7 +47,7 @@ parameters:
     value: 'biohubbc'
   - name: PGDATA
     description: Path to PostgreSQL data directory
-    value: '/var/lib/pgsql/data/userdata'
+    value: '/var/lib/postgresql/data/17'
     required: false
   - name: TZ
     description: Database timezone
@@ -197,6 +197,8 @@ objects:
               securityContext: {}
               terminationMessagePath: '/dev/termination-log'
               volumeMounts:
+                - name: '${DATABASE_SERVICE_NAME}-data'
+                  mountPath: '/var/lib/postgresql/data'
                 - name: '${DATABASE_SERVICE_NAME}-data'
                   mountPath: '/var/lib/pgsql/data'
                 # - name: '${DATABASE_SERVICE_NAME}-run'

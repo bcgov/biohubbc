@@ -22,4 +22,7 @@ RUN npm ci --include=dev
 USER 1001
 
 # run the database migrations and seeding
-CMD [ "npm", "run", "setup" ]
+# CMD [ "npm", "run", "setup" ]
+
+# TODO - Temporarily disable the dockerfile from running the setup script
+CMD ["echo", "Done"]
