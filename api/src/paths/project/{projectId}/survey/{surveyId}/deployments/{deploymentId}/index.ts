@@ -4,6 +4,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../errors/http-error';
 import { getDeploymentSchema } from '../../../../../../../openapi/schemas/deployment';
 import { warningSchema } from '../../../../../../../openapi/schemas/warning';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
@@ -54,7 +55,7 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'path',
-      name: 'surveyId',
+      name: 'projectId',
       schema: {
         type: 'integer',
         minimum: 1
@@ -63,7 +64,7 @@ GET.apiDoc = {
     },
     {
       in: 'path',
-      name: 'deploymentId',
+      name: 'surveyId',
       schema: {
         type: 'integer',
         minimum: 1
@@ -148,12 +149,7 @@ export function getDeploymentById(): RequestHandler {
       // Return early if there are no deployments
       if (!surveyDeployment) {
         // Return 400 if the provided deployment ID does not exist
-        return res.status(400).send({
-          name: 'Deployment ID Invalid',
-          status: 400,
-          message: 'Deployment ID does not exist.',
-          errors: [{ sims_deployment_id: deploymentId }]
-        });
+        throw new HTTP400('Deployment ID does not exist.', [{ sims_deployment_id: deploymentId }]);
       }
 
       // Fetch additional deployment details from BCTW service
