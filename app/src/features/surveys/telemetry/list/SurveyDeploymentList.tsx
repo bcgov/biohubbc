@@ -92,6 +92,13 @@ export const SurveyDeploymentList = () => {
   };
 
   /**
+   * Callback for deleting a bad deployment
+   */
+  const handleDeleteBadDeployment = async (deploymentId: number) => {
+    await biohubApi.survey.deleteDeployment(surveyContext.projectId, surveyContext.surveyId, Number(deploymentId));
+  };
+
+  /**
    * Callback for when the delete deployment action is confirmed.
    */
   const handleDeleteDeployment = async () => {
@@ -298,7 +305,12 @@ export const SurveyDeploymentList = () => {
                     background: grey[100]
                   }}>
                   {badDeployments.map((badDeployment) => {
-                    return <SurveyBadDeploymentListItem data={badDeployment} />;
+                    return (
+                      <SurveyBadDeploymentListItem
+                        data={badDeployment}
+                        handleDelete={(deploymentId: number) => handleDeleteBadDeployment(deploymentId)}
+                      />
+                    );
                   })}
                   {deployments.map((deployment) => {
                     const animal = surveyContext.critterDataLoader.data?.find(

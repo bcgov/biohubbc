@@ -1,4 +1,4 @@
-import { mdiChevronDown } from '@mdi/js';
+import { mdiChevronDown, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -6,6 +6,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import grey from '@mui/material/colors/grey';
+import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -13,6 +14,7 @@ import { WarningSchema } from 'interfaces/useBioHubApi.interface';
 
 export interface ISurveyBadDeploymentListItemProps {
   data: WarningSchema;
+  handleDelete: (deploymentId: number) => void;
 }
 
 /**
@@ -22,7 +24,7 @@ export interface ISurveyBadDeploymentListItemProps {
  * @return {*}
  */
 export const SurveyBadDeploymentListItem = (props: ISurveyBadDeploymentListItemProps) => {
-  const { data } = props;
+  const { data, handleDelete } = props;
 
   return (
     <Accordion
@@ -87,6 +89,13 @@ export const SurveyBadDeploymentListItem = (props: ISurveyBadDeploymentListItemP
             </Box>
           </Stack>
         </AccordionSummary>
+        <IconButton
+          sx={{ position: 'absolute', right: '24px' }}
+          edge="end"
+          onClick={() => handleDelete(data.data.deployment_id as number)}
+          aria-label="deployment-settings">
+          <Icon path={mdiTrashCanOutline} size={1}></Icon>
+        </IconButton>
       </Box>
       <AccordionDetails sx={{ mt: 0, pt: 0 }}>
         <List
