@@ -61,9 +61,9 @@ const phases = {
     tz: config.timezone.api,
     branch: branch,
     cpuRequest: '50m',
-    cpuLimit: '1000m',
+    cpuLimit: '800m',
     memoryRequest: '100Mi',
-    memoryLimit: '3Gi'
+    memoryLimit: '1500Mi'
   },
   dev: {
     namespace: 'af2668-dev',

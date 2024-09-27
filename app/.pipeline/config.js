@@ -62,9 +62,9 @@ const phases = {
     tag: tag,
     branch: branch,
     cpuRequest: '50m',
-    cpuLimit: '2000m',
+    cpuLimit: '1200m',
     memoryRequest: '100Mi',
-    memoryLimit: '6Gi'
+    memoryLimit: '4500Mi'
   },
   dev: {
     namespace: 'af2668-dev',

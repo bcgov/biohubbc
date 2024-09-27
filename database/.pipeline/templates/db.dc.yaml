@@ -15,7 +15,12 @@ parameters:
   - description: The OpenShift ImageStream name.
     displayName: IMAGE_STREAM_NAME
     name: IMAGE_STREAM_NAME
-    value: 'postgis-postgres'
+    value: 'crunchy-postgres-gis'
+  - description: Version of PostgreSQL image to be used (9.2, 9.4, 9.5 or latest).
+    displayName: Version of PostgreSQL Image
+    name: IMAGE_STREAM_VERSION
+    required: true
+    value: 'ubi8-14.2-3.1-1'
   - description: The OpenShift Namespace where the ImageStream resides.
     displayName: Namespace
     name: IMAGE_STREAM_NAMESPACE
@@ -61,11 +66,6 @@ parameters:
     name: VOLUME_CAPACITY
     required: true
     value: '500Mi'
-  - description: Version of PostgreSQL image to be used (9.2, 9.4, 9.5 or latest).
-    displayName: Version of PostgreSQL Image
-    name: IMAGE_STREAM_VERSION
-    required: true
-    value: '12-31'
   - description: Indicator to enable pgcrypto extension (provided out-of-the-box with PostgreSQL).
     displayName: Flag to enable pgcrypto PostgreSQL extension.
     name: PGCRYPTO_EXTENSION
@@ -165,30 +165,44 @@ objects:
           containers:
             - name: postgresql
               env:
-                - name: POSTGRESQL_USER
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-user
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRESQL_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-user-password
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRESQL_ADMIN_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-admin-password
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRESQL_DATABASE
+                - name: MODE
+                  value: 'postgres'
+                - name: PG_MODE
+                  value: 'primary'
+                - name: PGDATA_PATH_OVERRIDE
+                  value: 'userdata' # This is the value used by the existing prod PVC (PVC: ./userdata/<db_files>)
+                - name: PG_DATABASE
                   valueFrom:
                     secretKeyRef:
                       key: database-name
                       name: '${DATABASE_SERVICE_NAME}'
-                - name: PGCRYPTO_EXTENSION
-                  value: 'N'
-                - name: POSTGIS_EXTENSION
-                  value: 'N'
+                - name: PG_PRIMARY_PORT
+                  value: '5432'
+                - name: PG_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user
+                      name: '${DATABASE_SERVICE_NAME}'
+                - name: PG_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user-password
+                      name: '${DATABASE_SERVICE_NAME}'
+                - name: PG_PRIMARY_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user
+                      name: '${DATABASE_SERVICE_NAME}'
+                - name: PG_PRIMARY_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user-password
+                      name: '${DATABASE_SERVICE_NAME}'
+                - name: PG_ROOT_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-admin-password
+                      name: '${DATABASE_SERVICE_NAME}'
                 - name: PGOPTIONS
                   value: '-c maintenance_work_mem=128MB'
                 - name: PGTZ
@@ -209,7 +223,7 @@ objects:
                     - '/bin/sh'
                     - '-i'
                     - '-c'
-                    - psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d $POSTGRESQL_DATABASE -c 'SELECT 1'
+                    - PGPASSWORD="$PG_ROOT_PASSWORD" psql -h 127.0.0.1 -U postgres -q -d $PG_DATABASE -c 'SELECT 1'
                 initialDelaySeconds: 5
                 timeoutSeconds: 1
               resources:
@@ -224,7 +238,7 @@ objects:
                 privileged: false
               terminationMessagePath: '/dev/termination-log'
               volumeMounts:
-                - mountPath: '/var/lib/pgsql/data'
+                - mountPath: '/pgdata'
                   name: '${DATABASE_SERVICE_NAME}-data'
                 - mountPath: '/var/run/postgresql'
                   name: '${DATABASE_SERVICE_NAME}-run'

@@ -2,6 +2,8 @@ kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
   name: postgresql null
+annotations:
+  iconClass: iconpostgresql
 parameters:
   - name: NAME
     displayName: Name
@@ -13,6 +15,12 @@ parameters:
     required: true
   - name: TAG_NAME
     required: true
+  - name: POSTGRES_IMAGE_NAME
+    value: crunchy-postgres-gis
+    description: The name of the image to use as the base image (must be imported into the af2668-tools namespace)
+  - name: POSTGRES_IMAGE_TAG
+    value: ubi8-14.2-3.1-1
+    description: The tag of the image to use as the base image
 objects:
   - kind: ImageStream
     apiVersion: image.openshift.io/v1
@@ -29,7 +37,7 @@ objects:
           annotations:
           from:
             kind: ImageStreamTag
-            name: postgis-postgres:12-31
+            name: '${POSTGRES_IMAGE_NAME}:${POSTGRES_IMAGE_TAG}'
             namespace: af2668-tools
           generation: 1
           importPolicy: {}

@@ -110,28 +110,29 @@ Depending on the changes being made by the migration, different aspects of the d
 
 Important things to consider when making any migrations (not all will apply every time):
 
-1. ** Drop/create the views**
-   1. _The views need to be dropped and/or created for any model changes (if you are only changing a constraint, but not altering the model, then the views shouldn't need to be touched (but it also won't hurt anything to re-create them either))_
+1. **Drop/create the views**
+   - The views need to be dropped and/or created for any model changes (if you are only changing a constraint, but not altering the model, then the views shouldn't need to be touched (but it also won't hurt anything to re-create them either))
 2. **Update table/column comments**
-   1. _Ensure comments are concise, but do accurately describe the table or column sufficiently, especially if the column contains un-obvious business logic._
+   - Ensure comments are concise, but do accurately describe the table or column sufficiently, especially if the column contains un-obvious business logic.
 3. **Update/add primary key constraint**
-   1. _Table primary key - Should be a surrogate key (ie: just an int that starts at 1, and increments by 1 for each row)_
+   - Table primary key
+   - Should be a surrogate key (ie: just an int that starts at 1, and increments by 1 for each row)
 4. **Update/add unique key constraint(s)**
-   1. _To ensure some set of columns must be unique (acts as a key)_
+   - To ensure some set of columns must be unique (acts as a key)
 5. **Update/add unique end-date key constraint(s)**
-   1. _A special version of the unique key constraint when dealing with rows that have a `record_end_date` type column and uses soft deletes_
+   - A special version of the unique key constraint when dealing with rows that have a `record_end_date` type column and uses soft deletes
 6. **Update/add foreign key constraint(s)**
-   1. _To ensure a child table column references a parent table column_
+   - To ensure a child table column references a parent table column
 7. **Update/add index(es)**
-   1. _For optimizing query performance_
+   - For optimizing query performance
 8. **Add standard audit columns (create/update user, create/update date, revision count)**
-   1. _These 5 standard columns should be added to every table._
+   - These 5 standard columns should be added to every table.
 9. **Update/add audit/journal triggers**
-   1. _Audit and journal functions exist to read/write the 5 audit columns above. Every table needs to register 2 triggers (1 to call the audit function, and 1 to call the journal function) so that on table row insert/update/delete the audit/journal functions are executed._
+   - Audit and journal functions exist to read/write the 5 audit columns above. Every table needs to register 2 triggers (1 to call the audit function, and 1 to call the journal function) so that on table row insert/update/delete the audit/journal functions are executed.
 10. **Update functions (ex: api_delete_project, api_delete_survey)**
-    1. _Double check any existing functions that may need to be updated as a result of model changes._
+    - Double check any existing functions that may need to be updated as a result of model changes.
 11. **Update seeds**
-    1. Double check any existing seed files that may need to be updated as a result of model changes.
+    - Double check any existing seed files that may need to be updated as a result of model changes.
 
 ## Naming conventions
 
