@@ -21,6 +21,11 @@ export interface ISamplingDataFromRow {
   methods: { methodTechniqueId: number; samplePeriodId: number }[];
 }
 
+interface IObservationDateTime {
+  date: string | null;
+  time: string | null;
+}
+
 /**
  * Validates the incoming sampling data against the survey sampling data.
  * Ensures that all sampling sites, methods, and periods exist within the survey.
@@ -87,21 +92,34 @@ export function buildSamplingDataToValidate(worksheetRowObjects: Record<string, 
 
   worksheetRowObjects.forEach((row) => {
     // Convert cell object to string
-    const siteName = getColumnCellValue(row, 'SAMPLING_SITE').cell as string;
-    const methodName = getColumnCellValue(row, 'SAMPLING_METHOD').cell as string;
-    const period = getColumnCellValue(row, 'SAMPLING_PERIOD').cell as string;
+    const siteName = getColumnCellValue(row, 'SAMPLING_SITE').cell as string | null;
+    const methodName = getColumnCellValue(row, 'SAMPLING_METHOD').cell as string | null;
+    const period = getColumnCellValue(row, 'SAMPLING_PERIOD').cell as string | null;
+    const observationDate = getColumnCellValue(row, 'DATE').cell as string | null;
+    const observationTime = getColumnCellValue(row, 'TIME').cell as string | null;
 
-    // Split the sampling period string into separate start date and end date
-    const splitPeriod = period.split('-');
-    const samplingPeriodObject: ISamplingPeriodRowData = {
-      startDate: dayjs(splitPeriod[0]).format('YYYY-MM-DD'),
-      endDate: dayjs(splitPeriod[1]).format('YYYY-MM-DD'),
-      // If the value includes a colon, assume time is present
-      startTime: splitPeriod[1].includes(':') ? dayjs(splitPeriod[0]).format('HH:mm:ss') : null,
-      endTime: splitPeriod[1].includes(':') ? dayjs(splitPeriod[1]).format('HH:mm:ss') : null
+    const observationData: IObservationDateTime = {
+      date: dayjs(observationDate).format('YYYY-MM-DD'),
+      time: observationTime ? dayjs(observationTime).format('HH:mm:ss') : null
     };
 
-    if (!siteName || !methodName || !period) return;
+    // If there is no sampling information for the row, return early
+    if (!siteName || !methodName || (!period && (!observationDate || !observationTime))) {
+      return;
+    }
+
+    // Split the sampling period string into separate start date and end date
+    let samplingPeriodObject = null: ISamplingPeriodRowData;
+    if (period) {
+      const splitPeriod = period.split('-');
+      samplingPeriodObject = {
+        startDate: dayjs(splitPeriod[0]).format('YYYY-MM-DD'),
+        endDate: dayjs(splitPeriod[1]).format('YYYY-MM-DD'),
+        // If the value includes a colon, assume time is present
+        startTime: splitPeriod[1].includes(':') ? dayjs(splitPeriod[0]).format('HH:mm:ss') : null,
+        endTime: splitPeriod[1].includes(':') ? dayjs(splitPeriod[1]).format('HH:mm:ss') : null
+      };
+    }
 
     // Ensure site exists in the map
     if (!samplingDataMap.has(siteName)) {
