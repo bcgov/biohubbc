@@ -108,9 +108,9 @@ export const SurveyBadDeploymentListItem = (props: ISurveyBadDeploymentListItemP
             }
           }}>
           <Box width="100%" display="flex" justifyContent="space-between" p={0}>
-            <Typography component="dt" variant="subtitle2" color="error">
+            <Typography component="dt" variant="subtitle2" color='textSecondary'>
               Deployment&nbsp;{data.data.bctw_deployment_id as string}&nbsp;does not exist. You can remove this
-              deployment from your Survey.
+              deployment from the Survey.
             </Typography>
           </Box>
         </List>
