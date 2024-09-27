@@ -48,7 +48,7 @@
  create trigger journal_template after insert or update or delete on biohub.template for each row execute procedure tr_journal_trigger();
  create trigger journal_survey_summary_submission_message after insert or update or delete on biohub.survey_summary_submission_message for each row execute procedure tr_journal_trigger();
  create trigger journal_system_user_role after insert or update or delete on biohub.system_user_role for each row execute procedure tr_journal_trigger();
- create trigger journal_system_user after insert or update or delete on biohub.system_user for each row execute procedure tr_journal_trigger();
+ create trigger journal_system_user after insert or update or delete on biohub."system_user" for each row execute procedure tr_journal_trigger();
  create trigger journal_template_methodology_species after insert or update or delete on biohub.template_methodology_species for each row execute procedure tr_journal_trigger();
  create trigger journal_user_identity_source after insert or update or delete on biohub.user_identity_source for each row execute procedure tr_journal_trigger();
  create trigger journal_system_role after insert or update or delete on biohub.system_role for each row execute procedure tr_journal_trigger();
