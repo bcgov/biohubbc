@@ -22,7 +22,7 @@ ENV PATH ${HOME}/node_modules/.bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/us
 COPY . ./
 
 # Update log directory file permissions, prevents permission errors for linux environments
-RUN chmod -R a+rw data/logs/*
+RUN mkdir -p data/logs && chmod -R a+rw data/logs
 
 VOLUME ${HOME}
 

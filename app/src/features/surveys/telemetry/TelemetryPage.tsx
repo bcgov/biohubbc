@@ -23,6 +23,9 @@ export const TelemetryPage = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  const deploymentIds =
+    deploymentsDataLoader.data?.deployments.map((deployment) => deployment.bctw_deployment_id) ?? [];
+
   return (
     <Stack
       position="relative"
@@ -46,8 +49,7 @@ export const TelemetryPage = () => {
         </Box>
         {/* Telemetry Component */}
         <Box flex="1 1 auto" position="relative">
-          <TelemetryTableContextProvider
-            deployment_ids={deploymentsDataLoader.data?.map((deployment) => deployment.bctw_deployment_id) ?? []}>
+          <TelemetryTableContextProvider deployment_ids={deploymentIds}>
             <TelemetryTableContainer />
           </TelemetryTableContextProvider>
         </Box>

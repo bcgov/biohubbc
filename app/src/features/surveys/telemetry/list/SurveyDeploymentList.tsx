@@ -17,6 +17,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
+import { SurveyBadDeploymentListItem } from 'features/surveys/telemetry/list/SurveyBadDeploymentListItem';
 import { SurveyDeploymentListItem } from 'features/surveys/telemetry/list/SurveyDeploymentListItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
@@ -45,8 +46,12 @@ export const SurveyDeploymentList = () => {
   const deviceMakesDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('device_make'));
 
   const deploymentsDataLoader = telemetryDataContext.deploymentsDataLoader;
-  const deployments = deploymentsDataLoader.data ?? [];
+
+  const deployments = deploymentsDataLoader.data?.deployments ?? [];
+  const badDeployments = deploymentsDataLoader.data?.bad_deployments ?? [];
+
   const deploymentCount = deployments?.length ?? 0;
+  const badDeploymentCount = badDeployments?.length ?? 0;
 
   useEffect(() => {
     frequencyUnitDataLoader.load();
@@ -228,7 +233,7 @@ export const SurveyDeploymentList = () => {
               isLoading={deploymentsDataLoader.isLoading}
               isLoadingFallback={<SkeletonList />}
               isLoadingFallbackDelay={100}
-              hasNoData={!deploymentCount}
+              hasNoData={!deploymentCount && !badDeploymentCount}
               hasNoDataFallback={
                 <Stack
                   sx={{
@@ -292,6 +297,9 @@ export const SurveyDeploymentList = () => {
                   sx={{
                     background: grey[100]
                   }}>
+                  {badDeployments.map((badDeployment) => {
+                    return <SurveyBadDeploymentListItem data={badDeployment} />;
+                  })}
                   {deployments.map((deployment) => {
                     const animal = surveyContext.critterDataLoader.data?.find(
                       (animal) => animal.critterbase_critter_id === deployment.critterbase_critter_id

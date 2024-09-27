@@ -8,7 +8,6 @@ import {
   IFindSurveysResponse,
   SurveyBasicFieldsObject
 } from 'interfaces/useSurveyApi.interface';
-import { IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { ApiPaginationResponseParams } from 'types/misc';
 import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
@@ -117,25 +116,30 @@ describe('useSurveyApi', () => {
 
   describe('getDeploymentsInSurvey', () => {
     it('should get one deployment', async () => {
-      const response: IAnimalDeployment = {
-        assignment_id: v4(),
-        collar_id: v4(),
-        critterbase_critter_id: v4(),
-        critter_id: 123,
-        critterbase_start_capture_id: '',
-        critterbase_end_capture_id: '',
-        critterbase_end_mortality_id: '',
-        attachment_start_date: '',
-        attachment_start_time: '',
-        attachment_end_date: '',
-        attachment_end_time: '',
-        deployment_id: 123,
-        bctw_deployment_id: v4(),
-        device_id: 123,
-        device_make: 22,
-        device_model: 'a',
-        frequency: 1,
-        frequency_unit: 33
+      const response = {
+        deployments: [
+          {
+            assignment_id: v4(),
+            collar_id: v4(),
+            critterbase_critter_id: v4(),
+            critter_id: 123,
+            critterbase_start_capture_id: '',
+            critterbase_end_capture_id: '',
+            critterbase_end_mortality_id: '',
+            attachment_start_date: '',
+            attachment_start_time: '',
+            attachment_end_date: '',
+            attachment_end_time: '',
+            deployment_id: 123,
+            bctw_deployment_id: v4(),
+            device_id: 123,
+            device_make: 22,
+            device_model: 'a',
+            frequency: 1,
+            frequency_unit: 33
+          }
+        ],
+        bad_deployments: []
       };
 
       mock.onGet(`/api/project/${projectId}/survey/${surveyId}/deployments`).reply(200, [response]);
@@ -143,8 +147,8 @@ describe('useSurveyApi', () => {
       const result = await useSurveyApi(axios).getDeploymentsInSurvey(projectId, surveyId);
 
       expect(Array.isArray(result)).toBe(true);
-      expect(result.length).toBe(1);
-      expect(result[0].device_id).toBe(123);
+      expect(result.deployments.length).toBe(1);
+      expect(result.deployments[0].device_id).toBe(123);
     });
   });
 

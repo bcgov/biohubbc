@@ -4,8 +4,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP409 } from '../../../../../../../errors/http-error';
 import { getDeploymentSchema } from '../../../../../../../openapi/schemas/deployment';
+import { warningSchema } from '../../../../../../../openapi/schemas/warning';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { BctwDeploymentService } from '../../../../../../../services/bctw-service/bctw-deployment-service';
 import { BctwDeviceService } from '../../../../../../../services/bctw-service/bctw-device-service';
@@ -87,7 +87,19 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            oneOf: [getDeploymentSchema, { type: 'null' }]
+            type: 'object',
+            required: ['deployment', 'bad_deployment'],
+            additionalProperties: false,
+            properties: {
+              deployment: {
+                ...getDeploymentSchema,
+                nullable: true
+              },
+              bad_deployment: {
+                ...warningSchema,
+                nullable: true
+              }
+            }
           }
         }
       }
@@ -135,8 +147,13 @@ export function getDeploymentById(): RequestHandler {
 
       // Return early if there are no deployments
       if (!surveyDeployment) {
-        // TODO: 400 error instead?
-        return res.status(200).send();
+        // Return 400 if the provided deployment ID does not exist
+        return res.status(400).send({
+          name: 'Deployment ID Invalid',
+          status: 400,
+          message: 'Deployment ID does not exist.',
+          errors: [{ sims_deployment_id: deploymentId }]
+        });
       }
 
       // Fetch additional deployment details from BCTW service
@@ -150,19 +167,45 @@ export function getDeploymentById(): RequestHandler {
       );
 
       if (matchingBctwDeployments.length > 1) {
-        throw new HTTP409('Multiple active deployments found for the same deployment ID', [
-          'This is an issue in the BC Telemetry Warehouse (BCTW) data. There should only be one active deployment record for a given deployment ID.',
-          `SIMS deployment ID: ${surveyDeployment.deployment_id}`,
-          `BCTW deployment ID: ${surveyDeployment.bctw_deployment_id}`
-        ]);
+        defaultLog.warn({
+          label: 'getDeploymentById',
+          message: 'Multiple active deployments found for the same deployment ID, when only one should exist.',
+          sims_deployment_id: surveyDeployment.deployment_id,
+          bctw_deployment_id: surveyDeployment.bctw_deployment_id
+        });
+
+        const badDeployment = {
+          name: 'BCTW Data Error',
+          message: 'Multiple active deployments found for the same deployment ID, when only one should exist.',
+          data: {
+            sims_deployment_id: surveyDeployment.deployment_id,
+            bctw_deployment_id: surveyDeployment.bctw_deployment_id
+          }
+        };
+
+        // Don't continue processing this deployment
+        return res.status(200).json({ deployment: null, bad_deployment: badDeployment });
       }
 
       if (matchingBctwDeployments.length === 0) {
-        throw new HTTP409('No active deployments found for deployment ID', [
-          'There should be no deployments recorded in SIMS that have no matching deployment record in BCTW.',
-          `SIMS Deployment ID: ${surveyDeployment.deployment_id}`,
-          `BCTW Deployment ID: ${surveyDeployment.bctw_deployment_id}`
-        ]);
+        defaultLog.warn({
+          label: 'getDeploymentById',
+          message: 'No active deployments found for deployment ID, when one should exist.',
+          sims_deployment_id: surveyDeployment.deployment_id,
+          bctw_deployment_id: surveyDeployment.bctw_deployment_id
+        });
+
+        const badDeployment = {
+          name: 'BCTW Data Error',
+          message: 'No active deployments found for deployment ID, when one should exist.',
+          data: {
+            sims_deployment_id: surveyDeployment.deployment_id,
+            bctw_deployment_id: surveyDeployment.bctw_deployment_id
+          }
+        };
+
+        // Don't continue processing this deployment
+        return res.status(200).json({ deployment: null, bad_deployment: badDeployment });
       }
 
       const surveyDeploymentWithBctwData = {
@@ -196,7 +239,7 @@ export function getDeploymentById(): RequestHandler {
         critterbase_end_mortality_id: surveyDeployment.critterbase_end_mortality_id
       };
 
-      return res.status(200).json(surveyDeploymentWithBctwData);
+      return res.status(200).json({ deployment: surveyDeploymentWithBctwData, bad_deployment: null });
     } catch (error) {
       defaultLog.error({ label: 'getDeploymentById', message: 'error', error });
       await connection.rollback();
