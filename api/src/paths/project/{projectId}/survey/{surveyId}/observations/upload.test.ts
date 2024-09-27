@@ -36,64 +36,6 @@ describe('uploadMedia', () => {
     body: {}
   } as any;
 
-  it('should throw an error when files are missing', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = upload.uploadMedia();
-
-      await result({ ...mockReq, files: [] }, null as unknown as any, null as unknown as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing upload data');
-    }
-  });
-
-  it('should throw an error when file format incorrect', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    try {
-      const result = upload.uploadMedia();
-
-      await result(
-        { ...mockReq, files: [{ originalname: 'file.txt' }] },
-        null as unknown as any,
-        null as unknown as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Invalid file type, expected a CSV file.');
-    }
-  });
-
-  it('should throw an error when file has malicious content', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(false);
-
-    try {
-      const result = upload.uploadMedia();
-
-      await result(mockReq, null as unknown as any, null as unknown as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Malicious content detected, upload cancelled');
-    }
-  });
-
   it('should throw an error if failure occurs', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -101,8 +43,6 @@ describe('uploadMedia', () => {
         return 20;
       }
     });
-
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
 
     const expectedError = new Error('cannot process request');
     sinon.stub(ObservationService.prototype, 'insertSurveyObservationSubmission').rejects(expectedError);
@@ -125,7 +65,6 @@ describe('uploadMedia', () => {
       }
     });
 
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(file_utils, 'uploadFileToS3').resolves();
 
     const expectedResponse = { submissionId: 1 };

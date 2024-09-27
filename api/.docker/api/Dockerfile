@@ -1,5 +1,5 @@
 # ########################################################################################################
-# This DockerFile is used for local development (via docker-compose) only.
+# This DockerFile is used for local development (via compose.yml) only.
 # ########################################################################################################
 
 FROM node:20
@@ -20,6 +20,9 @@ ENV PATH ${HOME}/node_modules/.bin/:/usr/local/sbin:/usr/local/bin:/usr/sbin:/us
 
 # Copy the rest of the files
 COPY . ./
+
+# Update log directory file permissions, prevents permission errors for linux environments
+RUN chmod -R a+rw data/logs/*
 
 VOLUME ${HOME}
 

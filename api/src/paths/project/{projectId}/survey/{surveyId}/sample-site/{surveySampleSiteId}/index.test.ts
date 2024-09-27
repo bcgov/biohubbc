@@ -17,66 +17,6 @@ describe('updateSurveySampleSite', () => {
     sinon.restore();
   });
 
-  it('should throw a 400 error when no surveyId is provided', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    try {
-      const requestHandler = updateSurveySampleSite();
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
-    }
-  });
-
-  it('should throw a 400 error when no surveySampleSiteId is provided', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      surveyId: '1'
-    };
-
-    try {
-      const requestHandler = updateSurveySampleSite();
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveySampleSiteId`');
-    }
-  });
-
-  it('should throw a 400 error when no sampleSite is provided', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      surveyId: '1',
-      surveySampleSiteId: '2'
-    };
-
-    try {
-      const requestHandler = updateSurveySampleSite();
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required body param `sampleSite`');
-    }
-  });
-
   it('should catch and re-throw an error if SampleLocationService throws an error', async () => {
     const dbConnectionObj = getMockDBConnection();
 

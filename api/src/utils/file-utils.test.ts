@@ -1,16 +1,16 @@
-import AWS from 'aws-sdk';
+import { S3Client } from '@aws-sdk/client-s3';
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   deleteFileFromS3,
   generateS3FileKey,
   getS3HostUrl,
+  getS3KeyPrefix,
   getS3SignedURL,
   _getClamAvScanner,
   _getObjectStoreBucketName,
   _getObjectStoreUrl,
-  _getS3Client,
-  _getS3KeyPrefix
+  _getS3Client
 } from './file-utils';
 
 describe('deleteFileFromS3', () => {
@@ -55,17 +55,22 @@ describe('generateS3FileKey', () => {
   it('returns project folder file path', async () => {
     process.env.S3_KEY_PREFIX = 'some/s3/prefix';
 
-    const result = generateS3FileKey({ projectId: 1, folder: 'folder', fileName: 'testFileName' });
+    const result = generateS3FileKey({ projectId: 1, folder: 'reports', fileName: 'testFileName' });
 
-    expect(result).to.equal('some/s3/prefix/projects/1/folder/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/reports/testFileName');
   });
 
   it('returns survey folder file path', async () => {
     process.env.S3_KEY_PREFIX = 'some/s3/prefix';
 
-    const result = generateS3FileKey({ projectId: 1, surveyId: 2, folder: 'folder', fileName: 'testFileName' });
+    const result = generateS3FileKey({
+      projectId: 1,
+      surveyId: 2,
+      folder: 'telemetry-credentials',
+      fileName: 'testFileName'
+    });
 
-    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/folder/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/telemetry-credentials/testFileName');
   });
 
   it('returns survey submission folder file path when a submission ID is passed', async () => {
@@ -97,16 +102,16 @@ describe('getS3HostUrl', () => {
 
     const result = getS3HostUrl();
 
-    expect(result).to.equal('nrs.objectstore.gov.bc.ca');
+    expect(result).to.equal('https://nrs.objectstore.gov.bc.ca');
   });
 
   it('should successfully produce an S3 host url', () => {
-    process.env.OBJECT_STORE_URL = 's3.host.example.com';
+    process.env.OBJECT_STORE_URL = 'http://s3.host.example.com';
     process.env.OBJECT_STORE_BUCKET_NAME = 'test-bucket-name';
 
     const result = getS3HostUrl();
 
-    expect(result).to.equal('s3.host.example.com/test-bucket-name');
+    expect(result).to.equal('http://s3.host.example.com/test-bucket-name');
   });
 
   it('should successfully append a key to an S3 host url', () => {
@@ -115,7 +120,7 @@ describe('getS3HostUrl', () => {
 
     const result = getS3HostUrl('my-test-file.txt');
 
-    expect(result).to.equal('s3.host.example.com/test-bucket-name/my-test-file.txt');
+    expect(result).to.equal('https://s3.host.example.com/test-bucket-name/my-test-file.txt');
   });
 });
 
@@ -131,7 +136,7 @@ describe('_getS3Client', () => {
     process.env.OBJECT_STORE_SECRET_KEY_ID = 'bbbb';
 
     const result = _getS3Client();
-    expect(result).to.be.instanceOf(AWS.S3);
+    expect(result).to.be.instanceOf(S3Client);
   });
 });
 
@@ -185,22 +190,36 @@ describe('_getObjectStoreUrl', () => {
     process.env.OBJECT_STORE_URL = OBJECT_STORE_URL;
   });
 
-  it('should return an object store bucket name', () => {
-    process.env.OBJECT_STORE_URL = 'test-url1';
+  it('should return an object store bucket name that http protocol', () => {
+    process.env.OBJECT_STORE_URL = 'http://s3.host.example.com';
 
     const result = _getObjectStoreUrl();
-    expect(result).to.equal('test-url1');
+    expect(result).to.equal('http://s3.host.example.com');
+  });
+
+  it('should return an object store bucket name that https protocol', () => {
+    process.env.OBJECT_STORE_URL = 'https://s3.host.example.com';
+
+    const result = _getObjectStoreUrl();
+    expect(result).to.equal('https://s3.host.example.com');
+  });
+
+  it('should return an object store bucket name that had no protocol', () => {
+    process.env.OBJECT_STORE_URL = 's3.host.example.com';
+
+    const result = _getObjectStoreUrl();
+    expect(result).to.equal('https://s3.host.example.com');
   });
 
   it('should return its default value', () => {
     delete process.env.OBJECT_STORE_URL;
 
     const result = _getObjectStoreUrl();
-    expect(result).to.equal('nrs.objectstore.gov.bc.ca');
+    expect(result).to.equal('https://nrs.objectstore.gov.bc.ca');
   });
 });
 
-describe('_getS3KeyPrefix', () => {
+describe('getS3KeyPrefix', () => {
   const OLD_S3_KEY_PREFIX = process.env.S3_KEY_PREFIX;
 
   afterEach(() => {
@@ -210,14 +229,14 @@ describe('_getS3KeyPrefix', () => {
   it('should return an s3 key prefix', () => {
     process.env.S3_KEY_PREFIX = 'test-sims';
 
-    const result = _getS3KeyPrefix();
+    const result = getS3KeyPrefix();
     expect(result).to.equal('test-sims');
   });
 
   it('should return its default value', () => {
     delete process.env.S3_KEY_PREFIX;
 
-    const result = _getS3KeyPrefix();
+    const result = getS3KeyPrefix();
     expect(result).to.equal('sims');
   });
 });

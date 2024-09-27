@@ -4,7 +4,7 @@ import { getAPIUserDBConnection } from '../../../database/db';
 import { CodeService } from '../../../services/code-service';
 import { getLogger } from '../../../utils/logger';
 
-const defaultLog = getLogger('paths/code');
+const defaultLog = getLogger('paths/reference/search/environment');
 
 export const GET: Operation = [findSubcountEnvironments()];
 
@@ -151,6 +151,9 @@ export function findSubcountEnvironments(): RequestHandler {
       const response = await codeService.findSubcountEnvironments([searchTerm]);
 
       await connection.commit();
+
+      // Allow browsers to cache this response for 300 seconds (5 minutes)
+      res.setHeader('Cache-Control', 'private, max-age=300');
 
       return res.status(200).json(response);
     } catch (error) {

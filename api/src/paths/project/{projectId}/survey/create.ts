@@ -12,7 +12,6 @@ import {
   surveyPermitSchema,
   surveyProprietorSchema,
   surveyPurposeAndMethodologySchema,
-  surveySiteSelectionSchema,
   surveySpeciesSchema
 } from '../../../../openapi/schemas/survey';
 import { surveyParticipationAndSystemUserSchema } from '../../../../openapi/schemas/user';
@@ -104,7 +103,56 @@ POST.apiDoc = {
               type: 'array',
               items: surveyLocationSchema
             },
-            site_selection: surveySiteSelectionSchema,
+            site_selection: {
+              title: 'survey site selection response object',
+              type: 'object',
+              additionalProperties: false,
+              required: ['strategies', 'stratums'],
+              properties: {
+                strategies: {
+                  description: 'Strategies',
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
+                },
+                stratums: {
+                  description: 'Stratums',
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    required: ['name', 'description'],
+                    properties: {
+                      name: {
+                        description: 'Name',
+                        type: 'string'
+                      },
+                      description: {
+                        description: 'Description',
+                        type: 'string',
+                        nullable: true
+                      },
+                      survey_id: {
+                        description: 'Survey id',
+                        type: 'integer',
+                        nullable: true
+                      },
+                      survey_stratum_id: {
+                        description: 'Survey stratum id',
+                        type: 'integer',
+                        nullable: true,
+                        minimum: 1
+                      },
+                      revision_count: {
+                        description: 'Revision count',
+                        type: 'integer'
+                      }
+                    }
+                  }
+                }
+              }
+            },
             participants: {
               type: 'array',
               items: {
@@ -176,7 +224,7 @@ export function createSurvey(): RequestHandler {
 
     const sanitizedPostSurveyData = new PostSurveyObject(req.body);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

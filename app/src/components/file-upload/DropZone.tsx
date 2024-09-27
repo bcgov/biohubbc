@@ -3,8 +3,8 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
-import { ConfigContext } from 'contexts/configContext';
-import React, { useContext } from 'react';
+import { useConfigContext } from 'hooks/useContext';
+import React from 'react';
 import Dropzone, { FileRejection } from 'react-dropzone';
 
 const BYTES_PER_MEGABYTE = 1048576;
@@ -48,19 +48,20 @@ export interface IDropZoneConfigProps {
   /**
    * Comma separated list of allowed file extensions.
    *
-   * Example: `'.pdf, .txt'`
+   * @example '.pdf, .txt'
+   * @example ['.pdf', '.txt']
    *
-   * @type {string}
+   * @type {(string | string[])}
    * @memberof IDropZoneConfigProps
    */
-  acceptedFileExtensions?: string;
+  acceptedFileExtensions?: string | string[];
 }
 
 export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props) => {
-  const config = useContext(ConfigContext);
+  const config = useConfigContext();
 
-  const maxNumFiles = props.maxNumFiles || config?.MAX_UPLOAD_NUM_FILES;
-  const maxFileSize = props.maxFileSize || config?.MAX_UPLOAD_FILE_SIZE;
+  const maxNumFiles = props.maxNumFiles || config.MAX_UPLOAD_NUM_FILES;
+  const maxFileSize = props.maxFileSize || config.MAX_UPLOAD_FILE_SIZE;
   const multiple = props.multiple ?? true;
   const acceptedFileExtensions = props.acceptedFileExtensions;
 

@@ -8,9 +8,9 @@ import TextField from '@mui/material/TextField';
 import SpeciesCard from 'components/species/components/SpeciesCard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
-import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import { debounce, startCase } from 'lodash-es';
-import { ChangeEvent, useMemo, useState } from 'react';
+import { IPartialTaxonomy, ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { debounce } from 'lodash-es';
+import { useEffect, useMemo, useState } from 'react';
 
 export interface ISpeciesAutocompleteFieldProps {
   /**
@@ -30,17 +30,27 @@ export interface ISpeciesAutocompleteFieldProps {
   /**
    * Callback to fire on species option selection.
    *
-   * @type {(species: ITaxonomy) => void}
+   * @type {(species: ITaxonomy | IPartialTaxonomy) => void}
    * @memberof ISpeciesAutocompleteFieldProps
    */
-  handleSpecies: (species?: ITaxonomy) => void;
+  handleSpecies: (species: ITaxonomy | IPartialTaxonomy) => void;
+  /**
+   * Optional callback to fire on species option being cleared
+   *
+   * @memberof ISpeciesAutocompleteFieldProps
+   */
+  handleClear?: () => void;
   /**
    * Default species to render for input and options.
    *
-   * @type {ITaxonomy}
+   * @type {ITaxonomy | IPartialTaxonomy}
    * @memberof ISpeciesAutocompleteFieldProps
    */
-  defaultSpecies?: ITaxonomy;
+  defaultSpecies?:
+    | ITaxonomy
+    | IPartialTaxonomy
+    | Promise<ITaxonomy | null | undefined>
+    | Promise<IPartialTaxonomy | null | undefined>;
   /**
    * The error message to display.
    *
@@ -72,77 +82,183 @@ export interface ISpeciesAutocompleteFieldProps {
    * @memberof ISpeciesAutocompleteFieldProps
    */
   clearOnSelect?: boolean;
+  /**
+   * Whether to show start adornment magnifying glass or not
+   * Defaults to false
+   *
+   * @type {boolean}
+   * @memberof ISpeciesAutocompleteFieldProps
+   */
+  showStartAdornment?: boolean;
+  /**
+   * Placeholder text for the TextField
+   *
+   * @type {string}
+   * @memberof ISpeciesAutocompleteFieldProps
+   */
+  placeholder?: string;
 }
 
+/**
+ * Autocomplete field for searching for and selecting a single taxon.
+ *
+ * Note: Depends on the external BioHub API for fetching species records.
+ *
+ * @param {ISpeciesAutocompleteFieldProps} props
+ * @return {*}
+ */
 const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
-  const { formikFieldName, label, required, error, handleSpecies, defaultSpecies } = props;
+  const {
+    formikFieldName,
+    clearOnSelect,
+    required,
+    label,
+    error,
+    placeholder,
+    disabled,
+    handleSpecies,
+    handleClear,
+    defaultSpecies,
+    showStartAdornment
+  } = props;
 
   const biohubApi = useBiohubApi();
   const isMounted = useIsMounted();
 
+  // A default species has been provided and it is not a promise
+  const isDefaultSpecies = defaultSpecies && !(defaultSpecies instanceof Promise);
+
+  const [hasLoadedDefaultSpecies, setHasLoadedDefaultSpecies] = useState(false);
   // The input field value
-  const [inputValue, setInputValue] = useState(defaultSpecies?.scientificName ?? '');
+  const [inputValue, setInputValue] = useState<string>(isDefaultSpecies ? defaultSpecies?.scientificName : '');
   // The array of options to choose from
-  const [options, setOptions] = useState<ITaxonomy[]>(defaultSpecies ? [defaultSpecies] : []);
+  const [options, setOptions] = useState<(ITaxonomy | IPartialTaxonomy)[]>(isDefaultSpecies ? [defaultSpecies] : []);
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
 
-  const search = useMemo(
+  useEffect(() => {
+    if (defaultSpecies instanceof Promise) {
+      // A default species has been provided and it is a promise
+      defaultSpecies.then((taxonomy) => {
+        if (hasLoadedDefaultSpecies) {
+          // Only ever run this once
+          return;
+        }
+
+        if (inputValue !== '') {
+          // Input value has been set by the user, do not override it
+          return;
+        }
+
+        if (!taxonomy) {
+          // No default taxon returned from promise
+          return;
+        }
+
+        if (!isMounted()) {
+          // Component has been unmounted
+          return;
+        }
+
+        // Set the default taxon as the input value and options
+        setHasLoadedDefaultSpecies(true);
+        setInputValue(taxonomy.scientificName);
+        setOptions([taxonomy]);
+      });
+    }
+  }, [defaultSpecies, hasLoadedDefaultSpecies, inputValue, isMounted]);
+
+  const handleSearch = useMemo(
     () =>
       debounce(async (inputValue: string, callback: (searchedValues: ITaxonomy[]) => void) => {
         const searchTerms = inputValue.split(' ').filter(Boolean);
-        // TODO: Add error handling if this call throws an error
-        const response = await biohubApi.taxonomy.searchSpeciesByTerms(searchTerms);
+        const response = await biohubApi.taxonomy.searchSpeciesByTerms(searchTerms).catch(() => {
+          return [];
+        });
 
         callback(response);
       }, 500),
     [biohubApi.taxonomy]
   );
 
-  const handleOnChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const input = event.target.value;
-    setInputValue(input);
-
-    if (!input) {
-      setOptions([]);
-      search.cancel();
-      handleSpecies();
-      return;
-    }
-    setIsLoading(true);
-    search(input, (speciesOptions) => {
-      if (!isMounted()) {
-        return;
-      }
-      setOptions(speciesOptions);
-      setIsLoading(false);
-    });
-  };
-
   return (
     <Autocomplete
-      id={props.formikFieldName}
-      disabled={props.disabled}
-      data-testid={props.formikFieldName}
-      filterSelectedOptions
-      noOptionsText="No matching options"
+      id={formikFieldName}
+      disabled={disabled}
+      data-testid={formikFieldName}
+      noOptionsText={isLoading ? 'Loading...' : 'No matching options'}
       options={options}
       getOptionLabel={(option) => option.scientificName}
-      isOptionEqualToValue={(option, value) => {
-        return option.tsn === value.tsn;
-      }}
       filterOptions={(item) => item}
       inputValue={inputValue}
-      onInputChange={(_, _value, reason) => {
-        if (props.clearOnSelect && reason === 'reset') {
+      // Text field value changed
+      onInputChange={(_, value, reason) => {
+        if (reason === 'reset') {
+          if (!clearOnSelect) {
+            return;
+          }
+
+          if (inputValue === '' && options.length === 0) {
+            // Nothing to clear
+            return;
+          }
+
           setInputValue('');
+          setOptions([]);
+          handleClear?.();
+
+          return;
         }
+
+        if (reason === 'clear') {
+          if (inputValue === '' && options.length === 0) {
+            // Nothing to clear
+            return;
+          }
+
+          setInputValue('');
+          setOptions([]);
+          handleClear?.();
+          return;
+        }
+
+        if (!value) {
+          if (inputValue === '' && options.length === 0) {
+            // Nothing to clear
+            return;
+          }
+
+          setInputValue('');
+          setOptions([]);
+          return;
+        }
+
+        setIsLoading(true);
+        setInputValue(value);
+        handleSearch(value, (newOptions) => {
+          if (!isMounted()) {
+            return;
+          }
+
+          setOptions(() => newOptions);
+          setIsLoading(false);
+        });
       }}
+      // Option selected from dropdown
       onChange={(_, option) => {
-        if (option) {
-          handleSpecies(option);
-          setInputValue(startCase(option?.commonNames?.length ? option.commonNames[0] : option.scientificName));
+        if (!option) {
+          handleClear?.();
+          return;
         }
+
+        handleSpecies(option);
+
+        if (clearOnSelect) {
+          setInputValue('');
+          return;
+        }
+
+        setInputValue(option?.commonNames?.length ? option.commonNames[0] : option.scientificName);
       }}
       renderOption={(renderProps, renderOption) => {
         return (
@@ -153,16 +269,10 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
                 borderTop: '1px solid' + grey[300]
               }
             }}
-            key={`${renderOption.tsn}-${renderOption.scientificName}`}
-            {...renderProps}>
-            <Box py={1} width="100%">
-              <SpeciesCard
-                commonNames={renderOption.commonNames}
-                scientificName={renderOption.scientificName}
-                tsn={renderOption.tsn}
-                rank={renderOption.rank}
-                kingdom={renderOption.kingdom}
-              />
+            {...renderProps}
+            key={`${renderOption.tsn}-${renderOption.scientificName}`}>
+            <Box py={1} width={'100%'}>
+              <SpeciesCard taxon={renderOption} />
             </Box>
           </Box>
         );
@@ -171,22 +281,21 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
         <TextField
           {...params}
           name={formikFieldName}
-          onChange={handleOnChange}
           required={required}
           label={label}
           variant="outlined"
           fullWidth
-          placeholder="Type to start searching"
+          placeholder={placeholder || 'Enter a species or taxon'}
           InputProps={{
             ...params.InputProps,
-            startAdornment: (
+            startAdornment: showStartAdornment && (
               <Box mx={1} mt="6px">
                 <Icon path={mdiMagnify} size={1}></Icon>
               </Box>
             ),
             endAdornment: (
               <>
-                {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {inputValue && isLoading ? <CircularProgress color="inherit" size={20} /> : null}
                 {params.InputProps.endAdornment}
               </>
             )

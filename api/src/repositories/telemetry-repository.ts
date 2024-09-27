@@ -7,6 +7,23 @@ import { BaseRepository } from './base-repository';
 
 const defaultLog = getLogger('repositories/telemetry-repository');
 
+export const Deployment = z.object({
+  /**
+   * SIMS deployment primary ID
+   */
+  deployment_id: z.number(),
+  /**
+   * SIMS critter primary ID
+   */
+  critter_id: z.number(),
+  /**
+   * BCTW deployment primary ID
+   */
+  bctw_deployment_id: z.string().uuid()
+});
+
+export type Deployment = z.infer<typeof Deployment>;
+
 /**
  * Interface reflecting survey telemetry retrieved from the database
  */
@@ -82,5 +99,58 @@ export class TelemetryRepository extends BaseRepository {
     }
 
     return response.rows[0];
+  }
+
+  /**
+   * Get deployments for the given critter ids.
+   *
+   * Note: SIMS does not store deployment information, beyond an ID. Deployment details must be fetched from the
+   * external BCTW API.
+   *
+   * @param {number[]} critterIds
+   * @return {*}  {Promise<Deployment[]>}
+   * @memberof TelemetryRepository
+   */
+  async getDeploymentsByCritterIds(critterIds: number[]): Promise<Deployment[]> {
+    const queryBuilder = getKnex()
+      .queryBuilder()
+      .select(['deployment_id', 'critter_id', 'bctw_deployment_id'])
+      .from('deployment')
+      .whereIn('critter_id', critterIds);
+
+    const response = await this.connection.knex(queryBuilder, Deployment);
+
+    return response.rows;
+  }
+
+  /**
+   * Get deployments for the provided survey id.
+   *
+   * Note: SIMS does not store deployment information, beyond an ID. Deployment details must be fetched from the
+   * external BCTW API.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<Deployment[]>}
+   * @memberof TelemetryRepository
+   */
+  async getDeploymentsBySurveyId(surveyId: number): Promise<Deployment[]> {
+    const sqlStatement = SQL`
+      SELECT
+        deployment.deployment_id,
+        deployment.critter_id,
+        deployment.bctw_deployment_id
+      FROM
+        deployment
+      LEFT JOIN
+        critter
+      ON
+        critter.critter_id = deployment.critter_id
+      WHERE
+        critter.survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, Deployment);
+
+    return response.rows;
   }
 }

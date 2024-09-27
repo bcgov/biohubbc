@@ -2,24 +2,25 @@ import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import { ISurveyCritter } from 'contexts/animalPageContext';
+import { ISurveyAdvancedFilters } from 'features/summary/list-data/survey/SurveysListFilterForm';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
-import {
-  IAnimalDeployment,
-  ICreateAnimalDeployment,
-  IDeploymentTimespan,
-  ITelemetryPointCollection
-} from 'features/surveys/view/survey-animals/telemetry-device/device';
+import { SurveyExportConfig } from 'features/surveys/view/survey-export/SurveyExportForm';
+import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
+  IFindSurveysResponse,
   IGetSurveyAttachmentsResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
-  IGetSurveyListResponse,
-  ISimpleCritterWithInternalId,
-  SurveyUpdateObject
+  IUpdateSurveyRequest
 } from 'interfaces/useSurveyApi.interface';
+import {
+  IAllTelemetryPointCollection,
+  IAnimalDeployment,
+  ICreateAnimalDeploymentPostData
+} from 'interfaces/useTelemetryApi.interface';
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
@@ -69,16 +70,37 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get surveys for a system user id.
+   *
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @param {ISurveyAdvancedFilters} filterFieldData
+   * @return {*} {Promise<IFindProjectsResponse[]>}
+   */
+  const findSurveys = async (
+    pagination?: ApiPaginationRequestOptions,
+    filterFieldData?: ISurveyAdvancedFilters
+  ): Promise<IFindSurveysResponse> => {
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
+
+    const { data } = await axios.get('/api/survey', { params, paramsSerializer: (params) => qs.stringify(params) });
+
+    return data;
+  };
+
+  /**
    * Fetches a subset of survey fields for all surveys under a project.
    *
    * @param {number} projectId
    * @param {ApiPaginationRequestOptions} [pagination]
-   * @return {*}  {Promise<IGetSurveysListResponse[]>}
+   * @return {*}  {Promise<IFindSurveysResponse>}
    */
   const getSurveysBasicFieldsByProjectId = async (
     projectId: number,
     pagination?: ApiPaginationRequestOptions
-  ): Promise<IGetSurveyListResponse> => {
+  ): Promise<IFindSurveysResponse> => {
     let urlParamsString = '';
 
     if (pagination) {
@@ -104,10 +126,10 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {SurveyUpdateObject} surveyData
+   * @param {IUpdateSurveyRequest} surveyData
    * @return {*}  {Promise<any>}
    */
-  const updateSurvey = async (projectId: number, surveyId: number, surveyData: SurveyUpdateObject): Promise<any> => {
+  const updateSurvey = async (projectId: number, surveyId: number, surveyData: IUpdateSurveyRequest): Promise<any> => {
     const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/update`, surveyData);
 
     return data;
@@ -139,39 +161,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });
-
-    return data;
-  };
-
-  /**
-   * Upload survey keyx files.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {File} file
-   * @param {CancelTokenSource} [cancelTokenSource]
-   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
-   * @return {*}  {Promise<IUploadAttachmentResponse>}
-   */
-  const uploadSurveyKeyx = async (
-    projectId: number,
-    surveyId: number,
-    file: File,
-    cancelTokenSource?: CancelTokenSource,
-    onProgress?: (progressEvent: AxiosProgressEvent) => void
-  ): Promise<IUploadAttachmentResponse> => {
-    const req_message = new FormData();
-
-    req_message.append('media', file);
-
-    const { data } = await axios.post(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/keyx/upload`,
-      req_message,
-      {
-        cancelToken: cancelTokenSource?.token,
-        onUploadProgress: onProgress
-      }
-    );
 
     return data;
   };
@@ -370,10 +359,45 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @returns {ISimpleCritterWithInternalId[]}
+   * @returns {ICritterSimpleResponse[]}
    */
-  const getSurveyCritters = async (projectId: number, surveyId: number): Promise<ISimpleCritterWithInternalId[]> => {
+  const getSurveyCritters = async (projectId: number, surveyId: number): Promise<ICritterSimpleResponse[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/critters`);
+    return data;
+  };
+
+  /**
+   * Retrieve a list of critters associated with the given survey with details taken from critterbase.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @return {*}  {Promise<ICritterDetailedResponse>}
+   */
+  const getCritterById = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number
+  ): Promise<ICritterDetailedResponse> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}?format=detailed`
+    );
+    return data;
+  };
+
+  /**
+   * Retrieve a list of critters associated with the given survey with details from critterbase, including
+   * additional information such as captures and mortality
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<ICritterDetailedResponse[]>}
+   */
+  const getSurveyCrittersDetailed = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<ICritterDetailedResponse[]> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/critters?format=detailed`);
     return data;
   };
 
@@ -382,8 +406,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {Critter} critter Critter payload type
-   * @returns Count of affected rows
+   * @param {ICreateCritter} critter
+   * @return {*}  {Promise<ISurveyCritter>}
    */
   const createCritterAndAddToSurvey = async (
     projectId: number,
@@ -399,8 +423,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {number} critterId
-   * @returns {*}
+   * @param {number[]} critterIds
+   * @return {*}  {Promise<number>}
    */
   const removeCrittersFromSurvey = async (
     projectId: number,
@@ -414,20 +438,20 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Add a new deployment with associated device hardware metadata. Must include critterbase critter id.
+   * Create a new deployment with associated device hardware metadata. Must include critterbase critter id.
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} critterId
-   * @param {IAnimalTelemetryDevice & {critter_id: string}} body
-   * @returns {*}
+   * @param {Omit<ICreateAnimalDeploymentPostData, 'critter_id'>} body
+   * @return {*}  {Promise<{ deploymentId: number }>}
    */
-  const addDeployment = async (
+  const createDeployment = async (
     projectId: number,
     surveyId: number,
-    critterId: number, // Survey critter_id
-    body: ICreateAnimalDeployment // Critterbase critter_id
-  ): Promise<number> => {
+    critterId: number,
+    body: Omit<ICreateAnimalDeploymentPostData, 'critter_id'>
+  ): Promise<{ deploymentId: number }> => {
     const { data } = await axios.post(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
       body
@@ -440,20 +464,17 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {number} critterId
-   * @param {IDeploymentTimespan} body
-   * @returns {*}
+   * @param {number} deploymentId
+   * @param {ICreateAnimalDeploymentPostData} body
+   * @return {*}  {Promise<number>}
    */
   const updateDeployment = async (
     projectId: number,
     surveyId: number,
-    critterId: number,
-    body: IDeploymentTimespan
+    deploymentId: number,
+    body: ICreateAnimalDeploymentPostData
   ): Promise<number> => {
-    const { data } = await axios.patch(
-      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
-      body
-    );
+    const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`, body);
     return data;
   };
 
@@ -462,7 +483,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @returns {*}
+   * @return {*}  {Promise<IAnimalDeployment[]>}
    */
   const getDeploymentsInSurvey = async (projectId: number, surveyId: number): Promise<IAnimalDeployment[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments`);
@@ -470,14 +491,33 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get deployment by Id, using the integer Id from SIMS instead of the BCTW GUID
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} deploymentId
+   * @return {*}  {Promise<IAnimalDeployment>}
+   */
+  const getDeploymentById = async (
+    projectId: number,
+    surveyId: number,
+    deploymentId: number
+  ): Promise<IAnimalDeployment> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
+    return data;
+  };
+
+  /**
    * Get all telemetry points for a critter in a survey within a given time span.
+   *
+   * TODO: Unused?
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} critterId
    * @param {string} startDate
    * @param {string} endDate
-   * @return {*}  {Promise<ITelemetryPointCollection>}
+   * @return {*}  {Promise<IAllTelemetryPointCollection>}
    */
   const getCritterTelemetry = async (
     projectId: number,
@@ -485,30 +525,180 @@ const useSurveyApi = (axios: AxiosInstance) => {
     critterId: number,
     startDate: string,
     endDate: string
-  ): Promise<ITelemetryPointCollection> => {
+  ): Promise<IAllTelemetryPointCollection> => {
     const { data } = await axios.get(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/telemetry?startDate=${startDate}&endDate=${endDate}`
     );
     return data;
   };
+
   /**
-   * Removes a deployment. Will trigger removal in both SIMS and BCTW.
+   * Ends a deployment. Will trigger removal in both SIMS and BCTW.
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} critterId
-   * @param {string} deploymentId
-   * @returns {*}
+   * @param {number} deploymentId
+   * @return {*}  {Promise<string>}
    */
-  const removeDeployment = async (
+  const endDeployment = async (
     projectId: number,
     surveyId: number,
     critterId: number,
-    deploymentId: string
+    deploymentId: number
   ): Promise<string> => {
     const { data } = await axios.delete(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments/${deploymentId}`
     );
+    return data;
+  };
+
+  /**
+   * Deletes a deployment. Will trigger deletion in SIMS and invalidates the deployment in BCTW.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} deploymentId
+   * @return {*}  {Promise<string>}
+   */
+  const deleteDeployment = async (projectId: number, surveyId: number, deploymentId: number): Promise<string> => {
+    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
+    return data;
+  };
+
+  /**
+   * Bulk upload Critters from CSV.
+   *
+   * @param {File} file
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<{ survey_critter_ids: number[] }>}
+   */
+  const importCrittersFromCsv = async (
+    file: File,
+    projectId: number,
+    surveyId: number
+  ): Promise<{ survey_critter_ids: number[] }> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/critters/import`, formData);
+
+    return data;
+  };
+
+  /**
+   * Bulk upload Captures from CSV.
+   *
+   * @async
+   * @param {File} file - Captures CSV.
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {Promise<number[]>}
+   */
+  const importCapturesFromCsv = async (
+    file: File,
+    projectId: number,
+    surveyId: number,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
+  ): Promise<{ survey_critter_ids: number[] }> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/critters/captures/import`,
+      formData,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
+
+    return data;
+  };
+
+  /**
+   * Bulk upload Markings from CSV.
+   *
+   * @async
+   * @param {File} file - Captures CSV.
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {Promise<number[]>}
+   */
+  const importMarkingsFromCsv = async (
+    file: File,
+    projectId: number,
+    surveyId: number,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
+  ): Promise<{ survey_critter_ids: number[] }> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/critters/markings/import`,
+      formData,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
+
+    return data;
+  };
+
+  /**
+   * Bulk upload Measurements from CSV.
+   *
+   * @async
+   * @param {File} file - Captures CSV.
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {Promise<number[]>}
+   */
+  const importMeasurementsFromCsv = async (
+    file: File,
+    projectId: number,
+    surveyId: number,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
+  ): Promise<{ survey_critter_ids: number[] }> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/critters/measurements/import`,
+      formData,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
+
+    return data;
+  };
+
+  /**
+   * Initiates a data export for a survey.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {SurveyExportConfig} exportConfig
+   * @return {*}  {Promise<{ presignedS3Urls: string[] }>}
+   */
+  const exportData = async (
+    projectId: number,
+    surveyId: number,
+    exportConfig: SurveyExportConfig
+  ): Promise<{ presignedS3Urls: string[] }> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/export`, { config: exportConfig });
+
     return data;
   };
 
@@ -517,9 +707,10 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForView,
     getSurveysBasicFieldsByProjectId,
     getSurveyForUpdate,
+    findSurveys,
+    getDeploymentById,
     updateSurvey,
     uploadSurveyAttachments,
-    uploadSurveyKeyx,
     uploadSurveyReports,
     updateSurveyReportMetadata,
     getSurveyReportDetails,
@@ -530,11 +721,19 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyCritters,
     createCritterAndAddToSurvey,
     removeCrittersFromSurvey,
-    addDeployment,
+    createDeployment,
+    getSurveyCrittersDetailed,
     getDeploymentsInSurvey,
+    getCritterById,
     updateDeployment,
     getCritterTelemetry,
-    removeDeployment
+    importCrittersFromCsv,
+    importCapturesFromCsv,
+    importMarkingsFromCsv,
+    importMeasurementsFromCsv,
+    endDeployment,
+    deleteDeployment,
+    exportData
   };
 };
 

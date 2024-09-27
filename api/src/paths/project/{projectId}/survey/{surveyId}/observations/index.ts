@@ -2,13 +2,12 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import {
-  paginationRequestQueryParamSchema,
-  paginationResponseSchema
-} from '../../../../../../openapi/schemas/pagination';
+import { observervationsWithSubcountDataSchema } from '../../../../../../openapi/schemas/observation';
+import { paginationRequestQueryParamSchema } from '../../../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { CritterbaseService } from '../../../../../../services/critterbase-service';
+import { CritterbaseService, getCritterbaseUser } from '../../../../../../services/critterbase-service';
 import { InsertUpdateObservations, ObservationService } from '../../../../../../services/observation-service';
+import { ObservationSubCountEnvironmentService } from '../../../../../../services/observation-subcount-environment-service';
 import { getLogger } from '../../../../../../utils/logger';
 import { ensureCompletePaginationOptions, makePaginationResponse } from '../../../../../../utils/pagination';
 import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
@@ -54,7 +53,7 @@ export const PUT: Operation = [
       ]
     };
   }),
-  insertUpdateManualSurveyObservations()
+  putObservations()
 ];
 
 GET.apiDoc = {
@@ -91,400 +90,7 @@ GET.apiDoc = {
       description: 'Survey Observations get response.',
       content: {
         'application/json': {
-          schema: {
-            description: 'Survey get response object, for view purposes',
-            type: 'object',
-            additionalProperties: false,
-            required: ['surveyObservations', 'supplementaryObservationData', 'pagination'],
-            properties: {
-              surveyObservations: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  additionalProperties: false,
-                  required: [
-                    'survey_observation_id',
-                    'survey_id',
-                    'itis_tsn',
-                    'itis_scientific_name',
-                    'survey_sample_site_id',
-                    'survey_sample_method_id',
-                    'survey_sample_period_id',
-                    'latitude',
-                    'longitude',
-                    'count',
-                    'observation_date',
-                    'observation_time',
-                    'survey_sample_site_name',
-                    'survey_sample_method_name',
-                    'survey_sample_period_start_datetime'
-                  ],
-                  properties: {
-                    survey_observation_id: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    survey_id: {
-                      type: 'integer',
-                      minimum: 1
-                    },
-                    itis_tsn: {
-                      type: 'integer'
-                    },
-                    itis_scientific_name: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    survey_sample_site_id: {
-                      type: 'integer',
-                      minimum: 1,
-                      nullable: true
-                    },
-                    survey_sample_method_id: {
-                      type: 'integer',
-                      minimum: 1,
-                      nullable: true
-                    },
-                    survey_sample_period_id: {
-                      type: 'integer',
-                      minimum: 1,
-                      nullable: true
-                    },
-                    latitude: {
-                      type: 'number'
-                    },
-                    longitude: {
-                      type: 'number'
-                    },
-                    count: {
-                      type: 'integer'
-                    },
-                    observation_date: {
-                      type: 'string'
-                    },
-                    observation_time: {
-                      type: 'string'
-                    },
-                    survey_sample_site_name: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    survey_sample_method_name: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    survey_sample_period_start_datetime: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    subcounts: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        additionalProperties: false,
-                        required: [
-                          'observation_subcount_id',
-                          'subcount',
-                          'qualitative_measurements',
-                          'quantitative_measurements',
-                          'qualitative_environments',
-                          'quantitative_environments'
-                        ],
-                        properties: {
-                          observation_subcount_id: {
-                            type: 'integer'
-                          },
-                          subcount: {
-                            type: 'number'
-                          },
-                          qualitative_measurements: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              additionalProperties: false,
-                              required: [
-                                'critterbase_taxon_measurement_id',
-                                'critterbase_measurement_qualitative_option_id'
-                              ],
-                              properties: {
-                                critterbase_taxon_measurement_id: {
-                                  type: 'string',
-                                  format: 'uuid'
-                                },
-                                critterbase_measurement_qualitative_option_id: {
-                                  type: 'string',
-                                  format: 'uuid'
-                                }
-                              }
-                            }
-                          },
-                          quantitative_measurements: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              additionalProperties: false,
-                              required: ['critterbase_taxon_measurement_id', 'value'],
-                              properties: {
-                                critterbase_taxon_measurement_id: {
-                                  type: 'string',
-                                  format: 'uuid'
-                                },
-                                value: {
-                                  type: 'number'
-                                }
-                              }
-                            }
-                          },
-                          qualitative_environments: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              additionalProperties: false,
-                              required: ['environment_qualitative_id', 'environment_qualitative_option_id'],
-                              properties: {
-                                observation_subcount_qualitative_environment_id: {
-                                  type: 'integer'
-                                },
-                                environment_qualitative_id: {
-                                  type: 'string',
-                                  format: 'uuid'
-                                },
-                                environment_qualitative_option_id: {
-                                  type: 'string',
-                                  format: 'uuid'
-                                }
-                              }
-                            }
-                          },
-                          quantitative_environments: {
-                            type: 'array',
-                            items: {
-                              type: 'object',
-                              additionalProperties: false,
-                              required: ['environment_quantitative_id', 'value'],
-                              properties: {
-                                environment_quantitative_id: {
-                                  type: 'string',
-                                  format: 'uuid'
-                                },
-                                value: {
-                                  type: 'number'
-                                }
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              supplementaryObservationData: {
-                type: 'object',
-                additionalProperties: false,
-                required: [
-                  'observationCount',
-                  'qualitative_measurements',
-                  'quantitative_measurements',
-                  'qualitative_environments',
-                  'quantitative_environments'
-                ],
-                properties: {
-                  observationCount: {
-                    type: 'integer',
-                    minimum: 0
-                  },
-                  qualitative_measurements: {
-                    description: 'All qualitative measurement type definitions for the survey.',
-                    type: 'array',
-                    items: {
-                      description: 'A qualitative measurement type definition, with array of valid/accepted options',
-                      type: 'object',
-                      additionalProperties: false,
-                      required: ['itis_tsn', 'taxon_measurement_id', 'measurement_name', 'measurement_desc', 'options'],
-                      properties: {
-                        itis_tsn: {
-                          type: 'integer',
-                          nullable: true
-                        },
-                        taxon_measurement_id: {
-                          type: 'string'
-                        },
-                        measurement_name: {
-                          type: 'string'
-                        },
-                        measurement_desc: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        options: {
-                          description: 'Valid options for the measurement.',
-                          type: 'array',
-                          items: {
-                            type: 'object',
-                            additionalProperties: false,
-                            required: ['qualitative_option_id', 'option_label', 'option_value', 'option_desc'],
-                            properties: {
-                              qualitative_option_id: {
-                                type: 'string'
-                              },
-                              option_label: {
-                                type: 'string',
-                                nullable: true
-                              },
-                              option_value: {
-                                type: 'number'
-                              },
-                              option_desc: {
-                                type: 'string',
-                                nullable: true
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  quantitative_measurements: {
-                    description: 'All quantitative measurement type definitions for the survey.',
-                    type: 'array',
-                    items: {
-                      description: 'A quantitative measurement type definition, with possible min/max constraint.',
-                      type: 'object',
-                      additionalProperties: false,
-                      required: [
-                        'itis_tsn',
-                        'taxon_measurement_id',
-                        'measurement_name',
-                        'measurement_desc',
-                        'min_value',
-                        'max_value',
-                        'unit'
-                      ],
-                      properties: {
-                        itis_tsn: {
-                          type: 'integer',
-                          nullable: true
-                        },
-                        taxon_measurement_id: {
-                          type: 'string'
-                        },
-                        measurement_name: {
-                          type: 'string'
-                        },
-                        measurement_desc: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        min_value: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        max_value: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        unit: {
-                          type: 'string',
-                          nullable: true
-                        }
-                      }
-                    }
-                  },
-                  qualitative_environments: {
-                    description: 'All qualitative environment type definitions for the survey.',
-                    type: 'array',
-                    items: {
-                      description: 'A qualitative environment type definition, with array of valid/accepted options',
-                      type: 'object',
-                      additionalProperties: false,
-                      required: ['environment_qualitative_id', 'name', 'description', 'options'],
-                      properties: {
-                        environment_qualitative_id: {
-                          type: 'string',
-                          format: 'uuid'
-                        },
-                        name: {
-                          type: 'string'
-                        },
-                        description: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        options: {
-                          description: 'Valid options for the environment.',
-                          type: 'array',
-                          items: {
-                            type: 'object',
-                            additionalProperties: false,
-                            required: [
-                              'environment_qualitative_option_id',
-                              'environment_qualitative_id',
-                              'name',
-                              'description'
-                            ],
-                            properties: {
-                              environment_qualitative_option_id: {
-                                type: 'string',
-                                format: 'uuid'
-                              },
-                              environment_qualitative_id: {
-                                type: 'string',
-                                format: 'uuid'
-                              },
-                              name: {
-                                type: 'string'
-                              },
-                              description: {
-                                type: 'string',
-                                nullable: true
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  },
-                  quantitative_environments: {
-                    description: 'All quantitative environment type definitions for the survey.',
-                    type: 'array',
-                    items: {
-                      description: 'A quantitative environment type definition, with possible min/max constraint.',
-                      type: 'object',
-                      additionalProperties: false,
-                      required: ['environment_quantitative_id', 'name', 'description', 'min', 'max', 'unit'],
-                      properties: {
-                        environment_quantitative_id: {
-                          type: 'string',
-                          format: 'uuid'
-                        },
-                        name: {
-                          type: 'string'
-                        },
-                        description: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        min: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        max: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        unit: {
-                          type: 'string',
-                          nullable: true
-                        }
-                      }
-                    }
-                  }
-                }
-              },
-              pagination: { ...paginationResponseSchema }
-            }
-          }
+          schema: observervationsWithSubcountDataSchema
         }
       }
     },
@@ -563,7 +169,8 @@ PUT.apiDoc = {
                         type: 'integer',
                         minimum: 1,
                         nullable: true,
-                        description: 'The survey observation ID. If provided observation, the record will be updated.'
+                        description:
+                          'The survey observation ID. If provided, the matching existing observation record will be updated. If not provided, a new observation record will be inserted.'
                       },
                       itis_tsn: {
                         type: 'integer'
@@ -617,6 +224,7 @@ PUT.apiDoc = {
                       additionalProperties: false,
                       required: [
                         'subcount',
+                        'observation_subcount_sign_id',
                         'qualitative_measurements',
                         'quantitative_measurements',
                         'qualitative_environments',
@@ -624,9 +232,17 @@ PUT.apiDoc = {
                       ],
                       properties: {
                         observation_subcount_id: {
-                          type: 'number',
+                          type: 'integer',
+                          minimum: 1,
                           nullable: true,
-                          description: 'The observation subcount ID. If provided, the subcount record will be updated.'
+                          description:
+                            'The observation subcount ID. If provided, the mataching existing subcount record will be updated. If not provided, a new subcount record will be inserted.'
+                        },
+                        observation_subcount_sign_id: {
+                          type: 'integer',
+                          minimum: 1,
+                          description:
+                            'The observation subcount sign ID, indicating whether the subcount was a direct sighting, footprints, scat, etc.'
                         },
                         subcount: {
                           type: 'number',
@@ -765,7 +381,7 @@ export function getSurveyObservations(): RequestHandler {
 
     const paginationOptions: Partial<ApiPaginationOptions> = { page, limit, order, sort };
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -802,39 +418,42 @@ export function getSurveyObservations(): RequestHandler {
  * @export
  * @return {*}  {RequestHandler}
  */
-export function insertUpdateManualSurveyObservations(): RequestHandler {
+export function putObservations(): RequestHandler {
   return async (req, res) => {
-    const surveyId = Number(req.params.surveyId);
-
-    defaultLog.debug({ label: 'insertUpdateSurveyObservations', surveyId });
-
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
+      const surveyId = Number(req.params.surveyId);
+      const observationRows: InsertUpdateObservations[] = req.body.surveyObservations;
+
+      defaultLog.debug({ label: 'insertUpdateSurveyObservations', surveyId });
+
       await connection.open();
 
       const observationService = new ObservationService(connection);
 
-      const observationRows: InsertUpdateObservations[] = req.body.surveyObservations;
-
-      const critterBaseService = new CritterbaseService({
-        keycloak_guid: req['system_user']?.user_guid,
-        username: req['system_user']?.user_identifier
-      });
-
       // Validate measurement data against fetched measurement definition
-      const isValid = await observationService.validateSurveyObservations(observationRows, critterBaseService);
+      const critterBaseService = new CritterbaseService(getCritterbaseUser(req));
+      const observationSubCountEnvironmentService = new ObservationSubCountEnvironmentService(connection);
+
+      const isValid = await observationService.validateSurveyObservations(
+        observationRows,
+        critterBaseService,
+        observationSubCountEnvironmentService
+      );
+
       if (!isValid) {
         throw new Error('Failed to save observation data, failed data validation.');
       }
 
+      // Insert/update observation records
       await observationService.insertUpdateManualSurveyObservations(surveyId, observationRows);
 
       await connection.commit();
 
       return res.status(204).send();
     } catch (error) {
-      defaultLog.error({ label: 'insertUpdateManualSurveyObservations', message: 'error', error });
+      defaultLog.error({ label: 'putObservations', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

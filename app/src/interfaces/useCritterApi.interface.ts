@@ -1,23 +1,24 @@
 import { ICreateCritterCollectionUnit } from 'features/surveys/view/survey-animals/animal';
 import { Feature } from 'geojson';
-import { ITaxonomy } from './useTaxonomyApi.interface';
+import { IPartialTaxonomy } from './useTaxonomyApi.interface';
 
-export interface ICritterCreate {
+export type ICritterCreate = {
   critter_id?: string;
   wlh_id?: string | null;
   animal_id?: string | null;
-  sex: string;
+  sex_qualitative_option_id: string | null;
   itis_tsn: number;
   responsible_region_nr_id?: string | null;
   critter_comment?: string | null;
-}
+};
 
 export interface ICreateEditAnimalRequest {
   critter_id?: string;
   nickname: string;
-  species: ITaxonomy | null;
+  species: IPartialTaxonomy | null;
+  sex_qualitative_option_id: string | null;
   ecological_units: ICreateCritterCollectionUnit[];
-  wildlife_health_id: string;
+  wildlife_health_id: string | null;
   critter_comment: string | null;
 }
 
@@ -103,6 +104,11 @@ export interface IEditMortalityRequest extends IMarkings, IMeasurementsUpdate {
   mortality: IMortalityPostData;
 }
 
+export interface ICollectionUnitMultiTsnResponse {
+  tsn: number;
+  categories: ICollectionCategory[];
+}
+
 export interface ICollectionCategory {
   collection_category_id: string;
   category_name: string;
@@ -155,8 +161,8 @@ export type ICaptureResponse = {
   release_time: string | null;
   capture_comment: string | null;
   release_comment: string | null;
-  capture_location: ILocationResponse;
-  release_location: ILocationResponse | null | undefined;
+  capture_location?: ILocationResponse | null;
+  release_location?: ILocationResponse | null;
 };
 
 export type IMarkingResponse = {
@@ -268,13 +274,19 @@ export type IFamilyChildResponse = {
   child_critter_id: string;
 };
 
+export interface ISex {
+  qualitative_option_id: string;
+  label: string;
+}
+
 export type ICritterDetailedResponse = {
-  critter_id: string;
+  critter_id: number;
+  critterbase_critter_id: string;
   itis_tsn: number;
   itis_scientific_name: string;
   wlh_id: string | null;
   animal_id: string | null;
-  sex: string;
+  sex: ISex | null;
   responsible_region_nr_id: string;
   critter_comment: string | null;
   collection_units: ICritterCollectionUnitResponse[];
@@ -290,10 +302,11 @@ export type ICritterDetailedResponse = {
 };
 
 export interface ICritterSimpleResponse {
-  critter_id: string;
+  critter_id: number;
+  critterbase_critter_id: string;
   wlh_id: string | null;
   animal_id: string | null;
-  sex: string;
+  sex: ISex;
   itis_tsn: number;
   itis_scientific_name: string;
   responsible_region_nr_id: string | null;
@@ -386,6 +399,6 @@ export type CBMeasurementSearchByTsnResponse = {
  * Response object when searching for measurement type definitions by search term.
  */
 export type CBMeasurementSearchByTermResponse = {
-  qualitative: (CBQualitativeMeasurementTypeDefinition & { tsnHierarchy: number[] })[];
-  quantitative: (CBQuantitativeMeasurementTypeDefinition & { tsnHierarchy: number[] })[];
+  qualitative: CBQualitativeMeasurementTypeDefinition[];
+  quantitative: CBQuantitativeMeasurementTypeDefinition[];
 };

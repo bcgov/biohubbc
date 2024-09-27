@@ -1,8 +1,11 @@
+import { mdiArrowTopRight } from '@mdi/js';
 import Typography from '@mui/material/Typography';
 import AttachmentsList from 'components/attachments/list/AttachmentsList';
 import ProjectReportAttachmentDialog from 'components/dialog/attachments/project/ProjectReportAttachmentDialog';
-import RemoveOrResubmitDialog from 'components/publish/components/RemoveOrResubmitDialog';
-import { AttachmentType, PublishStatus } from 'constants/attachments';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import { AttachmentType } from 'constants/attachments';
 import { AttachmentsI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
@@ -19,7 +22,6 @@ const ProjectAttachmentsList = () => {
   const dialogContext = useContext(DialogContext);
 
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | null>(null);
-  const [removeOrResubmitDialogOpen, setRemoveOrResubmitDialogOpen] = useState<boolean>(false);
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
@@ -58,11 +60,6 @@ const ProjectAttachmentsList = () => {
 
   const handleViewDetailsClose = () => {
     setCurrentAttachment(null);
-  };
-
-  const handleRemoveOrResubmit = (attachment: IGetProjectAttachment) => {
-    setCurrentAttachment(attachment);
-    setRemoveOrResubmitDialogOpen(true);
   };
 
   const handleDelete = (attachment: IGetProjectAttachment) => {
@@ -121,33 +118,35 @@ const ProjectAttachmentsList = () => {
 
   return (
     <>
-      <RemoveOrResubmitDialog
-        projectId={projectContext.projectId}
-        fileName={currentAttachment?.fileName ?? ''}
-        parentName={projectContext.projectDataLoader.data?.projectData.project.project_name ?? ''}
-        status={
-          currentAttachment?.supplementaryAttachmentData?.event_timestamp
-            ? PublishStatus.SUBMITTED
-            : PublishStatus.UNSUBMITTED
-        }
-        submittedDate={currentAttachment?.supplementaryAttachmentData?.event_timestamp ?? ''}
-        open={removeOrResubmitDialogOpen}
-        onClose={() => setRemoveOrResubmitDialogOpen(false)}
-      />
       <ProjectReportAttachmentDialog
         projectId={projectContext.projectId}
         attachment={currentAttachment}
         open={!!currentAttachment && currentAttachment?.fileType === AttachmentType.REPORT}
         onClose={handleViewDetailsClose}
       />
-      <AttachmentsList<IGetProjectAttachment>
-        attachments={attachmentsList}
-        handleDownload={handleDownload}
-        handleDelete={handleDelete}
-        handleViewDetails={handleViewDetailsOpen}
-        handleRemoveOrResubmit={handleRemoveOrResubmit}
-        emptyStateText="No shared files found"
-      />
+      <LoadingGuard
+        isLoading={projectContext.artifactDataLoader.isLoading}
+        isLoadingFallback={<SkeletonTable data-testid="project-attachments-loading-skeleton" />}
+        isLoadingFallbackDelay={100}
+        hasNoData={!attachmentsList.length}
+        hasNoDataFallback={
+          <NoDataOverlay
+            height="200px"
+            title="Upload Files"
+            subtitle="Share information with your team by uploading files"
+            icon={mdiArrowTopRight}
+            data-testid="project-attachments-list-no-data-overlay"
+          />
+        }
+        hasNoDataFallbackDelay={100}>
+        <AttachmentsList<IGetProjectAttachment>
+          attachments={attachmentsList}
+          handleDownload={handleDownload}
+          handleDelete={handleDelete}
+          handleViewDetails={handleViewDetailsOpen}
+          emptyStateText="No shared files found"
+        />
+      </LoadingGuard>
     </>
   );
 };

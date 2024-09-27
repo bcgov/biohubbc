@@ -1,10 +1,10 @@
 import Typography from '@mui/material/Typography';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import { useTaxonomyContext } from 'hooks/useContext';
-import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
+import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { useEffect, useState } from 'react';
 
-export interface ITaxonomyDataGridViewCellProps<DataGridType extends GridValidRowModel> {
+export interface IPartialTaxonomyDataGridViewCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
   error?: boolean;
 }
@@ -13,17 +13,17 @@ export interface ITaxonomyDataGridViewCellProps<DataGridType extends GridValidRo
  * Data grid taxonomy component for view.
  *
  * @template DataGridType
- * @param {ITaxonomyDataGridViewCellProps<DataGridType>} props
+ * @param {IPartialTaxonomyDataGridViewCellProps<DataGridType>} props
  * @return {*}
  */
 const TaxonomyDataGridViewCell = <DataGridType extends GridValidRowModel>(
-  props: ITaxonomyDataGridViewCellProps<DataGridType>
+  props: IPartialTaxonomyDataGridViewCellProps<DataGridType>
 ) => {
   const { dataGridProps } = props;
 
   const taxonomyContext = useTaxonomyContext();
 
-  const [taxon, setTaxon] = useState<ITaxonomy | null>(null);
+  const [taxon, setTaxon] = useState<IPartialTaxonomy | null>(null);
 
   useEffect(() => {
     const response = taxonomyContext.getCachedSpeciesTaxonomyById(dataGridProps.value);

@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 import { InsertSamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-period-repository';
@@ -9,7 +10,7 @@ import { InsertSamplePeriodRecord, UpdateSamplePeriodRecord } from './sample-per
  */
 export type InsertSampleMethodRecord = Pick<
   SampleMethodRecord,
-  'survey_sample_site_id' | 'method_lookup_id' | 'description' | 'method_response_metric_id'
+  'survey_sample_site_id' | 'method_technique_id' | 'description' | 'method_response_metric_id'
 > & { sample_periods: InsertSamplePeriodRecord[] };
 
 /**
@@ -17,7 +18,11 @@ export type InsertSampleMethodRecord = Pick<
  */
 export type UpdateSampleMethodRecord = Pick<
   SampleMethodRecord,
-  'survey_sample_method_id' | 'survey_sample_site_id' | 'method_lookup_id' | 'description' | 'method_response_metric_id'
+  | 'survey_sample_method_id'
+  | 'survey_sample_site_id'
+  | 'method_technique_id'
+  | 'description'
+  | 'method_response_metric_id'
 > & { sample_periods: UpdateSamplePeriodRecord[] };
 
 /**
@@ -26,7 +31,7 @@ export type UpdateSampleMethodRecord = Pick<
 export const SampleMethodRecord = z.object({
   survey_sample_method_id: z.number(),
   survey_sample_site_id: z.number(),
-  method_lookup_id: z.number(),
+  method_technique_id: z.number(),
   method_response_metric_id: z.number(),
   description: z.string(),
   create_date: z.string(),
@@ -36,6 +41,18 @@ export const SampleMethodRecord = z.object({
   revision_count: z.number()
 });
 export type SampleMethodRecord = z.infer<typeof SampleMethodRecord>;
+
+/**
+ * A survey_sample_method detail object.
+ */
+export const SampleMethodDetails = SampleMethodRecord.extend({
+  technique: z.object({
+    method_technique_id: z.number(),
+    name: z.string(),
+    description: z.string().nullable()
+  })
+});
+export type SampleMethodDetails = z.infer<typeof SampleMethodDetails>;
 
 /**
  * Sample Method Repository
@@ -82,6 +99,26 @@ export class SampleMethodRepository extends BaseRepository {
   }
 
   /**
+   * Gets count of sample methods associated with one or more method technique Ids
+   *
+   * @param {number[]} techniqueIds
+   * @return {*}  {Promise<number>}
+   * @memberof SampleMethodRepository
+   */
+  async getSampleMethodsCountForTechniqueIds(techniqueIds: number[]): Promise<number> {
+    const knex = getKnex();
+    const queryBuilder = knex
+      .queryBuilder()
+      .select(knex.raw('COUNT(*)::integer AS count'))
+      .from('survey_sample_method')
+      .whereIn('method_technique_id', techniqueIds);
+
+    const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
+
+    return response.rows[0].count;
+  }
+
+  /**
    * updates a survey Sample method.
    *
    * @param {UpdateSampleMethodRecord} sampleMethod
@@ -93,7 +130,7 @@ export class SampleMethodRepository extends BaseRepository {
       UPDATE survey_sample_method ssm
       SET
           survey_sample_site_id = ${sampleMethod.survey_sample_site_id},
-          method_lookup_id = ${sampleMethod.method_lookup_id},
+          method_technique_id = ${sampleMethod.method_technique_id},
           description = ${sampleMethod.description},
           method_response_metric_id = ${sampleMethod.method_response_metric_id}
       FROM 
@@ -128,12 +165,12 @@ export class SampleMethodRepository extends BaseRepository {
     const sqlStatement = SQL`
       INSERT INTO survey_sample_method (
         survey_sample_site_id,
-        method_lookup_id,
+        method_technique_id,
         description,
         method_response_metric_id
       ) VALUES (
         ${sampleMethod.survey_sample_site_id},
-        ${sampleMethod.method_lookup_id},
+        ${sampleMethod.method_technique_id},
         ${sampleMethod.description},
         ${sampleMethod.method_response_metric_id}
         )

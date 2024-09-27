@@ -15,19 +15,18 @@ describe('SurveyProprietaryData', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
-    const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const { getByTestId } = render(
       <SurveyContext.Provider
         value={{
           projectId: 1,
           surveyId: 1,
-          critterDeployments: [],
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
+          techniqueDataLoader: mockTechniqueDataLoader,
           sampleSiteDataLoader: mockSampleSiteDataLoader,
-          critterDataLoader: mockCritterDataLoader,
-          deploymentDataLoader: mockDeploymentDataLoader
+          critterDataLoader: mockCritterDataLoader
         }}>
         <SurveyProprietaryData />
       </SurveyContext.Provider>
@@ -45,19 +44,18 @@ describe('SurveyProprietaryData', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
-    const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const { getByTestId } = render(
       <SurveyContext.Provider
         value={{
           projectId: 1,
           surveyId: 1,
-          critterDeployments: [],
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
+          techniqueDataLoader: mockTechniqueDataLoader,
           sampleSiteDataLoader: mockSampleSiteDataLoader,
-          critterDataLoader: mockCritterDataLoader,
-          deploymentDataLoader: mockDeploymentDataLoader
+          critterDataLoader: mockCritterDataLoader
         }}>
         <SurveyProprietaryData />
       </SurveyContext.Provider>
@@ -73,19 +71,18 @@ describe('SurveyProprietaryData', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
-    const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const { container } = render(
       <SurveyContext.Provider
         value={{
           projectId: 1,
           surveyId: 1,
-          critterDeployments: [],
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
           sampleSiteDataLoader: mockSampleSiteDataLoader,
           critterDataLoader: mockCritterDataLoader,
-          deploymentDataLoader: mockDeploymentDataLoader
+          techniqueDataLoader: mockTechniqueDataLoader
         }}>
         <SurveyProprietaryData />
       </SurveyContext.Provider>

@@ -87,15 +87,34 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
+                  required: [
+                    'survey_sample_method_id',
+                    'survey_sample_site_id',
+                    'method_technique_id',
+                    'method_response_metric_id',
+                    'description',
+                    'create_date',
+                    'create_user',
+                    'update_date',
+                    'update_user',
+                    'revision_count'
+                  ],
                   properties: {
                     survey_sample_method_id: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
                     survey_sample_site_id: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
-                    method_lookup_id: {
-                      type: 'integer'
+                    method_technique_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    method_response_metric_id: {
+                      type: 'integer',
+                      minimum: 1
                     },
                     description: {
                       type: 'string'
@@ -104,7 +123,8 @@ GET.apiDoc = {
                       type: 'string'
                     },
                     create_user: {
-                      type: 'integer'
+                      type: 'integer',
+                      minimum: 1
                     },
                     update_date: {
                       type: 'string',
@@ -112,6 +132,7 @@ GET.apiDoc = {
                     },
                     update_user: {
                       type: 'integer',
+                      minimum: 1,
                       nullable: true
                     },
                     revision_count: {
@@ -157,7 +178,7 @@ export function getSurveySampleMethodRecords(): RequestHandler {
     const surveySampleSiteId = Number(req.params.surveySampleSiteId);
     const surveyId = Number(req.params.surveyId);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -184,7 +205,7 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
           surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
@@ -195,7 +216,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  createSurveySampleSiteRecord()
+  createSurveySampleMethodRecord()
 ];
 
 POST.apiDoc = {
@@ -281,7 +302,7 @@ POST.apiDoc = {
   }
 };
 
-export function createSurveySampleSiteRecord(): RequestHandler {
+export function createSurveySampleMethodRecord(): RequestHandler {
   return async (req, res) => {
     if (!req.params.surveySampleSiteId) {
       throw new HTTP400('Missing required param `surveySampleSiteId`');
@@ -294,12 +315,13 @@ export function createSurveySampleSiteRecord(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     const surveySampleSiteId = Number(req.params.surveySampleSiteId);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
-      const sampleSiteService = new SampleLocationService(connection);
+      const sampleLocationService = new SampleLocationService(connection);
 
-      const sampleSite = sampleSiteService.getSurveySampleSiteById(surveyId, surveySampleSiteId);
+      const sampleSite = await sampleLocationService.getSurveySampleSiteById(surveyId, surveySampleSiteId);
+
       if (!sampleSite) {
         throw new HTTP400('The given sample site does not belong to the given survey');
       }
@@ -319,7 +341,7 @@ export function createSurveySampleSiteRecord(): RequestHandler {
 
       return res.status(201).send();
     } catch (error) {
-      defaultLog.error({ label: 'insertProjectParticipants', message: 'error', error });
+      defaultLog.error({ label: 'createSurveySampleMethodRecord', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

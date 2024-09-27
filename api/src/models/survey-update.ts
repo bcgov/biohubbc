@@ -1,7 +1,7 @@
 import { Feature } from 'geojson';
 import { SurveyStratum, SurveyStratumRecord } from '../repositories/site-selection-strategy-repository';
 import { PostSurveyBlock } from '../repositories/survey-block-repository';
-import { ITaxonomy } from '../services/platform-service';
+import { ITaxonomyWithEcologicalUnits } from '../services/platform-service';
 
 export class PutSurveyObject {
   survey_details: PutSurveyDetailsData;
@@ -99,12 +99,10 @@ export class PutSurveyDetailsData {
 }
 
 export class PutSurveySpeciesData {
-  focal_species: ITaxonomy[];
-  ancillary_species: ITaxonomy[];
+  focal_species: ITaxonomyWithEcologicalUnits[];
 
   constructor(obj?: any) {
     this.focal_species = (obj?.focal_species?.length && obj?.focal_species) || [];
-    this.ancillary_species = (obj?.ancillary_species?.length && obj?.ancillary_species) || [];
   }
 }
 
@@ -136,13 +134,11 @@ export class PutSurveyProprietorData {
 export class PutSurveyPurposeAndMethodologyData {
   intended_outcome_ids: number[];
   additional_details: string;
-  vantage_code_ids: number[];
   revision_count: number;
 
   constructor(obj?: any) {
     this.intended_outcome_ids = (obj?.intended_outcome_ids?.length && obj?.intended_outcome_ids) || [];
     this.additional_details = obj?.additional_details || null;
-    this.vantage_code_ids = (obj?.vantage_code_ids?.length && obj.vantage_code_ids) || [];
     this.revision_count = obj?.revision_count ?? null;
   }
 }

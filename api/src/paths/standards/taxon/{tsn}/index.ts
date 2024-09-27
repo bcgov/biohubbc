@@ -1,26 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../constants/roles';
-import { getDBConnection } from '../../../../database/db';
-import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
+import { getAPIUserDBConnection } from '../../../../database/db';
 import { StandardsService } from '../../../../services/standards-service';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/projects');
 
-export const GET: Operation = [
-  authorizeRequestHandler(() => {
-    return {
-      and: [
-        {
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          discriminator: 'SystemRole'
-        }
-      ]
-    };
-  }),
-  getSpeciesStandards()
-];
+export const GET: Operation = [getSpeciesStandards()];
 
 GET.apiDoc = {
   description: 'Gets lookup values for a tsn to describe what information can be uploaded for a given species.',
@@ -35,7 +21,6 @@ GET.apiDoc = {
       required: true
     }
   ],
-  security: [{ Bearer: [] }],
   responses: {
     200: {
       description: 'Species data standards response object.',
@@ -199,8 +184,7 @@ GET.apiDoc = {
  */
 export function getSpeciesStandards(): RequestHandler {
   return async (req, res) => {
-    // TODO: const connection = getAPIUserDBConnection();
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getAPIUserDBConnection();
 
     try {
       const tsn = Number(req.params.tsn);
@@ -216,6 +200,7 @@ export function getSpeciesStandards(): RequestHandler {
       return res.status(200).json(getSpeciesStandardsResponse);
     } catch (error) {
       defaultLog.error({ label: 'getSpeciesStandards', message: 'error', error });
+      connection.rollback();
       throw error;
     } finally {
       connection.release();

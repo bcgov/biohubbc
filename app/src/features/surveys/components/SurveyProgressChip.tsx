@@ -1,8 +1,8 @@
 import { ChipProps } from '@mui/material';
-import blueGrey from '@mui/material/colors/blueGrey';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import { SurveyProgressChipColours } from 'constants/misc';
+import { getSurveyProgressColour, SurveyProgressKeys } from 'constants/colours';
 import { useCodesContext } from 'hooks/useContext';
+import { useEffect } from 'react';
 import { getCodesName } from 'utils/Utils';
 
 interface ISurveyProgressChipProps extends ChipProps {
@@ -15,14 +15,20 @@ interface ISurveyProgressChipProps extends ChipProps {
  * @param props
  * @returns
  */
-const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
+export const SurveyProgressChip = (props: ISurveyProgressChipProps) => {
   const codesContext = useCodesContext();
 
-  const codeName =
-    getCodesName(codesContext.codesDataLoader.data, 'survey_progress', props.progress_id)?.toUpperCase() ?? '';
-  const codeColour = SurveyProgressChipColours[codeName] ?? blueGrey;
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
-  return <ColouredRectangleChip colour={codeColour} label={codeName} title="Survey progress" />;
+  const codeName = getCodesName(codesContext.codesDataLoader.data, 'survey_progress', props.progress_id) ?? '';
+
+  return (
+    <ColouredRectangleChip
+      colour={getSurveyProgressColour(codeName as SurveyProgressKeys)}
+      label={codeName}
+      title="Survey progress"
+    />
+  );
 };
-
-export default SurveyProgressChip;

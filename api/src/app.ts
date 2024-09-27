@@ -5,7 +5,7 @@ import { OpenAPIV3 } from 'openapi-types';
 import path from 'path';
 import swaggerUIExperss from 'swagger-ui-express';
 import { defaultPoolConfig, initDBPool } from './database/db';
-import { ensureHTTPError, HTTP500 } from './errors/http-error';
+import { ensureHTTPError, HTTP400, HTTP500 } from './errors/http-error';
 import {
   authorizeAndAuthenticateMiddleware,
   getCritterbaseProxyMiddleware,
@@ -13,6 +13,7 @@ import {
 } from './middleware/critterbase-proxy';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest, authenticateRequestOptional } from './request-handlers/security/authentication';
+import { scanFileForVirus } from './utils/file-utils';
 import { getLogger } from './utils/logger';
 
 const defaultLog = getLogger('app');
@@ -75,20 +76,46 @@ const openAPIFramework = initialize({
     'application/json': express.json({ limit: MAX_REQ_BODY_SIZE }),
     'multipart/form-data': function (req, res, next) {
       const multerRequestHandler = multer({
-        storage: multer.memoryStorage(),
+        storage: multer.memoryStorage(), // TODO change to local/PVC storage and stream file uploads to S3?
         limits: { fileSize: MAX_UPLOAD_FILE_SIZE }
       }).array('media', MAX_UPLOAD_NUM_FILES);
 
-      multerRequestHandler(req, res, (error?: any) => {
+      /**
+       * Multer transforms and moves the incoming files from `req.body.media` --> `req.files`.
+       *
+       * OpenAPI only allows validation on specific parts of the request object (requestBody / parameters...) this excludes the contents of `req.files`.
+       * To get around this we re-assign `req.body.media` to the Multer transformed files stored in `req.files`.
+       *
+       * Files can be accessed via `req.body.media` OR `req.files`.
+       *
+       * @see https://www.npmjs.com/package/express-openapi#argsconsumesmiddleware
+       */
+      multerRequestHandler(req, res, async (error?: any) => {
         if (error) {
           return next(error);
         }
 
-        if (req.files && req.files.length) {
-          // Set original request file field to empty string to satisfy OpenAPI validation
-          // See: https://www.npmjs.com/package/express-openapi#argsconsumesmiddleware
-          (req.files as Express.Multer.File[]).forEach((file) => (req.body[file.fieldname] = ''));
+        // Scan files for malicious content, if enabled
+        const virusScanPromises = (req.files as Express.Multer.File[]).map(async function (file) {
+          const isSafe = await scanFileForVirus(file);
+
+          if (!isSafe) {
+            throw new HTTP400('Malicious file content detected.', [{ file_name: file.originalname }]);
+          }
+        });
+
+        try {
+          await Promise.all(virusScanPromises);
+        } catch (error) {
+          // If a virus is detected, return error and do not continue
+          return next(error);
         }
+
+        // Ensure `req.files` or `req.body.media` is always set to an array
+        const multerFiles = req.files ?? [];
+
+        req.files = multerFiles;
+        req.body = { ...req.body, media: multerFiles };
 
         return next();
       });

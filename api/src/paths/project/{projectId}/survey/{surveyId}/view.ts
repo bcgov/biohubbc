@@ -20,8 +20,6 @@ import { authorizeRequestHandler } from '../../../../../request-handlers/securit
 import { SurveyService } from '../../../../../services/survey-service';
 import { getLogger } from '../../../../../utils/logger';
 
-('../../../../../openapi/schemas/survey');
-
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/view');
 
 export const GET: Operation = [
@@ -157,7 +155,7 @@ export function getSurvey(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();

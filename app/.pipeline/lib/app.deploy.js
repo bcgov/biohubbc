@@ -36,6 +36,8 @@ const appDeploy = async (settings) => {
         REACT_APP_KEYCLOAK_HOST: phases[phase].sso.host,
         REACT_APP_KEYCLOAK_REALM: phases[phase].sso.realm,
         REACT_APP_KEYCLOAK_CLIENT_ID: phases[phase].sso.clientId,
+        // Feature Flags
+        REACT_APP_FEATURE_FLAGS: phases[phase].featureFlags,
         // Openshift Resources
         CPU_REQUEST: phases[phase].cpuRequest,
         CPU_LIMIT: phases[phase].cpuLimit,
@@ -43,7 +45,6 @@ const appDeploy = async (settings) => {
         MEMORY_LIMIT: phases[phase].memoryLimit,
         REPLICAS: phases[phase].replicas,
         REPLICAS_MAX: phases[phase].replicasMax,
-        REACT_APP_BIOHUB_FEATURE_FLAG: phases[phase].biohubFeatureFlag,
         REACT_APP_BACKBONE_PUBLIC_API_HOST: phases[phase].backbonePublicApiHost,
         REACT_APP_BIOHUB_TAXON_PATH: phases[phase].biohubTaxonPath,
         REACT_APP_BIOHUB_TAXON_TSN_PATH: phases[phase].biohubTaxonTsnPath

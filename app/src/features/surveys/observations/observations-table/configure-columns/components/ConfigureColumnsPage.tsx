@@ -1,7 +1,6 @@
 import { mdiCog, mdiLeaf, mdiRuler } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
-import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
@@ -127,8 +126,8 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
   const [activeView, setActiveView] = useState(ConfigureColumnsViewEnum.GENERAL);
 
   return (
-    <Grid container justifyContent="space-between" pr={2}>
-      <Grid item>
+    <Grid container justifyContent="space-between" pr={2} mt={1} height="100%" columnSpacing={5}>
+      <Grid item maxWidth="250px">
         <ToggleButtonGroup
           value={activeView}
           onChange={(_, view) => {
@@ -173,7 +172,7 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
             startIcon={<Icon path={mdiRuler} size={0.75} />}
             disabled={disabled}
             value={ConfigureColumnsViewEnum.MEASUREMENTS}>
-            Measurements
+            Species Attributes
           </ToggleButton>
           <ToggleButton
             key={ConfigureColumnsViewEnum.ENVIRONMENT}
@@ -186,8 +185,7 @@ export const ConfigureColumnsPage = (props: IConfigureColumnsPageProps) => {
           </ToggleButton>
         </ToggleButtonGroup>
       </Grid>
-      <Divider orientation="vertical" flexItem />
-      <Grid item xs={9.5}>
+      <Grid item height="100%" flex="1 1 auto">
         {activeView === ConfigureColumnsViewEnum.GENERAL && (
           <ConfigureGeneralColumns
             key={ConfigureColumnsViewEnum.GENERAL}

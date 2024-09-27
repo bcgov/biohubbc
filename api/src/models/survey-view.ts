@@ -1,4 +1,5 @@
 import { Feature } from 'geojson';
+import { z } from 'zod';
 import { SurveyMetadataPublish } from '../repositories/history-publish-repository';
 import { IPermitModel } from '../repositories/permit-repository';
 import { SiteSelectionData } from '../repositories/site-selection-strategy-repository';
@@ -6,11 +7,35 @@ import { SurveyBlockRecord } from '../repositories/survey-block-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { SurveyUser } from '../repositories/survey-participation-repository';
 import { SystemUser } from '../repositories/user-repository';
-import { ITaxonomy } from '../services/platform-service';
+import { ITaxonomyWithEcologicalUnits } from '../services/platform-service';
+
+export interface ISurveyAdvancedFilters {
+  keyword?: string;
+  itis_tsn?: number;
+  itis_tsns?: number[];
+  start_date?: string;
+  end_date?: string;
+  survey_name?: string;
+  system_user_id?: number;
+}
+
+export const FindSurveysResponse = z.object({
+  project_id: z.number(),
+  survey_id: z.number(),
+  name: z.string(),
+  progress_id: z.number(),
+  regions: z.array(z.string()),
+  start_date: z.string().nullable(),
+  end_date: z.string().nullable().optional().nullable(),
+  focal_species: z.array(z.number().nullable()),
+  types: z.array(z.number().nullable())
+});
+
+export type FindSurveysResponse = z.infer<typeof FindSurveysResponse>;
 
 export type SurveyObject = {
   survey_details: GetSurveyData;
-  species: GetFocalSpeciesData & GetAncillarySpeciesData;
+  species: GetFocalSpeciesData;
   permit: GetPermitData;
   funding_sources: GetSurveyFundingSourceData[];
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
@@ -76,7 +101,7 @@ export class GetSurveyFundingSourceData {
 }
 
 export class GetFocalSpeciesData {
-  focal_species: ITaxonomy[];
+  focal_species: ITaxonomyWithEcologicalUnits[];
 
   constructor(obj?: any[]) {
     this.focal_species = [];
@@ -88,18 +113,6 @@ export class GetFocalSpeciesData {
   }
 }
 
-export class GetAncillarySpeciesData {
-  ancillary_species: ITaxonomy[];
-
-  constructor(obj?: any[]) {
-    this.ancillary_species = [];
-
-    obj?.length &&
-      obj.forEach((item: any) => {
-        this.ancillary_species.push(item);
-      });
-  }
-}
 export class GetPermitData {
   permits: {
     permit_id: IPermitModel['permit_id'];
@@ -121,12 +134,10 @@ export class GetSurveyPurposeAndMethodologyData {
   intended_outcome_ids: number[];
   additional_details: string;
   revision_count: number;
-  vantage_code_ids: number[];
 
   constructor(obj?: any) {
     this.intended_outcome_ids = (obj?.intended_outcome_ids?.length && obj?.intended_outcome_ids) || [];
     this.additional_details = obj?.additional_details || '';
-    this.vantage_code_ids = (obj?.vantage_ids?.length && obj.vantage_ids) || [];
     this.revision_count = obj?.revision_count ?? 0;
   }
 }

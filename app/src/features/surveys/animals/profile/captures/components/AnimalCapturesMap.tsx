@@ -19,31 +19,43 @@ interface IAnimalCapturesMapProps {
 export const AnimalCapturesMap = (props: IAnimalCapturesMapProps) => {
   const { captures, isLoading } = props;
 
-  const captureMapFeatures = captures
-    .filter((capture) => isDefined(capture.capture_location?.latitude) && isDefined(capture.capture_location.longitude))
-    .map((capture) => ({
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [capture.capture_location.longitude, capture.capture_location.latitude]
-      },
-      properties: { captureId: capture.capture_id, date: capture.capture_date }
-    })) as Feature[];
+  // Only include captures with valid locations
+  const captureMapFeatures = [];
+
+  for (const capture of captures) {
+    if (
+      capture.capture_location &&
+      isDefined(capture.capture_location.latitude) &&
+      isDefined(capture.capture_location.longitude)
+    ) {
+      const feature = {
+        id: capture.capture_id,
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [capture.capture_location.longitude, capture.capture_location.latitude]
+        },
+        properties: { captureId: capture.capture_id, date: capture.capture_date }
+      };
+      captureMapFeatures.push(feature);
+    }
+  }
 
   const staticLayers: IStaticLayer[] = captureMapFeatures.map((feature, index) => ({
     layerName: 'Captures',
     popupRecordTitle: 'Capture Location',
     features: [
       {
-        key: `${feature.geometry}-${index}`,
-        geoJSON: feature
+        id: feature.id,
+        key: `capture-location-${feature.geometry}-${index}`,
+        geoJSON: feature as Feature
       }
     ]
   }));
 
   return (
     <Box height={{ sm: 250, md: 400 }} position="relative">
-      <SurveyMap isLoading={isLoading} staticLayers={staticLayers} supplementaryLayers={[]} />
+      <SurveyMap isLoading={isLoading} staticLayers={staticLayers} />
     </Box>
   );
 };

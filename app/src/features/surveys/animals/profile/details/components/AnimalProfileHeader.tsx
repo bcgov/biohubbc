@@ -1,4 +1,4 @@
-import { mdiCheckboxMultipleBlankOutline, mdiInformationOutline, mdiPlusBoxOutline } from '@mdi/js';
+import { mdiCheckboxMultipleBlankOutline, mdiInformationOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import green from '@mui/material/colors/green';
@@ -48,7 +48,7 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
         {critter.animal_id}
       </Typography>
       <Box display="flex" justifyContent="space-between">
-        <Stack direction="row" spacing={2}>
+        <Stack direction="row" spacing={2} sx={{ mr: 2, alignItems: 'center' }}>
           <AnimalAttributeItem
             text={
               <ScientificNameTypography
@@ -60,7 +60,6 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
             }
             startIcon={mdiInformationOutline}
           />
-          {critter.wlh_id && <AnimalAttributeItem text={critter.wlh_id} startIcon={mdiPlusBoxOutline} />}
           <Box mt={1}>
             <ColouredRectangleChip
               label={critter.mortality.length ? 'Deceased' : 'Alive'}
@@ -72,15 +71,15 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
           <Typography sx={{ fontSize: '0.8rem', fontWeight: 700 }} component="span">
             Unique ID:&nbsp;
           </Typography>
-          {critter.critter_id}
+          {critter.critterbase_critter_id}
           <IconButton
             sx={{ borderRadius: '5px', p: 0.5, ml: 0.5 }}
             onClick={() => {
-              if (!critter.critter_id) {
+              if (!critter.critterbase_critter_id) {
                 return;
               }
 
-              copyToClipboard(critter.critter_id, () =>
+              copyToClipboard(critter.critterbase_critter_id, () =>
                 setMessageSnackbar('Unique ID copied to clipboard', dialogContext)
               ).catch((error) => {
                 console.error('Could not copy text: ', error);
@@ -92,14 +91,26 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
       </Box>
       <Divider sx={{ my: 2 }} />
       <Stack direction="row" gap={3} flex="1 1 auto">
-        <Box>
-          <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
-            Sex
-          </Typography>
-          <Typography component="dd" variant="body2">
-            {critter.sex}
-          </Typography>
-        </Box>
+        {critter.sex && (
+          <Box>
+            <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
+              Sex
+            </Typography>
+            <Typography component="dd" variant="body2">
+              {critter.sex.label}
+            </Typography>
+          </Box>
+        )}
+        {critter.wlh_id && (
+          <Box>
+            <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
+              Wildlife Health ID
+            </Typography>
+            <Typography component="dd" variant="body2">
+              {critter.wlh_id}
+            </Typography>
+          </Box>
+        )}
         {critter.collection_units.map((unit, index) => (
           <Box key={`${unit.collection_category_id}-${index}`}>
             <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">

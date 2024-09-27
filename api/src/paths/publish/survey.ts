@@ -125,7 +125,7 @@ POST.apiDoc = {
  */
 export function publishSurvey(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     const { surveyId, data } = req.body;
 

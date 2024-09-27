@@ -29,6 +29,7 @@ describe('CodeService', () => {
         'management_action_type',
         'first_nations',
         'agency',
+        'attractants',
         'investment_action_category',
         'type',
         'proprietor_type',
@@ -39,12 +40,12 @@ describe('CodeService', () => {
         'project_roles',
         'administrative_activity_status_type',
         'intended_outcomes',
-        'vantage_codes',
         'site_selection_strategies',
         'survey_jobs',
         'sample_methods',
         'survey_progress',
-        'method_response_metrics'
+        'method_response_metrics',
+        'observation_subcount_signs'
       );
     });
   });

@@ -1,5 +1,6 @@
 import { AttachmentType } from 'constants/attachments';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { ConfigContext, IConfig } from 'contexts/configContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { IProjectAuthStateContext, ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
@@ -46,7 +47,9 @@ describe('ProjectAttachments', () => {
     const mockProjectContext: IProjectContext = {
       artifactDataLoader: {
         data: null,
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
@@ -66,15 +69,17 @@ describe('ProjectAttachments', () => {
     };
 
     const { getByText, queryByText } = render(
-      <AuthStateContext.Provider value={authState}>
-        <Router history={history}>
-          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-            <ProjectContext.Provider value={mockProjectContext}>
-              <ProjectAttachments />
-            </ProjectContext.Provider>
-          </ProjectAuthStateContext.Provider>
-        </Router>
-      </AuthStateContext.Provider>
+      <ConfigContext.Provider value={{} as IConfig}>
+        <AuthStateContext.Provider value={authState}>
+          <Router history={history}>
+            <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+              <ProjectContext.Provider value={mockProjectContext}>
+                <ProjectAttachments />
+              </ProjectContext.Provider>
+            </ProjectAuthStateContext.Provider>
+          </Router>
+        </AuthStateContext.Provider>
+      </ConfigContext.Provider>
     );
 
     await waitFor(() => {
@@ -116,19 +121,21 @@ describe('ProjectAttachments', () => {
       hasLoadedParticipantInfo: true
     };
 
-    const { getByText } = render(
-      <AuthStateContext.Provider value={authState}>
-        <Router history={history}>
-          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-            <ProjectContext.Provider value={mockProjectContext}>
-              <ProjectAttachments />
-            </ProjectContext.Provider>
-          </ProjectAuthStateContext.Provider>
-        </Router>
-      </AuthStateContext.Provider>
+    const { getByTestId } = render(
+      <ConfigContext.Provider value={{} as IConfig}>
+        <AuthStateContext.Provider value={authState}>
+          <Router history={history}>
+            <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+              <ProjectContext.Provider value={mockProjectContext}>
+                <ProjectAttachments />
+              </ProjectContext.Provider>
+            </ProjectAuthStateContext.Provider>
+          </Router>
+        </AuthStateContext.Provider>
+      </ConfigContext.Provider>
     );
     await waitFor(() => {
-      expect(getByText('No shared files found')).toBeInTheDocument();
+      expect(getByTestId('project-attachments-list-no-data-overlay')).toBeInTheDocument();
     });
   });
 
@@ -150,7 +157,9 @@ describe('ProjectAttachments', () => {
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -165,15 +174,17 @@ describe('ProjectAttachments', () => {
     };
 
     const { getByText } = render(
-      <AuthStateContext.Provider value={authState}>
-        <Router history={history}>
-          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-            <ProjectContext.Provider value={mockProjectContext}>
-              <ProjectAttachments />
-            </ProjectContext.Provider>
-          </ProjectAuthStateContext.Provider>
-        </Router>
-      </AuthStateContext.Provider>
+      <ConfigContext.Provider value={{} as IConfig}>
+        <AuthStateContext.Provider value={authState}>
+          <Router history={history}>
+            <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+              <ProjectContext.Provider value={mockProjectContext}>
+                <ProjectAttachments />
+              </ProjectContext.Provider>
+            </ProjectAuthStateContext.Provider>
+          </Router>
+        </AuthStateContext.Provider>
+      </ConfigContext.Provider>
     );
 
     await waitFor(() => {
@@ -224,17 +235,19 @@ describe('ProjectAttachments', () => {
     };
 
     const { baseElement, queryByText, getByTestId, getAllByTestId, queryByTestId } = render(
-      <AuthStateContext.Provider value={authState}>
-        <Router history={history}>
-          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-            <DialogContextProvider>
-              <ProjectContext.Provider value={mockProjectContext}>
-                <ProjectAttachments />
-              </ProjectContext.Provider>
-            </DialogContextProvider>
-          </ProjectAuthStateContext.Provider>
-        </Router>
-      </AuthStateContext.Provider>
+      <ConfigContext.Provider value={{} as IConfig}>
+        <AuthStateContext.Provider value={authState}>
+          <Router history={history}>
+            <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+              <DialogContextProvider>
+                <ProjectContext.Provider value={mockProjectContext}>
+                  <ProjectAttachments />
+                </ProjectContext.Provider>
+              </DialogContextProvider>
+            </ProjectAuthStateContext.Provider>
+          </Router>
+        </AuthStateContext.Provider>
+      </ConfigContext.Provider>
     );
 
     await waitFor(() => {
@@ -296,17 +309,19 @@ describe('ProjectAttachments', () => {
     };
 
     const { baseElement, queryByText, getByTestId, queryByTestId, getAllByTestId } = render(
-      <AuthStateContext.Provider value={authState}>
-        <Router history={history}>
-          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-            <DialogContextProvider>
-              <ProjectContext.Provider value={mockProjectContext}>
-                <ProjectAttachments />
-              </ProjectContext.Provider>
-            </DialogContextProvider>
-          </ProjectAuthStateContext.Provider>
-        </Router>
-      </AuthStateContext.Provider>
+      <ConfigContext.Provider value={{} as IConfig}>
+        <AuthStateContext.Provider value={authState}>
+          <Router history={history}>
+            <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+              <DialogContextProvider>
+                <ProjectContext.Provider value={mockProjectContext}>
+                  <ProjectAttachments />
+                </ProjectContext.Provider>
+              </DialogContextProvider>
+            </ProjectAuthStateContext.Provider>
+          </Router>
+        </AuthStateContext.Provider>
+      </ConfigContext.Provider>
     );
 
     await waitFor(() => {
@@ -350,12 +365,16 @@ describe('ProjectAttachments', () => {
             }
           ]
         },
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>,
       projectId: 1,
       projectDataLoader: {
         data: { projectData: { project: { project_name: 'name' } } },
-        load: jest.fn()
+        load: jest.fn(),
+        isLoading: false,
+        isReady: true
       } as unknown as DataLoader<any, any, any>
     } as unknown as IProjectContext;
 
@@ -370,17 +389,19 @@ describe('ProjectAttachments', () => {
     };
 
     const { baseElement, queryByText, getAllByRole, queryByTestId, getAllByTestId } = render(
-      <AuthStateContext.Provider value={authState}>
-        <Router history={history}>
-          <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
-            <DialogContextProvider>
-              <ProjectContext.Provider value={mockProjectContext}>
-                <ProjectAttachments />
-              </ProjectContext.Provider>
-            </DialogContextProvider>
-          </ProjectAuthStateContext.Provider>
-        </Router>
-      </AuthStateContext.Provider>
+      <ConfigContext.Provider value={{} as IConfig}>
+        <AuthStateContext.Provider value={authState}>
+          <Router history={history}>
+            <ProjectAuthStateContext.Provider value={mockProjectAuthStateContext}>
+              <DialogContextProvider>
+                <ProjectContext.Provider value={mockProjectContext}>
+                  <ProjectAttachments />
+                </ProjectContext.Provider>
+              </DialogContextProvider>
+            </ProjectAuthStateContext.Provider>
+          </Router>
+        </AuthStateContext.Provider>
+      </ConfigContext.Provider>
     );
 
     await waitFor(() => {

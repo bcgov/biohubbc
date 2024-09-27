@@ -5,7 +5,6 @@ import { ObservationsContextProvider } from 'contexts/observationsContext';
 import { ProjectAuthStateContextProvider } from 'contexts/projectAuthStateContext';
 import { ProjectContextProvider } from 'contexts/projectContext';
 import { SurveyContextProvider } from 'contexts/surveyContext';
-import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import ProjectPage from 'features/projects/view/ProjectPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
 import SurveyRouter from 'features/surveys/SurveyRouter';
@@ -15,7 +14,6 @@ import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 import CreateProjectPage from './create/CreateProjectPage';
 import EditProjectPage from './edit/EditProjectPage';
-import ProjectsListPage from './list/ProjectsListPage';
 import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
 
 /**
@@ -26,11 +24,9 @@ import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
 const ProjectsRouter: React.FC = () => {
   return (
     <Switch>
-      {/* Project List Routes */}
+      {/* Summary Page Redirect */}
       <RouteWithTitle exact path="/admin/projects" title={getTitle('Projects')}>
-        <DialogContextProvider>
-          <ProjectsListPage />
-        </DialogContextProvider>
+        <Redirect to="/admin/summary" />
       </RouteWithTitle>
 
       {/* Create Project Route */}
@@ -46,7 +42,7 @@ const ProjectsRouter: React.FC = () => {
       <Redirect exact from="/admin/projects/:id" to="/admin/projects/:id/details" />
 
       {/* Project Routes */}
-      <RouteWithTitle path="/admin/projects/:id" title={getTitle('Project Details')}>
+      <RouteWithTitle path="/admin/projects/:id" title={getTitle('Project')}>
         <ProjectAuthStateContextProvider>
           <DialogContextProvider>
             <ProjectContextProvider>
@@ -88,7 +84,7 @@ const ProjectsRouter: React.FC = () => {
               </RouteWithTitle>
 
               {/* Survey Routes */}
-              <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Surveys')}>
+              <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id" title={getTitle('Survey')}>
                 <ProjectRoleRouteGuard
                   validProjectPermissions={[
                     PROJECT_PERMISSION.COORDINATOR,
@@ -98,9 +94,7 @@ const ProjectsRouter: React.FC = () => {
                   validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
                   <SurveyContextProvider>
                     <ObservationsContextProvider>
-                      <TelemetryDataContextProvider>
-                        <SurveyRouter />
-                      </TelemetryDataContextProvider>
+                      <SurveyRouter />
                     </ObservationsContextProvider>
                   </SurveyContextProvider>
                 </ProjectRoleRouteGuard>

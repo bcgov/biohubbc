@@ -2,12 +2,14 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { critterSchema } from '../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { CritterbaseService, ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters');
+
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
@@ -61,18 +63,19 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'path',
-      name: 'surveyId',
+      name: 'projectId',
       schema: {
         type: 'integer'
       },
       required: true
     },
     {
-      in: 'query',
-      name: 'format',
+      in: 'path',
+      name: 'surveyId',
       schema: {
-        type: 'string'
-      }
+        type: 'integer'
+      },
+      required: true
     }
   ],
   responses: {
@@ -81,12 +84,9 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            title: 'Bulk creation response object',
+            title: 'Array of critters in survey.',
             type: 'array',
-            items: {
-              title: 'Default critter response',
-              type: 'object'
-            }
+            items: critterSchema
           }
         }
       }
@@ -111,8 +111,8 @@ GET.apiDoc = {
 
 POST.apiDoc = {
   description:
-    'Creates a new critter in critterbase, and if successful, adds the a link to the critter_id under this survey.',
-  tags: ['critterbase'],
+    'Creates a new critter in CritterBase, and if successful, adds a corresponding SIMS critter record under this survey.',
+  tags: ['survey', 'critterbase'],
   security: [
     {
       Bearer: []
@@ -121,9 +121,19 @@ POST.apiDoc = {
   parameters: [
     {
       in: 'path',
+      name: 'projectId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -149,8 +159,10 @@ POST.apiDoc = {
             itis_tsn: {
               type: 'integer'
             },
-            sex: {
-              type: 'string'
+            sex_qualitative_option_id: {
+              type: 'string',
+              format: 'uuid',
+              nullable: true
             },
             critter_comment: {
               type: 'string'
@@ -170,11 +182,11 @@ POST.apiDoc = {
             title: 'Response object for adding critter to survey',
             type: 'object',
             properties: {
-              survey_critter_id: {
+              critter_id: {
                 type: 'number',
                 description: 'SIMS internal ID of the critter within the survey'
               },
-              critter_id: {
+              critterbase_critter_id: {
                 type: 'string',
                 description: 'Critterbase ID of the critter'
               }
@@ -201,20 +213,21 @@ POST.apiDoc = {
   }
 };
 
+/**
+ * Get all critters under this survey that have a corresponding Critterbase critter record.
+ *
+ * @export
+ * @return {*}  {RequestHandler}
+ */
 export function getCrittersFromSurvey(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
-
     const surveyId = Number(req.params.surveyId);
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
-    const surveyService = new SurveyCritterService(connection);
-    const critterbaseService = new CritterbaseService(user);
     try {
       await connection.open();
+
+      const surveyService = new SurveyCritterService(connection);
       const surveyCritters = await surveyService.getCrittersInSurvey(surveyId);
 
       // Exit early if surveyCritters list is empty
@@ -223,21 +236,41 @@ export function getCrittersFromSurvey(): RequestHandler {
       }
 
       const critterIds = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
-      const result = await critterbaseService.getMultipleCrittersByIds(critterIds);
 
-      const critterMap = new Map();
-      for (const item of result) {
-        critterMap.set(item.critter_id, item);
-      }
+      const critterbaseCritters = await surveyService.critterbaseService.getMultipleCrittersByIds(critterIds);
 
+      const response = [];
+
+      // For all SIMS critters
       for (const surveyCritter of surveyCritters) {
-        if (critterMap.has(surveyCritter.critterbase_critter_id)) {
-          critterMap.get(surveyCritter.critterbase_critter_id).survey_critter_id = surveyCritter.critter_id;
+        // Find the corresponding Critterbase critter
+        const critterbaseCritter = critterbaseCritters.find(
+          (critter) => critter.critter_id === surveyCritter.critterbase_critter_id
+        );
+
+        if (!critterbaseCritter) {
+          // SIMS critter exists but Critterbase critter does not. As Critterbase is the source of truth for critter
+          // data, we should not return this critter, which SIMS cannot properly represent.
+          continue;
         }
+
+        response.push({
+          // SIMS properties
+          critter_id: surveyCritter.critter_id,
+          critterbase_critter_id: surveyCritter.critterbase_critter_id,
+          // Critterbase properties
+          wlh_id: critterbaseCritter.wlh_id,
+          animal_id: critterbaseCritter.animal_id,
+          sex: critterbaseCritter.sex,
+          itis_tsn: critterbaseCritter.itis_tsn,
+          itis_scientific_name: critterbaseCritter.itis_scientific_name,
+          critter_comment: critterbaseCritter.critter_comment
+        });
       }
-      return res.status(200).json([...critterMap.values()]);
+
+      return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'createCritter', message: 'error', error });
+      defaultLog.error({ label: 'getCrittersFromSurvey', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -248,32 +281,33 @@ export function getCrittersFromSurvey(): RequestHandler {
 
 export function addCritterToSurvey(): RequestHandler {
   return async (req, res) => {
-    const user: ICritterbaseUser = {
-      keycloak_guid: req['system_user']?.user_guid,
-      username: req['system_user']?.user_identifier
-    };
-
     const surveyId = Number(req.params.surveyId);
     let critterId = req.body.critter_id;
 
-    const connection = getDBConnection(req['keycloak_token']);
-    const surveyService = new SurveyCritterService(connection);
-    const cb = new CritterbaseService(user);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
+      const user: ICritterbaseUser = {
+        keycloak_guid: connection.systemUserGUID(),
+        username: connection.systemUserIdentifier()
+      };
+
+      const critterbaseService = new CritterbaseService(user);
+
       // If request does not include critter ID, create a new critter and use its critter ID
       let result = null;
       if (!critterId) {
-        result = await cb.createCritter(req.body);
+        result = await critterbaseService.createCritter(req.body);
         critterId = result.critter_id;
       }
 
-      const response = await surveyService.addCritterToSurvey(surveyId, critterId);
+      const surveyService = new SurveyCritterService(connection);
+      const surveyCritterId = await surveyService.addCritterToSurvey(surveyId, critterId);
 
       await connection.commit();
-      return res.status(201).json({ critterbase_critter_id: critterId, survey_critter_id: response });
+      return res.status(201).json({ critterbase_critter_id: critterId, critter_id: surveyCritterId });
     } catch (error) {
       defaultLog.error({ label: 'addCritterToSurvey', message: 'error', error });
       await connection.rollback();

@@ -108,6 +108,16 @@ GET.apiDoc = {
                 create_date: {
                   type: 'string',
                   description: 'ISO 8601 date string'
+                },
+                updated_by: {
+                  type: 'string',
+                  description: 'Display name of the user who last updated the record',
+                  nullable: true
+                },
+                update_date: {
+                  type: 'string',
+                  description: 'Date when the record was last updated',
+                  nullable: true
                 }
               }
             }
@@ -140,7 +150,7 @@ GET.apiDoc = {
  */
 export function getAdministrativeActivities(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       // Only search for specified types if provided, otherwise search all types

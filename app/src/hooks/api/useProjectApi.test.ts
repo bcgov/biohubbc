@@ -4,13 +4,13 @@ import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
-import { ICreateProjectRequest, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import { ICreateProjectRequest, IFindProjectsResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import { ISurveyPermitForm } from '../../features/surveys/SurveyPermitForm';
+import { ISurveyPermitForm } from '../../features/surveys/components/permit/SurveyPermitForm';
 import useProjectApi from './useProjectApi';
 
 describe('useProjectApi', () => {
-  let mock: any;
+  let mock: MockAdapter;
 
   beforeEach(() => {
     mock = new MockAdapter(axios);
@@ -20,7 +20,6 @@ describe('useProjectApi', () => {
     mock.restore();
   });
 
-  const systemUserId = 123;
   const projectId = 1;
   const attachmentId = 1;
   const attachmentType = 'type';
@@ -32,32 +31,6 @@ describe('useProjectApi', () => {
     year_published: 2000,
     revision_count: 1
   };
-
-  it('getAllUserProjectsForView works as expected', async () => {
-    mock.onGet(`/api/user/${systemUserId}/projects/get`).reply(200, [
-      {
-        project_participation_id: 3,
-        project_id: 321,
-        project_name: 'test',
-        system_user_id: 1,
-        project_role_ids: [2],
-        project_role_names: ['Role1'],
-        project_role_permissions: ['Permission1']
-      }
-    ]);
-
-    const result = await useProjectApi(axios).getAllUserProjectsForView(123);
-
-    expect(result[0]).toEqual({
-      project_participation_id: 3,
-      project_id: 321,
-      project_name: 'test',
-      system_user_id: 1,
-      project_role_ids: [2],
-      project_role_names: ['Role1'],
-      project_role_permissions: ['Permission1']
-    });
-  });
 
   it('getProjectAttachments works as expected', async () => {
     mock.onGet(`/api/project/${projectId}/attachments/list`).reply(200, {
@@ -83,6 +56,35 @@ describe('useProjectApi', () => {
     ]);
   });
 
+  it('findProjects works as expected', async () => {
+    const mockResponse: IFindProjectsResponse = {
+      projects: [
+        {
+          project_id: 1,
+          name: 'name',
+          start_date: '2021-01-01',
+          end_date: '2021-12-31',
+          regions: [],
+          focal_species: [123, 456],
+          types: [1, 2, 3],
+          members: [{ system_user_id: 1, display_name: 'John doe' }]
+        }
+      ],
+      pagination: {
+        total: 100,
+        current_page: 2,
+        last_page: 4,
+        per_page: 25
+      }
+    };
+
+    mock.onGet('/api/project', { params: { limit: 25, page: 2, keyword: 'moose' } }).reply(200, mockResponse);
+
+    const result = await useProjectApi(axios).findProjects({ limit: 25, page: 2 }, { keyword: 'moose' });
+
+    expect(result).toEqual(mockResponse);
+  });
+
   it('deleteProject works as expected', async () => {
     mock.onDelete(`/api/project/${projectId}/delete`).reply(200, true);
 
@@ -97,22 +99,6 @@ describe('useProjectApi', () => {
     const result = await useProjectApi(axios).deleteProjectAttachment(projectId, attachmentId, attachmentType);
 
     expect(result).toEqual(1);
-  });
-
-  describe('getProjectsList', () => {
-    it('getProjectsList works as expected', async () => {
-      const response = [
-        {
-          project_id: 1
-        }
-      ];
-
-      mock.onGet(`/api/project/list?`).reply(200, response);
-
-      const result = await useProjectApi(axios).getProjectsList();
-
-      expect(result).toEqual([{ project_id: 1 }]);
-    });
   });
 
   it('getProjectForView works as expected', async () => {

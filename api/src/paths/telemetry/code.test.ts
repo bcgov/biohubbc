@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { BctwService } from '../../services/bctw-service';
+import { SystemUser } from '../../repositories/user-repository';
+import { BctwService } from '../../services/bctw-service/bctw-service';
 import { getRequestHandlerMocks } from '../../__mocks__/db';
 import { getCodeValues } from './code';
 
@@ -23,6 +24,9 @@ describe('getCodeValues', () => {
     const mockGetCode = sinon.stub(BctwService.prototype, 'getCode').resolves(mockCodeValues);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
     const requestHandler = getCodeValues();
 
     await requestHandler(mockReq, mockRes, mockNext);
@@ -37,6 +41,9 @@ describe('getCodeValues', () => {
     const mockGetCode = sinon.stub(BctwService.prototype, 'getCode').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.system_user = { user_identifier: 'user', user_guid: 'guid' } as SystemUser;
+
     const requestHandler = getCodeValues();
 
     try {

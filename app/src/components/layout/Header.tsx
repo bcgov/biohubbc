@@ -259,7 +259,7 @@ const Header: React.FC = () => {
                   <MenuItem
                     tabIndex={1}
                     component={RouterLink}
-                    to="/admin/projects"
+                    to="/admin/summary"
                     id="menu_projects_sm"
                     onClick={hideMobileMenu}>
                     Projects
@@ -277,11 +277,9 @@ const Header: React.FC = () => {
                     Funding Sources
                   </MenuItem>
                 </SystemRoleGuard>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <MenuItem component={RouterLink} to="/standards" id="menu_standards" onClick={hideMobileMenu}>
-                    Standards
-                  </MenuItem>
-                </SystemRoleGuard>
+                <MenuItem component={RouterLink} to="/standards" id="menu_standards" onClick={hideMobileMenu}>
+                  Standards
+                </MenuItem>
                 <MenuItem component="button" onClick={showSupportDialog} sx={{ width: '100%' }}>
                   Support
                 </MenuItem>
@@ -340,7 +338,7 @@ const Header: React.FC = () => {
                   </RouterLink>
                 </UnAuthGuard>
                 <AuthGuard>
-                  <RouterLink to="/admin/projects" id="menu_projects">
+                  <RouterLink to="/admin/summary" id="menu_projects">
                     Projects
                   </RouterLink>
                 </AuthGuard>
@@ -354,11 +352,9 @@ const Header: React.FC = () => {
                     Funding Sources
                   </RouterLink>
                 </SystemRoleGuard>
-                <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <RouterLink to="/standards" id="menu_standards">
-                    Standards
-                  </RouterLink>
-                </SystemRoleGuard>
+                <RouterLink to="/standards" id="menu_standards">
+                  Standards
+                </RouterLink>
                 <Button
                   color="inherit"
                   variant="text"

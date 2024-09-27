@@ -3,10 +3,12 @@ import { Operation } from 'express-openapi';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, getServiceClientDBConnection } from '../../database/db';
+import { HTTP409 } from '../../errors/http-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
 import { getKeycloakSource } from '../../utils/keycloak-utils';
 import { getLogger } from '../../utils/logger';
+import { getKeycloakTokenFromRequest } from '../../utils/request';
 
 const defaultLog = getLogger('paths/user/add');
 
@@ -104,6 +106,9 @@ POST.apiDoc = {
     403: {
       $ref: '#/components/responses/403'
     },
+    409: {
+      $ref: '#/components/responses/409'
+    },
     500: {
       $ref: '#/components/responses/500'
     },
@@ -132,17 +137,24 @@ export function addSystemRoleUser(): RequestHandler {
     const family_name: string = req.body?.family_name;
     const role_name: string = req.body?.role_name;
 
-    const sourceSystem = getKeycloakSource(req['keycloak_token']);
+    const keycloakToken = getKeycloakTokenFromRequest(req);
 
-    const connection = sourceSystem
-      ? getServiceClientDBConnection(sourceSystem)
-      : getDBConnection(req['keycloak_token']);
+    const sourceSystem = getKeycloakSource(keycloakToken);
+
+    const connection = sourceSystem ? getServiceClientDBConnection(sourceSystem) : getDBConnection(keycloakToken);
 
     try {
       await connection.open();
 
       const userService = new UserService(connection);
 
+      const user = await userService.getUserByIdentifier(userIdentifier, identitySource);
+      if (user?.record_end_date === null) {
+        // User already exists and is active, do nothing and return early
+        throw new HTTP409('Failed to add user. User with matching identifier already exists.');
+      }
+
+      // This function also verifies that the user exists, but we explicitly check above to return a useful error message.
       const userObject = await userService.ensureSystemUser(
         userGuid,
         userIdentifier,
@@ -153,19 +165,23 @@ export function addSystemRoleUser(): RequestHandler {
         family_name
       );
 
-      if (userObject) {
-        if (role_name) {
-          await userService.addUserSystemRoleByName(userObject.system_user_id, role_name);
-        } else {
-          await userService.addUserSystemRoles(userObject.system_user_id, [roleId]);
-        }
+      // Delete existin role
+      if (userObject.role_ids.length) {
+        await userService.deleteUserSystemRoles(userObject.system_user_id);
+      }
+
+      // Add the new role
+      if (role_name) {
+        await userService.addUserSystemRoleByName(userObject.system_user_id, role_name);
+      } else {
+        await userService.addUserSystemRoles(userObject.system_user_id, [roleId]);
       }
 
       await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'getUser', message: 'error', error });
+      defaultLog.error({ label: 'addSystemRoleUser', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

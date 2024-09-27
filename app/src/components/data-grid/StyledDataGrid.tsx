@@ -1,28 +1,30 @@
-import Box from '@mui/material/Box';
 import { grey } from '@mui/material/colors';
 import { DataGrid, DataGridProps, GridValidRowModel } from '@mui/x-data-grid';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { useCallback } from 'react';
 import StyledDataGridOverlay from './StyledDataGridOverlay';
 
-const StyledLoadingOverlay = () => (
-  <Box width="100%" height="100%" sx={{ backgroundColor: grey[300], opacity: 0.25 }}></Box>
-);
 export type StyledDataGridProps = DataGridProps & {
   noRowsMessage?: string;
+  noRowsOverlay?: JSX.Element;
 };
 export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledDataGridProps) => {
+  const loadingOverlay = () => <SkeletonTable />;
+
   const noRowsOverlay = useCallback(
-    () => <StyledDataGridOverlay message={props.noRowsMessage} />,
-    [props.noRowsMessage]
+    () => props.noRowsOverlay ?? <StyledDataGridOverlay message={props.noRowsMessage} />,
+    [props.noRowsMessage, props.noRowsOverlay]
   );
 
   return (
     <DataGrid<R>
-      {...props}
       autoHeight
+      {...props}
+      disableColumnMenu
       slots={{
-        loadingOverlay: StyledLoadingOverlay,
-        noRowsOverlay: noRowsOverlay
+        loadingOverlay: loadingOverlay,
+        noRowsOverlay: noRowsOverlay,
+        ...props.slots
       }}
       sx={{
         border: 'none',
@@ -47,9 +49,22 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
         '& .MuiDataGrid-columnHeader:last-of-type, .MuiDataGrid-cell:last-of-type': {
           pr: 2
         },
-        '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': { py: '8px' },
-        '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': { py: '15px' },
-        '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': { py: '22px' }
+        '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': {
+          py: '8px',
+          wordWrap: 'anywhere'
+        },
+        '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': {
+          py: '15px',
+          wordWrap: 'anywhere'
+        },
+        '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': {
+          py: '22px',
+          wordWrap: 'anywhere'
+        },
+        '& .MuiDataGrid-columnHeaderDraggableContainer': {
+          minWidth: '50px'
+        },
+        ...props.sx
       }}
     />
   );

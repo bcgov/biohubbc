@@ -128,7 +128,8 @@ const useStyles = () => {
         padding: 0,
         margin: 0
       }
-    }
+    },
+    flex: '1 1 auto'
   };
 };
 

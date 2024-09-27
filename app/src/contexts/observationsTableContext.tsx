@@ -493,6 +493,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
     }
 
     const requiredStandardColumns: (keyof IObservationTableRow)[] = [
+      'observation_subcount_sign_id',
       'count',
       'latitude',
       'longitude',
@@ -905,8 +906,9 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       survey_sample_site_id: null as unknown as number,
       survey_sample_method_id: null as unknown as number,
       survey_sample_period_id: null,
+      observation_subcount_sign_id: null as unknown as number,
       count: null as unknown as number,
-      observation_date: null as unknown as Date,
+      observation_date: '',
       observation_time: '',
       latitude: null as unknown as number,
       longitude: null as unknown as number,
@@ -1154,6 +1156,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         // Why?: Currently there is no UI support for setting a subcount value.
         // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
         subcount: row.count,
+        observation_subcount_sign_id: row.observation_subcount_sign_id,
         qualitative_measurements: measurementsToSave.qualitative,
         quantitative_measurements: measurementsToSave.quantitative,
         qualitative_environments: environmentsToSave.qualitative,
@@ -1236,8 +1239,11 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
           id: String(observationRow.survey_observation_id),
           ...observationRow,
 
-          // Spread the subcount row data into the row
+          // Add the subcount id to the row
           observation_subcount_id: subcountRow.observation_subcount_id,
+          // Add the subcount sign data into the row
+          observation_subcount_sign_id: subcountRow.observation_subcount_sign_id,
+
           // Reduce the array of qualitative measurements into an object and spread into the row
           ...subcountRow.qualitative_measurements.reduce((acc, cur) => {
             return {

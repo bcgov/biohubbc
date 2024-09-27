@@ -13,11 +13,13 @@ export interface IGetSurveyObservationsResponse {
   pagination: ApiPaginationResponseParams;
 }
 
+export interface IGetSurveyObservationsGeometryObject {
+  survey_observation_id: number;
+  geometry: GeoJSON.Point;
+}
+
 export interface IGetSurveyObservationsGeometryResponse {
-  surveyObservationsGeometry: {
-    survey_observation_id: number;
-    geometry: GeoJSON.Point;
-  }[];
+  surveyObservationsGeometry: IGetSurveyObservationsGeometryObject[];
   supplementaryObservationData: SupplementaryObservationData;
 }
 
@@ -35,7 +37,7 @@ export type StandardObservationColumns = {
   survey_sample_method_id: number | null;
   survey_sample_period_id: number | null;
   count: number | null;
-  observation_date: Date;
+  observation_date: string;
   observation_time: string;
   latitude: number | null;
   longitude: number | null;
@@ -43,6 +45,7 @@ export type StandardObservationColumns = {
 
 export type SubcountObservationColumns = {
   observation_subcount_id: number | null;
+  observation_subcount_sign_id: number;
   subcount: number | null;
   qualitative_measurements: {
     field: string;
@@ -129,7 +132,7 @@ type ObservationSubCountQuantitativeEnvironmentRecord = {
 
 type ObservationSubcountQualitativeEnvironmentObject = Pick<
   ObservationSubCountQualitativeEnvironmentRecord,
-  'environment_qualitative_id' | 'environment_qualitative_option_id'
+  'observation_subcount_qualitative_environment_id' | 'environment_qualitative_id' | 'environment_qualitative_option_id'
 >;
 
 type ObservationSubcountQuantitativeEnvironmentObject = Pick<
@@ -140,6 +143,7 @@ type ObservationSubcountQuantitativeEnvironmentObject = Pick<
 type ObservationSubcountRecord = {
   observation_subcount_id: number;
   survey_observation_id: number;
+  observation_subcount_sign_id: number;
   subcount: number | null;
   create_date: string;
   create_user: number;
@@ -150,6 +154,7 @@ type ObservationSubcountRecord = {
 
 type ObservationSubcountObject = {
   observation_subcount_id: ObservationSubcountRecord['observation_subcount_id'];
+  observation_subcount_sign_id: ObservationSubcountRecord['observation_subcount_sign_id'];
   subcount: ObservationSubcountRecord['subcount'];
   qualitative_measurements: ObservationSubcountQualitativeMeasurementObject[];
   quantitative_measurements: ObservationSubcountQuantitativeMeasurementObject[];

@@ -1,3 +1,4 @@
+import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
@@ -5,18 +6,19 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
+  FindSurveysResponse,
   GetAttachmentsData,
   GetReportAttachmentsData,
   GetSurveyProprietorData,
-  GetSurveyPurposeAndMethodologyData
+  GetSurveyPurposeAndMethodologyData,
+  ISurveyAdvancedFilters
 } from '../models/survey-view';
-import { getLogger } from '../utils/logger';
+import { IPostCollectionUnit } from '../services/critterbase-service';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
 export interface IGetSpeciesData {
   itis_tsn: number;
-  is_focal: boolean;
 }
 
 export interface IObservationSubmissionInsertDetails {
@@ -116,7 +118,17 @@ export const SurveyBasicFields = z.object({
 
 export type SurveyBasicFields = z.infer<typeof SurveyBasicFields>;
 
-const defaultLog = getLogger('repositories/survey-repository');
+export const SurveyTaxonomyWithEcologicalUnits = z.object({
+  itis_tsn: z.number(),
+  ecological_units: z.array(
+    z.object({
+      critterbase_collection_unit_id: z.string().uuid(),
+      critterbase_collection_category_id: z.string().uuid()
+    })
+  )
+});
+
+export type SurveyTaxonomyWithEcologicalUnits = z.infer<typeof SurveyTaxonomyWithEcologicalUnits>;
 
 export class SurveyRepository extends BaseRepository {
   /**
@@ -129,6 +141,134 @@ export class SurveyRepository extends BaseRepository {
     const sqlStatement = SQL`call api_delete_survey(${surveyId})`;
 
     await this.connection.sql(sqlStatement);
+  }
+
+  /**
+   * Constructs a non-paginated query used to get a list of surveys based on the user's permissions and filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @return {*}  Promise<Knex.QueryBuilder>
+   * @memberof SurveyRepository
+   */
+  _makeFindSurveysQuery(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    const query = knex
+      .select([
+        's.survey_id',
+        's.project_id',
+        's.name',
+        's.progress_id',
+        's.start_date',
+        's.end_date',
+        knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
+        knex.raw('array_remove(array_agg(distinct sp.itis_tsn), null) as focal_species'),
+        knex.raw('array_remove(array_agg(distinct st.type_id), null) as types')
+      ])
+      .from('survey as s')
+      .leftJoin('project as p', 'p.project_id', 's.project_id')
+      .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
+      .leftJoin('survey_type as st', 'st.survey_id', 's.survey_id')
+      .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
+      .leftJoin('region_lookup as rl', 'rl.region_id', 'sr.region_id')
+      .leftJoin('project_participation as ppa', 'ppa.project_id', 's.project_id')
+      .groupBy('s.survey_id', 's.project_id', 's.name', 's.progress_id', 's.start_date', 's.end_date');
+
+    // Ensure that users can only see surveys that they are participating in, unless they are an administrator.
+    if (!isUserAdmin) {
+      query.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder.select('project_id').from('project_participation').where('system_user_id', systemUserId);
+      });
+    }
+
+    if (filterFields.system_user_id) {
+      query.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
+      });
+    }
+
+    // Start Date filter
+    if (filterFields.start_date) {
+      query.andWhere('s.start_date', '>=', filterFields.start_date);
+    }
+
+    // End Date filter
+    if (filterFields.end_date) {
+      query.andWhere('s.end_date', '<=', filterFields.end_date);
+    }
+
+    // Project Name filter (like match)
+    if (filterFields.survey_name) {
+      query.andWhere('s.name', 'ilike', `%${filterFields.survey_name}%`);
+    }
+
+    // Focal Species filter
+    if (filterFields.itis_tsns?.length) {
+      // multiple
+      query.whereIn('sp.itis_tsn', filterFields.itis_tsns);
+    } else if (filterFields.itis_tsn) {
+      // single
+      query.where('sp.itis_tsn', filterFields.itis_tsn);
+    }
+
+    // Keyword Search filter
+    if (filterFields.keyword) {
+      const keywordMatch = `%${filterFields.keyword}%`;
+      query.where((subQueryBuilder) => {
+        subQueryBuilder
+          .where('s.name', 'ilike', keywordMatch)
+          .orWhere('s.additional_details', 'ilike', keywordMatch)
+          .orWhere('s.comments', 'ilike', keywordMatch);
+
+        // If the keyword is a number, also match on survey Id
+        if (!isNaN(Number(filterFields.keyword))) {
+          subQueryBuilder.orWhere('s.survey_id', Number(filterFields.keyword));
+        }
+      });
+    }
+
+    return query;
+  }
+
+  /**
+   * Retrieves the paginated list of all surveys that are available to the user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<FindSurveysResponse[]>}
+   * @memberof SurveyRepository
+   */
+  async findSurveys(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<FindSurveysResponse[]> {
+    const query = this._makeFindSurveysQuery(isUserAdmin, systemUserId, filterFields);
+
+    // Pagination
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(query, FindSurveysResponse);
+
+    return response.rows;
   }
 
   /**
@@ -230,21 +370,41 @@ export class SurveyRepository extends BaseRepository {
    * Get species data for a given survey ID
    *
    * @param {number} surveyId
-   * @returns {*} {Promise<IGetSpeciesData[]>}
+   * @return {*}  {Promise<SurveyTaxonomyWithEcologicalUnits[]>}
    * @memberof SurveyRepository
    */
-  async getSpeciesData(surveyId: number): Promise<IGetSpeciesData[]> {
+  async getSpeciesData(surveyId: number): Promise<SurveyTaxonomyWithEcologicalUnits[]> {
     const sqlStatement = SQL`
+    WITH w_ecological_units AS (
       SELECT
-        itis_tsn,
-        is_focal
+        ssu.study_species_id,
+        json_agg(
+          json_build_object(
+            'critterbase_collection_category_id', ssu.critterbase_collection_category_id,
+            'critterbase_collection_unit_id', ssu.critterbase_collection_unit_id
+          )
+        ) AS units
       FROM
-        study_species
+        study_species_unit ssu
+      LEFT JOIN
+        study_species ss ON ss.study_species_id = ssu.study_species_id
       WHERE
-        survey_id = ${surveyId};
+        ss.survey_id = ${surveyId}
+      GROUP BY
+        ssu.study_species_id
+    )
+    SELECT
+      ss.itis_tsn,
+      COALESCE(weu.units, '[]'::json) AS ecological_units
+    FROM
+      study_species ss
+    LEFT JOIN
+      w_ecological_units weu ON weu.study_species_id = ss.study_species_id
+    WHERE
+      ss.survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql<IGetSpeciesData>(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, SurveyTaxonomyWithEcologicalUnits);
 
     return response.rows;
   }
@@ -259,15 +419,9 @@ export class SurveyRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         s.additional_details,
-        array_remove(array_agg(DISTINCT io.intended_outcome_id), NULL) as intended_outcome_ids,
-        array_remove(array_agg(DISTINCT sv.vantage_id), NULL) as vantage_ids
-
+        array_remove(array_agg(DISTINCT io.intended_outcome_id), NULL) as intended_outcome_ids
       FROM
         survey s
-      LEFT OUTER JOIN
-        survey_vantage sv
-      ON
-        sv.survey_id = s.survey_id
       LEFT OUTER JOIN
         survey_intended_outcome io
       ON
@@ -475,6 +629,38 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
+   * Returns the total number of surveys that the user has access to
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyService
+   */
+  async findSurveysCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISurveyAdvancedFilters
+  ): Promise<number> {
+    const surveyListQuery = this._makeFindSurveysQuery(isUserAdmin, systemUserId, filterFields);
+
+    const knex = getKnex();
+
+    const queryBuilder = knex.from(surveyListQuery.as('slq')).select(knex.raw('count(*)::integer as count'));
+
+    const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get survey count', [
+        'SurveyRepository->findSurveysCount',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].count;
+  }
+
+  /**
    * Returns the total number of surveys belonging to the given project.
    *
    * @param {number} projectId
@@ -599,7 +785,7 @@ export class SurveyRepository extends BaseRepository {
 
     if (!result?.id) {
       throw new ApiExecuteSQLError('Failed to insert focal species data', [
-        'SurveyRepository->insertSurveyData',
+        'SurveyRepository->insertFocalSpecies',
         'response was null or undefined, expected response != null'
       ]);
     }
@@ -608,67 +794,36 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Inserts a new Ancillary species record and returns the new ID
+   * Inserts focal ecological units for focal species
    *
-   * @param {number} ancillary_species_id
-   * @param {number} surveyId
+   * @param {IPostCollectionUnit} ecologicalUnitObject
+   * @param {number} studySpeciesId
    * @returns {*} Promise<number>
    * @memberof SurveyRepository
    */
-  async insertAncillarySpecies(ancillary_species_id: number, surveyId: number): Promise<number> {
+  async insertFocalSpeciesUnits(ecologicalUnitObject: IPostCollectionUnit, studySpeciesId: number): Promise<number> {
     const sqlStatement = SQL`
-      INSERT INTO study_species (
-        itis_tsn,
-        is_focal,
-        survey_id
+      INSERT INTO study_species_unit (
+        study_species_id,
+        critterbase_collection_category_id,
+        critterbase_collection_unit_id
       ) VALUES (
-        ${ancillary_species_id},
-        FALSE,
-        ${surveyId}
-      ) RETURNING study_species_id as id;
+        ${studySpeciesId},
+        ${ecologicalUnitObject.critterbase_collection_category_id},
+        ${ecologicalUnitObject.critterbase_collection_unit_id}
+      ) RETURNING study_species_id AS id;
     `;
 
     const response = await this.connection.sql(sqlStatement);
     const result = response.rows?.[0];
 
     if (!result?.id) {
-      throw new ApiExecuteSQLError('Failed to insert ancillary species data', [
-        'SurveyRepository->insertSurveyData',
+      throw new ApiExecuteSQLError('Failed to insert focal species units data', [
+        'SurveyRepository->insertFocalSpeciesUnits',
         'response was null or undefined, expected response != null'
       ]);
     }
 
-    return result.id;
-  }
-
-  /**
-   * Inserts a new vantage code record and returns the new ID
-   *
-   * @param {number} vantage_code_id
-   * @param {number} surveyId
-   * @returns {*} Promise<number>
-   * @memberof SurveyRepository
-   */
-  async insertVantageCodes(vantage_code_id: number, surveyId: number): Promise<number> {
-    const sqlStatement = SQL`
-      INSERT INTO survey_vantage (
-        vantage_id,
-        survey_id
-      ) VALUES (
-        ${vantage_code_id},
-        ${surveyId}
-      ) RETURNING survey_vantage_id as id;
-    `;
-
-    const response = await this.connection.sql(sqlStatement);
-    const result = response.rows?.[0];
-
-    if (!result?.id) {
-      throw new ApiExecuteSQLError('Failed to insert vantage codes', [
-        'SurveyRepository->insertVantageCodes',
-        'response was null or undefined, expected response != null'
-      ]);
-    }
     return result.id;
   }
 
@@ -709,7 +864,6 @@ export class SurveyRepository extends BaseRepository {
   /**
    * Inserts a new Survey Proprietor record and returns the new ID
    *
-   * @param {number} ancillary_species_id
    * @param {number} surveyId
    * @returns {*} Promise<number>
    * @memberof SurveyRepository
@@ -916,6 +1070,24 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
+   * Deletes ecological units data for focal species in a given survey ID
+   *
+   * @param {number} surveyId
+   * @returns {*} Promise<void>
+   * @memberof SurveyRepository
+   */
+  async deleteSurveySpeciesUnitData(surveyId: number) {
+    const sqlStatement = SQL`
+      DELETE FROM study_species_unit ssu
+      USING study_species ss
+      WHERE ss.study_species_id = ssu.study_species_id
+      AND ss.survey_id = ${surveyId};
+    `;
+
+    await this.connection.sql(sqlStatement);
+  }
+
+  /**
    * Breaks permit survey link for a given survey ID
    *
    * @param {number} surveyId
@@ -954,24 +1126,6 @@ export class SurveyRepository extends BaseRepository {
   }
 
   /**
-   * Deletes Survey vantage codes for a given survey ID
-   *
-   * @param {number} surveyId
-   * @returns {*} Promise<void>
-   * @memberof SurveyRepository
-   */
-  async deleteSurveyVantageCodes(surveyId: number) {
-    const sqlStatement = SQL`
-      DELETE
-        from survey_vantage
-      WHERE
-        survey_id = ${surveyId};
-    `;
-
-    await this.connection.sql(sqlStatement);
-  }
-
-  /**
    * Gets all indigenous partnerships belonging to the given survey
    *
    * @param {number} surveyId
@@ -979,8 +1133,6 @@ export class SurveyRepository extends BaseRepository {
    * @memberof SurveyRepository
    */
   async getIndigenousPartnershipsBySurveyId(surveyId: number): Promise<IndigenousPartnershipRecord[]> {
-    defaultLog.debug({ label: 'getIndigenousPartnershipsBySurveyId', surveyId });
-
     const sqlStatement = SQL`
       SELECT
         *
@@ -1011,8 +1163,6 @@ export class SurveyRepository extends BaseRepository {
    * @memberof SurveyRepository
    */
   async getStakeholderPartnershipsBySurveyId(surveyId: number): Promise<StakeholderPartnershipRecord[]> {
-    defaultLog.debug({ label: 'getStakeholderPartnershipsBySurveyId', surveyId });
-
     const sqlStatement = SQL`
       SELECT
         *
@@ -1048,7 +1198,6 @@ export class SurveyRepository extends BaseRepository {
     firstNationsIds: number[],
     surveyId: number
   ): Promise<IndigenousPartnershipRecord[]> {
-    defaultLog.debug({ label: 'insertIndigenousPartnerships', firstNationsIds, surveyId });
     const queryBuilder = getKnex()
       .table('survey_first_nation_partnership')
       .insert(
@@ -1083,7 +1232,6 @@ export class SurveyRepository extends BaseRepository {
     stakeholderPartners: string[],
     surveyId: number
   ): Promise<StakeholderPartnershipRecord[]> {
-    defaultLog.debug({ label: 'insertStakeholderPartnerships', stakeholderPartners, surveyId });
     const queryBuilder = getKnex()
       .table('survey_stakeholder_partnership')
       .insert(
@@ -1114,7 +1262,6 @@ export class SurveyRepository extends BaseRepository {
    * @memberof SurveyRepository
    */
   async deleteIndigenousPartnershipsData(surveyId: number): Promise<number> {
-    defaultLog.debug({ label: 'deleteIndigenousPartnershipsData', surveyId });
     const queryBuilder = getKnex().table('survey_first_nation_partnership').delete().where('survey_id', surveyId);
 
     const response = await this.connection.knex(queryBuilder);
@@ -1130,7 +1277,6 @@ export class SurveyRepository extends BaseRepository {
    * @memberof SurveyRepository
    */
   async deleteStakeholderPartnershipsData(surveyId: number): Promise<number> {
-    defaultLog.debug({ label: 'deleteStakeholderPartnershipsData', surveyId });
     const queryBuilder = getKnex().table('survey_stakeholder_partnership').delete().where('survey_id', surveyId);
 
     const response = await this.connection.knex(queryBuilder);

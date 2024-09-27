@@ -70,7 +70,7 @@ export function getSelf(): RequestHandler {
       throw new HTTP400("Missing required param 'projectId'");
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       const projectId = Number(req.params.projectId);

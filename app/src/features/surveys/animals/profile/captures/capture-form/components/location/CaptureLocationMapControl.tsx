@@ -29,6 +29,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import { getCoordinatesFromGeoJson, isGeoJsonPointFeature, isValidCoordinates } from 'utils/spatial-utils';
+import { v4 as uuid } from 'uuid';
 
 export interface ICaptureLocationMapControlProps {
   name: string;
@@ -38,6 +39,8 @@ export interface ICaptureLocationMapControlProps {
 
 /**
  * Capture location map control component.
+ *
+ * This component can be used to record a Point location on a map, for either a capture or release location.
  *
  * @param {ICaptureLocationMapControlProps} props
  * @return {*}
@@ -83,8 +86,10 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
   const coordinates = captureLocationGeoJson && getCoordinatesFromGeoJson(captureLocationGeoJson);
 
   // Initialize state based on formik context for the edit page
-  const [latitudeInput, setLatitudeInput] = useState<string>(coordinates ? String(coordinates.latitude) : '');
-  const [longitudeInput, setLongitudeInput] = useState<string>(coordinates ? String(coordinates.longitude) : '');
+  const [latitudeInput, setLatitudeInput] = useState<string>(coordinates?.latitude ? String(coordinates.latitude) : '');
+  const [longitudeInput, setLongitudeInput] = useState<string>(
+    coordinates?.longitude ? String(coordinates.longitude) : ''
+  );
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 
@@ -120,9 +125,10 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
       return;
     }
 
+    drawControlsRef.current?.clearLayers();
+
     // If coordinates are invalid, reset the map to show nothing
     if (!isValidCoordinates(lat, lon)) {
-      drawControlsRef.current?.clearLayers();
       setUpdatedBounds(calculateUpdatedMapBounds([ALL_OF_BC_BOUNDARY]));
       return;
     }
@@ -272,7 +278,15 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
                   layers={[
                     {
                       layerName: `${title}`,
-                      features: get(values, name) ? [{ geoJSON: get(values, name), key: Math.random() }] : []
+                      features: get(values, name)
+                        ? [
+                            {
+                              id: uuid(),
+                              key: `capture-location-${uuid()}`,
+                              geoJSON: get(values, name)
+                            }
+                          ]
+                        : []
                     }
                   ]}
                 />

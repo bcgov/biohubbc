@@ -6,19 +6,16 @@ import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostProjectObject } from '../models/project-create';
 import { PutObjectivesData, PutProjectData } from '../models/project-update';
 import {
+  FindProjectsResponse,
   GetAttachmentsData,
   GetIUCNClassificationData,
   GetObjectivesData,
   GetReportAttachmentsData,
   IProjectAdvancedFilters,
-  ProjectData,
-  ProjectListData
+  ProjectData
 } from '../models/project-view';
-import { getLogger } from '../utils/logger';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
-
-const defaultLog = getLogger('repositories/project-repository');
 
 /**
  * A repository class for accessing project data.
@@ -29,15 +26,15 @@ const defaultLog = getLogger('repositories/project-repository');
  */
 export class ProjectRepository extends BaseRepository {
   /**
-   * Constructs a non-paginated query used to get a project list for users.
+   * Constructs a non-paginated query used to get a list of projects based on the user's permissions and filter criteria.
    *
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId
+   * @param {(number | null)} systemUserId The system user id of the user making the request
    * @param {IProjectAdvancedFilters} filterFields
-   * @return {*}  Promise<Knex.QueryBuilder>
+   * @return {*}  {Knex.QueryBuilder}
    * @memberof ProjectRepository
    */
-  _makeProjectListQuery(
+  _makeFindProjectsQuery(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters
@@ -48,34 +45,58 @@ export class ProjectRepository extends BaseRepository {
       .select([
         'p.project_id',
         'p.name',
-        knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`)
+        knex.raw(`MIN(s.start_date) as start_date`),
+        knex.raw('MAX(s.end_date) as end_date'),
+        knex.raw(`COALESCE(array_remove(array_agg(DISTINCT rl.region_name), null), '{}') as regions`),
+        knex.raw('array_remove(array_agg(DISTINCT sp.itis_tsn), null) as focal_species'),
+        knex.raw('array_remove(array_agg(DISTINCT st.type_id), null) as types'),
+        knex.raw(`
+          array_agg(
+            DISTINCT jsonb_build_object(
+              'system_user_id', su.system_user_id,
+              'display_name', su.display_name
+            )
+          ) as members
+        `)
       ])
       .from('project as p')
       .leftJoin('survey as s', 's.project_id', 'p.project_id')
       .leftJoin('study_species as sp', 'sp.survey_id', 's.survey_id')
+      .leftJoin('survey_type as st', 'sp.survey_id', 'st.survey_id')
       .leftJoin('survey_region as sr', 'sr.survey_id', 's.survey_id')
       .leftJoin('region_lookup as rl', 'sr.region_id', 'rl.region_id')
+      .leftJoin('project_participation as ppa', 'p.project_id', 'ppa.project_id')
+      .leftJoin('system_user as su', 'ppa.system_user_id', 'su.system_user_id')
+      .groupBy(['p.project_id', 'p.name']);
 
-      .groupBy(['p.project_id', 'p.name', 'p.objectives']);
-
-    /*
-     * Ensure that users can only see project that they are participating in, unless
-     * they are an administrator.
-     */
+    // Ensure that users can only see projects that they are participating in, unless they are an administrator.
     if (!isUserAdmin) {
       query.whereIn('p.project_id', (subQueryBuilder) => {
         subQueryBuilder.select('project_id').from('project_participation').where('system_user_id', systemUserId);
       });
     }
 
-    // Project Name filter (exact match)
+    if (filterFields.system_user_id) {
+      query.whereIn('p.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
+      });
+    }
+
+    // Project Name filter (like match)
     if (filterFields.project_name) {
-      query.andWhere('p.name', filterFields.project_name);
+      query.andWhere('p.name', 'ilike', `%${filterFields.project_name}%`);
     }
 
     // Focal Species filter
     if (filterFields.itis_tsns?.length) {
+      // multiple
       query.whereIn('sp.itis_tsn', filterFields.itis_tsns);
+    } else if (filterFields.itis_tsn) {
+      // single
+      query.where('sp.itis_tsn', filterFields.itis_tsn);
     }
 
     // Keyword Search filter
@@ -86,6 +107,11 @@ export class ProjectRepository extends BaseRepository {
           .where('p.name', 'ilike', keywordMatch)
           .orWhere('p.objectives', 'ilike', keywordMatch)
           .orWhere('s.name', 'ilike', keywordMatch);
+
+        // If the keyword is a number, also match on project Id
+        if (!isNaN(Number(filterFields.keyword))) {
+          subQueryBuilder.orWhere('p.project_id', Number(filterFields.keyword));
+        }
       });
     }
 
@@ -99,20 +125,17 @@ export class ProjectRepository extends BaseRepository {
    * @param {(number | null)} systemUserId
    * @param {IProjectAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<ProjectListData[]>}
+   * @return {*}  {Promise<FindProjectsResponse[]>}
    * @memberof ProjectRepository
    */
-  async getProjectList(
+  async findProjects(
     isUserAdmin: boolean,
     systemUserId: number | null,
     filterFields: IProjectAdvancedFilters,
     pagination?: ApiPaginationOptions
-  ): Promise<ProjectListData[]> {
-    defaultLog.debug({ label: 'getProjectList', pagination });
+  ): Promise<FindProjectsResponse[]> {
+    const query = this._makeFindProjectsQuery(isUserAdmin, systemUserId, filterFields);
 
-    const query = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields);
-
-    // Pagination
     if (pagination) {
       query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
@@ -121,7 +144,7 @@ export class ProjectRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(query, ProjectListData);
+    const response = await this.connection.knex(query, FindProjectsResponse);
 
     return response.rows;
   }
@@ -129,18 +152,18 @@ export class ProjectRepository extends BaseRepository {
   /**
    * Returns the total count of projects that are visible to the given user.
    *
-   * @param {IProjectAdvancedFilters} filterFields
    * @param {boolean} isUserAdmin
-   * @param {(number | null)} systemUserId
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IProjectAdvancedFilters} filterFields
    * @return {*}  {Promise<number>}
    * @memberof ProjectRepository
    */
-  async getProjectCount(
-    filterFields: IProjectAdvancedFilters,
+  async findProjectsCount(
     isUserAdmin: boolean,
-    systemUserId: number | null
+    systemUserId: number | null,
+    filterFields: IProjectAdvancedFilters
   ): Promise<number> {
-    const projectsListQuery = this._makeProjectListQuery(isUserAdmin, systemUserId, filterFields);
+    const projectsListQuery = this._makeFindProjectsQuery(isUserAdmin, systemUserId, filterFields);
 
     const knex = getKnex();
 
@@ -151,7 +174,7 @@ export class ProjectRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get project count', [
-        'ProjectRepository->getProjectCount',
+        'ProjectRepository->findProjectsCount',
         'rows was null or undefined, expected rows != null'
       ]);
     }

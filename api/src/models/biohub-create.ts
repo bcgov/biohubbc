@@ -1,7 +1,7 @@
 import { FeatureCollection } from 'geojson';
 import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { ISurveyAttachment, ISurveyReportAttachment } from '../repositories/attachment-repository';
-import { ObservationRecord } from '../repositories/observation-repository';
+import { ObservationRecord } from '../repositories/observation-repository/observation-repository';
 import { getLogger } from '../utils/logger';
 import { GetSurveyData, GetSurveyPurposeAndMethodologyData } from './survey-view';
 

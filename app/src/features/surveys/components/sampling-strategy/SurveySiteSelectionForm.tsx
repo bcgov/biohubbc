@@ -116,7 +116,7 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
       />
       <MultiAutocompleteField
         id="site_selection.strategies"
-        label="Site Selection Strategies"
+        label="Site selection strategy"
         options={siteStrategies}
         selectedOptions={selectedSiteStrategies}
         required={true}

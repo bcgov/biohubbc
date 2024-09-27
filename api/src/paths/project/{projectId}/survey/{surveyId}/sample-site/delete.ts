@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400, HTTP500 } from '../../../../../../errors/http-error';
+import { HTTP400, HTTP409 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ObservationService } from '../../../../../../services/observation-service';
 import { SampleLocationService } from '../../../../../../services/sample-location-service';
@@ -15,8 +15,8 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR],
-          projectId: Number(req.params.projectId),
+          validProjectPermissions: [PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR],
+          surveyId: Number(req.params.surveyId),
           discriminator: 'ProjectPermission'
         },
         {
@@ -90,6 +90,9 @@ POST.apiDoc = {
     403: {
       $ref: '#/components/responses/403'
     },
+    409: {
+      $ref: '#/components/responses/409'
+    },
     500: {
       $ref: '#/components/responses/500'
     },
@@ -108,7 +111,7 @@ export function deleteSurveySampleSiteRecords(): RequestHandler {
       throw new HTTP400('Missing required body `surveySampleSiteIds`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
@@ -122,7 +125,7 @@ export function deleteSurveySampleSiteRecords(): RequestHandler {
       );
 
       if (observationCount > 0) {
-        throw new HTTP500(`Cannot delete a sampling site that is associated with an observation`);
+        throw new HTTP409(`Cannot delete a sampling site that is associated with an observation`);
       }
 
       for (const surveySampleSiteId of surveySampleSiteIds) {

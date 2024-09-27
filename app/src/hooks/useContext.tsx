@@ -8,7 +8,8 @@ import { IObservationsTableContext, ObservationsTableContext } from 'contexts/ob
 import { IProjectContext, ProjectContext } from 'contexts/projectContext';
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { ITaxonomyContext, TaxonomyContext } from 'contexts/taxonomyContext';
-import { ITelemetryTableContext, TelemetryTableContext } from 'contexts/telemetryTableContext';
+import { ITelemetryDataContext, TelemetryDataContext } from 'contexts/telemetryDataContext';
+import { IAllTelemetryTableContext, TelemetryTableContext } from 'contexts/telemetryTableContext';
 import { useContext } from 'react';
 
 /**
@@ -148,11 +149,28 @@ export const useObservationsTableContext = (): IObservationsTableContext => {
 };
 
 /**
- * Returns an instance of `IObservationsTableContext` from `ObservationsTableContext`.
+ * Returns an instance of `ITelemetryDataContext` from `TelemetryDataContext`.
  *
- * @return {*}  {IObservationsTableContext}
+ * @return {*}  {ITelemetryDataContext}
  */
-export const useTelemetryTableContext = (): ITelemetryTableContext => {
+export const useTelemetryDataContext = (): ITelemetryDataContext => {
+  const context = useContext(TelemetryDataContext);
+
+  if (!context) {
+    throw Error(
+      'TelemetryDataContext is undefined, please verify you are calling useTelemetryDataContext() as child of an <TelemetryTableContextProvider> component.'
+    );
+  }
+
+  return context;
+};
+
+/**
+ * Returns an instance of `ITelemetryTableContext` from `TelemetryTableContext`.
+ *
+ * @return {*}  {ITelemetryTableContext}
+ */
+export const useTelemetryTableContext = (): IAllTelemetryTableContext => {
   const context = useContext(TelemetryTableContext);
 
   if (!context) {
@@ -165,7 +183,7 @@ export const useTelemetryTableContext = (): ITelemetryTableContext => {
 };
 
 /**
- * Returns an instance of `ITaxonomyContext` from `SurveyContext`.
+ * Returns an instance of `ITaxonomyContext` from `TaxonomyContext`.
  *
  * @return {*}  {ITaxonomyContext}
  */
@@ -184,7 +202,7 @@ export const useTaxonomyContext = (): ITaxonomyContext => {
 /**
  * Returns an instance of `IAnimalPageContext` from `AnimalPageContext`.
  *
- * @return {*}  {ISurveyContext}
+ * @return {*} {IAnimalPageContext}
  */
 export const useAnimalPageContext = (): IAnimalPageContext => {
   const context = useContext(AnimalPageContext);

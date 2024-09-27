@@ -1,6 +1,7 @@
 import Typography from '@mui/material/Typography';
+import { AxiosProgressEvent } from 'axios';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
 import { Feature, GeoJsonProperties, Geometry } from 'geojson';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -110,6 +111,24 @@ export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string 
   }
 
   return dateJs.format(dateFormat);
+};
+
+/**
+ * Get a formatted time string.
+ *
+ * @param {DATE_FORMAT} timeFormat
+ * @param {string} timestamp ISO 8601 date string
+ * @return {string} formatted date string, or an empty string if unable to parse the timestamp
+ */
+export const getFormattedTime = (timeFormat: TIME_FORMAT, timestamp: string): string => {
+  const dateJs = dayjs(timestamp);
+
+  if (!dateJs.isValid()) {
+    //date was invalid
+    return '';
+  }
+
+  return dateJs.format(timeFormat);
 };
 
 /**
@@ -443,9 +462,10 @@ export const firstOrNull = <T,>(arr: T[]): T | null => (arr.length > 0 ? arr[0] 
  * @param seed
  * @returns
  */
-export const getRandomHexColor = (seed: number, min = 100, max = 170): string => {
+export const getRandomHexColor = (seed: number, min = 120, max = 180): string => {
   const randomChannel = (): string => {
-    const x = Math.sin(seed++) * 10000;
+    // Change the multiplier to change the colour boldness
+    const x = Math.sin(seed++) * 1000;
     return (Math.floor((x - Math.floor(x)) * (max - min + 1)) + min).toString(16).padStart(2, '0');
   };
 
@@ -460,3 +480,15 @@ export const getRandomHexColor = (seed: number, min = 100, max = 170): string =>
  * @return {*}  {value is T}
  */
 export const isDefined = <T,>(value: T | undefined | null): value is T => value !== undefined && value !== null;
+
+/**
+ * Gets the progress percentage from an Axios ProgressEvent.
+ *
+ * Note: Axios will fire a `progress event` 3 times a second.
+ *
+ * @param {AxiosProgressEvent} progressEvent - Axios progress event
+ *
+ */
+export const getAxiosProgress = (progressEvent: AxiosProgressEvent) => {
+  return Math.round((progressEvent.loaded / (progressEvent.total || 1)) * 100);
+};

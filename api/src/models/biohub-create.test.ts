@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { FeatureCollection } from 'geojson';
 import { describe } from 'mocha';
-import { ObservationRecord } from '../repositories/observation-repository';
+import { ObservationRecord } from '../repositories/observation-repository/observation-repository';
 import {
   PostSurveyObservationToBiohubObject,
   PostSurveySubmissionToBioHubObject,
@@ -191,8 +191,7 @@ describe('PostSurveySubmissionToBioHubObject', () => {
     const purpose_and_methodology: GetSurveyPurposeAndMethodologyData = {
       intended_outcome_ids: [],
       additional_details: 'A description of the purpose',
-      revision_count: 0,
-      vantage_code_ids: []
+      revision_count: 0
     };
 
     const survey_geometry: FeatureCollection = {
