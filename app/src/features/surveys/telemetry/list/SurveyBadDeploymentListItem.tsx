@@ -13,8 +13,10 @@ import Typography from '@mui/material/Typography';
 import { WarningSchema } from 'interfaces/useBioHubApi.interface';
 
 export interface ISurveyBadDeploymentListItemProps {
-  data: WarningSchema;
+  data: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }>;
+  isChecked: boolean;
   handleDelete: (deploymentId: number) => void;
+  handleCheckboxChange: (deploymentId: number) => void;
 }
 
 /**
@@ -24,7 +26,7 @@ export interface ISurveyBadDeploymentListItemProps {
  * @return {*}
  */
 export const SurveyBadDeploymentListItem = (props: ISurveyBadDeploymentListItemProps) => {
-  const { data, handleDelete } = props;
+  const { data, isChecked, handleDelete, handleCheckboxChange } = props;
 
   return (
     <Accordion
@@ -66,7 +68,16 @@ export const SurveyBadDeploymentListItem = (props: ISurveyBadDeploymentListItemP
               pr: 2,
               overflow: 'hidden'
             }}>
-            <Checkbox edge="start" sx={{ py: 0 }} disabled={true} inputProps={{ 'aria-label': 'controlled' }} />
+            <Checkbox
+              edge="start"
+              checked={isChecked}
+              sx={{ py: 0 }}
+              onClick={(event) => {
+                event.stopPropagation();
+                handleCheckboxChange(data.data.sims_deployment_id);
+              }}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
             <Box>
               <Stack gap={1} direction="row">
                 <Typography
@@ -92,7 +103,7 @@ export const SurveyBadDeploymentListItem = (props: ISurveyBadDeploymentListItemP
         <IconButton
           sx={{ position: 'absolute', right: '24px' }}
           edge="end"
-          onClick={() => handleDelete(data.data.deployment_id as number)}
+          onClick={() => handleDelete(data.data.sims_deployment_id as number)}
           aria-label="deployment-settings">
           <Icon path={mdiTrashCanOutline} size={1}></Icon>
         </IconButton>
@@ -108,7 +119,7 @@ export const SurveyBadDeploymentListItem = (props: ISurveyBadDeploymentListItemP
             }
           }}>
           <Box width="100%" display="flex" justifyContent="space-between" p={0}>
-            <Typography component="dt" variant="subtitle2" color='textSecondary'>
+            <Typography component="dt" variant="subtitle2" color="textSecondary">
               Deployment&nbsp;{data.data.bctw_deployment_id as string}&nbsp;does not exist. You can remove this
               deployment from the Survey.
             </Typography>

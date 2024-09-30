@@ -484,12 +484,18 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @return {*}  {Promise<{ deployments: IAnimalDeployment[]; bad_deployments: WarningSchema[] }>}
+   * @return {*}  {Promise<{
+   *     deployments: IAnimalDeployment[];
+   *     bad_deployments: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }>[];
+   *   }>}
    */
   const getDeploymentsInSurvey = async (
     projectId: number,
     surveyId: number
-  ): Promise<{ deployments: IAnimalDeployment[]; bad_deployments: WarningSchema[] }> => {
+  ): Promise<{
+    deployments: IAnimalDeployment[];
+    bad_deployments: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }>[];
+  }> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments`);
     return data;
   };
@@ -501,7 +507,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @param {number} deploymentId
    * @return {*}  {(Promise<
-   *     { deployment: IAnimalDeployment; bad_deployment: null } | { deployment: null; bad_deployment: WarningSchema }
+   *     | { deployment: IAnimalDeployment; bad_deployment: null }
+   *     | { deployment: null; bad_deployment: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }> }
    *   >)}
    */
   const getDeploymentById = async (
@@ -509,7 +516,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     surveyId: number,
     deploymentId: number
   ): Promise<
-    { deployment: IAnimalDeployment; bad_deployment: null } | { deployment: null; bad_deployment: WarningSchema }
+    | { deployment: IAnimalDeployment; bad_deployment: null }
+    | { deployment: null; bad_deployment: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }> }
   > => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
     return data;

@@ -14,12 +14,15 @@ export interface ITelemetryDataContext {
   /**
    * The Data Loader used to load deployments.
    *
-   * @type {DataLoader<[project_id: number, survey_id: number], { deployments: IAnimalDeployment[]; bad_deployments: WarningSchema[] }, unknown>}
+   * @type {DataLoader<[project_id: number, survey_id: number], { deployments: IAnimalDeployment[]; bad_deployments: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }>[] }, unknown>}
    * @memberof ITelemetryDataContext
    */
   deploymentsDataLoader: DataLoader<
     [project_id: number, survey_id: number],
-    { deployments: IAnimalDeployment[]; bad_deployments: WarningSchema[] },
+    {
+      deployments: IAnimalDeployment[];
+      bad_deployments: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }>[];
+    },
     unknown
   >;
   /**

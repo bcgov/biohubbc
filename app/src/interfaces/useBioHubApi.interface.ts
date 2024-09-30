@@ -1,6 +1,6 @@
-export type WarningSchema = {
+export type WarningSchema<DataType extends Record<string, unknown> = Record<string, unknown>> = {
   name: string;
   message: string;
-  data: Record<string, unknown>;
+  data: DataType;
   errors?: (string | Record<string, unknown>)[];
 };
