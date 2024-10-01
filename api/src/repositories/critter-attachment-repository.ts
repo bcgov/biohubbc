@@ -20,15 +20,17 @@ export class CritterAttachmentRepository extends BaseRepository {
   /**
    * Get Critter Capture Attachment signed URL.
    *
-   * @param {number} critterCaptureAttachmentId - Critter Capture Attachment ID
+   * @param {number} surveyId - Survey ID
+   * @param {number} attachmentId - Critter Capture Attachment ID
    * @return {*}  {Promise<string>}
    */
-  async getCritterCaptureSignedURL(critterCaptureAttachmentId: number): Promise<string> {
+  async getCritterCaptureSignedURL(surveyId: number, attachmentId: number): Promise<string> {
     const sqlStatement = SQL`
       SELECT
         key
       FROM critter_capture_attachment
-      WHERE critter_capture_attachment_id = ${critterCaptureAttachmentId};
+      WHERE critter_capture_attachment_id = ${attachmentId}
+      AND survey_id = ${surveyId};
     `;
 
     const response = await this.connection.sql(sqlStatement, z.object({ key: z.string() }));

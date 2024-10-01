@@ -26,11 +26,12 @@ export class CritterAttachmentService extends DBService {
   /**
    * Get Critter Capture Attachment signed URL.
    *
-   * @param {number} critterCaptureAttachmentId - Critter Capture Attachment ID
+   * @param {number} surveyId - Survey ID
+   * @param {number} attachmentId - Critter Capture Attachment ID
    * @return {*}  {Promise<string>}
    */
-  async getCritterCaptureSignedURL(critterCaptureAttachmentId: number): Promise<string> {
-    return this.attachmentRepository.getCritterCaptureSignedURL(critterCaptureAttachmentId);
+  async getCritterCaptureSignedURL(surveyId: number, attachmentId: number): Promise<string> {
+    return this.attachmentRepository.getCritterCaptureSignedURL(surveyId, attachmentId);
   }
 
   /**

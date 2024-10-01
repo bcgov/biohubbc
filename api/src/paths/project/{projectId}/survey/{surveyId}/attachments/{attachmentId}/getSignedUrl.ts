@@ -1,10 +1,15 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ATTACHMENT_TYPE, TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
+import {
+  ATTACHMENT_TYPE,
+  CRITTER_CAPTURE_ATTACHMENT_TYPE,
+  TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE
+} from '../../../../../../../constants/attachments';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
+import { CritterAttachmentService } from '../../../../../../../services/critter-attachment-service';
 import { getS3SignedURL } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 
@@ -74,7 +79,14 @@ GET.apiDoc = {
       name: 'attachmentType',
       schema: {
         type: 'string',
-        enum: ['Report', 'KeyX', 'Cfg', 'Other']
+        enum: [
+          ATTACHMENT_TYPE.REPORT,
+          ATTACHMENT_TYPE.OTHER,
+          TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG,
+          TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
+          CRITTER_CAPTURE_ATTACHMENT_TYPE.CAPTURE,
+          CRITTER_CAPTURE_ATTACHMENT_TYPE.MORTALITY
+        ]
       },
       required: true
     }
@@ -126,9 +138,15 @@ export function getSurveyAttachmentSignedURL(): RequestHandler {
       let s3Key;
 
       const attachmentService = new AttachmentService(connection);
+      const critterAttachmentService = new CritterAttachmentService(connection);
 
       if (req.query.attachmentType === ATTACHMENT_TYPE.REPORT) {
         s3Key = await attachmentService.getSurveyReportAttachmentS3Key(
+          Number(req.params.surveyId),
+          Number(req.params.attachmentId)
+        );
+      } else if (req.query.attachmentType === CRITTER_CAPTURE_ATTACHMENT_TYPE.CAPTURE) {
+        s3Key = await critterAttachmentService.getCritterCaptureSignedURL(
           Number(req.params.surveyId),
           Number(req.params.attachmentId)
         );
