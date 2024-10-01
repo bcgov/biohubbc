@@ -48,10 +48,16 @@ export const EcologicalUnitsForm = () => {
                   <EcologicalUnitsSelect
                     categoryFieldName={`ecological_units[${index}].collection_category_id`}
                     unitFieldName={`ecological_units[${index}].collection_unit_id`}
-                    selectedCategoryIds={values.ecological_units.map((unit) => unit.collection_category_id)}
+                    selectedCategories={values.ecological_units
+                      .filter((unit) => unit.collection_category_id)
+                      .map((unit) => ({
+                        critterbase_collection_category_id: unit.collection_category_id!,
+                        critterbase_collection_unit_id: unit.critter_collection_unit_id ?? null
+                      }))}
                     ecologicalUnits={ecologicalUnitsDataLoader?.data ?? []}
                     arrayHelpers={arrayHelpers}
                     index={index}
+                    distinct
                   />
                 </Box>
               </Collapse>

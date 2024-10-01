@@ -16,9 +16,15 @@ interface EcologicalUnitsSelectProps {
   categoryFieldName: string;
   unitFieldName: string;
   ecologicalUnits: ICollectionCategory[];
-  selectedCategoryIds: string[];
+  selectedCategories: { critterbase_collection_category_id: string; critterbase_collection_unit_id: string | null }[];
   arrayHelpers: FieldArrayRenderProps;
   index: number;
+  /**
+   * Whether to allow for multiple ecological units of the same category to be selected; eg. if distinct is true, cannot
+   * select two population units. If distinct is false, multiple units can be selected for the "population unit" category.
+   *
+   */
+  distinct?: boolean;
 }
 
 /**
@@ -28,7 +34,8 @@ interface EcologicalUnitsSelectProps {
  * @returns
  */
 export const EcologicalUnitsSelect = (props: EcologicalUnitsSelectProps) => {
-  const { index, ecologicalUnits, arrayHelpers, categoryFieldName, unitFieldName, selectedCategoryIds } = props;
+  const { index, ecologicalUnits, arrayHelpers, categoryFieldName, unitFieldName, selectedCategories, distinct } =
+    props;
   const { setFieldValue } = useFormikContext();
   const critterbaseApi = useCritterbaseApi();
 
@@ -36,43 +43,57 @@ export const EcologicalUnitsSelect = (props: EcologicalUnitsSelectProps) => {
     critterbaseApi.xref.getCollectionUnits(categoryId)
   );
 
-  const selectedCategoryId = selectedCategoryIds[index];
+  const selectedCategory = selectedCategories[index]?.critterbase_collection_category_id;
+  const selectedUnit = selectedCategories[index]?.critterbase_collection_unit_id;
 
   useEffect(() => {
-    if (selectedCategoryId) {
-      ecologicalUnitOptionsLoader.refresh(selectedCategoryId);
+    if (selectedCategory) {
+      ecologicalUnitOptionsLoader.refresh(selectedCategory);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCategoryId]);
+  }, [selectedCategory]);
 
   // Memoized label for the selected ecological unit
   const selectedCategoryLabel = useMemo(() => {
-    return ecologicalUnits.find((unit) => unit.collection_category_id === selectedCategoryId)?.category_name ?? '';
-  }, [ecologicalUnits, selectedCategoryId]);
+    return ecologicalUnits.find((unit) => unit.collection_category_id === selectedCategory)?.category_name ?? '';
+  }, [ecologicalUnits, selectedCategory]);
 
   // Filter out already selected categories
   const availableCategories = useMemo(() => {
+    if (!distinct) {
+      return ecologicalUnits.map((unit) => ({
+        value: unit.collection_category_id,
+        label: unit.category_name
+      }));
+    }
+
+    const selectedCategoriesSet = new Set(selectedCategories.map((id) => id.critterbase_collection_category_id));
+
     return ecologicalUnits
       .filter(
         (unit) =>
-          !selectedCategoryIds.some(
-            (existingId) => existingId === unit.collection_category_id && existingId !== selectedCategoryId
-          )
+          !selectedCategoriesSet.has(unit.collection_category_id) || unit.collection_category_id === selectedCategory
       )
       .map((unit) => ({
         value: unit.collection_category_id,
         label: unit.category_name
       }));
-  }, [ecologicalUnits, selectedCategoryIds, selectedCategoryId]);
+  }, [ecologicalUnits, selectedCategories, selectedCategory, distinct]);
 
-  const ecologicalUnitOptions = useMemo(
-    () =>
+  // Filter out already selected units
+  const ecologicalUnitOptions = useMemo(() => {
+    const allOptions =
       ecologicalUnitOptionsLoader.data?.map((unit) => ({
         value: unit.collection_unit_id,
         label: unit.unit_name
-      })) ?? [],
-    [ecologicalUnitOptionsLoader.data]
-  );
+      })) ?? [];
+
+    // Create a Set for faster lookup of selected ecological unit IDs
+    const selectedUnitIdsSet = new Set(selectedCategories.map((category) => category.critterbase_collection_unit_id));
+
+    // Filter out selected units
+    return allOptions.filter((unit) => !selectedUnitIdsSet.has(unit.value) || unit.value === selectedUnit);
+  }, [ecologicalUnitOptionsLoader.data, selectedCategories, selectedUnit]);
 
   return (
     <Card
