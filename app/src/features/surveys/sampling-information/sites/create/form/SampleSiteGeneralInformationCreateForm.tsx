@@ -30,10 +30,10 @@ const SampleSiteGeneralInformationCreateForm = () => {
     <Box component="fieldset">
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <TextField label="Name" placeholder="Maximum 50 characters" required onChange={handleNameChange} fullWidth/>
+          <TextField label="Name" placeholder="Maximum 50 characters" required onChange={handleNameChange} fullWidth />
         </Grid>
         <Grid item xs={12}>
-          <TextField label="Description" multiline rows={4} onChange={handleDescriptionChange} fullWidth/>
+          <TextField label="Description" multiline rows={4} onChange={handleDescriptionChange} fullWidth />
         </Grid>
       </Grid>
     </Box>
