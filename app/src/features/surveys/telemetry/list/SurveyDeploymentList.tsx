@@ -100,7 +100,7 @@ export const SurveyDeploymentList = () => {
    */
   const handleBulkDeleteDeployment = async () => {
     await biohubApi.survey
-      .deleteDeployment(surveyContext.projectId, surveyContext.surveyId, Number(selectedDeploymentId))
+      .deleteDeployments(surveyContext.projectId, surveyContext.surveyId, checkboxSelectedIds)
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setBulkDeploymentAnchorEl(null);
@@ -113,7 +113,7 @@ export const SurveyDeploymentList = () => {
           snackbarMessage: (
             <>
               <Typography variant="body2" component="div">
-                <strong>Error Deleting Deployment</strong>
+                <strong>Error Deleting Deployments</strong>
               </Typography>
               <Typography variant="body2" component="div">
                 {String(error)}

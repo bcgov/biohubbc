@@ -583,6 +583,22 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Deletes a list of deployments. Will trigger deletion in SIMS and invalidates the deployments in BCTW.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number[]} deploymentIds
+   * @return {*}  {Promise<string>}
+   */
+  const deleteDeployments = async (projectId: number, surveyId: number, deploymentIds: number[]): Promise<string> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/deployments/delete`, {
+      deployment_ids: deploymentIds
+    });
+
+    return data;
+  };
+
+  /**
    * Bulk upload Critters from CSV.
    *
    * @param {File} file
@@ -749,6 +765,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     importMeasurementsFromCsv,
     endDeployment,
     deleteDeployment,
+    deleteDeployments,
     exportData
   };
 };
