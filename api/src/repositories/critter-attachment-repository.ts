@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { CritterCaptureAttachmentRecord } from '../database-models/critter_capture_attachment';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
@@ -16,6 +17,31 @@ import {
  * @extends {BaseRepository}
  */
 export class CritterAttachmentRepository extends BaseRepository {
+  /**
+   * Get Critter Capture Attachment signed URL.
+   *
+   * @param {number} critterCaptureAttachmentId - Critter Capture Attachment ID
+   * @return {*}  {Promise<string>}
+   */
+  async getCritterCaptureSignedURL(critterCaptureAttachmentId: number): Promise<string> {
+    const sqlStatement = SQL`
+      SELECT
+        key
+      FROM critter_capture_attachment
+      WHERE critter_capture_attachment_id = ${critterCaptureAttachmentId};
+    `;
+
+    const response = await this.connection.sql(sqlStatement, z.object({ key: z.string() }));
+
+    if (!response?.rows?.[0]) {
+      throw new ApiExecuteSQLError('Failed to get critter capture attachment signed URL', [
+        'AttachmentRepository->getCritterCaptureSignedURL',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].key;
+  }
   /**
    * Upsert Critter Capture Attachment record.
    *
@@ -39,7 +65,7 @@ export class CritterAttachmentRepository extends BaseRepository {
       ${payload.critterbase_capture_id},
       ${payload.file_name},
       ${payload.file_size},
-      'other',
+      ${ATTACHMENT_TYPE.OTHER},
       ${payload.key}
     )
     ON CONFLICT (critter_id, critterbase_capture_id, file_name)
@@ -89,7 +115,7 @@ export class CritterAttachmentRepository extends BaseRepository {
       ${payload.critterbase_mortality_id},
       ${payload.file_name},
       ${payload.file_size},
-      'other',
+      ${ATTACHMENT_TYPE.OTHER},
       ${payload.key}
     )
     ON CONFLICT (critter_id, critterbase_mortality_id, file_name)
@@ -148,10 +174,10 @@ export class CritterAttachmentRepository extends BaseRepository {
   /**
    * Delete Critter Capture Attachments by ID.
    *
-   * @param {string[]} deleteIds
+   * @param {number[]} deleteIds - Critter Capture Attachment ID's
    * @return {*}  {Promise<void>}
    */
-  async deleteCritterCaptureAttachments(deleteIds: string[]): Promise<void> {
+  async deleteCritterCaptureAttachments(deleteIds: number[]): Promise<void> {
     const sqlStatement = SQL`
       DELETE FROM critter_capture_attachment
       WHERE critter_capture_attachment_id IN (${deleteIds.join(',')});

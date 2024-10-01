@@ -90,13 +90,11 @@ POST.apiDoc = {
             media: {
               description: 'Uploaded Capture attachments.',
               type: 'array',
-              minItems: 1,
               items: fileSchema
             },
             delete_ids: {
               description: 'Critter Capture Attachment IDs to delete.',
               type: 'array',
-              minItems: 1,
               items: {
                 type: 'string'
               }
@@ -147,7 +145,7 @@ POST.apiDoc = {
 export function uploadCaptureAttachments(): RequestHandler {
   return async (req, res) => {
     const rawMediaFiles = req.files as Express.Multer.File[];
-    const deleteIds = req.body.delete_ids as string[];
+    const deleteIds: number[] = req.body.delete_ids?.map((id: string) => Number(id)) ?? [];
 
     const connection = getDBConnection(req.keycloak_token);
 
@@ -157,7 +155,7 @@ export function uploadCaptureAttachments(): RequestHandler {
       const critterAttachmentService = new CritterAttachmentService(connection);
 
       // Delete any flagged attachments
-      if (deleteIds && deleteIds.length > 0) {
+      if (deleteIds.length) {
         await critterAttachmentService.deleteCritterCaptureAttachments(deleteIds);
       }
 

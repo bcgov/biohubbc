@@ -24,6 +24,16 @@ export class CritterAttachmentService extends DBService {
   }
 
   /**
+   * Get Critter Capture Attachment signed URL.
+   *
+   * @param {number} critterCaptureAttachmentId - Critter Capture Attachment ID
+   * @return {*}  {Promise<string>}
+   */
+  async getCritterCaptureSignedURL(critterCaptureAttachmentId: number): Promise<string> {
+    return this.attachmentRepository.getCritterCaptureSignedURL(critterCaptureAttachmentId);
+  }
+
+  /**
    * Upsert Critter Capture Attachment.
    *
    * @param {CritterCaptureAttachmentPayload} payload
@@ -38,11 +48,11 @@ export class CritterAttachmentService extends DBService {
   /**
    * Delete Critter Capture Attachments.
    *
-   * @param {string[]} deleteIds
+   * @param {number[]} deleteIds - Critter Capture Attachment ID's
    * @return {*} {Promise<void>}
    *
    */
-  async deleteCritterCaptureAttachments(deleteIds: string[]): Promise<void> {
+  async deleteCritterCaptureAttachments(deleteIds: number[]): Promise<void> {
     return this.attachmentRepository.deleteCritterCaptureAttachments(deleteIds);
   }
 

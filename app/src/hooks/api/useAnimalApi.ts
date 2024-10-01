@@ -67,14 +67,22 @@ const useAnimalApi = (axios: AxiosInstance) => {
     critterId: number;
     critterbaseCaptureId: string;
     files: File[];
+    deleteIds?: number[];
     cancelTokenSource?: CancelTokenSource;
     onProgress?: (progressEvent: AxiosProgressEvent) => void;
   }) => {
     const fileData = new FormData();
 
-    params.files.forEach((file) => {
-      fileData.append('media', file);
+    params.files.forEach((file, index) => {
+      fileData.append(`media[${index}]`, file);
     });
+
+    // Add any delete ids to the request
+    if (params.deleteIds?.length) {
+      params.deleteIds.forEach((deleteId, index) => {
+        fileData.append(`delete_ids[${index}]`, deleteId.toString());
+      });
+    }
 
     await axios.post(
       `/api/project/${params.projectId}/survey/${params.surveyId}/critters/${params.critterId}/captures/${params.critterbaseCaptureId}/attachments/upload`,

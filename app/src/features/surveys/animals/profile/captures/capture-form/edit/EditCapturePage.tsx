@@ -13,6 +13,7 @@ import { EditCaptureI18N } from 'constants/i18n';
 import { AnimalCaptureForm } from 'features/surveys/animals/profile/captures/capture-form/components/AnimalCaptureForm';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -32,6 +33,7 @@ export const EditCapturePage = () => {
   const history = useHistory();
 
   const critterbaseApi = useCritterbaseApi();
+  const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
   const projectContext = useProjectContext();
@@ -88,7 +90,11 @@ export const EditCapturePage = () => {
     setIsSaving(true);
 
     try {
+      const surveyCritterId = Number(animalPageContext.selectedAnimal?.critter_id);
       const critterbaseCritterId = animalPageContext.selectedAnimal?.critterbase_critter_id;
+      const critterbaseCaptureId = capture.capture_id;
+      const captureAttachments = Object.values(values.attachments.capture_attachments.create);
+      const captureAttachmentsToDelete = values.attachments.capture_attachments.delete;
 
       if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
         return;
@@ -161,6 +167,32 @@ export const EditCapturePage = () => {
           }
         });
         return;
+      }
+
+      // Upload Capture attachments and delete any marked for deletion
+      if (captureAttachments.length || captureAttachmentsToDelete.length) {
+        await biohubApi.animal
+          .uploadCritterCaptureAttachments({
+            projectId,
+            surveyId,
+            critterId: surveyCritterId,
+            critterbaseCaptureId: critterbaseCaptureId,
+            files: captureAttachments,
+            deleteIds: captureAttachmentsToDelete
+          })
+          .catch(() => {
+            dialogContext.setErrorDialog({
+              dialogTitle: 'Failed to modify capture attachments.',
+              dialogText: EditCaptureI18N.createErrorText,
+              open: true,
+              onClose: () => {
+                dialogContext.setErrorDialog({ open: false });
+              },
+              onOk: () => {
+                dialogContext.setErrorDialog({ open: false });
+              }
+            });
+          });
       }
 
       // Refresh page

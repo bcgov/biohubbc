@@ -177,10 +177,10 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
    * @return {void}
    */
   const flagUploadedFileForDelete = (attachmentId: number) => {
-    const deleteIds = props.formikRef.current?.values.attachments.capture_attachments.delete;
+    const deleteIds = props.formikRef.current?.values.attachments.capture_attachments.delete ?? [];
 
     // If the attachment is not already flagged for deletion, add it to the list
-    if (deleteIds && !deleteIds.includes(attachmentId)) {
+    if (!deleteIds.includes(attachmentId)) {
       props.formikRef.current?.setFieldValue(`attachments.capture_attachments.delete`, [...deleteIds, attachmentId]);
     }
   };
