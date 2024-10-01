@@ -55,7 +55,7 @@ export const EditDeploymentPage = () => {
   const badDeployment = deploymentDataLoader.data.bad_deployment;
 
   if (badDeployment) {
-    return <div></div>;
+    return <CircularProgress className="pageProgress" size={40} />;
   }
 
   const deployment = deploymentDataLoader.data.deployment;
