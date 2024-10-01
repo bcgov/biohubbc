@@ -25,7 +25,7 @@ const SelectedAnimalSpecies = (props: ISelectedAnimalSpeciesProps) => {
       {selectedSpecies.map((species, speciesIndex) => {
         return (
           <Collapse key={species.tsn}>
-            <Paper component={Stack} gap={3} variant="outlined" sx={{ p: 3, background: grey[50], my: 1 }}>
+            <Paper component={Stack} gap={3} variant="outlined" sx={{ px: 3, py: 2, background: grey[50], my: 1 }}>
               <SpeciesSelectedCard index={speciesIndex} species={species} handleRemove={handleRemoveSpecies} />
             </Paper>
           </Collapse>

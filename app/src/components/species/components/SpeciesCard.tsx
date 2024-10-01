@@ -35,7 +35,6 @@ const SpeciesCard = (props: ISpeciesCardProps) => {
         </Typography>
       </Box>
       <Chip
-        // position="absolute"
         right={5}
         label={taxon.tsn}
         variant="filled"
