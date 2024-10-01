@@ -48,7 +48,11 @@ export const FocalSpeciesForm = () => {
             <TransitionGroup>
               {selectedSpecies.map((species, index) => (
                 <Collapse key={species.tsn}>
-                  <Paper component={Stack} gap={3} variant="outlined" sx={{ px: 3, py: 2, background: grey[50], my: 1 }}>
+                  <Paper
+                    component={Stack}
+                    gap={3}
+                    variant="outlined"
+                    sx={{ px: 3, py: 2, background: grey[50], my: 1 }}>
                     <SpeciesSelectedCard
                       species={species}
                       index={index}
