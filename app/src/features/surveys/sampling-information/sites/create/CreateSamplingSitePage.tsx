@@ -70,6 +70,8 @@ export const CreateSamplingSitePage = () => {
     try {
       setIsSubmitting(true);
 
+      console.log(values)
+
       // Remove internal _id property of newly created sample_methods used only as a unique key prop
       const { sample_methods, ...otherValues } = values;
 
