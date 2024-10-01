@@ -96,6 +96,8 @@ export const EditCapturePage = () => {
       const captureAttachments = Object.values(values.attachments.capture_attachments.create);
       const captureAttachmentsToDelete = values.attachments.capture_attachments.delete;
 
+      console.log({ captureAttachments, create: values.attachments.capture_attachments.create });
+
       if (!values || !critterbaseCritterId || values.capture.capture_location?.geometry.type !== 'Point') {
         return;
       }

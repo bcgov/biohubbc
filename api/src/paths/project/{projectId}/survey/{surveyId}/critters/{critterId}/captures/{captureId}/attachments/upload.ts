@@ -147,6 +147,8 @@ export function uploadCaptureAttachments(): RequestHandler {
     const rawMediaFiles = req.files as Express.Multer.File[];
     const deleteIds: number[] = req.body.delete_ids?.map((id: string) => Number(id)) ?? [];
 
+    console.log({ rawMediaFiles });
+
     const connection = getDBConnection(req.keycloak_token);
 
     try {
