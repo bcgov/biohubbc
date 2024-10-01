@@ -146,7 +146,6 @@ describe('useSurveyApi', () => {
 
       const result = await useSurveyApi(axios).getDeploymentsInSurvey(projectId, surveyId);
 
-      expect(Array.isArray(result)).toBe(true);
       expect(result.deployments.length).toBe(1);
       expect(result.deployments[0].device_id).toBe(123);
     });
