@@ -36,7 +36,7 @@ export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupP
       return [{ label: 'Telemetry ID', value: telemetryId }];
     }
 
-    const deploymentRecord = deploymentDataLoader.data?.find(
+    const deploymentRecord = deploymentDataLoader.data?.deployments.find(
       (deployment) => deployment.bctw_deployment_id === telemetryRecord.deployment_id
     );
 
