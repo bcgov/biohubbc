@@ -20,20 +20,44 @@ import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { SurveyBadDeploymentListItem } from 'features/surveys/telemetry/list/SurveyBadDeploymentListItem';
 import { SurveyDeploymentListItem } from 'features/surveys/telemetry/list/SurveyDeploymentListItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useSurveyContext, useTelemetryDataContext } from 'hooks/useContext';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { WarningSchema } from 'interfaces/useBioHubApi.interface';
+import { IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+
+export interface ISurveyDeploymentListProps {
+  deployments: IAnimalDeployment[];
+  badDeployments: WarningSchema<{
+    sims_deployment_id: number;
+    bctw_deployment_id: string;
+  }>[];
+  /**
+   * Flag to indicate if the deployments are loading.
+   *
+   * @type {boolean}
+   * @memberof ISurveyDeploymentListProps
+   */
+  isLoading: boolean;
+  /**
+   * Refresh the deployments.
+   *
+   * @memberof ISurveyDeploymentListProps
+   */
+  refreshRecords: () => void;
+}
 
 /**
  * Renders a list of all deployments in the survey
  *
  * @returns {*}
  */
-export const SurveyDeploymentList = () => {
+export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
+  const { deployments, badDeployments, isLoading, refreshRecords } = props;
+
   const dialogContext = useDialogContext();
   const surveyContext = useSurveyContext();
-  const telemetryDataContext = useTelemetryDataContext();
 
   const biohubApi = useBiohubApi();
 
@@ -46,24 +70,12 @@ export const SurveyDeploymentList = () => {
   const frequencyUnitDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('frequency_unit'));
   const deviceMakesDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('device_make'));
 
-  const deploymentsDataLoader = telemetryDataContext.deploymentsDataLoader;
-
-  const deployments = deploymentsDataLoader.data?.deployments ?? [];
-  const badDeployments = deploymentsDataLoader.data?.bad_deployments ?? [];
-
   const deploymentCount = (deployments?.length ?? 0) + (badDeployments?.length ?? 0);
 
   useEffect(() => {
     frequencyUnitDataLoader.load();
     deviceMakesDataLoader.load();
-    deploymentsDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [
-    deploymentsDataLoader,
-    deviceMakesDataLoader,
-    frequencyUnitDataLoader,
-    surveyContext.projectId,
-    surveyContext.surveyId
-  ]);
+  }, [deviceMakesDataLoader, frequencyUnitDataLoader, surveyContext.projectId, surveyContext.surveyId]);
 
   const handleBulkActionMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setBulkDeploymentAnchorEl(event.currentTarget);
@@ -104,7 +116,7 @@ export const SurveyDeploymentList = () => {
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setBulkDeploymentAnchorEl(null);
-        deploymentsDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+        refreshRecords();
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
@@ -134,7 +146,7 @@ export const SurveyDeploymentList = () => {
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setDeploymentAnchorEl(null);
-        deploymentsDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+        refreshRecords();
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
@@ -324,7 +336,7 @@ export const SurveyDeploymentList = () => {
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
           <Box position="absolute" top="0" right="0" bottom="0" left="0">
             <LoadingGuard
-              isLoading={deploymentsDataLoader.isLoading}
+              isLoading={isLoading}
               isLoadingFallback={<SkeletonList />}
               isLoadingFallbackDelay={100}
               hasNoData={!deploymentCount}
@@ -399,6 +411,7 @@ export const SurveyDeploymentList = () => {
                   {badDeployments.map((badDeployment) => {
                     return (
                       <SurveyBadDeploymentListItem
+                        key={badDeployment.data.sims_deployment_id}
                         data={badDeployment}
                         isChecked={checkboxSelectedIds.includes(badDeployment.data.sims_deployment_id)}
                         handleDelete={(deploymentId) => renderDeleteDeploymentDialog(deploymentId)}
