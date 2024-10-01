@@ -43,15 +43,22 @@ export const EditDeploymentPage = () => {
   const critters = surveyContext.critterDataLoader.data ?? [];
 
   const deploymentDataLoader = useDataLoader(biohubApi.survey.getDeploymentById);
-  const deployment = deploymentDataLoader.data;
 
   useEffect(() => {
     deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId, deploymentId);
   }, [deploymentDataLoader, deploymentId, surveyContext.projectId, surveyContext.surveyId]);
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data || !deployment) {
+  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data || !deploymentDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
+
+  const badDeployment = deploymentDataLoader.data.bad_deployment;
+
+  if (badDeployment) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
+
+  const deployment = deploymentDataLoader.data.deployment;
 
   const deploymentFormInitialValues = {
     critter_id: deployment.critter_id,
@@ -81,7 +88,7 @@ export const EditDeploymentPage = () => {
         critter_id: values.critter_id,
         device_id: Number(values.device_id),
         device_make: values.device_make,
-        frequency: values.frequency || null,
+        frequency: values.frequency || null, // nullify if empty string
         frequency_unit: values.frequency_unit,
         device_model: values.device_model,
         critterbase_start_capture_id: values.critterbase_start_capture_id,

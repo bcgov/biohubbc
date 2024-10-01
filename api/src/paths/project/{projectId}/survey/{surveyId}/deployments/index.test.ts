@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { getDeploymentsInSurvey } from '.';
 import * as db from '../../../../../../database/db';
-import { HTTPError } from '../../../../../../errors/http-error';
 import { SurveyDeployment } from '../../../../../../models/survey-deployment';
 import {
   BctwDeploymentRecordWithDeviceMeta,
@@ -74,30 +73,33 @@ describe('getDeploymentsInSurvey', () => {
 
     expect(getDeploymentsForSurveyIdStub).calledOnceWith(66);
     expect(getDeploymentsByIdsStub).calledOnceWith(['444']);
-    expect(mockRes.json).to.have.been.calledOnceWith([
-      {
-        // BCTW properties
-        assignment_id: mockBCTWDeployments[0].assignment_id,
-        collar_id: mockBCTWDeployments[0].collar_id,
-        attachment_start_date: '2020-01-01',
-        attachment_start_time: '00:00:00',
-        attachment_end_date: '2020-01-02',
-        attachment_end_time: '12:12:12',
-        bctw_deployment_id: mockBCTWDeployments[0].deployment_id,
-        device_id: mockBCTWDeployments[0].device_id,
-        device_make: mockBCTWDeployments[0].device_make,
-        device_model: mockBCTWDeployments[0].device_model,
-        frequency: mockBCTWDeployments[0].frequency,
-        frequency_unit: mockBCTWDeployments[0].frequency_unit,
-        // SIMS properties
-        deployment_id: mockSIMSDeployments[0].deployment_id,
-        critter_id: mockSIMSDeployments[0].critter_id,
-        critterbase_critter_id: mockSIMSDeployments[0].critterbase_critter_id,
-        critterbase_start_capture_id: mockSIMSDeployments[0].critterbase_start_capture_id,
-        critterbase_end_capture_id: mockSIMSDeployments[0].critterbase_end_capture_id,
-        critterbase_end_mortality_id: mockSIMSDeployments[0].critterbase_end_mortality_id
-      }
-    ]);
+    expect(mockRes.json).to.have.been.calledOnceWith({
+      deployments: [
+        {
+          // BCTW properties
+          assignment_id: mockBCTWDeployments[0].assignment_id,
+          collar_id: mockBCTWDeployments[0].collar_id,
+          attachment_start_date: '2020-01-01',
+          attachment_start_time: '00:00:00',
+          attachment_end_date: '2020-01-02',
+          attachment_end_time: '12:12:12',
+          bctw_deployment_id: mockBCTWDeployments[0].deployment_id,
+          device_id: mockBCTWDeployments[0].device_id,
+          device_make: mockBCTWDeployments[0].device_make,
+          device_model: mockBCTWDeployments[0].device_model,
+          frequency: mockBCTWDeployments[0].frequency,
+          frequency_unit: mockBCTWDeployments[0].frequency_unit,
+          // SIMS properties
+          deployment_id: mockSIMSDeployments[0].deployment_id,
+          critter_id: mockSIMSDeployments[0].critter_id,
+          critterbase_critter_id: mockSIMSDeployments[0].critterbase_critter_id,
+          critterbase_start_capture_id: mockSIMSDeployments[0].critterbase_start_capture_id,
+          critterbase_end_capture_id: mockSIMSDeployments[0].critterbase_end_capture_id,
+          critterbase_end_mortality_id: mockSIMSDeployments[0].critterbase_end_mortality_id
+        }
+      ],
+      bad_deployments: []
+    });
     expect(mockRes.status).calledOnceWith(200);
     expect(mockDBConnection.release).to.have.been.calledOnce;
   });
@@ -150,12 +152,12 @@ describe('getDeploymentsInSurvey', () => {
 
     expect(getDeploymentsForSurveyIdStub).calledOnceWith(66);
     expect(getDeploymentsByIdsStub).not.to.have.been.called;
-    expect(mockRes.json).calledOnceWith([]);
+    expect(mockRes.json).calledOnceWith({ deployments: [], bad_deployments: [] });
     expect(mockRes.status).calledOnceWith(200);
     expect(mockDBConnection.release).to.have.been.calledOnce;
   });
 
-  it('throws a 409 error if more than 1 active deployment found in BCTW for a single SIMS deployment record', async () => {
+  it('returns bad deployment records if more than 1 active deployment found in BCTW for a single SIMS deployment record', async () => {
     const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
@@ -228,21 +230,28 @@ describe('getDeploymentsInSurvey', () => {
 
     const requestHandler = getDeploymentsInSurvey();
 
-    try {
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).message).to.equal(
-        'Multiple active deployments found for the same deployment ID'
-      );
-      expect((actualError as HTTPError).status).to.equal(409);
-      expect(getDeploymentsForSurveyIdStub).calledOnceWith(66);
-      expect(getDeploymentsByIdsStub).calledOnceWith(['444']);
-      expect(mockDBConnection.release).to.have.been.calledOnce;
-    }
+    await requestHandler(mockReq, mockRes, mockNext);
+
+    expect(getDeploymentsForSurveyIdStub).calledOnceWith(66);
+    expect(getDeploymentsByIdsStub).calledOnceWith(['444']);
+    expect(mockRes.json).calledOnceWith({
+      deployments: [],
+      bad_deployments: [
+        {
+          name: 'BCTW Data Error',
+          message: 'Multiple active deployments found for the same deployment ID, when only one should exist.',
+          data: {
+            sims_deployment_id: 3,
+            bctw_deployment_id: '444'
+          }
+        }
+      ]
+    });
+    expect(mockRes.status).calledOnceWith(200);
+    expect(mockDBConnection.release).to.have.been.calledOnce;
   });
 
-  it('throws a 409 error if no active deployment found in BCTW for a single SIMS deployment record', async () => {
+  it('returns bad deployment records if no active deployment found in BCTW for a single SIMS deployment record', async () => {
     const mockDBConnection = getMockDBConnection({ release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
@@ -296,16 +305,25 @@ describe('getDeploymentsInSurvey', () => {
 
     const requestHandler = getDeploymentsInSurvey();
 
-    try {
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).message).to.equal('No active deployments found for deployment ID');
-      expect((actualError as HTTPError).status).to.equal(409);
-      expect(getDeploymentsForSurveyIdStub).calledOnceWith(66);
-      expect(getDeploymentsByIdsStub).calledOnceWith(['444']);
-      expect(mockDBConnection.release).to.have.been.calledOnce;
-    }
+    await requestHandler(mockReq, mockRes, mockNext);
+
+    expect(getDeploymentsForSurveyIdStub).calledOnceWith(66);
+    expect(getDeploymentsByIdsStub).calledOnceWith(['444']);
+    expect(mockRes.json).calledOnceWith({
+      deployments: [],
+      bad_deployments: [
+        {
+          name: 'BCTW Data Error',
+          message: 'No active deployments found for deployment ID, when one should exist.',
+          data: {
+            sims_deployment_id: 3,
+            bctw_deployment_id: '444'
+          }
+        }
+      ]
+    });
+    expect(mockRes.status).calledOnceWith(200);
+    expect(mockDBConnection.release).to.have.been.calledOnce;
   });
 
   it('catches and re-throws errors', async () => {
