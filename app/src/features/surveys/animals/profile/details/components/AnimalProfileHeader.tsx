@@ -91,6 +91,16 @@ export const AnimalProfileHeader = (props: IAnimalProfileHeaderProps) => {
       </Box>
       <Divider sx={{ my: 2 }} />
       <Stack direction="row" gap={3} flex="1 1 auto">
+        {critter.sex && (
+          <Box>
+            <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">
+              Sex
+            </Typography>
+            <Typography component="dd" variant="body2">
+              {critter.sex.label}
+            </Typography>
+          </Box>
+        )}
         {critter.wlh_id && (
           <Box>
             <Typography component="dt" variant="body2" fontWeight={500} color="textSecondary">

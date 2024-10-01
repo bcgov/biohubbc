@@ -159,8 +159,10 @@ POST.apiDoc = {
             itis_tsn: {
               type: 'integer'
             },
-            sex: {
-              type: 'string'
+            sex_qualitative_option_id: {
+              type: 'string',
+              format: 'uuid',
+              nullable: true
             },
             critter_comment: {
               type: 'string'

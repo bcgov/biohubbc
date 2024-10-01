@@ -46,8 +46,6 @@ describe('uploadMedia', () => {
       }
     });
 
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-
     const expectedError = new Error('cannot process request');
     sinon.stub(AttachmentService.prototype, 'upsertProjectReportAttachment').rejects(expectedError);
 
@@ -69,7 +67,6 @@ describe('uploadMedia', () => {
       }
     });
 
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(file_utils, 'uploadFileToS3').resolves();
 
     const expectedResponse = { attachmentId: 1, revision_count: 1 };

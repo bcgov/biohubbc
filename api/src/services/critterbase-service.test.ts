@@ -79,7 +79,7 @@ describe('CritterbaseService', () => {
         const data: ICreateCritter = {
           wlh_id: 'aaaa',
           animal_id: 'aaaa',
-          sex: 'male',
+          sex_qualitative_option_id: 'male',
           itis_tsn: 1,
           critter_comment: 'None.'
         };

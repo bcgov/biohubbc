@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { AnimalSex, ICreateCritter } from 'features/surveys/view/survey-animals/animal';
+import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
@@ -72,7 +72,7 @@ describe('useSurveyApi', () => {
         itis_tsn: 1,
         wlh_id: '123-45',
         animal_id: 'carl',
-        sex: AnimalSex.MALE,
+        sex_qualitative_option_id: null,
         critter_comment: 'comment'
       };
 
@@ -184,6 +184,25 @@ describe('useSurveyApi', () => {
       expect(Array.isArray(result)).toBe(true);
       expect(result.length).toBe(1);
       expect(result).toEqual(response);
+    });
+  });
+
+  describe('exportData', () => {
+    it('should get critters', async () => {
+      const mockResponse = { presignedS3Urls: ['signed-url-for:path/to/file/key'] };
+
+      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/export`).reply(200, mockResponse);
+
+      const result = await useSurveyApi(axios).exportData(projectId, surveyId, {
+        metadata: true,
+        sampling_data: false,
+        observation_data: true,
+        telemetry_data: true,
+        animal_data: false,
+        artifacts: false
+      });
+
+      expect(result).toEqual(mockResponse);
     });
   });
 });

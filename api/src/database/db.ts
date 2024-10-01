@@ -103,6 +103,15 @@ export const getDBPool = function (): pg.Pool | undefined {
 
 export interface IDBConnection {
   /**
+   * Get a new pg client.
+   *
+   * Note: This is not the same client that is initialized when calling `.open()`, and must be released manually by
+   * calling `client.release()`.
+   *
+   * @memberof IDBConnection
+   */
+  getClient: () => Promise<pg.PoolClient>;
+  /**
    * Opens a new connection, begins a transaction, and sets the user context.
    *
    * Note: Does nothing if the connection is already open.
@@ -132,17 +141,6 @@ export interface IDBConnection {
    * @memberof IDBConnection
    */
   rollback: () => Promise<void>;
-  /**
-   * Performs a query against this connection, returning the results.
-   *
-   * @param {string} text SQL text
-   * @param {any[]} [values] SQL values array (optional)
-   * @return {*}  {(Promise<QueryResult<any>>)}
-   * @throws If the connection is not open.
-   * @deprecated Prefer using `.sql` (pass entire statement object) or `.knex` (pass knex query builder object)
-   * @memberof IDBConnection
-   */
-  query: <T extends pg.QueryResultRow = any>(text: string, values?: any[]) => Promise<pg.QueryResult<T>>;
   /**
    * Performs a query against this connection, returning the results.
    *
@@ -235,6 +233,21 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
   let _isReleased = false;
   let _systemUserId: number | null = null;
   const _token = keycloakToken;
+
+  /**
+   * Get a new pg client.
+   *
+   * @return {*}
+   */
+  const _getClient = async () => {
+    const pool = getDBPool();
+
+    if (!pool) {
+      throw Error('DBPool is not initialized');
+    }
+
+    return pool.connect();
+  };
 
   /**
    * Opens a new connection, begins a transaction, and sets the user context.
@@ -553,8 +566,8 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
   };
 
   return {
+    getClient: asyncErrorWrapper(_getClient),
     open: asyncErrorWrapper(_open),
-    query: asyncErrorWrapper(_query),
     sql: asyncErrorWrapper(_sql),
     knex: asyncErrorWrapper(_knex),
     release: syncErrorWrapper(_release),

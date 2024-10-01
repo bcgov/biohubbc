@@ -166,7 +166,7 @@ export const SurveySpatialObservationTable = (props: ISurveyDataObservationTable
       hasNoData={!rows.length}
       hasNoDataFallback={
         <NoDataOverlay
-          height="250px"
+          height="100%"
           title="Add Observations"
           subtitle="After adding sampling information, upload observations and link them to sampling efforts"
           icon={mdiArrowTopRight}
