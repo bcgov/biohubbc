@@ -353,7 +353,8 @@ PUT.apiDoc = {
               nullable: true
             },
             frequency: {
-              type: 'number'
+              type: 'number',
+              nullable: true
             },
             frequency_unit: {
               type: 'number',

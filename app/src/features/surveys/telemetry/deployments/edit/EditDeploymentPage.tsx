@@ -88,7 +88,7 @@ export const EditDeploymentPage = () => {
         critter_id: values.critter_id,
         device_id: Number(values.device_id),
         device_make: values.device_make,
-        frequency: values.frequency,
+        frequency: values.frequency || null, // nullify if empty string
         frequency_unit: values.frequency_unit,
         device_model: values.device_model,
         critterbase_start_capture_id: values.critterbase_start_capture_id,
