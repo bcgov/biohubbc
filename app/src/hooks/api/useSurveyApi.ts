@@ -5,6 +5,7 @@ import { ISurveyCritter } from 'contexts/animalPageContext';
 import { ISurveyAdvancedFilters } from 'features/summary/list-data/survey/SurveysListFilterForm';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import { SurveyExportConfig } from 'features/surveys/view/survey-export/SurveyExportForm';
+import { WarningSchema } from 'interfaces/useBioHubApi.interface';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
@@ -483,9 +484,18 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @return {*}  {Promise<IAnimalDeployment[]>}
+   * @return {*}  {Promise<{
+   *     deployments: IAnimalDeployment[];
+   *     bad_deployments: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }>[];
+   *   }>}
    */
-  const getDeploymentsInSurvey = async (projectId: number, surveyId: number): Promise<IAnimalDeployment[]> => {
+  const getDeploymentsInSurvey = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<{
+    deployments: IAnimalDeployment[];
+    bad_deployments: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }>[];
+  }> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments`);
     return data;
   };
@@ -496,13 +506,19 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} deploymentId
-   * @return {*}  {Promise<IAnimalDeployment>}
+   * @return {*}  {(Promise<
+   *     | { deployment: IAnimalDeployment; bad_deployment: null }
+   *     | { deployment: null; bad_deployment: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }> }
+   *   >)}
    */
   const getDeploymentById = async (
     projectId: number,
     surveyId: number,
     deploymentId: number
-  ): Promise<IAnimalDeployment> => {
+  ): Promise<
+    | { deployment: IAnimalDeployment; bad_deployment: null }
+    | { deployment: null; bad_deployment: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }> }
+  > => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
     return data;
   };
@@ -563,6 +579,22 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const deleteDeployment = async (projectId: number, surveyId: number, deploymentId: number): Promise<string> => {
     const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
+    return data;
+  };
+
+  /**
+   * Deletes a list of deployments. Will trigger deletion in SIMS and invalidates the deployments in BCTW.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number[]} deploymentIds
+   * @return {*}  {Promise<string>}
+   */
+  const deleteDeployments = async (projectId: number, surveyId: number, deploymentIds: number[]): Promise<string> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/deployments/delete`, {
+      deployment_ids: deploymentIds
+    });
+
     return data;
   };
 
@@ -733,6 +765,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     importMeasurementsFromCsv,
     endDeployment,
     deleteDeployment,
+    deleteDeployments,
     exportData
   };
 };
