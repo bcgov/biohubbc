@@ -142,7 +142,7 @@ describe('useSurveyApi', () => {
         bad_deployments: []
       };
 
-      mock.onGet(`/api/project/${projectId}/survey/${surveyId}/deployments`).reply(200, [response]);
+      mock.onGet(`/api/project/${projectId}/survey/${surveyId}/deployments`).reply(200, response);
 
       const result = await useSurveyApi(axios).getDeploymentsInSurvey(projectId, surveyId);
 
