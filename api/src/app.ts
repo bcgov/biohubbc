@@ -91,6 +91,8 @@ const openAPIFramework = initialize({
        * @see https://www.npmjs.com/package/express-openapi#argsconsumesmiddleware
        */
       multerRequestHandler(req, res, async (error?: any) => {
+        console.log({ MULTER_FILES: req.files });
+
         if (error) {
           return next(error);
         }
