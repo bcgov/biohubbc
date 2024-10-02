@@ -56,7 +56,7 @@ export const CreateDeploymentPage = () => {
       await biohubApi.survey.createDeployment(surveyContext.projectId, surveyContext.surveyId, critter_id, {
         device_id: Number(values.device_id),
         device_make: values.device_make,
-        frequency: values.frequency,
+        frequency: values.frequency || null,
         frequency_unit: values.frequency_unit,
         device_model: values.device_model,
         critterbase_start_capture_id: values.critterbase_start_capture_id,
