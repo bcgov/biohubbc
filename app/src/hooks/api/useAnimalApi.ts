@@ -73,7 +73,12 @@ const useAnimalApi = (axios: AxiosInstance) => {
   }) => {
     const fileData = new FormData();
 
-    // Add all the files to the request FormData
+    /**
+     * Add all the files to the request FormData
+     *
+     * Note: Multer expecting a single key of 'media' for the array of files,
+     * using `media[index]` will not work.
+     */
     params.files.forEach((file) => {
       fileData.append(`media`, file);
     });

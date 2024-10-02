@@ -1,4 +1,11 @@
 import { z } from 'zod';
+/**
+ * Note: These files should only contain the `Data Models` and `Data Records` with equivalent inferred types.
+ *
+ * Data Models contain a 1 to 1 mapping of the database table.
+ *
+ * Data Records contain a 1 to 1 mapping of the database table, minus the audit columns.
+ */
 
 /**
  * Critter Mortality Attachment Model.
@@ -12,10 +19,10 @@ export const CritterMortalityAttachmentModel = z.object({
   critterbase_mortality_id: z.string(),
   file_type: z.string(),
   file_name: z.string().nullable(),
+  file_size: z.number().nullable(),
   title: z.string().nullable(),
   description: z.string().nullable(),
   key: z.string(),
-  file_size: z.number().nullable(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),

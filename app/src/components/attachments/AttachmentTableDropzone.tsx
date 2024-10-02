@@ -25,10 +25,12 @@ interface IAttachmentTableDropzoneProps {
 /**
  * AttachmentTableDropzone
  *
+ * @description Renders a dropzone for staged attachements and a table of uploaded attachments.
+ *
  * @param {IAnimalAttachmentsProps} props
  * @returns {*}
  */
-export const AttachmentTableDropzone = (props: IAttachmentTableDropzoneProps) => {
+export const AttachmentTableDropzone = (props: IAttachmentTableDropzoneProps): JSX.Element => {
   const attachmentsListColumnDefs: GridColDef<IAttachment>[] = [
     GenericFileNameColDef({ field: 'name', headerName: 'Name' }),
     {

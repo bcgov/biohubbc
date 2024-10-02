@@ -1,4 +1,11 @@
 import { z } from 'zod';
+/**
+ * Note: These files should only contain the `Data Models` and `Data Records` with equivalent inferred types.
+ *
+ * Data Models contain a 1 to 1 mapping of the database table.
+ *
+ * Data Records contain a 1 to 1 mapping of the database table, minus the audit columns.
+ */
 
 /**
  * Critter Capture Attachment Model.

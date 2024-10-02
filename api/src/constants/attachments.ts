@@ -34,7 +34,7 @@ export enum CRITTER_CAPTURE_ATTACHMENT_TYPE {
    * Critter Capture Attachment file type.
    *
    * Note: This will not be used as the attachment type on the record.
-   * But used to identify the attachment to request in the endpoint.
+   * But used to identify which service to get the S3 key from in the endpoint.
    *
    * @export
    * @enum {string}
