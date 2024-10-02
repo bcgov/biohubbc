@@ -1,5 +1,6 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
+import { WarningSchema } from 'interfaces/useBioHubApi.interface';
 import { IAllTelemetry, IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { createContext, PropsWithChildren, useMemo } from 'react';
 
@@ -13,10 +14,17 @@ export interface ITelemetryDataContext {
   /**
    * The Data Loader used to load deployments.
    *
-   * @type {DataLoader<[project_id: number, survey_id: number], IAnimalDeployment[], unknown>}
+   * @type {DataLoader<[project_id: number, survey_id: number], { deployments: IAnimalDeployment[]; bad_deployments: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }>[] }, unknown>}
    * @memberof ITelemetryDataContext
    */
-  deploymentsDataLoader: DataLoader<[project_id: number, survey_id: number], IAnimalDeployment[], unknown>;
+  deploymentsDataLoader: DataLoader<
+    [project_id: number, survey_id: number],
+    {
+      deployments: IAnimalDeployment[];
+      bad_deployments: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }>[];
+    },
+    unknown
+  >;
   /**
    * The Data Loader used to load telemetry.
    *
