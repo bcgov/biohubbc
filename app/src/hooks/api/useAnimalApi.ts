@@ -73,16 +73,15 @@ const useAnimalApi = (axios: AxiosInstance) => {
   }) => {
     const fileData = new FormData();
 
-    console.log(params.files);
-
+    // Add all the files to the request FormData
     params.files.forEach((file) => {
       fileData.append(`media`, file);
     });
 
-    // Add any delete ids to the request
+    // Add any delete ids to the request FormData
     if (params.deleteIds?.length) {
-      params.deleteIds.forEach((deleteId, index) => {
-        fileData.append(`delete_ids[${index}]`, deleteId.toString());
+      params.deleteIds.forEach((id, idx) => {
+        fileData.append(`delete_ids[${idx}]`, id.toString());
       });
     }
 

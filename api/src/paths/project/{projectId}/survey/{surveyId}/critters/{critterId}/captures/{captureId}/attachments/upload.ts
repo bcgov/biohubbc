@@ -145,9 +145,8 @@ POST.apiDoc = {
 export function uploadCaptureAttachments(): RequestHandler {
   return async (req, res) => {
     const rawMediaFiles = req.files as Express.Multer.File[];
-    const deleteIds: number[] = req.body.delete_ids?.map((id: string) => Number(id)) ?? [];
-
-    console.log({ rawMediaFiles });
+    const deleteIds: number[] = req.body.delete_ids?.map(Number) ?? [];
+    const surveyId = Number(req.params.surveyId);
 
     const connection = getDBConnection(req.keycloak_token);
 
@@ -158,7 +157,7 @@ export function uploadCaptureAttachments(): RequestHandler {
 
       // Delete any flagged attachments
       if (deleteIds.length) {
-        await critterAttachmentService.deleteCritterCaptureAttachments(deleteIds);
+        await critterAttachmentService.deleteCritterCaptureAttachments(surveyId, deleteIds);
       }
 
       // Upload each file to S3 and store the file details in the database

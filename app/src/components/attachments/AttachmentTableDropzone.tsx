@@ -14,20 +14,21 @@ interface IAttachment {
   type: string;
 }
 
-interface IAnimalAttachmentsProps {
+interface IAttachmentTableDropzoneProps {
   attachments?: IAttachment[];
+  onDownloadAttachment: (id: number, attachmentType: string) => void;
   onStagedAttachment: (file: File | null) => void;
-  onRemoveStagedAttachment: (fileName: string, id?: number) => void;
+  onRemoveStagedAttachment: (fileName: string) => void;
   onRemoveUploadedAttachment: (id: number) => void;
 }
 
 /**
- * AnimalAttachments
+ * AttachmentTableDropzone
  *
  * @param {IAnimalAttachmentsProps} props
  * @returns {*}
  */
-export const AnimalAttachments = (props: IAnimalAttachmentsProps) => {
+export const AttachmentTableDropzone = (props: IAttachmentTableDropzoneProps) => {
   const attachmentsListColumnDefs: GridColDef<IAttachment>[] = [
     GenericFileNameColDef({ field: 'name', headerName: 'Name' }),
     {
@@ -50,7 +51,7 @@ export const AnimalAttachments = (props: IAnimalAttachmentsProps) => {
           <AttachmentsListItemMenuButton
             attachmentFileType={params.row.type}
             attachmentStatus={PublishStatus.SUBMITTED}
-            onDownloadFile={() => console.log('download')}
+            onDownloadFile={() => props.onDownloadAttachment(params.row.id, params.row.type)}
             onDeleteFile={() => props.onRemoveUploadedAttachment(params.row.id)}
             onViewDetails={() => undefined}
           />

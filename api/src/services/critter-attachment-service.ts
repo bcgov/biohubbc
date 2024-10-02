@@ -24,14 +24,14 @@ export class CritterAttachmentService extends DBService {
   }
 
   /**
-   * Get Critter Capture Attachment signed URL.
+   * Get Critter Capture Attachment S3 key.
    *
    * @param {number} surveyId - Survey ID
    * @param {number} attachmentId - Critter Capture Attachment ID
    * @return {*}  {Promise<string>}
    */
-  async getCritterCaptureSignedURL(surveyId: number, attachmentId: number): Promise<string> {
-    return this.attachmentRepository.getCritterCaptureSignedURL(surveyId, attachmentId);
+  async getCritterCaptureAttachmentS3Key(surveyId: number, attachmentId: number): Promise<string> {
+    return this.attachmentRepository.getCritterCaptureAttachmentS3Key(surveyId, attachmentId);
   }
 
   /**
@@ -49,12 +49,13 @@ export class CritterAttachmentService extends DBService {
   /**
    * Delete Critter Capture Attachments.
    *
+   * @param {number} surveyId - Survey ID
    * @param {number[]} deleteIds - Critter Capture Attachment ID's
    * @return {*} {Promise<void>}
    *
    */
-  async deleteCritterCaptureAttachments(deleteIds: number[]): Promise<void> {
-    return this.attachmentRepository.deleteCritterCaptureAttachments(deleteIds);
+  async deleteCritterCaptureAttachments(surveyId: number, deleteIds: number[]): Promise<void> {
+    return this.attachmentRepository.deleteCritterCaptureAttachments(surveyId, deleteIds);
   }
 
   /**
@@ -70,16 +71,18 @@ export class CritterAttachmentService extends DBService {
   }
 
   /**
-   * Get all Attachments for a Critterbase Critter ID.
+   * Find all Attachments for a Critterbase Critter ID.
    *
    * TODO: Include mortality attachments.
    *
    * @param {number} critterId - SIMS Critter ID
    * @return {*} {Promise<{captureAttachments: CritterCaptureAttachmentRecord[]}>}
    */
-  async getAllCritterAttachments(critterId: number): Promise<{ captureAttachments: CritterCaptureAttachmentRecord[] }> {
+  async findAllCritterAttachments(
+    critterId: number
+  ): Promise<{ captureAttachments: CritterCaptureAttachmentRecord[] }> {
     const [captureAttachments] = await Promise.all([
-      this.attachmentRepository.getCaptureAttachmentsByCritterId(critterId)
+      this.attachmentRepository.findCaptureAttachmentsByCritterId(critterId)
     ]);
     return { captureAttachments };
   }

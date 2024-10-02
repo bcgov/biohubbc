@@ -231,7 +231,7 @@ export function getCrittersFromSurvey(): RequestHandler {
 
       // Get the attachments from SIMS table and the Critter from critterbase
       const [atttachments, critterbaseCritter] = await Promise.all([
-        critterAttachmentService.getAllCritterAttachments(surveyCritter.critter_id),
+        critterAttachmentService.findAllCritterAttachments(surveyCritter.critter_id),
         critterbaseService.getCritter(surveyCritter.critterbase_critter_id)
       ]);
 

@@ -2,6 +2,7 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { CritterCaptureAttachmentRecord } from '../database-models/critter_capture_attachment';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 import {
@@ -18,26 +19,32 @@ import {
  */
 export class CritterAttachmentRepository extends BaseRepository {
   /**
-   * Get Critter Capture Attachment signed URL.
+   * Get Critter Capture Attachment S3 key.
+   *
+   * Note: Joining on survey_id for security purposes.
    *
    * @param {number} surveyId - Survey ID
    * @param {number} attachmentId - Critter Capture Attachment ID
    * @return {*}  {Promise<string>}
    */
-  async getCritterCaptureSignedURL(surveyId: number, attachmentId: number): Promise<string> {
+  async getCritterCaptureAttachmentS3Key(surveyId: number, attachmentId: number): Promise<string> {
     const sqlStatement = SQL`
       SELECT
         key
-      FROM critter_capture_attachment
-      WHERE critter_capture_attachment_id = ${attachmentId}
-      AND survey_id = ${surveyId};
+      FROM critter_capture_attachment cc
+      JOIN critter c
+      ON c.critter_id = cc.critter_id
+      JOIN survey s
+      ON s.survey_id = c.survey_id
+      WHERE cc.critter_capture_attachment_id = ${attachmentId}
+      AND s.survey_id = ${surveyId};
     `;
 
     const response = await this.connection.sql(sqlStatement, z.object({ key: z.string() }));
 
-    if (!response?.rows?.[0]) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get critter capture attachment signed URL', [
-        'AttachmentRepository->getCritterCaptureSignedURL',
+        'AttachmentRepository->getCritterCaptureAttachmentS3Key',
         'rows was null or undefined, expected rows != null'
       ]);
     }
@@ -84,7 +91,7 @@ export class CritterAttachmentRepository extends BaseRepository {
       z.object({ critter_capture_attachment_id: z.number(), key: z.string() })
     );
 
-    if (!response?.rows?.[0]) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to upsert critter capture attachment data', [
         'AttachmentRepository->upsertCritterCaptureAttachment',
         'rows was null or undefined, expected rows != null'
@@ -134,7 +141,7 @@ export class CritterAttachmentRepository extends BaseRepository {
       z.object({ critter_mortality_attachment_id: z.number(), key: z.string() })
     );
 
-    if (!response?.rows?.[0]) {
+    if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to upsert critter mortality attachment data', [
         'AttachmentRepository->insertCritterMortalityAttachment',
         'rows was null or undefined, expected rows != null'
@@ -145,13 +152,13 @@ export class CritterAttachmentRepository extends BaseRepository {
   }
 
   /**
-   * Get Critter Capture Attachments by Critter ID.
+   * Find Critter Capture Attachments by Critter ID.
    *
    * @param {number} critterId - SIMS Critter ID
    * @return {*}  {Promise<CritterCaptureAttachment[]>}
    * @memberof CritterAttachmentRepository
    */
-  async getCaptureAttachmentsByCritterId(critterId: number): Promise<CritterCaptureAttachmentRecord[]> {
+  async findCaptureAttachmentsByCritterId(critterId: number): Promise<CritterCaptureAttachmentRecord[]> {
     const sqlStatement = SQL`
       SELECT
         critter_capture_attachment_id,
@@ -176,15 +183,31 @@ export class CritterAttachmentRepository extends BaseRepository {
   /**
    * Delete Critter Capture Attachments by ID.
    *
+   * Note: Joining on survey_id for security purposes.
+   *
+   * @param {number} surveyId - Survey ID
    * @param {number[]} deleteIds - Critter Capture Attachment ID's
    * @return {*}  {Promise<void>}
    */
-  async deleteCritterCaptureAttachments(deleteIds: number[]): Promise<void> {
-    const sqlStatement = SQL`
-      DELETE FROM critter_capture_attachment
-      WHERE critter_capture_attachment_id IN (${deleteIds.join(',')});
-    `;
+  async deleteCritterCaptureAttachments(surveyId: number, deleteIds: number[]): Promise<void> {
+    const knex = getKnex();
 
-    await this.connection.sql(sqlStatement);
+    const queryBuilder = knex
+      .queryBuilder()
+      .del()
+      .from('critter_capture_attachment as cc')
+      .join('critter as c', 'c.critter_id', 'cc.critter_id')
+      .join('survey as s', 's.survey_id', 'c.survey_id')
+      .whereIn('cc.critter_capture_attachment_id', deleteIds)
+      .andWhere('s.survey_id', surveyId);
+
+    const response = await this.connection.knex(queryBuilder);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete critter capture attachments', [
+        'AttachmentRepository->deleteCritterCaptureAttachments',
+        'response was null or undefined, expected response != null'
+      ]);
+    }
   }
 }
