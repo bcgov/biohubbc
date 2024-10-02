@@ -2,6 +2,7 @@ import { OpenAPIV3 } from 'openapi-types';
 import { GeoJSONFeatureCollection } from './geoJson';
 
 export const getDeploymentSchema: OpenAPIV3.SchemaObject = {
+  title: 'Deployment',
   type: 'object',
   // TODO: REMOVE unnecessary columns from BCTW response
   additionalProperties: false,
@@ -9,19 +10,19 @@ export const getDeploymentSchema: OpenAPIV3.SchemaObject = {
     // BCTW properties
     'assignment_id',
     'collar_id',
-    'critter_id',
-    'device_id',
     'attachment_start_date',
     'attachment_start_time',
     'attachment_end_date',
     'attachment_end_time',
     'bctw_deployment_id',
+    'device_id',
     'device_make',
     'device_model',
     'frequency',
     'frequency_unit',
     // SIMS properties
     'deployment_id',
+    'critter_id',
     'critterbase_critter_id',
     'critterbase_start_capture_id',
     'critterbase_end_capture_id',
