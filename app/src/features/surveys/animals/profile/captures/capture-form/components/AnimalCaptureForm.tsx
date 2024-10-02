@@ -229,33 +229,31 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
           title="Attachments"
           summary="Upload attachments related to the capture"
           component={
-            <>
-              <AttachmentTableDropzone
-                attachments={props.captureAttachments
-                  ?.map((attachment) => ({
-                    id: attachment.critter_capture_attachment_id,
-                    s3Key: attachment.key,
-                    name: attachment.file_name ?? 'Unknown',
-                    size: attachment.file_size,
-                    type: attachment.file_type
-                  }))
-                  // Filter out attachments that are flagged for deletion
-                  .filter((attachment) => !captureDeleteIds.includes(attachment.id))}
-                onStagedAttachment={addStagedFile}
-                onRemoveStagedAttachment={removeStagedFile}
-                onRemoveUploadedAttachment={flagUploadedFileForDelete}
-                onDownloadAttachment={(id) =>
-                  downloadS3File(
-                    biohubApi.survey.getSurveyAttachmentSignedURL(
-                      projectId,
-                      surveyId,
-                      id,
-                      CRITTER_CAPTURE_ATTACHMENT_TYPE
-                    )
+            <AttachmentTableDropzone
+              attachments={props.captureAttachments
+                ?.map((attachment) => ({
+                  id: attachment.critter_capture_attachment_id,
+                  s3Key: attachment.key,
+                  name: attachment.file_name ?? 'Unknown',
+                  size: attachment.file_size,
+                  type: attachment.file_type
+                }))
+                // Filter out attachments that are flagged for deletion
+                .filter((attachment) => !captureDeleteIds.includes(attachment.id))}
+              onStagedAttachment={addStagedFile}
+              onRemoveStagedAttachment={removeStagedFile}
+              onRemoveUploadedAttachment={flagUploadedFileForDelete}
+              onDownloadAttachment={(id) =>
+                downloadS3File(
+                  biohubApi.survey.getSurveyAttachmentSignedURL(
+                    projectId,
+                    surveyId,
+                    id,
+                    CRITTER_CAPTURE_ATTACHMENT_TYPE
                   )
-                }
-              />
-            </>
+                )
+              }
+            />
           }
         />
         <Divider />

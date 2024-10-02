@@ -151,7 +151,10 @@ export function getSurveyAttachmentSignedURL(): RequestHandler {
         case ATTACHMENT_TYPE.REPORT:
           s3Key = await attachmentService.getSurveyReportAttachmentS3Key(surveyId, attachmentId);
           break;
-        case TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX || TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG:
+        case TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX:
+          s3Key = await attachmentService.getSurveyTelemetryCredentialAttachmentS3Key(surveyId, attachmentId);
+          break;
+        case TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG:
           s3Key = await attachmentService.getSurveyTelemetryCredentialAttachmentS3Key(surveyId, attachmentId);
           break;
         default:
