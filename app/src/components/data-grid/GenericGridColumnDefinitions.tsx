@@ -251,6 +251,7 @@ export const GenericLongitudeColDef = <T extends GridValidRowModel>(props: {
 export const GenericFileNameColDef = <T extends GridValidRowModel>(props: {
   field: string;
   headerName: string;
+  onClick?: (params: GridCellParams) => void;
 }): GridColDef<T> => {
   return {
     field: props.field,
@@ -272,7 +273,7 @@ export const GenericFileNameColDef = <T extends GridValidRowModel>(props: {
             }
           }}>
           <Icon path={mdiFileOutline} size={1} />
-          <Link underline="always" onClick={() => console.log('download')} tabIndex={0}>
+          <Link underline="always" onClick={() => props.onClick?.(params)} tabIndex={0}>
             {params.value}
           </Link>
         </Stack>

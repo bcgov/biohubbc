@@ -55,11 +55,11 @@ const useAnimalApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Uploads attachments for a Critter Capture.
+   * Uploads attachments for a Critter Capture and deletes existing attachments if provided.
    *
    * @async
    * @param {*} params - Upload parameters.
-   * @returns {Promise<void>}
+   * @returns {*} Promise<void>
    */
   const uploadCritterCaptureAttachments = async (params: {
     projectId: number;
@@ -83,7 +83,7 @@ const useAnimalApi = (axios: AxiosInstance) => {
       fileData.append(`media`, file);
     });
 
-    // Add any delete ids to the request FormData
+    // Add the existing attachment ids to delete
     if (params.deleteIds?.length) {
       params.deleteIds.forEach((id, idx) => {
         fileData.append(`delete_ids[${idx}]`, id.toString());

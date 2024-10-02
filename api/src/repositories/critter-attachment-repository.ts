@@ -187,9 +187,9 @@ export class CritterAttachmentRepository extends BaseRepository {
    *
    * @param {number} surveyId - Survey ID
    * @param {number[]} deleteIds - Critter Capture Attachment ID's
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<string[]>} List of S3 keys that were deleted
    */
-  async deleteCritterCaptureAttachments(surveyId: number, deleteIds: number[]): Promise<void> {
+  async deleteCritterCaptureAttachments(surveyId: number, deleteIds: number[]): Promise<string[]> {
     const knex = getKnex();
 
     const queryBuilder = knex
@@ -199,9 +199,10 @@ export class CritterAttachmentRepository extends BaseRepository {
       .join('critter as c', 'c.critter_id', 'cc.critter_id')
       .join('survey as s', 's.survey_id', 'c.survey_id')
       .whereIn('cc.critter_capture_attachment_id', deleteIds)
-      .andWhere('s.survey_id', surveyId);
+      .andWhere('s.survey_id', surveyId)
+      .returning('cc.key');
 
-    const response = await this.connection.knex(queryBuilder);
+    const response = await this.connection.knex(queryBuilder, z.object({ key: z.string() }));
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete critter capture attachments', [
@@ -209,5 +210,7 @@ export class CritterAttachmentRepository extends BaseRepository {
         'response was null or undefined, expected response != null'
       ]);
     }
+
+    return response.rows.map((row) => row.key);
   }
 }

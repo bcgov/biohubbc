@@ -2,6 +2,8 @@ import {
   CompleteMultipartUploadCommandOutput,
   DeleteObjectCommand,
   DeleteObjectCommandOutput,
+  DeleteObjectsCommand,
+  DeleteObjectsCommandOutput,
   GetObjectCommand,
   GetObjectCommandOutput,
   HeadObjectCommand,
@@ -117,6 +119,33 @@ export async function deleteFileFromS3(key: string): Promise<DeleteObjectCommand
     new DeleteObjectCommand({
       Bucket: _getObjectStoreBucketName(),
       Key: key
+    })
+  );
+}
+
+/**
+ * Bulk delete files from S3 from a list of keys.
+ *
+ * For potential future reference:
+ * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/command/DeleteObjectsCommand/
+ *
+ * @export
+ * @param {string} keys - List of S3 keys to delete
+ * @returns {Promise<DeleteObjectCommandOutput>} the response from S3 or null if required parameters are null
+ */
+export async function bulkDeleteFilesFromS3(keys: string[]): Promise<DeleteObjectsCommandOutput | null> {
+  const s3Client = _getS3Client();
+
+  if (!keys.length || !s3Client) {
+    return null;
+  }
+
+  return s3Client.send(
+    new DeleteObjectsCommand({
+      Bucket: _getObjectStoreBucketName(),
+      Delete: {
+        Objects: keys.map((key) => ({ Key: key }))
+      }
     })
   );
 }

@@ -51,10 +51,10 @@ export class CritterAttachmentService extends DBService {
    *
    * @param {number} surveyId - Survey ID
    * @param {number[]} deleteIds - Critter Capture Attachment ID's
-   * @return {*} {Promise<void>}
+   * @return {*} {Promise<string[]>} List of keys that were deleted
    *
    */
-  async deleteCritterCaptureAttachments(surveyId: number, deleteIds: number[]): Promise<void> {
+  async deleteCritterCaptureAttachments(surveyId: number, deleteIds: number[]): Promise<string[]> {
     return this.attachmentRepository.deleteCritterCaptureAttachments(surveyId, deleteIds);
   }
 

@@ -5,7 +5,11 @@ import { getDBConnection } from '../../../../../../../../../../database/db';
 import { fileSchema } from '../../../../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../../../../request-handlers/security/authorization';
 import { CritterAttachmentService } from '../../../../../../../../../../services/critter-attachment-service';
-import { generateS3FileKey, uploadFileToS3 } from '../../../../../../../../../../utils/file-utils';
+import {
+  bulkDeleteFilesFromS3,
+  generateS3FileKey,
+  uploadFileToS3
+} from '../../../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../../../utils/logger';
 
 const defaultLog = getLogger(
@@ -157,7 +161,10 @@ export function uploadCaptureAttachments(): RequestHandler {
 
       // Delete any flagged attachments
       if (deleteIds.length) {
-        await critterAttachmentService.deleteCritterCaptureAttachments(surveyId, deleteIds);
+        // Delete the attachments from the database and get the S3 keys
+        const s3Keys = await critterAttachmentService.deleteCritterCaptureAttachments(surveyId, deleteIds);
+        // Bulk delete the files from S3
+        await bulkDeleteFilesFromS3(s3Keys);
       }
 
       // Upload each file to S3 and store the file details in the database
@@ -184,6 +191,7 @@ export function uploadCaptureAttachments(): RequestHandler {
         return upsertResult.critter_capture_attachment_id;
       });
 
+      // In parallel, upload all the files to S3 and store the file details in the database
       const attachmentIds = await Promise.all(uploadPromises);
 
       await connection.commit();

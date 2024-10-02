@@ -3,18 +3,16 @@ import Stack from '@mui/material/Stack';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import { AttachmentTableDropzone } from 'components/attachments/AttachmentTableDropzone';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import { AttachmentsI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
 import { Formik, FormikProps } from 'formik';
-import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
+import { useS3FileDownload } from 'hooks/useS3Download';
 import {
   ICreateCaptureRequest,
   ICritterCaptureAttachment,
   IEditCaptureRequest
 } from 'interfaces/useCritterApi.interface';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { isDefined } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import { MarkingsForm } from '../../../markings/MarkingsForm';
@@ -45,7 +43,7 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
   const biohubApi = useBiohubApi();
   const { projectId, surveyId } = useSurveyContext();
 
-  const dialogContext = useContext(DialogContext);
+  const { downloadS3File } = useS3FileDownload();
 
   // Track the capture attachment ids that are flagged for deletion (formik ref is not stateful)
   const [captureDeleteIds, setCaptureDeleteIds] = useState<number[]>([]);
@@ -205,40 +203,6 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
     }
   };
 
-  /**
-   * Download the attachment.
-   *
-   * @async
-   * @param {number} id - Critter Capture Attachment ID
-   * @returns {Promise<void>}
-   */
-  const downloadAttachment = async (id: number): Promise<void> => {
-    try {
-      const response = await biohubApi.survey.getSurveyAttachmentSignedURL(
-        projectId,
-        surveyId,
-        id,
-        CRITTER_CAPTURE_ATTACHMENT_TYPE
-      );
-
-      if (!response) {
-        return;
-      }
-      window.open(response);
-    } catch (error) {
-      const apiError = error as APIError;
-
-      dialogContext.setErrorDialog({
-        open: true,
-        onOk: () => dialogContext.setErrorDialog({ open: false }),
-        onClose: () => dialogContext.setErrorDialog({ open: false }),
-        dialogTitle: AttachmentsI18N.downloadErrorTitle,
-        dialogText: AttachmentsI18N.downloadErrorText,
-        dialogErrorDetails: apiError.errors
-      });
-    }
-  };
-
   return (
     <Formik
       innerRef={props.formikRef}
@@ -280,7 +244,16 @@ export const AnimalCaptureForm = <FormikValuesType extends ICreateCaptureRequest
                 onStagedAttachment={addStagedFile}
                 onRemoveStagedAttachment={removeStagedFile}
                 onRemoveUploadedAttachment={flagUploadedFileForDelete}
-                onDownloadAttachment={downloadAttachment}
+                onDownloadAttachment={(id) =>
+                  downloadS3File(
+                    biohubApi.survey.getSurveyAttachmentSignedURL(
+                      projectId,
+                      surveyId,
+                      id,
+                      CRITTER_CAPTURE_ATTACHMENT_TYPE
+                    )
+                  )
+                }
               />
             </>
           }
