@@ -23,6 +23,14 @@ import { getLogger } from './logger';
 const defaultLog = getLogger('/api/src/utils/file-utils');
 
 /**
+ * S3 folders Enum.
+ */
+export enum S3_FOLDER {
+  // Captures folder for Critter Capture attachments
+  CAPTURE = 'captures'
+}
+
+/**
  * Local getter for retrieving the ClamAV client.
  *
  * @return {*}  {Promise<NodeClam>}

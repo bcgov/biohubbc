@@ -8,6 +8,7 @@ import { CritterAttachmentService } from '../../../../../../../../../../services
 import {
   bulkDeleteFilesFromS3,
   generateS3FileKey,
+  S3_FOLDER,
   uploadFileToS3
 } from '../../../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../../../utils/logger';
@@ -73,7 +74,7 @@ POST.apiDoc = {
     },
     {
       in: 'path',
-      name: 'captureId',
+      name: 'critterbaseCaptureId',
       schema: {
         type: 'string',
         format: 'uuid',
@@ -100,7 +101,8 @@ POST.apiDoc = {
               description: 'Critter Capture Attachment IDs to delete.',
               type: 'array',
               items: {
-                type: 'string'
+                type: 'string',
+                format: 'integer'
               }
             }
           }
@@ -174,13 +176,13 @@ export function uploadCaptureAttachments(): RequestHandler {
           projectId: Number(req.params.projectId),
           surveyId: Number(req.params.surveyId),
           fileName: file.originalname,
-          folder: 'captures'
+          folder: S3_FOLDER.CAPTURE
         });
 
         // Store the file details in the database
         const upsertResult = await critterAttachmentService.upsertCritterCaptureAttachment({
           critter_id: Number(req.params.critterId),
-          critterbase_capture_id: req.params.captureId,
+          critterbase_capture_id: req.params.critterbaseCaptureId,
           file_name: file.originalname,
           file_size: file.size,
           key: s3Key
