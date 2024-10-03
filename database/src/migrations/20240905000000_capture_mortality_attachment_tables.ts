@@ -138,8 +138,8 @@ export async function up(knex: Knex): Promise<void> {
     -- Create audit and journal triggers
     ----------------------------------------------------------------------------------------
 
-    CREATE TRIGGER audit_critter_mortality_attachment BEFORE INSERT OR UPDATE OR DELETE ON critter_capture_attachment FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_critter_mortality_attachment AFTER INSERT OR UPDATE OR DELETE ON critter_capture_attachment FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+    CREATE TRIGGER audit_critter_mortality_attachment BEFORE INSERT OR UPDATE OR DELETE ON critter_mortality_attachment FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_critter_mortality_attachment AFTER INSERT OR UPDATE OR DELETE ON critter_mortality_attachment FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
 
     ----------------------------------------------------------------------------------------
