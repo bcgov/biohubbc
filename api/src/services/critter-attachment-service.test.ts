@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import { getMockDBConnection } from '../__mocks__/db';
 import { CritterAttachmentService } from './critter-attachment-service';
 
-describe.only('CritterCaptureAttachmentService', () => {
+describe('CritterCaptureAttachmentService', () => {
   afterEach(() => {
     sinon.restore();
   });
