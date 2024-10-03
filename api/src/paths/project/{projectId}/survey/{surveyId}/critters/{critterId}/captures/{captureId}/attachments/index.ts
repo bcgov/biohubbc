@@ -68,7 +68,7 @@ DELETE.apiDoc = {
     },
     {
       in: 'path',
-      name: 'captureId',
+      name: 'critterbaseCaptureId',
       schema: {
         type: 'string',
         format: 'uuid',
@@ -98,7 +98,7 @@ DELETE.apiDoc = {
 export function deleteCritterCaptureAttachments(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const captureId = req.params.captureId;
+    const captureId = req.params.critterbaseCaptureId;
 
     const connection = getDBConnection(req.keycloak_token);
 

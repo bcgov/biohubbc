@@ -20,7 +20,7 @@ describe('uploadCaptureAttachments', () => {
     buffer: Buffer.from('test')
   };
 
-  it.only('creates attachments and deletes any attachments from a list of ids', async () => {
+  it('creates attachments and deletes any attachments from a list of ids', async () => {
     const mockDBConnection = getMockDBConnection({
       open: sinon.stub(),
       commit: sinon.stub(),
