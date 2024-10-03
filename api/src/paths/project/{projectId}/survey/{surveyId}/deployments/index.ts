@@ -3,8 +3,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { HTTP409 } from '../../../../../../errors/http-error';
 import { getDeploymentSchema } from '../../../../../../openapi/schemas/deployment';
+import { WarningSchema, warningSchema } from '../../../../../../openapi/schemas/warning';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { BctwDeploymentService } from '../../../../../../services/bctw-service/bctw-deployment-service';
 import { ICritterbaseUser } from '../../../../../../services/critterbase-service';
@@ -47,9 +47,19 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'path',
+      name: 'projectId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -60,9 +70,18 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            title: 'Deployments',
-            type: 'array',
-            items: getDeploymentSchema
+            type: 'object',
+            properties: {
+              deployments: {
+                title: 'Deployments',
+                type: 'array',
+                items: getDeploymentSchema
+              },
+              bad_deployments: {
+                type: 'array',
+                items: warningSchema
+              }
+            }
           }
         }
       }
@@ -113,14 +132,17 @@ export function getDeploymentsInSurvey(): RequestHandler {
 
       // Return early if there are no deployments
       if (!deploymentIds.length) {
-        // TODO: 400 error instead?
-        return res.status(200).json([]);
+        // Return an empty array if there are no deployments in the survey
+        return res.status(200).json({ deployments: [], bad_deployments: [] });
       }
 
       // Fetch additional deployment details from BCTW service
       const bctwDeployments = await bctwDeploymentService.getDeploymentsByIds(deploymentIds);
 
       const surveyDeploymentsWithBctwData = [];
+
+      // Track deployments that exist in SIMS but have incorrect data in BCTW
+      const badDeployments: WarningSchema[] = [];
 
       // For each SIMS survey deployment record, find the matching BCTW deployment record.
       // We expect exactly 1 matching record, otherwise we throw an error.
@@ -131,19 +153,45 @@ export function getDeploymentsInSurvey(): RequestHandler {
         );
 
         if (matchingBctwDeployments.length > 1) {
-          throw new HTTP409('Multiple active deployments found for the same deployment ID', [
-            'This is an issue in the BC Telemetry Warehouse (BCTW) data. There should only be one active deployment record for a given deployment ID.',
-            `SIMS deployment ID: ${surveyDeployment.deployment_id}`,
-            `BCTW deployment ID: ${surveyDeployment.bctw_deployment_id}`
-          ]);
+          defaultLog.warn({
+            label: 'getDeploymentById',
+            message: 'Multiple active deployments found for the same deployment ID, when only one should exist.',
+            sims_deployment_id: surveyDeployment.deployment_id,
+            bctw_deployment_id: surveyDeployment.bctw_deployment_id
+          });
+
+          badDeployments.push({
+            name: 'BCTW Data Error',
+            message: 'Multiple active deployments found for the same deployment ID, when only one should exist.',
+            data: {
+              sims_deployment_id: surveyDeployment.deployment_id,
+              bctw_deployment_id: surveyDeployment.bctw_deployment_id
+            }
+          });
+
+          // Don't continue processing this deployment
+          continue;
         }
 
         if (matchingBctwDeployments.length === 0) {
-          throw new HTTP409('No active deployments found for deployment ID', [
-            'There should be no deployments recorded in SIMS that have no matching deployment record in BCTW.',
-            `SIMS Deployment ID: ${surveyDeployment.deployment_id}`,
-            `BCTW Deployment ID: ${surveyDeployment.bctw_deployment_id}`
-          ]);
+          defaultLog.warn({
+            label: 'getDeploymentById',
+            message: 'No active deployments found for deployment ID, when one should exist.',
+            sims_deployment_id: surveyDeployment.deployment_id,
+            bctw_deployment_id: surveyDeployment.bctw_deployment_id
+          });
+
+          badDeployments.push({
+            name: 'BCTW Data Error',
+            message: 'No active deployments found for deployment ID, when one should exist.',
+            data: {
+              sims_deployment_id: surveyDeployment.deployment_id,
+              bctw_deployment_id: surveyDeployment.bctw_deployment_id
+            }
+          });
+
+          // Don't continue processing this deployment
+          continue;
         }
 
         surveyDeploymentsWithBctwData.push({
@@ -178,7 +226,7 @@ export function getDeploymentsInSurvey(): RequestHandler {
         });
       }
 
-      return res.status(200).json(surveyDeploymentsWithBctwData);
+      return res.status(200).json({ deployments: surveyDeploymentsWithBctwData, bad_deployments: badDeployments });
     } catch (error) {
       defaultLog.error({ label: 'getDeploymentsInSurvey', message: 'error', error });
       await connection.rollback();
