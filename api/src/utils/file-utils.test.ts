@@ -2,6 +2,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  bulkDeleteFilesFromS3,
   deleteFileFromS3,
   generateS3FileKey,
   getS3HostUrl,
@@ -16,6 +17,14 @@ import {
 describe('deleteFileFromS3', () => {
   it('returns null when no key specified', async () => {
     const result = await deleteFileFromS3(null as unknown as string);
+
+    expect(result).to.be.null;
+  });
+});
+
+describe('bulkDeleteFilesFromS3', () => {
+  it('returns null when no keys provided', async () => {
+    const result = await bulkDeleteFilesFromS3([]);
 
     expect(result).to.be.null;
   });

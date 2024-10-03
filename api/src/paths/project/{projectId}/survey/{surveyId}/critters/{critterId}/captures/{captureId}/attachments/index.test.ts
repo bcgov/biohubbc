@@ -11,7 +11,7 @@ describe('deleteCritterCaptureAttachments', () => {
     sinon.restore();
   });
 
-  it.only('deletes all attachments for a critter capture', async () => {
+  it('deletes all attachments for a critter capture', async () => {
     const mockDBConnection = getMockDBConnection({
       open: sinon.stub(),
       commit: sinon.stub(),
