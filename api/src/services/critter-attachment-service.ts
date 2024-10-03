@@ -1,4 +1,7 @@
-import { CritterCaptureAttachmentRecord } from '../database-models/critter_capture_attachment';
+import {
+  CritterCaptureAttachmentModel,
+  CritterCaptureAttachmentRecord
+} from '../database-models/critter_capture_attachment';
 import { IDBConnection } from '../database/db';
 import { CritterAttachmentRepository } from '../repositories/critter-attachment-repository';
 import {
@@ -68,6 +71,20 @@ export class CritterAttachmentService extends DBService {
     payload: CritterMortalityAttachmentPayload
   ): Promise<{ critter_mortality_attachment_id: number; key: string }> {
     return this.attachmentRepository.upsertCritterMortalityAttachment(payload);
+  }
+
+  /**
+   * Find all Attachments for a Critterbase Capture ID.
+   *
+   * @param {number} surveyId - Survey ID
+   * @param {string} critterbaseCaptureId - Critterbase Capture ID
+   * @return {*} {Promise<CritterCaptureAttachmentModel>}
+   */
+  async findAllCritterCaptureAttachments(
+    surveyId: number,
+    critterbaseCaptureId: string
+  ): Promise<CritterCaptureAttachmentModel[]> {
+    return this.attachmentRepository.findAllCritterCaptureAttachments(surveyId, critterbaseCaptureId);
   }
 
   /**

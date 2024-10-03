@@ -1,7 +1,10 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ATTACHMENT_TYPE } from '../constants/attachments';
-import { CritterCaptureAttachmentRecord } from '../database-models/critter_capture_attachment';
+import {
+  CritterCaptureAttachmentModel,
+  CritterCaptureAttachmentRecord
+} from '../database-models/critter_capture_attachment';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
@@ -149,6 +152,33 @@ export class CritterAttachmentRepository extends BaseRepository {
     }
 
     return response.rows[0];
+  }
+
+  /**
+   * Find all Attachments for a Critterbase Capture ID.
+   *
+   * @param {number} surveyId - Survey ID
+   * @param {string} critterbaseCaptureId - Critterbase Capture ID
+   * @return {*} {Promise<CritterCaptureAttachmentModel[]>}
+   */
+  async findAllCritterCaptureAttachments(
+    surveyId: number,
+    critterbaseCaptureId: string
+  ): Promise<CritterCaptureAttachmentModel[]> {
+    const sqlStatement = SQL`
+      SELECT cc.*
+      FROM critter_capture_attachment cc
+      INNER JOIN critter c
+        ON c.critter_id = cc.critter_id
+      INNER JOIN survey s
+        ON s.survey_id = c.survey_id
+      WHERE cc.critterbase_capture_id = ${critterbaseCaptureId}
+      AND s.survey_id = ${surveyId};
+      `;
+
+    const response = await this.connection.sql(sqlStatement, CritterCaptureAttachmentModel);
+
+    return response.rows;
   }
 
   /**

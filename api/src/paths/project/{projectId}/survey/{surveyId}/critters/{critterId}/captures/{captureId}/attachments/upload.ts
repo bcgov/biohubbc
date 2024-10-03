@@ -13,7 +13,7 @@ import {
 import { getLogger } from '../../../../../../../../../../utils/logger';
 
 const defaultLog = getLogger(
-  '/api/project/{projectId}/survey/{surveyId}/critters/{critterId}/captures/{captureId}/upload'
+  '/api/project/{projectId}/survey/{surveyId}/critters/{critterId}/captures/{captureId}/upload/attachments'
 );
 
 export const POST: Operation = [

@@ -100,7 +100,30 @@ const useAnimalApi = (axios: AxiosInstance) => {
     );
   };
 
-  return { getCaptureMortalityGeometry, findAnimals, uploadCritterCaptureAttachments };
+  /**
+   * Deletes all attachments for a Critter Capture.
+   *
+   * @async
+   * @param {*} params - Delete parameters.
+   * @returns {*} Promise<void>
+   */
+  const deleteCaptureAttachments = async (params: {
+    projectId: number;
+    surveyId: number;
+    critterId: number;
+    critterbaseCaptureId: string;
+  }) => {
+    await axios.delete(
+      `/api/project/${params.projectId}/survey/${params.surveyId}/critters/${params.critterId}/captures/${params.critterbaseCaptureId}/attachments`
+    );
+  };
+
+  return {
+    getCaptureMortalityGeometry,
+    findAnimals,
+    uploadCritterCaptureAttachments,
+    deleteCaptureAttachments
+  };
 };
 
 export default useAnimalApi;
