@@ -153,8 +153,9 @@ export function getDeploymentsInSurvey(): RequestHandler {
           (deployment) => deployment.deployment_id === surveyDeployment.bctw_deployment_id
         );
 
-        // If the feature flag exists: we allow multiple active deployments to exist for the same deployment ID.
-        if (!isFeatureFlagPresent(['API_FF_DISABLE_MULTIPLE_ACTIVE_DEPLOYMENTS'])) {
+        // TODO: If the feature flag exists, then we allow multiple active deployments to exist for the same deployment
+        // ID (when normally we would return a bad deployment).
+        if (!isFeatureFlagPresent(['API_FF_DISABLE_MULTIPLE_ACTIVE_DEPLOYMENTS_CHECK'])) {
           if (matchingBctwDeployments.length > 1) {
             defaultLog.warn({
               label: 'getDeploymentById',
