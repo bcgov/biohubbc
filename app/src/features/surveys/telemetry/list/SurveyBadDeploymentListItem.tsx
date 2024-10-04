@@ -71,11 +71,13 @@ export const SurveyBadDeploymentListItem = (props: ISurveyBadDeploymentListItemP
             <Checkbox
               edge="start"
               checked={isChecked}
+              // TODO: This is disabled as a temporary bug fix to prevent deployment data from being deleted
+              disabled
               sx={{ py: 0 }}
-              onClick={(event) => {
-                event.stopPropagation();
-                handleCheckboxChange(data.data.sims_deployment_id);
-              }}
+              // onClick={(event) => {
+              //   event.stopPropagation();
+              //   handleCheckboxChange(data.data.sims_deployment_id);
+              // }}
               inputProps={{ 'aria-label': 'controlled' }}
             />
             <Box>
@@ -103,7 +105,11 @@ export const SurveyBadDeploymentListItem = (props: ISurveyBadDeploymentListItemP
         <IconButton
           sx={{ position: 'absolute', right: '24px' }}
           edge="end"
-          onClick={() => handleDelete(data.data.sims_deployment_id as number)}
+          // TODO: This delete is commented out as a temporary bug fix to prevent deployment data from being deleted
+          // onClick={
+          //   () => {
+          //   handleDelete(data.data.sims_deployment_id as number)}
+          // }
           aria-label="deployment-settings">
           <Icon path={mdiTrashCanOutline} size={1}></Icon>
         </IconButton>
