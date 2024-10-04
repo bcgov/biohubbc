@@ -285,7 +285,7 @@ export class ObservationSubCountEnvironmentRepository extends BaseRepository {
     surveyId: number
   ): Promise<QuantitativeEnvironmentTypeDefinition[]> {
     const sqlStatement = SQL`
-      SELECT
+      SELECT DISTINCT
         environment_quantitative.environment_quantitative_id,
         environment_quantitative.name,
         environment_quantitative.description,
