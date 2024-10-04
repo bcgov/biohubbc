@@ -164,8 +164,7 @@ const phases = {
     maxUploadFileSize,
     nodeEnv: 'production',
     sso: config.sso.prod,
-    featureFlags:
-      'APP_FF_SUBMIT_BIOHUB,APP_FF_DISABLE_BAD_DEPLOYMENT_DELETE,API_FF_DISABLE_MULTIPLE_ACTIVE_DEPLOYMENTS_CHECK',
+    featureFlags: 'APP_FF_SUBMIT_BIOHUB,APP_FF_DISABLE_BAD_DEPLOYMENT_DELETE',
     cpuRequest: '50m',
     cpuLimit: '1000m',
     memoryRequest: '100Mi',
