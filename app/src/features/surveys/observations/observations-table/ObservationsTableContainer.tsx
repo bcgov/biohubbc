@@ -236,7 +236,7 @@ const ObservationsTableContainer = () => {
 
       <ObservationSubcountCommentDialog
         // The key prop is necessary for the dialog to correctly reset if the user discards changes
-        key={observationsTableContext.commentDialogParams?.value ?? 'observation-comment-dialog'}
+        key={observationsTableContext.commentDialogParams?.id ?? 'comment-dialog-key'}
         open={Boolean(observationsTableContext.commentDialogParams)}
         initialValue={observationsTableContext.commentDialogParams?.value}
         handleClose={() => observationsTableContext.setCommentDialogParams(null)}
