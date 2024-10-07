@@ -1,11 +1,15 @@
+import { mdiFileOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Link } from '@mui/material';
 import Typography from '@mui/material/Typography';
+import { Stack } from '@mui/system';
 import { GridCellParams, GridColDef, GridValidRowModel } from '@mui/x-data-grid';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
 import { round } from 'lodash-es';
-import { getFormattedDate } from 'utils/Utils';
+import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
 
 export const GenericDateColDef = <T extends GridValidRowModel>(props: {
   field: string;
@@ -240,6 +244,55 @@ export const GenericLongitudeColDef = <T extends GridValidRowModel>(props: {
           }}
         />
       );
+    }
+  };
+};
+
+export const GenericFileNameColDef = <T extends GridValidRowModel>(props: {
+  field: string;
+  headerName: string;
+  onClick?: (params: GridCellParams) => void;
+}): GridColDef<T> => {
+  return {
+    field: props.field,
+    headerName: props.headerName,
+    flex: 1,
+    disableColumnMenu: true,
+    renderCell: (params) => {
+      return (
+        <Stack
+          flexDirection="row"
+          alignItems="center"
+          gap={2}
+          sx={{
+            '& svg': {
+              color: '#1a5a96'
+            },
+            '& a': {
+              fontWeight: 700
+            }
+          }}>
+          <Icon path={mdiFileOutline} size={1} />
+          <Link underline="always" onClick={() => props.onClick?.(params)} tabIndex={0}>
+            {params.value}
+          </Link>
+        </Stack>
+      );
+    }
+  };
+};
+
+export const GenericFileSizeColDef = <T extends GridValidRowModel>(props: {
+  field: string;
+  headerName: string;
+}): GridColDef<T> => {
+  return {
+    field: props.field,
+    headerName: props.headerName,
+    flex: 1,
+    disableColumnMenu: true,
+    valueGetter: (params) => {
+      return getFormattedFileSize(params.value);
     }
   };
 };
