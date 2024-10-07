@@ -8,7 +8,7 @@ import { bulkDeleteFilesFromS3 } from '../../../../../../../../../../utils/file-
 import { getLogger } from '../../../../../../../../../../utils/logger';
 
 const defaultLog = getLogger(
-  '/api/project/{projectId}/survey/{surveyId}/critters/{critterbaseCaptureId}/captures/{captureId}/attachments'
+  '/api/project/{projectId}/survey/{surveyId}/critters/{critterId}/captures/{critterbaseCaptureId}/attachments'
 );
 
 export const DELETE: Operation = [
@@ -59,7 +59,7 @@ DELETE.apiDoc = {
     },
     {
       in: 'path',
-      name: 'critterbaseCaptureId',
+      name: 'critterId',
       schema: {
         type: 'integer',
         minimum: 1
@@ -68,11 +68,10 @@ DELETE.apiDoc = {
     },
     {
       in: 'path',
-      name: 'captureId',
+      name: 'critterbaseCaptureId',
       schema: {
         type: 'string',
-        format: 'uuid',
-        minimum: 1
+        format: 'uuid'
       },
       required: true
     }
@@ -98,7 +97,7 @@ DELETE.apiDoc = {
 export function deleteCritterCaptureAttachments(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const captureId = req.params.captureId;
+    const critterbaseCaptureId = req.params.critterbaseCaptureId;
 
     const connection = getDBConnection(req.keycloak_token);
 
@@ -108,7 +107,10 @@ export function deleteCritterCaptureAttachments(): RequestHandler {
       const critterAttachmentService = new CritterAttachmentService(connection);
 
       // Get all attachments for the critter capture
-      const attachments = await critterAttachmentService.findAllCritterCaptureAttachments(surveyId, captureId);
+      const attachments = await critterAttachmentService.findAllCritterCaptureAttachments(
+        surveyId,
+        critterbaseCaptureId
+      );
 
       // Get the S3 keys and attachmentIds for the attachments
       const s3Keys = attachments.map((attachment) => attachment.key);

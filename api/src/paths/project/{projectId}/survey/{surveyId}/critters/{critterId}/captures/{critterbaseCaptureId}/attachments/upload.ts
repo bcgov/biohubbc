@@ -13,7 +13,7 @@ import {
 import { getLogger } from '../../../../../../../../../../utils/logger';
 
 const defaultLog = getLogger(
-  '/api/project/{projectId}/survey/{surveyId}/critters/{critterId}/captures/{critterbaseCaptureId}/upload/attachments'
+  '/api/project/{projectId}/survey/{surveyId}/critters/{critterId}/captures/{critterbaseCaptureId}/attachments/upload'
 );
 
 export const POST: Operation = [
@@ -76,8 +76,7 @@ POST.apiDoc = {
       name: 'critterbaseCaptureId',
       schema: {
         type: 'string',
-        format: 'uuid',
-        minimum: 1
+        format: 'uuid'
       },
       required: true
     }
@@ -151,7 +150,10 @@ export function uploadCaptureAttachments(): RequestHandler {
   return async (req, res) => {
     const rawMediaFiles = req.files as Express.Multer.File[];
     const deleteIds: number[] = req.body.delete_ids?.map(Number) ?? [];
+    const projectId = Number(req.params.projectId);
     const surveyId = Number(req.params.surveyId);
+    const critterId = Number(req.params.critterId);
+    const critterbaseCaptureId = req.params.critterbaseCaptureId;
 
     const connection = getDBConnection(req.keycloak_token);
 
@@ -172,16 +174,16 @@ export function uploadCaptureAttachments(): RequestHandler {
       const uploadPromises = rawMediaFiles.map(async (file) => {
         // Generate the S3 key for the file - used only on new inserts
         const s3Key = generateS3FileKey({
-          projectId: Number(req.params.projectId),
-          surveyId: Number(req.params.surveyId),
+          projectId: projectId,
+          surveyId: surveyId,
           fileName: file.originalname,
           folder: 'captures'
         });
 
         // Store the file details in the database
         const upsertResult = await critterAttachmentService.upsertCritterCaptureAttachment({
-          critter_id: Number(req.params.critterId),
-          critterbase_capture_id: req.params.critterbaseCaptureId,
+          critter_id: critterId,
+          critterbase_capture_id: critterbaseCaptureId,
           file_name: file.originalname,
           file_size: file.size,
           key: s3Key
