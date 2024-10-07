@@ -8,7 +8,6 @@ import { CritterAttachmentService } from '../../../../../../../../../../services
 import {
   bulkDeleteFilesFromS3,
   generateS3FileKey,
-  S3_FOLDER,
   uploadFileToS3
 } from '../../../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../../../utils/logger';
@@ -176,7 +175,7 @@ export function uploadCaptureAttachments(): RequestHandler {
           projectId: Number(req.params.projectId),
           surveyId: Number(req.params.surveyId),
           fileName: file.originalname,
-          folder: S3_FOLDER.CAPTURE
+          folder: 'captures'
         });
 
         // Store the file details in the database

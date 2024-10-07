@@ -65,7 +65,7 @@ describe('uploadCaptureAttachments', () => {
       projectId: 1,
       surveyId: 2,
       fileName: 'test.txt',
-      folder: S3.S3_FOLDER.CAPTURE
+      folder: 'captures'
     });
 
     expect(mockUpsertAttachment).to.have.been.calledOnceWithExactly({
