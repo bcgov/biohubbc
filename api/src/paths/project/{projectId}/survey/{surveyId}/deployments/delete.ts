@@ -133,6 +133,8 @@ export function deleteDeploymentsInSurvey(): RequestHandler {
 
       await Promise.all(deletePromises);
 
+      await connection.commit();
+
       return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteDeploymentsInSurvey', message: 'error', error });

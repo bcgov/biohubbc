@@ -15,6 +15,7 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import AlertBar from 'components/alert/AlertBar';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { SurveyBadDeploymentListItem } from 'features/surveys/telemetry/list/SurveyBadDeploymentListItem';
@@ -391,10 +392,11 @@ export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
 
                             // Select all
                             const deploymentIds = deployments.map((deployment) => deployment.deployment_id);
-                            const badDeploymentIds = badDeployments.map(
-                              (deployment) => deployment.data.sims_deployment_id
-                            );
-                            setCheckboxSelectedIds([...badDeploymentIds, ...deploymentIds]);
+                            // const badDeploymentIds = badDeployments.map(
+                            //   (deployment) => deployment.data.sims_deployment_id
+                            // );
+                            // TODO: Temporary bug fix - prevent bad deployment ids from being selected and deleted
+                            setCheckboxSelectedIds([...deploymentIds]);
                           }}
                           inputProps={{ 'aria-label': 'controlled' }}
                         />
@@ -408,6 +410,12 @@ export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
                   sx={{
                     background: grey[100]
                   }}>
+                  <AlertBar
+                    severity="error"
+                    text="We're fixing a bug preventing deployments from loading. Please check back later."
+                    title="There's a Bug!"
+                    variant="standard"
+                  />
                   {badDeployments.map((badDeployment) => {
                     return (
                       <SurveyBadDeploymentListItem
