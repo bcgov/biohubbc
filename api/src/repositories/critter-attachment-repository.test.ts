@@ -7,7 +7,7 @@ import { CritterAttachmentRepository } from './critter-attachment-repository';
 
 chai.use(sinonChai);
 
-describe.only('CritterAttachmentRepository', () => {
+describe('CritterAttachmentRepository', () => {
   describe('getCritterCaptureAttachmentS3Key', () => {
     it('gets S3 key', async () => {
       const mockResponse = { rows: [{ key: 'key' }], rowCount: 1 } as any as Promise<QueryResult<any>>;
