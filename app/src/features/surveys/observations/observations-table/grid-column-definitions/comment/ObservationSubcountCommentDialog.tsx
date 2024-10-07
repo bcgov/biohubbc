@@ -5,47 +5,50 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import TextField from '@mui/material/TextField';
-import { useObservationsTableContext } from 'hooks/useContext';
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 interface IObservationSubcountCommentDialogProps {
+  /**
+   * The initial value of the comment.
+   *
+   * @type {string}
+   */
+  initialValue?: string;
+  /**
+   * The open state of the dialog.
+   *
+   * @type {boolean}
+   */
   open: boolean;
+  /**
+   * Callback to close the dialog.
+   *
+   * @type {(value?: string) => void}
+   */
+  handleClose: () => void;
+  /**
+   * Callback to save the comment.
+   *
+   * @type {(value?: string) => void}
+   */
+  handleSave: (value?: string) => void;
 }
 
 /**
  * Dialog for adding comments to an observation.
  *
- * @param props
- * @returns JSX.Element or null
+ * @param {IObservationSubcountCommentDialogProps} props
+ * @returns {*} {JSX.Element}
  */
 export const ObservationSubcountCommentDialog = (props: IObservationSubcountCommentDialogProps) => {
-  const observationsTableContext = useObservationsTableContext();
-
-  const params = observationsTableContext.commentDialogParams;
-
-  const [comment, setComment] = useState(params?.value ?? '');
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setComment(event.currentTarget.value);
-  };
-
-  useEffect(() => {
-    setComment(params?.value);
-  }, [params?.value]);
-
-  const handleSave = () => {
-    if (params) {
-      // Update the row in the DataGrid
-      params.api.setEditCellValue({ id: params.id, field: params.field, value: comment });
-    }
-    observationsTableContext.setCommentDialogParams(null);
-  };
+  // Hold the intial value in state so that we can reset the comment if the user cancels
+  const [comment, setComment] = useState(props.initialValue);
 
   return (
     <Dialog
       maxWidth="xl"
       open={props.open}
-      onClose={() => observationsTableContext.setCommentDialogParams(null)}
+      onClose={props.handleClose}
       aria-labelledby="component-dialog-title"
       aria-describedby="component-dialog-description">
       <DialogTitle id="component-dialog-title">Add Comment</DialogTitle>
@@ -57,16 +60,26 @@ export const ObservationSubcountCommentDialog = (props: IObservationSubcountComm
           sx={{ minWidth: '300px' }}
           rows={5}
           multiline
-          onChange={handleChange}
-          autoFocus
+          onChange={(event) => setComment(event.target.value)}
         />
       </DialogContent>
       <DialogActions sx={{ pt: 0 }}>
-        <LoadingButton onClick={handleSave} color="primary" variant="contained">
+        <LoadingButton
+          onClick={() => {
+            // Close the dialog and save the comment
+            props.handleClose();
+            props.handleSave(comment);
+          }}
+          color="primary"
+          variant="contained">
           Save & close
         </LoadingButton>
         <Button
-          onClick={() => observationsTableContext.setCommentDialogParams(null)}
+          onClick={() => {
+            // Close the dialog and reset the comment to the initial value
+            props.handleClose();
+            setComment(props.initialValue);
+          }}
           color="primary"
           variant="outlined">
           Cancel

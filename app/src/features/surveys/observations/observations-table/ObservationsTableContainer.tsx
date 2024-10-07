@@ -234,7 +234,24 @@ const ObservationsTableContainer = () => {
         muiDataGridApiRef={observationsTableContext._muiDataGridApiRef.current}
       />
 
-      <ObservationSubcountCommentDialog open={Boolean(observationsTableContext.commentDialogParams)} />
+      <ObservationSubcountCommentDialog
+        // The key prop is necessary for the dialog to correctly reset if the user discards changes
+        key={observationsTableContext.commentDialogParams?.value ?? 'observation-comment-dialog'}
+        open={Boolean(observationsTableContext.commentDialogParams)}
+        initialValue={observationsTableContext.commentDialogParams?.value}
+        handleClose={() => observationsTableContext.setCommentDialogParams(null)}
+        handleSave={(value) => {
+          if (!observationsTableContext.commentDialogParams) {
+            return;
+          }
+
+          observationsTableContext.commentDialogParams.api.setEditCellValue({
+            value,
+            id: observationsTableContext.commentDialogParams.id,
+            field: observationsTableContext.commentDialogParams.field
+          });
+        }}
+      />
 
       <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
         <Box position="absolute" width="100%" height="100%">

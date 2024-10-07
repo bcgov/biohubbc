@@ -12,8 +12,7 @@ export async function up(knex: Knex): Promise<void> {
     SET SEARCH_PATH=biohub,biohub_dapi_v1;
 
     ALTER TABLE biohub.observation_subcount ADD COLUMN comment VARCHAR(1000);
-    COMMENT ON COLUMN observation_subcount.comment IS 'A comment or note about the subcount record.'
-
+    COMMENT ON COLUMN observation_subcount.comment IS 'A comment or note about the subcount record.';
 
     CREATE OR REPLACE VIEW biohub_dapi_v1.observation_subcount AS SELECT * FROM biohub.observation_subcount;
   `);
