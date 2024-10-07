@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { IObservationAdvancedFilters } from '../models/observation-view';
@@ -22,6 +23,7 @@ import {
   InsertObservationSubCountQualitativeMeasurementRecord,
   InsertObservationSubCountQuantitativeMeasurementRecord
 } from '../repositories/observation-subcount-measurement-repository';
+import { SampleLocationRecord } from '../repositories/sample-location-repository';
 import { SamplePeriodHierarchyIds } from '../repositories/sample-period-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
@@ -45,6 +47,10 @@ import {
   TsnMeasurementTypeDefinitionMap,
   validateMeasurements
 } from '../utils/observation-xlsx-utils/measurement-column-utils';
+import {
+  buildSamplingDataToValidate,
+  validateSamplingData
+} from '../utils/observation-xlsx-utils/sampling-column-utils';
 import { CSV_COLUMN_ALIASES } from '../utils/xlsx-utils/column-aliases';
 import { generateColumnCellGetterFromColumnValidator } from '../utils/xlsx-utils/column-validator-utils';
 import {
@@ -65,6 +71,7 @@ import { DBService } from './db-service';
 import { ObservationSubCountEnvironmentService } from './observation-subcount-environment-service';
 import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
 import { PlatformService } from './platform-service';
+import { SampleLocationService } from './sample-location-service';
 import { SamplePeriodService } from './sample-period-service';
 import { SubCountService } from './subcount-service';
 
@@ -83,7 +90,10 @@ export const observationStandardColumnValidator = {
   DATE: { type: 'date' },
   TIME: { type: 'string' },
   LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE },
-  LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE }
+  LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE },
+  SAMPLING_SITE: { type: 'string', aliases: CSV_COLUMN_ALIASES.SAMPLING_SITE, optional: true },
+  SAMPLING_METHOD: { type: 'string', aliases: CSV_COLUMN_ALIASES.SAMPLING_METHOD, optional: true },
+  SAMPLING_PERIOD: { type: 'string', aliases: CSV_COLUMN_ALIASES.SAMPLING_PERIOD, optional: true }
 } satisfies IXLSXCSVValidator;
 
 export const getColumnCellValue = generateColumnCellGetterFromColumnValidator(observationStandardColumnValidator);
@@ -598,8 +608,23 @@ export class ObservationService extends DBService {
       throw new Error('Failed to process file for importing observations. Environment column validator failed.');
     }
 
+    // VALIDATE SAMPLING INFORMATION -----------------------------------------------------------------------------------------
+
+    const sampleLocationService = new SampleLocationService(this.connection);
+
+    // Get sampling information for the survey
+    const samplingLocations = await sampleLocationService.getSampleLocationsForSurveyId(surveyId);
+
+    // Ensure that all sampling locations exist
+    const samplingDataToValidate = buildSamplingDataToValidate(worksheetRowObjects);
+
+    if (!validateSamplingData(samplingDataToValidate, samplingLocations)) {
+      throw new Error('Failed to process file for importing observations. Sampling data validator failed.');
+    }
+
     // -----------------------------------------------------------------------------------------
 
+    // SamplePeriodHierarchyIds is only for when all records are being assigned to the same sampling period
     let samplePeriodHierarchyIds: SamplePeriodHierarchyIds;
 
     if (options?.surveySamplePeriodId) {
@@ -646,14 +671,37 @@ export class ObservationService extends DBService {
       newSubcount.qualitative_environments = environments.qualitative_environments;
       newSubcount.quantitative_environments = environments.quantitative_environments;
 
+      // If surveySamplePeriodId was included in the initial request, assign all rows to that sampling period
+      if (options?.surveySamplePeriodId) {
+        return {
+          standardColumns: {
+            survey_id: surveyId,
+            itis_tsn: getColumnCellValue(row, 'ITIS_TSN').cell as number,
+            itis_scientific_name: null,
+            survey_sample_site_id: samplePeriodHierarchyIds?.survey_sample_site_id ?? null,
+            survey_sample_method_id: samplePeriodHierarchyIds?.survey_sample_method_id ?? null,
+            survey_sample_period_id: samplePeriodHierarchyIds?.survey_sample_period_id ?? null,
+            latitude: getColumnCellValue(row, 'LATITUDE').cell as number,
+            longitude: getColumnCellValue(row, 'LONGITUDE').cell as number,
+            count: getColumnCellValue(row, 'COUNT').cell as number,
+            observation_time: getColumnCellValue(row, 'TIME').cell as string,
+            observation_date: getColumnCellValue(row, 'DATE').cell as string
+          },
+          subcounts: [newSubcount]
+        };
+      }
+
+      // If surveySamplePeriodId was not included, assign the observation to the sampling period specified in the row data
+      const samplingData = this._pullSamplingDataFromWorksheetRowObject(row, samplingLocations);
+
       return {
         standardColumns: {
           survey_id: surveyId,
           itis_tsn: getColumnCellValue(row, 'ITIS_TSN').cell as number,
           itis_scientific_name: null,
-          survey_sample_site_id: samplePeriodHierarchyIds?.survey_sample_site_id ?? null,
-          survey_sample_method_id: samplePeriodHierarchyIds?.survey_sample_method_id ?? null,
-          survey_sample_period_id: samplePeriodHierarchyIds?.survey_sample_period_id ?? null,
+          survey_sample_site_id: samplingData?.sampleSiteId ?? null,
+          survey_sample_method_id: samplingData?.sampleMethodId ?? null,
+          survey_sample_period_id: samplingData?.samplePeriodId ?? null,
           latitude: getColumnCellValue(row, 'LATITUDE').cell as number,
           longitude: getColumnCellValue(row, 'LONGITUDE').cell as number,
           count: getColumnCellValue(row, 'COUNT').cell as number,
@@ -793,6 +841,97 @@ export class ObservationService extends DBService {
     });
 
     return foundEnvironments;
+  }
+
+  /**
+   * Extracts sampling data from the worksheet row object and maps site names, method techniques, and periods
+   * to their respective IDs using the provided samplingLocations.
+   *
+   * @param {Record<string, any>} row - The current row of the worksheet being processed.
+   * @param {string[]} samplingColumns - The list of column names relevant to sampling (site, method, period).
+   * @param {SampleLocationRecord[]} samplingLocations - The available sampling locations for the survey, used for mapping names to IDs.
+   * @return { { sampleSiteId: number, sampleMethodId: number, samplePeriodId: number } | null } The sampling data with IDs, or null if no valid data is found.
+   */
+  /**
+   * Extracts sampling data from the worksheet row object and maps site names, method techniques, and periods
+   * to their respective IDs using the provided samplingLocations.
+   *
+   * @param {Record<string, any>} row - The current row of the worksheet being processed.
+   * @param {string[]} samplingColumns - The list of column names relevant to sampling (site, method, period).
+   * @param {SampleLocationRecord[]} samplingLocations - The available sampling locations for the survey, used for mapping names to IDs.
+   * @return { { sampleSiteId: number, sampleMethodId: number, samplePeriodId: number } | null } The sampling data with IDs, or null if no valid data is found.
+   */
+  _pullSamplingDataFromWorksheetRowObject(
+    row: Record<string, any>,
+    samplingLocations: SampleLocationRecord[]
+  ): { sampleSiteId: number; sampleMethodId: number; samplePeriodId: number } | null {
+    // Extract site, method, and period data from the row
+    const siteName = row['SAMPLING_SITE'] as string;
+    const techniqueName = row['SAMPLING_METHOD'] as string;
+    const period = row['SAMPLING_PERIOD'] as string;
+
+    if (!siteName || !techniqueName || !period) {
+      return null;
+    }
+
+    const [startDate, endDate] = period.split('-').map((date: string) => dayjs(date).format('YYYY-MM-DD'));
+    const startTime = dayjs(period.split('-')[0]).format('HH:mm:ss');
+    const endTime = dayjs(period.split('-')[1]).format('HH:mm:ss');
+
+    // Find the site record by name
+    const siteRecord = samplingLocations.find((site) => site.name.toLowerCase() === siteName.toLowerCase());
+    if (!siteRecord) return null;
+
+    // Find the method record by technique name
+    const methodRecord = siteRecord.sample_methods.find((method) => method.technique.name.toLowerCase() === techniqueName.toLowerCase());
+    if (!methodRecord) return null;
+
+    // Find matching periods by date
+    const matchingPeriods = methodRecord.sample_periods.filter(
+      (p) => p.start_date === startDate && p.end_date === endDate
+    );
+
+    // Return if exactly one period matches the date
+    if (matchingPeriods.length === 1) {
+      return {
+        sampleSiteId: siteRecord.survey_sample_site_id,
+        sampleMethodId: methodRecord.survey_sample_method_id,
+        samplePeriodId: matchingPeriods[0].survey_sample_period_id
+      };
+    }
+
+    // If multiple periods match by date, match also by time
+    const matchingPeriod = matchingPeriods.find((p) => p.start_time === startTime && p.end_time === endTime);
+
+    if (matchingPeriod) {
+      return {
+        sampleSiteId: siteRecord.survey_sample_site_id,
+        sampleMethodId: methodRecord.survey_sample_method_id,
+        samplePeriodId: matchingPeriod.survey_sample_period_id
+      };
+    }
+
+    // If no periods match by date, check if the observation date falls within a period
+    const observationDate = dayjs(row['DATE'].cell as string).format('YYYY-MM-DD');
+    const observationTime = dayjs(row['TIME'].cell as string).format('HH:mm:ss');
+
+    const encompassingPeriod = methodRecord.sample_periods.find(
+      (p) =>
+        observationDate >= p.start_date &&
+        observationDate <= p.end_date &&
+        (!p.start_time || observationTime >= p.start_time) &&
+        (!p.end_time || observationTime <= p.end_time)
+    );
+
+    if (encompassingPeriod) {
+      return {
+        sampleSiteId: siteRecord.survey_sample_site_id,
+        sampleMethodId: methodRecord.survey_sample_method_id,
+        samplePeriodId: encompassingPeriod.survey_sample_period_id
+      };
+    }
+
+    return null;
   }
 
   /**
