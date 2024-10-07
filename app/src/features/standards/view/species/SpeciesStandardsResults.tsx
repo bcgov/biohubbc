@@ -21,7 +21,7 @@ const SpeciesStandardsResults = (props: ISpeciesStandardsResultsProps) => {
   const [activeView, setActiveView] = useState<SpeciesStandardsViewEnum>(SpeciesStandardsViewEnum.MEASUREMENTS);
 
   if (!props.data) {
-    // No data to display, return null
+    // No data to display
     return null;
   }
 

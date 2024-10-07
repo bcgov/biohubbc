@@ -1,103 +1,82 @@
+import { mdiDotsVertical } from '@mdi/js';
+import Icon from '@mdi/react';
+import { ListItemIcon } from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
-import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
+import ListItem from '@mui/material/ListItem';
+import ListItemButton from '@mui/material/ListItemButton';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
+import { ISurveyCritter } from 'contexts/animalPageContext';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
-import { useEffect } from 'react';
 import { ScientificNameTypography } from '../../components/ScientificNameTypography';
 
 interface ICritterListItemProps {
   critter: ICritterSimpleResponse;
-  isChecked: boolean;
-  handleCheckboxChange: (surveyCritterId: number) => void;
+  isSelectedAnimal: boolean;
+  onAnimalClick: (critter: ICritterSimpleResponse) => void;
+  isCheckboxSelected: boolean;
+  onCheckboxClick: (critterId: number) => void;
+  onMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, critter: ISurveyCritter) => void;
 }
 
 /**
- * Component for displaying and selecting an animal within the AnimalListContainer
+ * Component for displaying a critter list item.
  *
  * @param {ICritterListItemProps} props
  * @return {*}
  */
 export const CritterListItem = (props: ICritterListItemProps) => {
-  const surveyContext = useSurveyContext();
-  const critters = surveyContext.critterDataLoader.data;
-  const { critter, isChecked, handleCheckboxChange } = props;
-
-  const { selectedAnimal, setSelectedAnimal } = useAnimalPageContext();
-
-  const { projectId, surveyId } = surveyContext;
-
-  useEffect(() => {
-    surveyContext.critterDataLoader.load(projectId, surveyId);
-  }, [projectId, surveyContext.critterDataLoader, surveyId]);
-
-  if (!critters?.length) {
-    return <CircularProgress size={40} />;
-  }
+  const { critter, onAnimalClick, isSelectedAnimal, isCheckboxSelected, onCheckboxClick, onMenuClick } = props;
 
   return (
-    <Stack
+    <ListItem
       sx={{
-        width: '100%'
-      }}>
-      <IconButton
-        onClick={() => {
-          if (critter.critter_id !== selectedAnimal?.critter_id)
-            setSelectedAnimal({
-              critter_id: critter.critter_id,
-              critterbase_critter_id: critter.critterbase_critter_id
-            });
-        }}
+        backgroundColor: isSelectedAnimal ? grey[100] : undefined,
+        '&:hover': {
+          backgroundColor: grey[100]
+        }
+      }}
+      secondaryAction={
+        <IconButton
+          onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
+            onMenuClick(event, {
+              critterbase_critter_id: critter.critterbase_critter_id,
+              critter_id: critter.critter_id
+            })
+          }
+          aria-label="animal-settings">
+          <Icon path={mdiDotsVertical} size={1} />
+        </IconButton>
+      }>
+      <ListItemIcon sx={{ minWidth: 35 }}>
+        <Checkbox
+          edge="start"
+          checked={isCheckboxSelected}
+          onClick={(event) => {
+            event.stopPropagation();
+            onCheckboxClick(critter.critter_id);
+          }}
+          inputProps={{ 'aria-label': 'controlled' }}
+        />
+      </ListItemIcon>
+      <ListItemButton
+        onClick={() => onAnimalClick(critter)}
         sx={{
-          pt: 0.5,
-          pb: 1.5,
-          borderRadius: 0,
-          flex: '1 1 auto',
-          justifyContent: 'flex-start',
-          '&:focus': {
-            outline: 'none'
+          paddingLeft: '0px',
+          '&.MuiButtonBase-root:hover': {
+            bgcolor: 'transparent'
           },
-          '& .MuiTypography-root': {
-            color: 'text.primary'
-          },
-          bgcolor: selectedAnimal?.critter_id === critter.critter_id ? grey[100] : undefined
+          outline: 'none !important'
         }}>
-        <Stack
-          flexDirection="row"
-          alignItems="flex-start"
-          sx={{
-            px: 1.25,
-            flex: '1 1 auto',
-            maxWidth: '100%'
-          }}>
-          <Checkbox
-            sx={{ mr: 0.5 }}
-            edge="start"
-            checked={isChecked}
-            onClick={(event) => {
-              event.stopPropagation();
-              handleCheckboxChange(critter.critter_id);
-            }}
-            inputProps={{ 'aria-label': 'controlled' }}
-          />
-          <Typography
-            sx={{
-              whiteSpace: 'nowrap',
-              textOverflow: 'ellipsis',
-              overflow: 'hidden',
-              textAlign: 'left',
-              flex: '0.9',
-              mt: 1
-            }}>
+        <Stack flexDirection="row" alignItems="flex-start" sx={{ flex: '1 1 auto' }}>
+          <Typography sx={{ flex: '1 1 auto' }}>
             <Typography
               component="span"
               variant="body2"
               textAlign="left"
               sx={{
-                mr: 1,
                 fontWeight: 700,
                 whiteSpace: 'nowrap',
                 display: 'block',
@@ -113,7 +92,6 @@ export const CritterListItem = (props: ICritterListItemProps) => {
               component="span"
               name={critter.itis_scientific_name}
               sx={{
-                mr: 1,
                 whiteSpace: 'nowrap',
                 display: 'block',
                 textOverflow: 'ellipsis',
@@ -125,7 +103,7 @@ export const CritterListItem = (props: ICritterListItemProps) => {
             />
           </Typography>
         </Stack>
-      </IconButton>
-    </Stack>
+      </ListItemButton>
+    </ListItem>
   );
 };

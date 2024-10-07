@@ -167,7 +167,7 @@ export const SurveySamplingTabs = () => {
 
       <Divider />
 
-      <Box p={2} position="relative">
+      <Box px={2} position="relative">
         {activeView === SurveySamplingView.TECHNIQUES && (
           <>
             <LoadingGuard

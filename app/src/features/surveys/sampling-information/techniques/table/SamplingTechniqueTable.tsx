@@ -130,12 +130,10 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
       flex: 0.4,
       headerName: 'Method',
       renderCell: (params) => (
-        <Box>
-          <ColouredRectangleChip
-            label={getCodesName(codesContext.codesDataLoader.data, 'sample_methods', params.row.method_lookup_id) ?? ''}
-            colour={blueGrey}
-          />
-        </Box>
+        <ColouredRectangleChip
+          label={getCodesName(codesContext.codesDataLoader.data, 'sample_methods', params.row.method_lookup_id) ?? ''}
+          colour={blueGrey}
+        />
       )
     },
     {
@@ -274,6 +272,8 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
         <StyledDataGrid
           rows={rows}
           columns={columns}
+          autoHeight
+          getRowHeight={() => 'auto'}
           disableRowSelectionOnClick
           disableColumnMenu
           checkboxSelection

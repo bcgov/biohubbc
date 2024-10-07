@@ -34,14 +34,7 @@ const SpeciesCard = (props: ISpeciesCardProps) => {
           {commonNames}
         </Typography>
       </Box>
-      <Chip
-        // position="absolute"
-        right={5}
-        label={taxon.tsn}
-        variant="filled"
-        component={Box}
-        title="Taxonomic serial number"
-      />
+      <Chip right={5} label={taxon.tsn} variant="filled" component={Box} title="Taxonomic serial number" />
     </Stack>
   );
 };

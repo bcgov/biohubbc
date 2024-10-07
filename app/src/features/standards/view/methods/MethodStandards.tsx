@@ -57,14 +57,14 @@ export const MethodStandards = () => {
             </Stack>
           }
           isLoadingFallbackDelay={100}
-          hasNoData={!methodDataLoader.data && methodDataLoader.isReady}
+          hasNoData={!methodDataLoader.data?.length && methodDataLoader.isReady}
           hasNoDataFallback={
             <Box minHeight="200px" display="flex" alignItems="center" justifyContent="center">
               <Typography color="textSecondary">No method standards found</Typography>
             </Box>
           }
           hasNoDataFallbackDelay={100}>
-          <MethodStandardsResults data={methodDataLoader.data} />
+          <MethodStandardsResults data={methodDataLoader.data ?? []} />
         </LoadingGuard>
       </Box>
     </>

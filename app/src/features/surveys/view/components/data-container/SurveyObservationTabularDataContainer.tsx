@@ -2,6 +2,7 @@ import { mdiChartBar, mdiTallyMark5 } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { useState } from 'react';
@@ -68,7 +69,8 @@ const SurveyObservationTabularDataContainer = (props: ISurveyObservationTabularD
           ))}
         </ToggleButtonGroup>
       </Box>
-      <Box flex="1 1 auto" overflow="hidden">
+      <Divider />
+      <Box flex="1 1 auto" overflow="hidden" mt={1}>
         {activeDataView === SurveyObservationTabularDataContainerViewEnum.COUNTS && (
           <SurveySpatialObservationTable isLoading={isLoading} />
         )}

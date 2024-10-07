@@ -73,7 +73,7 @@ export const SampleSiteColDef = (props: {
 
   return {
     field: 'survey_sample_site_id',
-    description: 'A sampling site where the observation was made',
+    description: 'The sampling site where the observation was made',
     headerName: 'Site',
     editable: true,
     hideable: true,
@@ -117,8 +117,8 @@ export const SampleMethodColDef = (props: {
 
   return {
     field: 'survey_sample_method_id',
-    headerName: 'Method',
-    description: 'A method with which the observation was made',
+    headerName: 'Technique',
+    description: 'The technique with which the observation was made',
     editable: true,
     hideable: true,
     flex: 1,
@@ -166,7 +166,7 @@ export const SamplePeriodColDef = (props: {
   return {
     field: 'survey_sample_period_id',
     headerName: 'Period',
-    description: 'A sampling period in which the observation was made',
+    description: 'The sampling period in which the observation was made',
     editable: true,
     hideable: true,
     flex: 0,

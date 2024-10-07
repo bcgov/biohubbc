@@ -56,7 +56,18 @@ export const critterSchema: OpenAPIV3.SchemaObject = {
       type: 'string'
     },
     sex: {
-      type: 'string'
+      type: 'object',
+      additionalProperties: false,
+      description: 'Object describing qualitative_option_id and label of the sex measurement value',
+      properties: {
+        qualitative_option_id: {
+          type: 'string',
+          format: 'uuid',
+          description: 'Critterbase foreign key referencing a sex measurement option'
+        },
+        label: { type: 'string', description: 'Name of the sex measurement value, eg. male' }
+      },
+      nullable: true
     },
     responsible_region_nr_id: {
       type: 'string',

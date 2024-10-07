@@ -131,10 +131,30 @@ const ObservationsTableContainer = () => {
       SamplePeriodColDef({ samplePeriodOptions, hasError: observationsTableContext.hasError }),
       ObservationSubcountSignColDef({ observationSubcountSignOptions, hasError: observationsTableContext.hasError }),
       ObservationCountColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
-      GenericDateColDef({ field: 'observation_date', headerName: 'Date', hasError: observationsTableContext.hasError }),
-      GenericTimeColDef({ field: 'observation_time', headerName: 'Time', hasError: observationsTableContext.hasError }),
-      GenericLatitudeColDef({ field: 'latitude', headerName: 'Lat', hasError: observationsTableContext.hasError }),
-      GenericLongitudeColDef({ field: 'longitude', headerName: 'Long', hasError: observationsTableContext.hasError }),
+      GenericDateColDef({
+        field: 'observation_date',
+        headerName: 'Date',
+        hasError: observationsTableContext.hasError,
+        description: 'The date when the observation was made'
+      }),
+      GenericTimeColDef({
+        field: 'observation_time',
+        headerName: 'Time',
+        hasError: observationsTableContext.hasError,
+        description: 'The time of day when the observation was made'
+      }),
+      GenericLatitudeColDef({
+        field: 'latitude',
+        headerName: 'Latitude',
+        hasError: observationsTableContext.hasError,
+        description: 'The latitude where the observation was made'
+      }),
+      GenericLongitudeColDef({
+        field: 'longitude',
+        headerName: 'Longitude',
+        hasError: observationsTableContext.hasError,
+        description: 'The longitude where the observation was made'
+      }),
       // Add measurement columns to the table
       ...getMeasurementColumnDefinitions(
         observationsTableContext.measurementColumns,

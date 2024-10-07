@@ -70,7 +70,7 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
   const critterDeployments: IAnimalDeploymentWithCritter[] = useMemo(() => {
     const critterDeployments: IAnimalDeploymentWithCritter[] = [];
     const critters = critterDataLoader.data ?? [];
-    const deployments = deploymentDataLoader.data ?? [];
+    const deployments = deploymentDataLoader.data?.deployments ?? [];
 
     if (!critters.length || !deployments.length) {
       return [];
@@ -176,7 +176,7 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
       hasNoData={!rows.length}
       hasNoDataFallback={
         <NoDataOverlay
-          height="250px"
+          height="100%"
           title="Add Telemetry"
           subtitle="Add telemetry devices to animals and upload device data"
           icon={mdiArrowTopRight}

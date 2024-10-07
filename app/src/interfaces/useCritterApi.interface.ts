@@ -1,22 +1,22 @@
-import { AnimalSex, ICreateCritterCollectionUnit } from 'features/surveys/view/survey-animals/animal';
+import { ICreateCritterCollectionUnit } from 'features/surveys/view/survey-animals/animal';
 import { Feature } from 'geojson';
 import { IPartialTaxonomy } from './useTaxonomyApi.interface';
 
-export interface ICritterCreate {
+export type ICritterCreate = {
   critter_id?: string;
   wlh_id?: string | null;
   animal_id?: string | null;
-  sex: AnimalSex;
+  sex_qualitative_option_id: string | null;
   itis_tsn: number;
   responsible_region_nr_id?: string | null;
   critter_comment?: string | null;
-}
+};
 
 export interface ICreateEditAnimalRequest {
   critter_id?: string;
   nickname: string;
   species: IPartialTaxonomy | null;
-  sex: AnimalSex;
+  sex_qualitative_option_id: string | null;
   ecological_units: ICreateCritterCollectionUnit[];
   wildlife_health_id: string | null;
   critter_comment: string | null;
@@ -274,6 +274,11 @@ export type IFamilyChildResponse = {
   child_critter_id: string;
 };
 
+export interface ISex {
+  qualitative_option_id: string;
+  label: string;
+}
+
 export type ICritterDetailedResponse = {
   critter_id: number;
   critterbase_critter_id: string;
@@ -281,7 +286,7 @@ export type ICritterDetailedResponse = {
   itis_scientific_name: string;
   wlh_id: string | null;
   animal_id: string | null;
-  sex: string;
+  sex: ISex | null;
   responsible_region_nr_id: string;
   critter_comment: string | null;
   collection_units: ICritterCollectionUnitResponse[];
@@ -301,7 +306,7 @@ export interface ICritterSimpleResponse {
   critterbase_critter_id: string;
   wlh_id: string | null;
   animal_id: string | null;
-  sex: string;
+  sex: ISex;
   itis_tsn: number;
   itis_scientific_name: string;
   responsible_region_nr_id: string | null;

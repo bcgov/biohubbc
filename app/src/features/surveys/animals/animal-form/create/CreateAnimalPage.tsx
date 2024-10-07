@@ -10,7 +10,6 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import { CreateAnimalI18N } from 'constants/i18n';
 import { AnimalFormContainer } from 'features/surveys/animals/animal-form/components/AnimalFormContainer';
-import { AnimalSex } from 'features/surveys/view/survey-animals/animal';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -25,7 +24,7 @@ import { Link as RouterLink } from 'react-router-dom';
 export const defaultAnimalDataFormValues: ICreateEditAnimalRequest = {
   nickname: '',
   species: null,
-  sex: AnimalSex.UNKNOWN,
+  sex_qualitative_option_id: null,
   ecological_units: [],
   wildlife_health_id: '',
   critter_comment: ''
@@ -92,7 +91,7 @@ export const CreateAnimalPage = () => {
         itis_tsn: values.species.tsn,
         wlh_id: undefined,
         animal_id: values.nickname,
-        sex: values.sex,
+        sex_qualitative_option_id: values.sex_qualitative_option_id,
         critter_comment: values.critter_comment
       });
 
