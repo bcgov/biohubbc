@@ -14,7 +14,7 @@ import {
 import { getLogger } from '../../../../../../../../../../utils/logger';
 
 const defaultLog = getLogger(
-  '/api/project/{projectId}/survey/{surveyId}/critters/{critterId}/captures/{captureId}/upload/attachments'
+  '/api/project/{projectId}/survey/{surveyId}/critters/{critterId}/captures/{critterbaseCaptureId}/upload/attachments'
 );
 
 export const POST: Operation = [
@@ -89,8 +89,8 @@ POST.apiDoc = {
       'multipart/form-data': {
         schema: {
           type: 'object',
-          additionalProperties: false,
           required: ['media'],
+          additionalProperties: false,
           properties: {
             media: {
               description: 'Uploaded Capture attachments.',
@@ -117,15 +117,15 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
-            items: {
-              properties: {
-                attachment_ids: {
-                  description: 'The IDs of the capture attachments that were uploaded.',
-                  type: 'array',
-                  items: {
-                    type: 'integer',
-                    minItems: 1
-                  }
+            required: ['attachment_ids'],
+            additionalProperties: false,
+            properties: {
+              attachment_ids: {
+                description: 'The IDs of the capture attachments that were uploaded.',
+                type: 'array',
+                items: {
+                  type: 'integer',
+                  minItems: 1
                 }
               }
             }

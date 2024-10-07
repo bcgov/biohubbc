@@ -8,7 +8,7 @@ import { bulkDeleteFilesFromS3 } from '../../../../../../../../../../utils/file-
 import { getLogger } from '../../../../../../../../../../utils/logger';
 
 const defaultLog = getLogger(
-  '/api/project/{projectId}/survey/{surveyId}/critters/{critterId}/captures/{captureId}/attachments'
+  '/api/project/{projectId}/survey/{surveyId}/critters/{critterbaseCaptureId}/captures/{captureId}/attachments'
 );
 
 export const DELETE: Operation = [
@@ -59,7 +59,7 @@ DELETE.apiDoc = {
     },
     {
       in: 'path',
-      name: 'critterId',
+      name: 'critterbaseCaptureId',
       schema: {
         type: 'integer',
         minimum: 1
@@ -68,7 +68,7 @@ DELETE.apiDoc = {
     },
     {
       in: 'path',
-      name: 'critterbaseCaptureId',
+      name: 'captureId',
       schema: {
         type: 'string',
         format: 'uuid',
@@ -98,7 +98,7 @@ DELETE.apiDoc = {
 export function deleteCritterCaptureAttachments(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const captureId = req.params.critterbaseCaptureId;
+    const captureId = req.params.captureId;
 
     const connection = getDBConnection(req.keycloak_token);
 

@@ -53,13 +53,25 @@ export const EditCapturePage = () => {
 
   const { projectId, surveyId } = surveyContext;
 
+  useEffect(() => {
+    if (!surveyCritterId) {
+      return;
+    }
+
+    animalPageContext.critterDataLoader.load(projectId, surveyId, surveyCritterId);
+  }, [animalPageContext.critterDataLoader, projectId, surveyId, surveyCritterId]);
+
   const critter = animalPageContext.critterDataLoader.data;
 
-  const captureDataLoader = useDataLoader(() => critterbaseApi.capture.getCapture(captureId));
+  const captureDataLoader = useDataLoader((captureId: string) => critterbaseApi.capture.getCapture(captureId));
 
   useEffect(() => {
-    captureDataLoader.load();
-  }, [captureDataLoader]);
+    if (!captureId) {
+      return;
+    }
+
+    captureDataLoader.load(captureId);
+  }, [captureDataLoader, captureId]);
 
   const capture = captureDataLoader.data;
 
