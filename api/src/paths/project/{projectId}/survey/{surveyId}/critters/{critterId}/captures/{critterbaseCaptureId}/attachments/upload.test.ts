@@ -64,8 +64,10 @@ describe('uploadCaptureAttachments', () => {
     expect(mockS3GenerateS3FileKey).to.have.been.calledOnceWithExactly({
       projectId: 1,
       surveyId: 2,
-      fileName: 'test.txt',
-      folder: 'captures'
+      critterId: 3,
+      folder: 'captures',
+      critterbaseCaptureId: '123e4567-e89b-12d3-a456-426614174000',
+      fileName: 'test.txt'
     });
 
     expect(mockUpsertAttachment).to.have.been.calledOnceWithExactly({

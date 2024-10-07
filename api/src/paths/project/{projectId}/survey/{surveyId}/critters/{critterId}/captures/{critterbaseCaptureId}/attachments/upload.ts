@@ -176,8 +176,10 @@ export function uploadCaptureAttachments(): RequestHandler {
         const s3Key = generateS3FileKey({
           projectId: projectId,
           surveyId: surveyId,
-          fileName: file.originalname,
-          folder: 'captures'
+          critterId: critterId,
+          folder: 'captures',
+          critterbaseCaptureId: critterbaseCaptureId,
+          fileName: file.originalname
         });
 
         // Store the file details in the database

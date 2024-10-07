@@ -94,6 +94,36 @@ describe('generateS3FileKey', () => {
 
     expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/submissions/3/testFileName');
   });
+
+  it('returns critter captures folder file path', async () => {
+    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
+
+    const result = generateS3FileKey({
+      projectId: 1,
+      surveyId: 2,
+      critterId: 3,
+      folder: 'captures',
+      critterbaseCaptureId: '123-456-789',
+      fileName: 'testFileName'
+    });
+
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/critters/3/captures/123-456-789/testFileName');
+  });
+
+  it('returns critter mortalities folder file path', async () => {
+    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
+
+    const result = generateS3FileKey({
+      projectId: 1,
+      surveyId: 2,
+      critterId: 3,
+      folder: 'mortalities',
+      critterbaseMortalityId: '123-456-789',
+      fileName: 'testFileName'
+    });
+
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/critters/3/mortalities/123-456-789/testFileName');
+  });
 });
 
 describe('getS3HostUrl', () => {
