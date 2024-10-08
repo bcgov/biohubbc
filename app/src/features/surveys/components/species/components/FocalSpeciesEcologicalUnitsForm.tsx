@@ -3,7 +3,7 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import { EcologicalUnitsSelect } from 'components/species/ecological-units/EcologicalUnitsSelect';
+import { EcologicalUnitDualSelect } from 'components/species/ecological-units/EcologicalUnitDualSelect';
 import { initialEcologicalUnitValues } from 'features/surveys/animals/animal-form/components/ecological-units/EcologicalUnitsForm';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
@@ -60,21 +60,18 @@ export const FocalSpeciesEcologicalUnitsForm = (props: ISelectedSpeciesProps) =>
       render={(arrayHelpers: FieldArrayRenderProps) => (
         <Stack gap={2}>
           {selectedUnits.map((_, ecologicalUnitIndex) => (
-            <EcologicalUnitsSelect
+            <EcologicalUnitDualSelect
               // Key is intentionally index
               key={ecologicalUnitIndex}
-              categoryFieldName={`species.focal_species.[${index}].ecological_units[${ecologicalUnitIndex}].critterbase_collection_category_id`}
-              unitFieldName={`species.focal_species.[${index}].ecological_units[${ecologicalUnitIndex}].critterbase_collection_unit_id`}
-              selectedCategories={values.species.focal_species[index].ecological_units
-                .filter((unit) => unit.critterbase_collection_category_id)
-                .map((unit) => ({
-                  // Non-null assertion (!) assets that the values will not be null
-                  critterbase_collection_category_id: unit.critterbase_collection_category_id!,
-                  critterbase_collection_unit_id: unit.critterbase_collection_unit_id
-                }))}
-              ecologicalUnits={ecologicalUnitsForSpecies}
-              arrayHelpers={arrayHelpers}
-              index={ecologicalUnitIndex}
+              formikCategoryFieldName={`species.focal_species.[${index}].ecological_units[${ecologicalUnitIndex}].critterbase_collection_category_id`}
+              formikUnitFieldName={`species.focal_species.[${index}].ecological_units[${ecologicalUnitIndex}].critterbase_collection_unit_id`}
+              ecologicalCategories={ecologicalUnitsForSpecies}
+              filterUnitIds={
+                values.species.focal_species[index].ecological_units
+                  .filter((unit) => unit.critterbase_collection_unit_id)
+                  .map((unit) => unit.critterbase_collection_unit_id) as string[]
+              }
+              onDelete={() => arrayHelpers.remove(ecologicalUnitIndex)}
             />
           ))}
           <Box>
