@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
-import { SurveySamplingTabs } from 'features/surveys/view/components/sampling-data/components/SurveySamplingTabs';
 import { SurveySamplingHeader } from './components/SurveySamplingHeader';
+import { SurveySamplingTabs } from './table/SurveySamplingTabs';
 
 export const SurveySamplingContainer = () => {
   return (
