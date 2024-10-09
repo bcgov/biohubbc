@@ -47,7 +47,10 @@ export const transformStudyAreas = async (connection: IDBConnection): Promise<vo
     SELECT 
         bg.survey_id, 
         bg.study_area_name, 
-        bg.study_area_description, 
+        CASE 
+            WHEN bg.geo IS NULL THEN bg.study_area_description || ' - Study Area Created by SPI Code'
+            ELSE bg.study_area_description
+        END AS study_area_description,
         COALESCE(bg.geo, ST_Buffer(bg.convex_hull, bg.buffer_value)) AS geography
     FROM buffered_geographies bg;
   `;
