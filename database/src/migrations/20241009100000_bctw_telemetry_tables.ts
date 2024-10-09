@@ -108,6 +108,12 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN telemetry_ats.activity IS 'Activity value represents change in the accelerometer value internal to the collar between GPS fixes. Exact numeric meaning varies between models.';
     COMMENT ON COLUMN telemetry_ats.timeid IS 'DEPRECATED: A string combination of the device ID and recorded timestamp';
 
+    ----------------------------------------------------------------------------------------
+    -- Add triggers
+    ----------------------------------------------------------------------------------------
+    CREATE TRIGGER audit_telemetry_ats BEFORE INSERT OR UPDATE OR DELETE ON biohub.telemetry_ats FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_telemetry_ats AFTER INSERT OR UPDATE OR DELETE ON biohub.telemetry_ats FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
 
     ----------------------------------------------------------------------------------------
     -- Create telemetry_vectronic Table
@@ -228,6 +234,12 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN telemetry_vectronic.transformedy IS 'No description provided by vendor.';
     COMMENT ON COLUMN telemetry_vectronic.geom IS 'Telemetry collected by device.';
 
+    ----------------------------------------------------------------------------------------
+    -- Add triggers
+    ----------------------------------------------------------------------------------------
+    CREATE TRIGGER audit_telemetry_vectronic BEFORE INSERT OR UPDATE OR DELETE ON biohub.telemetry_vectronic FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_telemetry_vectronic AFTER INSERT OR UPDATE OR DELETE ON biohub.telemetry_vectronic FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
 
     ----------------------------------------------------------------------------------------
     -- Create telemetry_lotek Table
@@ -298,6 +310,17 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN telemetry_lotek.deviceid IS 'the Lotek device ID';
     COMMENT ON COLUMN telemetry_lotek.recdatetime IS 'timestamp the telemetry was recorded';
     COMMENT ON COLUMN telemetry_lotek.geom IS 'PostGIS human readable geometry point. Created with Latitude and Longitude.';
+
+    ----------------------------------------------------------------------------------------
+    -- Add triggers
+    ----------------------------------------------------------------------------------------
+    CREATE TRIGGER audit_telemetry_lotek BEFORE INSERT OR UPDATE OR DELETE ON biohub.telemetry_lotek FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_telemetry_lotek AFTER INSERT OR UPDATE OR DELETE ON biohub.telemetry_lotek FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+
+    ----------------------------------------------------------------------------------------
+    -- Create Lookup Tables
+    ----------------------------------------------------------------------------------------
 
     ----------------------------------------------------------------------------------------
     -- Create Views
