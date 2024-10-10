@@ -70,7 +70,7 @@ export async function up(knex: Knex): Promise<void> {
       fixtime                 varchar NULL,
       activity                varchar NULL,
 
-      CONSTRAINT telemetry_ats_pk PRIMARY KEY (telemetry_ats_id),
+      CONSTRAINT telemetry_ats_pk PRIMARY KEY (telemetry_ats_id)
     );
 
     ----------------------------------------------------------------------------------------
@@ -104,7 +104,6 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN telemetry_ats.numsats IS 'Number of satellites used in achieving GPS fix';
     COMMENT ON COLUMN telemetry_ats.fixtime IS 'Number of seconds needed to achieve GPS fix';
     COMMENT ON COLUMN telemetry_ats.activity IS 'Activity value represents change in the accelerometer value internal to the collar between GPS fixes. Exact numeric meaning varies between models.';
-    COMMENT ON COLUMN telemetry_ats.timeid IS 'DEPRECATED: A string combination of the device ID and recorded timestamp';
 
     ----------------------------------------------------------------------------------------
     -- Add triggers
@@ -277,7 +276,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE INDEX telemetry_lotek_idx1 ON telemetry_lotek(device_key);
     CREATE INDEX telemetry_lotek_idx2 ON telemetry_lotek USING gist (geom);
     CREATE INDEX telemetry_lotek_idx3 ON telemetry_lotek(uploadtimestamp);
-    CREATE UNIQUE INDEX telemetry_lotek_idx2 ON telemetry_lotek(uploadtimestamp, deviceid);
+    CREATE UNIQUE INDEX telemetry_lotek_idx4 ON telemetry_lotek(uploadtimestamp, deviceid);
 
     COMMENT ON TABLE telemetry_lotek IS 'The raw telemetry data from Lotek';
     COMMENT ON COLUMN telemetry_lotek.telemetry_lotek_id IS 'Primary key for telemetry_lotek table';
