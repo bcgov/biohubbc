@@ -7,7 +7,8 @@ import { z } from 'zod';
 export const DeviceModel = z.object({
   device_id: z.number(),
   survey_id: z.number(),
-  serial: z.number(),
+  device_key: z.string(),
+  serial: z.string(),
   device_make_id: z.number(),
   model: z.string().nullable(),
   comment: z.string().nullable(),

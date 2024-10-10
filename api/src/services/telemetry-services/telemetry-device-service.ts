@@ -33,11 +33,13 @@ export class TelemetryDeviceService extends DBService {
    * Get a single device by its ID.
    *
    * @throws {ApiGeneralError} If the device is not found.
-   * @param {number} device_id
+   *
+   * @param {number} surveyId
+   * @param {number} deviceId
    * @return {*} {Promise<DeviceRecord>}
    */
-  async getDevice(device_id: number): Promise<DeviceRecord> {
-    const devices = await this.telemetryDeviceRepository.getDevicesByIds([device_id]);
+  async getDevice(surveyId: number, deviceId: number): Promise<DeviceRecord> {
+    const devices = await this.telemetryDeviceRepository.getDevicesByIds(surveyId, [deviceId]);
 
     if (devices.length !== 1) {
       throw new ApiGeneralError('Device not found', ['TelemetryDeviceService -> getDevice']);
@@ -47,14 +49,22 @@ export class TelemetryDeviceService extends DBService {
   }
 
   /**
-   * Get a list of devices by their IDs.
+   * Delete a single device by its ID.
    *
-   * @param {number[]} deviceIds
-   * @returns {*} {Promise<DeviceRecord[]>}
+   * @throws {ApiGeneralError} If unable to delete the device.
    *
+   * @param {number} surveyId
+   * @param {number} deviceId
+   * @return {*} {Promise<number>} The device ID that was deleted.
    */
-  async getDevices(deviceIds: number[]): Promise<DeviceRecord[]> {
-    return this.telemetryDeviceRepository.getDevicesByIds(deviceIds);
+  async deleteDevice(surveyId: number, deviceId: number): Promise<number> {
+    const devices = await this.telemetryDeviceRepository.deleteDevicesByIds(surveyId, [deviceId]);
+
+    if (devices.length !== 1 || devices[0].device_id !== deviceId) {
+      throw new ApiGeneralError('Unable to delete device', ['TelemetryDeviceService -> deleteDevice']);
+    }
+
+    return devices[0].device_id;
   }
 
   /**
@@ -70,11 +80,12 @@ export class TelemetryDeviceService extends DBService {
   /**
    * Update an existing device record.
    *
+   * @param {number} surveyId
    * @param {number} deviceId
    * @param {UpdateTelemetryDevice} device
-   * @returns {*} {Promise<string>}
+   * @returns {*} {Promise<DeviceRecord>}
    */
-  async updateDevice(deviceId: number, device: UpdateTelemetryDevice): Promise<DeviceRecord> {
-    return this.telemetryDeviceRepository.updateDevice(deviceId, device);
+  async updateDevice(surveyId: number, deviceId: number, device: UpdateTelemetryDevice): Promise<DeviceRecord> {
+    return this.telemetryDeviceRepository.updateDevice(surveyId, deviceId, device);
   }
 }
