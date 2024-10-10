@@ -3,6 +3,7 @@ import { Knex } from 'knex';
  * TABLE: telemetry_ats
  *  Raw row identifier: N/A
  *  Collar serial: `collarserialnumber`
+ *  Device make: `ats` - Must match a value in the device_make lookup table
  *
  * Notes:
  *  1. Generating a UUID column for the primary key to prevent collisions with other telemetry sources.
@@ -13,6 +14,7 @@ import { Knex } from 'knex';
  * TABLE: telemetry_vectronic
  *  Raw row identifier: `idposition`
  *  Collar serial: `idcollar`
+ *  Device make: `vectronic` - Must match a value in the device_make lookup table
  *
  * Notes:
  *  1. Generating a UUID column for the primary key to prevent collisions with other telemetry sources.
@@ -20,7 +22,7 @@ import { Knex } from 'knex';
  *
  * TABLE: telemetry_lotek
  *  Raw row identifier: N/A
- *  Collar serial: `deviceid`
+ *  Collar serial: `deviceid` - Must match a value in the device_make lookup table
  *
  * Notes:
  *  1. Generating a UUID column for the primary key to prevent collisions with other telemetry sources.
@@ -79,9 +81,6 @@ export async function up(knex: Knex): Promise<void> {
     CREATE INDEX telemetry_ats_idx1 ON telemetry_ats(device_key);
     CREATE UNIQUE INDEX telemetry_ats_idx2 ON telemetry_ats(date, collarserialnumber);
 
-    ----------------------------------------------------------------------------------------
-    -- Create Table Comments
-    ----------------------------------------------------------------------------------------
     COMMENT ON TABLE telemetry_ats IS 'Raw telemetry data from the ATS API';
     COMMENT ON COLUMN telemetry_ats.telemetry_ats_id IS 'Primary key for telemetry_ats table';
     COMMENT ON COLUMN telemetry_ats.device_key IS 'A generated key for the device make and serial. This is a combination of the device make and the serial number. ie: ats:12345';
@@ -180,9 +179,6 @@ export async function up(knex: Knex): Promise<void> {
     CREATE INDEX vectronics_collar_data_idx1 ON telemetry_vectronic(device_key);
     CREATE INDEX vectronics_collar_data_idx2 ON telemetry_vectronic USING gist (geom);
 
-    ----------------------------------------------------------------------------------------
-    -- Create Table Comments
-    ----------------------------------------------------------------------------------------
     COMMENT ON TABLE telemetry_vectronic IS 'The raw telemetry data from Vectronics API';
     COMMENT ON COLUMN telemetry_vectronic.telemetry_vectronic_id IS 'Primary key for telemetry_vectronic table';
     COMMENT ON COLUMN telemetry_vectronic.device_key IS 'A generated key for the device make and serial number ie: vectronic:12345';
@@ -281,9 +277,6 @@ export async function up(knex: Knex): Promise<void> {
     CREATE INDEX telemetry_lotek_idx1 ON telemetry_lotek(device_key);
     CREATE INDEX telemetry_lotek_idx2 ON telemetry_lotek USING gist (geom);
 
-    ----------------------------------------------------------------------------------------
-    -- Create Table Comments
-    ----------------------------------------------------------------------------------------
     COMMENT ON TABLE telemetry_lotek IS 'The raw telemetry data from Lotek';
     COMMENT ON COLUMN telemetry_lotek.telemetry_lotek_id IS 'Primary key for telemetry_lotek table';
     COMMENT ON COLUMN telemetry_lotek.device_key IS 'A generated key for the device make and serial number ie: lotek:12345';
@@ -319,8 +312,95 @@ export async function up(knex: Knex): Promise<void> {
 
 
     ----------------------------------------------------------------------------------------
-    -- Create Lookup Tables
+    -- Create device make table
     ----------------------------------------------------------------------------------------
+    CREATE TABLE device_make (
+      device_make_id                                integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      name                                          varchar(32)        NOT NULL,
+      description                                   varchar(128),
+      record_effective_date                         timestamptz(6)     NOT NULL,
+      record_end_date                               timestamptz(6),
+      create_date                                   timestamptz(6)     DEFAULT now() NOT NULL,
+      create_user                                   integer            NOT NULL,
+      update_date                                   timestamptz(6),
+      update_user                                   integer,
+      revision_count                                integer            DEFAULT 0 NOT NULL,
+
+      CONSTRAINT device_make_id_name_composite_pk PRIMARY KEY (device_make_id, name) -- Composite foreign key
+    );
+
+    COMMENT ON TABLE device_make IS 'This table is intended to store options that users can select for their device make.';
+    COMMENT ON COLUMN device_make.device_make_id IS 'Composite primary key (id) for device make.';
+    COMMENT ON COLUMN device_make.name IS 'Composite primary key (name) of the device make option.';
+    COMMENT ON COLUMN device_make.description IS 'Description of the device make option.';
+    COMMENT ON COLUMN device_make.record_effective_date IS 'Start date of the device make option.';
+    COMMENT ON COLUMN device_make.record_end_date IS 'End date of the device make option.';
+    COMMENT ON COLUMN device_make.create_date IS 'The datetime the record was created.';
+    COMMENT ON COLUMN device_make.create_user IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN device_make.update_date IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN device_make.update_user IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN device_make.revision_count IS 'Revision count used for concurrency control.';
+
+    ----------------------------------------------------------------------------------------
+    -- Add triggers
+    ----------------------------------------------------------------------------------------
+    CREATE TRIGGER audit_device_make BEFORE INSERT OR UPDATE OR DELETE ON biohub.device_make FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_device_make AFTER INSERT OR UPDATE OR DELETE ON biohub.device_make FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+    ----------------------------------------------------------------------------------------
+    -- Add initial values to device make table
+    ----------------------------------------------------------------------------------------
+    INSERT INTO device_make (name, description, record_effective_date) VALUES
+    ('vectronic', 'VECTRONIC', 'NOW()'),
+    ('lotek', 'LOTEK', 'NOW()'),
+    ('ats', 'ATS', 'NOW()'),
+    ('followit', 'FOLLOWIT', 'NOW()'),
+    ('televit', 'TELEVIT', 'NOW()'),
+    ('teleonics', 'TELEONICS', 'NOW()');
+
+    ----------------------------------------------------------------------------------------
+    -- Create frequency table
+    ----------------------------------------------------------------------------------------
+    CREATE TABLE deployment_frequency (
+      deployment_frequency_id                           integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      name                                          varchar(32)        NOT NULL,
+      description                                   varchar(128),
+      record_effective_date                         timestamptz(6)     NOT NULL,
+      record_end_date                               timestamptz(6),
+      create_date                                   timestamptz(6)     DEFAULT now() NOT NULL,
+      create_user                                   integer            NOT NULL,
+      update_date                                   timestamptz(6),
+      update_user                                   integer,
+      revision_count                                integer            DEFAULT 0 NOT NULL,
+
+      CONSTRAINT deployment_frequency_id_pk PRIMARY KEY (deployment_frequency_id)
+    );
+
+    COMMENT ON TABLE  deployment_frequency IS 'This table is intended to store options that users can select for their deployment freqency.';
+    COMMENT ON COLUMN deployment_frequency.deployment_frequency_id IS 'Primary key for deployment frequency.';
+    COMMENT ON COLUMN deployment_frequency.name IS 'Name of the deployment frequency option.';
+    COMMENT ON COLUMN deployment_frequency.description IS 'Description of the deployment frequency option.';
+    COMMENT ON COLUMN deployment_frequency.record_effective_date IS 'Start date of the deployment frequency option.';
+    COMMENT ON COLUMN deployment_frequency.record_end_date IS 'End date of the deployment frequency option.';
+    COMMENT ON COLUMN deployment_frequency.create_date IS 'The datetime the record was created.';
+    COMMENT ON COLUMN deployment_frequency.create_user IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN deployment_frequency.update_date IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN deployment_frequency.update_user IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN deployment_frequency.revision_count IS 'Revision count used for concurrency control.';
+
+    ----------------------------------------------------------------------------------------
+    -- Add triggers
+    ----------------------------------------------------------------------------------------
+    CREATE TRIGGER audit_deployment_frequency BEFORE INSERT OR UPDATE OR DELETE ON biohub.deployment_frequency FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_deployment_frequency AFTER INSERT OR UPDATE OR DELETE ON biohub.deployment_frequency FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+    ----------------------------------------------------------------------------------------
+    -- Add initial values to deployment frequency table
+    ----------------------------------------------------------------------------------------
+    INSERT INTO deployment_frequency (name, description, record_effective_date) VALUES
+    ('khz', 'KHz', 'NOW()'),
+    ('mhz', 'MHz', 'NOW()'),
+    ('hz', 'Hz', 'NOW()');
 
     ----------------------------------------------------------------------------------------
     -- Create Views
