@@ -410,6 +410,8 @@ export async function up(knex: Knex): Promise<void> {
     CREATE OR REPLACE VIEW telemetry_ats as SELECT * FROM biohub.telemetry_ats;
     CREATE OR REPLACE VIEW telemetry_vectronic as SELECT * FROM biohub.telemetry_vectronic;
     CREATE OR REPLACE VIEW telemetry_lotek as SELECT * FROM biohub.telemetry_lotek;
+    CREATE OR REPLACE VIEW device_make as SELECT * FROM biohub.device_make;
+    CREATE OR REPLACE VIEW deployment_frequency as SELECT * FROM biohub.deployment_frequency;
   `);
 }
 
