@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
-import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { SkeletonList, SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import {
@@ -34,17 +34,6 @@ export const SurveySamplingTabs = () => {
     { value: SurveySamplingView.SITES, label: 'Sampling Sites', icon: mdiMapMarker },
     { value: SurveySamplingView.PERIODS, label: 'Sampling Periods', icon: mdiCalendarRange }
   ];
-
-  useEffect(() => {
-    // Refresh the data for the active view if the project or survey ID changes
-    if (activeView === SurveySamplingView.TECHNIQUES) {
-      surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    }
-    if (activeView === SurveySamplingView.SITES) {
-      surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeView]);
 
   useEffect(() => {
     // Load the data initially once per tab, if/when the active view changes
@@ -110,17 +99,17 @@ export const SurveySamplingTabs = () => {
 
       <Divider flexItem orientation="vertical" />
 
-      <Box p={2} flex="1 1 auto">
+      <Box p={2} flex="1 1 auto" minHeight="250px">
         {activeView === SurveySamplingView.TECHNIQUES && (
           <>
             <LoadingGuard
               isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
-              isLoadingFallback={<SkeletonTable />}
+              isLoadingFallback={<SkeletonList />}
               isLoadingFallbackDelay={100}
               hasNoData={!techniquesCount}
               hasNoDataFallback={
                 <NoDataOverlay
-                  height="250px"
+                  height="100%"
                   title="Add Techniques"
                   subtitle="Techniques describe how you collected species observations"
                   icon={mdiArrowTopRight}
@@ -141,7 +130,7 @@ export const SurveySamplingTabs = () => {
               hasNoData={!sampleSitesCount}
               hasNoDataFallback={
                 <NoDataOverlay
-                  height="250px"
+                  height="100%"
                   title="Add Sampling Sites"
                   subtitle="Apply your techniques to sampling sites to show where you collected data"
                   icon={mdiArrowTopRight}
@@ -162,7 +151,7 @@ export const SurveySamplingTabs = () => {
               hasNoData={!samplePeriodsCount}
               hasNoDataFallback={
                 <NoDataOverlay
-                  height="250px"
+                  height="100%"
                   title="Add Periods"
                   subtitle="Add periods when you create sampling sites to show when 
                   you collected species observations"

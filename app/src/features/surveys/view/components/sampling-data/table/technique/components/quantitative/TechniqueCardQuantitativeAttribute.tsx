@@ -1,10 +1,10 @@
 import { grey } from '@mui/material/colors';
+import Typography from '@mui/material/Typography';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { ITechniqueAttributeQuantitative } from 'interfaces/useReferenceApi.interface';
 import { TechniqueQuantitativeAttribute } from 'interfaces/useTechniqueApi.interface';
-import React from 'react';
 
-interface QuantitativeAttributesProps {
+interface TechniqueCardQuantitativeAttributesProps {
   quantitativeAttributes: TechniqueQuantitativeAttribute[];
   methodAttributes: {
     quantitative: ITechniqueAttributeQuantitative[];
@@ -14,13 +14,13 @@ interface QuantitativeAttributesProps {
 /**
  * Renders quantitative attributes for a technique.
  *
- * @param {QuantitativeAttributesProps} props - The props for the component.
- * @returns {JSX.Element} The rendered component.
+ * @param {TechniqueCardQuantitativeAttributesProps} props - The props for the component.
+ * @returns {*} The rendered component.
  */
-const QuantitativeAttributes: React.FC<QuantitativeAttributesProps> = ({
+const TechniqueCardQuantitativeAttributes = ({
   quantitativeAttributes,
   methodAttributes
-}) => {
+}: TechniqueCardQuantitativeAttributesProps) => {
   return (
     <>
       {quantitativeAttributes.map((attribute) => {
@@ -33,7 +33,14 @@ const QuantitativeAttributes: React.FC<QuantitativeAttributesProps> = ({
           return (
             <AccordionStandardCard
               key={attribute.method_lookup_attribute_quantitative_id}
-              label={`${attributeLookup.name}: ${attribute.value} ${attributeLookup.unit}`}
+              label={
+                <>
+                  {attributeLookup.name}:&nbsp;
+                  <Typography component="span">
+                    {attribute.value}&nbsp;({attributeLookup.unit})
+                  </Typography>
+                </>
+              }
               colour={grey[300]}
             />
           );
@@ -44,4 +51,4 @@ const QuantitativeAttributes: React.FC<QuantitativeAttributesProps> = ({
   );
 };
 
-export default QuantitativeAttributes;
+export default TechniqueCardQuantitativeAttributes;

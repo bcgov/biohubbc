@@ -17,8 +17,6 @@ interface ISurveyTechniqueCardProps extends PaperProps {
     quantitative: ITechniqueAttributeQuantitative[];
     qualitative: ITechniqueAttributeQualitative[];
   };
-  disableCollapse?: boolean;
-  startCollapsed?: boolean;
 }
 
 /**
@@ -37,10 +35,14 @@ export const SurveyTechniqueCard = ({
   const methodLookupName =
     codesDataLoader.data?.sample_methods.find((method) => method.id === technique.method_lookup_id)?.name ?? '';
 
+  const attributesCount =
+    technique.attributes.qualitative_attributes.length + technique.attributes.quantitative_attributes.length;
+  const attractantsCount = technique.attractants.length;
+
   return (
     <AccordionStandardCard
       label={technique.name}
-      colour={grey[100]}
+      colour={grey[50]}
       variant="outlined"
       ornament={
         <Stack gap={1} direction="row">
@@ -53,31 +55,47 @@ export const SurveyTechniqueCard = ({
       {...accordionStandardCardProps}>
       <Typography color="textSecondary">{technique.description}</Typography>
 
-      <AccordionStandardCard label="Attributes" colour={grey[200]} sx={{ my: 2 }}>
-        {technique.attributes.qualitative_attributes.length > 0 ? (
-          <QualitativeAttributes
-            qualitativeAttributes={technique.attributes.qualitative_attributes}
-            methodAttributes={methodAttributes}
-          />
-        ) : (
+      <AccordionStandardCard
+        label={
+          <>
+            Attributes&nbsp;
+            <Typography component="span">({attributesCount})</Typography>
+          </>
+        }
+        colour={grey[200]}
+        sx={{ my: 2 }}>
+        {attributesCount === 0 ? (
           <Typography color="textSecondary" mb={2}>
-            No qualitative attributes selected
+            No attributes selected
           </Typography>
-        )}
-        {technique.attributes.quantitative_attributes.length > 0 ? (
-          <QuantitativeAttributes
-            quantitativeAttributes={technique.attributes.quantitative_attributes}
-            methodAttributes={methodAttributes}
-          />
         ) : (
-          <Typography color="textSecondary" mb={2}>
-            No quantitative attributes selected
-          </Typography>
+          <Stack gap={1} mb={2}>
+            {technique.attributes.qualitative_attributes.length > 0 && (
+              <QualitativeAttributes
+                qualitativeAttributes={technique.attributes.qualitative_attributes}
+                methodAttributes={methodAttributes}
+              />
+            )}
+            {technique.attributes.quantitative_attributes.length > 0 && (
+              <QuantitativeAttributes
+                quantitativeAttributes={technique.attributes.quantitative_attributes}
+                methodAttributes={methodAttributes}
+              />
+            )}
+          </Stack>
         )}
       </AccordionStandardCard>
 
-      <AccordionStandardCard label="Attractants" colour={grey[200]} sx={{ my: 2 }}>
-        {technique.attractants.length > 0 ? (
+      <AccordionStandardCard
+        label={
+          <>
+            Attractants&nbsp;
+            <Typography component="span">({attractantsCount})</Typography>
+          </>
+        }
+        colour={grey[200]}
+        sx={{ my: 2 }}>
+        {attractantsCount > 0 ? (
           <Stack gap={1} mb={2}>
             {technique.attractants.map((attractant) => {
               const attractantName =

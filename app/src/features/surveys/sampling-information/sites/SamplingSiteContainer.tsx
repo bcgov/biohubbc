@@ -192,10 +192,10 @@ const SamplingSiteContainer = () => {
         <LoadingGuard
           isLoading={surveyContext.sampleSiteDataLoader.isLoading}
           isLoadingFallback={
-            <>
+            <Box height="300px">
               <SkeletonMap />
               <SkeletonTable numberOfLines={5} />
-            </>
+            </Box>
           }
           isLoadingFallbackDelay={100}>
           <SamplingSiteMapContainer samplingSites={sampleSites} />
@@ -206,7 +206,7 @@ const SamplingSiteContainer = () => {
           <Divider flexItem />
 
           {/* Data tables */}
-          <Box p={2}>
+          <Box p={2} flex="1 1 auto">
             {activeView === SamplingSiteManageTableView.SITES && (
               <LoadingGuard
                 isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}

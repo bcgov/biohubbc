@@ -160,7 +160,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
           {params.row.stratums.map((stratum) => (
-            <Box key={stratum} mr={1} mb={1}>
+            <Box key={stratum} mr={1} mb={1} sx={{ maxWidth: '14ch' }}>
               <ColouredRectangleChip label={stratum} colour={blueGrey} />
             </Box>
           ))}
@@ -235,7 +235,6 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
 
       {/* DATA TABLE */}
       <StyledDataGrid
-        autoHeight
         getRowHeight={() => 'auto'}
         disableColumnMenu
         rows={rows}

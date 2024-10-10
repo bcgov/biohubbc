@@ -1,11 +1,10 @@
 import { grey } from '@mui/material/colors';
-import Stack from '@mui/material/Stack';
+import Typography from '@mui/material/Typography';
 import { AccordionStandardCard } from 'features/standards/view/components/AccordionStandardCard';
 import { ITechniqueAttributeQualitative } from 'interfaces/useReferenceApi.interface';
 import { TechniqueQualitativeAttribute } from 'interfaces/useTechniqueApi.interface';
-import React from 'react';
 
-interface QualitativeAttributesProps {
+interface TechniqueCardQualitativeAttributesProps {
   qualitativeAttributes: TechniqueQualitativeAttribute[];
   methodAttributes: {
     qualitative: ITechniqueAttributeQualitative[];
@@ -15,12 +14,15 @@ interface QualitativeAttributesProps {
 /**
  * Renders qualitative attributes for a technique.
  *
- * @param {QualitativeAttributesProps} props - The props for the component.
- * @returns {JSX.Element} The rendered component.
+ * @param {TechniqueCardQualitativeAttributesProps} props
+ * @returns {*}
  */
-const QualitativeAttributes: React.FC<QualitativeAttributesProps> = ({ qualitativeAttributes, methodAttributes }) => {
+const TechniqueCardQualitativeAttributes = ({
+  qualitativeAttributes,
+  methodAttributes
+}: TechniqueCardQualitativeAttributesProps) => {
   return (
-    <Stack gap={1} mb={2}>
+    <>
       {qualitativeAttributes.map((attribute) => {
         const attributeLookup = methodAttributes.qualitative.find(
           (lookup) => lookup.method_lookup_attribute_qualitative_id === attribute.method_lookup_attribute_qualitative_id
@@ -36,13 +38,18 @@ const QualitativeAttributes: React.FC<QualitativeAttributesProps> = ({ qualitati
         return (
           <AccordionStandardCard
             key={attribute.method_lookup_attribute_qualitative_id}
-            label={`${attributeName}: ${attributeValue}`}
+            label={
+              <>
+                {attributeName}:&nbsp;
+                <Typography component="span">{attributeValue}</Typography>
+              </>
+            }
             colour={grey[300]}
           />
         );
       })}
-    </Stack>
+    </>
   );
 };
 
-export default QualitativeAttributes;
+export default TechniqueCardQualitativeAttributes;

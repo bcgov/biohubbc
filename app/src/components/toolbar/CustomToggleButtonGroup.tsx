@@ -9,6 +9,14 @@ interface CustomToggleButtonGroupProps<T extends string> {
   onViewChange: (view: T) => void;
 }
 
+/**
+ * A custom toggle button group that allows users to select from multiple views.
+ *
+ * TODO: Update all togglebuttongroups throughout the app to use this component for consistent styling
+ *
+ * @param {CustomToggleButtonGroupProps<T>} props
+ * @return {*}
+ */
 const CustomToggleButtonGroup = <T extends string>(props: CustomToggleButtonGroupProps<T>) => {
   const { views, activeView, onViewChange } = props;
 
@@ -25,9 +33,9 @@ const CustomToggleButtonGroup = <T extends string>(props: CustomToggleButtonGrou
       sx={{
         display: 'flex',
         flex: '1 1 auto',
-        gap: 1,
+        gap: 0.5,
         '& Button': {
-          py: 0.25,
+          py: 1,
           px: 2,
           border: 'none',
           borderRadius: '4px !important',

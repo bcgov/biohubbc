@@ -12,8 +12,6 @@ export interface ISurveyTechniquesCardContainerProps {
 export const SurveyTechniquesCardContainer = (props: ISurveyTechniquesCardContainerProps) => {
   const { techniques } = props;
 
-  const startCollapsed = techniques.length > 1;
-
   const biohubApi = useBiohubApi();
   // Get method attributes for relevant method lookup ids
   const methodAttributeDataLoader = useDataLoader(() =>
@@ -22,7 +20,7 @@ export const SurveyTechniquesCardContainer = (props: ISurveyTechniquesCardContai
 
   useEffect(() => {
     methodAttributeDataLoader.load();
-  }, []);
+  }, [methodAttributeDataLoader]);
 
   return (
     <Stack gap={1}>
@@ -40,7 +38,6 @@ export const SurveyTechniquesCardContainer = (props: ISurveyTechniquesCardContai
                 qualitative: attributes.qualitative_attributes
               }}
               technique={technique}
-              startCollapsed={startCollapsed}
             />
           );
         }
