@@ -2,8 +2,8 @@ import { Knex } from 'knex';
 
 /**
  * Add new tables (migrated from from BCTW)
- * - deployment2 (to be renamed when it replaces the existing 'deployment' table)
  * - device
+ * - deployment2 (to be renamed when it replaces the existing 'deployment' table)
  * - telemetry_manual
  * - telemetry_credential_lotek
  * - telemetry_credential_vectronic
@@ -20,11 +20,67 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     SET SEARCH_PATH=biohub;
 
+    CREATE TABLE device (
+      device_id         integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      survey_id         integer            NOT NULL,
+      device_key        varchar            NOT NULL,
+      serial            integer            NOT NULL,
+      device_make_id    integer            NOT NULL,
+      model             varchar(100),
+      comment           varchar(250),
+      create_date       timestamptz(6)     DEFAULT now() NOT NULL,
+      create_user       integer            NOT NULL,
+      update_date       timestamptz(6),
+      update_user       integer,
+      revision_count    integer            DEFAULT 0 NOT NULL,
+      CONSTRAINT device_pk PRIMARY KEY (device_id)
+    );
+
+    COMMENT ON TABLE  device                   IS 'A device of a telemetry (or similar) device on an animal.';
+    COMMENT ON COLUMN device.device_id         IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN device.survey_id         IS 'Foreign key to the survey table.';
+    COMMENT ON COLUMN device.device_key        IS 'The SIMS unique key for the device.';
+    COMMENT ON COLUMN device.serial            IS 'The serial number of the device.';
+    COMMENT ON COLUMN device.make              IS 'The device vendor.';
+    COMMENT ON COLUMN device.model             IS 'The device model.';
+    COMMENT ON COLUMN device.comment           IS 'A comment about the device.';
+    COMMENT ON COLUMN device.create_date       IS 'The datetime the record was created.';
+    COMMENT ON COLUMN device.create_user       IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN device.update_date       IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN device.update_user       IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN device.revision_count    IS 'Revision count used for concurrency control.';
+
+    -- Add foreign key constraints
+    ALTER TABLE device
+      ADD CONSTRAINT device_fk1
+      FOREIGN KEY (survey_id)
+      REFERENCES survey(survey_id);
+
+    ALTER TABLE device
+      ADD CONSTRAINT device_fk2
+      FOREIGN KEY (make_id)
+      REFERENCES device_make(device_make_id);
+
+    -- Add indexes for foreign keys
+    CREATE INDEX device_idx1 ON device(survey_id);
+
+    CREATE INDEX device_idx2 ON device(device_make_id);
+
+    -- Add indexes
+    CREATE INDEX device_idx3 ON device(device_id, device_key);
+
+    CREATE INDEX device_idx4 ON device(device_key);
+
+    CREATE INDEX device_idx5 ON device(serial);
+
+    ----------------------------------------------------------------------------------------
+
     CREATE TABLE deployment2 (
       deployment2_id                  integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       survey_id                       integer            NOT NULL,
       critter_id                      integer            NOT NULL,
       device_id                       integer            NOT NULL,
+      device_key                      varchar            NOT NULL,
       attachment_start                timestamptz(6)     NOT NULL,
       attachment_end                  timestamptz(6),
       critterbase_start_capture_id    uuid,
@@ -46,7 +102,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN deployment2.device_key                      IS 'The SIMS unique key for the device.';
     COMMENT ON COLUMN deployment2.attachment_start                IS 'The date the telemetry device was attached.';
     COMMENT ON COLUMN deployment2.attachment_end                  IS 'The date the telemetry device was removed.';
-    COMMENT ON COLUMN deployment2.critterbase_capture_id          IS 'UUID of an external Critterbase capture record. The capture event during which the device was attached to the animal.';
+    COMMENT ON COLUMN deployment2.critterbase_start_capture_id    IS 'UUID of an external Critterbase capture record. The capture event during which the device was attached to the animal.';
     COMMENT ON COLUMN deployment2.critterbase_end_capture_id      IS 'UUID of an external Critterbase capture record. The capture event during which the device was removed from the animal.';
     COMMENT ON COLUMN deployment2.critterbase_end_mortality_id    IS 'UUID of an external Critterbase mortality record. The mortality event during which the device was removed from the animal.';
     COMMENT ON COLUMN deployment2.create_date                     IS 'The datetime the record was created.';
@@ -84,54 +140,6 @@ export async function up(knex: Knex): Promise<void> {
 
     ----------------------------------------------------------------------------------------
 
-    CREATE TABLE device (
-      device_id         integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-      survey_id         integer            NOT NULL,
-      device_key        varchar            NOT NULL,
-      serial            integer            NOT NULL,
-      make              integer            NOT NULL,
-      model             varchar(100),
-      comment           varchar(250),
-      create_date       timestamptz(6)     DEFAULT now() NOT NULL,
-      create_user       integer            NOT NULL,
-      update_date       timestamptz(6),
-      update_user       integer,
-      revision_count    integer            DEFAULT 0 NOT NULL,
-      CONSTRAINT device_pk PRIMARY KEY (device_id)
-    );
-
-    COMMENT ON TABLE  device                   IS 'A device of a telemetry (or similar) device on an animal.';
-    COMMENT ON COLUMN device.device_id         IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN device.survey_id         IS 'Foreign key to the survey table.';
-    COMMENT ON COLUMN device.device_key        IS 'The SIMS unique key for the device.';
-    COMMENT ON COLUMN device.serial            IS 'The serial number of the device.';
-    COMMENT ON COLUMN device.make              IS 'The device vendor.';
-    COMMENT ON COLUMN device.model             IS 'The device model.';
-    COMMENT ON COLUMN device.comment           IS 'A comment about the device.';
-    COMMENT ON COLUMN device.create_date       IS 'The datetime the record was created.';
-    COMMENT ON COLUMN device.create_user       IS 'The id of the user who created the record as identified in the system user table.';
-    COMMENT ON COLUMN device.update_date       IS 'The datetime the record was updated.';
-    COMMENT ON COLUMN device.update_user       IS 'The id of the user who updated the record as identified in the system user table.';
-    COMMENT ON COLUMN device.revision_count    IS 'Revision count used for concurrency control.';
-
-    -- Add foreign key constraints
-    ALTER TABLE device
-      ADD CONSTRAINT device_fk1
-      FOREIGN KEY (survey_id)
-      REFERENCES survey(survey_id);
-
-    -- Add indexes for foreign keys
-    CREATE INDEX device_idx1 ON device(survey_id);
-
-    -- Add indexes
-    CREATE INDEX deployment2_idx3 ON deployment2(device_id, device_key);
-
-    CREATE INDEX device_idx2 ON device(device_key);
-
-    CREATE UNIQUE INDEX device_idx3 ON device(device_serial);
-
-    ----------------------------------------------------------------------------------------
-
     CREATE TABLE telemetry_manual (
       telemetry_manual_id    uuid               DEFAULT public.gen_random_uuid(),
       deployment2_id         integer            NOT NULL,
@@ -150,8 +158,8 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON TABLE  telemetry_manual                        IS 'A manually entered telemetry record.';
     COMMENT ON COLUMN telemetry_manual.telemetry_manual_id    IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN telemetry_manual.deployment2_id         IS 'Foreign key to the deployment table.';
-    COMMENT ON COLUMN telemetry_manual.latitude               IS 'The latitude of the telemetry record, having ten points of total precision and 7 points of precision after the decimal.'
-    COMMENT ON COLUMN telemetry_manual.longitude              IS 'The longitude of the telemetry record, having ten points of total precision and 7 points of precision after the decimal.'
+    COMMENT ON COLUMN telemetry_manual.latitude               IS 'The latitude of the telemetry record, having ten points of total precision and 7 points of precision after the decimal.';
+    COMMENT ON COLUMN telemetry_manual.longitude              IS 'The longitude of the telemetry record, having ten points of total precision and 7 points of precision after the decimal.';
     COMMENT ON COLUMN telemetry_manual.acquisition_date       IS 'The date the telemetry record was recorded.';
     COMMENT ON COLUMN telemetry_manual.transmission_date      IS 'The date the telemetry record was transmitted.';
     COMMENT ON COLUMN telemetry_manual.create_date            IS 'The datetime the record was created.';
@@ -178,7 +186,7 @@ export async function up(knex: Knex): Promise<void> {
       update_user                      integer,
       revision_count                   integer            DEFAULT 0 NOT NULL,
       CONSTRAINT telemetry_credential_lotek_pk PRIMARY KEY (telemetry_credential_lotek_id)
-    )
+    );
 
     COMMENT ON TABLE  telemetry_credential_lotek                                  IS 'Lotek telemetry device credentials.';
     COMMENT ON COLUMN telemetry_credential_lotek.telemetry_credential_lotek_id    IS 'System generated surrogate primary key identifier.';
@@ -215,7 +223,7 @@ export async function up(knex: Knex): Promise<void> {
       update_user                          integer,
       revision_count                       integer            DEFAULT 0 NOT NULL,
       CONSTRAINT telemetry_credential_vectronic_pk PRIMARY KEY (telemetry_credential_vectronic_id)
-    )
+    );
 
     COMMENT ON TABLE  telemetry_credential_lotek                                  IS 'Vectronic telemetry device credentials.';
     COMMENT ON COLUMN telemetry_credential_lotek.telemetry_credential_lotek_id    IS 'System generated surrogate primary key identifier.';
@@ -247,9 +255,18 @@ export async function up(knex: Knex): Promise<void> {
       update_user                                  integer,
       revision_count                               integer            DEFAULT 0 NOT NULL,
       CONSTRAINT survey_telemetry_vendor_credential_pk PRIMARY KEY (survey_telemetry_vendor_credential_id)
-    )
+    );
 
-
+    COMMENT ON TABLE  survey_telemetry_vendor_credential                                              IS 'A record of a telemetry device credential that is associated with a survey.';
+    COMMENT ON COLUMN survey_telemetry_vendor_credential.survey_telemetry_vendor_credential_id        IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN survey_telemetry_vendor_credential.survey_telemetry_credential_attachment_id    IS 'Foreign key to the survey_telemetry_credential_attachment table.';
+    COMMENT ON COLUMN survey_telemetry_vendor_credential.device_id                                    IS 'Foreign key to the device table.';
+    COMMENT ON COLUMN survey_telemetry_vendor_credential.device_key                                   IS 'The SIMS unique key for the device.';
+    COMMENT ON COLUMN survey_telemetry_vendor_credential.create_date                                  IS 'The datetime the record was created.';
+    COMMENT ON COLUMN survey_telemetry_vendor_credential.create_user                                  IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN survey_telemetry_vendor_credential.update_date                                  IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN survey_telemetry_vendor_credential.update_user                                  IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN survey_telemetry_vendor_credential.revision_count                               IS 'Revision count used for concurrency control.';
 
     -- Add foreign key constraints
     ALTER TABLE survey_telemetry_vendor_credential
