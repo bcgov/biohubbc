@@ -61,6 +61,7 @@ export const CreateTechniquePage = () => {
       // Parse the form data into the request format
       const createTechniqueRequestData: ICreateTechniqueRequest = {
         ...values,
+        distance_threshold: values.distance_threshold || null,
         attributes: {
           qualitative_attributes: values.attributes
             .filter(({ attribute_type }) => attribute_type === 'qualitative')

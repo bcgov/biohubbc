@@ -1,11 +1,17 @@
+import { mdiCommentOutline, mdiCommentText, mdiFileOutline } from '@mdi/js';
+import Icon from '@mdi/react';
+import { Link, Stack } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import { GridCellParams, GridColDef, GridValidRowModel } from '@mui/x-data-grid';
+import { GridCellParams, GridColDef, GridRenderEditCellParams, GridValidRowModel } from '@mui/x-data-grid';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import TimePickerDataGrid from 'components/data-grid/TimePickerDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { default as dayjs } from 'dayjs';
 import { round } from 'lodash-es';
-import { getFormattedDate } from 'utils/Utils';
+import appTheme from 'themes/appTheme';
+import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
 
 export const GenericDateColDef = <T extends GridValidRowModel>(props: {
   field: string;
@@ -18,7 +24,7 @@ export const GenericDateColDef = <T extends GridValidRowModel>(props: {
   return {
     field,
     headerName,
-    description: description ?? undefined,
+    description: description,
     editable: true,
     hideable: true,
     type: 'date',
@@ -71,7 +77,7 @@ export const GenericTimeColDef = <T extends GridValidRowModel>(props: {
     headerName,
     editable: true,
     hideable: true,
-    description: description ?? undefined,
+    description: description,
     type: 'string',
     width: 150,
     disableColumnMenu: true,
@@ -133,7 +139,7 @@ export const GenericLatitudeColDef = <T extends GridValidRowModel>(props: {
   return {
     field,
     headerName,
-    description: description ?? undefined,
+    description: description,
     editable: true,
     hideable: true,
     width: 120,
@@ -194,7 +200,7 @@ export const GenericLongitudeColDef = <T extends GridValidRowModel>(props: {
   return {
     field,
     headerName,
-    description: description ?? undefined,
+    description: description,
     editable: true,
     hideable: true,
     width: 120,
@@ -240,6 +246,116 @@ export const GenericLongitudeColDef = <T extends GridValidRowModel>(props: {
           }}
         />
       );
+    }
+  };
+};
+
+export const GenericCommentColDef = <T extends GridValidRowModel>(props: {
+  field: string;
+  headerName: string;
+  description?: string;
+  hasError: (params: GridCellParams) => boolean;
+  handleClose: () => void;
+  handleOpen: (params: GridRenderEditCellParams) => void;
+}): GridColDef<T> => {
+  const { field, headerName, description } = props;
+
+  return {
+    field,
+    headerName,
+    description: description,
+    width: 75,
+    disableColumnMenu: true,
+    editable: true,
+    align: 'center',
+    renderEditCell: (params) => {
+      return (
+        <Tooltip title={params.value} arrow>
+          <span>
+            <IconButton
+              aria-label="observation-subcount-comment"
+              onClick={() => {
+                props.handleOpen(params);
+              }}>
+              {params.value ? (
+                // The key prop is necessary for the color to correctly change when a value is set
+                <Icon path={mdiCommentText} size={1} key="comment-view-id" color={appTheme.palette.primary.dark} />
+              ) : (
+                <Icon
+                  path={mdiCommentOutline}
+                  size={1}
+                  key="comment-view-empty"
+                  color={appTheme.palette.primary.dark}
+                />
+              )}
+            </IconButton>
+          </span>
+        </Tooltip>
+      );
+    },
+    renderCell: (params) => {
+      return (
+        <Tooltip title={params.value} arrow>
+          <span>
+            <IconButton aria-label="observation-subcount-comment" disabled>
+              {params.value ? (
+                <Icon path={mdiCommentText} size={1} key="comment-view-id" color={appTheme.palette.primary.dark} />
+              ) : (
+                <Icon path={mdiCommentOutline} size={1} key="comment-view-empty" />
+              )}
+            </IconButton>
+          </span>
+        </Tooltip>
+      );
+    }
+  };
+};
+
+export const GenericFileNameColDef = <T extends GridValidRowModel>(props: {
+  field: string;
+  headerName: string;
+  onClick?: (params: GridCellParams) => void;
+}): GridColDef<T> => {
+  return {
+    field: props.field,
+    headerName: props.headerName,
+    flex: 1,
+    disableColumnMenu: true,
+    renderCell: (params) => {
+      return (
+        <Stack
+          flexDirection="row"
+          alignItems="center"
+          gap={2}
+          sx={{
+            '& svg': {
+              color: '#1a5a96'
+            },
+            '& a': {
+              fontWeight: 700
+            }
+          }}>
+          <Icon path={mdiFileOutline} size={1} />
+          <Link underline="always" onClick={() => props.onClick?.(params)} tabIndex={0}>
+            {params.value}
+          </Link>
+        </Stack>
+      );
+    }
+  };
+};
+
+export const GenericFileSizeColDef = <T extends GridValidRowModel>(props: {
+  field: string;
+  headerName: string;
+}): GridColDef<T> => {
+  return {
+    field: props.field,
+    headerName: props.headerName,
+    flex: 1,
+    disableColumnMenu: true,
+    valueGetter: (params) => {
+      return getFormattedFileSize(params.value);
     }
   };
 };

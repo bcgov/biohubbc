@@ -6,6 +6,7 @@ import { HTTPError, HTTPErrorType } from '../../../../../../../errors/http-error
 import { bulkUpdateResponse, critterBulkRequestObject } from '../../../../../../../openapi/schemas/critter';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { getBctwUser } from '../../../../../../../services/bctw-service/bctw-service';
+import { CritterAttachmentService } from '../../../../../../../services/critter-attachment-service';
 import { CritterbaseService, ICritterbaseUser } from '../../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../../utils/logger';
@@ -220,6 +221,7 @@ export function getCrittersFromSurvey(): RequestHandler {
 
       const surveyService = new SurveyCritterService(connection);
       const critterbaseService = new CritterbaseService(user);
+      const critterAttachmentService = new CritterAttachmentService(connection);
 
       const surveyCritter = await surveyService.getCritterById(surveyId, critterId);
 
@@ -227,7 +229,11 @@ export function getCrittersFromSurvey(): RequestHandler {
         return res.status(404).json({ error: `Critter with id ${critterId} not found.` });
       }
 
-      const critterbaseCritter = await critterbaseService.getCritter(surveyCritter.critterbase_critter_id);
+      // Get the attachments from SIMS table and the Critter from critterbase
+      const [atttachments, critterbaseCritter] = await Promise.all([
+        critterAttachmentService.findAllCritterAttachments(surveyCritter.critter_id),
+        critterbaseService.getCritter(surveyCritter.critterbase_critter_id)
+      ]);
 
       if (!critterbaseCritter || critterbaseCritter.length === 0) {
         return res.status(404).json({ error: `Critter ${surveyCritter.critterbase_critter_id} not found.` });
@@ -237,12 +243,16 @@ export function getCrittersFromSurvey(): RequestHandler {
         ...surveyCritter,
         ...critterbaseCritter,
         critterbase_critter_id: surveyCritter.critterbase_critter_id,
-        critter_id: surveyCritter.critter_id
+        critter_id: surveyCritter.critter_id,
+        attachments: {
+          capture_attachments: atttachments.captureAttachments
+          // TODO: add mortality attachments
+        }
       };
 
       return res.status(200).json(critterMapped);
     } catch (error) {
-      defaultLog.error({ label: 'createCritter', message: 'error', error });
+      defaultLog.error({ label: 'getCritter', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
