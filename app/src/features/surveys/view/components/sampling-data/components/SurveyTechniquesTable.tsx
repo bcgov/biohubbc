@@ -100,7 +100,6 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
     <StyledDataGrid
       noRowsMessage={'No Techniques'}
       rowSelection={false}
-      autoHeight
       getRowHeight={() => 'auto'}
       rows={techniques}
       getRowId={(row) => row.id}

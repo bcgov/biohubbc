@@ -1,15 +1,15 @@
 import { mdiChevronDown, mdiChevronUp } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import { Collapse } from '@mui/material';
-import Box, { BoxProps } from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Paper, { PaperProps } from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren, ReactElement, useState } from 'react';
 
-interface IAccordionStandardCardProps extends BoxProps {
-  label: string;
+interface IAccordionStandardCardProps extends PaperProps {
+  label: string | React.ReactElement;
   subtitle?: string | null;
-  ornament?: JSX.Element;
+  ornament?: ReactElement;
   colour: string;
   disableCollapse?: boolean;
 }
@@ -20,7 +20,7 @@ interface IAccordionStandardCardProps extends BoxProps {
  * @returns
  */
 export const AccordionStandardCard = (props: PropsWithChildren<IAccordionStandardCardProps>) => {
-  const { label, subtitle, children, colour, ornament, disableCollapse } = props;
+  const { label, subtitle, children, colour, ornament, disableCollapse, ...paperProps } = props;
 
   const [isCollapsed, setIsCollapsed] = useState(true);
 
@@ -33,7 +33,7 @@ export const AccordionStandardCard = (props: PropsWithChildren<IAccordionStandar
   };
 
   return (
-    <Paper sx={{ bgcolor: colour, flex: '1 1 auto' }} elevation={0}>
+    <Paper elevation={0} {...paperProps} sx={{ bgcolor: colour, flex: '1 1 auto', ...paperProps.sx }}>
       <Box
         display="flex"
         justifyContent="space-between"

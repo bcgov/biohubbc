@@ -19,10 +19,10 @@ export const getRowCountColDef = (): GridColDef<IObservationAnalyticsRow> => ({
   headerAlign: 'left',
   align: 'left',
   field: 'row_count',
-  headerName: 'Number of observations',
+  headerName: 'Count of observations',
   type: 'number',
   flex: 1,
-  minWidth: 180
+  minWidth: 150
 });
 
 /**
@@ -34,10 +34,10 @@ export const getIndividualCountColDef = (): GridColDef<IObservationAnalyticsRow>
   headerAlign: 'left',
   align: 'left',
   field: 'individual_count',
-  headerName: 'Number of individuals',
+  headerName: 'Count of individuals',
   type: 'number',
   flex: 1,
-  minWidth: 180
+  minWidth: 150
 });
 
 /**
@@ -52,7 +52,7 @@ export const getIndividualPercentageColDef = (): GridColDef<IObservationAnalytic
   headerName: 'Percentage of individuals',
   type: 'number',
   flex: 1,
-  minWidth: 180,
+  minWidth: 150,
   renderCell: (params) => (
     <Typography variant="body2">
       {params.row.individual_percentage}&nbsp;
@@ -76,7 +76,8 @@ export const getSpeciesColDef = (
   align: 'left',
   field: 'itis_tsn',
   headerName: 'Species',
-  minWidth: 180,
+  flex: 1,
+  minWidth: 150,
   renderCell: (params) => {
     if (!params.row.itis_tsn) {
       return null;
@@ -101,7 +102,8 @@ export const getSamplingSiteColDef = (
   align: 'left',
   field: 'survey_sample_site_id',
   headerName: 'Site',
-  minWidth: 180,
+  flex: 1,
+  minWidth: 150,
   renderCell: (params) => {
     if (!params.row.survey_sample_site_id) {
       return null;
@@ -130,7 +132,8 @@ export const getSamplingMethodColDef = (
   align: 'left',
   field: 'survey_sample_method_id',
   headerName: 'Method',
-  minWidth: 180,
+  flex: 1,
+  minWidth: 150,
   renderCell: (params) => {
     if (!params.row.survey_sample_method_id) {
       return null;
@@ -161,7 +164,8 @@ export const getSamplingPeriodColDef = (
   align: 'left',
   field: 'survey_sample_period_id',
   headerName: 'Period',
-  minWidth: 220,
+  flex: 1,
+  minWidth: 180,
   renderCell: (params) => {
     if (!params.row.survey_sample_period_id) {
       return null;
@@ -176,10 +180,13 @@ export const getSamplingPeriodColDef = (
       return null;
     }
 
+    const formattedDateRange = `${dayjs(period.start_date).format(DATE_FORMAT.ShortMediumDateFormat)} – ${dayjs(
+      period.end_date
+    ).format(DATE_FORMAT.ShortMediumDateFormat)}`;
+
     return (
-      <Typography>
-        {dayjs(period.start_date).format(DATE_FORMAT.ShortMediumDateFormat)}&ndash;
-        {dayjs(period.end_date).format(DATE_FORMAT.ShortMediumDateFormat)}
+      <Typography overflow="hidden" textOverflow="ellipsis" title={formattedDateRange}>
+        {formattedDateRange}
       </Typography>
     );
   }
@@ -195,7 +202,8 @@ export const getDateColDef = (): GridColDef<IObservationAnalyticsRow> => ({
   align: 'left',
   field: 'observation_date',
   headerName: 'Date',
-  minWidth: 180,
+  minWidth: 150,
+  flex: 1,
   renderCell: (params) =>
     params.row.observation_date ? (
       <Typography>{dayjs(params.row.observation_date).format(DATE_FORMAT.MediumDateFormat)}</Typography>
@@ -216,6 +224,7 @@ export const getBasicGroupByColDefs = (groupByOptions: IGroupByOption[]): GridCo
   return groupByOptions.map((item) => ({
     field: item.field,
     headerName: item.label,
-    minWidth: 180
+    minWidth: 150,
+    flex: 1
   }));
 };

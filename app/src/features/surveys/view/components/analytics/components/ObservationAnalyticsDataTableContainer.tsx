@@ -1,4 +1,9 @@
+import { mdiArrowTopRight } from '@mdi/js';
+import Box from '@mui/material/Box';
 import { GridColumnVisibilityModel } from '@mui/x-data-grid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { ObservationAnalyticsDataTable } from 'features/surveys/view/components/analytics/components/ObservationAnalyticsDataTable';
 import { IGroupByOption } from 'features/surveys/view/components/analytics/SurveyObservationAnalytics';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -144,11 +149,30 @@ export const ObservationAnalyticsDataTableContainer = (props: IObservationAnalyt
   }, [allGroupByColumns, columns]);
 
   return (
-    <ObservationAnalyticsDataTable
-      isLoading={!analyticsDataLoader.data}
-      columns={columns}
-      rows={rows}
-      columnVisibilityModel={columnVisibilityModel}
-    />
+    <Box display="flex" flex="1 1 auto" position="relative">
+      <Box position="absolute" width="100%" height="100%">
+        <LoadingGuard
+          isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}
+          isLoadingFallback={<SkeletonTable />}
+          isLoadingFallbackDelay={100}
+          hasNoData={!analyticsDataLoader.data?.length}
+          hasNoDataFallback={
+            <NoDataOverlay
+              height="100%"
+              title="Add Observations to View Analytics"
+              subtitle="Analyze demographics, species diversity, and more across your observations"
+              icon={mdiArrowTopRight}
+            />
+          }
+          hasNoDataFallbackDelay={100}>
+          <ObservationAnalyticsDataTable
+            isLoading={!analyticsDataLoader.data?.length}
+            columns={columns}
+            rows={rows}
+            columnVisibilityModel={columnVisibilityModel}
+          />
+        </LoadingGuard>
+      </Box>
+    </Box>
   );
 };

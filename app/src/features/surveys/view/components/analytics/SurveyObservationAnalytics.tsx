@@ -15,7 +15,7 @@ import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import startCase from 'lodash-es/startCase';
 import { useEffect, useState } from 'react';
-import { ObservationAnalyticsNoDataOverlay } from './components/ObservationAnalyticsNoDataOverlay';
+
 type GroupByColumnType = 'column' | 'quantitative_measurement' | 'qualitative_measurement';
 
 export type IGroupByOption = {
@@ -89,8 +89,6 @@ export const SurveyObservationAnalytics = () => {
         : [...groupBy, value]
     );
 
-  const allGroupByColumns = [...groupByColumns, ...groupByQualitativeMeasurements, ...groupByQuantitativeMeasurements];
-
   return (
     <Stack direction="row" height="100%">
       <LoadingGuard
@@ -145,7 +143,7 @@ export const SurveyObservationAnalytics = () => {
                     border: 'none',
                     outline: 'none',
                     fontWeight: 700,
-                    my: 1,
+                    my: 0.5,
                     ':focus': {
                       outline: 'none',
                       border: 'none'
@@ -175,19 +173,12 @@ export const SurveyObservationAnalytics = () => {
 
         <Divider orientation="vertical" />
 
-        {/* Overlay for when no group by columns are selected */}
-        {allGroupByColumns.length === 0 && !measurementDefinitionsDataLoader.isLoading && (
-          <ObservationAnalyticsNoDataOverlay />
-        )}
-
         {/* Data grid displaying fetched data */}
-        {measurementDefinitionsDataLoader.data && allGroupByColumns.length > 0 && (
-          <ObservationAnalyticsDataTableContainer
-            groupByColumns={groupByColumns}
-            groupByQuantitativeMeasurements={groupByQuantitativeMeasurements}
-            groupByQualitativeMeasurements={groupByQualitativeMeasurements}
-          />
-        )}
+        <ObservationAnalyticsDataTableContainer
+          groupByColumns={groupByColumns}
+          groupByQuantitativeMeasurements={groupByQuantitativeMeasurements}
+          groupByQualitativeMeasurements={groupByQualitativeMeasurements}
+        />
       </LoadingGuard>
     </Stack>
   );

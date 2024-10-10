@@ -4,13 +4,13 @@ export type TechniqueAttractant = {
   attractant_lookup_id: number;
 };
 
-type TechniqueQualitativeAttribute = {
+export type TechniqueQualitativeAttribute = {
   method_technique_attribute_qualitative_id: number | null;
   method_lookup_attribute_qualitative_id: string;
   method_lookup_attribute_qualitative_option_id: string;
 };
 
-type TechniqueQuantitativeAttribute = {
+export type TechniqueQuantitativeAttribute = {
   method_technique_attribute_quantitative_id: number | null;
   method_lookup_attribute_quantitative_id: string;
   value: number;
