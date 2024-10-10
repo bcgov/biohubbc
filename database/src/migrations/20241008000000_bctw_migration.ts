@@ -41,7 +41,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN device.survey_id         IS 'Foreign key to the survey table.';
     COMMENT ON COLUMN device.device_key        IS 'The SIMS unique key for the device.';
     COMMENT ON COLUMN device.serial            IS 'The serial number of the device.';
-    COMMENT ON COLUMN device.make              IS 'The device vendor.';
+    COMMENT ON COLUMN device.device_make_id    IS 'Foreign key to the device_make table.';
     COMMENT ON COLUMN device.model             IS 'The device model.';
     COMMENT ON COLUMN device.comment           IS 'A comment about the device.';
     COMMENT ON COLUMN device.create_date       IS 'The datetime the record was created.';
@@ -58,7 +58,7 @@ export async function up(knex: Knex): Promise<void> {
 
     ALTER TABLE device
       ADD CONSTRAINT device_fk2
-      FOREIGN KEY (make_id)
+      FOREIGN KEY (device_make_id)
       REFERENCES device_make(device_make_id);
 
     -- Add indexes for foreign keys
@@ -211,6 +211,9 @@ export async function up(knex: Knex): Promise<void> {
 
     -- Add indexes
     CREATE UNIQUE INDEX telemetry_credential_lotek_idx1 ON telemetry_credential_lotek(device_id);
+
+    -- Add unique constraint on device_key and is_valid (only allow one credential per device to be valid)
+    ALTER TABLE telemetry_credential_lotek ADD CONSTRAINT telemetry_credential_lotek_uk1 UNIQUE (device_key, is_valid);
 
     ----------------------------------------------------------------------------------------
 
