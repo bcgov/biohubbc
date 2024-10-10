@@ -1,8 +1,11 @@
 import { IStaticLayer } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
-import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
+import { SurveySampleSiteMapPopup } from 'features/surveys/view/SurveySampleSiteMapPopup';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
+import { useEffect } from 'react';
 import { Popup } from 'react-leaflet';
 
 /**
@@ -12,6 +15,17 @@ import { Popup } from 'react-leaflet';
  */
 export const useSamplingSiteStaticLayer = (): IStaticLayer => {
   const surveyContext = useSurveyContext();
+  const biohubApi = useBiohubApi();
+
+  const geometryDataLoader = useDataLoader(() =>
+    biohubApi.samplingSite.getSampleSitesGeometry(surveyContext.projectId, surveyContext.surveyId)
+  );
+
+  useEffect(() => {
+    geometryDataLoader.load();
+  }, []);
+
+  const samplingSites = geometryDataLoader.data?.sampleSites ?? [];
 
   const samplingSiteStaticLayer: IStaticLayer = {
     layerName: 'Sampling Sites',
@@ -20,7 +34,7 @@ export const useSamplingSiteStaticLayer = (): IStaticLayer => {
       fillColor: SURVEY_MAP_LAYER_COLOURS.SAMPLING_SITE_COLOUR
     },
     features:
-      surveyContext.sampleSiteDataLoader.data?.sampleSites.flatMap((site) => {
+      samplingSites.flatMap((site) => {
         return {
           id: site.survey_sample_site_id,
           key: `sampling-site-${site.survey_sample_site_id}`,
@@ -28,32 +42,9 @@ export const useSamplingSiteStaticLayer = (): IStaticLayer => {
         };
       }) ?? [],
     popup: (feature) => {
-      const sampleSite = surveyContext.sampleSiteDataLoader.data?.sampleSites.find(
-        (item) => item.survey_sample_site_id === feature.id
-      );
-
-      const metadata = [];
-
-      if (sampleSite) {
-        metadata.push({
-          label: 'Name',
-          value: sampleSite.name
-        });
-
-        metadata.push({
-          label: 'Description',
-          value: sampleSite.description
-        });
-      }
-
       return (
         <Popup keepInView={false} closeButton={true} autoPan={true}>
-          <SurveyMapPopup
-            title="Sampling Site"
-            metadata={metadata}
-            isLoading={false}
-            key={`sampling-site-popup-${feature.id}`}
-          />
+          <SurveySampleSiteMapPopup surveySampleSiteId={Number(feature.id)} />
         </Popup>
       );
     },

@@ -22,7 +22,7 @@ export interface ISamplingSiteRowData {
   id: number;
   name: string;
   description: string;
-  geojson_type: string;
+  geometry_type: string;
   blocks: string[];
   stratums: string[];
 }
@@ -107,7 +107,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
   const rows: ISamplingSiteRowData[] = sites.map((site) => ({
     id: site.survey_sample_site_id,
     name: site.name,
-    geojson_type: site.geojson_type,
+    geometry_type: site.geometry_type,
     description: site.description || '',
     blocks: site.blocks.map((block) => block.name),
     stratums: site.stratums.map((stratum) => stratum.name)
@@ -126,7 +126,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
       renderCell: (params) => (
         <Box>
           <ColouredRectangleChip
-            label={getSamplingSiteSpatialType(params.row.geojson_type) ?? 'Unknown'}
+            label={getSamplingSiteSpatialType(params.row.geometry_type) ?? 'Unknown'}
             colour={blueGrey}
           />
         </Box>

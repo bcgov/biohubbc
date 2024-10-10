@@ -51,7 +51,7 @@ export interface IGetSampleLocationNonSpatialDetails {
   survey_id: number;
   name: string;
   description: string;
-  geojson_type: string;
+  geometry_type: string;
   sample_methods: IGetSampleMethodDetails[];
   blocks: IGetSampleBlockDetails[];
   stratums: IGetSampleStratumDetails[];
@@ -94,6 +94,27 @@ export interface IGetSampleLocationDetails {
   sample_methods: IGetSampleMethodDetails[];
   blocks: IGetSampleBlockDetails[];
   stratums: IGetSampleStratumDetails[];
+}
+
+export interface IGetBasicSamplePeriod {
+  survey_sample_period_id: number;
+  start_date: string;
+  end_date: string;
+  start_time: string;
+  end_time: string;
+}
+
+export interface IGetBasicSampleMethod {
+  survey_sample_method_id: number;
+  method_response_metric_id: number;
+  technique: { survey_technique_id: number; name: string };
+  sample_periods: IGetBasicSamplePeriod[];
+}
+
+export interface IGetBasicSampleLocation {
+  survey_sample_site_id: number;
+  name: string;
+  sample_methods: IGetBasicSampleMethod;
 }
 
 export interface IGetSampleLocationDetailsForUpdate {

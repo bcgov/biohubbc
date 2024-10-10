@@ -4,14 +4,13 @@ import { GridColDef } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ISamplingSiteRowData } from 'features/surveys/sampling-information/sites/table/SamplingSiteTable';
-import { Feature } from 'geojson';
 import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
 
 export interface ISurveySitesRowData {
   id: number;
   name: string;
   description: string;
-  geojson: Feature;
+  geometry_type: string;
   blocks: string[];
   stratums: string[];
 }
@@ -36,7 +35,7 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
       renderCell: (params) => (
         <Box>
           <ColouredRectangleChip
-            label={getSamplingSiteSpatialType(params.row.geojson) ?? 'Unknown'}
+            label={getSamplingSiteSpatialType(params.row.geometry_type) ?? 'Unknown'}
             colour={blueGrey}
           />
         </Box>

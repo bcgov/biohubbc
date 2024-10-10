@@ -6,6 +6,7 @@ import { IGetSurveyAttachmentsResponse, IGetSurveyForViewResponse } from 'interf
 import { IGetTechniquesResponse } from 'interfaces/useTechniqueApi.interface';
 import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
+import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
  * Context object that stores information about a survey
@@ -36,7 +37,11 @@ export interface ISurveyContext {
    * @type {DataLoader<[project_id: number, survey_id: number], IGetSampleSiteResponse, unknown>}
    * @memberof ISurveyContext
    */
-  sampleSiteDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSampleSiteNonSpatialResponse, unknown>;
+  sampleSiteDataLoader: DataLoader<
+    [project_id: number, survey_id: number, pagination?: ApiPaginationRequestOptions],
+    IGetSampleSiteNonSpatialResponse,
+    unknown
+  >;
 
   /**
    * The Data Loader used to load survey techniques
@@ -75,7 +80,7 @@ export const SurveyContext = createContext<ISurveyContext>({
   surveyDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>,
   artifactDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>,
   sampleSiteDataLoader: {} as DataLoader<
-    [project_id: number, survey_id: number],
+    [project_id: number, survey_id: number, pagination?: ApiPaginationRequestOptions],
     IGetSampleSiteNonSpatialResponse,
     unknown
   >,

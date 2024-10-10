@@ -36,13 +36,14 @@ import { ImportObservationsButton } from 'features/surveys/observations/observat
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import {
   useCodesContext,
+  useObservationsContext,
   useObservationsPageContext,
   useObservationsTableContext,
   useSurveyContext
 } from 'hooks/useContext';
 import {
-  IGetSampleLocationNonSpatialDetails,
-  IGetSampleMethodDetails,
+  IGetBasicSampleLocation,
+  IGetBasicSampleMethod,
   IGetSamplePeriodRecord
 } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect, useMemo } from 'react';
@@ -60,6 +61,7 @@ const ObservationsTableContainer = () => {
   const surveyContext = useSurveyContext();
   const observationsPageContext = useObservationsPageContext();
   const observationsTableContext = useObservationsTableContext();
+  const observationsContext = useObservationsContext();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -72,9 +74,9 @@ const ObservationsTableContainer = () => {
   ]);
 
   // Collect sample sites
-  const surveySampleSites: IGetSampleLocationNonSpatialDetails[] = useMemo(
-    () => surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [],
-    [surveyContext.sampleSiteDataLoader.data?.sampleSites]
+  const surveySampleSites: IGetBasicSampleLocation[] = useMemo(
+    () => observationsContext.observationsDataLoader.data?.supplementaryObservationData.sample_sites ?? [],
+    [observationsContext.observationsDataLoader.data?.supplementaryObservationData.sample_sites]
   );
 
   const sampleSiteOptions: ISampleSiteOption[] = useMemo(
@@ -87,13 +89,13 @@ const ObservationsTableContainer = () => {
   );
 
   // Collect sample methods
-  const surveySampleMethods: IGetSampleMethodDetails[] = surveySampleSites
+  const surveySampleMethods: IGetBasicSampleMethod[] = surveySampleSites
     .filter((sampleSite) => Boolean(sampleSite.sample_methods))
-    .map((sampleSite) => sampleSite.sample_methods as IGetSampleMethodDetails[])
+    .map((sampleSite) => sampleSite.sample_methods)
     .flat(2);
   const sampleMethodOptions: ISampleMethodOption[] = surveySampleMethods.map((method) => ({
     survey_sample_method_id: method.survey_sample_method_id,
-    survey_sample_site_id: method.survey_sample_site_id,
+    // survey_sample_site_id: method.survey_sample_site_id,
     sample_method_name: method.technique.name,
     response_metric:
       getCodesName(codesContext.codesDataLoader.data, 'method_response_metrics', method.method_response_metric_id) ?? ''

@@ -77,7 +77,7 @@ export const SurveySamplingTabs = () => {
         id: site.survey_sample_site_id,
         name: site.name,
         description: site.description,
-        geojson: site.geojson,
+        geometry_type: site.geometry_type,
         blocks: site.blocks.map((block) => block.name),
         stratums: site.stratums.map((stratum) => stratum.name)
       })) ?? [],
