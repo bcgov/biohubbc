@@ -319,7 +319,8 @@ export async function up(knex: Knex): Promise<void> {
       device_make_id                                integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       name                                          varchar(32)        NOT NULL,
       description                                   varchar(128),
-      record_effective_date                         timestamptz(6)     NOT NULL,
+      notes                                         varchar(128),
+      record_effective_date                         timestamptz(6), -- Intentionally nullable
       record_end_date                               timestamptz(6),
       create_date                                   timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                                   integer            NOT NULL,
@@ -334,6 +335,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN device_make.device_make_id IS 'Composite primary key (id) for device make.';
     COMMENT ON COLUMN device_make.name IS 'Composite primary key (name) of the device make option.';
     COMMENT ON COLUMN device_make.description IS 'Description of the device make option.';
+    COMMENT ON COLUMN device_make.description IS 'Additional internal related notes of the record.';
     COMMENT ON COLUMN device_make.record_effective_date IS 'Start date of the device make option.';
     COMMENT ON COLUMN device_make.record_end_date IS 'End date of the device make option.';
     COMMENT ON COLUMN device_make.create_date IS 'The datetime the record was created.';
@@ -351,19 +353,19 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     -- Add initial values to device make table
     ----------------------------------------------------------------------------------------
-    INSERT INTO device_make (name, description, record_effective_date) VALUES
-    ('vectronic', 'VECTRONIC - This label must never change. Raw telemetry table references this value.', 'NOW()'),
-    ('lotek', 'LOTEK - This label must never change. Raw telemetry table references this value.', 'NOW()'),
-    ('ats', 'ATS - This label must never change. Raw telemetry table references this value.', 'NOW()'),
-    ('followit', 'FOLLOWIT', 'NOW()'),
-    ('televit', 'TELEVIT', 'NOW()'),
-    ('teleonics', 'TELEONICS', 'NOW()');
+    INSERT INTO device_make (name, description, notes, record_effective_date) VALUES
+    ('vectronic', 'Vectronic Aerospace Telemetry', 'This label must never change, raw telemetry table (telemetry_vectronic) references this value to generate device_key.', 'NOW()'),
+    ('lotek', 'Lotek Telemetry', 'This label must never change, raw telemetry table (telemetry_lotek) references this value to generate device_key.', 'NOW()'),
+    ('ats', 'Advanced Telemetry Systems', 'This label must never change, raw telemetry table (telemetry_ats) references this value to generate device_key.', 'NOW()'),
+    ('followit', 'Followit Telemetry', 'This device make is currently unsupported. All devices which use this value will have no source of telemetry', NULL),
+    ('televit', 'Televit Telemetry', 'This device make is currently unsupported. All devices which use this value will have no source of telemetry', NULL),
+    ('teleonics', 'Teleonics Telemetry', 'This device make is currently unsupported. All devices which use this value will have no source of telemetry', NULL);
 
     ----------------------------------------------------------------------------------------
     -- Create frequency table
     ----------------------------------------------------------------------------------------
     CREATE TABLE deployment_frequency (
-      deployment_frequency_id                           integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+      deployment_frequency_id                       integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       name                                          varchar(32)        NOT NULL,
       description                                   varchar(128),
       record_effective_date                         timestamptz(6)     NOT NULL,
@@ -399,9 +401,9 @@ export async function up(knex: Knex): Promise<void> {
     -- Add initial values to deployment frequency table
     ----------------------------------------------------------------------------------------
     INSERT INTO deployment_frequency (name, description, record_effective_date) VALUES
-    ('khz', 'KHz', 'NOW()'),
-    ('mhz', 'MHz', 'NOW()'),
-    ('hz', 'Hz', 'NOW()');
+    ('khz', 'Kilohertz', 'NOW()'),
+    ('mhz', 'Megahertz', 'NOW()'),
+    ('hz', 'Hertz', 'NOW()');
 
     ----------------------------------------------------------------------------------------
     -- Create Views
