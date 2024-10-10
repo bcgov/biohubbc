@@ -19,7 +19,6 @@ export class TelemetryDeviceRepository extends BaseRepository {
    * @param {surveyId} surveyId
    * @param {number[]} deviceIds
    * @returns {*} {Promise<DeviceRecord[]>}
-   *
    */
   async getDevicesByIds(surveyId: number, deviceIds: number[]): Promise<DeviceRecord[]> {
     const knex = getKnex();
@@ -40,9 +39,9 @@ export class TelemetryDeviceRepository extends BaseRepository {
    *
    * @param {surveyId} surveyId
    * @param {number[]} deviceIds
-   * @returns {*} {Promise<{ device_id: string }[]>}
+   * @returns {*} {Promise<Array<{ device_id: string }>>}
    */
-  async deleteDevicesByIds(surveyId: number, deviceIds: number[]): Promise<{ device_id: number }[]> {
+  async deleteDevicesByIds(surveyId: number, deviceIds: number[]): Promise<Array<{ device_id: number }>> {
     const knex = getKnex();
 
     const queryBuilder = knex
