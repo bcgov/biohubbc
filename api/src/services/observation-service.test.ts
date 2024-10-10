@@ -1,13 +1,14 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import {
   ObservationRecordWithSamplingAndSubcountData,
   ObservationRepository
 } from '../repositories/observation-repository/observation-repository';
 import * as file_utils from '../utils/file-utils';
-import { getMockDBConnection } from '../__mocks__/db';
 import { ObservationService } from './observation-service';
+import { SampleLocationService } from './sample-location-service';
 import { SubCountService } from './subcount-service';
 
 chai.use(sinonChai);
@@ -73,7 +74,8 @@ describe('ObservationService', () => {
         qualitative_measurements: [],
         quantitative_measurements: [],
         qualitative_environments: [],
-        quantitative_environments: []
+        quantitative_environments: [],
+        sample_sites: []
       };
 
       const getSurveyObservationsStub = sinon
@@ -92,6 +94,10 @@ describe('ObservationService', () => {
         .stub(SubCountService.prototype, 'getEnvironmentTypeDefinitionsForSurvey')
         .resolves({ qualitative_environments: [], quantitative_environments: [] });
 
+      const getBasicSampleLocationsStub = sinon
+        .stub(SampleLocationService.prototype, 'getBasicSurveySampleLocationsBySiteIds')
+        .resolves([]);
+
       const surveyId = 1;
 
       const observationService = new ObservationService(mockDBConnection);
@@ -104,6 +110,7 @@ describe('ObservationService', () => {
       expect(getSurveyObservationCountStub).to.be.calledOnceWith(surveyId);
       expect(getMeasurementTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
       expect(getEnvironmentTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
+      expect(getBasicSampleLocationsStub).to.be.calledOnceWith(surveyId)
       expect(response).to.eql({
         surveyObservations: [
           {

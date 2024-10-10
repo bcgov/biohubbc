@@ -428,10 +428,16 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: ['survey_sample_method_id', 'technique'],
+                  required: [
+                    'survey_sample_method_id',
+                    'technique',
+                    'method_response_metric_id',
+                    'survey_sample_site_id'
+                  ],
                   properties: {
                     survey_sample_method_id: { type: 'integer', minimum: 1 },
-                    method_response_metric_id: {type: 'integer', minimum: 1},
+                    survey_sample_site_id: { type: 'integer', minimum: 1 },
+                    method_response_metric_id: { type: 'integer', minimum: 1 },
                     technique: {
                       type: 'object',
                       additionalProperties: false,
@@ -451,9 +457,17 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
                         type: 'object',
                         description: 'A period associated with the sampling method',
                         additionalProperties: false,
-                        required: ['survey_sample_period_id', 'start_date', 'end_date', 'start_time', 'end_time'],
+                        required: [
+                          'survey_sample_period_id',
+                          'survey_sample_method_id',
+                          'start_date',
+                          'end_date',
+                          'start_time',
+                          'end_time'
+                        ],
                         properties: {
                           survey_sample_period_id: { type: 'integer' },
+                          survey_sample_method_id: { type: 'integer', minimum: 1 },
                           start_date: { type: 'string' },
                           end_date: { type: 'string' },
                           start_time: { type: 'string', nullable: true },

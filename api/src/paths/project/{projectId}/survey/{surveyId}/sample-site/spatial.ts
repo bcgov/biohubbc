@@ -29,7 +29,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveysampleSitesGeometry()
+  getSurveySampleSitesGeometry()
 ];
 
 GET.apiDoc = {
@@ -114,7 +114,7 @@ GET.apiDoc = {
  * @export
  * @return {*}  {RequestHandler}
  */
-export function getSurveysampleSitesGeometry(): RequestHandler {
+export function getSurveySampleSitesGeometry(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
 

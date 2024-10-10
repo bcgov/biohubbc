@@ -86,6 +86,7 @@ export const SampleLocationBasicRecord = z.object({
   sample_methods: z.array(
     SampleMethodRecord.pick({
       survey_sample_method_id: true,
+      survey_sample_site_id: true,
       method_response_metric_id: true
     }).extend(
       z.object({
@@ -96,6 +97,7 @@ export const SampleLocationBasicRecord = z.object({
         sample_periods: z.array(
           SamplePeriodRecord.pick({
             survey_sample_period_id: true,
+            survey_sample_method_id: true,
             start_date: true,
             start_time: true,
             end_date: true,
@@ -429,10 +431,10 @@ export class SampleLocationRepository extends BaseRepository {
       .with('w_survey_sample_period', (qb) => {
         qb.select(
           'ssp.survey_sample_method_id',
-          'ssp.method_response_metric_id',
           knex.raw(`
           json_agg(json_build_object(
             'survey_sample_period_id', ssp.survey_sample_period_id,
+            'survey_sample_method_id', ssp.survey_sample_method_id,
             'start_date', ssp.start_date,
             'end_date', ssp.end_date,
             'start_time', ssp.start_time,
@@ -448,6 +450,8 @@ export class SampleLocationRepository extends BaseRepository {
           knex.raw(`
           json_agg(json_build_object(
             'survey_sample_method_id', ssm.survey_sample_method_id,
+            'survey_sample_site_id', ssm.survey_sample_site_id,
+            'method_response_metric_id', ssm.method_response_metric_id,
             'technique', json_build_object(
               'method_technique_id', wmt.method_technique_id,
               'name', wmt.name
@@ -473,8 +477,6 @@ export class SampleLocationRepository extends BaseRepository {
       .whereIn('sss.survey_sample_site_id', surveySampleSiteIds);
 
     const response = await this.connection.knex(queryBuilder, SampleLocationBasicRecord);
-
-    console.log(response);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get sample site by IDs', [

@@ -98,6 +98,7 @@ export interface IGetSampleLocationDetails {
 
 export interface IGetBasicSamplePeriod {
   survey_sample_period_id: number;
+  survey_sample_method_id: number;
   start_date: string;
   end_date: string;
   start_time: string;
@@ -106,6 +107,7 @@ export interface IGetBasicSamplePeriod {
 
 export interface IGetBasicSampleMethod {
   survey_sample_method_id: number;
+  survey_sample_site_id: number;
   method_response_metric_id: number;
   technique: { survey_technique_id: number; name: string };
   sample_periods: IGetBasicSamplePeriod[];

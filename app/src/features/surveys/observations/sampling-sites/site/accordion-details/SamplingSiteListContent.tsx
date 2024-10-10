@@ -42,7 +42,7 @@ export const SamplingSiteListContent = (props: ISamplingSiteListContentProps) =>
         <Skeleton variant="rectangular" height="40px" sx={{ mx: 3 }}></Skeleton>
         <Skeleton variant="rectangular" height="30px" sx={{ mx: 3, ml: 6 }}></Skeleton>
         <Skeleton variant="rectangular" height="30px" sx={{ mx: 3, ml: 6 }}></Skeleton>
-        <Skeleton variant="rectangular" height="150px" sx={{ mx: 3, mt: 2 }}></Skeleton>
+        <Skeleton variant="rectangular" height="150px" sx={{ mx: 3, my: 2 }}></Skeleton>
       </Stack>
     );
   }

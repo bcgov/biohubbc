@@ -165,7 +165,7 @@ describe('getSamplingSiteSpatialType', () => {
       properties: {}
     };
 
-    const response = getSamplingSiteSpatialType(feature.type);
+    const response = getSamplingSiteSpatialType(feature.geometry.type);
 
     expect(response).toEqual(SAMPLING_SITE_SPATIAL_TYPE.TRANSECT);
   });
@@ -183,7 +183,7 @@ describe('getSamplingSiteSpatialType', () => {
       properties: {}
     };
 
-    const response = getSamplingSiteSpatialType(feature.type);
+    const response = getSamplingSiteSpatialType(feature.geometry.type);
 
     expect(response).toEqual(SAMPLING_SITE_SPATIAL_TYPE.TRANSECT);
   });
@@ -198,7 +198,7 @@ describe('getSamplingSiteSpatialType', () => {
       properties: {}
     };
 
-    const response = getSamplingSiteSpatialType(feature.type);
+    const response = getSamplingSiteSpatialType(feature.geometry.type);
 
     expect(response).toEqual(SAMPLING_SITE_SPATIAL_TYPE.POINT);
   });
@@ -216,7 +216,7 @@ describe('getSamplingSiteSpatialType', () => {
       properties: {}
     };
 
-    const response = getSamplingSiteSpatialType(feature.type);
+    const response = getSamplingSiteSpatialType(feature.geometry.type);
 
     expect(response).toEqual(SAMPLING_SITE_SPATIAL_TYPE.POINT);
   });
@@ -238,7 +238,7 @@ describe('getSamplingSiteSpatialType', () => {
       properties: {}
     };
 
-    const response = getSamplingSiteSpatialType(feature.type);
+    const response = getSamplingSiteSpatialType(feature.geometry.type);
 
     expect(response).toEqual(SAMPLING_SITE_SPATIAL_TYPE.AREA);
   });
@@ -262,7 +262,7 @@ describe('getSamplingSiteSpatialType', () => {
       properties: {}
     };
 
-    const response = getSamplingSiteSpatialType(feature.type);
+    const response = getSamplingSiteSpatialType(feature.geometry.type);
 
     expect(response).toEqual(SAMPLING_SITE_SPATIAL_TYPE.AREA);
   });

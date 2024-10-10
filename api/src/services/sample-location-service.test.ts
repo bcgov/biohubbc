@@ -2,10 +2,10 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { UpdateSampleBlockRecord } from '../repositories/sample-blocks-repository';
-import { SampleLocationRepository } from '../repositories/sample-location-repository';
-import { UpdateSampleStratumRecord } from '../repositories/sample-stratums-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { UpdateSampleBlockRecord } from '../repositories/sample-blocks-repository';
+import { SampleLocationRepository } from '../repositories/sample-location-repository/sample-location-repository';
+import { UpdateSampleStratumRecord } from '../repositories/sample-stratums-repository';
 import { SampleBlockService } from './sample-block-service';
 import { PostSampleLocations, SampleLocationService } from './sample-location-service';
 import { SampleMethodService } from './sample-method-service';
@@ -112,7 +112,7 @@ describe('SampleLocationService', () => {
           survey_id: 1,
           name: 'Sample Site 1',
           description: '',
-          geojson: [],
+          geometry_type: 'Point',
           blocks: [],
           sample_methods: [],
           stratums: []
