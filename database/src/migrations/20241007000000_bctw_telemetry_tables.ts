@@ -81,7 +81,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE INDEX telemetry_ats_idx3 ON telemetry_ats(date);
 
     COMMENT ON TABLE telemetry_ats IS 'Raw telemetry data from the ATS API';
-    COMMENT ON COLUMN telemetry_ats.telemetry_ats_id IS 'Primary key for telemetry_ats table';
+    COMMENT ON COLUMN telemetry_ats.telemetry_ats_id IS 'Primary key for telemetry_ats table. This data should only be updated by the Cronjob.';
     COMMENT ON COLUMN telemetry_ats.device_key IS 'A generated key for the device make and serial. This is a combination of the device make and the serial number. ie: ats:12345';
     COMMENT ON COLUMN telemetry_ats.collarserialnumber IS 'The serial number printed on the device. Not used as a key.';
     COMMENT ON COLUMN telemetry_ats."date" IS 'The timestamp at which this row was recorded.';
@@ -178,7 +178,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE INDEX vectronics_collar_data_idx2 ON telemetry_vectronic USING gist (geom);
     CREATE INDEX vectronics_collar_data_idx3 ON telemetry_vectronic(acquisitiontime);
 
-    COMMENT ON TABLE telemetry_vectronic IS 'The raw telemetry data from Vectronics API';
+    COMMENT ON TABLE telemetry_vectronic IS 'The raw telemetry data from Vectronics API. This data should only be updated by the Cronjob.';
     COMMENT ON COLUMN telemetry_vectronic.telemetry_vectronic_id IS 'Primary key for telemetry_vectronic table';
     COMMENT ON COLUMN telemetry_vectronic.device_key IS 'A generated key for the device make and serial number ie: vectronic:12345';
     COMMENT ON COLUMN telemetry_vectronic.idposition IS 'acts as the primary key of the table, this is a vectronic database identifier';
@@ -278,7 +278,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE INDEX telemetry_lotek_idx3 ON telemetry_lotek(uploadtimestamp);
     CREATE UNIQUE INDEX telemetry_lotek_idx4 ON telemetry_lotek(uploadtimestamp, deviceid);
 
-    COMMENT ON TABLE telemetry_lotek IS 'The raw telemetry data from Lotek';
+    COMMENT ON TABLE telemetry_lotek IS 'The raw telemetry data from Lotek. This data should only be updated by the Cronjob.';
     COMMENT ON COLUMN telemetry_lotek.telemetry_lotek_id IS 'Primary key for telemetry_lotek table';
     COMMENT ON COLUMN telemetry_lotek.device_key IS 'A generated key for the device make and serial number ie: lotek:12345';
     COMMENT ON COLUMN telemetry_lotek.channelstatus IS 'Unknown description';
