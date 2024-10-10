@@ -126,7 +126,7 @@ export async function up(knex: Knex): Promise<void> {
       REFERENCES critter(critter_id);
 
     ALTER TABLE deployment2
-      ADD CONSTRAINT deployment2_fk2
+      ADD CONSTRAINT deployment2_fk3
       FOREIGN KEY (device_id)
       REFERENCES device(device_id);
 
@@ -190,14 +190,13 @@ export async function up(knex: Knex): Promise<void> {
 
     COMMENT ON TABLE  telemetry_credential_lotek                                  IS 'Lotek telemetry device credentials.';
     COMMENT ON COLUMN telemetry_credential_lotek.telemetry_credential_lotek_id    IS '(Generated) Surrogate primary key identifier.';
-    COMMENT ON COLUMN telemetry_credential_lotek.device_id                        IS 'The SIMS unique key for the device.';
     COMMENT ON COLUMN telemetry_credential_lotek.device_key                       IS '(Generated) The SIMS unique key for the device.';
     COMMENT ON COLUMN telemetry_credential_lotek.ndeviceid                        IS 'The Lotek unique id for the device.';
     COMMENT ON COLUMN telemetry_credential_lotek.strspecialid                     IS 'The Lotek IMEI number.';
+    COMMENT ON COLUMN telemetry_credential_lotek.dtcreated                        IS 'The Lotek create date.';
     COMMENT ON COLUMN telemetry_credential_lotek.strsatellite                     IS 'The Lotek satellite name.';
     COMMENT ON COLUMN telemetry_credential_lotek.verified_date                    IS 'The date the credential was verified (by uploading the cfg file to lotek and confirming it is valid).';
     COMMENT ON COLUMN telemetry_credential_lotek.is_valid                         IS 'True if the credential is valid, false if it is invalid.';
-    COMMENT ON COLUMN telemetry_credential_lotek.dtrecord_added                   IS 'The date the record was added.';
     COMMENT ON COLUMN telemetry_credential_lotek.create_date                      IS 'The datetime the record was created.';
     COMMENT ON COLUMN telemetry_credential_lotek.create_user                      IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN telemetry_credential_lotek.update_date                      IS 'The datetime the record was updated.';
@@ -205,7 +204,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN telemetry_credential_lotek.revision_count                   IS 'Revision count used for concurrency control.';
 
     -- Add indexes
-    CREATE UNIQUE INDEX telemetry_credential_lotek_idx1 ON telemetry_credential_lotek(device_id);
+    CREATE UNIQUE INDEX telemetry_credential_lotek_idx1 ON telemetry_credential_lotek(device_key);
 
     -- Add unique constraint on device_key and is_valid (only allow one credential per device to be valid)
     ALTER TABLE telemetry_credential_lotek ADD CONSTRAINT telemetry_credential_lotek_uk1 UNIQUE (device_key, is_valid);
@@ -214,7 +213,7 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE TABLE telemetry_credential_vectronic (
       telemetry_credential_vectronic_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-      device_key                           varchar            GENERATED ALWAYS AS ('vectronic:' || ndeviceid::text) STORED,
+      device_key                           varchar            GENERATED ALWAYS AS ('vectronic:' || idcollar::text) STORED,
       idcollar                             integer            NOT NULL,
       comtype                              varchar(50)        NOT NULL,
       idcom                                integer            NOT NULL,
@@ -228,29 +227,28 @@ export async function up(knex: Knex): Promise<void> {
       CONSTRAINT telemetry_credential_vectronic_pk PRIMARY KEY (telemetry_credential_vectronic_id)
     );
 
-    COMMENT ON TABLE  telemetry_credential_lotek                                  IS 'Vectronic telemetry device credentials.';
-    COMMENT ON COLUMN telemetry_credential_lotek.telemetry_credential_lotek_id    IS '(Generated) Surrogate primary key identifier.';
-    COMMENT ON COLUMN telemetry_credential_lotek.device_key                       IS '(Generated) The SIMS unique key for the device.';
-    COMMENT ON COLUMN telemetry_credential_lotek.idcollar                         IS 'The Vectronic unique id for the device.';
-    COMMENT ON COLUMN telemetry_credential_lotek.comtype                          IS 'The Vectronic comtype field.';
-    COMMENT ON COLUMN telemetry_credential_lotek.idcom                            IS 'The Vectronic idcom field.';
-    COMMENT ON COLUMN telemetry_credential_lotek.collarkey                        IS 'The Vectronic device key.';
-    COMMENT ON COLUMN telemetry_credential_lotek.collartype                       IS 'The Vectronic device type.';
-    COMMENT ON COLUMN telemetry_credential_lotek.create_date                      IS 'The datetime the record was created.';
-    COMMENT ON COLUMN telemetry_credential_lotek.create_user                      IS 'The id of the user who created the record as identified in the system user table.';
-    COMMENT ON COLUMN telemetry_credential_lotek.update_date                      IS 'The datetime the record was updated.';
-    COMMENT ON COLUMN telemetry_credential_lotek.update_user                      IS 'The id of the user who updated the record as identified in the system user table.';
-    COMMENT ON COLUMN telemetry_credential_lotek.revision_count                   IS 'Revision count used for concurrency control.';
+    COMMENT ON TABLE  telemetry_credential_vectronic                                      IS 'Vectronic telemetry device credentials.';
+    COMMENT ON COLUMN telemetry_credential_vectronic.telemetry_credential_vectronic_id    IS '(Generated) Surrogate primary key identifier.';
+    COMMENT ON COLUMN telemetry_credential_vectronic.device_key                           IS '(Generated) The SIMS unique key for the device.';
+    COMMENT ON COLUMN telemetry_credential_vectronic.idcollar                             IS 'The Vectronic unique id for the device.';
+    COMMENT ON COLUMN telemetry_credential_vectronic.comtype                              IS 'The Vectronic comtype field.';
+    COMMENT ON COLUMN telemetry_credential_vectronic.idcom                                IS 'The Vectronic idcom field.';
+    COMMENT ON COLUMN telemetry_credential_vectronic.collarkey                            IS 'The Vectronic device key.';
+    COMMENT ON COLUMN telemetry_credential_vectronic.collartype                           IS 'The Vectronic device type.';
+    COMMENT ON COLUMN telemetry_credential_vectronic.create_date                          IS 'The datetime the record was created.';
+    COMMENT ON COLUMN telemetry_credential_vectronic.create_user                          IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN telemetry_credential_vectronic.update_date                          IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN telemetry_credential_vectronic.update_user                          IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN telemetry_credential_vectronic.revision_count                       IS 'Revision count used for concurrency control.';
 
     -- Add indexes
-    CREATE UNIQUE INDEX telemetry_credential_vectronic_idx1 ON telemetry_credential_vectronic(device_id);
+    CREATE UNIQUE INDEX telemetry_credential_vectronic_idx1 ON telemetry_credential_vectronic(device_key);
 
     ----------------------------------------------------------------------------------------
 
     CREATE TABLE survey_telemetry_vendor_credential (
       survey_telemetry_vendor_credential_id        integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       survey_telemetry_credential_attachment_id    integer            NOT NULL,
-      device_id                                    varchar(50)        NOT NULL,
       device_key                                   varchar            NOT NULL,
       create_date                                  timestamptz(6)     DEFAULT now() NOT NULL,
       create_user                                  integer            NOT NULL,
@@ -263,7 +261,6 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON TABLE  survey_telemetry_vendor_credential                                              IS 'A record of a telemetry device credential that is associated with a survey.';
     COMMENT ON COLUMN survey_telemetry_vendor_credential.survey_telemetry_vendor_credential_id        IS '(Generated) Surrogate primary key identifier.';
     COMMENT ON COLUMN survey_telemetry_vendor_credential.survey_telemetry_credential_attachment_id    IS 'Foreign key to the survey_telemetry_credential_attachment table.';
-    COMMENT ON COLUMN survey_telemetry_vendor_credential.device_id                                    IS 'Foreign key to the device table.';
     COMMENT ON COLUMN survey_telemetry_vendor_credential.device_key                                   IS 'The SIMS unique key for the device.';
     COMMENT ON COLUMN survey_telemetry_vendor_credential.create_date                                  IS 'The datetime the record was created.';
     COMMENT ON COLUMN survey_telemetry_vendor_credential.create_user                                  IS 'The id of the user who created the record as identified in the system user table.';
@@ -281,7 +278,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE INDEX survey_telemetry_vendor_credential_idx1 ON survey_telemetry_vendor_credential(survey_telemetry_credential_attachment_id);
 
     -- Add indexes
-    CREATE INDEX survey_telemetry_vendor_credential_idx2 ON survey_telemetry_vendor_credential(device_id);
+    CREATE INDEX survey_telemetry_vendor_credential_idx2 ON survey_telemetry_vendor_credential(device_key);
 
     ----------------------------------------------------------------------------------------
     -- Create audit/journal triggers

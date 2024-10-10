@@ -41,7 +41,7 @@ export async function seed(knex: Knex): Promise<void> {
         END IF;
 
         -- Assign the device.device_key to the deployment2.device_key
-        new.device_key := _device.device_key
+        new.device_key := _device.device_key;
 
         -- Return the new deployment2 record with the device_key value
         RETURN new;
