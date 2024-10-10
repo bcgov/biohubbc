@@ -16,6 +16,7 @@ export type BctwUpdateCollarRequest = {
   frequency_unit?: number | null;
 };
 
+// TODO: Is this deprecated??
 export class BctwDeviceService extends BctwService {
   /**
    * Get a list of all supported collar vendors.
