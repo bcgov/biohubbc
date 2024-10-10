@@ -212,6 +212,9 @@ export async function up(knex: Knex): Promise<void> {
     -- Add indexes
     CREATE UNIQUE INDEX telemetry_credential_lotek_idx1 ON telemetry_credential_lotek(device_id);
 
+    -- Add unique constraint on device_key and is_valid (only allow one credential per device to be valid)
+    ALTER TABLE telemetry_credential_lotek ADD CONSTRAINT telemetry_credential_lotek_uk1 UNIQUE (device_key, is_valid);
+
     ----------------------------------------------------------------------------------------
 
     CREATE TABLE telemetry_credential_vectronic (
