@@ -53,7 +53,6 @@ export const isGeoJsonPointFeature = (feature?: unknown): feature is Feature<Poi
  * @return {*}  {(SAMPLING_SITE_SPATIAL_TYPE | null)}
  */
 export const getSamplingSiteSpatialType = (type: string): SAMPLING_SITE_SPATIAL_TYPE | null => {
-
   if (['MultiLineString', 'LineString'].includes(type)) {
     return SAMPLING_SITE_SPATIAL_TYPE.TRANSECT;
   }

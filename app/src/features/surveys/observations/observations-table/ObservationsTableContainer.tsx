@@ -38,8 +38,7 @@ import {
   useCodesContext,
   useObservationsContext,
   useObservationsPageContext,
-  useObservationsTableContext,
-  useSurveyContext
+  useObservationsTableContext
 } from 'hooks/useContext';
 import {
   IGetBasicSampleLocation,
@@ -58,20 +57,13 @@ import {
 
 const ObservationsTableContainer = () => {
   const codesContext = useCodesContext();
-  const surveyContext = useSurveyContext();
   const observationsPageContext = useObservationsPageContext();
   const observationsTableContext = useObservationsTableContext();
   const observationsContext = useObservationsContext();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
-    surveyContext.sampleSiteDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [
-    codesContext.codesDataLoader,
-    surveyContext.projectId,
-    surveyContext.sampleSiteDataLoader,
-    surveyContext.surveyId
-  ]);
+  }, [codesContext.codesDataLoader]);
 
   // Collect sample sites
   const surveySampleSites: IGetBasicSampleLocation[] = useMemo(

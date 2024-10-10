@@ -20,7 +20,7 @@ export const SurveySampleSiteMapPopup = (props: ISurveySampleSiteMapPopupProps) 
 
   useEffect(() => {
     surveyDataLoader.load();
-  }, []);
+  }, [surveyDataLoader]);
 
   const sampleSite = surveyDataLoader.data;
 

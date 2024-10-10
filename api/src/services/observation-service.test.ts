@@ -1,12 +1,12 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { getMockDBConnection } from '../__mocks__/db';
 import {
   ObservationRecordWithSamplingAndSubcountData,
   ObservationRepository
 } from '../repositories/observation-repository/observation-repository';
 import * as file_utils from '../utils/file-utils';
+import { getMockDBConnection } from '../__mocks__/db';
 import { ObservationService } from './observation-service';
 import { SampleLocationService } from './sample-location-service';
 import { SubCountService } from './subcount-service';
@@ -110,7 +110,7 @@ describe('ObservationService', () => {
       expect(getSurveyObservationCountStub).to.be.calledOnceWith(surveyId);
       expect(getMeasurementTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
       expect(getEnvironmentTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
-      expect(getBasicSampleLocationsStub).to.be.calledOnceWith(surveyId)
+      expect(getBasicSampleLocationsStub).to.be.calledOnceWith(surveyId);
       expect(response).to.eql({
         surveyObservations: [
           {

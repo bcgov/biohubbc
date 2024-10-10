@@ -106,7 +106,7 @@ GET.apiDoc = {
                     },
                     geometry_type: {
                       type: 'string',
-                      maxLength: 50,
+                      maxLength: 50
                     },
                     sample_methods: {
                       type: 'array',

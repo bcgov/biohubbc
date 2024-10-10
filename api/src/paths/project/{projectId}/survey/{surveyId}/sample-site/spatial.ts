@@ -129,8 +129,6 @@ export function getSurveySampleSitesGeometry(): RequestHandler {
 
       const sampleSiteData = await sampleSiteService.getSampleLocationsGeometryBySurveyId(surveyId);
 
-      console.log(sampleSiteData);
-
       return res.status(200).json({ sampleSites: sampleSiteData });
     } catch (error) {
       defaultLog.error({ label: 'getSurveySampleSitesGeometry', message: 'error', error });

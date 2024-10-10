@@ -32,7 +32,7 @@ export const SamplingSiteListContent = (props: ISamplingSiteListContentProps) =>
 
   useEffect(() => {
     sampleSiteDataLoader.load();
-  }, []);
+  }, [sampleSiteDataLoader]);
 
   const sampleSite = sampleSiteDataLoader.data;
 

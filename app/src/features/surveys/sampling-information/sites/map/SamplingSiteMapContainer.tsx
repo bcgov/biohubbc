@@ -17,7 +17,7 @@ export const SamplingSiteMapContainer = () => {
 
   useEffect(() => {
     samplingSiteGeometryDataLoader.load();
-  }, []);
+  }, [samplingSiteGeometryDataLoader]);
 
   const staticLayers: IStaticLayer[] =
     samplingSiteGeometryDataLoader.data?.sampleSites.map((sampleSite) => ({

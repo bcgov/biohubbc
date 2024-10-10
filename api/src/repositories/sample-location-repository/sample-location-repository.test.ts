@@ -3,8 +3,8 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { getMockDBConnection } from '../../__mocks__/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
+import { getMockDBConnection } from '../../__mocks__/db';
 import { InsertSampleSiteRecord, SampleLocationRepository, UpdateSampleSiteRecord } from './sample-location-repository';
 
 chai.use(sinonChai);
@@ -77,6 +77,37 @@ describe('SampleLocationRepository', () => {
 
       const repo = new SampleLocationRepository(dbConnectionObj);
       const response = await repo.getSurveySampleLocationBySiteId(surveyId, surveySampleSiteId);
+
+      expect(response).to.eql(mockRows);
+    });
+  });
+
+  describe('getBasicSurveySampleLocationsBySiteIds', () => {
+    it('should successfully return sampling location records with basic data', async () => {
+      const mockRows = [{ survey_sample_site_id: 1, name: '', sample_methods: [] }];
+      const mockResponse = { rows: mockRows, rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ knex: () => mockResponse });
+
+      const surveySampleSiteIds = [1, 2];
+      const surveyId = 2;
+
+      const repo = new SampleLocationRepository(dbConnectionObj);
+      const response = await repo.getBasicSurveySampleLocationsBySiteIds(surveyId, surveySampleSiteIds);
+
+      expect(response).to.eql(mockRows);
+    });
+  });
+
+  describe('getSampleLocationsGeometryBySurveyId', () => {
+    it('should return sample site geometries', async () => {
+      const mockRows = [{ survey_sample_site_id: 1 }];
+      const mockResponse = { rows: mockRows, rowCount: 1 } as any as Promise<QueryResult<any>>;
+      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+
+      const surveyId = 2;
+
+      const repo = new SampleLocationRepository(dbConnectionObj);
+      const response = await repo.getSampleLocationsGeometryBySurveyId(surveyId);
 
       expect(response).to.eql(mockRows);
     });

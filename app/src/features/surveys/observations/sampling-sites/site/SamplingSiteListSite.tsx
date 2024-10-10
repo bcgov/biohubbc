@@ -123,7 +123,7 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
           pt: 0,
           pb: 1,
           pl: 1,
-          pr: 0,
+          pr: 0
         }}
       />
       <SamplingSiteListContent surveySampleSiteId={sampleSite.survey_sample_site_id} />

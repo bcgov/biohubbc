@@ -23,7 +23,7 @@ export const useSamplingSiteStaticLayer = (): IStaticLayer => {
 
   useEffect(() => {
     geometryDataLoader.load();
-  }, []);
+  }, [geometryDataLoader]);
 
   const samplingSites = geometryDataLoader.data?.sampleSites ?? [];
 
