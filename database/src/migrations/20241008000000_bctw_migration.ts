@@ -37,9 +37,9 @@ export async function up(knex: Knex): Promise<void> {
     );
 
     COMMENT ON TABLE  device                   IS 'A device of a telemetry (or similar) device on an animal.';
-    COMMENT ON COLUMN device.device_id         IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN device.device_id         IS '(Generated) Surrogate primary key identifier.';
     COMMENT ON COLUMN device.survey_id         IS 'Foreign key to the survey table.';
-    COMMENT ON COLUMN device.device_key        IS 'The SIMS unique key for the device.';
+    COMMENT ON COLUMN device.device_key        IS '(Generated) The SIMS unique key for the device.';
     COMMENT ON COLUMN device.serial            IS 'The serial number of the device.';
     COMMENT ON COLUMN device.device_make_id    IS 'Foreign key to the device_make table.';
     COMMENT ON COLUMN device.model             IS 'The device model.';
@@ -67,11 +67,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE INDEX device_idx2 ON device(device_make_id);
 
     -- Add indexes
-    CREATE INDEX device_idx3 ON device(device_id, device_key);
-
-    CREATE INDEX device_idx4 ON device(device_key);
-
-    CREATE INDEX device_idx5 ON device(serial);
+    CREATE INDEX device_idx3 ON device(device_key);
 
     ----------------------------------------------------------------------------------------
 
@@ -91,7 +87,9 @@ export async function up(knex: Knex): Promise<void> {
       update_date                     timestamptz(6),
       update_user                     integer,
       revision_count                  integer            DEFAULT 0 NOT NULL,
+      -- Check that the attachment_start is before attachment_end
       CONSTRAINT check_attachment_start_before_end CHECK (attachment_start <= attachment_end),
+      -- Check that for deployments of the same device_key, that the attachment dates do not overlap
       CONSTRAINT check_no_device_attachment_date_overlap EXCLUDE USING gist (
         device_key WITH =,
         tstzrange(attachment_start, attachment_end) WITH &&
@@ -100,11 +98,11 @@ export async function up(knex: Knex): Promise<void> {
     );
 
     COMMENT ON TABLE  deployment2                                 IS 'A deployment of a telemetry (or similar) device on an animal.';
-    COMMENT ON COLUMN deployment2.deployment2_id                  IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN deployment2.deployment2_id                  IS '(Generated) Surrogate primary key identifier.';
     COMMENT ON COLUMN deployment2.survey_id                       IS 'Foreign key to the survey table.';
     COMMENT ON COLUMN deployment2.critter_id                      IS 'Foreign key to the critter table.';
     COMMENT ON COLUMN deployment2.device_id                       IS 'Foreign key to the device table.';
-    COMMENT ON COLUMN deployment2.device_key                      IS 'The SIMS unique key for the device.';
+    COMMENT ON COLUMN deployment2.device_key                      IS '(Generated) The SIMS unique key for the device.';
     COMMENT ON COLUMN deployment2.attachment_start                IS 'The date the telemetry device was attached.';
     COMMENT ON COLUMN deployment2.attachment_end                  IS 'The date the telemetry device was removed.';
     COMMENT ON COLUMN deployment2.critterbase_start_capture_id    IS 'UUID of an external Critterbase capture record. The capture event during which the device was attached to the animal.';
@@ -128,21 +126,19 @@ export async function up(knex: Knex): Promise<void> {
       REFERENCES critter(critter_id);
 
     ALTER TABLE deployment2
-      ADD CONSTRAINT deployment2_fk3
-      FOREIGN KEY (device_id, device_key)
-      REFERENCES device(device_id, device_key);
+      ADD CONSTRAINT deployment2_fk2
+      FOREIGN KEY (device_id)
+      REFERENCES device(device_id);
 
     -- Add indexes for foreign keys
     CREATE INDEX deployment2_idx1 ON deployment2(survey_id);
 
     CREATE INDEX deployment2_idx2 ON deployment2(critter_id);
 
-    CREATE INDEX deployment2_idx3 ON deployment2(device_id, device_key);
+    CREATE INDEX deployment2_idx3 ON deployment2(device_id);
 
     -- Add indexes
-    -- Note: an index on device_id is already created as part of the composite key above, because its the first column
     CREATE INDEX deployment2_idx4 ON deployment2(device_key);
-
     ----------------------------------------------------------------------------------------
 
     CREATE TABLE telemetry_manual (
@@ -161,7 +157,7 @@ export async function up(knex: Knex): Promise<void> {
     );
 
     COMMENT ON TABLE  telemetry_manual                        IS 'A manually entered telemetry record.';
-    COMMENT ON COLUMN telemetry_manual.telemetry_manual_id    IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN telemetry_manual.telemetry_manual_id    IS '(Generated) Surrogate primary key identifier.';
     COMMENT ON COLUMN telemetry_manual.deployment2_id         IS 'Foreign key to the deployment table.';
     COMMENT ON COLUMN telemetry_manual.latitude               IS 'The latitude of the telemetry record, having ten points of total precision and 7 points of precision after the decimal.';
     COMMENT ON COLUMN telemetry_manual.longitude              IS 'The longitude of the telemetry record, having ten points of total precision and 7 points of precision after the decimal.';
@@ -177,8 +173,7 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE TABLE telemetry_credential_lotek (
       telemetry_credential_lotek_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-      device_id                        varchar(50)        NOT NULL,
-      device_key                       varchar            NOT NULL,
+      device_key                       varchar            GENERATED ALWAYS AS ('lotek:' || ndeviceid::text) STORED,
       ndeviceid                        integer            NOT NULL,
       strspecialid                     varchar(100),
       dtcreated                        timestamptz(6),
@@ -194,9 +189,9 @@ export async function up(knex: Knex): Promise<void> {
     );
 
     COMMENT ON TABLE  telemetry_credential_lotek                                  IS 'Lotek telemetry device credentials.';
-    COMMENT ON COLUMN telemetry_credential_lotek.telemetry_credential_lotek_id    IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN telemetry_credential_lotek.telemetry_credential_lotek_id    IS '(Generated) Surrogate primary key identifier.';
     COMMENT ON COLUMN telemetry_credential_lotek.device_id                        IS 'The SIMS unique key for the device.';
-    COMMENT ON COLUMN telemetry_credential_lotek.device_key                       IS 'The SIMS unique key for the device.';
+    COMMENT ON COLUMN telemetry_credential_lotek.device_key                       IS '(Generated) The SIMS unique key for the device.';
     COMMENT ON COLUMN telemetry_credential_lotek.ndeviceid                        IS 'The Lotek unique id for the device.';
     COMMENT ON COLUMN telemetry_credential_lotek.strspecialid                     IS 'The Lotek IMEI number.';
     COMMENT ON COLUMN telemetry_credential_lotek.strsatellite                     IS 'The Lotek satellite name.';
@@ -219,7 +214,7 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE TABLE telemetry_credential_vectronic (
       telemetry_credential_vectronic_id    integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-      device_key                           varchar            NOT NULL,
+      device_key                           varchar            GENERATED ALWAYS AS ('vectronic:' || ndeviceid::text) STORED,
       idcollar                             integer            NOT NULL,
       comtype                              varchar(50)        NOT NULL,
       idcom                                integer            NOT NULL,
@@ -234,8 +229,8 @@ export async function up(knex: Knex): Promise<void> {
     );
 
     COMMENT ON TABLE  telemetry_credential_lotek                                  IS 'Vectronic telemetry device credentials.';
-    COMMENT ON COLUMN telemetry_credential_lotek.telemetry_credential_lotek_id    IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN telemetry_credential_lotek.device_key                       IS 'The SIMS unique key for the device.';
+    COMMENT ON COLUMN telemetry_credential_lotek.telemetry_credential_lotek_id    IS '(Generated) Surrogate primary key identifier.';
+    COMMENT ON COLUMN telemetry_credential_lotek.device_key                       IS '(Generated) The SIMS unique key for the device.';
     COMMENT ON COLUMN telemetry_credential_lotek.idcollar                         IS 'The Vectronic unique id for the device.';
     COMMENT ON COLUMN telemetry_credential_lotek.comtype                          IS 'The Vectronic comtype field.';
     COMMENT ON COLUMN telemetry_credential_lotek.idcom                            IS 'The Vectronic idcom field.';
@@ -266,7 +261,7 @@ export async function up(knex: Knex): Promise<void> {
     );
 
     COMMENT ON TABLE  survey_telemetry_vendor_credential                                              IS 'A record of a telemetry device credential that is associated with a survey.';
-    COMMENT ON COLUMN survey_telemetry_vendor_credential.survey_telemetry_vendor_credential_id        IS 'System generated surrogate primary key identifier.';
+    COMMENT ON COLUMN survey_telemetry_vendor_credential.survey_telemetry_vendor_credential_id        IS '(Generated) Surrogate primary key identifier.';
     COMMENT ON COLUMN survey_telemetry_vendor_credential.survey_telemetry_credential_attachment_id    IS 'Foreign key to the survey_telemetry_credential_attachment table.';
     COMMENT ON COLUMN survey_telemetry_vendor_credential.device_id                                    IS 'Foreign key to the device table.';
     COMMENT ON COLUMN survey_telemetry_vendor_credential.device_key                                   IS 'The SIMS unique key for the device.';
