@@ -91,6 +91,11 @@ export async function up(knex: Knex): Promise<void> {
       update_date                     timestamptz(6),
       update_user                     integer,
       revision_count                  integer            DEFAULT 0 NOT NULL,
+      CONSTRAINT check_attachment_start_before_end CHECK (attachment_start <= attachment_end),
+      CONSTRAINT check_no_device_attachment_date_overlap EXCLUDE USING gist (
+        device_key WITH =,
+        tstzrange(attachment_start, attachment_end) WITH &&
+      ),
       CONSTRAINT deployment2_pk PRIMARY KEY (deployment2_id)
     );
 
