@@ -3,10 +3,10 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ObservationService } from '../../../../../../services/observation-service';
+import { SampleLocationService } from '../../../../../../services/sample-location-service';
 import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/sample-site/spatial');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -28,12 +28,12 @@ export const GET: Operation = [
       ]
     };
   }),
-  getSurveyObservationsGeometry()
+  getSurveysampleSitesGeometry()
 ];
 
 GET.apiDoc = {
-  description: 'Get all observations for the survey.',
-  tags: ['observation'],
+  description: 'Get spatial information for all sample sites in the survey.',
+  tags: ['survey'],
   security: [
     {
       Bearer: []
@@ -61,34 +61,23 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Survey Observations spatial get response.',
+      description: 'Survey sample sites spatial get response.',
       content: {
         'application/json': {
           schema: {
             type: 'object',
             additionalProperties: false,
             nullable: true,
-            required: ['supplementaryObservationData', 'surveyObservationsGeometry'],
+            required: ['surveysampleSitesGeometry'],
             properties: {
-              supplementaryObservationData: {
-                type: 'object',
-                additionalProperties: false,
-                required: ['observationCount'],
-                properties: {
-                  observationCount: {
-                    type: 'integer',
-                    minimum: 0
-                  }
-                }
-              },
-              surveyObservationsGeometry: {
+              surveySampleSitesGeometry: {
                 type: 'array',
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: ['survey_observation_id', 'geometry'],
+                  required: ['survey_sample_site_id', 'geometry'],
                   properties: {
-                    survey_observation_id: {
+                    survey_sample_site_id: {
                       type: 'integer'
                     },
                     geometry: {
@@ -121,29 +110,29 @@ GET.apiDoc = {
 };
 
 /**
- * Fetch all observations for a survey.
+ * Fetch geometry for all sampling sites in the survey
  *
  * @export
  * @return {*}  {RequestHandler}
  */
-export function getSurveyObservationsGeometry(): RequestHandler {
+export function getSurveysampleSitesGeometry(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
 
-    defaultLog.debug({ label: 'getSurveyObservationsGeometry', surveyId });
+    defaultLog.debug({ label: 'getSurveySampleSitesGeometry', surveyId });
 
     const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
-      const observationService = new ObservationService(connection);
+      const sampleSiteService = new SampleLocationService(connection);
 
-      const observationData = await observationService.getSurveyObservationsGeometryWithSupplementaryData(surveyId);
+      const sampleSiteData = await sampleSiteService.getSampleLocationsGeometryBySurveyId(surveyId);
 
-      return res.status(200).json(observationData);
+      return res.status(200).json(sampleSiteData);
     } catch (error) {
-      defaultLog.error({ label: 'getSurveyObservationsGeometry', message: 'error', error });
+      defaultLog.error({ label: 'getSurveySampleSitesGeometry', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -1,7 +1,7 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
-import { IGetSampleSiteResponse } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleSiteNonSpatialResponse } from 'interfaces/useSamplingSiteApi.interface';
 import { IGetSurveyAttachmentsResponse, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { IGetTechniquesResponse } from 'interfaces/useTechniqueApi.interface';
 import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
@@ -36,7 +36,7 @@ export interface ISurveyContext {
    * @type {DataLoader<[project_id: number, survey_id: number], IGetSampleSiteResponse, unknown>}
    * @memberof ISurveyContext
    */
-  sampleSiteDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSampleSiteResponse, unknown>;
+  sampleSiteDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSampleSiteNonSpatialResponse, unknown>;
 
   /**
    * The Data Loader used to load survey techniques
@@ -74,7 +74,11 @@ export interface ISurveyContext {
 export const SurveyContext = createContext<ISurveyContext>({
   surveyDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>,
   artifactDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>,
-  sampleSiteDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSampleSiteResponse, unknown>,
+  sampleSiteDataLoader: {} as DataLoader<
+    [project_id: number, survey_id: number],
+    IGetSampleSiteNonSpatialResponse,
+    unknown
+  >,
   techniqueDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetTechniquesResponse, unknown>,
   critterDataLoader: {} as DataLoader<[project_id: number, survey_id: number], ICritterSimpleResponse[], unknown>,
   projectId: -1,

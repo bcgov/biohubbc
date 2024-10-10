@@ -86,7 +86,7 @@ GET.apiDoc = {
                 items: {
                   type: 'object',
                   additionalProperties: false,
-                  required: ['survey_sample_site_id', 'survey_id', 'name', 'description', 'geojson'],
+                  required: ['survey_sample_site_id', 'survey_id', 'name', 'description', 'geojson_type'],
                   properties: {
                     survey_sample_site_id: {
                       type: 'integer',
@@ -104,8 +104,9 @@ GET.apiDoc = {
                       type: 'string',
                       maxLength: 250
                     },
-                    geojson: {
-                      ...(GeoJSONFeature as object)
+                    geojson_type: {
+                      type: 'string',
+                      maxLength: 50,
                     },
                     sample_methods: {
                       type: 'array',

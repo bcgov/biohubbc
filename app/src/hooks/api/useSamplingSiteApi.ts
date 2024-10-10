@@ -3,7 +3,9 @@ import {
   ICreateSamplingSiteRequest,
   IEditSampleSiteRequest,
   IGetSampleLocationDetails,
-  IGetSampleSiteResponse
+  IGetSampleSiteGeometry,
+  IGetSampleSiteGeometryResponse,
+  IGetSampleSiteNonSpatialResponse
 } from 'interfaces/useSamplingSiteApi.interface';
 
 /**
@@ -36,8 +38,21 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @return {*}  {Promise<void>}
    */
-  const getSampleSites = async (projectId: number, surveyId: number): Promise<IGetSampleSiteResponse> => {
+  const getSampleSites = async (projectId: number, surveyId: number): Promise<IGetSampleSiteNonSpatialResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/sample-site`);
+
+    return data;
+  };
+
+  /**
+   * Get Sample Sites
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<void>}
+   */
+  const getSampleSitesGeometry = async (projectId: number, surveyId: number): Promise<IGetSampleSiteGeometryResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/sample-site/spatial`);
 
     return data;
   };
@@ -109,6 +124,7 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     createSamplingSites,
     getSampleSites,
     getSampleSiteById,
+    getSampleSitesGeometry,
     editSampleSite,
     deleteSampleSite,
     deleteSampleSites

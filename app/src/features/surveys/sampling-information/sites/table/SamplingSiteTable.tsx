@@ -11,10 +11,9 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
@@ -23,13 +22,13 @@ export interface ISamplingSiteRowData {
   id: number;
   name: string;
   description: string;
-  geojson: Feature;
+  geojson_type: string;
   blocks: string[];
   stratums: string[];
 }
 
 interface ISamplingSiteTableProps {
-  sites: IGetSampleLocationDetails[];
+  sites: IGetSampleLocationNonSpatialDetails[];
   bulkActionSites: GridRowSelectionModel;
   setBulkActionSites: (selection: GridRowSelectionModel) => void;
 }
@@ -108,8 +107,8 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
   const rows: ISamplingSiteRowData[] = sites.map((site) => ({
     id: site.survey_sample_site_id,
     name: site.name,
+    geojson_type: site.geojson_type,
     description: site.description || '',
-    geojson: site.geojson,
     blocks: site.blocks.map((block) => block.name),
     stratums: site.stratums.map((stratum) => stratum.name)
   }));
@@ -127,7 +126,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
       renderCell: (params) => (
         <Box>
           <ColouredRectangleChip
-            label={getSamplingSiteSpatialType(params.row.geojson) ?? 'Unknown'}
+            label={getSamplingSiteSpatialType(params.row.geojson_type) ?? 'Unknown'}
             colour={blueGrey}
           />
         </Box>

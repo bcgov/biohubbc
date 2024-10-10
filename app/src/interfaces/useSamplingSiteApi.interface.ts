@@ -40,6 +40,24 @@ export interface IEditSampleSiteRequest {
   };
 }
 
+// Types without spatial information
+export interface IGetSampleSiteNonSpatialResponse {
+  sampleSites: IGetSampleLocationNonSpatialDetails[];
+  pagination: ApiPaginationResponseParams;
+}
+
+export interface IGetSampleLocationNonSpatialDetails {
+  survey_sample_site_id: number;
+  survey_id: number;
+  name: string;
+  description: string;
+  geojson_type: string;
+  sample_methods: IGetSampleMethodDetails[];
+  blocks: IGetSampleBlockDetails[];
+  stratums: IGetSampleStratumDetails[];
+}
+
+// Types with spatial information
 export interface IGetSampleSiteResponse {
   sampleSites: IGetSampleLocationDetails[];
   pagination: ApiPaginationResponseParams;
@@ -56,6 +74,15 @@ export interface IGetSampleLocationRecord {
   update_date: string | null;
   update_user: number | null;
   revision_count: number;
+}
+
+export interface IGetSampleSiteGeometryResponse {
+  sampleSites: IGetSampleSiteGeometry[];
+}
+
+export interface IGetSampleSiteGeometry {
+  survey_sample_site_id: number;
+  geojson: Feature;
 }
 
 export interface IGetSampleLocationDetails {

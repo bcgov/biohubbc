@@ -198,7 +198,7 @@ const SamplingSiteContainer = () => {
             </>
           }
           isLoadingFallbackDelay={100}>
-          <SamplingSiteMapContainer samplingSites={sampleSites} />
+          <SamplingSiteMapContainer />
 
           {/* Toggle buttons for changing between sites, methods, and periods */}
           <SamplingSiteTabs activeView={activeView} setActiveView={setActiveView} viewCounts={viewCounts} />

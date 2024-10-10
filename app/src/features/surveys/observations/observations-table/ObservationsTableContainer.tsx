@@ -41,7 +41,7 @@ import {
   useSurveyContext
 } from 'hooks/useContext';
 import {
-  IGetSampleLocationDetails,
+  IGetSampleLocationNonSpatialDetails,
   IGetSampleMethodDetails,
   IGetSamplePeriodRecord
 } from 'interfaces/useSamplingSiteApi.interface';
@@ -72,7 +72,7 @@ const ObservationsTableContainer = () => {
   ]);
 
   // Collect sample sites
-  const surveySampleSites: IGetSampleLocationDetails[] = useMemo(
+  const surveySampleSites: IGetSampleLocationNonSpatialDetails[] = useMemo(
     () => surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [],
     [surveyContext.sampleSiteDataLoader.data?.sampleSites]
   );

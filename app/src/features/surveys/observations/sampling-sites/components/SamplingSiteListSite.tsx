@@ -15,10 +15,10 @@ import { IStaticLayer } from 'components/map/components/StaticLayers';
 import { SamplingSiteListMethod } from 'features/surveys/observations/sampling-sites/components/SamplingSiteListMethod';
 import { SamplingStratumChips } from 'features/surveys/sampling-information/sites/edit/form/SamplingStratumChips';
 import SurveyMap from 'features/surveys/view/SurveyMap';
-import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 
 export interface ISamplingSiteListSiteProps {
-  sampleSite: IGetSampleLocationDetails;
+  sampleSite: IGetSampleLocationNonSpatialDetails;
   isChecked: boolean;
   handleSampleSiteMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, sample_site_id: number) => void;
   handleCheckboxChange: (sampleSiteId: number) => void;
@@ -60,6 +60,12 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
     <Accordion
       disableGutters
       square
+      slotProps={{
+        transition: {
+          mountOnEnter: true,
+          unmountOnExit: true
+        }
+      }}
       sx={{
         boxShadow: 'none',
         borderBottom: '1px solid' + grey[300],

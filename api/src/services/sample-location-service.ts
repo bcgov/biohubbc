@@ -4,6 +4,7 @@ import {
   InsertSampleSiteRecord,
   SampleLocationRecord,
   SampleLocationRepository,
+  SampleSiteGeometryRecord,
   SampleSiteRecord,
   UpdateSampleLocationRecord
 } from '../repositories/sample-location-repository';
@@ -66,6 +67,17 @@ export class SampleLocationService extends DBService {
    */
   async getSampleLocationsCountBySurveyId(surveyId: number): Promise<number> {
     return this.sampleLocationRepository.getSampleLocationsCountBySurveyId(surveyId);
+  }
+
+  /**
+   * Returns the geometry for all sampling locations in the Survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>}
+   * @memberof SampleLocationService
+   */
+  async getSampleLocationsGeometryBySurveyId(surveyId: number): Promise<SampleSiteGeometryRecord[]> {
+    return this.sampleLocationRepository.getSampleLocationsGeometryBySurveyId(surveyId);
   }
 
   /**

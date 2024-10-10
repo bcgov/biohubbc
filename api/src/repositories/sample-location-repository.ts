@@ -15,12 +15,12 @@ import { SampleStratumRecord, UpdateSampleStratumRecord } from './sample-stratum
  * An aggregate record that includes a single sample site, all of its child sample methods, and for each child sample
  * method, all of its child sample periods. Also includes any survey blocks or survey stratums that this site belongs to.
  */
-export const SampleLocationRecord = z.object({
+export const SampleLocationNonSpatialRecord = z.object({
   survey_sample_site_id: z.number(),
   survey_id: z.number(),
   name: z.string(),
   description: z.string().nullable(),
-  geojson: z.any(),
+  geojson_type: z.string(),
   sample_methods: z.array(
     SampleMethodRecord.pick({
       survey_sample_method_id: true,
@@ -73,13 +73,30 @@ export const SampleLocationRecord = z.object({
     })
   )
 });
+export type SampleLocationNonSpatialRecord = z.infer<typeof SampleLocationNonSpatialRecord>;
+
+/**
+ * A survey_sample_site geometry
+ */
+export const SampleLocationRecord = z.object({
+  survey_sample_site_id: z.number(),
+  geojson: z.any()
+});
 export type SampleLocationRecord = z.infer<typeof SampleLocationRecord>;
+
+/**
+ * A survey_sample_site geometry
+ */
+export const SampleSiteGeometryRecord = z.object({
+  survey_sample_site_id: z.number(),
+  geojson: z.any()
+});
+export type SampleSiteGeometryRecord = z.infer<typeof SampleSiteGeometryRecord>;
 
 /**
  * A survey_sample_site record.
  */
-export const SampleSiteRecord = z.object({
-  survey_sample_site_id: z.number(),
+export const SampleSiteRecord = SampleSiteGeometryRecord.extend({
   survey_id: z.number(),
   name: z.string(),
   description: z.string().nullable(),
@@ -133,13 +150,13 @@ export class SampleLocationRepository extends BaseRepository {
    * Gets a paginated set of Sample Locations for the given survey for a given Survey
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<SampleLocationRecord[]>}
+   * @return {*}  {Promise<SampleLocationNonSpatialRecord[]>}
    * @memberof SampleLocationRepository
    */
   async getSampleLocationsForSurveyId(
     surveyId: number,
     pagination?: ApiPaginationOptions
-  ): Promise<SampleLocationRecord[]> {
+  ): Promise<SampleLocationNonSpatialRecord[]> {
     const knex = getKnex();
     const queryBuilder = knex
       .queryBuilder()
@@ -246,7 +263,7 @@ export class SampleLocationRepository extends BaseRepository {
         'sss.survey_id',
         'sss.name',
         'sss.description',
-        'sss.geojson',
+        knex.raw(`sss.geojson->>'type' as geojson_type`),
         knex.raw(`
         COALESCE(wssm.sample_methods, '[]'::json) as sample_methods,
         COALESCE(wssb.blocks, '[]'::json) as blocks,
@@ -266,7 +283,7 @@ export class SampleLocationRepository extends BaseRepository {
       }
     }
 
-    const response = await this.connection.knex(queryBuilder, SampleLocationRecord);
+    const response = await this.connection.knex(queryBuilder, SampleLocationNonSpatialRecord);
 
     return response.rows;
   }
@@ -569,6 +586,31 @@ export class SampleLocationRepository extends BaseRepository {
     }
 
     return response.rows[0];
+  }
+
+  /**
+   * Gets geometry for sampling sites in the survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SampleSiteRecord>}
+   * @memberof SampleLocationRepository
+   */
+  async getSampleLocationsGeometryBySurveyId(surveyId: number): Promise<SampleSiteGeometryRecord[]> {
+    const sqlStatement = SQL`
+      SELECT 
+        survey_sample_site_id,
+        geojson
+      FROM 
+        survey_sample_site
+      AND
+        survey_id = ${surveyId}
+      RETURNING
+        *;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SampleSiteGeometryRecord);
+
+    return response.rows;
   }
 
   /**
