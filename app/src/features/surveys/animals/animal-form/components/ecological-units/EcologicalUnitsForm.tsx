@@ -49,7 +49,7 @@ export const EcologicalUnitsForm = () => {
                     formikCategoryFieldName={`ecological_units[${index}].collection_category_id`}
                     formikUnitFieldName={`ecological_units[${index}].collection_unit_id`}
                     ecologicalCategories={ecologicalUnitsDataLoader.data ?? []}
-                    filterUnitIds={values.ecological_units.map((unit) => unit.collection_unit_id)}
+                    filterCategoryIds={values.ecological_units.map((unit) => unit.collection_category_id)}
                     onDelete={() => arrayHelpers.remove(index)}
                   />
                 </Box>

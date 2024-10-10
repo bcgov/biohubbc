@@ -66,11 +66,9 @@ export const FocalSpeciesEcologicalUnitsForm = (props: ISelectedSpeciesProps) =>
               formikCategoryFieldName={`species.focal_species.[${index}].ecological_units[${ecologicalUnitIndex}].critterbase_collection_category_id`}
               formikUnitFieldName={`species.focal_species.[${index}].ecological_units[${ecologicalUnitIndex}].critterbase_collection_unit_id`}
               ecologicalCategories={ecologicalUnitsForSpecies}
-              filterUnitIds={
-                values.species.focal_species[index].ecological_units
-                  .filter((unit) => unit.critterbase_collection_unit_id)
-                  .map((unit) => unit.critterbase_collection_unit_id) as string[]
-              }
+              filterUnitIds={values.species.focal_species[index].ecological_units
+                .filter((unit) => unit.critterbase_collection_unit_id)
+                .map((unit) => unit.critterbase_collection_unit_id!)}
               onDelete={() => arrayHelpers.remove(ecologicalUnitIndex)}
             />
           ))}

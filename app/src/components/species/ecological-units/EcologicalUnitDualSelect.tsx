@@ -110,7 +110,10 @@ export const EcologicalUnitDualSelect = (props: IEcologicalUnitSelectProps) => {
         }))
         // Filter out units that are already selected (if included in filterUnitIds)
         .filter(
-          (unit) => (ecologicalUnitId && filterUnitIdsSet.has(ecologicalUnitId)) || !filterUnitIdsSet.has(unit.value)
+          (unit) =>
+            (ecologicalUnitId && !filterUnitIdsSet.has(ecologicalUnitId)) ||
+            !filterUnitIdsSet.has(unit.value) ||
+            unit.value === ecologicalUnitId
         )
     );
   }, [ecologicalCategoryId, ecologicalUnitId, ecologicalUnitOptionsLoader.data, props.filterUnitIds]);
