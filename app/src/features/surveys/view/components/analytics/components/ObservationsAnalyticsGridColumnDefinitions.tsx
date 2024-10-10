@@ -180,10 +180,13 @@ export const getSamplingPeriodColDef = (
       return null;
     }
 
+    const formattedDateRange = `${dayjs(period.start_date).format(DATE_FORMAT.ShortMediumDateFormat)} – ${dayjs(
+      period.end_date
+    ).format(DATE_FORMAT.ShortMediumDateFormat)}`;
+
     return (
-      <Typography>
-        {dayjs(period.start_date).format(DATE_FORMAT.ShortMediumDateFormat)}&ndash;
-        {dayjs(period.end_date).format(DATE_FORMAT.ShortMediumDateFormat)}
+      <Typography overflow="hidden" textOverflow="ellipsis" title={formattedDateRange}>
+        {formattedDateRange}
       </Typography>
     );
   }
@@ -221,6 +224,7 @@ export const getBasicGroupByColDefs = (groupByOptions: IGroupByOption[]): GridCo
   return groupByOptions.map((item) => ({
     field: item.field,
     headerName: item.label,
-    minWidth: 200
+    minWidth: 150,
+    flex: 1
   }));
 };

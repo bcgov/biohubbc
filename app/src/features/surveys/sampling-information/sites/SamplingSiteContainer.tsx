@@ -206,7 +206,7 @@ const SamplingSiteContainer = () => {
           <Divider flexItem />
 
           {/* Data tables */}
-          <Box p={2} flex="1 1 auto">
+          <Box p={2}>
             {activeView === SamplingSiteManageTableView.SITES && (
               <LoadingGuard
                 isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}

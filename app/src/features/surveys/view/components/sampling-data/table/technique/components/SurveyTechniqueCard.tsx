@@ -1,5 +1,5 @@
 import { PaperProps } from '@mui/material';
-import { blueGrey } from '@mui/material/colors';
+import blueGrey from '@mui/material/colors/blueGrey';
 import grey from '@mui/material/colors/grey';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
@@ -20,17 +20,16 @@ interface ISurveyTechniqueCardProps extends PaperProps {
 }
 
 /**
- * SurveyTechniqueCard displays detailed information about a survey technique,
- * including its attributes and attractants.
+ * Returns an expandable card with information about a survey technique, including its attributes and attractants
  *
- * @param {ISurveyTechniqueCardProps} props - The props for the component.
- * @returns {JSX.Element} The rendered component.
+ * @param {ISurveyTechniqueCardProps} props
+ * @returns {*}
  */
 export const SurveyTechniqueCard = ({
   technique,
   methodAttributes,
   ...accordionStandardCardProps
-}: ISurveyTechniqueCardProps): JSX.Element => {
+}: ISurveyTechniqueCardProps) => {
   const { codesDataLoader } = useCodesContext();
   const methodLookupName =
     codesDataLoader.data?.sample_methods.find((method) => method.id === technique.method_lookup_id)?.name ?? '';

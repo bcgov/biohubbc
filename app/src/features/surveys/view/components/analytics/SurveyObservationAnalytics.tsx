@@ -90,7 +90,7 @@ export const SurveyObservationAnalytics = () => {
     );
 
   return (
-    <Stack direction="row" height="100%" flex="1 1 auto">
+    <Stack direction="row" height="100%">
       <LoadingGuard
         isLoading={measurementDefinitionsDataLoader.isLoading || !measurementDefinitionsDataLoader.isReady}
         isLoadingFallback={
@@ -101,7 +101,7 @@ export const SurveyObservationAnalytics = () => {
         isLoadingFallbackDelay={100}>
         <Box minWidth="250px" display="flex" flexDirection="column">
           {/* Group by header */}
-          <Box>
+          <Box flex="0 0 auto">
             <Typography
               variant="body2"
               fontWeight={700}

@@ -14,8 +14,8 @@ interface TechniqueCardQuantitativeAttributesProps {
 /**
  * Renders quantitative attributes for a technique.
  *
- * @param {TechniqueCardQuantitativeAttributesProps} props - The props for the component.
- * @returns {*} The rendered component.
+ * @param {TechniqueCardQuantitativeAttributesProps} props
+ * @returns {*}
  */
 const TechniqueCardQuantitativeAttributes = ({
   quantitativeAttributes,

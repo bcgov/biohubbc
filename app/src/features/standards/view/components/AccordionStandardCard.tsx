@@ -4,15 +4,14 @@ import { Collapse } from '@mui/material';
 import Box from '@mui/material/Box';
 import Paper, { PaperProps } from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import React, { PropsWithChildren, useState } from 'react';
+import React, { PropsWithChildren, ReactElement, useState } from 'react';
 
 interface IAccordionStandardCardProps extends PaperProps {
   label: string | React.ReactElement;
   subtitle?: string | null;
-  ornament?: JSX.Element;
+  ornament?: ReactElement;
   colour: string;
   disableCollapse?: boolean;
-  startCollapsed?: boolean;
 }
 
 /**
@@ -21,9 +20,9 @@ interface IAccordionStandardCardProps extends PaperProps {
  * @returns
  */
 export const AccordionStandardCard = (props: PropsWithChildren<IAccordionStandardCardProps>) => {
-  const { label, subtitle, children, colour, ornament, disableCollapse, startCollapsed, ...paperProps } = props;
+  const { label, subtitle, children, colour, ornament, disableCollapse, ...paperProps } = props;
 
-  const [isCollapsed, setIsCollapsed] = useState(startCollapsed ?? true);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   const expandable = (children || subtitle) && !disableCollapse;
 

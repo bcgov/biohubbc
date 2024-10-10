@@ -99,7 +99,7 @@ export const SurveySamplingTabs = () => {
 
       <Divider flexItem orientation="vertical" />
 
-      <Box p={2} flex="1 1 auto" minHeight="250px">
+      <Box p={2} position="relative" flex="1 1 auto" minHeight="250px">
         {activeView === SurveySamplingView.TECHNIQUES && (
           <>
             <LoadingGuard
@@ -109,7 +109,6 @@ export const SurveySamplingTabs = () => {
               hasNoData={!techniquesCount}
               hasNoDataFallback={
                 <NoDataOverlay
-                  height="100%"
                   title="Add Techniques"
                   subtitle="Techniques describe how you collected species observations"
                   icon={mdiArrowTopRight}
@@ -130,7 +129,6 @@ export const SurveySamplingTabs = () => {
               hasNoData={!sampleSitesCount}
               hasNoDataFallback={
                 <NoDataOverlay
-                  height="100%"
                   title="Add Sampling Sites"
                   subtitle="Apply your techniques to sampling sites to show where you collected data"
                   icon={mdiArrowTopRight}
@@ -151,7 +149,6 @@ export const SurveySamplingTabs = () => {
               hasNoData={!samplePeriodsCount}
               hasNoDataFallback={
                 <NoDataOverlay
-                  height="100%"
                   title="Add Periods"
                   subtitle="Add periods when you create sampling sites to show when 
                   you collected species observations"
