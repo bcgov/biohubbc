@@ -7,9 +7,9 @@ import { Knex } from 'knex';
  *
  * Notes:
  *  1. Generating a UUID column for the primary key to prevent collisions with other telemetry sources.
- *  2. Column `timeid` (psuedo primary key) is deprecated and will be removed after the BCTW data migration.
- *  3. Generating the `device_key` as a combination of the device make and collar serial number.
- *  4. The `collarserialnumber` value was previously Nullable, but is now required to generate the device_id.
+ *  2. Generating the `device_key` as a combination of the device make and collar serial number.
+ *  3. The `collarserialnumber` value was previously Nullable, but is now required to generate the device_id.
+ *  4. Dropped deprecated `timeid` column
  *
  * TABLE: telemetry_vectronic
  *  Raw row identifier: `idposition`
@@ -69,10 +69,8 @@ export async function up(knex: Knex): Promise<void> {
       numsats                 varchar NULL,
       fixtime                 varchar NULL,
       activity                varchar NULL,
-      timeid                  text NOT NULL, -- DEPRECATED: Will be removed in future versions
 
       CONSTRAINT telemetry_ats_pk PRIMARY KEY (telemetry_ats_id),
-      CONSTRAINT telemetry_ats_timeid_un UNIQUE (timeid) -- DEPRECATED: Will be removed in future versions
     );
 
     ----------------------------------------------------------------------------------------
@@ -330,7 +328,7 @@ export async function up(knex: Knex): Promise<void> {
       update_user                                   integer,
       revision_count                                integer            DEFAULT 0 NOT NULL,
 
-      CONSTRAINT device_make_id_name_composite_pk PRIMARY KEY (device_make_id, name) -- Composite foreign key
+      CONSTRAINT device_make_id_pk PRIMARY KEY (device_make_id)
     );
 
     COMMENT ON TABLE device_make IS 'This table is intended to store options that users can select for their device make.';
@@ -355,9 +353,9 @@ export async function up(knex: Knex): Promise<void> {
     -- Add initial values to device make table
     ----------------------------------------------------------------------------------------
     INSERT INTO device_make (name, description, record_effective_date) VALUES
-    ('vectronic', 'VECTRONIC', 'NOW()'),
-    ('lotek', 'LOTEK', 'NOW()'),
-    ('ats', 'ATS', 'NOW()'),
+    ('vectronic', 'VECTRONIC - This label must never change. Raw telemetry table references this value.', 'NOW()'),
+    ('lotek', 'LOTEK - This label must never change. Raw telemetry table references this value.', 'NOW()'),
+    ('ats', 'ATS - This label must never change. Raw telemetry table references this value.', 'NOW()'),
     ('followit', 'FOLLOWIT', 'NOW()'),
     ('televit', 'TELEVIT', 'NOW()'),
     ('teleonics', 'TELEONICS', 'NOW()');
