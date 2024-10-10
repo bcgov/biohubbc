@@ -80,6 +80,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     CREATE INDEX telemetry_ats_idx1 ON telemetry_ats(device_key);
     CREATE UNIQUE INDEX telemetry_ats_idx2 ON telemetry_ats(date, collarserialnumber);
+    CREATE INDEX telemetry_ats_idx3 ON telemetry_ats(date);
 
     COMMENT ON TABLE telemetry_ats IS 'Raw telemetry data from the ATS API';
     COMMENT ON COLUMN telemetry_ats.telemetry_ats_id IS 'Primary key for telemetry_ats table';
@@ -178,6 +179,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     CREATE INDEX vectronics_collar_data_idx1 ON telemetry_vectronic(device_key);
     CREATE INDEX vectronics_collar_data_idx2 ON telemetry_vectronic USING gist (geom);
+    CREATE INDEX vectronics_collar_data_idx3 ON telemetry_vectronic(acquisitiontime);
 
     COMMENT ON TABLE telemetry_vectronic IS 'The raw telemetry data from Vectronics API';
     COMMENT ON COLUMN telemetry_vectronic.telemetry_vectronic_id IS 'Primary key for telemetry_vectronic table';
@@ -276,6 +278,8 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     CREATE INDEX telemetry_lotek_idx1 ON telemetry_lotek(device_key);
     CREATE INDEX telemetry_lotek_idx2 ON telemetry_lotek USING gist (geom);
+    CREATE INDEX telemetry_lotek_idx3 ON telemetry_lotek(uploadtimestamp);
+    CREATE UNIQUE INDEX telemetry_lotek_idx2 ON telemetry_lotek(uploadtimestamp, deviceid);
 
     COMMENT ON TABLE telemetry_lotek IS 'The raw telemetry data from Lotek';
     COMMENT ON COLUMN telemetry_lotek.telemetry_lotek_id IS 'Primary key for telemetry_lotek table';
