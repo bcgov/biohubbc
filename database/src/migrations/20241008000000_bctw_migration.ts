@@ -41,7 +41,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN device.survey_id         IS 'Foreign key to the survey table.';
     COMMENT ON COLUMN device.device_key        IS 'The SIMS unique key for the device.';
     COMMENT ON COLUMN device.serial            IS 'The serial number of the device.';
-    COMMENT ON COLUMN device.make              IS 'The device vendor.';
+    COMMENT ON COLUMN device.device_make_id    IS 'Foreign key to the device_make table.';
     COMMENT ON COLUMN device.model             IS 'The device model.';
     COMMENT ON COLUMN device.comment           IS 'A comment about the device.';
     COMMENT ON COLUMN device.create_date       IS 'The datetime the record was created.';
@@ -58,7 +58,7 @@ export async function up(knex: Knex): Promise<void> {
 
     ALTER TABLE device
       ADD CONSTRAINT device_fk2
-      FOREIGN KEY (make_id)
+      FOREIGN KEY (device_make_id)
       REFERENCES device_make(device_make_id);
 
     -- Add indexes for foreign keys
