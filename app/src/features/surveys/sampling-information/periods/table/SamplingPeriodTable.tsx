@@ -95,6 +95,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       columns={columns}
       checkboxSelection={false}
       disableRowSelectionOnClick
+      rowCount={periods.length}
       initialState={{
         pagination: {
           paginationModel: { page: 1, pageSize: 10 }

@@ -22,6 +22,8 @@ import SampleSiteFileUploadItemProgressBar from 'features/surveys/sampling-infor
 import SampleSiteFileUploadItemSubtext from 'features/surveys/sampling-information/sites/components/map/file-upload/SampleSiteFileUploadItemSubtext';
 import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { ICreateSamplingSiteRequest, ISurveySampleSite } from 'interfaces/useSamplingSiteApi.interface';
 import { DrawEvents, LatLngBoundsExpression } from 'leaflet';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
@@ -65,6 +67,8 @@ export interface ISamplingSiteMapControlProps {
 const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   const classes = useStyles();
 
+  const biohubApi = useBiohubApi();
+
   const surveyContext = useContext(SurveyContext);
   const [lastDrawn, setLastDrawn] = useState<null | number>(null);
 
@@ -74,7 +78,15 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
 
   const { values, errors, setFieldValue, setFieldError } = formikProps;
 
-  let numSites = surveyContext.sampleSiteDataLoader.data?.sampleSites.length ?? 0;
+  const samplingSiteDataLoader = useDataLoader(() =>
+    biohubApi.samplingSite.getSampleSitesGeometry(surveyContext.projectId, surveyContext.surveyId)
+  );
+
+  useEffect(() => {
+    samplingSiteDataLoader.load();
+  });
+
+  let numSites = samplingSiteDataLoader.data?.sampleSites.length ?? 0;
 
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
 

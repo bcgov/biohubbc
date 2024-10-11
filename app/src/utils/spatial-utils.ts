@@ -52,18 +52,16 @@ export const isGeoJsonPointFeature = (feature?: unknown): feature is Feature<Poi
  * @param {Feature} feature
  * @return {*}  {(SAMPLING_SITE_SPATIAL_TYPE | null)}
  */
-export const getSamplingSiteSpatialType = (feature: Feature): SAMPLING_SITE_SPATIAL_TYPE | null => {
-  const geometryType = feature.geometry.type;
-
-  if (['MultiLineString', 'LineString'].includes(geometryType)) {
+export const getSamplingSiteSpatialType = (type: string): SAMPLING_SITE_SPATIAL_TYPE | null => {
+  if (['MultiLineString', 'LineString'].includes(type)) {
     return SAMPLING_SITE_SPATIAL_TYPE.TRANSECT;
   }
 
-  if (['Point', 'MultiPoint'].includes(geometryType)) {
+  if (['Point', 'MultiPoint'].includes(type)) {
     return SAMPLING_SITE_SPATIAL_TYPE.POINT;
   }
 
-  if (['Polygon', 'MultiPolygon'].includes(geometryType)) {
+  if (['Polygon', 'MultiPolygon'].includes(type)) {
     return SAMPLING_SITE_SPATIAL_TYPE.AREA;
   }
 

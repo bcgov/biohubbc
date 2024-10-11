@@ -87,9 +87,6 @@ export const CreateSamplingSitePage = () => {
 
       await biohubApi.samplingSite.createSamplingSites(surveyContext.projectId, surveyContext.surveyId, data);
 
-      // Refresh the context, so the next page loads with the latest data
-      surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-
       // create complete, navigate back to observations page
       history.push(
         `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`,

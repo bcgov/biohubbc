@@ -64,7 +64,7 @@ describe('SurveyDetails', () => {
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
-            sampleSiteDataLoader: mockSampleSiteDataLoader,
+            
             techniqueDataLoader: mockTechniqueDataLoader,
             critterDataLoader: mockCritterDataLoader
           }}>
