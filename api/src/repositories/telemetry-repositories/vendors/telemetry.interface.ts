@@ -13,4 +13,4 @@ export const TelemetrySchema = z.object({
   temperature: z.number().nullable()
 });
 
-export type ITelemetry = z.infer<typeof TelemetrySchema>;
+export type Telemetry = z.infer<typeof TelemetrySchema>;

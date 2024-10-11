@@ -3,7 +3,7 @@ import { DeviceRecord } from '../../database-models/device';
 import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
 import { BaseRepository } from '../base-repository';
-import { CreateTelemetryDevice, UpdateTelemetryDevice } from './telemetry-device-repository.interface';
+import { CreateTelemetryDevice, DeviceWithMake, UpdateTelemetryDevice } from './telemetry-device-repository.interface';
 
 /**
  * A repository class for accessing telemetry device data.
@@ -20,16 +20,26 @@ export class TelemetryDeviceRepository extends BaseRepository {
    * @param {number[]} deviceIds
    * @returns {*} {Promise<DeviceRecord[]>}
    */
-  async getDevicesByIds(surveyId: number, deviceIds: number[]): Promise<DeviceRecord[]> {
+  async getDevicesByIds(surveyId: number, deviceIds: number[]): Promise<DeviceWithMake[]> {
     const knex = getKnex();
 
     const queryBuilder = knex
-      .select(['device_id', 'survey_id', 'device_key', 'serial', 'device_make_id', 'model', 'comment'])
-      .from('device')
+      .select([
+        'd.device_id',
+        'd.survey_id',
+        'd.device_key',
+        'd.serial',
+        'd.device_make_id',
+        'dm.name as device_make',
+        'd.model',
+        'd.comment'
+      ])
+      .from({ d: 'device' })
+      .join({ dm: 'device_make' }, 'd.device_make_id', 'dm.device_make_id')
       .whereIn('device_id', deviceIds)
       .andWhere('survey_id', surveyId);
 
-    const response = await this.connection.knex(queryBuilder, DeviceRecord);
+    const response = await this.connection.knex(queryBuilder, DeviceWithMake);
 
     return response.rows;
   }

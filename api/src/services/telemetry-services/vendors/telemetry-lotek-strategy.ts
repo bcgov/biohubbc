@@ -34,10 +34,12 @@ export class TelemetryLotekStrategy extends DBService implements ITelemetryStrat
    * @return {*} {Promise<ITelemetry[]>} - Normalized list of telemetry data
    */
   async getTelemetryByDeploymentId(surveyId: number, deploymentId: number) {
-    const validCredentials = await this.lotekRepository.getValidCredentialsForDeploymentIds(surveyId, [deploymentId]);
+    const validDeploymentIds = await this.lotekRepository.getDeploymentIdsWithValidLotekCredentials(surveyId, [
+      deploymentId
+    ]);
 
     // If no valid credentials are found, throw an error
-    if (validCredentials.length) {
+    if (validDeploymentIds.length) {
       throw new ApiGeneralError('Lotek credentials authorization failed', [
         'TelemetryLotekStrategy -> authorizeTelemetry'
       ]);
@@ -56,8 +58,10 @@ export class TelemetryLotekStrategy extends DBService implements ITelemetryStrat
    * @return {*} {Promise<ITelemetry[]>} - Normalized list of telemetry data
    */
   async getTelemetryByDeploymentIds(surveyId: number, deploymentIds: number[]) {
-    const validCredentials = await this.lotekRepository.getValidCredentialsForDeploymentIds(surveyId, deploymentIds);
-    const validDeploymentIds = validCredentials.map((credential) => credential.deployment_id);
+    const validDeploymentIds = await this.lotekRepository.getDeploymentIdsWithValidLotekCredentials(
+      surveyId,
+      deploymentIds
+    );
 
     // Get the telemetry data for the valid deployment IDs
     return this.lotekRepository.getLotekAndManualTelemetryByDeploymentIds(surveyId, validDeploymentIds);

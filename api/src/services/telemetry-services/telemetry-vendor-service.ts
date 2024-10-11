@@ -1,5 +1,6 @@
 import { IDBConnection } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
+import { Telemetry } from '../../repositories/telemetry-repositories/vendors/telemetry.interface';
 import { DBService } from '../db-service';
 import { TelemetryDeviceService } from './telemetry-device-service';
 import { ITelemetryStrategy, TelemetryVendor } from './telemetry.interface';
@@ -50,47 +51,64 @@ export class TelemetryVendorService extends DBService {
   }
 
   /**
-   * Parse the device key to get the device make and serial.
-   *
-   * @param {string} deviceKey - The device key ie: `lotek:12345`
-   * @return {*} {deviceMake: string, deviceSerial: string} - The device make and serial
-   */
-  _parseDeviceKey(deviceKey: string) {
-    const [deviceMake, deviceSerial] = deviceKey.split(':')[0];
-
-    return { deviceMake, deviceSerial };
-  }
-
-  /**
-   * Get vendor telemetry for a deployment.
-   * Allows control of which vendor to use. ie: lotek, manual, etc.
+   * Get telemetry for a deployment of a specific vendor. ie: `Lotek` or `Manual`
    *
    * Note: Vendors will also return manual telemetry data.
    *
    * @param {ITelemetryStrategy} vendor - The telemetry vendor strategy
    * @param {number} surveyId - The survey ID
    * @param {number} deploymentId - The deployment ID
-   * @return {*} {Promise<ITelemetry[]>} - The telemetry data
+   * @return {*} {Promise<Telemetry[]>} - The telemetry data
    */
-  async getVendorTelemetryForDeployment(vendor: ITelemetryStrategy, surveyId: number, deploymentId: number) {
+  async getVendorTelemetryForDeployment(
+    vendor: ITelemetryStrategy,
+    surveyId: number,
+    deploymentId: number
+  ): Promise<Telemetry[]> {
     return vendor.getTelemetryByDeploymentId(surveyId, deploymentId);
   }
 
   /**
    * Get telemetry for a deployment.
+   *
    * Note: Infers the vendor based on the device make.
    *
    * @param {number} surveyId - The survey ID
    * @param {number} deploymentId - The deployment ID
-   * @return {*} {Promise<ITelemetry[]>} - The telemetry data
+   * @return {*} {Promise<Telemetry[]>} - The telemetry data
    */
-  async getTelemetryForDeployment(surveyId: number, deploymentId: number) {
+  async getTelemetryForDeployment(surveyId: number, deploymentId: number): Promise<Telemetry[]> {
     const device = await this.deviceService.getDevice(surveyId, deploymentId);
 
-    const { deviceMake } = this._parseDeviceKey(device.device_key);
-    const vendor = this.createTelemetryStrategy(deviceMake as TelemetryVendor);
+    const vendor = this.createTelemetryStrategy(device.device_make as TelemetryVendor);
 
     return vendor.getTelemetryByDeploymentId(surveyId, deploymentId);
+  }
+
+  /**
+   * Get telemetry for a list of deployments.
+   *
+   * Note: Infers the vendors based on the device makes.
+   *
+   * @param {number} surveyId - The survey ID
+   * @param {number[]} deploymentIds - The deployment IDs
+   * @return {*} {Promise<Telemetry[]>} - The telemetry data
+   */
+  async getTelemetryForDeployments(surveyId: number, deploymentIds: number[]) {
+    const devices = await this.deviceService.getDevices(surveyId, deploymentIds);
+
+    // Get unique device makes
+    const uniqueDeviceMakes = [...new Set(devices.map((device) => device.device_make))];
+
+    // Get telemetry for each device make (vendor)
+    const telemetryPromises = uniqueDeviceMakes.map((deviceMake) => {
+      const vendor = this.createTelemetryStrategy(deviceMake as TelemetryVendor);
+      return vendor.getTelemetryByDeploymentIds(surveyId, deploymentIds);
+    });
+
+    const telemetry = await Promise.all(telemetryPromises);
+
+    return telemetry.flat();
   }
 
   //TODO: Implement the following methods once deployment service is complete.

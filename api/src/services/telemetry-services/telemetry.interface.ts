@@ -1,4 +1,4 @@
-import { ITelemetry } from '../../repositories/telemetry-repositories/vendors/telemetry-repository.interface';
+import { Telemetry } from '../../repositories/telemetry-repositories/vendors/telemetry.interface';
 
 export enum TelemetryVendor {
   /**
@@ -41,9 +41,9 @@ export interface ITelemetryStrategy {
    * @param {number} surveyId - Survey ID
    * @param {number} deploymentId - Deployment ID
    * @param {number} [limit] - Limit the number of telemetry records returned
-   * @return {*} {Promise<ITelemetry[]>} - Normalized list of telemetry data
+   * @return {*} {Promise<Telemetry[]>} - Normalized list of telemetry data
    */
-  getTelemetryByDeploymentId: (surveyId: number, deploymentId: number, limit?: number) => Promise<ITelemetry[]>;
+  getTelemetryByDeploymentId: (surveyId: number, deploymentId: number, limit?: number) => Promise<Telemetry[]>;
 
   /**
    * Get all telemetry data by a list of deployment IDs.
@@ -54,7 +54,7 @@ export interface ITelemetryStrategy {
    * @param {number} surveyId - Survey ID
    * @param {number[]} deploymentIds - List of deployment ID's
    * @param {number} [limit] - Limit the number of telemetry records returned
-   * @return {*} {Promise<ITelemetry[]>} - Normalized list of telemetry data
+   * @return {*} {Promise<Telemetry[]>} - Normalized list of telemetry data
    */
-  getTelemetryByDeploymentIds: (surveyId: number, deploymentIds: number[], limit?: number) => Promise<ITelemetry[]>;
+  getTelemetryByDeploymentIds: (surveyId: number, deploymentIds: number[], limit?: number) => Promise<Telemetry[]>;
 }
