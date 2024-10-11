@@ -22,7 +22,8 @@ import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { SamplingSiteListSite } from 'features/surveys/observations/sampling-sites/site/SamplingSiteListSite';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useObservationsPageContext, useSurveyContext } from 'hooks/useContext';
-import { useEffect, useState } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
@@ -40,25 +41,25 @@ export const SamplingSiteListContainer = () => {
   const observationsPageContext = useObservationsPageContext();
   const biohubApi = useBiohubApi();
 
+  const [sampleSiteAnchorEl, setSampleSiteAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  const [headerAnchorEl, setHeaderAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  const [selectedSampleSiteId, setSelectedSampleSiteId] = useState<number | undefined>();
+  const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
+
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: pageSizeOptions[0]
   });
   const [sortModel] = useState<GridSortModel>([]);
 
-  useEffect(() => {
-    surveyContext.sampleSiteDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [surveyContext.projectId, surveyContext.sampleSiteDataLoader, surveyContext.surveyId]);
+  const sampleSiteDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
+    biohubApi.samplingSite.getSampleSites(surveyContext.projectId, surveyContext.surveyId, pagination)
+  );
 
-  const [sampleSiteAnchorEl, setSampleSiteAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [headerAnchorEl, setHeaderAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [selectedSampleSiteId, setSelectedSampleSiteId] = useState<number | undefined>();
-  const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
-
-  // Refresh survey list when pagination or sort changes
-  useEffect(() => {
+  const pagination: ApiPaginationRequestOptions = useMemo(() => {
     const sort = firstOrNull(sortModel);
-    const pagination: ApiPaginationRequestOptions = {
+
+    return {
       limit: paginationModel.pageSize,
       sort: sort?.field || undefined,
       order: sort?.sort || undefined,
@@ -66,14 +67,17 @@ export const SamplingSiteListContainer = () => {
       // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
       page: paginationModel.page + 1
     };
+  }, [sortModel, paginationModel]);
 
-    surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId, pagination);
+  // Refresh survey list when pagination or sort changes
+  useEffect(() => {
+    sampleSiteDataLoader.refresh(pagination);
 
     // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sortModel, paginationModel]);
+  }, [pagination]);
 
-  const sampleSites = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
+  const sampleSites = sampleSiteDataLoader.data?.sampleSites ?? [];
 
   const handleSampleSiteMenuClick = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -97,7 +101,7 @@ export const SamplingSiteListContainer = () => {
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setSampleSiteAnchorEl(null);
-        surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+        sampleSiteDataLoader.refresh(pagination);
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
@@ -163,7 +167,7 @@ export const SamplingSiteListContainer = () => {
         dialogContext.setYesNoDialog({ open: false });
         setCheckboxSelectedIds([]);
         setHeaderAnchorEl(null);
-        surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+        sampleSiteDataLoader.refresh(pagination);
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
@@ -327,7 +331,7 @@ export const SamplingSiteListContainer = () => {
         <Divider flexItem />
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
           <Box position="absolute" top="0" right="0" bottom="0" left="0">
-            {surveyContext.sampleSiteDataLoader.isLoading ? (
+            {sampleSiteDataLoader.isLoading ? (
               <SkeletonList />
             ) : (
               <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
@@ -375,7 +379,7 @@ export const SamplingSiteListContainer = () => {
                     background: grey[100]
                   }}>
                   {/* Display text if the sample site data loader has no items in it */}
-                  {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length && (
+                  {!sampleSiteDataLoader.data?.sampleSites.length && (
                     <Stack
                       sx={{
                         background: grey[100]
@@ -394,7 +398,7 @@ export const SamplingSiteListContainer = () => {
                     </Stack>
                   )}
 
-                  {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
+                  {sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
                     return (
                       <SamplingSiteListSite
                         sampleSite={sampleSite}
@@ -415,7 +419,7 @@ export const SamplingSiteListContainer = () => {
                     onPageChange={handleChangePage}
                     rowsPerPageOptions={pageSizeOptions}
                     onRowsPerPageChange={handleChangeRowsPerPage}
-                    count={surveyContext.sampleSiteDataLoader.data?.pagination.total ?? 0}
+                    count={sampleSiteDataLoader.data?.pagination.total ?? 0}
                   />
                 </Paper>
               </Stack>

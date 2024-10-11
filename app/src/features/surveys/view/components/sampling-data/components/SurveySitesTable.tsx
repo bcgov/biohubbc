@@ -1,9 +1,10 @@
 import Box from '@mui/material/Box';
 import blueGrey from '@mui/material/colors/blueGrey';
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ISamplingSiteRowData } from 'features/surveys/sampling-information/sites/table/SamplingSiteTable';
+import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
 
 export interface ISurveySitesRowData {
@@ -16,11 +17,17 @@ export interface ISurveySitesRowData {
 }
 
 export interface ISurveySitesTableProps {
-  sites: ISurveySitesRowData[];
+  sites: IGetSampleLocationNonSpatialDetails[];
+  paginationModel: GridPaginationModel;
+  setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+  setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
+  sortModel: GridSortModel;
+  pageSizeOptions: number[];
+  handleRefresh: () => void;
 }
 
 export const SurveySitesTable = (props: ISurveySitesTableProps) => {
-  const { sites } = props;
+  const { sites, paginationModel, setPaginationModel, sortModel, setSortModel, pageSizeOptions, handleRefresh } = props;
 
   const columns: GridColDef<ISamplingSiteRowData>[] = [
     {
@@ -86,12 +93,16 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
       getRowId={(row) => row.id}
       columns={columns}
       disableRowSelectionOnClick
+      onPaginationModelChange={setPaginationModel}
+      onSortModelChange={setSortModel}
+      sortModel={sortModel}
+      paginationModel={paginationModel}
       initialState={{
         pagination: {
-          paginationModel: { page: 1, pageSize: 10 }
+          paginationModel
         }
       }}
-      pageSizeOptions={[10, 25, 50]}
+      pageSizeOptions={pageSizeOptions}
     />
   );
 };

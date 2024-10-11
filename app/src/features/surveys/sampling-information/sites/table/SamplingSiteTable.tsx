@@ -8,7 +8,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -31,6 +31,12 @@ interface ISamplingSiteTableProps {
   sites: IGetSampleLocationNonSpatialDetails[];
   bulkActionSites: GridRowSelectionModel;
   setBulkActionSites: (selection: GridRowSelectionModel) => void;
+  paginationModel: GridPaginationModel;
+  setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+  setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
+  sortModel: GridSortModel;
+  pageSizeOptions: number[];
+  handleRefresh: () => void;
 }
 
 /**
@@ -40,7 +46,17 @@ interface ISamplingSiteTableProps {
  * @returns {*}
  */
 export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
-  const { sites, bulkActionSites, setBulkActionSites } = props;
+  const {
+    sites,
+    bulkActionSites,
+    setBulkActionSites,
+    handleRefresh,
+    paginationModel,
+    setPaginationModel,
+    sortModel,
+    setSortModel,
+    pageSizeOptions
+  } = props;
 
   const biohubApi = useBiohubApi();
   const surveyContext = useSurveyContext();
@@ -59,7 +75,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setActionMenuAnchorEl(null);
-        surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+        handleRefresh();
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
@@ -242,13 +258,17 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
         columns={columns}
         rowSelectionModel={bulkActionSites}
         onRowSelectionModelChange={setBulkActionSites}
+        onPaginationModelChange={setPaginationModel}
+        onSortModelChange={setSortModel}
         checkboxSelection
+        sortModel={sortModel}
+        paginationModel={paginationModel}
         initialState={{
           pagination: {
-            paginationModel: { page: 1, pageSize: 10 }
+            paginationModel
           }
         }}
-        pageSizeOptions={[10, 25, 50]}
+        pageSizeOptions={pageSizeOptions}
       />
     </>
   );

@@ -128,15 +128,11 @@ export const EditSamplingSitePage = () => {
         .then(() => {
           setIsSubmitting(false);
 
-          // Refresh the context, so the next page loads with the latest data
-          surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-
           // create complete, navigate back to observations page
           history.push(
             `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`,
             SKIP_CONFIRMATION_DIALOG
           );
-          surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
         })
         .catch((error: any) => {
           dialogContext.setYesNoDialog({ open: false });

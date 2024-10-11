@@ -5,6 +5,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IObservationCountByGroup } from 'interfaces/useAnalyticsApi.interface';
+import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect, useMemo } from 'react';
 import {
   getBasicGroupByColDefs,
@@ -96,10 +97,9 @@ export const ObservationAnalyticsDataTableContainer = (props: IObservationAnalyt
     [analyticsDataLoader?.data]
   );
 
-  const sampleSites = useMemo(
-    () => surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [],
-    [surveyContext.sampleSiteDataLoader.data?.sampleSites]
-  );
+  // TODO: Include sampling information in the analytics response / otherwise get sampling information,
+  // which is now more complicated because sample sites are paginated.
+  const sampleSites: IGetSampleLocationNonSpatialDetails[] = [];
 
   const allGroupByColumns = useMemo(
     () => [...groupByColumns, ...groupByQualitativeMeasurements, ...groupByQuantitativeMeasurements],
