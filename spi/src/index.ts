@@ -13,6 +13,7 @@ import { transformSurveys } from './transformations/survey';
 import { transformUsers } from './transformations/user';
 import { transformWildlifeObservations } from './transformations/wildlife_observations_1';
 import { truncateTables } from './utils/truncate-tables';
+import { transformSurveyParticipants } from './transformations/survey_participation';
 
 let connection: IDBConnection; // Declare connection variable at the module level
 
@@ -50,6 +51,8 @@ async function main() {
 
     // STEP 4. Transforms SPI Surveys into SIMS Surveys
     await transformSurveys(connection);
+
+    await transformSurveyParticipants(connection);
 
     // STEP 5. Transforms SPI Permits into SIMS Permits
     await transformPermits(connection);
