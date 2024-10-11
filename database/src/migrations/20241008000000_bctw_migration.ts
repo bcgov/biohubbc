@@ -24,7 +24,7 @@ export async function up(knex: Knex): Promise<void> {
       device_id         integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       survey_id         integer            NOT NULL,
       device_key        varchar            NOT NULL,
-      serial            integer            NOT NULL,
+      serial            varchar            NOT NULL,
       device_make_id    integer            NOT NULL,
       model             varchar(100),
       comment           varchar(250),
@@ -40,7 +40,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN device.device_id         IS '(Generated) Surrogate primary key identifier.';
     COMMENT ON COLUMN device.survey_id         IS 'Foreign key to the survey table.';
     COMMENT ON COLUMN device.device_key        IS '(Generated) The SIMS unique key for the device.';
-    COMMENT ON COLUMN device.serial            IS 'The serial number of the device.';
+    COMMENT ON COLUMN device.serial            IS 'The serial identifier of the device.';
     COMMENT ON COLUMN device.device_make_id    IS 'Foreign key to the device_make table.';
     COMMENT ON COLUMN device.model             IS 'The device model.';
     COMMENT ON COLUMN device.comment           IS 'A comment about the device.';
@@ -60,6 +60,9 @@ export async function up(knex: Knex): Promise<void> {
       ADD CONSTRAINT device_fk2
       FOREIGN KEY (device_make_id)
       REFERENCES device_make(device_make_id);
+
+  -- Add unique constraints
+    ALTER TABLE device ADD CONSTRAINT device_uk1 UNIQUE (survey_id, serial, device_make_id);
 
     -- Add indexes for foreign keys
     CREATE INDEX device_idx1 ON device(survey_id);
