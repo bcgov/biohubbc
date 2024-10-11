@@ -202,7 +202,6 @@ export const SamplingSiteTableContainer = () => {
               paginationModel={paginationModel}
               pageSizeOptions={pageSizeOptions}
               sortModel={sortModel}
-              handleRefresh={() => {}}
             />
           </LoadingGuard>
         )}

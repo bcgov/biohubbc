@@ -36,7 +36,6 @@ interface ISamplingSiteTableProps {
   setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
   sortModel: GridSortModel;
   pageSizeOptions: number[];
-  handleRefresh: () => void;
 }
 
 /**
@@ -50,7 +49,6 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
     sites,
     bulkActionSites,
     setBulkActionSites,
-    handleRefresh,
     paginationModel,
     setPaginationModel,
     sortModel,
@@ -75,7 +73,6 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setActionMenuAnchorEl(null);
-        handleRefresh();
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });

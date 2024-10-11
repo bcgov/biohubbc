@@ -7,6 +7,8 @@ import { ISamplingSiteRowData } from 'features/surveys/sampling-information/site
 import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
 
+const pageSizeOptions = [10, 25, 50];
+
 export interface ISurveySitesRowData {
   id: number;
   name: string;
@@ -22,12 +24,19 @@ export interface ISurveySitesTableProps {
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
   sortModel: GridSortModel;
-  pageSizeOptions: number[];
-  handleRefresh: () => void;
 }
 
 export const SurveySitesTable = (props: ISurveySitesTableProps) => {
-  const { sites, paginationModel, setPaginationModel, sortModel, setSortModel, pageSizeOptions, handleRefresh } = props;
+  const { sites, paginationModel, setPaginationModel, sortModel, setSortModel } = props;
+
+  const rows: ISamplingSiteRowData[] = sites.map((site) => ({
+    id: site.survey_sample_site_id,
+    name: site.name,
+    geometry_type: site.geometry_type,
+    description: site.description || '',
+    blocks: site.blocks.map((block) => block.name),
+    stratums: site.stratums.map((stratum) => stratum.name)
+  }));
 
   const columns: GridColDef<ISamplingSiteRowData>[] = [
     {
@@ -89,7 +98,7 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
       rowSelection={false}
       autoHeight
       getRowHeight={() => 'auto'}
-      rows={sites}
+      rows={rows}
       getRowId={(row) => row.id}
       columns={columns}
       disableRowSelectionOnClick
