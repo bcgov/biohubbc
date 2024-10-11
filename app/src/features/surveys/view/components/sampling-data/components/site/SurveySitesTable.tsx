@@ -24,10 +24,11 @@ export interface ISurveySitesTableProps {
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
   sortModel: GridSortModel;
+  rowCount: number;
 }
 
 export const SurveySitesTable = (props: ISurveySitesTableProps) => {
-  const { sites, paginationModel, setPaginationModel, sortModel, setSortModel } = props;
+  const { sites, paginationModel, setPaginationModel, sortModel, setSortModel, rowCount } = props;
 
   const rows: ISamplingSiteRowData[] = sites.map((site) => ({
     id: site.survey_sample_site_id,
@@ -96,7 +97,7 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
     <StyledDataGrid
       noRowsMessage={'No Sites'}
       rowSelection={false}
-      autoHeight
+      autoHeight={false}
       getRowHeight={() => 'auto'}
       rows={rows}
       getRowId={(row) => row.id}
@@ -106,6 +107,9 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
       onSortModelChange={setSortModel}
       sortModel={sortModel}
       paginationModel={paginationModel}
+      paginationMode="server"
+      sortingMode="server"
+      rowCount={rowCount}
       initialState={{
         pagination: {
           paginationModel

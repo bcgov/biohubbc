@@ -221,7 +221,7 @@ export const SamplingSiteListContainer = () => {
     });
   };
 
-  const samplingSiteCount = sampleSites.length ?? 0;
+  const samplingSiteCount = useMemo(() => sampleSiteDataLoader.data?.pagination.total ?? 0, [sampleSites]);
 
   return (
     <>
@@ -330,102 +330,98 @@ export const SamplingSiteListContainer = () => {
         </Toolbar>
         <Divider flexItem />
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-          <Box position="absolute" top="0" right="0" bottom="0" left="0">
-            {sampleSiteDataLoader.isLoading ? (
-              <SkeletonList />
-            ) : (
-              <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
-                <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
-                  <FormGroup>
-                    <FormControlLabel
-                      label={
-                        <Typography
-                          variant="body2"
-                          component="span"
-                          color="textSecondary"
-                          fontWeight={700}
-                          sx={{ textTransform: 'uppercase' }}>
-                          Select All
-                        </Typography>
+          <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
+            <FormGroup>
+              <FormControlLabel
+                label={
+                  <Typography
+                    variant="body2"
+                    component="span"
+                    color="textSecondary"
+                    fontWeight={700}
+                    sx={{ textTransform: 'uppercase' }}>
+                    Select All
+                  </Typography>
+                }
+                control={
+                  <Checkbox
+                    sx={{
+                      mr: 0.75
+                    }}
+                    checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === samplingSiteCount}
+                    indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount}
+                    onClick={() => {
+                      if (checkboxSelectedIds.length === samplingSiteCount) {
+                        setCheckboxSelectedIds([]);
+                        return;
                       }
-                      control={
-                        <Checkbox
-                          sx={{
-                            mr: 0.75
-                          }}
-                          checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === samplingSiteCount}
-                          indeterminate={
-                            checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount
-                          }
-                          onClick={() => {
-                            if (checkboxSelectedIds.length === samplingSiteCount) {
-                              setCheckboxSelectedIds([]);
-                              return;
-                            }
 
-                            const sampleSiteIds = sampleSites.map((sampleSite) => sampleSite.survey_sample_site_id);
-                            setCheckboxSelectedIds(sampleSiteIds);
-                          }}
-                          inputProps={{ 'aria-label': 'controlled' }}
-                        />
-                      }
-                    />
-                  </FormGroup>
-                </Box>
-                <Divider flexItem></Divider>
-                <Box
-                  flex="1 1 auto"
-                  sx={{
-                    background: grey[100]
-                  }}>
-                  {/* Display text if the sample site data loader has no items in it */}
-                  {!sampleSiteDataLoader.data?.sampleSites.length && (
-                    <Stack
-                      sx={{
-                        background: grey[100]
-                      }}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      flex="1 1 auto"
-                      position="absolute"
-                      top={0}
-                      right={0}
-                      left={0}
-                      bottom={0}
-                      height="100%">
-                      <Typography variant="body2">No Sampling Sites</Typography>
-                    </Stack>
-                  )}
-
-                  {sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
-                    return (
-                      <SamplingSiteListSite
-                        sampleSite={sampleSite}
-                        isChecked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
-                        handleSampleSiteMenuClick={handleSampleSiteMenuClick}
-                        handleCheckboxChange={handleCheckboxChange}
-                        key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
-                      />
-                    );
-                  })}
-                </Box>
-                {/* Pagination control */}
-                <Paper square sx={{ position: 'sticky', bottom: 0, marginTop: '-1px' }}>
-                  <Divider flexItem />
-                  <TablePagination
-                    rowsPerPage={paginationModel.pageSize}
-                    page={paginationModel.page}
-                    onPageChange={handleChangePage}
-                    rowsPerPageOptions={pageSizeOptions}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                    count={sampleSiteDataLoader.data?.pagination.total ?? 0}
+                      const sampleSiteIds = sampleSites.map((sampleSite) => sampleSite.survey_sample_site_id);
+                      setCheckboxSelectedIds(sampleSiteIds);
+                    }}
+                    inputProps={{ 'aria-label': 'controlled' }}
                   />
-                </Paper>
-              </Stack>
-            )}
+                }
+              />
+            </FormGroup>
           </Box>
+          {sampleSiteDataLoader.isLoading ? (
+            <SkeletonList />
+          ) : (
+            <Stack height="100%" width="100%" position="absolute" sx={{ overflowY: 'auto' }}>
+              <Divider flexItem></Divider>
+              <Box
+                flex="1 1 auto"
+                sx={{
+                  background: grey[100]
+                }}>
+                {/* Display text if the sample site data loader has no items in it */}
+                {!sampleSiteDataLoader.data?.sampleSites.length && (
+                  <Stack
+                    sx={{
+                      background: grey[100]
+                    }}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    flex="1 1 auto"
+                    position="absolute"
+                    top={0}
+                    right={0}
+                    left={0}
+                    bottom={0}
+                    height="100%">
+                    <Typography variant="body2">No Sampling Sites</Typography>
+                  </Stack>
+                )}
+
+                {sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
+                  return (
+                    <SamplingSiteListSite
+                      sampleSite={sampleSite}
+                      isChecked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
+                      handleSampleSiteMenuClick={handleSampleSiteMenuClick}
+                      handleCheckboxChange={handleCheckboxChange}
+                      key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
+                    />
+                  );
+                })}
+              </Box>
+            </Stack>
+          )}
         </Box>
+        {/* Pagination control */}
+        <Paper square sx={{ bottom: 0, marginTop: '-1px', width: '100%', zIndex: 99 }}>
+          <Divider flexItem />
+          <TablePagination
+            rowsPerPage={paginationModel.pageSize}
+            page={paginationModel.page}
+            onPageChange={handleChangePage}
+            rowsPerPageOptions={pageSizeOptions}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            count={sampleSiteDataLoader.data?.pagination.total ?? 0}
+          />
+        </Paper>
       </Paper>
     </>
   );

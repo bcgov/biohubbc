@@ -36,6 +36,7 @@ interface ISamplingSiteTableProps {
   setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
   sortModel: GridSortModel;
   pageSizeOptions: number[];
+  rowCount: number;
 }
 
 /**
@@ -53,7 +54,8 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
     setPaginationModel,
     sortModel,
     setSortModel,
-    pageSizeOptions
+    pageSizeOptions,
+    rowCount
   } = props;
 
   const biohubApi = useBiohubApi();
@@ -247,7 +249,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
 
       {/* DATA TABLE */}
       <StyledDataGrid
-        autoHeight
+        autoHeight={false}
         getRowHeight={() => 'auto'}
         disableColumnMenu
         rows={rows}
@@ -255,11 +257,14 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
         columns={columns}
         rowSelectionModel={bulkActionSites}
         onRowSelectionModelChange={setBulkActionSites}
-        onPaginationModelChange={setPaginationModel}
-        onSortModelChange={setSortModel}
         checkboxSelection
+        rowCount={rowCount}
+        paginationMode="server"
+        sortingMode="server"
         sortModel={sortModel}
         paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        onSortModelChange={setSortModel}
         initialState={{
           pagination: {
             paginationModel

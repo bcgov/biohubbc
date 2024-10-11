@@ -3,7 +3,6 @@ import { Icon } from '@mdi/react';
 import Button from '@mui/material/Button';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import Toolbar from '@mui/material/Toolbar';
 import { SetStateAction } from 'react';
 
 export enum SamplingSiteManageTableView {
@@ -44,12 +43,13 @@ export const SamplingSiteTableView = (props: ISamplingSiteTableViewProps) => {
   };
 
   return (
-    <Toolbar>
+    <>
       <ToggleButtonGroup
         value={activeView}
         onChange={updateDatasetView}
         exclusive
         sx={{
+          flex: '1 1 auto',
           display: 'flex',
           gap: 1,
           '& Button': {
@@ -68,6 +68,6 @@ export const SamplingSiteTableView = (props: ISamplingSiteTableViewProps) => {
           </ToggleButton>
         ))}
       </ToggleButtonGroup>
-    </Toolbar>
+    </>
   );
 };

@@ -4,7 +4,6 @@ import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { SamplingSiteMapContainer } from 'features/surveys/sampling-information/sites/map/SamplingSiteMapContainer';
 import { useSurveyContext } from 'hooks/useContext';
 import { Link as RouterLink } from 'react-router-dom';
 import { SamplingSiteTableContainer } from './table/SamplingSiteTableContainer';
@@ -37,8 +36,8 @@ const SamplingSiteContainer = () => {
 
       <Divider flexItem />
 
-      <SamplingSiteMapContainer />
-      
+      {/* <SamplingSiteMapContainer /> */}
+
       <SamplingSiteTableContainer />
     </>
   );

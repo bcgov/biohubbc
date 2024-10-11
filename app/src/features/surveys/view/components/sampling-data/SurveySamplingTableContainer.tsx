@@ -12,6 +12,7 @@ import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import { SurveyPeriodsTable } from './components/period/SurveyPeriodsTable';
 import { SurveySitesTable } from './components/site/SurveySitesTable';
+import { SurveySamplingHeader } from './components/SurveySamplingHeader';
 import { SurveyTechniquesTable } from './components/technique/SurveyTechniquesTable';
 import { SurveySamplingViewTabs } from './components/view/SurveySamplingView';
 
@@ -97,10 +98,10 @@ export const SurveySamplingTableContainer = () => {
 
   return (
     <>
-      <SurveySamplingViewTabs activeView={activeView} setActiveView={setActiveView} />
-
+      <SurveySamplingHeader />
       <Divider />
-
+      <SurveySamplingViewTabs activeView={activeView} setActiveView={setActiveView} />
+      <Divider />
       <Box px={2} position="relative">
         {activeView === SurveySamplingView.TECHNIQUES && (
           <LoadingGuard
@@ -110,7 +111,7 @@ export const SurveySamplingTableContainer = () => {
             hasNoData={!techniques.length}
             hasNoDataFallback={
               <NoDataOverlay
-                height="250px"
+                height="100%"
                 title="Add Techniques"
                 subtitle="Techniques describe how you collected species observations"
               />
@@ -121,33 +122,38 @@ export const SurveySamplingTableContainer = () => {
               setPaginationModel={setTechniquesPaginationModel}
               sortModel={techniquesSortModel}
               setSortModel={setTechniquesSortModel}
+              rowCount={surveyContext.techniqueDataLoader.data?.pagination.total ?? 0}
             />
           </LoadingGuard>
         )}
 
         {activeView === SurveySamplingView.SITES && (
-          <LoadingGuard
-            isLoading={samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady}
-            isLoadingFallback={<SkeletonTable />}
-            isLoadingFallbackDelay={100}
-            hasNoData={!sampleSites.length}
-            hasNoDataFallback={
-              <NoDataOverlay
-                height="200px"
-                title="Add Sampling Sites"
-                subtitle="Apply your techniques to sampling sites to show where you collected data"
+          <Box height="400px">
+            <LoadingGuard
+              isLoading={samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady}
+              isLoadingFallback={<SkeletonTable />}
+              isLoadingFallbackDelay={100}
+              hasNoData={!sampleSites.length}
+              hasNoDataFallback={
+                <NoDataOverlay
+                  height="200px"
+                  title="Add Sampling Sites"
+                  subtitle="Apply your techniques to sampling sites to show where you collected data"
+                />
+              }>
+              <SurveySitesTable
+                sites={sampleSites}
+                paginationModel={sitesPaginationModel}
+                setPaginationModel={setSitesPaginationModel}
+                sortModel={sitesSortModel}
+                setSortModel={setSitesSortModel}
+                rowCount={samplingSitesDataLoader.data?.pagination.total ?? 0}
               />
-            }>
-            <SurveySitesTable
-              sites={sampleSites}
-              paginationModel={sitesPaginationModel}
-              setPaginationModel={setSitesPaginationModel}
-              sortModel={sitesSortModel}
-              setSortModel={setSitesSortModel}
-            />
-          </LoadingGuard>
+            </LoadingGuard>
+          </Box>
         )}
 
+        {/* TODO: Add pagination to the survey periods request */}
         {activeView === SurveySamplingView.PERIODS && (
           <SurveyPeriodsTable
             periods={samplePeriods}

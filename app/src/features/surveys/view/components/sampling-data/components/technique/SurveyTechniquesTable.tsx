@@ -26,10 +26,11 @@ export interface ISurveyTechniquesTableProps {
   sortModel: GridSortModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
+  rowCount: number;
 }
 
 export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
-  const { techniques, paginationModel, setPaginationModel, sortModel, setSortModel } = props;
+  const { techniques, paginationModel, setPaginationModel, sortModel, setSortModel, rowCount } = props;
 
   const codesContext = useCodesContext();
 
@@ -126,6 +127,10 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
       onSortModelChange={setSortModel}
       sortModel={sortModel}
       paginationModel={paginationModel}
+      // TODO: Enable pagination 
+      // paginationMode="server"
+      // sortingMode="server"
+      rowCount={rowCount}
       initialState={{
         pagination: {
           paginationModel

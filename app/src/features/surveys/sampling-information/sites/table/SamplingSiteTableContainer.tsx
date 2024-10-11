@@ -1,6 +1,13 @@
 import { mdiArrowTopRight, mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { IconButton, ListItemIcon, ListItemText, Menu, MenuItem, Typography } from '@mui/material';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import { Box } from '@mui/system';
 import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -67,6 +74,7 @@ export const SamplingSiteTableContainer = () => {
   }, [pagination]);
 
   const sampleSites = samplingSitesDataLoader.data?.sampleSites ?? [];
+
   const samplePeriods: ISamplingSitePeriodRowData[] = useMemo(() => {
     const data: ISamplingSitePeriodRowData[] = [];
 
@@ -163,21 +171,32 @@ export const SamplingSiteTableContainer = () => {
         </MenuItem>
       </Menu>
 
-      <IconButton
-        edge="end"
-        sx={{ ml: 1 }}
-        aria-label="header-settings"
-        disabled={!siteSelection.length}
-        onClick={handleHeaderMenuClick}
-        title="Bulk Actions">
-        <Icon path={mdiDotsVertical} size={1} />
-      </IconButton>
+      <Toolbar
+        disableGutters
+        sx={{
+          flex: '1 1 auto',
+          pl: 3,
+          pr: 5.5,
+          width: '100%'
+        }}>
+        {/* Toggle buttons for changing between sites, methods, and periods */}
+        <SamplingSiteTableView activeView={activeView} setActiveView={setActiveView} />
 
-      {/* Toggle buttons for changing between sites, methods, and periods */}
-      <SamplingSiteTableView activeView={activeView} setActiveView={setActiveView} />
+        <IconButton
+          edge="end"
+          sx={{ ml: 1 }}
+          aria-label="header-settings"
+          disabled={!siteSelection.length}
+          onClick={handleHeaderMenuClick}
+          title="Bulk Actions">
+          <Icon path={mdiDotsVertical} size={1} />
+        </IconButton>
+      </Toolbar>
+
+      <Divider flexItem />
 
       {/* Data tables */}
-      <Box p={2}>
+      <Box p={2} height="400px">
         {activeView === SamplingSiteManageTableView.SITES && (
           <LoadingGuard
             isLoading={samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady}
@@ -201,6 +220,7 @@ export const SamplingSiteTableContainer = () => {
               bulkActionSites={siteSelection}
               paginationModel={paginationModel}
               pageSizeOptions={pageSizeOptions}
+              rowCount={samplingSitesDataLoader.data?.pagination.total ?? 0}
               sortModel={sortModel}
             />
           </LoadingGuard>
