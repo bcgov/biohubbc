@@ -83,7 +83,8 @@ export const observationStandardColumnValidator = {
   DATE: { type: 'date' },
   TIME: { type: 'string' },
   LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE },
-  LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE }
+  LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE },
+  COMMENT: { type: 'string', aliases: CSV_COLUMN_ALIASES.COMMENT, optional: true }
 } satisfies IXLSXCSVValidator;
 
 export const getColumnCellValue = generateColumnCellGetterFromColumnValidator(observationStandardColumnValidator);
@@ -91,6 +92,7 @@ export const getColumnCellValue = generateColumnCellGetterFromColumnValidator(ob
 export interface InsertSubCount {
   observation_subcount_id: number | null;
   observation_subcount_sign_id: number | null;
+  comment: string | null;
   subcount: number;
   qualitative_measurements: {
     measurement_id: string;
@@ -192,7 +194,8 @@ export class ObservationService extends DBService {
           survey_observation_id: surveyObservationId,
           //  NOTE: The UI currently only allows one subcount per observation, so the standardColumns count can be used
           subcount: observation.subcounts.length === 1 ? observation.standardColumns.count : subcount.subcount,
-          observation_subcount_sign_id: subcount.observation_subcount_sign_id
+          observation_subcount_sign_id: subcount.observation_subcount_sign_id,
+          comment: subcount.comment
         });
 
         if (!observation.subcounts.length) {
@@ -624,6 +627,7 @@ export class ObservationService extends DBService {
         observation_subcount_id: null,
         subcount: getColumnCellValue(row, 'COUNT').cell as number,
         observation_subcount_sign_id: observationSubcountSignId ?? null,
+        comment: (getColumnCellValue(row, 'COMMENT').cell as string) ?? null,
         qualitative_measurements: [],
         quantitative_measurements: [],
         qualitative_environments: [],

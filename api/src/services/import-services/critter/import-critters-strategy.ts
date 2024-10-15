@@ -116,8 +116,6 @@ export class ImportCrittersStrategy extends DBService implements CSVImportStrate
       'sex' as keyof CsvCritter
     ]);
 
-    console.log(partialRow);
-
     // Keys of collection units
     const collectionUnitKeys = keys(partialRow);
 
