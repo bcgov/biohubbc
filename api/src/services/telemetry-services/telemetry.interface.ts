@@ -1,5 +1,10 @@
 import { Telemetry } from '../../repositories/telemetry-repositories/vendors/telemetry.interface';
 
+/**
+ * Telemetry vendor enumeration.
+ *
+ * Note: These values (except MANUAL) must match what exists in the `device_make` table
+ */
 export enum TelemetryVendor {
   /**
    * Vectronic telemetry vendor.
@@ -44,17 +49,4 @@ export interface ITelemetryStrategy {
    * @return {*} {Promise<Telemetry[]>} - Normalized list of telemetry data
    */
   getTelemetryByDeploymentId: (surveyId: number, deploymentId: number, limit?: number) => Promise<Telemetry[]>;
-
-  /**
-   * Get all telemetry data by a list of deployment IDs.
-   *
-   * Note: This should return all sources of telemetry for the vendor.
-   * ie: vendor telemetry + manual vendor telemetry.
-   *
-   * @param {number} surveyId - Survey ID
-   * @param {number[]} deploymentIds - List of deployment ID's
-   * @param {number} [limit] - Limit the number of telemetry records returned
-   * @return {*} {Promise<Telemetry[]>} - Normalized list of telemetry data
-   */
-  getTelemetryByDeploymentIds: (surveyId: number, deploymentIds: number[], limit?: number) => Promise<Telemetry[]>;
 }

@@ -1,5 +1,6 @@
 import { IDBConnection } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
+import { TelemetryMultiVendorRepository } from '../../repositories/telemetry-repositories/vendors/telemetry-multi-vendor-repository';
 import { Telemetry } from '../../repositories/telemetry-repositories/vendors/telemetry.interface';
 import { DBService } from '../db-service';
 import { TelemetryDeviceService } from './telemetry-device-service';
@@ -20,18 +21,14 @@ import { TelemetryLotekStrategy } from './vendors/telemetry-lotek-strategy';
  * @extends {DBService}
  */
 export class TelemetryVendorService extends DBService {
+  multiVendorRepository: TelemetryMultiVendorRepository;
   deviceService: TelemetryDeviceService;
-  // TODO: Uncomment this line once deployment service is complete.
-  //
-  //deploymentService: DeploymentService;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
+    this.multiVendorRepository = new TelemetryMultiVendorRepository(connection);
     this.deviceService = new TelemetryDeviceService(connection);
-    // TODO: Uncomment this line once deployment service is complete.
-    //
-    //this.deploymentService = new DeploymentService(connection);
   }
 
   /**
@@ -47,25 +44,7 @@ export class TelemetryVendorService extends DBService {
       // Add more cases as needed
     }
 
-    throw new ApiGeneralError('Telemetry vendor not supported', ['TelemetryService -> createTelemetryVendor']);
-  }
-
-  /**
-   * Get telemetry for a deployment of a specific vendor. ie: `Lotek` or `Manual`
-   *
-   * Note: Vendors will also return manual telemetry data.
-   *
-   * @param {ITelemetryStrategy} vendor - The telemetry vendor strategy
-   * @param {number} surveyId - The survey ID
-   * @param {number} deploymentId - The deployment ID
-   * @return {*} {Promise<Telemetry[]>} - The telemetry data
-   */
-  async getVendorTelemetryForDeployment(
-    vendor: ITelemetryStrategy,
-    surveyId: number,
-    deploymentId: number
-  ): Promise<Telemetry[]> {
-    return vendor.getTelemetryByDeploymentId(surveyId, deploymentId);
+    throw new ApiGeneralError('Telemetry vendor not supported', ['TelemetryService -> createTelemetryStrategy']);
   }
 
   /**
@@ -95,26 +74,6 @@ export class TelemetryVendorService extends DBService {
    * @return {*} {Promise<Telemetry[]>} - The telemetry data
    */
   async getTelemetryForDeployments(surveyId: number, deploymentIds: number[]) {
-    const devices = await this.deviceService.getDevices(surveyId, deploymentIds);
-
-    // Get unique device makes
-    const uniqueDeviceMakes = [...new Set(devices.map((device) => device.device_make))];
-
-    // Get telemetry for each device make (vendor)
-    const telemetryPromises = uniqueDeviceMakes.map((deviceMake) => {
-      const vendor = this.createTelemetryStrategy(deviceMake as TelemetryVendor);
-      return vendor.getTelemetryByDeploymentIds(surveyId, deploymentIds);
-    });
-
-    const telemetry = await Promise.all(telemetryPromises);
-
-    return telemetry.flat();
+    return this.multiVendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds);
   }
-
-  //TODO: Implement the following methods once deployment service is complete.
-  //
-  // async getTelemetryForDeployments(surveyId: number, deploymentIds: number[]) {}
-  // async getTelemetryByCritterId(surveyId: number, critterId: number) {}
-  // async getTelemetryBySurvey(surveyId: number) {}
-  // async findTelemetry() {}
 }
