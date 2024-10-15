@@ -19,6 +19,7 @@ import { ApiPaginationRequestOptions } from 'types/misc';
 export interface SubcountToSave {
   observation_subcount_id: number | null;
   subcount: number | null;
+  comment: string | null;
   qualitative_measurements: {
     measurement_id: string;
     measurement_option_id: string;

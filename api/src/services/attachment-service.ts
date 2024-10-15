@@ -27,11 +27,11 @@ export interface IAttachmentType {
 }
 
 /**
- * A repository class for accessing project and survey attachment data.
+ * A service class for accessing project and survey attachment data.
  *
  * @export
- * @class AttachmentRepository
- * @extends {BaseRepository}
+ * @class AttachmentService
+ * @extends {DBService}
  */
 export class AttachmentService extends DBService {
   attachmentRepository: AttachmentRepository;

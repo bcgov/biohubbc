@@ -2,6 +2,8 @@ import {
   CompleteMultipartUploadCommandOutput,
   DeleteObjectCommand,
   DeleteObjectCommandOutput,
+  DeleteObjectsCommand,
+  DeleteObjectsCommandOutput,
   GetObjectCommand,
   GetObjectCommandOutput,
   HeadObjectCommand,
@@ -117,6 +119,33 @@ export async function deleteFileFromS3(key: string): Promise<DeleteObjectCommand
     new DeleteObjectCommand({
       Bucket: _getObjectStoreBucketName(),
       Key: key
+    })
+  );
+}
+
+/**
+ * Bulk delete files from S3 from a list of keys.
+ *
+ * For potential future reference:
+ * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/command/DeleteObjectsCommand/
+ *
+ * @export
+ * @param {string} keys - List of S3 keys to delete
+ * @returns {Promise<DeleteObjectCommandOutput>} the response from S3 or null if required parameters are null
+ */
+export async function bulkDeleteFilesFromS3(keys: string[]): Promise<DeleteObjectsCommandOutput | null> {
+  const s3Client = _getS3Client();
+
+  if (!keys.length || !s3Client) {
+    return null;
+  }
+
+  return s3Client.send(
+    new DeleteObjectsCommand({
+      Bucket: _getObjectStoreBucketName(),
+      Delete: {
+        Objects: keys.map((key) => ({ Key: key }))
+      }
     })
   );
 }
@@ -295,7 +324,24 @@ export async function getS3SignedURLs(keys: string[]): Promise<(string | null)[]
   return Promise.all(keys.map((key) => getS3SignedURL(key)));
 }
 
-export interface IS3FileKey {
+type Projects3Key = {
+  /**
+   * The project ID the file is associated with.
+   */
+  projectId: number;
+  /**
+   * The sub-folder where the file is stored.
+   *
+   * Note: For regular/generic file attachments, leave this undefined.
+   */
+  folder?: 'reports' | 'telemetry-credentials';
+  /**
+   * The name of the file.
+   */
+  fileName: string;
+};
+
+type SurveyS3Key = {
   /**
    * The project ID the file is associated with.
    */
@@ -303,7 +349,7 @@ export interface IS3FileKey {
   /**
    * The survey ID the file is associated with.
    */
-  surveyId?: number;
+  surveyId: number;
   /**
    * The template submission ID the file is associated with.
    *
@@ -311,19 +357,72 @@ export interface IS3FileKey {
    */
   submissionId?: number;
   /**
-   * The sub-folder in the project/survey where the file is stored.
+   * The sub-folder where the file is stored.
    *
    * Note: For regular/generic file attachments, leave this undefined.
    */
   folder?: 'reports' | 'telemetry-credentials';
   /**
    * The name of the file.
-   *
-   * @type {string}
-   * @memberof IS3FileKey
    */
   fileName: string;
-}
+};
+
+type CritterCaptureS3Key = {
+  /**
+   * The project ID the file is associated with.
+   */
+  projectId: number;
+  /**
+   * The survey ID the file is associated with.
+   */
+  surveyId: number;
+  /**
+   * The SIMS Critter ID the file is associated with.
+   */
+  critterId: number;
+  /**
+   * The sub-folder where the file is stored.
+   */
+  folder: 'captures';
+  /**
+   * The Critterbase Capture ID (uuid) the file is associated with.
+   */
+  critterbaseCaptureId: string;
+  /**
+   * The name of the file.
+   */
+  fileName: string;
+};
+
+type CritterMortalityS3Key = {
+  /**
+   * The project ID the file is associated with.
+   */
+  projectId: number;
+  /**
+   * The survey ID the file is associated with.
+   */
+  surveyId: number;
+  /**
+   * The SIMS Critter ID the file is associated with.
+   */
+  critterId: number;
+  /**
+   * The sub-folder where the file is stored.
+   */
+  folder: 'mortalities';
+  /**
+   * The Critterbase Mortality ID (uuid) the file is associated with.
+   */
+  critterbaseMortalityId: string;
+  /**
+   * The name of the file.
+   */
+  fileName: string;
+};
+
+export type IS3FileKey = Projects3Key | SurveyS3Key | CritterCaptureS3Key | CritterMortalityS3Key;
 
 /**
  * Generate an S3 key for a project or survey attachment file.
@@ -340,18 +439,31 @@ export function generateS3FileKey(options: IS3FileKey): string {
     keyParts.push(options.projectId);
   }
 
-  if (options.surveyId) {
+  if ('surveyId' in options && options.surveyId) {
     keyParts.push('surveys');
     keyParts.push(options.surveyId);
   }
 
-  if (options.submissionId) {
+  if ('submissionId' in options && options.submissionId) {
     keyParts.push('submissions');
     keyParts.push(options.submissionId);
   }
 
-  if (options.folder) {
+  if ('critterId' in options && options.critterId) {
+    keyParts.push('critters');
+    keyParts.push(options.critterId);
+  }
+
+  if ('folder' in options && options.folder) {
     keyParts.push(options.folder);
+  }
+
+  if ('critterbaseCaptureId' in options && options.critterbaseCaptureId) {
+    keyParts.push(options.critterbaseCaptureId);
+  }
+
+  if ('critterbaseMortalityId' in options && options.critterbaseMortalityId) {
+    keyParts.push(options.critterbaseMortalityId);
   }
 
   if (options.fileName) {
