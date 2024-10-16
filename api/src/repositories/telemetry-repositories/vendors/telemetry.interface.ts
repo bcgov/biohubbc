@@ -1,3 +1,4 @@
+import { Knex } from 'knex';
 import { z } from 'zod';
 import { TelemetryVendor } from '../../../services/telemetry-services/telemetry.interface';
 
@@ -16,3 +17,7 @@ export const TelemetrySchema = z.object({
 });
 
 export type Telemetry = z.infer<typeof TelemetrySchema>;
+
+export type ITelemetryRepositoryStrategy = {
+  getTelemetryByDeploymentIdsBaseQuery(surveyId: number, deploymentIds: number): Knex.QueryBuilder;
+};

@@ -1,6 +1,5 @@
 import { IDBConnection } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
-import { TelemetryMultiVendorRepository } from '../../repositories/telemetry-repositories/vendors/telemetry-multi-vendor-repository';
 import { Telemetry } from '../../repositories/telemetry-repositories/vendors/telemetry.interface';
 import { DBService } from '../db-service';
 import { TelemetryDeviceService } from './telemetry-device-service';
@@ -21,23 +20,21 @@ import { TelemetryLotekStrategy } from './vendors/telemetry-lotek-strategy';
  * @extends {DBService}
  */
 export class TelemetryVendorService extends DBService {
-  multiVendorRepository: TelemetryMultiVendorRepository;
   deviceService: TelemetryDeviceService;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
-    this.multiVendorRepository = new TelemetryMultiVendorRepository(connection);
     this.deviceService = new TelemetryDeviceService(connection);
   }
 
   /**
    * Create a telemetry strategy based on the vendor type.
    *
-   * @param {TelemetryVendor} vendorType - The telemetry vendor type. ie: device.device_make or 'manual'
+   * @param {string} vendorType - The telemetry vendor type. ie: device.device_make or 'manual'
    * @return {*} {ITelemetryStrategy} - The telemetry strategy for the vendor.
    */
-  createTelemetryStrategy(vendorType: TelemetryVendor): ITelemetryStrategy {
+  createTelemetryStrategy(vendorType: string): ITelemetryStrategy {
     switch (vendorType) {
       case TelemetryVendor.LOTEK:
         return new TelemetryLotekStrategy(this.connection);
@@ -45,6 +42,12 @@ export class TelemetryVendorService extends DBService {
     }
 
     throw new ApiGeneralError('Telemetry vendor not supported', ['TelemetryService -> createTelemetryStrategy']);
+  }
+
+  async getVendorsFromDeployments(surveyId: number, deploymentIds: number[]): Promise<string[]> {
+    const devices = await this.deviceService.getDevices(surveyId, deploymentIds);
+
+    return [...new Set(devices.map((device) => device.device_make))];
   }
 
   /**
@@ -59,7 +62,7 @@ export class TelemetryVendorService extends DBService {
   async getTelemetryForDeployment(surveyId: number, deploymentId: number): Promise<Telemetry[]> {
     const device = await this.deviceService.getDevice(surveyId, deploymentId);
 
-    const vendor = this.createTelemetryStrategy(device.device_make as TelemetryVendor);
+    const vendor = this.createTelemetryStrategy(device.device_make);
 
     return vendor.getTelemetryByDeploymentId(surveyId, deploymentId);
   }
@@ -74,6 +77,18 @@ export class TelemetryVendorService extends DBService {
    * @return {*} {Promise<Telemetry[]>} - The telemetry data
    */
   async getTelemetryForDeployments(surveyId: number, deploymentIds: number[]) {
-    return this.multiVendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds);
+    const devices = await this.deviceService.getDevices(surveyId, deploymentIds);
+
+    const deviceMakes = [...new Set(devices.map((device) => device.device_make))];
+
+    const telemetry = await Promise.all(
+      deviceMakes.map((deviceMake) => {
+        const vendor = this.createTelemetryStrategy(deviceMake);
+
+        return vendor.getTelemetryByDeploymentIds(surveyId, deploymentIds);
+      })
+    );
+
+    return telemetry.flat();
   }
 }

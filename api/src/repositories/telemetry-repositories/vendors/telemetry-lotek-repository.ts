@@ -4,7 +4,7 @@ import { BaseRepository } from '../../base-repository';
 import { TelemetrySchema } from './telemetry.interface';
 
 export class TelemetryLotekRepository extends BaseRepository {
-  _getLotekTelemetryByDeploymentIdsBaseQuery(surveyId: number, deploymentIds: number[]): Knex.QueryBuilder {
+  getTelemetryByDeploymentIdsBaseQuery(surveyId: number, deploymentIds: number[]): Knex.QueryBuilder {
     const knex = getKnex();
 
     const queryBuilder = knex
@@ -43,7 +43,8 @@ export class TelemetryLotekRepository extends BaseRepository {
    * @returns {Promise<TelemetrySchema[]>}
    */
   async getTelemetryByDeploymentIds(surveyId: number, deploymentIds: number[]) {
-    const queryBuilder = this._getLotekTelemetryByDeploymentIdsBaseQuery(surveyId, deploymentIds);
+    const queryBuilder = this.getTelemetryByDeploymentIdsBaseQuery(surveyId, deploymentIds);
+    // TODO: incorporate manual teleetry
 
     const response = await this.connection.knex(queryBuilder, TelemetrySchema);
 
@@ -61,24 +62,5 @@ export class TelemetryLotekRepository extends BaseRepository {
   async deploymentHasValidCredentials(surveyId: number, deploymentIds: number[]): Promise<boolean> {
     console.log(surveyId, deploymentIds);
     return true;
-    //const sqlStatement = SQL`
-    //  SELECT
-    //    d.deployment_id
-    //  FROM telemetry_credential_lotek lc
-    //  JOIN survey_telemetry_vendor_credential sc
-    //  ON lc.device_key = sc.device_key
-    //  JOIN survey_telemetry_credential_attachment sa
-    //  ON sc.survey_telemetry_vendor_credential_id = sa.survey_telemetry_vendor_credential_id
-    //  JOIN survey s
-    //  ON sa.survey_id = s.survey_id
-    //  JOIN deployment2 d
-    //  ON s.survey_id = d.survey_id
-    //  WHERE sa.survey_id = ${surveyId}
-    //  AND d.deployment_id IN ('${deploymentIds.join("','")}')
-    //  AND lc.is_valid = TRUE;
-    //`;
-    //const response = await this.connection.sql(sqlStatement, z.object({ deployment_id: z.number() }));
-    //
-    //return response.rows.map((row) => row.deployment_id);
   }
 }

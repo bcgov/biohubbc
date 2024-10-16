@@ -43,6 +43,6 @@ export class TelemetryLotekStrategy extends DBService implements ITelemetryStrat
       ]);
     }
 
-    return this.lotekRepository.getLotekAndManualTelemetryByDeploymentIds(surveyId, [deploymentId]);
+    return this.lotekRepository.getTelemetryByDeploymentIds(surveyId, [deploymentId]);
   }
 }
