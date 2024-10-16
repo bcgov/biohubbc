@@ -28,7 +28,7 @@ export async function up(knex: Knex): Promise<void> {
         SET sp.survey_job_id = (
             SELECT sj.survey_job_id 
             FROM biohub.survey_job sj
-            WHERE sj.name = 'Crew Member'
+            WHERE sj.name = 'Crew member'
         )
         WHERE sp.survey_job_id = (
             SELECT sj.survey_job_id 
