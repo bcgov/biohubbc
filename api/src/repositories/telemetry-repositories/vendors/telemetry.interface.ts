@@ -1,13 +1,11 @@
-import { Knex } from 'knex';
 import { z } from 'zod';
-import { TelemetryVendor } from '../../../services/telemetry-services/telemetry.interface';
 
 export const TelemetrySchema = z.object({
   telemetry_id: z.string(),
   deployment_id: z.number(),
   critter_id: z.number(),
   critterbase_critter_id: z.string().uuid(),
-  device_make: z.nativeEnum(TelemetryVendor),
+  device_make: z.string(),
   serial: z.string(),
   acquisition_date: z.string(),
   latitude: z.number().nullable(),
@@ -17,7 +15,3 @@ export const TelemetrySchema = z.object({
 });
 
 export type Telemetry = z.infer<typeof TelemetrySchema>;
-
-export type ITelemetryRepositoryStrategy = {
-  getTelemetryByDeploymentIdsBaseQuery(surveyId: number, deploymentIds: number): Knex.QueryBuilder;
-};

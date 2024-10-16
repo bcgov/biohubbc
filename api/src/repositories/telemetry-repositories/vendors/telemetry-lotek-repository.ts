@@ -1,10 +1,16 @@
-import { Knex } from 'knex';
 import { getKnex } from '../../../database/db';
 import { BaseRepository } from '../../base-repository';
 import { TelemetrySchema } from './telemetry.interface';
 
 export class TelemetryLotekRepository extends BaseRepository {
-  getTelemetryByDeploymentIdsBaseQuery(surveyId: number, deploymentIds: number[]): Knex.QueryBuilder {
+  /**
+   * Get Lotek telemetry data by deployment IDs.
+   *
+   * @param {number} surveyId
+   * @param {number[]} deploymentIds
+   * @returns {Promise<TelemetrySchema[]>}
+   */
+  async getTelemetryByDeploymentIds(surveyId: number, deploymentIds: number[]) {
     const knex = getKnex();
 
     const queryBuilder = knex
@@ -32,20 +38,6 @@ export class TelemetryLotekRepository extends BaseRepository {
       .andWhere(knex.raw('l.uploadtimestamp::timestamptz <= d.attachment_start OR d.attachment_end IS NULL'))
       .orderBy('l.uploadtimestamp', 'asc');
 
-    return queryBuilder;
-  }
-
-  /**
-   * Get Lotek telemetry data by deployment IDs.
-   *
-   * @param {number} surveyId
-   * @param {number[]} deploymentIds
-   * @returns {Promise<TelemetrySchema[]>}
-   */
-  async getTelemetryByDeploymentIds(surveyId: number, deploymentIds: number[]) {
-    const queryBuilder = this.getTelemetryByDeploymentIdsBaseQuery(surveyId, deploymentIds);
-    // TODO: incorporate manual teleetry
-
     const response = await this.connection.knex(queryBuilder, TelemetrySchema);
 
     return response.rows;
@@ -54,13 +46,11 @@ export class TelemetryLotekRepository extends BaseRepository {
   /**
    * Get a list of deployment ID's with valid lotek credentials.
    *
-   * BCTW-MIGRATION-TODO: replace reference of `deployment2` to `deployment` once data fully migrated
-   *
    * @param {number} surveyId
    * @param {number[]} deploymentIds
    */
-  async deploymentHasValidCredentials(surveyId: number, deploymentIds: number[]): Promise<boolean> {
+  async getDeploymentIdsWithValidCredentials(surveyId: number, deploymentIds: number[]): Promise<number[]> {
     console.log(surveyId, deploymentIds);
-    return true;
+    return [];
   }
 }
