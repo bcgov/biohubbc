@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../database/db';
-import { TelemetryVendorRepository } from '../repositories/telemetry-repositories/vendors/telemetry-lotek-repository';
+import { TelemetryVendorRepository } from '../repositories/telemetry-repositories/telemetry-vendor-repository';
 
 export const GET: Operation = [getVersionInformation()];
 

@@ -1,8 +1,15 @@
-import { getKnex } from '../../../database/db';
-import { BaseRepository } from '../../base-repository';
-import { TelemetrySchema, TelemetryVendorEnum } from './telemetry.interface';
+import { getKnex } from '../../database/db';
+import { BaseRepository } from '../base-repository';
+import { TelemetrySchema, TelemetryVendorEnum } from './telemetry-vendor-repository.interface';
 
 export class TelemetryVendorRepository extends BaseRepository {
+  /**
+   * Get Lotek telemetry base query. Essentialy a normalized view of the `telemetry_lotek` table.
+   *
+   * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
+   *
+   * @returns {Knex.QueryBuilder}
+   */
   getLotekTelemetryBaseQuery() {
     const knex = getKnex();
 
@@ -34,9 +41,10 @@ export class TelemetryVendorRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number[]} deploymentIds
+   * @param {number} [limit] - Limit the number of telemetry records returned
    * @returns {Promise<TelemetrySchema[]>}
    */
-  async getTelemetryByDeploymentIds(surveyId: number, deploymentIds: number[]) {
+  async getTelemetryByDeploymentIds(surveyId: number, deploymentIds: number[], limit?: number) {
     const knex = getKnex();
 
     const queryBuilder = knex
@@ -46,6 +54,11 @@ export class TelemetryVendorRepository extends BaseRepository {
           this.getLotekTelemetryBaseQuery()
             .whereIn('deployment2.deployment2_id', deploymentIds)
             .andWhere('deployment2.survey_id', surveyId)
+            .modify((qb) => {
+              if (limit) {
+                qb.limit(limit);
+              }
+            })
         );
       })
       .select(
