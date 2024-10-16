@@ -3,7 +3,7 @@ import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
-import AlertListPage from 'features/alert/AlertListPage';
+import AlertListPage from 'features/alert/manage/AlertListPage';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';

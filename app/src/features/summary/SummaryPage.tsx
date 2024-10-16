@@ -1,11 +1,13 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import PageHeader from 'components/layout/PageHeader';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
+import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { ListDataTableContainer } from 'features/summary/list-data/ListDataTableContainer';
 import { TabularDataTableContainer } from 'features/summary/tabular-data/TabularDataTableContainer';
 import { Link as RouterLink } from 'react-router-dom';
@@ -36,6 +38,9 @@ const SummaryPage = () => {
       />
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
+        <Box mb={3}>
+          <SystemAlertBanner />
+        </Box>
         <Paper>
           <ListDataTableContainer />
         </Paper>

@@ -1,17 +1,8 @@
 import SQL from 'sql-template-strings';
+import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { IAlert, IAlertCreateObject, IAlertFilterObject } from '../models/alert-view';
 import { BaseRepository } from './base-repository';
-
-export interface IAlert {
-  alert_id: number;
-  type: string;
-  name: string;
-  message: string;
-  data: object | null;
-  record_end_date: string | null;
-}
-
-export type IAlertCreateObject = Omit<IAlert, 'alert_id'>;
 
 /**
  * A repository class for accessing alert data.
@@ -21,25 +12,47 @@ export type IAlertCreateObject = Omit<IAlert, 'alert_id'>;
  * @extends {BaseRepository}
  */
 export class AlertRepository extends BaseRepository {
+  _getAlertBaseQuery() {
+    const knex = getKnex();
+
+    return knex
+      .select(
+        'alert_id',
+        'name',
+        'message',
+        'type',
+        'data',
+        'record_end_date',
+        knex.raw(`
+    CASE
+      WHEN record_end_date < NOW() THEN 'expired'
+      ELSE 'active'
+    END AS status
+  `)
+      )
+      .from('alert');
+  }
   /**
    * Get all alert records, including deactivated alerts
    *
-   * @param {string[]} alertTypes
+   * @param {IAlertFilterObject} filterObject
    * @return {*}  {Promise<IAlert>}
    * @memberof AlertRepository
    */
-  async getAllAlerts(alertTypes: string[]): Promise<IAlert[]> {
-    const sqlStatement = SQL`
-      SELECT
-        a.*
-      FROM
-        alert a
-      WHERE
-        a.types = ANY(${alertTypes})
-      ;
-      `;
+  async getAlerts(filterObject: IAlertFilterObject): Promise<IAlert[]> {
+    const queryBuilder = this._getAlertBaseQuery();
 
-    const response = await this.connection.sql<IAlert>(sqlStatement);
+    if (filterObject.recordEndDate) {
+      queryBuilder.where((qb) => {
+        qb.whereRaw(`record_end_date >= ?`, [filterObject.recordEndDate]).orWhereNull('record_end_date');
+      });
+    }
+
+    if (filterObject.types && filterObject.types.length > 0) {
+      queryBuilder.whereIn('type', filterObject.types);
+    }
+
+    const response = await this.connection.knex(queryBuilder, IAlert);
 
     return response.rows;
   }
@@ -52,43 +65,13 @@ export class AlertRepository extends BaseRepository {
    * @memberof AlertRepository
    */
   async getAlertById(alertId: number): Promise<IAlert> {
-    const sqlStatement = SQL`
-        SELECT
-          a.*
-        FROM
-          alert a
-        WHERE
-          a.types = ${alertId}
-        ;
-        `;
+    const queryBuilder = this._getAlertBaseQuery();
 
-    const response = await this.connection.sql<IAlert>(sqlStatement);
+    queryBuilder.where('alert_id', alertId);
+
+    const response = await this.connection.knex(queryBuilder, IAlert);
 
     return response.rows[0];
-  }
-
-  /**
-   * Get active alert records, excluding deactivated alerts
-   *
-   * @param {string[]} alertTypes
-   * @return {*}  {Promise<IAlert>}
-   * @memberof AlertRepository
-   */
-  async getActiveAlerts(alertTypes: string[]): Promise<IAlert[]> {
-    const sqlStatement = SQL`
-          SELECT
-            a.*
-          FROM
-            alert a
-          WHERE
-            a.types = ANY(${alertTypes})
-        AND record_end_date IS NULL or record_end_date > NOW();
-          ;
-          `;
-
-    const response = await this.connection.sql<IAlert>(sqlStatement);
-
-    return response.rows;
   }
 
   /**
@@ -136,9 +119,9 @@ export class AlertRepository extends BaseRepository {
   async createAlert(alert: IAlertCreateObject): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO
-        alert (name, message, type, data)
+        alert (name, message, type, data, record_end_date)
       VALUES
-        (${alert.name}, ${alert.message}, ${alert.type}, ${JSON.stringify(alert.data)})
+        (${alert.name}, ${alert.message}, ${alert.type}, ${JSON.stringify(alert.data)}, ${alert.record_end_date})
       RETURNING alert_id
       ;
       `;

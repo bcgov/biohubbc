@@ -1,4 +1,3 @@
-import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { AlertI18N } from 'constants/i18n';
@@ -62,7 +61,7 @@ const DeleteAlert: React.FC<IDeleteAlert> = (props) => {
   };
 
   if (!alertDataLoader.isReady || !alertDataLoader.data) {
-    return <CircularProgress className="pageProgress" size={40} />;
+    return <></>
   }
 
   return (

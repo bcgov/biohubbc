@@ -1,5 +1,6 @@
 import { IDBConnection } from '../database/db';
-import { AlertRepository, IAlert, IAlertCreateObject } from '../repositories/alert-repository';
+import { IAlert, IAlertCreateObject, IAlertFilterObject } from '../models/alert-view';
+import { AlertRepository } from '../repositories/alert-repository';
 import { DBService } from './db-service';
 
 export class AlertService extends DBService {
@@ -14,15 +15,14 @@ export class AlertService extends DBService {
   /**
    * Get all alert records, including deactivated alerts
    *
-   * @param {string[]} alertTypes
+   * @param {IAlertFilterObject} filterObject
    * @return {*}  {IAlertModel[]}
    * @memberof AlertService
    */
-  async getAllAlerts(alertTypes: string[]): Promise<IAlert[]> {
-    return this.alertRepository.getAllAlerts(alertTypes);
+  async getAllAlerts(filterObject: IAlertFilterObject): Promise<IAlert[]> {
+    return this.alertRepository.getAlerts(filterObject);
   }
 
-  
   /**
    * Get a specific alert by its ID
    *
@@ -35,24 +35,13 @@ export class AlertService extends DBService {
   }
 
   /**
-   * Get active alert records, excluding deactivated alerts
-   *
-   * @param {string[]} alertTypes
-   * @return {*}  {IAlertModel[]}
-   * @memberof AlertService
-   */
-  async getActiveAlerts(alertTypes: string[]): Promise<IAlert[]> {
-    return this.alertRepository.getActiveAlerts(alertTypes);
-  }
-
-  /**
    * Create and associate alert for survey.
    *
    * @param {IAlertCreateObjectt} alert
    * @return {*}  {IAlertModel[]}
    * @memberof AlertService
    */
-  async createAlert(alert: IAlertCreateObject): Promise<number | null> {
+  async createAlert(alert: IAlertCreateObject): Promise<number> {
     return this.alertRepository.createAlert(alert);
   }
 

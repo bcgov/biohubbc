@@ -8,8 +8,15 @@ export interface IAlert {
   name: string;
   message: string;
   data: object | null;
+  record_end_date: string | null;
+  status: 'expired' | 'active'
 }
 
-export type IAlertCreateObject = Omit<IAlert, 'alert_id'>;
+export type IAlertCreateObject = Omit<IAlert, 'alert_id' | 'status'>;
 
-export type IAlertUpdateObject = IAlert
+export type IAlertUpdateObject = Omit<IAlert, 'status'>;
+
+export interface IAlertFilterParams {
+  recordEndDate?: string;
+  types?: string[]
+}

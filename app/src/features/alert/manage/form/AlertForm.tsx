@@ -1,23 +1,14 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
-import StartEndDateFields from 'components/fields/StartEndDateFields';
-
-export interface IAlertData {
-  funding_source_id: number | null;
-  name: string;
-  description: string;
-  start_date: string | null;
-  end_date: string | null;
-  revision_count: number | null;
-}
+import { DateField } from 'components/fields/DateField';
 
 const AlertForm = () => {
   return (
     <form>
       <Box>
         <Box component={'fieldset'} mb={4}>
-          <Typography component="legend">Name and Description</Typography>
+          <Typography component="legend">Name and Message</Typography>
           <Box mt={0.5} mb={3}>
             <CustomTextField
               name="name"
@@ -27,17 +18,22 @@ const AlertForm = () => {
             />
           </Box>
           <CustomTextField
-            name="description"
-            label="Description"
+            name="message"
+            label="Message"
+            maxLength={250}
+            other={{ multiline: true, placeholder: 'Maximum 250 characters', required: true, rows: 3 }}
+          />
+          <CustomTextField
+            name="type"
+            label="type"
             maxLength={250}
             other={{ multiline: true, placeholder: 'Maximum 250 characters', required: true, rows: 3 }}
           />
         </Box>
-
         <Box component={'fieldset'}>
-          <Typography component="legend">Effective Dates</Typography>
+          <Typography component="legend">End date (optional)</Typography>
           <Box mt={0.5}>
-            <StartEndDateFields startName="start_date" endName="end_date" startRequired={false} endRequired={false} />
+            <DateField label='End date' name='record_end_date' id='alert-record-end-date' required={false}/>
           </Box>
         </Box>
       </Box>

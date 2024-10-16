@@ -64,7 +64,7 @@ const AlertListPage = () => {
   if (!alertDataLoader.isReady) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-
+  
   return (
     <>
       {/* CREATE Alert MODAL */}

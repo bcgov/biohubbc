@@ -1,6 +1,8 @@
-import { RequestHandler } from 'express';
+import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { IAlertFilterObject } from '../../models/alert-view';
 import { systemAlertSchema } from '../../openapi/schemas/alert';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { AlertService } from '../../services/alert-service';
@@ -32,11 +34,14 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'query',
-      name: 'type',
+      name: 'types',
       required: false,
       schema: {
-        type: 'string',
-        nullable: true
+        type: 'array',
+        items: {
+          type: 'string',
+          nullable: true
+        }
       }
     }
   ],
@@ -46,9 +51,11 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            description: 'Array of system alerts',
-            items: systemAlertSchema
+            type: 'object',
+            description: 'Response object containing system alerts',
+            additionalProperties: false,
+            required: ['alerts'],
+            properties: { alerts: { type: 'array', description: 'Array of system alerts', items: systemAlertSchema } }
           }
         }
       }
@@ -85,20 +92,164 @@ export function getAlerts(): RequestHandler {
     try {
       await connection.open();
 
-      const alertTypes = (req.query.type as string[]) ?? [];
+      const filterObject = parseQueryParams(req);
 
       const alertService = new AlertService(connection);
 
-      const alerts = alertService.getAllAlerts(alertTypes);
+      const alerts = await alertService.getAllAlerts(filterObject);
 
       await connection.commit();
 
-      // Allow browsers to cache this response for 30 seconds
-      res.setHeader('Cache-Control', 'private, max-age=300');
-
-      return res.status(200).json(alerts);
+      return res.status(200).json({ alerts: alerts });
     } catch (error) {
       defaultLog.error({ label: 'getAlerts', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
+/**
+ * Parse the query parameters from the request into the expected format.
+ *
+ * @param {Request<unknown, unknown, unknown, IAlertFilterObject>} req
+ * @return {*}  {IAlertFilterObject}
+ */
+function parseQueryParams(req: Request<unknown, unknown, unknown, IAlertFilterObject>): IAlertFilterObject {
+  return {
+    recordEndDate: req.query.recordEndDate ?? undefined,
+    types: req.query.types ?? []
+  };
+}
+
+export const POST: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          discriminator: 'SystemUser',
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        }
+      ]
+    };
+  }),
+  createAlert()
+];
+
+POST.apiDoc = {
+  description: 'Create an alert.',
+  tags: ['alerts'],
+  security: [
+    {
+      Bearer: []
+    }
+  ],
+  requestBody: {
+    description: 'Alert post request object.',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['name', 'message', 'data', 'type'],
+          properties: {
+            alert_id: {
+              type: 'number',
+              nullable: true
+            },
+            name: {
+              type: 'string',
+              description: 'Name of the alert, displayed as the title of banner.'
+            },
+            message: {
+              type: 'string',
+              description: 'Message of the alert, displayed as the body of the banner.'
+            },
+            type: {
+              type: 'string',
+              description: 'Type of the alert, controlling how it is actioned or displayed.'
+            },
+            data: {
+              type: 'object',
+              nullable: true
+            },
+            record_end_date: {
+              type: 'string',
+              nullable: true
+            },
+            revision_count: {
+              type: 'integer',
+              minimum: 0,
+              nullable: true
+            }
+          }
+        }
+      }
+    }
+  },
+  responses: {
+    200: {
+      description: 'System alert response object',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['alert_id'],
+            properties: {
+              alert_id: {
+                type: 'number'
+              }
+            }
+          }
+        }
+      }
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/403'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
+
+/**
+ * Creates a new system alert
+ *
+ * @returns {RequestHandler}
+ */
+export function createAlert(): RequestHandler {
+  return async (req, res) => {
+    defaultLog.debug({ label: 'createAlert' });
+
+    const connection = getDBConnection(req.keycloak_token);
+
+    try {
+      await connection.open();
+
+      const alert = req.body;
+
+      const alertService = new AlertService(connection);
+
+      const id = await alertService.createAlert(alert);
+
+      await connection.commit();
+
+      return res.status(200).json({ alert_id: id });
+    } catch (error) {
+      defaultLog.error({ label: 'createAlert', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

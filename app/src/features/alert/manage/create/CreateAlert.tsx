@@ -10,6 +10,12 @@ import { useContext, useState } from 'react';
 import yup from 'utils/YupSchema';
 import AlertForm from '../form/AlertForm';
 
+const AlertYupSchema = yup.object().shape({
+  name: yup.string().trim().max(50, 'Name cannot exceed 50 characters').required('Name is required'),
+  message: yup.string().max(250, 'Description cannot exceed 250 characters').required('Description is required'),
+  record_end_date: yup.string().isValidDateString().nullable()
+});
+
 interface ICreateAlertProps {
   open: boolean;
   onClose: (refresh?: boolean) => void;
@@ -20,34 +26,6 @@ const CreateAlert = (props: ICreateAlertProps) => {
   const dialogContext = useContext(DialogContext);
 
   const biohubApi = useBiohubApi();
-
-  // This is placed inside the `CreateAlert` component to make use of an API call to check for used names
-  // The API call would violate the rules of react hooks if placed in an object outside of the component
-  // Reference: https://react.dev/warnings/invalid-hook-call-warning
-  const AlertYupSchema = yup.object().shape({
-    name: yup
-      .string()
-      .trim()
-      .max(50, 'Name cannot exceed 50 characters')
-      .required('Name is required')
-      .test('nameUsed', 'Name has already been used', async (val) => {
-        let hasBeenUsed = false;
-        if (val) {
-          const alerts = await biohubApi.alert.getAlerts(val);
-          // name matches return true
-
-          alerts.alerts.forEach((item) => {
-            if (item.name.toLowerCase() === val.toLowerCase()) {
-              hasBeenUsed = true;
-            }
-          });
-        }
-        return !hasBeenUsed;
-      }),
-    description: yup.string().max(250, 'Description cannot exceed 250 characters').required('Description is required'),
-    start_date: yup.string().isValidDateString().nullable(),
-    end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date').nullable()
-  });
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
@@ -67,7 +45,7 @@ const CreateAlert = (props: ICreateAlertProps) => {
     try {
       setIsSubmitting(true);
 
-      await biohubApi.alert.createAlert(values)
+      await biohubApi.alert.createAlert(values);
 
       // creation was a success, tell parent to refresh
       props.onClose(true);
@@ -76,7 +54,7 @@ const CreateAlert = (props: ICreateAlertProps) => {
         snackbarMessage: (
           <>
             <Typography variant="body2" component="span">
-              Funding source '<strong>{values.name}</strong>' created
+              Alert '<strong>{values.name}</strong>' created
             </Typography>
           </>
         ),
@@ -105,7 +83,8 @@ const CreateAlert = (props: ICreateAlertProps) => {
             name: '',
             message: '',
             type: '',
-            data: {}
+            data: null,
+            record_end_date: null
           },
           validationSchema: AlertYupSchema
         }}

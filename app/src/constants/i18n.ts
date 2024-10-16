@@ -506,7 +506,7 @@ export const AlertI18N = {
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
   // CREATE ALERT
   createAlertDialogTitle: 'Create Alert',
-  createAlertDialogText: 'Specify the name, description and effective dates for this alert.',
+  createAlertDialogText: 'Enter a name, message, and type for the alert. The name and message will be displayed on the alert banner.',
   createErrorTitle: 'Error Creating Alert',
   createErrorText:
     'An error has occurred while attempting to create your alert, please try again. If the error persists, please contact your system administrator.',

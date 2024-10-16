@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { systemAlertSchema } from '../../../openapi/schemas/alert';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
@@ -31,7 +32,7 @@ GET.apiDoc = {
   ],
   parameters: [
     {
-      in: 'query',
+      in: 'path',
       name: 'alertId',
       schema: {
         type: 'string'
@@ -79,20 +80,117 @@ export function getAlerts(): RequestHandler {
     try {
       await connection.open();
 
-      const alertId = Number(req.query.alertId)
+      const alertId = Number(req.params.alertId);
 
       const alertService = new AlertService(connection);
 
-      const alerts = alertService.getAlertById(alertId);
+      const alert = await alertService.getAlertById(alertId);
 
       await connection.commit();
 
-      // Allow browsers to cache this response for 30 seconds
-      res.setHeader('Cache-Control', 'private, max-age=300');
-
-      return res.status(200).json(alerts);
+      return res.status(200).json(alert);
     } catch (error) {
       defaultLog.error({ label: 'getAlerts', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
+export const DELETE: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          discriminator: 'SystemUser',
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        }
+      ]
+    };
+  }),
+  deleteAlert()
+];
+
+DELETE.apiDoc = {
+  description: 'Delete an alert by its id.',
+  tags: ['alerts'],
+  security: [
+    {
+      Bearer: []
+    }
+  ],
+  parameters: [
+    {
+      in: 'query',
+      name: 'alertId',
+      schema: {
+        type: 'string'
+      }
+    }
+  ],
+  responses: {
+    200: {
+      description: 'System alert response object',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['alert_id'],
+            properties: {
+              alert_id: {
+                type: 'number'
+              }
+            }
+          }
+        }
+      }
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/403'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
+
+/**
+ * Deletes a system alert by its id
+ *
+ * @returns {RequestHandler}
+ */
+export function deleteAlert(): RequestHandler {
+  return async (req, res) => {
+    defaultLog.debug({ label: 'deleteAlert' });
+
+    const connection = getDBConnection(req.keycloak_token);
+
+    try {
+      await connection.open();
+
+      const alertId = Number(req.params.alertId);
+
+      const alertService = new AlertService(connection);
+
+      const id = await alertService.deleteAlert(alertId);
+
+      await connection.commit();
+
+      return res.status(200).json({ alert_id: id });
+    } catch (error) {
+      defaultLog.error({ label: 'deleteAlert', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -38,7 +38,7 @@ const EditAlert = (props: IEditAlertProps) => {
       .test('nameUsed', 'Name has already been used', async (val) => {
         let hasBeenUsed = false;
         if (val) {
-          const alerts = await biohubApi.alert.getAlerts(val);
+          const alerts = await biohubApi.alert.getAlerts();
           // name matches and id matches return false
           // name matches and id no match return true
           // no name matches return false
@@ -115,7 +115,8 @@ const EditAlert = (props: IEditAlertProps) => {
           name: alertDataLoader.data.name,
           message: alertDataLoader.data.message,
           type: alertDataLoader.data.type,
-          data: alertDataLoader.data.data
+          data: alertDataLoader.data.data,
+          record_end_date: alertDataLoader.data.record_end_date
         },
         validationSchema: AlertYupSchema
       }}

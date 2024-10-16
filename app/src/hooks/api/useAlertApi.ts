@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IAlert, IAlertCreateObject, IGetAlertsResponse } from 'interfaces/useAlertApi.interface';
+import { IAlert, IAlertCreateObject, IAlertFilterParams, IAlertUpdateObject, IGetAlertsResponse } from 'interfaces/useAlertApi.interface';
 import qs from 'qs';
 
 /**
@@ -12,12 +12,16 @@ export const useAlertApi = (axios: AxiosInstance) => {
   /**
    * Get project alert details based on its ID for viewing purposes.
    *
-   * @param {string} recordEndDate
+   * @param {IAlertFilterParams} filterObject
    * @return {*} {Promise<IGetAlertsResponse[]>}
    */
-  const getAlerts = async (recordEndDate?: string): Promise<IGetAlertsResponse> => {
+  const getAlerts = async (filterObject?: IAlertFilterParams): Promise<IGetAlertsResponse> => {
+    const params = {
+      ...filterObject
+    };
+
     const { data } = await axios.get(`/api/alert`, {
-      params: { recordEndDate },
+      params: params,
       paramsSerializer: (params: any) => {
         return qs.stringify(params);
       }
@@ -56,7 +60,7 @@ export const useAlertApi = (axios: AxiosInstance) => {
    * @param {IAlert} alert
    * @return {*}  {Promise<ICreateAlertResponse>}
    */
-  const updateAlert = async (alert: IAlert): Promise<void> => {
+  const updateAlert = async (alert: IAlertUpdateObject): Promise<void> => {
     const { data } = await axios.patch(`/api/alert/${alert.alert_id}`, alert);
 
     return data;
