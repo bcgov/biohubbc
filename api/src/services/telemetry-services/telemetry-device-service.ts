@@ -4,7 +4,6 @@ import { ApiGeneralError } from '../../errors/api-error';
 import { TelemetryDeviceRepository } from '../../repositories/telemetry-repositories/telemetry-device-repository';
 import {
   CreateTelemetryDevice,
-  DeviceWithMake,
   UpdateTelemetryDevice
 } from '../../repositories/telemetry-repositories/telemetry-device-repository.interface';
 import { DBService } from '../db-service';
@@ -39,7 +38,7 @@ export class TelemetryDeviceService extends DBService {
    * @param {number} deviceId
    * @return {*} {Promise<DeviceRecord>}
    */
-  async getDevice(surveyId: number, deviceId: number): Promise<DeviceWithMake> {
+  async getDevice(surveyId: number, deviceId: number): Promise<DeviceRecord> {
     const devices = await this.telemetryDeviceRepository.getDevicesByIds(surveyId, [deviceId]);
 
     if (devices.length !== 1) {
@@ -51,12 +50,12 @@ export class TelemetryDeviceService extends DBService {
 
   /**
    * Get a list of devices by their IDs.
-   *
    * @param {number} surveyId
    * @param {number[]} deviceIds
    * @returns {*} {Promise<DeviceRecord[]>}
+   *
    */
-  async getDevices(surveyId: number, deviceIds: number[]): Promise<DeviceWithMake[]> {
+  async getDevices(surveyId: number, deviceIds: number[]): Promise<DeviceRecord[]> {
     return this.telemetryDeviceRepository.getDevicesByIds(surveyId, deviceIds);
   }
 

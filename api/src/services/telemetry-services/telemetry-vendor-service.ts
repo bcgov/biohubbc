@@ -4,13 +4,13 @@ import { Telemetry } from '../../repositories/telemetry-repositories/telemetry-v
 import { DBService } from '../db-service';
 
 /**
- * A context class for working with telemetry vendors (telemetry strategies).
+ * A service class for working with telemetry vendor data.
  *
  * @export
- * @class TelemetryLotekContext
+ * @class TelemetryVendorService
  * @extends {DBService}
  */
-export class TelemetryVendorContext extends DBService {
+export class TelemetryVendorService extends DBService {
   vendorRepository: TelemetryVendorRepository;
 
   constructor(connection: IDBConnection) {
