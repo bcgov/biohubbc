@@ -1,9 +1,34 @@
-import SQL from 'sql-template-strings';
 import { getKnex } from '../../../database/db';
 import { BaseRepository } from '../../base-repository';
-import { TelemetrySchema } from './telemetry.interface';
+import { TelemetrySchema, TelemetryVendorEnum } from './telemetry.interface';
 
-export class TelemetryLotekRepository extends BaseRepository {
+export class TelemetryVendorRepository extends BaseRepository {
+  getLotekTelemetryBaseQuery() {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .select(
+        'telemetry_lotek.telemetry_lotek_id as telemetry_id',
+        'deployment2.deployment2_id as deployment_id',
+        'critter.critter_id',
+        'critter.critterbase_critter_id',
+        knex.raw(`'${TelemetryVendorEnum.LOTEK}' as vendor`),
+        knex.raw('telemetry_lotek.deviceid::text as serial'),
+        knex.raw('deployment2.attachment_start::timestamptz'),
+        knex.raw('deployment2.attachment_end::timestamptz'),
+        knex.raw('telemetry_lotek.uploadtimestamp::timestamptz as acquisition_date'),
+        'telemetry_lotek.latitude',
+        'telemetry_lotek.longitude',
+        'telemetry_lotek.altitude as elevation',
+        'telemetry_lotek.temperature'
+      )
+      .from('telemetry_lotek')
+      .join('deployment2', 'telemetry_lotek.device_key', 'deployment2.device_key')
+      .join('critter', 'deployment2.critter_id', 'critter.critter_id');
+
+    return queryBuilder;
+  }
+
   /**
    * Get Lotek telemetry data for list of deployment IDs.
    *
@@ -15,52 +40,36 @@ export class TelemetryLotekRepository extends BaseRepository {
     const knex = getKnex();
 
     const queryBuilder = knex
+      .queryBuilder()
+      .with('telemetry', (withQueryBuilder) => {
+        withQueryBuilder.union(
+          this.getLotekTelemetryBaseQuery()
+            .whereIn('deployment2.deployment2_id', deploymentIds)
+            .andWhere('deployment2.survey_id', surveyId)
+        );
+      })
       .select(
-        'l.telemetry_lotek_id as telemetry_id',
-        'd.deployment2_id as deployment_id',
-        'c.critter_id',
-        'c.critterbase_critter_id',
-        'dm.name as device_make',
-        knex.raw('l.deviceid::text as serial'),
-        'l.uploadtimestamp as acquisition_date',
-        'l.latitude',
-        'l.longitude',
-        'l.altitude as elevation',
-        'l.temperature'
+        'telemetry_id',
+        'deployment_id',
+        'critter_id',
+        'critterbase_critter_id',
+        'vendor',
+        'serial',
+        'acquisition_date',
+        'latitude',
+        'longitude',
+        'elevation',
+        'temperature'
       )
-      .from('telemetry_lotek as l')
-      .join('deployment2 as d', 'l.device_key', 'd.device_key')
-      .join('critter as c', 'd.critter_id', 'c.critter_id')
-      .join('device as dv', 'd.device_id', 'dv.device_id')
-      .join('device_make as dm', 'dv.device_make_id', 'dm.device_make_id')
-      .whereIn('d.deployment2_id', deploymentIds)
-      .andWhere('d.survey_id', surveyId)
-      .andWhere(knex.raw('l.uploadtimestamp::timestamptz >= d.attachment_start'))
-      .andWhere(knex.raw('l.uploadtimestamp::timestamptz <= d.attachment_start OR d.attachment_end IS NULL'))
-      .orderBy('l.uploadtimestamp', 'asc');
+      .from('telemetry')
+      .where(knex.raw('telemetry.acquisition_date >= telemetry.attachment_start'))
+      .andWhere(
+        knex.raw('telemetry.acquisition_date <= telemetry.attachment_start OR telemetry.attachment_end IS NULL')
+      )
+      .orderBy('telemetry.acquisition_date', 'desc');
 
     const response = await this.connection.knex(queryBuilder, TelemetrySchema);
 
     return response.rows;
-  }
-
-  /**
-   * Get a list of deployment ID's with valid lotek credentials.
-   *
-   * @param {number} surveyId
-   * @param {number[]} deploymentIds
-   */
-  async getDeploymentIdsWithValidCredentials(surveyId: number, deploymentIds: number[]): Promise<number[]> {
-    const sqlStatement = SQL`
-      SELECT
-        d.deployment_id,
-      FROM
-        deployment d
-      WHERE
-        d.survey_id = ${surveyId}
-      AND d.deployment_id IN (${deploymentIds.join(',')})
-
-    `;
-    return [];
   }
 }

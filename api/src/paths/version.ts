@@ -1,5 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { getAPIUserDBConnection } from '../database/db';
+import { TelemetryVendorRepository } from '../repositories/telemetry-repositories/vendors/telemetry-lotek-repository';
 
 export const GET: Operation = [getVersionInformation()];
 
@@ -49,6 +51,19 @@ GET.apiDoc = {
  */
 export function getVersionInformation(): RequestHandler {
   return async (_req, res) => {
+    const connection = getAPIUserDBConnection();
+
+    await connection.open();
+
+    const repo = new TelemetryVendorRepository(connection);
+
+    const telemetry = await repo.getTelemetryByDeploymentIds(1, [1]);
+
+    console.log({ telemetry });
+
+    await connection.commit();
+    connection.release();
+
     const versionInfo = {
       version: process.env.VERSION,
       change_version: process.env.CHANGE_VERSION,
