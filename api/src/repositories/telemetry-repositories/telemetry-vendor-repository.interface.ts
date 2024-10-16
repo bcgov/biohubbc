@@ -39,7 +39,7 @@ export const TelemetrySchema = z.object({
   critterbase_critter_id: z.string().uuid(),
   vendor: z.nativeEnum(TelemetryVendorEnum),
   serial: z.string(),
-  acquisition_date: z.string(),
+  transmission_date: z.string(),
   latitude: z.number().nullable(),
   longitude: z.number().nullable(),
   elevation: z.number().nullable(),
