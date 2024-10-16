@@ -498,3 +498,42 @@ export const SurveyExportI18N = {
   exportErrorText:
     'An error has occurred while attempting to export survey data. Please try again. If the error persists, please contact your system administrator.'
 };
+
+
+
+export const AlertI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  // CREATE ALERT
+  createAlertDialogTitle: 'Create Alert',
+  createAlertDialogText: 'Specify the name, description and effective dates for this alert.',
+  createErrorTitle: 'Error Creating Alert',
+  createErrorText:
+    'An error has occurred while attempting to create your alert, please try again. If the error persists, please contact your system administrator.',
+  // EDIT ALERT
+  updateAlertDialogTitle: 'Edit Alert Details',
+  updateAlertDialogText: 'Edit the name, description and effective dates for this alert.',
+  updateErrorTitle: 'Error Updating Alert',
+  updateErrorText:
+    'An error has occurred while attempting to update your Alert, please try again. If the error persists, please contact your system administrator.',
+  // DELETE ALERT
+  deleteAlertErrorTitle: 'Error Deleting a Alert',
+  deleteAlertErrorText:
+    'An error has occurred while attempting to delete the Alerts, please try again. If the error persists, please contact your system administrator.',
+
+  deleteAlertDialogTitle: 'Delete Alert?',
+  deleteAlertDialogText:
+    'Are you sure you want to permanently delete this alert? This action cannot be undone.',
+
+  cannotDeleteAlertTitle: "You can't delete this alert",
+  cannotDeleteAlertText:
+    'This alert has been referenced by one or more surveys. To delete this record, you will first have to remove it from all related surveys.',
+
+  // FETCH ALERT
+  fetchAlertsErrorTitle: 'Error Fetching Alerts',
+  fetchAlertsErrorText:
+    'An error has occurred while attempting to fetch the Alerts, please try again. If the error persists, please contact your system administrator.',
+  fetchAlertErrorTitle: 'Error Fetching Alert',
+  fetchAlertErrorText:
+    'An error has occurred while attempting to fetch the Alert, please try again. If the error persists, please contact your system administrator.'
+};

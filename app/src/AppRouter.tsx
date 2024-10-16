@@ -3,6 +3,7 @@ import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
+import AlertListPage from 'features/alert/AlertListPage';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
@@ -115,6 +116,14 @@ const AppRouter: React.FC = () => {
       <RouteWithTitle path="/standards" title={getTitle('Standards')}>
         <BaseLayout>
           <StandardsPage />
+        </BaseLayout>
+      </RouteWithTitle>
+
+      <RouteWithTitle path="/admin/alerts" title={getTitle('Alerts')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <AlertListPage />
+          </AuthenticatedRouteGuard>
         </BaseLayout>
       </RouteWithTitle>
 
