@@ -3,8 +3,8 @@ import { ApiGeneralError } from '../../../errors/api-error';
 import { Telemetry } from '../../../repositories/telemetry-repositories/vendors/telemetry.interface';
 import { DBService } from '../../db-service';
 import { TelemetryDeviceService } from '../telemetry-device-service';
-import { TelemetryLotekService } from './telemetry-lotek-strategy';
-import { ITelemetryStrategy, TelemetryVendor } from './telemetry-vendor-strategy.interface';
+import { TelemetryLotekStrategy } from './telemetry-lotek-strategy';
+import { ITelemetryStrategy, TelemetryVendor } from './telemetry-vendor-context.interface';
 
 /**
  * A context class for working with telemetry vendors (telemetry strategies).
@@ -23,26 +23,32 @@ export class TelemetryVendorContext extends DBService {
   }
 
   /**
-   * Helper method to create a telemetry vendor strategy.
+   * Helper method to create a telemetry vendor strategy from a string.
+   * Note: Allows strings to convienently pass `device_make` values.
    *
-   * @see TelemetryVendor enum ../telemetry.interface.ts
+   * @see Enum `TelemetryVendor` ../telemetry.interface.ts
    *
-   * @param {TelemetryVendor | string} strategyType -
+   * @param {TelemetryVendor | string} strategyType - The telemetry vendor strategy type ie: 'lotek' or 'manual'
    * @returns {ITelemetryStrategy}
    */
   createVendorStrategy(strategyType: TelemetryVendor | string): ITelemetryStrategy {
     switch (strategyType) {
       case TelemetryVendor.LOTEK:
-        return new TelemetryLotekService(this.connection);
+        return new TelemetryLotekStrategy(this.connection);
       // TODO: Add additional cases as created
       default:
         throw new ApiGeneralError(`Unknown telemetry strategy: ${strategyType}`);
     }
   }
 
-  getAllVendorStrategies() {
+  /**
+   * Get all telemetry vendor strategies.
+   *
+   * @returns {ITelemetryStrategy[]}
+   */
+  getAllVendorStrategies(): ITelemetryStrategy[] {
     // TODO: Add additional strategies as needed
-    return [new TelemetryLotekService(this.connection)];
+    return [new TelemetryLotekStrategy(this.connection)];
   }
 
   /**

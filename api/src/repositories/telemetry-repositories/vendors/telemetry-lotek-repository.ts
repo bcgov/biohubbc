@@ -1,10 +1,11 @@
+import SQL from 'sql-template-strings';
 import { getKnex } from '../../../database/db';
 import { BaseRepository } from '../../base-repository';
 import { TelemetrySchema } from './telemetry.interface';
 
 export class TelemetryLotekRepository extends BaseRepository {
   /**
-   * Get Lotek telemetry data by deployment IDs.
+   * Get Lotek telemetry data for list of deployment IDs.
    *
    * @param {number} surveyId
    * @param {number[]} deploymentIds
@@ -50,7 +51,16 @@ export class TelemetryLotekRepository extends BaseRepository {
    * @param {number[]} deploymentIds
    */
   async getDeploymentIdsWithValidCredentials(surveyId: number, deploymentIds: number[]): Promise<number[]> {
-    console.log(surveyId, deploymentIds);
+    const sqlStatement = SQL`
+      SELECT
+        d.deployment_id,
+      FROM
+        deployment d
+      WHERE
+        d.survey_id = ${surveyId}
+      AND d.deployment_id IN (${deploymentIds.join(',')})
+
+    `;
     return [];
   }
 }
