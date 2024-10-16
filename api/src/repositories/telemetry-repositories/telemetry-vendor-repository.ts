@@ -2,6 +2,13 @@ import { getKnex } from '../../database/db';
 import { BaseRepository } from '../base-repository';
 import { TelemetrySchema, TelemetryVendorEnum } from './telemetry-vendor-repository.interface';
 
+/**
+ * A repository class for working with telemetry vendor data.
+ *
+ * @export
+ * @class TelemetryVendorRepository
+ * @extends {BaseRepository}
+ */
 export class TelemetryVendorRepository extends BaseRepository {
   /**
    * Get Lotek telemetry base query. Essentialy a normalized view of the `telemetry_lotek` table.
