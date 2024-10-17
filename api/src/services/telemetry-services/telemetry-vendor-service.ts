@@ -1,6 +1,7 @@
 import { IDBConnection } from '../../database/db';
 import { TelemetryVendorRepository } from '../../repositories/telemetry-repositories/telemetry-vendor-repository';
 import { Telemetry } from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
+import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
 
 /**
@@ -25,12 +26,15 @@ export class TelemetryVendorService extends DBService {
    * @async
    * @param {number} surveyId
    * @param {number} deploymentId
-   * @param {number} [limit] - Limit the number of telemetry records returned per deployment
+   * @param {ApiPaginationOptions} [pagination] - Pagination options
    * @returns {Promise<Telemetry[]>}
    */
-  async getTelemetryForDeployment(surveyId: number, deploymentId: number, limit?: number): Promise<Telemetry[]> {
-    // TODO: Validate credentials
-    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, [deploymentId], limit);
+  async getTelemetryForDeployment(
+    surveyId: number,
+    deploymentId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<Telemetry[]> {
+    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, [deploymentId], pagination);
   }
 
   /**
@@ -39,11 +43,14 @@ export class TelemetryVendorService extends DBService {
    * @async
    * @param {number} surveyId
    * @param {number} deploymentIds
-   * @param {number} [limit] - Limit the number of telemetry records returned per deployment
+   * @param {ApiPaginationOptions} [pagination] - Pagination options
    * @returns {Promise<Telemetry[]>}
    */
-  async getTelemetryForDeployments(surveyId: number, deploymentIds: number[], limit?: number): Promise<Telemetry[]> {
-    // TODO: Validate credentials and only pass valid deployment_ids
-    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, limit);
+  async getTelemetryForDeployments(
+    surveyId: number,
+    deploymentIds: number[],
+    pagination?: ApiPaginationOptions
+  ): Promise<Telemetry[]> {
+    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, pagination);
   }
 }
