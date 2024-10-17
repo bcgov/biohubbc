@@ -25,7 +25,7 @@ export class TelemetryVendorService extends DBService {
    * @async
    * @param {number} surveyId
    * @param {number} deploymentId
-   * @param {number} [limit] - Limit the number of telemetry records returned
+   * @param {number} [limit] - Limit the number of telemetry records returned per deployment
    * @returns {Promise<Telemetry[]>}
    */
   async getTelemetryForDeployment(surveyId: number, deploymentId: number, limit?: number): Promise<Telemetry[]> {
@@ -39,7 +39,7 @@ export class TelemetryVendorService extends DBService {
    * @async
    * @param {number} surveyId
    * @param {number} deploymentIds
-   * @param {number} [limit] - Limit the number of telemetry records returned
+   * @param {number} [limit] - Limit the number of telemetry records returned per deployment
    * @returns {Promise<Telemetry[]>}
    */
   async getTelemetryForDeployments(surveyId: number, deploymentIds: number[], limit?: number): Promise<Telemetry[]> {
