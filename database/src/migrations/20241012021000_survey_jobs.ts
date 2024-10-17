@@ -10,7 +10,7 @@ import { Knex } from 'knex';
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`--sql
     
-    SET SEARCH_PATH=biohub
+    SET SEARCH_PATH=biohub;
     
     ----------------------------------------------------------------------------------------
     -- Adding survey participant roles
