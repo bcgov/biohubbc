@@ -80,6 +80,8 @@ export async function up(knex: Knex): Promise<void> {
       critter_id                      integer            NOT NULL,
       device_id                       integer            NOT NULL,
       device_key                      varchar            NOT NULL,
+      frequency                       integer,
+      frequency_unit_id               integer,
       attachment_start                timestamptz(6)     NOT NULL,
       attachment_end                  timestamptz(6),
       critterbase_start_capture_id    uuid,
@@ -106,6 +108,8 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN deployment2.critter_id                      IS 'Foreign key to the critter table.';
     COMMENT ON COLUMN deployment2.device_id                       IS 'Foreign key to the device table.';
     COMMENT ON COLUMN deployment2.device_key                      IS '(Generated) The SIMS unique key for the device.';
+    COMMENT ON COLUMN deployment2.frequency                       IS 'The frequency of the device.';
+    COMMENT ON COLUMN deployment2.frequency_unit_id               IS 'Foreign key to the frequency_unit table.';
     COMMENT ON COLUMN deployment2.attachment_start                IS 'The date the telemetry device was attached.';
     COMMENT ON COLUMN deployment2.attachment_end                  IS 'The date the telemetry device was removed.';
     COMMENT ON COLUMN deployment2.critterbase_start_capture_id    IS 'UUID of an external Critterbase capture record. The capture event during which the device was attached to the animal.';
@@ -133,6 +137,11 @@ export async function up(knex: Knex): Promise<void> {
       FOREIGN KEY (device_id)
       REFERENCES device(device_id);
 
+    ALTER TABLE deployment2
+      ADD CONSTRAINT deployment2_fk4
+      FOREIGN KEY (frequency_unit_id)
+      REFERENCES frequency_unit(frequency_unit_id);
+
     -- Add indexes for foreign keys
     CREATE INDEX deployment2_idx1 ON deployment2(survey_id);
 
@@ -140,8 +149,10 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE INDEX deployment2_idx3 ON deployment2(device_id);
 
+    CREATE INDEX deployment2_idx4 ON deployment2(frequency_unit_id);
+
     -- Add indexes
-    CREATE INDEX deployment2_idx4 ON deployment2(device_key);
+    CREATE INDEX deployment2_idx5 ON deployment2(device_key);
     ----------------------------------------------------------------------------------------
 
     CREATE TABLE telemetry_manual (
