@@ -26,13 +26,12 @@ export class DeploymentService extends DBService {
   /**
    * Create a new deployment.
    *
-   * @param {number} surveyId
    * @param {CreateDeployment} deployment
    * @return {*}  {Promise<void>}
    * @memberof DeploymentService
    */
-  async createDeployment(surveyId: number, deployment: CreateDeployment): Promise<void> {
-    return this.deploymentRepository.createDeployment(surveyId, deployment);
+  async createDeployment(deployment: CreateDeployment): Promise<void> {
+    return this.deploymentRepository.createDeployment(deployment);
   }
 
   /**

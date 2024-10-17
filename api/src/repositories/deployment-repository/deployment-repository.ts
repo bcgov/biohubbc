@@ -1,6 +1,6 @@
 import SQL from 'sql-template-strings';
 import { DeploymentRecord } from '../../database-models/deployment';
-import { ApiExecuteSQLError, ProjectPermissionError } from '../../errors/api-error';
+import { ApiExecuteSQLError } from '../../errors/api-error';
 import { BaseRepository } from '../base-repository';
 import { CreateDeployment, UpdateDeployment } from './deployment-repository.interface';
 
@@ -12,13 +12,7 @@ import { CreateDeployment, UpdateDeployment } from './deployment-repository.inte
  * @extends {BaseRepository}
  */
 export class DeploymentRepository extends BaseRepository {
-  async createDeployment(surveyId: number, deployment: CreateDeployment): Promise<void> {
-    if (deployment.survey_id !== surveyId) {
-      throw new ProjectPermissionError('Failed to create deployment', [
-        `User is not authorized to create a deployment for survey ${deployment.survey_id}`
-      ]);
-    }
-
+  async createDeployment(deployment: CreateDeployment): Promise<void> {
     const sqlStatement = SQL`
       INSERT INTO deployment2 (
         survey_id,

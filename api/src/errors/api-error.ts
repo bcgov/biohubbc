@@ -69,16 +69,3 @@ export class ApiBuildSQLError extends ApiError {
     super(ApiErrorType.BUILD_SQL, message, errors);
   }
 }
-
-/**
- * The API was unable to perform an action due to a lack of project permissions.
- *
- * @export
- * @class ProjectPermissionError
- * @extends {ApiError}
- */
-export class ProjectPermissionError extends ApiError {
-  constructor(message: string, errors?: (string | object)[]) {
-    super(ApiErrorType.PROJECT_PERMISSION, message, errors);
-  }
-}
