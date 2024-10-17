@@ -3,6 +3,8 @@ import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
 import { Link as RouterLink } from 'react-router-dom';
+import Button from '@mui/material/Button';
+import { useState } from 'react';
 
 export interface ManualTelemetryHeaderProps {
   project_id: number;
@@ -10,7 +12,7 @@ export interface ManualTelemetryHeaderProps {
   survey_id: number;
   survey_name: string;
 }
-
+const [showImportDialog, setShowImportDialog] = useState(false);
 const ManualTelemetryHeader: React.FC<ManualTelemetryHeaderProps> = (props) => {
   const { project_id, project_name, survey_id, survey_name } = props;
   return (

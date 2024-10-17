@@ -27,6 +27,7 @@ import { useTelemetryApi } from 'hooks/useTelemetryApi';
 import { useContext, useDeferredValue, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
 import ManualTelemetryTable from './ManualTelemetryTable';
+import { useHistory } from 'react-router';
 
 const ManualTelemetryTableContainer = () => {
   const telemetryApi = useTelemetryApi();
@@ -34,6 +35,7 @@ const ManualTelemetryTableContainer = () => {
   const dialogContext = useContext(DialogContext);
   const telemetryTableContext = useTelemetryTableContext();
   const surveyContext = useContext(SurveyContext);
+  const history = useHistory();
 
   const [showImportDialog, setShowImportDialog] = useState(false);
   const [processingRecords, setProcessingRecords] = useState(false);
@@ -86,6 +88,10 @@ const ManualTelemetryTableContainer = () => {
           setProcessingRecords(false);
         });
     });
+  };
+
+  const onManageAnimals = () => {
+    history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/details`);
   };
 
   return (
@@ -146,6 +152,12 @@ const ManualTelemetryTableContainer = () => {
               onClick={() => telemetryTableContext.addRecord()}
               disabled={telemetryTableContext.isSaving}>
               Add Record
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={onManageAnimals}>
+              Manage Animals
             </Button>
             <Collapse in={deferredUnsavedChanges} orientation="horizontal">
               <Stack flexDirection="row" whiteSpace="nowrap" gap={1}>

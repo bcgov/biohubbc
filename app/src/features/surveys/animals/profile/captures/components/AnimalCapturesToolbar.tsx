@@ -38,7 +38,7 @@ export const AnimalCapturesToolbar = (props: ICapturesToolbarProps) => {
           ({capturesCount})
         </Typography>
       </Typography>
-      <Box display="flex">
+      <Box display="flex" sx={{ mr: 1 }}>
         <Button
           variant="contained"
           color="primary"

@@ -115,11 +115,9 @@ export const AnimalCaptureContainer = () => {
           history.push(
             `/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.survey_critter_id}/capture/create`
           );
-       }}
+        }}
         onAddTelemetryDevice={() => {
-          history.push(
-            `/admin/projects/${projectId}/surveys/${surveyId}/telemetry/deployment/create`
-          );
+          history.push(`/admin/projects/${projectId}/surveys/${surveyId}/telemetry/deployment/create`);
         }}
       />
       {capturesWithLocation.length < captures.length && (
