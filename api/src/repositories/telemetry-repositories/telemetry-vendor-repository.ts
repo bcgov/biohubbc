@@ -3,8 +3,6 @@ import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { BaseRepository } from '../base-repository';
 import { TelemetrySchema, TelemetryVendorEnum } from './telemetry-vendor-repository.interface';
 
-// TODO: Look at BCTW telemetry materialized view for elevation conversions
-//
 /**
  * A repository class for working with telemetry vendor data.
  *
