@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 interface ICapturesToolbarProps {
   capturesCount: number;
   onAddAnimalCapture: () => void;
+  onAddTelemetryDevice: () => void;
 }
 
 /**
@@ -17,7 +18,7 @@ interface ICapturesToolbarProps {
  * @returns {*}
  */
 export const AnimalCapturesToolbar = (props: ICapturesToolbarProps) => {
-  const { capturesCount, onAddAnimalCapture } = props;
+  const { capturesCount, onAddAnimalCapture, onAddTelemetryDevice } = props;
 
   return (
     <Toolbar
@@ -44,6 +45,15 @@ export const AnimalCapturesToolbar = (props: ICapturesToolbarProps) => {
           onClick={onAddAnimalCapture}
           startIcon={<Icon path={mdiPlus} size={1} />}>
           Add Capture
+        </Button>
+      </Box>
+      <Box display="flex">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={onAddTelemetryDevice}
+          startIcon={<Icon path={mdiPlus} size={1} />}>
+          Add Devices
         </Button>
       </Box>
     </Toolbar>
