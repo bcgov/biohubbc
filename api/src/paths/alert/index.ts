@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { IAlertFilterObject } from '../../models/alert-view';
-import { systemAlertSchema } from '../../openapi/schemas/alert';
+import { systemAlertCreateSchema, systemAlertSchema } from '../../openapi/schemas/alert';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { AlertService } from '../../services/alert-service';
 import { getLogger } from '../../utils/logger';
@@ -150,42 +150,7 @@ POST.apiDoc = {
     description: 'Alert post request object.',
     content: {
       'application/json': {
-        schema: {
-          type: 'object',
-          additionalProperties: false,
-          required: ['name', 'message', 'data', 'type'],
-          properties: {
-            alert_id: {
-              type: 'number',
-              nullable: true
-            },
-            name: {
-              type: 'string',
-              description: 'Name of the alert, displayed as the title of banner.'
-            },
-            message: {
-              type: 'string',
-              description: 'Message of the alert, displayed as the body of the banner.'
-            },
-            type: {
-              type: 'string',
-              description: 'Type of the alert, controlling how it is actioned or displayed.'
-            },
-            data: {
-              type: 'object',
-              nullable: true
-            },
-            record_end_date: {
-              type: 'string',
-              nullable: true
-            },
-            revision_count: {
-              type: 'integer',
-              minimum: 0,
-              nullable: true
-            }
-          }
-        }
+        schema: systemAlertCreateSchema
       }
     }
   },

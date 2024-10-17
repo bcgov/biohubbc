@@ -1,6 +1,5 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
@@ -38,9 +37,8 @@ const SummaryPage = () => {
       />
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Box mb={3}>
-          <SystemAlertBanner />
-        </Box>
+        <SystemAlertBanner alertTypes={['General']}/>
+
         <Paper>
           <ListDataTableContainer />
         </Paper>

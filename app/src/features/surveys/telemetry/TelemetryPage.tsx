@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
 import { TelemetryTableContextProvider } from 'contexts/telemetryTableContext';
+import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { SurveyDeploymentList } from 'features/surveys/telemetry/list/SurveyDeploymentList';
 import { TelemetryTableContainer } from 'features/surveys/telemetry/table/TelemetryTableContainer';
 import { TelemetryHeader } from 'features/surveys/telemetry/TelemetryHeader';
@@ -72,6 +73,7 @@ export const TelemetryPage = () => {
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
+      <SystemAlertBanner alertTypes={['Telemetry']}/>
       <Stack flex="1 1 auto" direction="row" gap={1} p={1}>
         {/* Telematry List */}
         <Box flex="0 0 auto" position="relative" width="400px">

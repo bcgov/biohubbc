@@ -7,6 +7,7 @@ import { ObservationsTableContext, ObservationsTableContextProvider } from 'cont
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
+import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { useContext } from 'react';
 import ObservationsTableContainer from './observations-table/ObservationsTableContainer';
 import { SamplingSiteListContainer } from './sampling-sites/SamplingSiteListContainer';
@@ -36,6 +37,8 @@ export const SurveyObservationPage = () => {
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
+      
+      <SystemAlertBanner alertTypes={['Observations']}/>
 
       <ObservationsPageContextProvider>
         <Stack

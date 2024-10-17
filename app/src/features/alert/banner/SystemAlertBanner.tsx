@@ -1,21 +1,20 @@
-import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Collapse from '@mui/material/Collapse';
+import grey from '@mui/material/colors/grey';
 import AlertBar from 'components/alert/AlertBar';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { TransitionGroup } from 'react-transition-group';
 
 interface ISystemAlertBannerProps {
-  alertTypes?: [];
+  alertTypes?: string[];
 }
-/**
- * Renders active alerts of the specified alertTypes
- *
- * @return {*}  {IStaticLayer}
- */
-export const SystemAlertBanner = (props: ISystemAlertBannerProps) => {
-  const { alertTypes } = props;
 
+export const SystemAlertBanner = ({ alertTypes }: ISystemAlertBannerProps) => {
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const biohubApi = useBiohubApi();
 
   const alertDataLoader = useDataLoader(() =>
@@ -24,14 +23,32 @@ export const SystemAlertBanner = (props: ISystemAlertBannerProps) => {
 
   useEffect(() => {
     alertDataLoader.load();
-  }, []);
+  }, [alertDataLoader]);
 
   const alerts = alertDataLoader.data?.alerts ?? [];
+  const maxShown = 2;
+
+  const renderAlerts = (alertsToRender: any[]) =>
+    alertsToRender.map((alert) => (
+      <Collapse key={alert.alert_id}>
+        <Box my={0.5}>
+          <AlertBar severity={alert.severity} text={alert.message} title={alert.name} variant="outlined" />
+        </Box>
+      </Collapse>
+    ));
+
   return (
-    <Stack gap={1}>
-      {alerts.map((alert) => (
-        <AlertBar key={alert.alert_id} severity="error" text={alert.message} title={alert.name} variant="outlined" startCollapsed />
-      ))}
-    </Stack>
+    <Box mb={2}>
+      <TransitionGroup>
+        {renderAlerts(alerts.slice(0, isExpanded ? alerts.length : maxShown))}
+      </TransitionGroup>
+      {alerts.length > maxShown && (
+        <Box mt={1}>
+          <Button variant="text" onClick={() => setIsExpanded((prev) => !prev)} sx={{ color: grey[700] }}>
+            {isExpanded ? 'See fewer alerts' : 'See more alerts'}
+          </Button>
+        </Box>
+      )}
+    </Box>
   );
 };

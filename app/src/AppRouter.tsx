@@ -122,7 +122,9 @@ const AppRouter: React.FC = () => {
       <RouteWithTitle path="/admin/alerts" title={getTitle('Alerts')}>
         <BaseLayout>
           <AuthenticatedRouteGuard>
-            <AlertListPage />
+            <CodesContextProvider>
+              <AlertListPage />
+            </CodesContextProvider>
           </AuthenticatedRouteGuard>
         </BaseLayout>
       </RouteWithTitle>

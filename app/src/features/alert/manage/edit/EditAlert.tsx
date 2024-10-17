@@ -31,29 +31,9 @@ const EditAlert = (props: IEditAlertProps) => {
   // The API call would violate the rules of react hooks if placed in an object outside of the component
   // Reference: https://react.dev/warnings/invalid-hook-call-warning
   const AlertYupSchema = yup.object().shape({
-    name: yup
-      .string()
-      .trim()
-      .required('Name is required')
-      .test('nameUsed', 'Name has already been used', async (val) => {
-        let hasBeenUsed = false;
-        if (val) {
-          const alerts = await biohubApi.alert.getAlerts();
-          // name matches and id matches return false
-          // name matches and id no match return true
-          // no name matches return false
-
-          alerts.alerts.forEach((item) => {
-            if (item.name.toLowerCase() === val.toLowerCase() && item.alert_id !== props.alertId) {
-              hasBeenUsed = true;
-            }
-          });
-        }
-        return !hasBeenUsed;
-      }),
-    description: yup.string().max(200, 'Description cannot exceed 200 characters').required('Description is required'),
-    start_date: yup.string().isValidDateString().nullable(),
-    end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date').nullable()
+    name: yup.string().trim().max(50, 'Name cannot exceed 50 characters').required('Name is required'),
+    message: yup.string().max(250, 'Description cannot exceed 250 characters').required('Description is required'),
+    record_end_date: yup.string().isValidDateString().nullable()
   });
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
@@ -108,13 +88,15 @@ const EditAlert = (props: IEditAlertProps) => {
       dialogTitle={AlertI18N.updateAlertDialogTitle}
       open={props.open}
       dialogLoading={isSubmitting}
+      size="md"
       component={{
         element: <AlertForm />,
         initialValues: {
           alert_id: alertDataLoader.data.alert_id,
           name: alertDataLoader.data.name,
           message: alertDataLoader.data.message,
-          type: alertDataLoader.data.type,
+          alert_type_id: alertDataLoader.data.alert_type_id,
+          severity: alertDataLoader.data.severity,
           data: alertDataLoader.data.data,
           record_end_date: alertDataLoader.data.record_end_date
         },

@@ -3,6 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Container from '@mui/material/Container';
 import PageHeader from 'components/layout/PageHeader';
 import { AdministrativeActivityStatusType, AdministrativeActivityType } from 'constants/misc';
+import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -128,6 +129,7 @@ const ManageUsersPage: React.FC = () => {
     <>
       <PageHeader title="Manage Users" />
       <Container maxWidth="xl" sx={{ py: 3 }}>
+        <SystemAlertBanner alertTypes={['Administrator']} />
         <AccessRequestContainer
           accessRequests={accessRequests}
           codes={codes}

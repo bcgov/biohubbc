@@ -5,6 +5,7 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
+import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import SurveysListPage from 'features/surveys/list/SurveysListPage';
 import { useContext, useEffect } from 'react';
@@ -36,6 +37,7 @@ const ProjectPage = () => {
     <>
       <ProjectHeader />
       <Container maxWidth="xl" sx={{ py: 3 }}>
+      <SystemAlertBanner alertTypes={['Projects']}/>
         <Grid container spacing={3}>
           <Grid item xs={12} lg={4}>
             <Paper>

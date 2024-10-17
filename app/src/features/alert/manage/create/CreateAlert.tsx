@@ -5,7 +5,7 @@ import { AlertI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IAlertCreateObject } from 'interfaces/useAlertApi.interface';
+import { AlertSeverity, IAlertCreateObject } from 'interfaces/useAlertApi.interface';
 import { useContext, useState } from 'react';
 import yup from 'utils/YupSchema';
 import AlertForm from '../form/AlertForm';
@@ -13,6 +13,8 @@ import AlertForm from '../form/AlertForm';
 const AlertYupSchema = yup.object().shape({
   name: yup.string().trim().max(50, 'Name cannot exceed 50 characters').required('Name is required'),
   message: yup.string().max(250, 'Description cannot exceed 250 characters').required('Description is required'),
+  alert_type_id: yup.number().integer(),
+  severity: yup.string(),
   record_end_date: yup.string().isValidDateString().nullable()
 });
 
@@ -76,13 +78,15 @@ const CreateAlert = (props: ICreateAlertProps) => {
         dialogTitle={AlertI18N.createAlertDialogTitle}
         dialogText={AlertI18N.createAlertDialogText}
         open={props.open}
+        size='md'
         dialogLoading={isSubmitting}
         component={{
           element: <AlertForm />,
           initialValues: {
             name: '',
             message: '',
-            type: '',
+            alert_type_id: '' as unknown as number,
+            severity: 'info' as AlertSeverity,
             data: null,
             record_end_date: null
           },

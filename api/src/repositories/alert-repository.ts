@@ -17,15 +17,16 @@ export class AlertRepository extends BaseRepository {
 
     return knex
       .select(
-        'alert_id',
-        'name',
-        'message',
-        'type',
-        'data',
-        'record_end_date',
+        'alert.alert_id',
+        'alert.name',
+        'alert.message',
+        'alert.alert_type_id',
+        'alert.data',
+        'alert.severity',
+        'alert.record_end_date',
         knex.raw(`
     CASE
-      WHEN record_end_date < NOW() THEN 'expired'
+      WHEN alert.record_end_date < NOW() THEN 'expired'
       ELSE 'active'
     END AS status
   `)
@@ -44,12 +45,14 @@ export class AlertRepository extends BaseRepository {
 
     if (filterObject.recordEndDate) {
       queryBuilder.where((qb) => {
-        qb.whereRaw(`record_end_date >= ?`, [filterObject.recordEndDate]).orWhereNull('record_end_date');
+        qb.whereRaw(`alert.record_end_date >= ?`, [filterObject.recordEndDate]).orWhereNull('alert.record_end_date');
       });
     }
 
     if (filterObject.types && filterObject.types.length > 0) {
-      queryBuilder.whereIn('type', filterObject.types);
+      queryBuilder
+        .join('alert_type as at', 'at.alert_type_id', 'alert.alert_type_id')
+        .whereRaw('lower(at.name) = ANY(?)', [filterObject.types.map((type) => type.toLowerCase())]);
     }
 
     const response = await this.connection.knex(queryBuilder, IAlert);
@@ -87,7 +90,7 @@ export class AlertRepository extends BaseRepository {
       SET
         name = ${alert.name},
         message = ${alert.message},
-        type = ${alert.type},
+        alert_type_id = ${alert.alert_type_id},
         data = ${JSON.stringify(alert.data)}::json
       WHERE
         alert_id = ${alert.alert_id}
@@ -119,9 +122,11 @@ export class AlertRepository extends BaseRepository {
   async createAlert(alert: IAlertCreateObject): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO
-        alert (name, message, type, data, record_end_date)
+        alert (name, message, alert_type_id, data, severity, record_end_date)
       VALUES
-        (${alert.name}, ${alert.message}, ${alert.type}, ${JSON.stringify(alert.data)}, ${alert.record_end_date})
+        (${alert.name}, ${alert.message}, ${alert.alert_type_id}, ${JSON.stringify(alert.data)}, ${alert.severity}, ${
+      alert.record_end_date
+    })
       RETURNING alert_id
       ;
       `;
