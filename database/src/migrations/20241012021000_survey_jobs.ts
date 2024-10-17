@@ -15,7 +15,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     -- Adding survey participant roles
     ----------------------------------------------------------------------------------------
-        INSERT INTO biohub.survey_job (name, record_effective_date, description)
+        INSERT INTO survey_job (name, record_effective_date, description)
         VALUES
           ('Crew lead', NOW(), 'A participant of a survey in a crew lead role.'),
           ('Crew member', NOW(), 'A participant of a survey in a crew member role.');
@@ -24,22 +24,22 @@ export async function up(knex: Knex): Promise<void> {
     -- Reassigning sims biologist roles to crew member
     ----------------------------------------------------------------------------------------
       
-        UPDATE biohub.survey_participation sp
+        UPDATE survey_participation sp
         SET sp.survey_job_id = (
             SELECT sj.survey_job_id 
-            FROM biohub.survey_job sj
+            FROM survey_job sj
             WHERE sj.name = 'Crew member'
         )
         WHERE sp.survey_job_id = (
             SELECT sj.survey_job_id 
-            FROM biohub.survey_job sj
+            FROM survey_job sj
             WHERE sj.name = 'Biologist'
         );
 
     ----------------------------------------------------------------------------------------
     -- deleting sime biologist role 
     ----------------------------------------------------------------------------------------
-          DELETE FROM biohub.survey_job
+          DELETE FROM survey_job
           WHERE name = 'Biologist';
 
   `);
