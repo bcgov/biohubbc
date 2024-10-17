@@ -4,8 +4,7 @@ export enum ApiErrorType {
   BUILD_SQL = 'Error constructing SQL query',
   EXECUTE_SQL = 'Error executing SQL query',
   GENERAL = 'Error',
-  UNKNOWN = 'Unknown Error',
-  PROJECT_PERMISSION = 'Project Permission Error'
+  UNKNOWN = 'Unknown Error'
 }
 
 export class ApiError extends BaseError {
