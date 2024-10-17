@@ -24,9 +24,8 @@ export class TelemetryDeviceRepository extends BaseRepository {
     const knex = getKnex();
 
     const queryBuilder = knex
-      .select(['d.device_id', 'd.survey_id', 'd.device_key', 'd.serial', 'd.device_make_id', 'd.model', 'd.comment'])
-      .from({ d: 'device' })
-      .join({ dm: 'device_make' }, 'd.device_make_id', 'dm.device_make_id')
+      .select(['device_id', 'survey_id', 'device_key', 'serial', 'device_make_id', 'model', 'comment'])
+      .from('device')
       .whereIn('device_id', deviceIds)
       .andWhere('survey_id', surveyId);
 
