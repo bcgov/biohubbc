@@ -74,6 +74,8 @@ export class DeploymentRepository extends BaseRepository {
   /**
    * Returns a specific deployment for a given critter Id
    *
+   * WARNING: Should this return all deployments for a critter vs just the most recent?
+   *
    * @param {number} surveyId
    * @param {number} critterId
    * @return {*}  {Promise<SurveyDeployment>}
