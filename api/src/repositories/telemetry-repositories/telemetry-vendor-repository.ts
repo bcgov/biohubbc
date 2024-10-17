@@ -35,7 +35,7 @@ export class TelemetryVendorRepository extends BaseRepository {
         'telemetry_lotek.temperature'
       )
       .from('telemetry_lotek')
-      .innerJoin('deployment2', 'telemetry_lotek.device_key', 'deployment2.device_key');
+      .join('deployment2', 'telemetry_lotek.device_key', 'deployment2.device_key');
 
     return queryBuilder;
   }
@@ -53,7 +53,7 @@ export class TelemetryVendorRepository extends BaseRepository {
       .whereIn('deployment2.deployment2_id', deploymentIds)
       .andWhere('deployment2.survey_id', surveyId)
       .andWhereRaw('telemetry_lotek.uploadtimestamp >= deployment2.attachment_start_timestamp')
-      .orWhereRaw(
+      .andWhereRaw(
         'telemetry_lotek.uploadtimestamp <= deployment2.attachment_end_timestamp OR deployment2.attachment_end_timestamp IS NULL'
       );
 
@@ -83,7 +83,7 @@ export class TelemetryVendorRepository extends BaseRepository {
         'telemetry_vectronic.temperature'
       )
       .from('telemetry_vectronic')
-      .innerJoin('deployment2', 'telemetry_vectronic.device_key', 'deployment2.device_key');
+      .join('deployment2', 'telemetry_vectronic.device_key', 'deployment2.device_key');
 
     return queryBuilder;
   }
@@ -124,14 +124,14 @@ export class TelemetryVendorRepository extends BaseRepository {
         'deployment2.critter_id as critter_id',
         knex.raw(`'${TelemetryVendorEnum.ATS}' as vendor`),
         knex.raw('telemetry_ats.collarserialnumber::text as serial'),
-        knex.raw('telemetry_ats.date as acquisition_date'),
+        'telemetry_ats.date as acquisition_date',
         'telemetry_ats.latitude',
         'telemetry_ats.longitude',
         knex.raw('NULL as elevation'),
         knex.raw('telemetry_ats.temperature::float')
       )
       .from('telemetry_ats')
-      .innerJoin('deployment2', 'telemetry_ats.device_key', 'deployment2.device_key');
+      .join('deployment2', 'telemetry_ats.device_key', 'deployment2.device_key');
 
     return queryBuilder;
   }
@@ -147,7 +147,7 @@ export class TelemetryVendorRepository extends BaseRepository {
       .whereIn('deployment2.deployment2_id', deploymentIds)
       .andWhere('deployment2.survey_id', surveyId)
       .andWhereRaw('telemetry_ats.date >= deployment2.attachment_start_timestamp')
-      .orWhereRaw(
+      .andWhereRaw(
         'telemetry_ats.date <= deployment2.attachment_end_timestamp OR deployment2.attachment_end_timestamp IS NULL'
       );
 
@@ -169,15 +169,15 @@ export class TelemetryVendorRepository extends BaseRepository {
         'telemetry_manual.deployment2_id as deployment_id',
         'deployment2.critter_id as critter_id',
         knex.raw(`'${TelemetryVendorEnum.MANUAL}' as vendor`),
-        knex.raw('device.serial'),
-        knex.raw('telemetry_manual.acquisition_date'),
+        'device.serial',
+        'telemetry_manual.acquisition_date',
         'telemetry_manual.latitude',
         'telemetry_manual.longitude',
         knex.raw('NULL as elevation'),
         knex.raw('NULL as temperature')
       )
       .from('telemetry_manual')
-      .innerJoin('deployment2', 'telemetry_manual.deployment2_id', 'deployment2.deployment2_id')
+      .join('deployment2', 'telemetry_manual.deployment2_id', 'deployment2.deployment2_id')
       .join('device', 'deployment2.device_id', 'device.device_id');
 
     return queryBuilder;
@@ -194,7 +194,7 @@ export class TelemetryVendorRepository extends BaseRepository {
       .whereIn('telemetry_manual.deployment2_id', deploymentIds)
       .andWhere('deployment2.survey_id', surveyId)
       .andWhereRaw('telemetry_manual.acquisition_date >= deployment2.attachment_start_timestamp')
-      .orWhereRaw(
+      .andWhereRaw(
         'telemetry_manual.acquisition_date <= deployment2.attachment_end OR deployment2.attachment_end_timestamp IS NULL'
       );
 
