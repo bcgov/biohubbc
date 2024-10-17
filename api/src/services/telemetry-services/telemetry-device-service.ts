@@ -49,6 +49,17 @@ export class TelemetryDeviceService extends DBService {
   }
 
   /**
+   * Get a list of devices by their IDs.
+   * @param {number} surveyId
+   * @param {number[]} deviceIds
+   * @returns {*} {Promise<DeviceRecord[]>}
+   *
+   */
+  async getDevices(surveyId: number, deviceIds: number[]): Promise<DeviceRecord[]> {
+    return this.telemetryDeviceRepository.getDevicesByIds(surveyId, deviceIds);
+  }
+
+  /**
    * Delete a single device by its ID.
    *
    * @throws {ApiGeneralError} If unable to delete the device.

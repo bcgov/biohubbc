@@ -70,6 +70,12 @@ export async function up(knex: Knex): Promise<void> {
       fixtime                 varchar NULL,
       activity                varchar NULL,
 
+      create_date       timestamptz(6)     DEFAULT now() NOT NULL,
+      create_user       integer            NOT NULL,
+      update_date       timestamptz(6),
+      update_user       integer,
+      revision_count    integer            DEFAULT 0 NOT NULL,
+
       CONSTRAINT telemetry_ats_pk PRIMARY KEY (telemetry_ats_id)
     );
 
@@ -104,6 +110,11 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN telemetry_ats.numsats IS 'Number of satellites used in achieving GPS fix';
     COMMENT ON COLUMN telemetry_ats.fixtime IS 'Number of seconds needed to achieve GPS fix';
     COMMENT ON COLUMN telemetry_ats.activity IS 'Activity value represents change in the accelerometer value internal to the collar between GPS fixes. Exact numeric meaning varies between models.';
+    COMMENT ON COLUMN telemetry_ats.create_date       IS 'The datetime the record was created.';
+    COMMENT ON COLUMN telemetry_ats.create_user       IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN telemetry_ats.update_date       IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN telemetry_ats.update_user       IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN telemetry_ats.revision_count    IS 'Revision count used for concurrency control.';
 
     ----------------------------------------------------------------------------------------
     -- Add triggers
@@ -167,6 +178,12 @@ export async function up(knex: Knex): Promise<void> {
     transformedy                  FLOAT8 NULL,
     geom                          public.geometry(point, 4326) NULL,
 
+    create_date       timestamptz(6)     DEFAULT now() NOT NULL,
+    create_user       integer            NOT NULL,
+    update_date       timestamptz(6),
+    update_user       integer,
+    revision_count    integer            DEFAULT 0 NOT NULL,
+
     CONSTRAINT telemetry_vectronic_pk PRIMARY KEY (telemetry_vectronic_id),
     CONSTRAINT telemetry_vectronic_idposition_un UNIQUE (idposition)
     );
@@ -228,6 +245,11 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN telemetry_vectronic.transformedx IS 'No description provided by vendor.';
     COMMENT ON COLUMN telemetry_vectronic.transformedy IS 'No description provided by vendor.';
     COMMENT ON COLUMN telemetry_vectronic.geom IS 'Telemetry collected by device.';
+    COMMENT ON COLUMN telemetry_vectronic.create_date       IS 'The datetime the record was created.';
+    COMMENT ON COLUMN telemetry_vectronic.create_user       IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN telemetry_vectronic.update_date       IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN telemetry_vectronic.update_user       IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN telemetry_vectronic.revision_count    IS 'Revision count used for concurrency control.';
 
     ----------------------------------------------------------------------------------------
     -- Add triggers
@@ -267,6 +289,12 @@ export async function up(knex: Knex): Promise<void> {
     recdatetime                   TIMESTAMPTZ NULL,
     geom                          public.geometry(point, 4326) NULL,
 
+    create_date       timestamptz(6)     DEFAULT now() NOT NULL,
+    create_user       integer            NOT NULL,
+    update_date       timestamptz(6),
+    update_user       integer,
+    revision_count    integer            DEFAULT 0 NOT NULL,
+
     CONSTRAINT telemetry_lotek_pk PRIMARY KEY (telemetry_lotek_id)
     );
 
@@ -304,6 +332,11 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN telemetry_lotek.deviceid IS 'the Lotek device ID';
     COMMENT ON COLUMN telemetry_lotek.recdatetime IS 'timestamp the telemetry was recorded';
     COMMENT ON COLUMN telemetry_lotek.geom IS 'PostGIS human readable geometry point. Created with Latitude and Longitude.';
+    COMMENT ON COLUMN telemetry_lotek.create_date       IS 'The datetime the record was created.';
+    COMMENT ON COLUMN telemetry_lotek.create_user       IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN telemetry_lotek.update_date       IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN telemetry_lotek.update_user       IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN telemetry_lotek.revision_count    IS 'Revision count used for concurrency control.';
 
     ----------------------------------------------------------------------------------------
     -- Add triggers
