@@ -1,7 +1,8 @@
+import { Knex } from 'knex';
 import { getKnex } from '../../database/db';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { BaseRepository } from '../base-repository';
-import { TelemetrySchema, TelemetryVendorEnum } from './telemetry-vendor-repository.interface';
+import { Telemetry, TelemetrySchema, TelemetryVendorEnum } from './telemetry-vendor-repository.interface';
 
 /**
  * A repository class for working with telemetry vendor data.
@@ -17,19 +18,16 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
    * @returns {Knex.QueryBuilder}
    */
-  getLotekTelemetryBaseQuery() {
+  getLotekTelemetryBaseQuery(): Knex.QueryBuilder {
     const knex = getKnex();
 
     const queryBuilder = knex
       .select(
         'telemetry_lotek.telemetry_lotek_id as telemetry_id',
         'deployment2.deployment2_id as deployment_id',
-        'critter.critter_id',
-        'critter.critterbase_critter_id',
+        'deployment2.critter_id as critter_id',
         knex.raw(`'${TelemetryVendorEnum.LOTEK}' as vendor`),
         knex.raw('telemetry_lotek.deviceid::text as serial'),
-        knex.raw('deployment2.attachment_start'),
-        knex.raw('deployment2.attachment_end'),
         knex.raw('telemetry_lotek.uploadtimestamp as acquisition_date'),
         'telemetry_lotek.latitude',
         'telemetry_lotek.longitude',
@@ -37,8 +35,27 @@ export class TelemetryVendorRepository extends BaseRepository {
         'telemetry_lotek.temperature'
       )
       .from('telemetry_lotek')
-      .join('deployment2', 'telemetry_lotek.device_key', 'deployment2.device_key')
-      .join('critter', 'deployment2.critter_id', 'critter.critter_id');
+      .innerJoin('deployment2', 'telemetry_lotek.device_key', 'deployment2.device_key');
+
+    return queryBuilder;
+  }
+
+  /**
+   * Get normalized `Lotek` telemetry data for list of deployment IDs.
+   *
+   * TODO: Add check for credentials (same method or different method?)
+   *
+   * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
+   * @returns {Knex.QueryBuilder}
+   */
+  getLotekTelemetryByDeploymentIdsBaseQuery(surveyId: number, deploymentIds: number[]): Knex.QueryBuilder {
+    const queryBuilder = this.getLotekTelemetryBaseQuery()
+      .whereIn('deployment2.deployment2_id', deploymentIds)
+      .andWhere('deployment2.survey_id', surveyId)
+      .andWhereRaw('telemetry_lotek.uploadtimestamp >= deployment2.attachment_start_timestamp')
+      .orWhereRaw(
+        'telemetry_lotek.uploadtimestamp <= deployment2.attachment_end_timestamp OR deployment2.attachment_end_timestamp IS NULL'
+      );
 
     return queryBuilder;
   }
@@ -49,19 +66,16 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
    * @returns {Knex.QueryBuilder}
    */
-  getVectronicTelemetryBaseQuery() {
+  getVectronicTelemetryBaseQuery(): Knex.QueryBuilder {
     const knex = getKnex();
 
     const queryBuilder = knex
       .select(
         'telemetry_vectronic.telemetry_vectronic_id as telemetry_id',
         'deployment2.deployment2_id as deployment_id',
-        'critter.critter_id',
-        'critter.critterbase_critter_id',
+        'deployment2.critter_id as critter_id',
         knex.raw(`'${TelemetryVendorEnum.VECTRONIC}' as vendor`),
         knex.raw('telemetry_vectronic.idcollar::text as serial'),
-        knex.raw('deployment2.attachment_start'),
-        knex.raw('deployment2.attachment_end'),
         knex.raw('telemetry_vectronic.acquisitiontime as acquisition_date'),
         'telemetry_vectronic.latitude',
         'telemetry_vectronic.longitude',
@@ -69,8 +83,27 @@ export class TelemetryVendorRepository extends BaseRepository {
         'telemetry_vectronic.temperature'
       )
       .from('telemetry_vectronic')
-      .join('deployment2', 'telemetry_vectronic.device_key', 'deployment2.device_key')
-      .join('critter', 'deployment2.critter_id', 'critter.critter_id');
+      .innerJoin('deployment2', 'telemetry_vectronic.device_key', 'deployment2.device_key');
+
+    return queryBuilder;
+  }
+
+  /**
+   * Get normalized `Vectronic` telemetry data for list of deployment IDs.
+   *
+   * TODO: Add check for credentials (same method or different method?)
+   *
+   * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
+   * @returns {Knex.QueryBuilder}
+   */
+  getVectronicTelemetryByDeploymentIdsBaseQuery(surveyId: number, deploymentIds: number[]): Knex.QueryBuilder {
+    const queryBuilder = this.getVectronicTelemetryBaseQuery()
+      .whereIn('deployment2.deployment2_id', deploymentIds)
+      .andWhere('deployment2.survey_id', surveyId)
+      .andWhereRaw('telemetry_vectronic.acquisitiontime >= deployment2.attachment_start_timestamp')
+      .andWhereRaw(
+        'telemetry_vectronic.acquisitiontime <= deployment2.attachment_end_timestamp OR deployment2.attachment_end_timestamp IS NULL'
+      );
 
     return queryBuilder;
   }
@@ -88,12 +121,9 @@ export class TelemetryVendorRepository extends BaseRepository {
       .select(
         'telemetry_ats.telemetry_ats_id as telemetry_id',
         'deployment2.deployment2_id as deployment_id',
-        'critter.critter_id',
-        'critter.critterbase_critter_id',
+        'deployment2.critter_id as critter_id',
         knex.raw(`'${TelemetryVendorEnum.ATS}' as vendor`),
         knex.raw('telemetry_ats.collarserialnumber::text as serial'),
-        knex.raw('deployment2.attachment_start'),
-        knex.raw('deployment2.attachment_end'),
         knex.raw('telemetry_ats.date as acquisition_date'),
         'telemetry_ats.latitude',
         'telemetry_ats.longitude',
@@ -101,8 +131,25 @@ export class TelemetryVendorRepository extends BaseRepository {
         knex.raw('telemetry_ats.temperature::float')
       )
       .from('telemetry_ats')
-      .join('deployment2', 'telemetry_ats.device_key', 'deployment2.device_key')
-      .join('critter', 'deployment2.critter_id', 'critter.critter_id');
+      .innerJoin('deployment2', 'telemetry_ats.device_key', 'deployment2.device_key');
+
+    return queryBuilder;
+  }
+
+  /**
+   * Get normalized `ATS` telemetry data for list of deployment IDs.
+   *
+   * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
+   * @returns {Knex.QueryBuilder}
+   */
+  getATSTelemetryByDeploymentIdsBaseQuery(surveyId: number, deploymentIds: number[]): Knex.QueryBuilder {
+    const queryBuilder = this.getATSTelemetryBaseQuery()
+      .whereIn('deployment2.deployment2_id', deploymentIds)
+      .andWhere('deployment2.survey_id', surveyId)
+      .andWhereRaw('telemetry_ats.date >= deployment2.attachment_start_timestamp')
+      .orWhereRaw(
+        'telemetry_ats.date <= deployment2.attachment_end_timestamp OR deployment2.attachment_end_timestamp IS NULL'
+      );
 
     return queryBuilder;
   }
@@ -113,19 +160,16 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
    * @returns {Knex.QueryBuilder}
    */
-  getManualTelemetryBaseQuery() {
+  getManualTelemetryBaseQuery(): Knex.QueryBuilder {
     const knex = getKnex();
 
     const queryBuilder = knex
       .select(
         'telemetry_manual.telemetry_manual_id as telemetry_id',
         'telemetry_manual.deployment2_id as deployment_id',
-        'critter.critter_id',
-        'critter.critterbase_critter_id',
+        'deployment2.critter_id as critter_id',
         knex.raw(`'${TelemetryVendorEnum.MANUAL}' as vendor`),
         knex.raw('device.serial'),
-        knex.raw('deployment2.attachment_start'),
-        knex.raw('deployment2.attachment_end'),
         knex.raw('telemetry_manual.acquisition_date'),
         'telemetry_manual.latitude',
         'telemetry_manual.longitude',
@@ -133,9 +177,26 @@ export class TelemetryVendorRepository extends BaseRepository {
         knex.raw('NULL as temperature')
       )
       .from('telemetry_manual')
-      .join('deployment2', 'telemetry_manual.deployment2_id', 'deployment2.deployment2_id')
-      .join('critter', 'deployment2.critter_id', 'critter.critter_id')
+      .innerJoin('deployment2', 'telemetry_manual.deployment2_id', 'deployment2.deployment2_id')
       .join('device', 'deployment2.device_id', 'device.device_id');
+
+    return queryBuilder;
+  }
+
+  /**
+   * Get normalized `Manual` telemetry data for list of deployment IDs.
+   *
+   * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
+   * @returns {Knex.QueryBuilder}
+   */
+  getManualTelemetryByDeploymentIdsBaseQuery(surveyId: number, deploymentIds: number[]): Knex.QueryBuilder {
+    const queryBuilder = this.getManualTelemetryBaseQuery()
+      .whereIn('telemetry_manual.deployment2_id', deploymentIds)
+      .andWhere('deployment2.survey_id', surveyId)
+      .andWhereRaw('telemetry_manual.acquisition_date >= deployment2.attachment_start_timestamp')
+      .orWhereRaw(
+        'telemetry_manual.acquisition_date <= deployment2.attachment_end OR deployment2.attachment_end_timestamp IS NULL'
+      );
 
     return queryBuilder;
   }
@@ -146,70 +207,41 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @param {number} surveyId
    * @param {number[]} deploymentIds
    * @param {ApiPaginationOptions} [pagination] - Pagination options
-   * @returns {Promise<TelemetrySchema[]>}
+   * @returns {Promise<Telemetry[]>}
    */
-  async getTelemetryByDeploymentIds(surveyId: number, deploymentIds: number[], pagination?: ApiPaginationOptions) {
+  async getTelemetryByDeploymentIds(
+    surveyId: number,
+    deploymentIds: number[],
+    pagination?: ApiPaginationOptions
+  ): Promise<Telemetry[]> {
     const knex = getKnex();
 
     const queryBuilder = knex
       .queryBuilder()
       .with('telemetry', (withQueryBuilder) => {
-        withQueryBuilder.union([
+        withQueryBuilder.unionAll([
           /**
-           * LOTEK TELEMETRY
-           *
-           * TODO: Add check for valid credentials
+           * LOTEK Telemetry
            */
-          this.getLotekTelemetryBaseQuery()
-            .whereIn('deployment2.deployment2_id', deploymentIds)
-            .andWhere('deployment2.survey_id', surveyId),
+          this.getLotekTelemetryByDeploymentIdsBaseQuery(surveyId, deploymentIds),
           /**
-           * VECTRONIC TELEMETRY
-           *
-           * TODO: Add check for valid credentials
+           * VECTRONIC Telemetry
            */
-          this.getVectronicTelemetryBaseQuery()
-            .whereIn('deployment2.deployment2_id', deploymentIds)
-            .andWhere('deployment2.survey_id', surveyId),
+          this.getVectronicTelemetryByDeploymentIdsBaseQuery(surveyId, deploymentIds),
           /**
-           * ATS TELEMETRY
-           *
+           * ATS Telemetry
            */
-          this.getATSTelemetryBaseQuery()
-            .whereIn('deployment2.deployment2_id', deploymentIds)
-            .andWhere('deployment2.survey_id', surveyId),
+          this.getATSTelemetryByDeploymentIdsBaseQuery(surveyId, deploymentIds),
           /**
-           * MANUAL TELEMETRY
-           *
+           * MANUAL Telemetry
            */
-          this.getManualTelemetryBaseQuery()
-            .whereIn('telemetry_manual.deployment2_id', deploymentIds)
-            .andWhere('deployment2.survey_id', surveyId)
+          this.getManualTelemetryByDeploymentIdsBaseQuery(surveyId, deploymentIds)
         ]);
       })
-      .select(
-        'telemetry_id',
-        'deployment_id',
-        'critter_id',
-        'critterbase_critter_id',
-        'vendor',
-        'serial',
-        'acquisition_date',
-        'latitude',
-        'longitude',
-        'elevation',
-        'temperature'
-      )
-      .from('telemetry')
-      .where(knex.raw('telemetry.acquisition_date >= telemetry.attachment_start'))
-      .andWhere(
-        knex.raw(`
-          telemetry.acquisition_date <= telemetry.attachment_end
-          OR
-          telemetry.attachment_end IS NULL`)
-      )
-      .orderBy('telemetry.acquisition_date', 'desc');
+      .select('*')
+      .from('telemetry');
 
+    // Inject pagination / sorting if provided
     if (pagination) {
       queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 

@@ -33,17 +33,16 @@ export enum TelemetryVendorEnum {
 }
 
 export const TelemetrySchema = z.object({
-  telemetry_id: z.string(),
-  deployment_id: z.number(),
-  critter_id: z.number(),
-  critterbase_critter_id: z.string().uuid(),
-  vendor: z.nativeEnum(TelemetryVendorEnum),
-  serial: z.string(),
-  acquisition_date: z.string(),
-  latitude: z.number().nullable(),
-  longitude: z.number().nullable(),
-  elevation: z.number().nullable(),
-  temperature: z.number().nullable()
+  telemetry_id: z.string(), // Vendor telemetry ID (Primary Key)
+  deployment_id: z.number(), // SIMS Deployment ID
+  critter_id: z.number(), // SIMS Critter ID
+  vendor: z.nativeEnum(TelemetryVendorEnum), // Telemetry vendor
+  serial: z.string(), // Telemetry device serial number
+  acquisition_date: z.string(), // Date telemetry was retrieved
+  latitude: z.number().nullable(), // Latitude of telemetry (Y axis)
+  longitude: z.number().nullable(), // Longitude of telemetry (X axis)
+  elevation: z.number().nullable(), // Elevation of telemetry in meters
+  temperature: z.number().nullable() // Temperature in Celsius
 });
 
 export type Telemetry = z.infer<typeof TelemetrySchema>;
