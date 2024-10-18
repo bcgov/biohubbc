@@ -78,7 +78,7 @@ const systemUsers: SystemUserSeed[] = [
     given_name: 'Andrew',
     family_name: 'Thompson',
     email: 'andrew.thompson@gov.bc.ca'
-  }, 
+  },
   {
     identifier: 'ameijer',
     type: SYSTEM_IDENTITY_SOURCE.IDIR,
