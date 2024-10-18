@@ -96,14 +96,14 @@ export async function up(knex: Knex): Promise<void> {
       update_date                     timestamptz(6),
       update_user                     integer,
       revision_count                  integer            DEFAULT 0 NOT NULL,
-      -- Check that the attachment_start is before attachment_end
+      -- Check that the attachment_start_timestamp is before attachment_end_timestamp
       CONSTRAINT check_attachment_start_before_end CHECK (attachment_start_timestamp <= attachment_end_timestamp),
       -- Check that if frequency is set, frequency_unit_id is also set and vice versa
       CONSTRAINT check_frequency_and_unit CHECK ((frequency IS NOT NULL AND frequency_unit_id IS NOT NULL) OR (frequency IS NULL AND frequency_unit_id IS NULL)),
       -- Check that for deployments of the same device_key, that the attachment dates do not overlap
       CONSTRAINT check_no_device_attachment_date_overlap EXCLUDE USING gist (
         device_key WITH =,
-        tstzrange(attachment_start, attachment_end) WITH &&
+        tstzrange(attachment_start_timestamp, attachment_end_timestamp) WITH &&
       ),
       CONSTRAINT deployment2_pk PRIMARY KEY (deployment2_id)
     );
@@ -185,7 +185,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN telemetry_manual.deployment2_id         IS 'Foreign key to the deployment table.';
     COMMENT ON COLUMN telemetry_manual.latitude               IS 'The latitude of the telemetry record, having ten points of total precision and 7 points of precision after the decimal.';
     COMMENT ON COLUMN telemetry_manual.longitude              IS 'The longitude of the telemetry record, having ten points of total precision and 7 points of precision after the decimal.';
-    COMMENT ON COLUMN telemetry_manual.acquisition_date       IS 'The date the device recorded the telemetry record. (Ex: the device captures a gps point every hour).'
+    COMMENT ON COLUMN telemetry_manual.acquisition_date       IS 'The date the device recorded the telemetry record. (Ex: the device captures a gps point every hour).';
     COMMENT ON COLUMN telemetry_manual.transmission_date      IS 'The date the device transmitted the telemetry record to the vendor. (Ex: the device transmits all recorded gps points to the vendor every 24 hours).';
     COMMENT ON COLUMN telemetry_manual.create_date            IS 'The datetime the record was created.';
     COMMENT ON COLUMN telemetry_manual.create_user            IS 'The id of the user who created the record as identified in the system user table.';

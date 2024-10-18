@@ -66,10 +66,10 @@ export class DeploymentRepository extends BaseRepository {
    *
    * @param {number} surveyId The survey ID
    * @param {number} deploymentId The deployment ID
-   * @return {*}  {Promise<DeploymentRecord>}
+   * @return {*}  {Promise<ExtendedDeploymentRecord>}
    * @memberof DeploymentRepository
    */
-  async getDeploymentById(surveyId: number, deploymentId: number): Promise<DeploymentRecord> {
+  async getDeploymentById(surveyId: number, deploymentId: number): Promise<ExtendedDeploymentRecord> {
     const sqlStatement = SQL`
       SELECT
         -- deployment data
@@ -104,7 +104,7 @@ export class DeploymentRepository extends BaseRepository {
         deployment2.survey_id = ${surveyId};
     `;
 
-    const response = await this.connection.sql(sqlStatement, DeploymentRecord);
+    const response = await this.connection.sql(sqlStatement, ExtendedDeploymentRecord);
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get deployment', [

@@ -129,21 +129,25 @@ GET.apiDoc = {
                     },
                     attachment_start_date: {
                       type: 'string',
-                      description: 'start date of the deployment.'
+                      description: 'start date of the deployment.',
+                      example: '2021-01-01'
                     },
                     attachment_start_time: {
                       type: 'string',
                       description: 'start time of the deployment.',
+                      example: '12:00:00',
                       nullable: true
                     },
                     attachment_end_date: {
                       type: 'string',
                       description: 'End date of the deployment.',
+                      example: '2021-01-01',
                       nullable: true
                     },
                     attachment_end_time: {
                       type: 'string',
                       description: 'End time of the deployment.',
+                      example: '12:00:00',
                       nullable: true
                     },
                     critterbase_start_capture_id: {
@@ -182,71 +186,7 @@ GET.apiDoc = {
                       format: 'uuid',
                       description: 'Id of the critter in Critterbase.'
                     }
-                  },
-                  oneOf: [
-                    {
-                      // Both frequency and frequency_unit_id are required if either is present
-                      properties: {
-                        frequency: {
-                          type: 'number',
-                          nullable: false
-                        },
-                        frequency_unit_id: {
-                          type: 'integer',
-                          nullable: false
-                        }
-                      },
-                      required: ['frequency', 'frequency_unit_id']
-                    },
-                    {
-                      // Frequency and frequency_unit_id are both optional if neither is present
-                      properties: {
-                        frequency: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        frequency_unit_id: {
-                          type: 'integer',
-                          nullable: true
-                        }
-                      },
-                      required: ['frequency', 'frequency_unit_id']
-                    }
-                  ],
-                  anyOf: [
-                    {
-                      // Either critterbase_end_capture_id or critterbase_end_mortality_id is required
-                      properties: {
-                        critterbase_end_capture_id: {
-                          type: 'string',
-                          format: 'uuid',
-                          nullable: true
-                        },
-                        critterbase_end_mortality_id: {
-                          type: 'string',
-                          format: 'uuid',
-                          nullable: false
-                        }
-                      },
-                      required: ['critterbase_end_capture_id', 'critterbase_end_mortality_id']
-                    },
-                    {
-                      // Either critterbase_end_capture_id or critterbase_end_mortality_id is required
-                      properties: {
-                        critterbase_end_capture_id: {
-                          type: 'string',
-                          format: 'uuid',
-                          nullable: false
-                        },
-                        critterbase_end_mortality_id: {
-                          type: 'string',
-                          format: 'uuid',
-                          nullable: true
-                        }
-                      },
-                      required: ['critterbase_end_capture_id', 'critterbase_end_mortality_id']
-                    }
-                  ]
+                  }
                 }
               }
             }
