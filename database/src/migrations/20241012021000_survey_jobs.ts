@@ -24,16 +24,16 @@ export async function up(knex: Knex): Promise<void> {
     -- Reassigning sims biologist roles to crew member
     ----------------------------------------------------------------------------------------
       
-        UPDATE survey_participation sp
-        SET sp.survey_job_id = (
-            SELECT sj.survey_job_id 
-            FROM survey_job sj
-            WHERE sj.name = 'Crew member'
+        UPDATE survey_participation
+        SET survey_job_id = (
+            SELECT survey_job_id 
+            FROM survey_job
+            WHERE name = 'Crew member'
         )
-        WHERE sp.survey_job_id = (
-            SELECT sj.survey_job_id 
-            FROM survey_job sj
-            WHERE sj.name = 'Biologist'
+        WHERE survey_job_id = (
+            SELECT survey_job_id 
+            FROM survey_job
+            WHERE name = 'Biologist'
         );
 
     ----------------------------------------------------------------------------------------

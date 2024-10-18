@@ -165,7 +165,7 @@ const insertSurveyParticipationData = (surveyId: number) => `
             su.user_identifier = '${PROJECT_SEEDER_USER_IDENTIFIER}'
         ), 1)
       ),
-      1
+      (SELECT survey_job_id FROM survey_job LIMIT 1)
     )
   ;
 `;
