@@ -1,6 +1,5 @@
-import { z } from 'zod';
-import { TelemetryManualRecord } from '../../database-models/telemetry_manual';
 import { getKnex } from '../../database/db';
+import { ApiExecuteSQLError } from '../../errors/api-error';
 import { BaseRepository } from '../base-repository';
 import { CreateManualTelemetry, UpdateManualTelemetry } from './telemetry-manual-repository.interface';
 
@@ -15,74 +14,69 @@ export class TelemetryManualRepository extends BaseRepository {
   /**
    * Bulk create manual telemetry records.
    *
-   * @param {number} surveyId
-   * @param {CreateManualTelemetry[]} telemetry - List of manual telemetry data
-   * @returns {Promise<TelemetryManualRecord[]>}
+   * Note: Deployment IDs need to be pre-validated against the survey ID in the service.
+   *
+   * @param {CreateManualTelemetry[]} telemetry - List of manual telemetry data to create
+   * @returns {Promise<void>}
    */
-  async bulkCreateManualTelemetry(
-    surveyId: number,
-    telemetry: CreateManualTelemetry[]
-  ): Promise<TelemetryManualRecord[]> {
+  async bulkCreateManualTelemetry(telemetry: CreateManualTelemetry[]): Promise<void> {
     const knex = getKnex();
 
-    const queryBuilder = knex
-      .insert(telemetry)
-      .into('telemetry_manual')
-      .join('deployment2', 'telemetry_manual.deployment2_id', 'deployment2.deployment2_id')
-      .where('deployment2.survey_id', surveyId);
+    const queryBuilder = knex.insert(telemetry).into('telemetry_manual');
 
-    const response = await this.connection.knex(queryBuilder, TelemetryManualRecord);
+    const response = await this.connection.knex(queryBuilder);
 
-    return response.rows;
+    if (response.rowCount !== telemetry.length) {
+      throw new ApiExecuteSQLError('Failed to create manual telemetry records', [
+        'TelemetryManualRepository->bulkCreateManualTelemetry',
+        `expected rowCount to be ${telemetry.length}, got ${response.rowCount}`
+      ]);
+    }
   }
 
   /**
    * Bulk update manual telemetry records.
    *
-   * @param {number} surveyId
-   * @param {CreateManualTelemetry[]} telemetry - List of Manual telemetry data
-   * @returns {Promise<TelemetryManualRecord[]>}
+   * Note: Deployment IDs need to be pre-validated against the survey ID in the service.
+   *
+   * @param {CreateManualTelemetry[]} telemetry - List of Manual telemetry data to update
+   * @returns {Promise<void>}
    */
-  async bulkUpdateManualTelemetry(
-    surveyId: number,
-    telemetry: UpdateManualTelemetry[]
-  ): Promise<TelemetryManualRecord[]> {
+  async bulkUpdateManualTelemetry(telemetry: UpdateManualTelemetry[]): Promise<void> {
     const knex = getKnex();
 
-    const queryBuilder = knex
-      .insert(telemetry)
-      .update('telemetry_manual')
-      .join('deployment2', 'telemetry_manual.deployment2_id', 'deployment2.deployment2_id')
-      .where('deployment2.survey_id', surveyId);
+    const queryBuilder = knex.upsert(telemetry, 'telemetry_manual_id').into('telemetry_manual');
 
-    const response = await this.connection.knex(queryBuilder, TelemetryManualRecord);
+    const response = await this.connection.knex(queryBuilder);
 
-    return response.rows;
+    if (response.rowCount !== telemetry.length) {
+      throw new ApiExecuteSQLError('Failed to update manual telemetry records', [
+        'TelemetryManualRepository->bulkUpdateManualTelemetry',
+        `expected rowCount to be ${telemetry.length}, got ${response.rowCount}`
+      ]);
+    }
   }
 
   /**
-   * Bulk update manual telemetry records.
+   * Bulk delete manual telemetry records.
    *
-   * @param {number} surveyId
-   * @param {CreateManualTelemetry} telemetryManualIds - List of manual telemetry IDs
-   * @returns {Promise<TelemetryManualRecord[]>}
+   * Note: Deployment IDs need to be pre-validated against the survey ID in the service.
+   *
+   * @param {string} telemetryManualIds - List of manual telemetry IDs
+   * @returns {Promise<void>}
    */
-  async bulkDeleteManualTelemetry(
-    surveyId: number,
-    telemetryManualIds: number
-  ): Promise<{ telemetry_manual_id: number }[]> {
+  async bulkDeleteManualTelemetry(telemetryManualIds: string[]): Promise<void> {
     const knex = getKnex();
 
-    const queryBuilder = knex
-      .delete()
-      .from('telemetry_manual')
-      .join('deployment2', 'telemetry_manual.deployment2_id', 'deployment2.deployment2_id')
-      .where('telemetry_manual_id', telemetryManualIds)
-      .andWhere('deployment2.survey_id', surveyId)
-      .returning('telemetry_manual_id');
+    const queryBuilder = knex.delete().from('telemetry_manual').whereIn('telemetry_manual_id', telemetryManualIds);
 
-    const response = await this.connection.knex(queryBuilder, z.object({ telemetry_manual_id: z.number() }));
+    const response = await this.connection.knex(queryBuilder);
 
-    return response.rows;
+    if (response.rowCount !== telemetryManualIds.length) {
+      throw new ApiExecuteSQLError('Failed to delete manual telemetry records', [
+        'TelemetryManualRepository->bulkDeleteManualTelemetry',
+        `expected rowCount to be ${telemetryManualIds.length}, got ${response.rowCount}`
+      ]);
+    }
   }
 }

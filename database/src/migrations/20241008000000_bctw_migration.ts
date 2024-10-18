@@ -172,6 +172,15 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN telemetry_manual.update_user            IS 'The id of the user who updated the record as identified in the system user table.';
     COMMENT ON COLUMN telemetry_manual.revision_count         IS 'Revision count used for concurrency control.';
 
+    -- Add foreign key constraints
+    ALTER TABLE telemetry_manual
+      ADD CONSTRAINT telemetry_manual_fk1
+      FOREIGN KEY (deployment2_id)
+      REFERENCES deployment2(deployment2_id);
+
+    -- Add indexes for foreign keys
+    CREATE INDEX telemetry_manual_idx1 ON deployment2(deployment2_id);
+
     ----------------------------------------------------------------------------------------
 
     CREATE TABLE telemetry_credential_lotek (
