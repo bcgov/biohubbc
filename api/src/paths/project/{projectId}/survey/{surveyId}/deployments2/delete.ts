@@ -3,12 +3,10 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { BctwDeploymentService } from '../../../../../../services/bctw-service/bctw-deployment-service';
-import { ICritterbaseUser } from '../../../../../../services/critterbase-service';
-import { DeploymentService } from '../../../../../../services/deployment-service';
+import { DeploymentService } from '../../../../../../services/deployment-services/deployment-service';
 import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments/delete');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments2/delete');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -103,7 +101,7 @@ POST.apiDoc = {
 };
 
 /**
- * Delete deployments from a survey.
+ * Delete deployments.
  *
  * @export
  * @return {*}  {RequestHandler}
@@ -118,20 +116,9 @@ export function deleteDeploymentsInSurvey(): RequestHandler {
     try {
       await connection.open();
 
-      const user: ICritterbaseUser = {
-        keycloak_guid: connection.systemUserGUID(),
-        username: connection.systemUserIdentifier()
-      };
+      const deploymentService = new DeploymentService(connection);
 
-      const deletePromises = deploymentIds.map(async (deploymentId) => {
-        const deploymentService = new DeploymentService(connection);
-        const { bctw_deployment_id } = await deploymentService.deleteDeployment(surveyId, deploymentId);
-
-        const bctwDeploymentService = new BctwDeploymentService(user);
-        await bctwDeploymentService.deleteDeployment(bctw_deployment_id);
-      });
-
-      await Promise.all(deletePromises);
+      await deploymentService.deleteDeployments(surveyId, deploymentIds);
 
       await connection.commit();
 

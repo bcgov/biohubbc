@@ -37,6 +37,11 @@ export type DeploymentModel = z.infer<typeof DeploymentModel>;
  * @description Data record for `deployment`.
  */
 export const DeploymentRecord = DeploymentModel.omit({
+  // internal fields
+  device_key: true,
+  attachment_start_timestamp: true,
+  attachment_end_timestamp: true,
+  // audit fields
   create_date: true,
   create_user: true,
   update_date: true,

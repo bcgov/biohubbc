@@ -3,8 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
-import { BctwDeploymentService } from '../../../../../../services/bctw-service/bctw-deployment-service';
-import { DeploymentService } from '../../../../../../services/deployment-service';
+import { DeploymentService } from '../../../../../../services/deployment-services/deployment-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../.././../../__mocks__/db';
 import { deleteDeploymentsInSurvey } from './delete';
 
@@ -15,9 +14,9 @@ describe('deleteDeploymentsInSurvey', () => {
     sinon.restore();
   });
 
-  it('should delete all provided deployment records from sims and bctw', async () => {
-    const dbConnectionObj = getMockDBConnection();
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+  it('should delete all provided deployment records', async () => {
+    const mockDBConnection = getMockDBConnection({ commit: sinon.stub(), release: sinon.stub() });
+    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -29,21 +28,21 @@ describe('deleteDeploymentsInSurvey', () => {
       deployment_ids: [3, 4]
     };
 
-    const mockDeleteSimsDeploymentResponse = { bctw_deployment_id: '123-456-789' };
-
-    sinon.stub(DeploymentService.prototype, 'deleteDeployment').resolves(mockDeleteSimsDeploymentResponse);
-    sinon.stub(BctwDeploymentService.prototype, 'deleteDeployment').resolves();
+    sinon.stub(DeploymentService.prototype, 'deleteDeployments').resolves();
 
     const requestHandler = deleteDeploymentsInSurvey();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
     expect(mockRes.statusValue).to.equal(200);
+
+    expect(mockDBConnection.commit).to.have.been.calledOnce;
+    expect(mockDBConnection.release).to.have.been.calledOnce;
   });
 
   it('should catch and re-throw an error', async () => {
-    const dbConnectionObj = getMockDBConnection();
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+    const mockDBConnection = getMockDBConnection({ commit: sinon.stub(), release: sinon.stub() });
+    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -55,11 +54,9 @@ describe('deleteDeploymentsInSurvey', () => {
       deployment_ids: [3, 4]
     };
 
-    const mockDeleteSimsDeploymentResponse = { bctw_deployment_id: '123-456-789' };
     const mockError = new Error('test error');
 
-    sinon.stub(DeploymentService.prototype, 'deleteDeployment').resolves(mockDeleteSimsDeploymentResponse);
-    sinon.stub(BctwDeploymentService.prototype, 'deleteDeployment').throws(mockError);
+    sinon.stub(DeploymentService.prototype, 'deleteDeployments').rejects(mockError);
 
     const requestHandler = deleteDeploymentsInSurvey();
     try {
@@ -67,6 +64,9 @@ describe('deleteDeploymentsInSurvey', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError).to.eql(mockError);
+
+      expect(mockDBConnection.commit).to.have.been.calledOnce;
+      expect(mockDBConnection.release).to.have.been.calledOnce;
     }
   });
 });

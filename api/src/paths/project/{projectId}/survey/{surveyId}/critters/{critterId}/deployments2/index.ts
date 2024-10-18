@@ -1,12 +1,8 @@
-import dayjs from 'dayjs';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
-import { BctwDeploymentService } from '../../../../../../../../services/bctw-service/bctw-deployment-service';
-import { BctwService, getBctwUser } from '../../../../../../../../services/bctw-service/bctw-service';
-import { CritterbaseService } from '../../../../../../../../services/critterbase-service';
 import { DeploymentService } from '../../../../../../../../services/deployment-services/deployment-service';
 import { getLogger } from '../../../../../../../../utils/logger';
 
@@ -79,14 +75,14 @@ POST.apiDoc = {
           required: [
             'device_id',
             'frequency',
-            'frequency_unit',
-            'device_make',
-            'device_model',
+            'frequency_unit_id',
+            'attachment_start_date',
+            'attachment_start_time',
+            'attachment_end_date',
+            'attachment_end_time',
             'critterbase_start_capture_id',
             'critterbase_end_capture_id',
-            'critterbase_end_mortality_id',
-            'attachment_end_date',
-            'attachment_end_time'
+            'critterbase_end_mortality_id'
           ],
           properties: {
             device_id: {
@@ -96,19 +92,30 @@ POST.apiDoc = {
             },
             frequency: {
               type: 'integer',
-              description: 'The frequency of the device.',
+              description:
+                'The frequency of the device. Property "frequency_unit_id" must also be provided if this is provided.',
               minimum: 1,
               nullable: true
             },
-            frequency_unit: {
+            frequency_unit_id: {
               type: 'integer',
-              description: 'The ID of a frequency unit code.',
+              description:
+                'The ID of a frequency unit code. Property "frequency" must also be provided if this is provided.',
               minimum: 1,
+              nullable: true
+            },
+            attachment_start_date: {
+              type: 'string',
+              description: 'Start date of the deployment (without time component).'
+            },
+            attachment_start_time: {
+              type: 'string',
+              description: 'Start time of the deployment.',
               nullable: true
             },
             attachment_end_date: {
               type: 'string',
-              description: 'End date of the deployment, without time.',
+              description: 'End date of the deployment (without time component).',
               nullable: true
             },
             attachment_end_time: {
@@ -118,23 +125,77 @@ POST.apiDoc = {
             },
             critterbase_start_capture_id: {
               type: 'string',
-              description: 'Critterbase capture record when the deployment started',
-              format: 'uuid',
-              nullable: true
+              description:
+                'Critterbase capture event. The capture event during which the device was attached to the animal.',
+              format: 'uuid'
             },
             critterbase_end_capture_id: {
               type: 'string',
-              description: 'Critterbase capture record when the deployment ended',
+              description:
+                'Critterbase capture event. The capture event during which the device was removed from the animal. Only one of critterbase_end_capture_id or critterbase_end_mortality_id can be provided.',
               format: 'uuid',
               nullable: true
             },
             critterbase_end_mortality_id: {
               type: 'string',
-              description: 'Critterbase mortality record when the deployment ended',
+              description:
+                'Critterbase mortality event. The mortality event during which the device was removed from the animal. Only one of critterbase_end_capture_id or critterbase_end_mortality_id can be provided.',
               format: 'uuid',
               nullable: true
             }
-          }
+          },
+          oneOf: [
+            {
+              // Both frequency and frequency_unit_id are required if either is present
+              properties: {
+                frequency: {
+                  nullable: false
+                },
+                frequency_unit_id: {
+                  nullable: false
+                }
+              },
+              required: ['frequency', 'frequency_unit_id']
+            },
+            {
+              // Frequency and frequency_unit_id are both optional if neither is present
+              properties: {
+                frequency: {
+                  nullable: true
+                },
+                frequency_unit_id: {
+                  nullable: true
+                }
+              },
+              required: []
+            }
+          ],
+          anyOf: [
+            {
+              // Either critterbase_end_capture_id or critterbase_end_mortality_id is required
+              properties: {
+                critterbase_end_capture_id: {
+                  nullable: true
+                },
+                critterbase_end_mortality_id: {
+                  nullable: false
+                }
+              },
+              required: ['critterbase_end_mortality_id']
+            },
+            {
+              // Either critterbase_end_capture_id or critterbase_end_mortality_id is required
+              properties: {
+                critterbase_end_capture_id: {
+                  nullable: false
+                },
+                critterbase_end_mortality_id: {
+                  nullable: true
+                }
+              },
+              required: ['critterbase_end_capture_id']
+            }
+          ]
         }
       }
     }
@@ -166,71 +227,44 @@ export function createDeployment(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     const critterId = Number(req.params.critterId);
 
-    const {
-      device_id,
-      frequency,
-      frequency_unit,
-      attachment_end_date,
-      attachment_end_time,
-      critterbase_start_capture_id,
-      critterbase_end_capture_id,
-      critterbase_end_mortality_id
-    } = req.body;
+    const deviceId = Number(req.body.device_id);
+    const frequency = Number(req.body.frequency);
+    const frequencyUnitId = Number(req.body.frequency_unit_id);
+    const attachmentStartDate = req.body.attachment_start_date;
+    const attachmentStartTime = req.body.attachment_start_time;
+    const attachmentEndDate = req.body.attachment_end_date;
+    const attachmentEndTime = req.body.attachment_end_time;
+    const critterbaseStartCaptureId = req.body.critterbase_start_capture_id;
+    const critterbaseEndCaptureId = req.body.critterbase_end_capture_id;
+    const critterbaseEndMortalityId = req.body.critterbase_end_mortality_id;
 
     const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
-      const user = getBctwUser(req);
-
-      const bctwService = new BctwService(user);
-      const bctwDeploymentService = new BctwDeploymentService(user);
       const deploymentService = new DeploymentService(connection);
-      const critterbaseService = new CritterbaseService(user);
+
+      // TODO - verify that the incoming 'critterbase...Id' values exist and are associated to the critter_id.
 
       await deploymentService.createDeployment({
-        critter_id: surveyCritterId,
-        bctw_deployment_id: newDeploymentId,
-        critterbase_start_capture_id,
-        critterbase_end_capture_id,
-        critterbase_end_mortality_id
-      });
-
-      // Retrieve the capture to get the capture date for BCTW
-      const critterbaseCritter = await critterbaseService.getCaptureById(critterbase_start_capture_id);
-
-      // Create attachment end date from provided end date (if not null) and end time (if not null).
-      const attachmentEnd = attachment_end_date
-        ? attachment_end_time
-          ? dayjs(`${attachment_end_date} ${attachment_end_time}`).toISOString()
-          : dayjs(`${attachment_end_date}`).toISOString()
-        : null;
-
-      // Get BCTW code values
-      const [deviceMakeCodes, frequencyUnitCodes] = await Promise.all([
-        bctwService.getCode('device_make'),
-        bctwService.getCode('frequency_unit')
-      ]);
-      // The BCTW API expects the device make and frequency unit as codes, not IDs.
-      const device_make_code = deviceMakeCodes.find((code) => code.id === device_make)?.code;
-      const frequency_unit_code = frequencyUnitCodes.find((code) => code.id === frequency_unit)?.code;
-
-      const deployment = await bctwDeploymentService.createDeployment({
-        deployment_id: newDeploymentId,
-        device_id: device_id,
-        critter_id: critterbaseCritter.critter_id,
+        survey_id: surveyId,
+        critter_id: critterId,
+        device_id: deviceId,
         frequency: frequency,
-        frequency_unit: frequency_unit_code,
-        device_make: device_make_code,
-        device_model: device_model,
-        attachment_start: critterbaseCritter.capture_date,
-        attachment_end: attachmentEnd // TODO: ADD SEPARATE DATE AND TIME TO BCTW
+        frequency_unit_id: frequencyUnitId,
+        attachment_start_date: attachmentStartDate,
+        attachment_start_time: attachmentStartTime,
+        attachment_end_date: attachmentEndDate,
+        attachment_end_time: attachmentEndTime,
+        critterbase_start_capture_id: critterbaseStartCaptureId,
+        critterbase_end_capture_id: critterbaseEndCaptureId,
+        critterbase_end_mortality_id: critterbaseEndMortalityId
       });
 
       await connection.commit();
 
-      return res.status(201).json({ deploymentId: deployment.deployment_id });
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'createDeployment', message: 'error', error });
       await connection.rollback();

@@ -3,6 +3,7 @@ import { IDBConnection } from '../../database/db';
 import { DeploymentRepository } from '../../repositories/deployment-repository/deployment-repository';
 import {
   CreateDeployment,
+  ExtendedDeploymentRecord,
   UpdateDeployment
 } from '../../repositories/deployment-repository/deployment-repository.interface';
 import { DBService } from '../db-service';
@@ -26,7 +27,7 @@ export class DeploymentService extends DBService {
   /**
    * Create a new deployment.
    *
-   * @param {CreateDeployment} deployment
+   * @param {CreateDeployment} deployment The deployment data to create
    * @return {*}  {Promise<void>}
    * @memberof DeploymentService
    */
@@ -37,8 +38,8 @@ export class DeploymentService extends DBService {
   /**
    * Get a specific deployment by its integer ID.
    *
-   * @param {number} surveyId
-   * @param {number} deploymentId
+   * @param {number} surveyId The survey ID
+   * @param {number} deploymentId The deployment ID
    * @return {*}  {Promise<DeploymentRecord>}
    * @memberof DeploymentService
    */
@@ -49,19 +50,19 @@ export class DeploymentService extends DBService {
   /**
    * Get deployments for a Survey.
    *
-   * @param {number} surveyId
-   * @return {*}  {Promise<DeploymentRecord[]>}
+   * @param {number} surveyId The survey ID
+   * @return {*}  {Promise<ExtendedDeploymentRecord[]>}
    * @memberof DeploymentService
    */
-  async getDeploymentsForSurveyId(surveyId: number): Promise<DeploymentRecord[]> {
+  async getDeploymentsForSurveyId(surveyId: number): Promise<ExtendedDeploymentRecord[]> {
     return this.deploymentRepository.getDeploymentsForSurveyId(surveyId);
   }
 
   /**
    * Get deployments for a Critter.
    *
-   * @param {number} surveyId
-   * @param {number} critterId
+   * @param {number} surveyId The survey ID
+   * @param {number} critterId The critter ID
    * @return {*}  {Promise<DeploymentRecord>}
    * @memberof DeploymentService
    */
@@ -72,24 +73,37 @@ export class DeploymentService extends DBService {
   /**
    * Update a deployment.
    *
-   * @param {number} surveyId
-   * @param {UpdateDeployment} deployment
+   * @param {number} surveyId The survey ID
+   * @param {number} deployment2_id The deployment ID
+   * @param {UpdateDeployment} deployment The deployment data to update
    * @return {*}  {Promise<string>}
    * @memberof DeploymentService
    */
-  async updateDeployment(surveyId: number, deployment: UpdateDeployment): Promise<void> {
-    return this.deploymentRepository.updateDeployment(surveyId, deployment);
+  async updateDeployment(surveyId: number, deployment2_id: number, deployment: UpdateDeployment): Promise<void> {
+    return this.deploymentRepository.updateDeployment(surveyId, deployment2_id, deployment);
   }
 
   /**
    * Delete a deployment.
    *
-   * @param {number} surveyId
-   * @param {number} deploymentId
+   * @param {number} surveyId The survey ID
+   * @param {number} deploymentId The deployment ID
    * @return {*}  {Promise<void>}
    * @memberof DeploymentService
    */
   async deleteDeployment(surveyId: number, deploymentId: number): Promise<void> {
     return this.deploymentRepository.deleteDeployment(surveyId, deploymentId);
+  }
+
+  /**
+   * Deletes deployments.
+   *
+   * @param {number} surveyId The survey ID
+   * @param {number[]} deploymentIds The deployment IDs
+   * @return {*}  {Promise<void>}
+   * @memberof DeploymentService
+   */
+  async deleteDeployments(surveyId: number, deploymentIds: number[]): Promise<void> {
+    return this.deploymentRepository.deleteDeployments(surveyId, deploymentIds);
   }
 }
