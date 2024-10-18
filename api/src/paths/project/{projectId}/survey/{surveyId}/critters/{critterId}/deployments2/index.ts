@@ -149,9 +149,11 @@ POST.apiDoc = {
               // Both frequency and frequency_unit_id are required if either is present
               properties: {
                 frequency: {
+                  type: 'number',
                   nullable: false
                 },
                 frequency_unit_id: {
+                  type: 'integer',
                   nullable: false
                 }
               },
@@ -161,13 +163,15 @@ POST.apiDoc = {
               // Frequency and frequency_unit_id are both optional if neither is present
               properties: {
                 frequency: {
+                  type: 'number',
                   nullable: true
                 },
                 frequency_unit_id: {
+                  type: 'integer',
                   nullable: true
                 }
               },
-              required: []
+              required: ['frequency', 'frequency_unit_id']
             }
           ],
           anyOf: [
@@ -175,25 +179,33 @@ POST.apiDoc = {
               // Either critterbase_end_capture_id or critterbase_end_mortality_id is required
               properties: {
                 critterbase_end_capture_id: {
+                  type: 'string',
+                  format: 'uuid',
                   nullable: true
                 },
                 critterbase_end_mortality_id: {
+                  type: 'string',
+                  format: 'uuid',
                   nullable: false
                 }
               },
-              required: ['critterbase_end_mortality_id']
+              required: ['critterbase_end_capture_id', 'critterbase_end_mortality_id']
             },
             {
               // Either critterbase_end_capture_id or critterbase_end_mortality_id is required
               properties: {
                 critterbase_end_capture_id: {
+                  type: 'string',
+                  format: 'uuid',
                   nullable: false
                 },
                 critterbase_end_mortality_id: {
+                  type: 'string',
+                  format: 'uuid',
                   nullable: true
                 }
               },
-              required: ['critterbase_end_capture_id']
+              required: ['critterbase_end_capture_id', 'critterbase_end_mortality_id']
             }
           ]
         }

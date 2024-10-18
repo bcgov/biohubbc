@@ -126,7 +126,6 @@ export function deleteDeploymentsInSurvey(): RequestHandler {
     } catch (error) {
       defaultLog.error({ label: 'deleteDeploymentsInSurvey', message: 'error', error });
       await connection.rollback();
-
       throw error;
     } finally {
       connection.release();

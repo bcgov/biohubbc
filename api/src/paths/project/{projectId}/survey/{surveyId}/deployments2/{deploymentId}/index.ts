@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
@@ -196,9 +195,11 @@ GET.apiDoc = {
                     // Both frequency and frequency_unit_id are required if either is present
                     properties: {
                       frequency: {
+                        type: 'number',
                         nullable: false
                       },
                       frequency_unit_id: {
+                        type: 'integer',
                         nullable: false
                       }
                     },
@@ -208,13 +209,15 @@ GET.apiDoc = {
                     // Frequency and frequency_unit_id are both optional if neither is present
                     properties: {
                       frequency: {
+                        type: 'number',
                         nullable: true
                       },
                       frequency_unit_id: {
+                        type: 'integer',
                         nullable: true
                       }
                     },
-                    required: []
+                    required: ['frequency', 'frequency_unit_id']
                   }
                 ],
                 anyOf: [
@@ -222,25 +225,33 @@ GET.apiDoc = {
                     // Either critterbase_end_capture_id or critterbase_end_mortality_id is required
                     properties: {
                       critterbase_end_capture_id: {
+                        type: 'string',
+                        format: 'uuid',
                         nullable: true
                       },
                       critterbase_end_mortality_id: {
+                        type: 'string',
+                        format: 'uuid',
                         nullable: false
                       }
                     },
-                    required: ['critterbase_end_mortality_id']
+                    required: ['critterbase_end_capture_id', 'critterbase_end_mortality_id']
                   },
                   {
                     // Either critterbase_end_capture_id or critterbase_end_mortality_id is required
                     properties: {
                       critterbase_end_capture_id: {
+                        type: 'string',
+                        format: 'uuid',
                         nullable: false
                       },
                       critterbase_end_mortality_id: {
+                        type: 'string',
+                        format: 'uuid',
                         nullable: true
                       }
                     },
-                    required: ['critterbase_end_capture_id']
+                    required: ['critterbase_end_capture_id', 'critterbase_end_mortality_id']
                   }
                 ]
               }
@@ -283,6 +294,8 @@ export function getDeploymentById(): RequestHandler {
       const deploymentService = new DeploymentService(connection);
 
       const deployment = await deploymentService.getDeploymentById(surveyId, deploymentId);
+
+      await connection.commit();
 
       return res.status(200).json({ deployment: deployment });
     } catch (error) {
@@ -443,9 +456,11 @@ PUT.apiDoc = {
               // Both frequency and frequency_unit_id are required if either is present
               properties: {
                 frequency: {
+                  type: 'number',
                   nullable: false
                 },
                 frequency_unit_id: {
+                  type: 'integer',
                   nullable: false
                 }
               },
@@ -455,13 +470,15 @@ PUT.apiDoc = {
               // Frequency and frequency_unit_id are both optional if neither is present
               properties: {
                 frequency: {
+                  type: 'number',
                   nullable: true
                 },
                 frequency_unit_id: {
+                  type: 'integer',
                   nullable: true
                 }
               },
-              required: []
+              required: ['frequency', 'frequency_unit_id']
             }
           ],
           anyOf: [
@@ -469,25 +486,33 @@ PUT.apiDoc = {
               // Either critterbase_end_capture_id or critterbase_end_mortality_id is required
               properties: {
                 critterbase_end_capture_id: {
+                  type: 'string',
+                  format: 'uuid',
                   nullable: true
                 },
                 critterbase_end_mortality_id: {
+                  type: 'string',
+                  format: 'uuid',
                   nullable: false
                 }
               },
-              required: ['critterbase_end_mortality_id']
+              required: ['critterbase_end_capture_id', 'critterbase_end_mortality_id']
             },
             {
               // Either critterbase_end_capture_id or critterbase_end_mortality_id is required
               properties: {
                 critterbase_end_capture_id: {
+                  type: 'string',
+                  format: 'uuid',
                   nullable: false
                 },
                 critterbase_end_mortality_id: {
+                  type: 'string',
+                  format: 'uuid',
                   nullable: true
                 }
               },
-              required: ['critterbase_end_capture_id']
+              required: ['critterbase_end_capture_id', 'critterbase_end_mortality_id']
             }
           ]
         }
@@ -671,7 +696,7 @@ export function deleteDeployment(): RequestHandler {
     } catch (error) {
       defaultLog.error({ label: 'deleteDeployment', message: 'error', error });
       await connection.rollback();
-      return res.status(500).json((error as AxiosError).response);
+      throw error;
     } finally {
       connection.release();
     }

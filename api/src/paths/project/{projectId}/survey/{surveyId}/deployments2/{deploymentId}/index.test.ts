@@ -44,7 +44,7 @@ describe('getDeploymentById', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(mockRes.json).to.have.been.calledWith(mockDeployment);
+    expect(mockRes.json).to.have.been.calledWith({ deployment: mockDeployment });
     expect(mockRes.status).to.have.been.calledWith(200);
     expect(mockDBConnection.commit).to.have.been.calledOnce;
     expect(mockDBConnection.release).to.have.been.calledOnce;
@@ -175,7 +175,7 @@ describe('deleteDeployment', () => {
   });
 
   it('catches and re-throws errors', async () => {
-    const mockDBConnection = getMockDBConnection({ commit: sinon.stub(), release: sinon.stub() });
+    const mockDBConnection = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const mockError = new Error('a test error');
@@ -190,12 +190,13 @@ describe('deleteDeployment', () => {
       deploymentId: '3'
     };
 
-    const requestHandler = updateDeployment();
+    const requestHandler = deleteDeployment();
     try {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect(actualError).to.equal(mockError);
+      expect(mockDBConnection.rollback).to.have.been.calledOnce;
       expect(mockDBConnection.release).to.have.been.calledOnce;
     }
   });

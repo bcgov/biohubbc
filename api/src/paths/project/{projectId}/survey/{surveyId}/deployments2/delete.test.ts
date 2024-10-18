@@ -41,7 +41,7 @@ describe('deleteDeploymentsInSurvey', () => {
   });
 
   it('should catch and re-throw an error', async () => {
-    const mockDBConnection = getMockDBConnection({ commit: sinon.stub(), release: sinon.stub() });
+    const mockDBConnection = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -65,7 +65,7 @@ describe('deleteDeploymentsInSurvey', () => {
     } catch (actualError) {
       expect(actualError).to.eql(mockError);
 
-      expect(mockDBConnection.commit).to.have.been.calledOnce;
+      expect(mockDBConnection.rollback).to.have.been.calledOnce;
       expect(mockDBConnection.release).to.have.been.calledOnce;
     }
   });
