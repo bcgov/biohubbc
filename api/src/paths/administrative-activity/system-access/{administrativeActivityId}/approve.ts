@@ -175,6 +175,7 @@ export function approveAccessRequest(): RequestHandler {
       return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'updateAccessRequest', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

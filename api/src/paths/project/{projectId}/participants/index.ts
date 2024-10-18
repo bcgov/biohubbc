@@ -109,6 +109,7 @@ export function getParticipants(): RequestHandler {
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'getAllProjectParticipantsSQL', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
@@ -257,6 +258,7 @@ export function postProjectParticipants(): RequestHandler {
       return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'postProjectParticipants', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

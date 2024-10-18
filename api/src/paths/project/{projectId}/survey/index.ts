@@ -165,6 +165,7 @@ export function getSurveys(): RequestHandler {
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getSurveys', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

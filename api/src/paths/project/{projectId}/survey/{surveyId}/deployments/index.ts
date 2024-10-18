@@ -128,6 +128,8 @@ export function getDeploymentsInSurvey(): RequestHandler {
       // Fetch deployments from the deployment service for the given surveyId
       const surveyDeployments = await deploymentService.getDeploymentsForSurveyId(surveyId);
 
+      await connection.commit();
+
       // Extract deployment IDs from survey deployments
       const deploymentIds = surveyDeployments.map((deployment) => deployment.bctw_deployment_id);
 

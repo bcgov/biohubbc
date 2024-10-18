@@ -146,6 +146,8 @@ export function getDeploymentById(): RequestHandler {
       // Fetch deployments from the deployment service for the given surveyId
       const surveyDeployment = await deploymentService.getDeploymentById(deploymentId);
 
+      await connection.commit();
+
       // Return early if there are no deployments
       if (!surveyDeployment) {
         // Return 400 if the provided deployment ID does not exist

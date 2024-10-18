@@ -400,6 +400,8 @@ export function getSurveyObservations(): RequestHandler {
           ensureCompletePaginationOptions(paginationOptions)
         );
 
+      await connection.commit();
+
       const observationCount = observationData.supplementaryObservationData.observationCount;
 
       return res.status(200).json({

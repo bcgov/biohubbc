@@ -188,6 +188,7 @@ export function viewProject(): RequestHandler {
       return res.status(200).json({ projectData });
     } catch (error) {
       defaultLog.error({ label: 'getProjectForView', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
