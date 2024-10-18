@@ -206,6 +206,7 @@ export function getProjectForUpdate(): RequestHandler {
       return res.status(200).send(results);
     } catch (error) {
       defaultLog.error({ label: 'getProjectForUpdate', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

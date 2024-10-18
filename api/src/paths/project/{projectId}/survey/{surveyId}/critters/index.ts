@@ -239,6 +239,8 @@ export function getCrittersFromSurvey(): RequestHandler {
 
       const critterbaseCritters = await surveyService.critterbaseService.getMultipleCrittersByIds(critterIds);
 
+      await connection.commit();
+
       const response = [];
 
       // For all SIMS critters

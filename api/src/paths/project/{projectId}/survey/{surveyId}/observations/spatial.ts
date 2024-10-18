@@ -259,6 +259,8 @@ export function getSurveyObservationsGeometry(): RequestHandler {
 
       const observationData = await observationService.getSurveyObservationsGeometryWithSupplementaryData(surveyId);
 
+      await connection.commit();
+
       return res.status(200).json(observationData);
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservationsGeometry', message: 'error', error });
