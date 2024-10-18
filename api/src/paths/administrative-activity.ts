@@ -201,6 +201,7 @@ export function getAdministrativeActivityStanding(): RequestHandler {
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getAdministrativeActivityStanding', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
