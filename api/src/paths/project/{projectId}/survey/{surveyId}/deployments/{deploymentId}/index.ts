@@ -1,4 +1,3 @@
-import { AxiosError } from 'axios';
 import dayjs from 'dayjs';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
@@ -586,8 +585,7 @@ export function deleteDeployment(): RequestHandler {
     } catch (error) {
       defaultLog.error({ label: 'deleteDeployment', message: 'error', error });
       await connection.rollback();
-
-      return res.status(500).json((error as AxiosError).response);
+      throw error;
     } finally {
       connection.release();
     }

@@ -549,27 +549,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Ends a deployment. Will trigger removal in both SIMS and BCTW.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} critterId
-   * @param {number} deploymentId
-   * @return {*}  {Promise<string>}
-   */
-  const endDeployment = async (
-    projectId: number,
-    surveyId: number,
-    critterId: number,
-    deploymentId: number
-  ): Promise<string> => {
-    const { data } = await axios.delete(
-      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments/${deploymentId}`
-    );
-    return data;
-  };
-
-  /**
    * Deletes a deployment. Will trigger deletion in SIMS and invalidates the deployment in BCTW.
    *
    * @param {number} projectId
@@ -763,7 +742,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     importCapturesFromCsv,
     importMarkingsFromCsv,
     importMeasurementsFromCsv,
-    endDeployment,
     deleteDeployment,
     deleteDeployments,
     exportData

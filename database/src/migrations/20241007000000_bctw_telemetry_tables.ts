@@ -397,8 +397,8 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     -- Create frequency table
     ----------------------------------------------------------------------------------------
-    CREATE TABLE deployment_frequency (
-      deployment_frequency_id                       integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    CREATE TABLE frequency_unit (
+      frequency_unit_id                             integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       name                                          varchar(32)        NOT NULL,
       description                                   varchar(128),
       record_effective_date                         timestamptz(6)     NOT NULL,
@@ -409,31 +409,31 @@ export async function up(knex: Knex): Promise<void> {
       update_user                                   integer,
       revision_count                                integer            DEFAULT 0 NOT NULL,
 
-      CONSTRAINT deployment_frequency_id_pk PRIMARY KEY (deployment_frequency_id)
+      CONSTRAINT frequency_unit_pk PRIMARY KEY (frequency_unit_id)
     );
 
-    COMMENT ON TABLE  deployment_frequency IS 'This table is intended to store options that users can select for their deployment freqency.';
-    COMMENT ON COLUMN deployment_frequency.deployment_frequency_id IS 'Primary key for deployment frequency.';
-    COMMENT ON COLUMN deployment_frequency.name IS 'Name of the deployment frequency option.';
-    COMMENT ON COLUMN deployment_frequency.description IS 'Description of the deployment frequency option.';
-    COMMENT ON COLUMN deployment_frequency.record_effective_date IS 'Start date of the deployment frequency option.';
-    COMMENT ON COLUMN deployment_frequency.record_end_date IS 'End date of the deployment frequency option.';
-    COMMENT ON COLUMN deployment_frequency.create_date IS 'The datetime the record was created.';
-    COMMENT ON COLUMN deployment_frequency.create_user IS 'The id of the user who created the record as identified in the system user table.';
-    COMMENT ON COLUMN deployment_frequency.update_date IS 'The datetime the record was updated.';
-    COMMENT ON COLUMN deployment_frequency.update_user IS 'The id of the user who updated the record as identified in the system user table.';
-    COMMENT ON COLUMN deployment_frequency.revision_count IS 'Revision count used for concurrency control.';
+    COMMENT ON TABLE  frequency_unit IS 'This table is intended to store options that users can select for their freqency unit.';
+    COMMENT ON COLUMN frequency_unit.frequency_unit_id IS 'Primary key for frequency unit.';
+    COMMENT ON COLUMN frequency_unit.name IS 'Name of the frequency unit option.';
+    COMMENT ON COLUMN frequency_unit.description IS 'Description of the frequency unit option.';
+    COMMENT ON COLUMN frequency_unit.record_effective_date IS 'Start date of the frequency unit option.';
+    COMMENT ON COLUMN frequency_unit.record_end_date IS 'End date of the frequency unit option.';
+    COMMENT ON COLUMN frequency_unit.create_date IS 'The datetime the record was created.';
+    COMMENT ON COLUMN frequency_unit.create_user IS 'The id of the user who created the record as identified in the system user table.';
+    COMMENT ON COLUMN frequency_unit.update_date IS 'The datetime the record was updated.';
+    COMMENT ON COLUMN frequency_unit.update_user IS 'The id of the user who updated the record as identified in the system user table.';
+    COMMENT ON COLUMN frequency_unit.revision_count IS 'Revision count used for concurrency control.';
 
     ----------------------------------------------------------------------------------------
     -- Add triggers
     ----------------------------------------------------------------------------------------
-    CREATE TRIGGER audit_deployment_frequency BEFORE INSERT OR UPDATE OR DELETE ON biohub.deployment_frequency FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_deployment_frequency AFTER INSERT OR UPDATE OR DELETE ON biohub.deployment_frequency FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+    CREATE TRIGGER audit_frequency_unit BEFORE INSERT OR UPDATE OR DELETE ON biohub.frequency_unit FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_frequency_unit AFTER INSERT OR UPDATE OR DELETE ON biohub.frequency_unit FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
 
     ----------------------------------------------------------------------------------------
-    -- Add initial values to deployment frequency table
+    -- Add initial values to frequency unit table
     ----------------------------------------------------------------------------------------
-    INSERT INTO deployment_frequency (name, description, record_effective_date) VALUES
+    INSERT INTO frequency_unit (name, description, record_effective_date) VALUES
     ('khz', 'Kilohertz', 'NOW()'),
     ('mhz', 'Megahertz', 'NOW()'),
     ('hz', 'Hertz', 'NOW()');
@@ -447,7 +447,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE OR REPLACE VIEW telemetry_vectronic as SELECT * FROM biohub.telemetry_vectronic;
     CREATE OR REPLACE VIEW telemetry_lotek as SELECT * FROM biohub.telemetry_lotek;
     CREATE OR REPLACE VIEW device_make as SELECT * FROM biohub.device_make;
-    CREATE OR REPLACE VIEW deployment_frequency as SELECT * FROM biohub.deployment_frequency;
+    CREATE OR REPLACE VIEW frequency_unit as SELECT * FROM biohub.frequency_unit;
   `);
 }
 
