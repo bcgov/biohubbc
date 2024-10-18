@@ -266,8 +266,8 @@ const Header: React.FC = () => {
                   </MenuItem>
                 </AuthGuard>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <MenuItem id="menu_admin_users" component={RouterLink} to="/admin/users" onClick={hideMobileMenu}>
-                    Manage Users
+                  <MenuItem id="menu_admin_users" component={RouterLink} to="/admin/manage/users" onClick={hideMobileMenu}>
+                    Admin
                   </MenuItem>
                   <MenuItem
                     id="menu_admin_funding_sources_sm"
@@ -343,8 +343,8 @@ const Header: React.FC = () => {
                   </RouterLink>
                 </AuthGuard>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <RouterLink to="/admin/users" id="menu_admin_users">
-                    Manage Users
+                  <RouterLink to="/admin/manage" id="menu_admin_users">
+                    Admin
                   </RouterLink>
                 </SystemRoleGuard>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>

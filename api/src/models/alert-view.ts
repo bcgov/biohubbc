@@ -1,5 +1,6 @@
 import { z } from 'zod';
 
+// Define the alert schema
 export const IAlert = z.object({
   alert_id: z.number(),
   alert_type_id: z.number().int(),
@@ -11,11 +12,18 @@ export const IAlert = z.object({
   status: z.enum(['active', 'expired'])
 });
 
+// Infer types from the schema
 export type IAlert = z.infer<typeof IAlert>;
+export type IAlertCreateObject = Omit<IAlert, 'alert_id' | 'status'>;
+export type IAlertUpdateObject = Omit<IAlert, 'status'>;
 
-export type IAlertCreateObject = Omit<IAlert, 'alert_id'>;
-
+// Filter object for viewing alerts
 export interface IAlertFilterObject {
-  recordEndDate?: string;
+  expiresBefore?: string;
+  expiresAfter?: string;
   types?: string[];
 }
+
+// Define severity and status types
+export type IAlertSeverity = 'info' | 'success' | 'error' | 'warning';
+export type IAlertStatus = 'active' | 'expired';

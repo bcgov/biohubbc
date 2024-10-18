@@ -1,3 +1,4 @@
+import Box from '@mui/material/Box';
 import { green } from '@mui/material/colors';
 import { GridColDef } from '@mui/x-data-grid';
 import AlertBar from 'components/alert/AlertBar';
@@ -27,6 +28,10 @@ export interface IAlertTableRow {
   status: 'expired' | 'active';
 }
 
+/**
+ * Data grid table displaying alerts created by system administrators
+ *
+ */
 const AlertTable = (props: IAlertTableTableProps) => {
   const codesContext = useCodesContext();
 
@@ -38,16 +43,23 @@ const AlertTable = (props: IAlertTableTableProps) => {
       headerName: 'Alert',
       flex: 1,
       renderCell: (params) => (
-        <AlertBar severity={params.row.severity} text={params.row.message} title={params.row.name} variant="outlined" />
+        <Box flex={0.9}>
+          <AlertBar
+            severity={params.row.severity}
+            text={params.row.message}
+            title={params.row.name}
+            variant="outlined"
+          />
+        </Box>
       )
     },
     {
       field: 'alert_type_id',
       headerName: 'Type',
       description: 'Type of the alert.',
-      headerAlign: 'right',
-      align: 'right',
-      width: 200,
+      headerAlign: 'left',
+      align: 'left',
+      width: 150,
       renderCell: (params) =>
         codesContext.codesDataLoader.data?.alert_types.find((code) => code.id === params.row.id)?.name
     },
@@ -55,9 +67,9 @@ const AlertTable = (props: IAlertTableTableProps) => {
       field: 'record_end_date',
       headerName: 'Expiry date',
       description: 'Status of the alert.',
-      headerAlign: 'right',
-      align: 'right',
-      width: 200,
+      headerAlign: 'left',
+      align: 'left',
+      width: 150,
       renderCell: (params) =>
         params.row.record_end_date ? dayjs(params.row.record_end_date).format(DATE_FORMAT.MediumDateFormat) : null
     },

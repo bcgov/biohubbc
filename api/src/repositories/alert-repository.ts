@@ -1,7 +1,8 @@
+import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { IAlert, IAlertCreateObject, IAlertFilterObject } from '../models/alert-view';
+import { IAlert, IAlertCreateObject, IAlertFilterObject, IAlertUpdateObject } from '../models/alert-view';
 import { BaseRepository } from './base-repository';
 
 /**
@@ -12,7 +13,13 @@ import { BaseRepository } from './base-repository';
  * @extends {BaseRepository}
  */
 export class AlertRepository extends BaseRepository {
-  _getAlertBaseQuery() {
+  /**
+   * Builds query for all alert records without filtering any records, and adds a status field based on record_end_date
+   *
+   * @return {*}  {Knex.QueryBuilder}
+   * @memberof AlertRepository
+   */
+  _getAlertBaseQuery(): Knex.QueryBuilder {
     const knex = getKnex();
 
     return knex
@@ -33,19 +40,26 @@ export class AlertRepository extends BaseRepository {
       )
       .from('alert');
   }
+
   /**
-   * Get all alert records, including deactivated alerts
+   * Get alert records with filters
    *
    * @param {IAlertFilterObject} filterObject
-   * @return {*}  {Promise<IAlert>}
+   * @return {*}  {Promise<IAlert[]>}
    * @memberof AlertRepository
    */
   async getAlerts(filterObject: IAlertFilterObject): Promise<IAlert[]> {
     const queryBuilder = this._getAlertBaseQuery();
 
-    if (filterObject.recordEndDate) {
+    if (filterObject.expiresAfter) {
       queryBuilder.where((qb) => {
-        qb.whereRaw(`alert.record_end_date >= ?`, [filterObject.recordEndDate]).orWhereNull('alert.record_end_date');
+        qb.whereRaw(`alert.record_end_date >= ?`, [filterObject.expiresAfter]).orWhereNull('alert.record_end_date');
+      });
+    }
+
+    if (filterObject.expiresBefore) {
+      queryBuilder.where((qb) => {
+        qb.whereRaw(`alert.record_end_date < ?`, [filterObject.expiresBefore]);
       });
     }
 
@@ -78,20 +92,22 @@ export class AlertRepository extends BaseRepository {
   }
 
   /**
-   * Update survey alert.
+   * Update system alert.
    *
    * @param {IAlert} alert
    * @return {*}  number
    * @memberof AlertRepository
    */
-  async updateAlert(alert: IAlert): Promise<number> {
+  async updateAlert(alert: IAlertUpdateObject): Promise<number> {
     const sqlStatement = SQL`
       UPDATE alert
       SET
         name = ${alert.name},
         message = ${alert.message},
         alert_type_id = ${alert.alert_type_id},
-        data = ${JSON.stringify(alert.data)}::json
+        severity = ${alert.severity},
+        data = ${JSON.stringify(alert.data)}::json,
+        record_end_date = ${alert.record_end_date}
       WHERE
         alert_id = ${alert.alert_id}
       RETURNING alert_id
@@ -113,7 +129,7 @@ export class AlertRepository extends BaseRepository {
   }
 
   /**
-   * Create survey alert.
+   * Create system alert.
    *
    * @param {IAlertCreateObject} alert
    * @return {*}  number
@@ -146,7 +162,7 @@ export class AlertRepository extends BaseRepository {
   }
 
   /**
-   * Deactivate (soft delete) survey alert. It is possible to enter a future date to schedule deactivation.
+   * Deactivate (soft delete) system alert. It is possible to enter a future date to schedule deactivation.
    *
    * @param {number} alertId
    * @param {number} recordEndDate
@@ -179,7 +195,7 @@ export class AlertRepository extends BaseRepository {
   }
 
   /**
-   * Delete survey alert.
+   * Delete system alert.
    *
    * @param {number} alertId
    * @return {*}  number

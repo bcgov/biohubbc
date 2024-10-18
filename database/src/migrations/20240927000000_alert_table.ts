@@ -106,7 +106,6 @@ export async function up(knex: Knex): Promise<void> {
       ('Surveys', 'Survey alerts'),
       ('Animals', 'Animal alerts'),
       ('Projects', 'Project alerts'),
-      ('Administrator', 'Administrator alerts'),
       ('Standards', 'Standards alerts'),
       ('Administrator', 'Administrator alerts'),
       ('Sampling', 'Sampling alerts');

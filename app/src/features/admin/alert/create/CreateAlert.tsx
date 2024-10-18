@@ -13,8 +13,8 @@ import AlertForm from '../form/AlertForm';
 const AlertYupSchema = yup.object().shape({
   name: yup.string().trim().max(50, 'Name cannot exceed 50 characters').required('Name is required'),
   message: yup.string().max(250, 'Description cannot exceed 250 characters').required('Description is required'),
-  alert_type_id: yup.number().integer(),
-  severity: yup.string(),
+  alert_type_id: yup.number().integer().required('Type is required'),
+  severity: yup.string().required('Style is required'),
   record_end_date: yup.string().isValidDateString().nullable()
 });
 
@@ -23,6 +23,10 @@ interface ICreateAlertProps {
   onClose: (refresh?: boolean) => void;
 }
 
+/**
+ * Dialog containing the alert form for creating a new system alert
+ *
+ */
 const CreateAlert = (props: ICreateAlertProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dialogContext = useContext(DialogContext);
@@ -73,32 +77,30 @@ const CreateAlert = (props: ICreateAlertProps) => {
   };
 
   return (
-    <>
-      <EditDialog
-        dialogTitle={AlertI18N.createAlertDialogTitle}
-        dialogText={AlertI18N.createAlertDialogText}
-        open={props.open}
-        size='md'
-        dialogLoading={isSubmitting}
-        component={{
-          element: <AlertForm />,
-          initialValues: {
-            name: '',
-            message: '',
-            alert_type_id: '' as unknown as number,
-            severity: 'info' as AlertSeverity,
-            data: null,
-            record_end_date: null
-          },
-          validationSchema: AlertYupSchema
-        }}
-        dialogSaveButtonLabel="Create"
-        onCancel={() => props.onClose()}
-        onSave={(formValues) => {
-          handleSubmitAlert(formValues);
-        }}
-      />
-    </>
+    <EditDialog
+      dialogTitle={AlertI18N.createAlertDialogTitle}
+      dialogText={AlertI18N.createAlertDialogText}
+      open={props.open}
+      size="md"
+      dialogLoading={isSubmitting}
+      component={{
+        element: <AlertForm />,
+        initialValues: {
+          name: '',
+          message: '',
+          alert_type_id: '' as unknown as number,
+          severity: 'info' as AlertSeverity,
+          data: null,
+          record_end_date: null
+        },
+        validationSchema: AlertYupSchema
+      }}
+      dialogSaveButtonLabel="Create"
+      onCancel={() => props.onClose()}
+      onSave={(formValues) => {
+        handleSubmitAlert(formValues);
+      }}
+    />
   );
 };
 

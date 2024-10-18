@@ -483,7 +483,7 @@ export class CodeRepository extends BaseRepository {
         description
       FROM alert_type
       WHERE record_end_date IS null
-      ORDER BY name DESC;
+      ORDER BY name ASC;
     `;
 
     const response = await this.connection.sql(sqlStatement, AlertTypeCode);

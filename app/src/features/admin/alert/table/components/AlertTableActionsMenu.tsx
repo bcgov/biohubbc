@@ -14,6 +14,10 @@ export interface IAlertTableActionsMenuProps {
   onDelete: (alertId: number) => void;
 }
 
+/**
+ * Actions displayed in the context menu of an alert row in the alert table data grid
+ *
+ */
 const AlertTableActionsMenu = (props: IAlertTableActionsMenuProps) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);

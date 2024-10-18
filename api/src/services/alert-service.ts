@@ -19,7 +19,7 @@ export class AlertService extends DBService {
    * @return {*}  {IAlertModel[]}
    * @memberof AlertService
    */
-  async getAllAlerts(filterObject: IAlertFilterObject): Promise<IAlert[]> {
+  async getAlerts(filterObject: IAlertFilterObject): Promise<IAlert[]> {
     return this.alertRepository.getAlerts(filterObject);
   }
 

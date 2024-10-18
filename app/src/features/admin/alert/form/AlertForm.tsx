@@ -10,6 +10,10 @@ import { useCodesContext } from 'hooks/useContext';
 import { IAlertCreateObject } from 'interfaces/useAlertApi.interface';
 import { useEffect } from 'react';
 
+/**
+ * Form used to create and update system alerts, used by system administrators
+ *
+ */
 const AlertForm = () => {
   const codesContext = useCodesContext();
 
@@ -51,10 +55,10 @@ const AlertForm = () => {
             label={'Style'}
             required
             options={[
-              { value: 'error', label: 'Red' },
-              { value: 'info', label: 'Blue' },
-              { value: 'success', label: 'Green' },
-              { value: 'warning', label: 'Orange' }
+              { value: 'error', label: 'Error' },
+              { value: 'info', label: 'Information' },
+              { value: 'success', label: 'Success' },
+              { value: 'warning', label: 'Warning' }
             ]}
           />
         </Stack>

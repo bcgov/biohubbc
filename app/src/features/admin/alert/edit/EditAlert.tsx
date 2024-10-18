@@ -18,6 +18,10 @@ interface IEditAlertProps {
   onClose: (refresh?: boolean) => void;
 }
 
+/**
+ * Dialog containing the alert form for editing an existing system alert
+ * 
+ */
 const EditAlert = (props: IEditAlertProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dialogContext = useContext(DialogContext);

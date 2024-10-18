@@ -43,6 +43,24 @@ GET.apiDoc = {
           nullable: true
         }
       }
+    },
+    {
+      in: 'query',
+      name: 'expiresBefore',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
+    },
+    {
+      in: 'query',
+      name: 'expiresAfter',
+      required: false,
+      schema: {
+        type: 'string',
+        nullable: true
+      }
     }
   ],
   responses: {
@@ -96,7 +114,7 @@ export function getAlerts(): RequestHandler {
 
       const alertService = new AlertService(connection);
 
-      const alerts = await alertService.getAllAlerts(filterObject);
+      const alerts = await alertService.getAlerts(filterObject);
 
       await connection.commit();
 
@@ -119,7 +137,8 @@ export function getAlerts(): RequestHandler {
  */
 function parseQueryParams(req: Request<unknown, unknown, unknown, IAlertFilterObject>): IAlertFilterObject {
   return {
-    recordEndDate: req.query.recordEndDate ?? undefined,
+    expiresBefore: req.query.expiresBefore ?? undefined,
+    expiresAfter: req.query.expiresAfter ?? undefined,
     types: req.query.types ?? []
   };
 }

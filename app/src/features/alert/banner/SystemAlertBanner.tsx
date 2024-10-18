@@ -18,7 +18,7 @@ export const SystemAlertBanner = ({ alertTypes }: ISystemAlertBannerProps) => {
   const biohubApi = useBiohubApi();
 
   const alertDataLoader = useDataLoader(() =>
-    biohubApi.alert.getAlerts({ types: alertTypes, recordEndDate: dayjs().format() })
+    biohubApi.alert.getAlerts({ types: alertTypes, expiresAfter: dayjs().format() })
   );
 
   useEffect(() => {
@@ -39,9 +39,7 @@ export const SystemAlertBanner = ({ alertTypes }: ISystemAlertBannerProps) => {
 
   return (
     <Box mb={2}>
-      <TransitionGroup>
-        {renderAlerts(alerts.slice(0, isExpanded ? alerts.length : maxShown))}
-      </TransitionGroup>
+      <TransitionGroup>{renderAlerts(alerts.slice(0, isExpanded ? alerts.length : maxShown))}</TransitionGroup>
       {alerts.length > maxShown && (
         <Box mt={1}>
           <Button variant="text" onClick={() => setIsExpanded((prev) => !prev)} sx={{ color: grey[700] }}>
