@@ -32,7 +32,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'Returns information about a specific deployment.',
+  description: 'Gets a deployment.',
   tags: ['deployment'],
   security: [
     {
@@ -281,6 +281,12 @@ GET.apiDoc = {
   }
 };
 
+/**
+ * Gets a deployment.
+ *
+ * @export
+ * @return {*}  {RequestHandler}
+ */
 export function getDeploymentById(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surevyId);
@@ -541,6 +547,12 @@ PUT.apiDoc = {
   }
 };
 
+/**
+ * Updates a deployment.
+ *
+ * @export
+ * @return {*}  {RequestHandler}
+ */
 export function updateDeployment(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);

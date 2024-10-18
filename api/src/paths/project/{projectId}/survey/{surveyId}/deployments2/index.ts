@@ -32,7 +32,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'Returns information about all deployments under this survey.',
+  description: 'Gets all deployments in a survey.',
   tags: ['deployment'],
   security: [
     {
@@ -276,7 +276,7 @@ GET.apiDoc = {
 };
 
 /**
- * Returns information about all deployments under this survey.
+ * Gets all deployments in a survey.
  *
  * @export
  * @return {*}  {RequestHandler}

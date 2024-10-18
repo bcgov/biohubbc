@@ -234,6 +234,12 @@ POST.apiDoc = {
   }
 };
 
+/**
+ * Creates a new deployment.
+ *
+ * @export
+ * @return {*}  {RequestHandler}
+ */
 export function createDeployment(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);

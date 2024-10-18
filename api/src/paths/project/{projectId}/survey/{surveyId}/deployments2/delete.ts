@@ -28,8 +28,8 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Delete deployments from a survey.',
-  tags: ['deployment', 'bctw'],
+  description: 'Delete deployments.',
+  tags: ['deployment'],
   security: [
     {
       Bearer: []
@@ -101,7 +101,7 @@ POST.apiDoc = {
 };
 
 /**
- * Delete deployments.
+ * Deletes deployments.
  *
  * @export
  * @return {*}  {RequestHandler}
