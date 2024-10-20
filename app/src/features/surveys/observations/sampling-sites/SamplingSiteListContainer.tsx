@@ -48,7 +48,7 @@ export const SamplingSiteListContainer = () => {
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: pageSizeOptions[0]
+    pageSize: pageSizeOptions[1]
   });
   const [sortModel] = useState<GridSortModel>([]);
 
@@ -221,7 +221,10 @@ export const SamplingSiteListContainer = () => {
     });
   };
 
-  const samplingSiteCount = useMemo(() => sampleSiteDataLoader.data?.pagination.total ?? 0, [sampleSites]);
+  const samplingSiteCount = useMemo(
+    () => sampleSiteDataLoader.data?.pagination.total ?? 0,
+    [sampleSites, sampleSiteDataLoader.data]
+  );
 
   return (
     <>
@@ -329,47 +332,48 @@ export const SamplingSiteListContainer = () => {
           </IconButton>
         </Toolbar>
         <Divider flexItem />
-        <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-          <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
-            <FormGroup>
-              <FormControlLabel
-                label={
-                  <Typography
-                    variant="body2"
-                    component="span"
-                    color="textSecondary"
-                    fontWeight={700}
-                    sx={{ textTransform: 'uppercase' }}>
-                    Select All
-                  </Typography>
-                }
-                control={
-                  <Checkbox
-                    sx={{
-                      mr: 0.75
-                    }}
-                    checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === samplingSiteCount}
-                    indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount}
-                    onClick={() => {
-                      if (checkboxSelectedIds.length === samplingSiteCount) {
-                        setCheckboxSelectedIds([]);
-                        return;
-                      }
+        <Box position="relative" display="flex" alignItems="center" px={2} height={55}>
+          <FormGroup>
+            <FormControlLabel
+              label={
+                <Typography
+                  variant="body2"
+                  component="span"
+                  color="textSecondary"
+                  fontWeight={700}
+                  sx={{ textTransform: 'uppercase' }}>
+                  Select All
+                </Typography>
+              }
+              control={
+                <Checkbox
+                  sx={{
+                    mr: 0.75
+                  }}
+                  checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === samplingSiteCount}
+                  indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount}
+                  onClick={() => {
+                    if (checkboxSelectedIds.length === samplingSiteCount) {
+                      setCheckboxSelectedIds([]);
+                      return;
+                    }
 
-                      const sampleSiteIds = sampleSites.map((sampleSite) => sampleSite.survey_sample_site_id);
-                      setCheckboxSelectedIds(sampleSiteIds);
-                    }}
-                    inputProps={{ 'aria-label': 'controlled' }}
-                  />
-                }
-              />
-            </FormGroup>
-          </Box>
+                    const sampleSiteIds = sampleSites.map((sampleSite) => sampleSite.survey_sample_site_id);
+                    setCheckboxSelectedIds(sampleSiteIds);
+                  }}
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+              }
+            />
+          </FormGroup>
+        </Box>
+        <Divider flexItem />
+        <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
           {sampleSiteDataLoader.isLoading ? (
             <SkeletonList />
           ) : (
             <Stack height="100%" width="100%" position="absolute" sx={{ overflowY: 'auto' }}>
-              <Divider flexItem></Divider>
+              <Divider flexItem />
               <Box
                 flex="1 1 auto"
                 sx={{
@@ -411,9 +415,17 @@ export const SamplingSiteListContainer = () => {
           )}
         </Box>
         {/* Pagination control */}
-        <Paper square sx={{ bottom: 0, marginTop: '-1px', width: '100%', zIndex: 99 }}>
+        <Paper square sx={{ bottom: 0, marginTop: '-1px', width: '100%', maxWidth: '100%', zIndex: 99 }}>
           <Divider flexItem />
           <TablePagination
+            sx={{
+              flex: 1,
+              display: 'flex',
+              justifyContent: 'space-between',
+              '& .MuiTablePagination-toolbar': { width: '100%' },
+              '& .MuiTablePagination-displayedRows': { minWidth: '125px', textAlign: 'right' }
+            }}
+            labelRowsPerPage="Rows:"
             rowsPerPage={paginationModel.pageSize}
             page={paginationModel.page}
             onPageChange={handleChangePage}

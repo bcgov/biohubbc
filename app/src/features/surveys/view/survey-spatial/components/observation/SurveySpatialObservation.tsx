@@ -2,8 +2,8 @@ import Box from '@mui/material/Box';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import SurveyObservationTabularDataContainer from 'features/surveys/view/components/data-container/SurveyObservationTabularDataContainer';
-import { SurveySpatialMap } from 'features/surveys/view/survey-spatial/components/map/SurveySpatialMap';
 import { SurveySpatialObservationPointPopup } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservationPointPopup';
+import SurveyMap from 'features/surveys/view/SurveyMap';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
@@ -12,10 +12,17 @@ import { IGetSurveyObservationsGeometryResponse } from 'interfaces/useObservatio
 import { useEffect, useMemo } from 'react';
 import { coloredCustomObservationMarker } from 'utils/mapUtils';
 
+interface ISurveySpatialObservationProps {
+  /**
+   * Array of additional static layers to be added to the map.
+   */
+  staticLayers: IStaticLayer[];
+}
+
 /**
  * Component to display survey observation data on a map and in a table.
  */
-export const SurveySpatialObservation = () => {
+export const SurveySpatialObservation = (props: ISurveySpatialObservationProps) => {
   const surveyContext = useSurveyContext();
   const { surveyId, projectId } = surveyContext;
   const biohubApi = useBiohubApi();
@@ -62,12 +69,15 @@ export const SurveySpatialObservation = () => {
     <>
       {/* Display map with observation points */}
       <Box height={{ xs: 300, md: 500 }} position="relative">
-        <SurveySpatialMap staticLayers={[observationLayer]} isLoading={observationsGeometryDataLoader.isLoading} />
+        <SurveyMap
+          staticLayers={[...props.staticLayers, observationLayer]}
+          isLoading={observationsGeometryDataLoader.isLoading}
+        />
       </Box>
 
       {/* Display data table with observation details */}
-      <Box height={{ xs: 300, md: 500 }} display="flex" flexDirection="column" px={2} pt={2}>
-        <SurveyObservationTabularDataContainer isLoading={observationsGeometryDataLoader.isLoading} />
+      <Box height={{ xs: 300, md: 500 }} display="flex" flexDirection="column" pt={2}>
+        <SurveyObservationTabularDataContainer />
       </Box>
     </>
   );

@@ -478,13 +478,6 @@ export class SampleLocationRepository extends BaseRepository {
 
     const response = await this.connection.knex(queryBuilder, SampleLocationBasicRecord);
 
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to get sample site by IDs', [
-        'SampleLocationRepository->getSurveySampleSiteByIds',
-        'rowCount was < 1, expected rowCount > 0'
-      ]);
-    }
-
     return response.rows;
   }
 

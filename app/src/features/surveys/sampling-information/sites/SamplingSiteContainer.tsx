@@ -1,9 +1,12 @@
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { useSamplingSiteStaticLayer } from 'features/surveys/view/survey-spatial/components/map/useSamplingSiteStaticLayer';
+import SurveyMap from 'features/surveys/view/SurveyMap';
 import { useSurveyContext } from 'hooks/useContext';
 import { Link as RouterLink } from 'react-router-dom';
 import { SamplingSiteTableContainer } from './table/SamplingSiteTableContainer';
@@ -16,6 +19,8 @@ import { SamplingSiteTableContainer } from './table/SamplingSiteTableContainer';
  */
 const SamplingSiteContainer = () => {
   const surveyContext = useSurveyContext();
+
+  const samplingSiteStaticLayer = useSamplingSiteStaticLayer();
 
   return (
     <>
@@ -36,7 +41,9 @@ const SamplingSiteContainer = () => {
 
       <Divider flexItem />
 
-      {/* <SamplingSiteMapContainer /> */}
+      <Box height="400px" flex="1 1 auto">
+        <SurveyMap staticLayers={[samplingSiteStaticLayer]} isLoading={false} />
+      </Box>
 
       <SamplingSiteTableContainer />
     </>

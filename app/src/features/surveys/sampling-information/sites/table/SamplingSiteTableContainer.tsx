@@ -73,7 +73,7 @@ export const SamplingSiteTableContainer = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pagination]);
 
-  const sampleSites = samplingSitesDataLoader.data?.sampleSites ?? [];
+  const sampleSites = useMemo(() => samplingSitesDataLoader.data?.sampleSites ?? [], [samplingSitesDataLoader.data]);
 
   const samplePeriods: ISamplingSitePeriodRowData[] = useMemo(() => {
     const data: ISamplingSitePeriodRowData[] = [];
@@ -196,7 +196,7 @@ export const SamplingSiteTableContainer = () => {
       <Divider flexItem />
 
       {/* Data tables */}
-      <Box p={2} height="400px">
+      <Box p={2} height="500px">
         {activeView === SamplingSiteManageTableView.SITES && (
           <LoadingGuard
             isLoading={samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady}
@@ -205,7 +205,7 @@ export const SamplingSiteTableContainer = () => {
             hasNoData={!sampleSites.length}
             hasNoDataFallback={
               <NoDataOverlay
-                height="200px"
+                height="100%"
                 title="Add Sampling Sites"
                 subtitle="Apply your techniques to sampling sites to show where you collected data"
                 icon={mdiArrowTopRight}
@@ -234,7 +234,7 @@ export const SamplingSiteTableContainer = () => {
             hasNoData={!samplePeriods.length}
             hasNoDataFallback={
               <NoDataOverlay
-                height="200px"
+                height="100%"
                 title="Add Periods"
                 subtitle="Add periods when you create sampling sites to show when you collected species observations"
                 icon={mdiArrowTopRight}

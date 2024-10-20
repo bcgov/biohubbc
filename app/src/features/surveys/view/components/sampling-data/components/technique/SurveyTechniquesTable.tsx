@@ -117,7 +117,7 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
     <StyledDataGrid
       noRowsMessage={'No Techniques'}
       rowSelection={false}
-      autoHeight
+      autoHeight={false}
       getRowHeight={() => 'auto'}
       rows={rows}
       getRowId={(row) => row.id}
@@ -127,9 +127,10 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
       onSortModelChange={setSortModel}
       sortModel={sortModel}
       paginationModel={paginationModel}
-      // TODO: Enable pagination 
-      // paginationMode="server"
-      // sortingMode="server"
+      // TODO: Enable pagination; saving for a separate PR because it should probably include
+      // removing techniquesDataLoader from the surveyContext
+      paginationMode="server"
+      sortingMode="server"
       rowCount={rowCount}
       initialState={{
         pagination: {

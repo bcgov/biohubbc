@@ -35,7 +35,7 @@ export const SurveySampleSiteMapPopup = (props: ISurveySampleSiteMapPopupProps) 
     <SurveyMapPopup
       title="Sampling Site"
       metadata={metadata}
-      isLoading={surveyDataLoader.isLoading}
+      isLoading={surveyDataLoader.isLoading || !surveyDataLoader.isReady}
       key={`sampling-site-popup-${sampleSite?.survey_sample_site_id}`}
     />
   );

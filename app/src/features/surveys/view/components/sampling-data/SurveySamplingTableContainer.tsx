@@ -3,14 +3,16 @@ import { GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
-import { ISamplingSitePeriodRowData } from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
+import {
+  ISamplingSitePeriodRowData,
+  SamplingPeriodTable
+} from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import { SurveyPeriodsTable } from './components/period/SurveyPeriodsTable';
 import { SurveySitesTable } from './components/site/SurveySitesTable';
 import { SurveySamplingHeader } from './components/SurveySamplingHeader';
 import { SurveyTechniquesTable } from './components/technique/SurveyTechniquesTable';
@@ -44,19 +46,10 @@ export const SurveySamplingTableContainer = () => {
   });
   const [sitesSortModel, setSitesSortModel] = useState<GridSortModel>([]);
 
-  // TODO: Add pagination to the techniquesDataLoader call and move techniqueDataLoader out of the context
-  useEffect(() => {
-    if (activeView === SurveySamplingView.TECHNIQUES) {
-      surveyContext.techniqueDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-    }
-  }, [activeView, surveyContext.techniqueDataLoader, surveyContext.projectId, surveyContext.surveyId]);
-
-  const techniques = surveyContext.techniqueDataLoader.data?.techniques ?? [];
-
+  // Sampling sites data loader and pagination
   const samplingSitesDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
     biohubApi.samplingSite.getSampleSites(surveyContext.projectId, surveyContext.surveyId, pagination)
   );
-
   const sitesPagination: ApiPaginationRequestOptions = useMemo(() => {
     const sort = firstOrNull(sitesSortModel);
     return {
@@ -67,13 +60,26 @@ export const SurveySamplingTableContainer = () => {
     };
   }, [sitesSortModel, sitesPaginationModel]);
 
+  // Refresh data if there is data
   useEffect(() => {
-    if (activeView === SurveySamplingView.SITES) {
+    if (
+      [SurveySamplingView.SITES, SurveySamplingView.PERIODS].includes(activeView) &&
+      Number(samplingSitesDataLoader.data?.pagination.total) !== 0
+    ) {
       samplingSitesDataLoader.refresh(sitesPagination);
     }
+    if (
+      activeView === SurveySamplingView.TECHNIQUES &&
+      Number(surveyContext.techniqueDataLoader.data?.pagination.total) !== 0
+    ) {
+      surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    }
+    // Including data loaders in the dependency cause infinite reloads
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeView, sitesPagination]);
 
-  const sampleSites = samplingSitesDataLoader.data?.sampleSites ?? [];
+  const sampleSites = useMemo(() => samplingSitesDataLoader.data?.sampleSites ?? [], [samplingSitesDataLoader.data]);
+  const techniques = surveyContext.techniqueDataLoader.data?.techniques ?? [];
 
   const samplePeriods: ISamplingSitePeriodRowData[] = useMemo(() => {
     const data: ISamplingSitePeriodRowData[] = [];
@@ -102,7 +108,7 @@ export const SurveySamplingTableContainer = () => {
       <Divider />
       <SurveySamplingViewTabs activeView={activeView} setActiveView={setActiveView} />
       <Divider />
-      <Box px={2} position="relative">
+      <Box px={2} position="relative" height="400px">
         {activeView === SurveySamplingView.TECHNIQUES && (
           <LoadingGuard
             isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
@@ -128,38 +134,45 @@ export const SurveySamplingTableContainer = () => {
         )}
 
         {activeView === SurveySamplingView.SITES && (
-          <Box height="400px">
-            <LoadingGuard
-              isLoading={samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady}
-              isLoadingFallback={<SkeletonTable />}
-              isLoadingFallbackDelay={100}
-              hasNoData={!sampleSites.length}
-              hasNoDataFallback={
-                <NoDataOverlay
-                  height="200px"
-                  title="Add Sampling Sites"
-                  subtitle="Apply your techniques to sampling sites to show where you collected data"
-                />
-              }>
-              <SurveySitesTable
-                sites={sampleSites}
-                paginationModel={sitesPaginationModel}
-                setPaginationModel={setSitesPaginationModel}
-                sortModel={sitesSortModel}
-                setSortModel={setSitesSortModel}
-                rowCount={samplingSitesDataLoader.data?.pagination.total ?? 0}
+          <LoadingGuard
+            isLoading={samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady}
+            isLoadingFallback={<SkeletonTable />}
+            isLoadingFallbackDelay={100}
+            hasNoData={!sampleSites.length}
+            hasNoDataFallback={
+              <NoDataOverlay
+                height="100%"
+                title="Add Sampling Sites"
+                subtitle="Apply your techniques to sampling sites to show where you collected data"
               />
-            </LoadingGuard>
-          </Box>
+            }>
+            <SurveySitesTable
+              sites={sampleSites}
+              paginationModel={sitesPaginationModel}
+              setPaginationModel={setSitesPaginationModel}
+              sortModel={sitesSortModel}
+              setSortModel={setSitesSortModel}
+              rowCount={samplingSitesDataLoader.data?.pagination.total ?? 0}
+            />
+          </LoadingGuard>
         )}
 
         {/* TODO: Add pagination to the survey periods request */}
         {activeView === SurveySamplingView.PERIODS && (
-          <SurveyPeriodsTable
-            periods={samplePeriods}
+          <LoadingGuard
             isLoading={samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady}
+            isLoadingFallback={<SkeletonTable />}
+            isLoadingFallbackDelay={100}
             hasNoData={!samplePeriods.length}
-          />
+            hasNoDataFallback={
+              <NoDataOverlay
+                height="100%"
+                title="Add Periods"
+                subtitle="Add periods when you create sampling sites to show when you collected species observations"
+              />
+            }>
+            <SamplingPeriodTable periods={samplePeriods} />
+          </LoadingGuard>
         )}
       </Box>
     </>
