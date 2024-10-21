@@ -96,9 +96,11 @@ export async function up(knex: Knex): Promise<void> {
       update_date                     timestamptz(6),
       update_user                     integer,
       revision_count                  integer            DEFAULT 0 NOT NULL,
+      -- Check that the critterbase_end_capture_id and critterbase_end_mortality_id are mutually exclusive (only one can be set, or neither)
+      CONSTRAINT check_critterbase_end_id CHECK (NOT (critterbase_end_capture_id IS NOT NULL AND critterbase_end_mortality_id IS NOT NULL)),
       -- Check that the attachment_start_timestamp is before attachment_end_timestamp
       CONSTRAINT check_attachment_start_before_end CHECK (attachment_start_timestamp <= attachment_end_timestamp),
-      -- Check that if frequency is set, frequency_unit_id is also set and vice versa
+      -- Check that frequency and frequency_unit_id coexist (both must be null or both must be not null)
       CONSTRAINT check_frequency_and_unit CHECK ((frequency IS NOT NULL AND frequency_unit_id IS NOT NULL) OR (frequency IS NULL AND frequency_unit_id IS NULL)),
       -- Check that for deployments of the same device_key, that the attachment dates do not overlap
       CONSTRAINT check_no_device_attachment_date_overlap EXCLUDE USING gist (
