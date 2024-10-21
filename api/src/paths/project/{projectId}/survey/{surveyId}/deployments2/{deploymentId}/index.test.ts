@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { deleteDeployment, getDeploymentById, updateDeployment } from '.';
 import * as db from '../../../../../../../database/db';
-import { DeploymentService } from '../../../../../../../services/deployment-services/deployment-service';
+import { TelemetryDeploymentService } from '../../../../../../../services/telemetry-services/telemetry-deployment-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 
 describe('getDeploymentById', () => {
@@ -30,7 +30,7 @@ describe('getDeploymentById', () => {
       critterbase_end_mortality_id: null
     };
 
-    sinon.stub(DeploymentService.prototype, 'getDeploymentById').resolves(mockDeployment);
+    sinon.stub(TelemetryDeploymentService.prototype, 'getDeploymentById').resolves(mockDeployment);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -56,7 +56,7 @@ describe('getDeploymentById', () => {
 
     const mockError = new Error('Test error');
 
-    sinon.stub(DeploymentService.prototype, 'getDeploymentById').rejects(mockError);
+    sinon.stub(TelemetryDeploymentService.prototype, 'getDeploymentById').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -87,7 +87,7 @@ describe('updateDeployment', () => {
     const mockDBConnection = getMockDBConnection({ commit: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    sinon.stub(DeploymentService.prototype, 'updateDeployment').resolves();
+    sinon.stub(TelemetryDeploymentService.prototype, 'updateDeployment').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -125,7 +125,7 @@ describe('updateDeployment', () => {
 
     const mockError = new Error('a test error');
 
-    sinon.stub(DeploymentService.prototype, 'updateDeployment').rejects(mockError);
+    sinon.stub(TelemetryDeploymentService.prototype, 'updateDeployment').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -155,7 +155,7 @@ describe('deleteDeployment', () => {
     const mockDBConnection = getMockDBConnection({ commit: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    sinon.stub(DeploymentService.prototype, 'deleteDeployment').resolves();
+    sinon.stub(TelemetryDeploymentService.prototype, 'deleteDeployment').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -180,7 +180,7 @@ describe('deleteDeployment', () => {
 
     const mockError = new Error('a test error');
 
-    sinon.stub(DeploymentService.prototype, 'deleteDeployment').rejects(mockError);
+    sinon.stub(TelemetryDeploymentService.prototype, 'deleteDeployment').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { createDeployment } from '.';
 import * as db from '../../../../../../../../database/db';
-import { DeploymentService } from '../../../../../../../../services/deployment-services/deployment-service';
+import { TelemetryDeploymentService } from '../../../../../../../../services/telemetry-services/telemetry-deployment-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../__mocks__/db';
 
 describe('createDeployment', () => {
@@ -14,7 +14,7 @@ describe('createDeployment', () => {
     const mockDBConnection = getMockDBConnection({ commit: sinon.stub(), release: sinon.stub() });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    sinon.stub(DeploymentService.prototype, 'createDeployment').resolves();
+    sinon.stub(TelemetryDeploymentService.prototype, 'createDeployment').resolves();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -50,7 +50,9 @@ describe('createDeployment', () => {
     const getDBConnectionStub = sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const mockError = new Error('a test error');
-    const insertDeploymentStub = sinon.stub(DeploymentService.prototype, 'createDeployment').rejects(mockError);
+    const insertDeploymentStub = sinon
+      .stub(TelemetryDeploymentService.prototype, 'createDeployment')
+      .rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

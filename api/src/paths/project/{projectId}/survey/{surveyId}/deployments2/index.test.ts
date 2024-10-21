@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { getDeploymentsInSurvey } from '.';
 import * as db from '../../../../../../database/db';
-import { DeploymentService } from '../../../../../../services/deployment-services/deployment-service';
+import { TelemetryDeploymentService } from '../../../../../../services/telemetry-services/telemetry-deployment-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 
 describe('getDeploymentsInSurvey', () => {
@@ -38,7 +38,7 @@ describe('getDeploymentsInSurvey', () => {
       }
     ];
 
-    sinon.stub(DeploymentService.prototype, 'getDeploymentsForSurveyId').resolves(mockDeployments);
+    sinon.stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurveyId').resolves(mockDeployments);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -63,7 +63,7 @@ describe('getDeploymentsInSurvey', () => {
     const mockError = new Error('Test error');
 
     const getDeploymentsForSurveyIdStub = sinon
-      .stub(DeploymentService.prototype, 'getDeploymentsForSurveyId')
+      .stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurveyId')
       .rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();

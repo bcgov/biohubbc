@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../../database/db';
-import { DeploymentService } from '../../../../../../services/deployment-services/deployment-service';
+import { TelemetryDeploymentService } from '../../../../../../services/telemetry-services/telemetry-deployment-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../.././../../__mocks__/db';
 import { deleteDeploymentsInSurvey } from './delete';
 
@@ -28,7 +28,7 @@ describe('deleteDeploymentsInSurvey', () => {
       deployment_ids: [3, 4]
     };
 
-    sinon.stub(DeploymentService.prototype, 'deleteDeployments').resolves();
+    sinon.stub(TelemetryDeploymentService.prototype, 'deleteDeployments').resolves();
 
     const requestHandler = deleteDeploymentsInSurvey();
 
@@ -56,7 +56,7 @@ describe('deleteDeploymentsInSurvey', () => {
 
     const mockError = new Error('test error');
 
-    sinon.stub(DeploymentService.prototype, 'deleteDeployments').rejects(mockError);
+    sinon.stub(TelemetryDeploymentService.prototype, 'deleteDeployments').rejects(mockError);
 
     const requestHandler = deleteDeploymentsInSurvey();
     try {

@@ -3,22 +3,26 @@ import { DeploymentRecord } from '../../database-models/deployment';
 import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
 import { BaseRepository } from '../base-repository';
-import { CreateDeployment, ExtendedDeploymentRecord, UpdateDeployment } from './deployment-repository.interface';
+import {
+  CreateDeployment,
+  ExtendedDeploymentRecord,
+  UpdateDeployment
+} from './telemetry-deployment-repository.interface';
 
 /**
  * Repository class for working with deployments.
  *
  * @export
- * @class DeploymentRepository
+ * @class TelemetryDeploymentRepository
  * @extends {BaseRepository}
  */
-export class DeploymentRepository extends BaseRepository {
+export class TelemetryDeploymentRepository extends BaseRepository {
   /**
    * Create a deployment.
    *
    * @param {CreateDeployment} deployment The deployment data to create
    * @return {*}  {Promise<void>}
-   * @memberof DeploymentRepository
+   * @memberof TelemetryDeploymentRepository
    */
   async createDeployment(deployment: CreateDeployment): Promise<void> {
     const sqlStatement = SQL`
@@ -55,7 +59,7 @@ export class DeploymentRepository extends BaseRepository {
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to create deployment', [
-        'DeploymentRepository->createDeployment',
+        'TelemetryDeploymentRepository->createDeployment',
         'rowCount was != 1, expected rowCount = 1'
       ]);
     }
@@ -67,7 +71,7 @@ export class DeploymentRepository extends BaseRepository {
    * @param {number} surveyId The survey ID
    * @param {number} deploymentId The deployment ID
    * @return {*}  {Promise<ExtendedDeploymentRecord>}
-   * @memberof DeploymentRepository
+   * @memberof TelemetryDeploymentRepository
    */
   async getDeploymentById(surveyId: number, deploymentId: number): Promise<ExtendedDeploymentRecord> {
     const sqlStatement = SQL`
@@ -108,7 +112,7 @@ export class DeploymentRepository extends BaseRepository {
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to get deployment', [
-        'DeploymentRepository->getDeploymentById',
+        'TelemetryDeploymentRepository->getDeploymentById',
         'rowCount was != 1, expected rowCount = 1'
       ]);
     }
@@ -121,7 +125,7 @@ export class DeploymentRepository extends BaseRepository {
    *
    * @param {number} surveyId The survey ID
    * @return {*}  {Promise<ExtendedDeploymentRecord[]>}
-   * @memberof DeploymentRepository
+   * @memberof TelemetryDeploymentRepository
    */
   async getDeploymentsForSurveyId(surveyId: number): Promise<ExtendedDeploymentRecord[]> {
     const sqlStatement = SQL`
@@ -168,7 +172,7 @@ export class DeploymentRepository extends BaseRepository {
    * @param {number} surveyId The survey ID
    * @param {number} critterId The critter ID
    * @return {*}  {Promise<DeploymentRecord[]>}
-   * @memberof DeploymentRepository
+   * @memberof TelemetryDeploymentRepository
    */
   async getDeploymentsForCritterId(surveyId: number, critterId: number): Promise<DeploymentRecord[]> {
     const sqlStatement = SQL`
@@ -202,7 +206,7 @@ export class DeploymentRepository extends BaseRepository {
    * @param {number} deployment2_id The deployment ID
    * @param {UpdateDeployment} deployment The deployment data to update
    * @return {*}  {Promise<void>}
-   * @memberof DeploymentRepository
+   * @memberof TelemetryDeploymentRepository
    */
   async updateDeployment(surveyId: number, deployment2_id: number, deployment: UpdateDeployment): Promise<void> {
     const sqlStatement = SQL`
@@ -229,7 +233,7 @@ export class DeploymentRepository extends BaseRepository {
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to update deployment', [
-        'DeploymentRepository->updateDeployment',
+        'TelemetryDeploymentRepository->updateDeployment',
         'rowCount was != 1, expected rowCount = 1'
       ]);
     }
@@ -241,7 +245,7 @@ export class DeploymentRepository extends BaseRepository {
    * @param {number} surveyId The survey ID
    * @param {number} deploymentId The deployment ID
    * @return {*}  {Promise<void>}
-   * @memberof DeploymentRepository
+   * @memberof TelemetryDeploymentRepository
    */
   async deleteDeployment(surveyId: number, deploymentId: number): Promise<void> {
     const sqlStatement = SQL`
@@ -256,7 +260,7 @@ export class DeploymentRepository extends BaseRepository {
 
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to delete deployment', [
-        'DeploymentRepository->deleteDeployment',
+        'TelemetryDeploymentRepository->deleteDeployment',
         'rowCount was != 1, expected rowCount = 1'
       ]);
     }
@@ -268,7 +272,7 @@ export class DeploymentRepository extends BaseRepository {
    * @param {number} surveyId The survey ID
    * @param {number[]} deploymentIds The deployment IDs
    * @return {*}  {Promise<void>}
-   * @memberof DeploymentRepository
+   * @memberof TelemetryDeploymentRepository
    */
   async deleteDeployments(surveyId: number, deploymentIds: number[]): Promise<void> {
     const queryBuilder = getKnex()
@@ -282,7 +286,7 @@ export class DeploymentRepository extends BaseRepository {
 
     if (response.rowCount !== deploymentIds.length) {
       throw new ApiExecuteSQLError('Failed to delete deployments', [
-        'DeploymentRepository->deleteDeployment',
+        'TelemetryDeploymentRepository->deleteDeployment',
         `rowCount was ${response.rowCount}, expected rowCount = ${deploymentIds.length}`
       ]);
     }
