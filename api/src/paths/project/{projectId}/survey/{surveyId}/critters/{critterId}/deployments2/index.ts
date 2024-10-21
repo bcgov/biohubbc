@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
-import { DeploymentService } from '../../../../../../../../services/deployment-services/deployment-service';
+import { TelemetryDeploymentService } from '../../../../../../../../services/telemetry-services/telemetry-deployment-service';
 import { getLogger } from '../../../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters/{critterId}/deployments');
@@ -201,11 +201,11 @@ export function createDeployment(): RequestHandler {
     try {
       await connection.open();
 
-      const deploymentService = new DeploymentService(connection);
+      const telemetryDeploymentService = new TelemetryDeploymentService(connection);
 
       // TODO - Do we need to verify that the incoming 'critterbase...Id' values exist and are associated to the critter_id??
 
-      await deploymentService.createDeployment({
+      await telemetryDeploymentService.createDeployment({
         survey_id: surveyId,
         critter_id: critterId,
         device_id: deviceId,
