@@ -1,17 +1,15 @@
-import { TelemetryManualRecord } from '../../database-models/telemetry_manual';
 import { IDBConnection } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
 import { TelemetryManualRepository } from '../../repositories/telemetry-repositories/telemetry-manual-repository';
 import {
   CreateManualTelemetry,
-  DeleteManualTelemetry,
   UpdateManualTelemetry
 } from '../../repositories/telemetry-repositories/telemetry-manual-repository.interface';
 import { TelemetryVendorRepository } from '../../repositories/telemetry-repositories/telemetry-vendor-repository';
 import { Telemetry } from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
-import { DeploymentService } from '../deployment-services/deployment-service';
+import { TelemetryDeploymentService } from './telemetry-deployment-service';
 
 /**
  * A service class for working with telemetry vendor data.
@@ -24,7 +22,7 @@ export class TelemetryVendorService extends DBService {
   vendorRepository: TelemetryVendorRepository;
   manualRepository: TelemetryManualRepository;
 
-  deploymentService: DeploymentService;
+  deploymentService: TelemetryDeploymentService;
 
   constructor(connection: IDBConnection) {
     super(connection);
@@ -34,7 +32,7 @@ export class TelemetryVendorService extends DBService {
     this.manualRepository = new TelemetryManualRepository(connection);
 
     // Services
-    this.deploymentService = new DeploymentService(connection);
+    this.deploymentService = new TelemetryDeploymentService(connection);
   }
 
   /**
@@ -72,29 +70,6 @@ export class TelemetryVendorService extends DBService {
   }
 
   /**
-   * Validate deployment IDs exist in a survey.
-   *
-   * @throws {ApiGeneralError} - If deployment IDs do not exist in the survey
-   * @param {number} surveyId
-   * @param {number[]} deploymentIds
-   * @returns {Promise<void>}
-   */
-  async _validateSurveyDeploymentIds(surveyId: number, deploymentIds: number[]): Promise<void> {
-    const surveyDeployments = await this.deploymentService.getDeploymentsForSurveyId(surveyId);
-
-    const surveyDeploymentIds = new Set(surveyDeployments.map((deployment) => deployment.deployment2_id));
-
-    for (const deploymentId of deploymentIds) {
-      if (!surveyDeploymentIds.has(deploymentId)) {
-        throw new ApiGeneralError('Invalid deployment ID provided for survey', [
-          'TelemetryVendorService->_validateSurveyDeploymentIds',
-          `deployment: ${deploymentId} does not exist in survey: ${surveyId}`
-        ]);
-      }
-    }
-  }
-
-  /**
    * Create manual telemetry records.
    *
    * @async
@@ -103,10 +78,15 @@ export class TelemetryVendorService extends DBService {
    * @returns {Promise<void>}
    */
   async bulkCreateManualTelemetry(surveyId: number, telemetry: CreateManualTelemetry[]): Promise<void> {
-    const deploymentIds = telemetry.map((t) => t.deployment2_id);
+    const deploymentIds = [...new Set(telemetry.map((record) => record.deployment2_id))];
+    const deployments = await this.deploymentService.getDeploymentsByIds(surveyId, deploymentIds);
 
-    // Validate the deployment IDs exist in the survey
-    await this._validateSurveyDeploymentIds(surveyId, deploymentIds);
+    if (deployments.length !== deploymentIds.length) {
+      throw new ApiGeneralError('Failed to create manual telemetry', [
+        'TelemetryVendorService->bulkCreateManualTelemetry',
+        'survey missing reference to one or many deployment IDs'
+      ]);
+    }
 
     return this.manualRepository.bulkCreateManualTelemetry(telemetry);
   }
@@ -114,27 +94,23 @@ export class TelemetryVendorService extends DBService {
   /**
    * Update manual telemetry records.
    *
-   * Note: Removes the `deployent2_id` from the records before updating.
-   *
    * @async
    * @param {number} surveyId
-   * @param {TelemetryManualRecord[]} telemetry - List of manual telemetry data to update
+   * @param {UpdateManualTelemetry[]} telemetry - List of manual telemetry data to update
    * @returns {Promise<void>}
    */
-  async bulkUpdateManualTelemetry(surveyId: number, telemetry: TelemetryManualRecord[]): Promise<void> {
-    const updateTelemetry: UpdateManualTelemetry[] = [];
-    const deploymentIds: number[] = [];
+  async bulkUpdateManualTelemetry(surveyId: number, telemetry: UpdateManualTelemetry[]): Promise<void> {
+    const telemetryManualIds = telemetry.map((record) => record.telemetry_manual_id);
+    const manualTelemetry = await this.manualRepository.getManualTelemetryByIds(surveyId, telemetryManualIds);
 
-    for (const record of telemetry) {
-      const { deployment2_id, ...updateRecord } = record;
-      deploymentIds.push(deployment2_id); // survey deployment validation
-      updateTelemetry.push(updateRecord); // update payload
+    if (manualTelemetry.length !== telemetry.length) {
+      throw new ApiGeneralError('Failed to update manual telemetry', [
+        'TelemetryVendorService->bulkUpdateManualTelemetry',
+        'survey missing reference to one or many telemetry manual IDs'
+      ]);
     }
 
-    // Validate the deployment IDs exist in the survey
-    await this._validateSurveyDeploymentIds(surveyId, deploymentIds);
-
-    return this.manualRepository.bulkUpdateManualTelemetry(updateTelemetry);
+    return this.manualRepository.bulkUpdateManualTelemetry(telemetry);
   }
 
   /**
@@ -142,15 +118,18 @@ export class TelemetryVendorService extends DBService {
    *
    * @async
    * @param {number} surveyId
-   * @param {DeleteManualTelemetry[]} payload - List of manual telemetry IDs and deployment IDs
+   * @param {string[]} telemetryManualIds - List of manual telemetry IDs
    * @returns {Promise<void>}
    */
-  async bulkDeleteManualTelemetry(surveyId: number, payload: DeleteManualTelemetry[]): Promise<void> {
-    const deploymentIds = payload.map((record) => record.deployment2_id);
-    const telemetryManualIds = payload.map((record) => record.telemetry_manual_id);
+  async bulkDeleteManualTelemetry(surveyId: number, telemetryManualIds: string[]): Promise<void> {
+    const manualTelemetry = await this.manualRepository.getManualTelemetryByIds(surveyId, telemetryManualIds);
 
-    // Validate the deployment IDs exist in the survey
-    await this._validateSurveyDeploymentIds(surveyId, deploymentIds);
+    if (manualTelemetry.length !== telemetryManualIds.length) {
+      throw new ApiGeneralError('Failed to delete manual telemetry', [
+        'TelemetryVendorService->bulkDeleteManualTelemetry',
+        'survey missing reference to one or many telemetry manual IDs'
+      ]);
+    }
 
     return this.manualRepository.bulkDeleteManualTelemetry(telemetryManualIds);
   }

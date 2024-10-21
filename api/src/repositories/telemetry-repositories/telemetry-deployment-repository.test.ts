@@ -78,7 +78,7 @@ describe('TelemetryDeploymentRepository', () => {
     });
   });
 
-  describe('getDeploymentById', () => {
+  describe('getDeploymentsByIds', () => {
     it('should get a deployment by ID successfully', async () => {
       const mockDeploymentRecord = {
         deployment2_id: 1,
@@ -111,9 +111,9 @@ describe('TelemetryDeploymentRepository', () => {
       const surveyId = 1;
       const deploymentId = 2;
 
-      const response = await telemetryDeploymentRepository.getDeploymentById(surveyId, deploymentId);
+      const response = await telemetryDeploymentRepository.getDeploymentsByIds(surveyId, [deploymentId]);
 
-      expect(response).to.eql(mockDeploymentRecord);
+      expect(response).to.eql([mockDeploymentRecord]);
     });
 
     it('should throw an error if the deployment is not found', async () => {
@@ -130,7 +130,7 @@ describe('TelemetryDeploymentRepository', () => {
       const deploymentId = 2;
 
       try {
-        await telemetryDeploymentRepository.getDeploymentById(surveyId, deploymentId);
+        await telemetryDeploymentRepository.getDeploymentsByIds(surveyId, [deploymentId]);
       } catch (error) {
         expect(error).to.be.instanceOf(ApiExecuteSQLError);
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to get deployment');

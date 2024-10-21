@@ -1,3 +1,4 @@
+import { TelemetryManualRecord } from '../../database-models/telemetry_manual';
 import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
 import { BaseRepository } from '../base-repository';
@@ -11,6 +12,27 @@ import { CreateManualTelemetry, UpdateManualTelemetry } from './telemetry-manual
  * @extends {BaseRepository}
  */
 export class TelemetryManualRepository extends BaseRepository {
+  /**
+   * Get manual telemetry records by their IDs.
+   *
+   * @param {number} surveyId - The survey ID
+   * @param {string[]} telemetryManualIds - List of manual telemetry IDs
+   * @returns {Promise<TelemetryManualRecord[]>}
+   */
+  async getManualTelemetryByIds(surveyId: number, telemetryManualIds: string[]): Promise<TelemetryManualRecord[]> {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .select('*')
+      .from('telemetry_manual')
+      .join('deployment2', 'telemetry_manual.deployment2_id', 'deployment2.deployment2_id')
+      .whereIn('telemetry_manual.telemetry_manual_id', telemetryManualIds)
+      .andWhere('deployment2.survey_id', surveyId);
+
+    const response = await this.connection.knex<TelemetryManualRecord>(queryBuilder);
+
+    return response.rows;
+  }
   /**
    * Bulk create manual telemetry records.
    *
