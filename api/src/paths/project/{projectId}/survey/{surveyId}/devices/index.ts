@@ -38,7 +38,7 @@ export const POST: Operation = [
 
 POST.apiDoc = {
   description: 'Create a telemetry device.',
-  tags: ['telemetry', 'device'],
+  tags: ['device'],
   security: [
     {
       Bearer: []
@@ -81,11 +81,13 @@ POST.apiDoc = {
             },
             model: {
               type: 'string',
-              maxLength: 100
+              maxLength: 100,
+              nullable: true
             },
             comment: {
               type: 'string',
-              maxLength: 250
+              maxLength: 250,
+              nullable: true
             }
           }
         }
@@ -115,7 +117,7 @@ POST.apiDoc = {
 };
 
 /**
- * Create a device.
+ * Create a telemetry device.
  *
  * @returns
  */
@@ -180,7 +182,7 @@ export const GET: Operation = [
 
 GET.apiDoc = {
   description: 'Get telemetry devices for a survey.',
-  tags: ['telemetry', 'device'],
+  tags: ['device'],
   security: [
     {
       Bearer: []
@@ -209,7 +211,7 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'List of survey devices.',
+      description: 'List of telemetry devices.',
       content: {
         'application/json': {
           schema: {
@@ -277,7 +279,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get all devices for a survey.
+ * Get all telemetry devices for a survey.
  *
  * @returns {RequestHandler}
  */

@@ -32,6 +32,16 @@ export class TelemetryDeviceService extends DBService {
   }
 
   /**
+   * Create a new device record.
+   *
+   * @param {CreateTelemetryDevice} device
+   * @returns {*} {Promise<DeviceRecord>}
+   */
+  async createDevice(device: CreateTelemetryDevice): Promise<DeviceRecord> {
+    return this.telemetryDeviceRepository.createDevice(device);
+  }
+
+  /**
    * Get a single device by its ID.
    *
    * @throws {ApiGeneralError} If the device is not found.
@@ -106,6 +116,18 @@ export class TelemetryDeviceService extends DBService {
   }
 
   /**
+   * Update an existing device record.
+   *
+   * @param {number} surveyId
+   * @param {number} deviceId
+   * @param {UpdateTelemetryDevice} device
+   * @returns {*} {Promise<DeviceRecord>}
+   */
+  async updateDevice(surveyId: number, deviceId: number, device: UpdateTelemetryDevice): Promise<DeviceRecord> {
+    return this.telemetryDeviceRepository.updateDevice(surveyId, deviceId, device);
+  }
+
+  /**
    * Delete a single device by its ID.
    *
    * @throws {ApiGeneralError} If unable to delete the device.
@@ -125,24 +147,21 @@ export class TelemetryDeviceService extends DBService {
   }
 
   /**
-   * Create a new device record.
-   *
-   * @param {CreateTelemetryDevice} device
-   * @returns {*} {Promise<DeviceRecord>}
-   */
-  async createDevice(device: CreateTelemetryDevice): Promise<DeviceRecord> {
-    return this.telemetryDeviceRepository.createDevice(device);
-  }
-
-  /**
-   * Update an existing device record.
+   * Deletes one or more devices by ID.
    *
    * @param {number} surveyId
-   * @param {number} deviceId
-   * @param {UpdateTelemetryDevice} device
-   * @returns {*} {Promise<DeviceRecord>}
+   * @param {number[]} deviceIds
+   * @return {*}  {Promise<void>}
+   * @memberof TelemetryDeviceService
    */
-  async updateDevice(surveyId: number, deviceId: number, device: UpdateTelemetryDevice): Promise<DeviceRecord> {
-    return this.telemetryDeviceRepository.updateDevice(surveyId, deviceId, device);
+  async deleteDevices(surveyId: number, deviceIds: number[]): Promise<void> {
+    const devices = await this.telemetryDeviceRepository.deleteDevicesByIds(surveyId, deviceIds);
+
+    if (devices.length !== deviceIds.length) {
+      throw new ApiGeneralError('Unable to delete devices', [
+        'TelemetryDeviceService -> deleteDevices',
+        `Expected ${deviceIds.length} devices to be deleted, but only ${devices.length} were deleted.`
+      ]);
+    }
   }
 }

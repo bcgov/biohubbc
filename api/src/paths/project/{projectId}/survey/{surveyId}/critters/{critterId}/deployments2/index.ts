@@ -29,7 +29,7 @@ export const POST: Operation = [
 
 POST.apiDoc = {
   description: 'Creates a new deployment.',
-  tags: ['deployment', 'critterbase'],
+  tags: ['deployment'],
   security: [
     {
       Bearer: []
