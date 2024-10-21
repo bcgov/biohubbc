@@ -80,8 +80,14 @@ export async function up(knex: Knex): Promise<void> {
       critter_id                      integer            NOT NULL,
       device_id                       integer            NOT NULL,
       device_key                      varchar            NOT NULL,
-      attachment_start                timestamptz(6)     NOT NULL,
-      attachment_end                  timestamptz(6),
+      frequency                       integer,
+      frequency_unit_id               integer,
+      attachment_start_date           date               NOT NULL,
+      attachment_start_time           time,
+      attachment_start_timestamp      timestamptz(6)     GENERATED ALWAYS AS (COALESCE(attachment_start_date + attachment_start_time, attachment_start_date::timestamp)) stored,
+      attachment_end_date             date,
+      attachment_end_time             time,
+      attachment_end_timestamp        timestamptz(6)     GENERATED ALWAYS AS (COALESCE(attachment_end_date + attachment_end_time, attachment_end_date::timestamp)) stored,
       critterbase_start_capture_id    uuid,
       critterbase_end_capture_id      uuid,
       critterbase_end_mortality_id    uuid,
@@ -90,12 +96,16 @@ export async function up(knex: Knex): Promise<void> {
       update_date                     timestamptz(6),
       update_user                     integer,
       revision_count                  integer            DEFAULT 0 NOT NULL,
-      -- Check that the attachment_start is before attachment_end
-      CONSTRAINT check_attachment_start_before_end CHECK (attachment_start <= attachment_end),
+      -- Check that the critterbase_end_capture_id and critterbase_end_mortality_id are mutually exclusive (only one can be set, or neither)
+      CONSTRAINT check_critterbase_end_id CHECK (NOT (critterbase_end_capture_id IS NOT NULL AND critterbase_end_mortality_id IS NOT NULL)),
+      -- Check that the attachment_start_timestamp is before attachment_end_timestamp
+      CONSTRAINT check_attachment_start_before_end CHECK (attachment_start_timestamp <= attachment_end_timestamp),
+      -- Check that frequency and frequency_unit_id coexist (both must be null or both must be not null)
+      CONSTRAINT check_frequency_and_unit CHECK ((frequency IS NOT NULL AND frequency_unit_id IS NOT NULL) OR (frequency IS NULL AND frequency_unit_id IS NULL)),
       -- Check that for deployments of the same device_key, that the attachment dates do not overlap
       CONSTRAINT check_no_device_attachment_date_overlap EXCLUDE USING gist (
         device_key WITH =,
-        tstzrange(attachment_start, attachment_end) WITH &&
+        tstzrange(attachment_start_timestamp, attachment_end_timestamp) WITH &&
       ),
       CONSTRAINT deployment2_pk PRIMARY KEY (deployment2_id)
     );
@@ -106,8 +116,14 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN deployment2.critter_id                      IS 'Foreign key to the critter table.';
     COMMENT ON COLUMN deployment2.device_id                       IS 'Foreign key to the device table.';
     COMMENT ON COLUMN deployment2.device_key                      IS '(Generated) The SIMS unique key for the device.';
-    COMMENT ON COLUMN deployment2.attachment_start                IS 'The date the telemetry device was attached.';
-    COMMENT ON COLUMN deployment2.attachment_end                  IS 'The date the telemetry device was removed.';
+    COMMENT ON COLUMN deployment2.frequency                       IS 'The frequency of the device.';
+    COMMENT ON COLUMN deployment2.frequency_unit_id               IS 'Foreign key to the frequency_unit table.';
+    COMMENT ON COLUMN deployment2.attachment_start_date           IS 'The date the device was attached to the animal.';
+    COMMENT ON COLUMN deployment2.attachment_start_time           IS 'The time the device was attached to the animal.';
+    COMMENT ON COLUMN deployment2.attachment_start_timestamp      IS '(Generated) The timestamp the device was attached to the animal.';
+    COMMENT ON COLUMN deployment2.attachment_end_date             IS 'The date the device was removed from the animal.';
+    COMMENT ON COLUMN deployment2.attachment_end_time             IS 'The time the device was removed from the animal.';
+    COMMENT ON COLUMN deployment2.attachment_end_timestamp        IS '(Generated) The timestamp the device was removed from the animal.';
     COMMENT ON COLUMN deployment2.critterbase_start_capture_id    IS 'UUID of an external Critterbase capture record. The capture event during which the device was attached to the animal.';
     COMMENT ON COLUMN deployment2.critterbase_end_capture_id      IS 'UUID of an external Critterbase capture record. The capture event during which the device was removed from the animal.';
     COMMENT ON COLUMN deployment2.critterbase_end_mortality_id    IS 'UUID of an external Critterbase mortality record. The mortality event during which the device was removed from the animal.';
@@ -133,6 +149,11 @@ export async function up(knex: Knex): Promise<void> {
       FOREIGN KEY (device_id)
       REFERENCES device(device_id);
 
+    ALTER TABLE deployment2
+      ADD CONSTRAINT deployment2_fk4
+      FOREIGN KEY (frequency_unit_id)
+      REFERENCES frequency_unit(frequency_unit_id);
+
     -- Add indexes for foreign keys
     CREATE INDEX deployment2_idx1 ON deployment2(survey_id);
 
@@ -140,8 +161,10 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE INDEX deployment2_idx3 ON deployment2(device_id);
 
+    CREATE INDEX deployment2_idx4 ON deployment2(frequency_unit_id);
+
     -- Add indexes
-    CREATE INDEX deployment2_idx4 ON deployment2(device_key);
+    CREATE INDEX deployment2_idx5 ON deployment2(device_key);
     ----------------------------------------------------------------------------------------
 
     CREATE TABLE telemetry_manual (
@@ -164,8 +187,8 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN telemetry_manual.deployment2_id         IS 'Foreign key to the deployment table.';
     COMMENT ON COLUMN telemetry_manual.latitude               IS 'The latitude of the telemetry record, having ten points of total precision and 7 points of precision after the decimal.';
     COMMENT ON COLUMN telemetry_manual.longitude              IS 'The longitude of the telemetry record, having ten points of total precision and 7 points of precision after the decimal.';
-    COMMENT ON COLUMN telemetry_manual.acquisition_date       IS 'The date the telemetry record was recorded.';
-    COMMENT ON COLUMN telemetry_manual.transmission_date      IS 'The date the telemetry record was transmitted.';
+    COMMENT ON COLUMN telemetry_manual.acquisition_date       IS 'The date the device recorded the telemetry record. (Ex: the device captures a gps point every hour).';
+    COMMENT ON COLUMN telemetry_manual.transmission_date      IS 'The date the device transmitted the telemetry record to the vendor. (Ex: the device transmits all recorded gps points to the vendor every 24 hours).';
     COMMENT ON COLUMN telemetry_manual.create_date            IS 'The datetime the record was created.';
     COMMENT ON COLUMN telemetry_manual.create_user            IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN telemetry_manual.update_date            IS 'The datetime the record was updated.';
