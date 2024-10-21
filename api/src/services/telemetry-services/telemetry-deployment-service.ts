@@ -1,27 +1,27 @@
 import { DeploymentRecord } from '../../database-models/deployment';
 import { IDBConnection } from '../../database/db';
-import { DeploymentRepository } from '../../repositories/deployment-repository/deployment-repository';
+import { TelemetryDeploymentRepository } from '../../repositories/telemetry-repositories/telemetry-deployment-repository';
 import {
   CreateDeployment,
   ExtendedDeploymentRecord,
   UpdateDeployment
-} from '../../repositories/deployment-repository/deployment-repository.interface';
+} from '../../repositories/telemetry-repositories/telemetry-deployment-repository.interface';
 import { DBService } from '../db-service';
 
 /**
  * Service class for working with deployments.
  *
  * @export
- * @class DeploymentService
+ * @class TelemetryDeploymentService
  * @extends {DBService}
  */
-export class DeploymentService extends DBService {
-  deploymentRepository: DeploymentRepository;
+export class TelemetryDeploymentService extends DBService {
+  deploymentRepository: TelemetryDeploymentRepository;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
-    this.deploymentRepository = new DeploymentRepository(connection);
+    this.deploymentRepository = new TelemetryDeploymentRepository(connection);
   }
 
   /**
@@ -29,7 +29,7 @@ export class DeploymentService extends DBService {
    *
    * @param {CreateDeployment} deployment The deployment data to create
    * @return {*}  {Promise<void>}
-   * @memberof DeploymentService
+   * @memberof TelemetryDeploymentService
    */
   async createDeployment(deployment: CreateDeployment): Promise<void> {
     return this.deploymentRepository.createDeployment(deployment);
@@ -41,7 +41,7 @@ export class DeploymentService extends DBService {
    * @param {number} surveyId The survey ID
    * @param {number} deploymentId The deployment ID
    * @return {*}  {Promise<DeploymentRecord>}
-   * @memberof DeploymentService
+   * @memberof TelemetryDeploymentService
    */
   async getDeploymentById(surveyId: number, deploymentId: number): Promise<DeploymentRecord> {
     return this.deploymentRepository.getDeploymentById(surveyId, deploymentId);
@@ -52,7 +52,7 @@ export class DeploymentService extends DBService {
    *
    * @param {number} surveyId The survey ID
    * @return {*}  {Promise<ExtendedDeploymentRecord[]>}
-   * @memberof DeploymentService
+   * @memberof TelemetryDeploymentService
    */
   async getDeploymentsForSurveyId(surveyId: number): Promise<ExtendedDeploymentRecord[]> {
     return this.deploymentRepository.getDeploymentsForSurveyId(surveyId);
@@ -64,7 +64,7 @@ export class DeploymentService extends DBService {
    * @param {number} surveyId The survey ID
    * @param {number} critterId The critter ID
    * @return {*}  {Promise<DeploymentRecord>}
-   * @memberof DeploymentService
+   * @memberof TelemetryDeploymentService
    */
   async getDeploymentsForCritterId(surveyId: number, critterId: number): Promise<DeploymentRecord[]> {
     return this.deploymentRepository.getDeploymentsForCritterId(surveyId, critterId);
@@ -77,7 +77,7 @@ export class DeploymentService extends DBService {
    * @param {number} deployment2_id The deployment ID
    * @param {UpdateDeployment} deployment The deployment data to update
    * @return {*}  {Promise<string>}
-   * @memberof DeploymentService
+   * @memberof TelemetryDeploymentService
    */
   async updateDeployment(surveyId: number, deployment2_id: number, deployment: UpdateDeployment): Promise<void> {
     return this.deploymentRepository.updateDeployment(surveyId, deployment2_id, deployment);
@@ -89,7 +89,7 @@ export class DeploymentService extends DBService {
    * @param {number} surveyId The survey ID
    * @param {number} deploymentId The deployment ID
    * @return {*}  {Promise<void>}
-   * @memberof DeploymentService
+   * @memberof TelemetryDeploymentService
    */
   async deleteDeployment(surveyId: number, deploymentId: number): Promise<void> {
     return this.deploymentRepository.deleteDeployment(surveyId, deploymentId);
@@ -101,7 +101,7 @@ export class DeploymentService extends DBService {
    * @param {number} surveyId The survey ID
    * @param {number[]} deploymentIds The deployment IDs
    * @return {*}  {Promise<void>}
-   * @memberof DeploymentService
+   * @memberof TelemetryDeploymentService
    */
   async deleteDeployments(surveyId: number, deploymentIds: number[]): Promise<void> {
     return this.deploymentRepository.deleteDeployments(surveyId, deploymentIds);

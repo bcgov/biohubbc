@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { DeploymentService } from '../../../../../../services/deployment-services/deployment-service';
+import { TelemetryDeploymentService } from '../../../../../../services/telemetry-services/telemetry-deployment-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments2/index');
@@ -230,7 +230,7 @@ export function getDeploymentsInSurvey(): RequestHandler {
     try {
       await connection.open();
 
-      const deploymentService = new DeploymentService(connection);
+      const deploymentService = new TelemetryDeploymentService(connection);
 
       const deployments = await deploymentService.getDeploymentsForSurveyId(surveyId);
 

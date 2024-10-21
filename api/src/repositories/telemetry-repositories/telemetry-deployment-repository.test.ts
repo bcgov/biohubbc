@@ -3,10 +3,10 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import { ApiExecuteSQLError } from '../../errors/api-error';
 import { getMockDBConnection } from '../../__mocks__/db';
-import { DeploymentRepository } from './deployment-repository';
-import { CreateDeployment, UpdateDeployment } from './deployment-repository.interface';
+import { TelemetryDeploymentRepository } from './telemetry-deployment-repository';
+import { CreateDeployment, UpdateDeployment } from './telemetry-deployment-repository.interface';
 
-describe('DeploymentRepository', () => {
+describe('TelemetryDeploymentRepository', () => {
   beforeEach(() => {});
 
   afterEach(() => {
@@ -22,7 +22,7 @@ describe('DeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new DeploymentRepository(mockDbConnection);
+      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const deployment: CreateDeployment = {
         survey_id: 1,
@@ -52,7 +52,7 @@ describe('DeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new DeploymentRepository(mockDbConnection);
+      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const deployment: CreateDeployment = {
         survey_id: 1,
@@ -106,7 +106,7 @@ describe('DeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new DeploymentRepository(mockDbConnection);
+      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
       const deploymentId = 2;
@@ -124,7 +124,7 @@ describe('DeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new DeploymentRepository(mockDbConnection);
+      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
       const deploymentId = 2;
@@ -166,7 +166,7 @@ describe('DeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new DeploymentRepository(mockDbConnection);
+      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
 
@@ -204,7 +204,7 @@ describe('DeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new DeploymentRepository(mockDbConnection);
+      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
       const critterId = 2;
@@ -224,7 +224,7 @@ describe('DeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new DeploymentRepository(mockDbConnection);
+      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const updateDeployment: UpdateDeployment = {
         critter_id: 1,
@@ -256,7 +256,7 @@ describe('DeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new DeploymentRepository(mockDbConnection);
+      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const updateDeployment: UpdateDeployment = {
         critter_id: 1,
@@ -293,7 +293,7 @@ describe('DeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new DeploymentRepository(mockDbConnection);
+      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
       const deploymentId = 2;
@@ -311,7 +311,7 @@ describe('DeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new DeploymentRepository(mockDbConnection);
+      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
       const deploymentId = 2;
@@ -334,7 +334,7 @@ describe('DeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new DeploymentRepository(mockDbConnection);
+      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
       const deploymentIds = [1, 2, 3];
@@ -352,7 +352,7 @@ describe('DeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new DeploymentRepository(mockDbConnection);
+      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
       const deploymentIds = [1, 2, 3];
