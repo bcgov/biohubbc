@@ -84,7 +84,7 @@ export class TelemetryVendorService extends DBService {
     if (deployments.length !== deploymentIds.length) {
       throw new ApiGeneralError('Failed to create manual telemetry', [
         'TelemetryVendorService->bulkCreateManualTelemetry',
-        'survey missing reference to one or many deployment IDs'
+        'survey missing reference to one or more deployment IDs'
       ]);
     }
 
@@ -106,7 +106,7 @@ export class TelemetryVendorService extends DBService {
     if (manualTelemetry.length !== telemetry.length) {
       throw new ApiGeneralError('Failed to update manual telemetry', [
         'TelemetryVendorService->bulkUpdateManualTelemetry',
-        'survey missing reference to one or many telemetry manual IDs'
+        'survey missing reference to one or more telemetry manual IDs'
       ]);
     }
 
@@ -127,7 +127,7 @@ export class TelemetryVendorService extends DBService {
     if (manualTelemetry.length !== telemetryManualIds.length) {
       throw new ApiGeneralError('Failed to delete manual telemetry', [
         'TelemetryVendorService->bulkDeleteManualTelemetry',
-        'survey missing reference to one or many telemetry manual IDs'
+        'survey missing reference to one or more telemetry manual IDs'
       ]);
     }
 
