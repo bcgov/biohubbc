@@ -14,9 +14,3 @@ export type CreateManualTelemetry = Pick<
  *
  */
 export type UpdateManualTelemetry = Omit<TelemetryManualRecord, 'deployment2_id'>;
-
-/**
- * Interface reflecting the telemetry manual data required to delete an existing manual telemetry record.
- *
- */
-export type DeleteManualTelemetry = Pick<TelemetryManualRecord, 'telemetry_manual_id' | 'deployment2_id'>;
