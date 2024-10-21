@@ -114,6 +114,8 @@ export class TelemetryVendorService extends DBService {
   /**
    * Update manual telemetry records.
    *
+   * Note: Removes the `deployent2_id` from the records before updating.
+   *
    * @async
    * @param {number} surveyId
    * @param {TelemetryManualRecord[]} telemetry - List of manual telemetry data to update
@@ -132,7 +134,7 @@ export class TelemetryVendorService extends DBService {
     // Validate the deployment IDs exist in the survey
     await this._validateSurveyDeploymentIds(surveyId, deploymentIds);
 
-    return this.manualRepository.bulkUpdateManualTelemetry(telemetry);
+    return this.manualRepository.bulkUpdateManualTelemetry(updateTelemetry);
   }
 
   /**
