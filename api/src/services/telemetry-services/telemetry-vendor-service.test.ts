@@ -8,7 +8,7 @@ import { TelemetryVendorService } from './telemetry-vendor-service';
 
 chai.use(sinonChai);
 
-describe.only('TelemetryVendorService', () => {
+describe('TelemetryVendorService', () => {
   beforeEach(() => {
     sinon.restore();
   });
