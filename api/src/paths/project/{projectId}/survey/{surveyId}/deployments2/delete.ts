@@ -116,9 +116,9 @@ export function deleteDeploymentsInSurvey(): RequestHandler {
     try {
       await connection.open();
 
-      const deploymentService = new TelemetryDeploymentService(connection);
+      const telemetryDeploymentService = new TelemetryDeploymentService(connection);
 
-      await deploymentService.deleteDeployments(surveyId, deploymentIds);
+      await telemetryDeploymentService.deleteDeployments(surveyId, deploymentIds);
 
       await connection.commit();
 

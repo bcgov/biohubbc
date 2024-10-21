@@ -201,11 +201,11 @@ export function createDeployment(): RequestHandler {
     try {
       await connection.open();
 
-      const deploymentService = new TelemetryDeploymentService(connection);
+      const telemetryDeploymentService = new TelemetryDeploymentService(connection);
 
       // TODO - Do we need to verify that the incoming 'critterbase...Id' values exist and are associated to the critter_id??
 
-      await deploymentService.createDeployment({
+      await telemetryDeploymentService.createDeployment({
         survey_id: surveyId,
         critter_id: critterId,
         device_id: deviceId,
