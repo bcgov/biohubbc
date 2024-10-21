@@ -1,7 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { BctwService, getBctwUser } from '../../../services/bctw-service';
+import { BctwDeviceService } from '../../../services/bctw-service/bctw-device-service';
+import { getBctwUser } from '../../../services/bctw-service/bctw-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/telemetry/device/{deviceId}');
@@ -94,9 +95,9 @@ export function upsertDevice(): RequestHandler {
   return async (req, res) => {
     const user = getBctwUser(req);
 
-    const bctwService = new BctwService(user);
+    const bctwDeviceService = new BctwDeviceService(user);
     try {
-      const results = await bctwService.updateDevice(req.body);
+      const results = await bctwDeviceService.updateDevice(req.body);
       return res.status(200).json(results);
     } catch (error) {
       defaultLog.error({ label: 'upsertDevice', message: 'error', error });

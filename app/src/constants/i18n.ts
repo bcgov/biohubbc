@@ -63,6 +63,20 @@ export const AttachmentsI18N = {
     'An error has occurred while attempting to download an attachment, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const ReportI18N = {
+  cancelTitle: 'Cancel Upload',
+  cancelText: 'Are you sure you want to cancel?',
+  uploadErrorTitle: 'Error Uploading Report',
+  uploadErrorText:
+    'An error has occurred while attempting to upload the report, please try again. If the error persists, please contact your system administrator.',
+  deleteErrorTitle: 'Error Deleting Report',
+  deleteErrorText:
+    'An error has occurred while attempting to delete the report, please try again. If the error persists, please contact your system administrator.',
+  downloadErrorTitle: 'Error Downloading Report',
+  downloadErrorText:
+    'An error has occurred while attempting to download the report, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const AccessRequestI18N = {
   requestTitle: 'Access Request',
   requestText: 'Error requesting access',
@@ -447,5 +461,40 @@ export const TelemetryTableI18N = {
   saveRecordsSuccessSnackbarMessage: 'Telemetry updated successfully.',
   deleteSingleRecordSuccessSnackbarMessage: 'Deleted telemetry record successfully.',
   deleteMultipleRecordSuccessSnackbarMessage: (count: number) =>
-    `Deleted ${count} telemetry ${p(count, 'record')} successfully.`
+    `Deleted ${count} telemetry ${p(count, 'record')} successfully.`,
+  // Animal CSV import strings
+  importRecordsSuccessSnackbarMessage: 'Telemetry imported successfully.',
+  importRecordsErrorDialogTitle: 'Error Importing telemetry Records',
+  importRecordsErrorDialogText: 'An error occurred while importing telemetry records.'
+};
+
+export const TelemetryDeviceKeyFileI18N = {
+  uploadErrorTitle: 'Error Uploading Telemetry Device Key File',
+  uploadErrorText:
+    'An error has occurred while attempting to upload the device key file, please try again. If the error persists, please contact your system administrator.',
+  downloadErrorTitle: 'Error Downloading Telemetry Device Key File',
+  downloadErrorText:
+    'An error has occurred while attempting to download the device key file, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const CreateAnimalDeploymentI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Deployment',
+  createErrorText:
+    'An error has occurred while attempting to create your deployment. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditAnimalDeploymentI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+  createErrorTitle: 'Error Creating Deployment',
+  createErrorText:
+    'An error has occurred while attempting to create your deployment. Please try again. If the error persists, please contact your system administrator.'
+};
+
+export const SurveyExportI18N = {
+  exportErrorTitle: 'Error Exporting Survey Data',
+  exportErrorText:
+    'An error has occurred while attempting to export survey data. Please try again. If the error persists, please contact your system administrator.'
 };

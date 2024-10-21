@@ -34,7 +34,7 @@ export const validateObservationTableRowMeasurements = async (
     return [];
   }
 
-  const taxonMeasurements = await getTsnMeasurementTypeDefinitionMap(Number(row.itis_tsn));
+  const taxonMeasurements = await getTsnMeasurementTypeDefinitionMap(row.itis_tsn);
 
   if (!taxonMeasurements) {
     // This taxon has no valid measurements, return an error

@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { SystemUser } from '../../repositories/user-repository';
-import { BctwService } from '../../services/bctw-service';
+import { BctwDeviceService } from '../../services/bctw-service/bctw-device-service';
 import { getRequestHandlerMocks } from '../../__mocks__/db';
 import { getCollarVendors } from './vendors';
 
@@ -12,7 +12,7 @@ describe('getCollarVendors', () => {
 
   it('gets collar vendors', async () => {
     const mockVendors = ['vendor1', 'vendor2'];
-    const mockGetCollarVendors = sinon.stub(BctwService.prototype, 'getCollarVendors').resolves(mockVendors);
+    const mockGetCollarVendors = sinon.stub(BctwDeviceService.prototype, 'getCollarVendors').resolves(mockVendors);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -30,7 +30,7 @@ describe('getCollarVendors', () => {
   it('catches and re-throws error', async () => {
     const mockError = new Error('a test error');
 
-    const mockGetCollarVendors = sinon.stub(BctwService.prototype, 'getCollarVendors').rejects(mockError);
+    const mockGetCollarVendors = sinon.stub(BctwDeviceService.prototype, 'getCollarVendors').rejects(mockError);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

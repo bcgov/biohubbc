@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { createManualTelemetry, GET, getManualTelemetry, PATCH, POST, updateManualTelemetry } from '.';
 import { SystemUser } from '../../../repositories/user-repository';
-import { BctwService, IManualTelemetry } from '../../../services/bctw-service';
+import { BctwTelemetryService, IManualTelemetry } from '../../../services/bctw-service/bctw-telemetry-service';
 import { getRequestHandlerMocks } from '../../../__mocks__/db';
 
 const mockTelemetry = [
@@ -28,7 +28,7 @@ describe('manual telemetry endpoints', () => {
       });
     });
     it('should retrieve all manual telemetry', async () => {
-      const mockGetTelemetry = sinon.stub(BctwService.prototype, 'getManualTelemetry').resolves(mockTelemetry);
+      const mockGetTelemetry = sinon.stub(BctwTelemetryService.prototype, 'getManualTelemetry').resolves(mockTelemetry);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -45,7 +45,7 @@ describe('manual telemetry endpoints', () => {
 
     it('should catch error', async () => {
       const mockError = new Error('test error');
-      const mockGetTelemetry = sinon.stub(BctwService.prototype, 'getManualTelemetry').rejects(mockError);
+      const mockGetTelemetry = sinon.stub(BctwTelemetryService.prototype, 'getManualTelemetry').rejects(mockError);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -70,7 +70,9 @@ describe('manual telemetry endpoints', () => {
       });
     });
     it('should bulk create manual telemetry', async () => {
-      const mockCreateTelemetry = sinon.stub(BctwService.prototype, 'createManualTelemetry').resolves(mockTelemetry);
+      const mockCreateTelemetry = sinon
+        .stub(BctwTelemetryService.prototype, 'createManualTelemetry')
+        .resolves(mockTelemetry);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -86,7 +88,7 @@ describe('manual telemetry endpoints', () => {
     });
     it('should catch error', async () => {
       const mockError = new Error('test error');
-      const mockGetTelemetry = sinon.stub(BctwService.prototype, 'createManualTelemetry').rejects(mockError);
+      const mockGetTelemetry = sinon.stub(BctwTelemetryService.prototype, 'createManualTelemetry').rejects(mockError);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -111,7 +113,9 @@ describe('manual telemetry endpoints', () => {
       });
     });
     it('should bulk update manual telemetry', async () => {
-      const mockCreateTelemetry = sinon.stub(BctwService.prototype, 'updateManualTelemetry').resolves(mockTelemetry);
+      const mockCreateTelemetry = sinon
+        .stub(BctwTelemetryService.prototype, 'updateManualTelemetry')
+        .resolves(mockTelemetry);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -127,7 +131,7 @@ describe('manual telemetry endpoints', () => {
     });
     it('should catch error', async () => {
       const mockError = new Error('test error');
-      const mockGetTelemetry = sinon.stub(BctwService.prototype, 'updateManualTelemetry').rejects(mockError);
+      const mockGetTelemetry = sinon.stub(BctwTelemetryService.prototype, 'updateManualTelemetry').rejects(mockError);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

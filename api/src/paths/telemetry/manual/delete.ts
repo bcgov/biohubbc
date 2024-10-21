@@ -2,7 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { manual_telemetry_responses } from '.';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { BctwService, getBctwUser } from '../../../services/bctw-service';
+import { getBctwUser } from '../../../services/bctw-service/bctw-service';
+import { BctwTelemetryService } from '../../../services/bctw-service/bctw-telemetry-service';
 import { getLogger } from '../../../utils/logger';
 const defaultLog = getLogger('paths/telemetry/manual/delete');
 
@@ -52,9 +53,9 @@ export function deleteManualTelemetry(): RequestHandler {
   return async (req, res) => {
     const user = getBctwUser(req);
 
-    const bctwService = new BctwService(user);
+    const bctwTelemetryService = new BctwTelemetryService(user);
     try {
-      const result = await bctwService.deleteManualTelemetry(req.body);
+      const result = await bctwTelemetryService.deleteManualTelemetry(req.body);
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'deleteManualTelemetry', message: 'error', error });

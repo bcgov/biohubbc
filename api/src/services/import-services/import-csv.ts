@@ -49,13 +49,17 @@ export const importCSV = async <ValidatedRow, InsertReturn>(
   // Convert the worksheet into an array of records
   const worksheetRows = getWorksheetRowObjects(worksheet);
 
+  if (!worksheetRows.length) {
+    throw new ApiGeneralError(`Row validator failed. No rows found in the CSV file.`);
+  }
+
   // Validate the CSV rows with reference data
   const validation = await importer.validateRows(worksheetRows, worksheet);
 
   // Throw error is row validation failed and inject validation errors
   // The validation errors can be either custom (Validation) or Zod (SafeParseReturn)
   if (!validation.success) {
-    throw new ApiGeneralError(`Failed to import Critter CSV. Column data validator failed.`, [
+    throw new ApiGeneralError(`Cell validator failed. Cells have invalid reference values.`, [
       { csv_row_errors: validation.error.issues },
       'importCSV->_validate->_validateRows'
     ]);

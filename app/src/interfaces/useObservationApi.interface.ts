@@ -45,6 +45,8 @@ export type StandardObservationColumns = {
 
 export type SubcountObservationColumns = {
   observation_subcount_id: number | null;
+  observation_subcount_sign_id: number;
+  comment: string | null;
   subcount: number | null;
   qualitative_measurements: {
     field: string;
@@ -131,7 +133,7 @@ type ObservationSubCountQuantitativeEnvironmentRecord = {
 
 type ObservationSubcountQualitativeEnvironmentObject = Pick<
   ObservationSubCountQualitativeEnvironmentRecord,
-  'environment_qualitative_id' | 'environment_qualitative_option_id'
+  'observation_subcount_qualitative_environment_id' | 'environment_qualitative_id' | 'environment_qualitative_option_id'
 >;
 
 type ObservationSubcountQuantitativeEnvironmentObject = Pick<
@@ -142,6 +144,8 @@ type ObservationSubcountQuantitativeEnvironmentObject = Pick<
 type ObservationSubcountRecord = {
   observation_subcount_id: number;
   survey_observation_id: number;
+  observation_subcount_sign_id: number;
+  comment: string;
   subcount: number | null;
   create_date: string;
   create_user: number;
@@ -152,6 +156,8 @@ type ObservationSubcountRecord = {
 
 type ObservationSubcountObject = {
   observation_subcount_id: ObservationSubcountRecord['observation_subcount_id'];
+  observation_subcount_sign_id: ObservationSubcountRecord['observation_subcount_sign_id'];
+  comment: ObservationSubcountRecord['comment'];
   subcount: ObservationSubcountRecord['subcount'];
   qualitative_measurements: ObservationSubcountQualitativeMeasurementObject[];
   quantitative_measurements: ObservationSubcountQuantitativeMeasurementObject[];

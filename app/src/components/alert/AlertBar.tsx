@@ -7,7 +7,7 @@ interface IAlertBarProps {
   severity: 'error' | 'warning' | 'info' | 'success';
   variant: 'filled' | 'outlined' | 'standard';
   title: string;
-  text: string;
+  text: string | JSX.Element;
 }
 
 const AlertBar: React.FC<IAlertBarProps> = (props) => {

@@ -1,7 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { BctwService, getBctwUser } from '../../../services/bctw-service';
+import { getBctwUser } from '../../../services/bctw-service/bctw-service';
+import { BctwTelemetryService } from '../../../services/bctw-service/bctw-telemetry-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/telemetry/manual');
@@ -95,7 +96,8 @@ POST.apiDoc = {
 export function getVendorTelemetryByDeploymentIds(): RequestHandler {
   return async (req, res) => {
     const user = getBctwUser(req);
-    const bctwService = new BctwService(user);
+
+    const bctwService = new BctwTelemetryService(user);
     try {
       const result = await bctwService.getVendorTelemetryByDeploymentIds(req.body);
       return res.status(200).json(result);

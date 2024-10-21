@@ -1,7 +1,9 @@
 import { mdiArrowTopRight } from '@mdi/js';
 import { Skeleton } from '@mui/material';
 import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -37,26 +39,37 @@ export const SpeciesStandards = () => {
         }}
       />
       <Box my={2}>
-        {standardsDataLoader.data && <SpeciesStandardsResults data={standardsDataLoader.data} />}
-        {standardsDataLoader.isLoading ? (
-          <Stack gap={1}>
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-            <Skeleton variant="rectangular" height="60px" />
-          </Stack>
-        ) : (
-          <Box minHeight="200px" display="flex" alignItems="center" justifyContent="center">
-            <NoDataOverlay
-              title="Search for a Species"
-              subtitle="Explore supported data types and formatting guidelines for species"
-              icon={mdiArrowTopRight}
-            />
-          </Box>
-        )}
+        <LoadingGuard
+          isLoading={standardsDataLoader.isLoading}
+          isLoadingFallback={
+            <Stack gap={2}>
+              <Skeleton variant="rectangular" height="30px" width="300px" sx={{ borderRadius: '5px' }} />
+              <Divider />
+              <Stack gap={1} direction={'row'}>
+                <Skeleton variant="rectangular" height="30px" width="160px" sx={{ borderRadius: '5px' }} />
+                <Skeleton variant="rectangular" height="30px" width="250px" sx={{ borderRadius: '5px' }} />
+              </Stack>
+              <Skeleton variant="rectangular" height="56px" sx={{ borderRadius: '5px' }} />
+              <Skeleton variant="rectangular" height="56px" sx={{ borderRadius: '5px' }} />
+              <Skeleton variant="rectangular" height="56px" sx={{ borderRadius: '5px' }} />
+              <Skeleton variant="rectangular" height="56px" sx={{ borderRadius: '5px' }} />
+              <Skeleton variant="rectangular" height="56px" sx={{ borderRadius: '5px' }} />
+            </Stack>
+          }
+          isLoadingFallbackDelay={100}
+          hasNoData={!standardsDataLoader.data}
+          hasNoDataFallback={
+            <Box minHeight="200px" display="flex" alignItems="center" justifyContent="center">
+              <NoDataOverlay
+                title="Search for a Species"
+                subtitle="Explore supported data types and formatting guidelines for species"
+                icon={mdiArrowTopRight}
+              />
+            </Box>
+          }
+          hasNoDataFallbackDelay={100}>
+          <SpeciesStandardsResults data={standardsDataLoader.data} />
+        </LoadingGuard>
       </Box>
     </>
   );

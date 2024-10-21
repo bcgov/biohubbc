@@ -96,6 +96,7 @@ export const EditTechniquePage = () => {
 
       const formattedTechniqueObject: IUpdateTechniqueRequest = {
         ...values,
+        distance_threshold: values.distance_threshold || null,
         attributes: {
           quantitative_attributes: values.attributes
             .filter((attribute) => attribute.attribute_type === 'quantitative')

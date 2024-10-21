@@ -1,14 +1,43 @@
 import { OpenAPIV3 } from 'openapi-types';
 
+export const collectionUnitsSchema: OpenAPIV3.SchemaObject = {
+  type: 'array',
+  items: {
+    type: 'object',
+    additionalProperties: false,
+    required: ['collection_category_id', 'collection_unit_id'],
+    properties: {
+      critter_collection_unit_id: {
+        type: 'string',
+        format: 'uuid'
+      },
+      collection_category_id: {
+        type: 'string',
+        format: 'uuid'
+      },
+      collection_unit_id: {
+        type: 'string',
+        format: 'uuid'
+      },
+      unit_name: {
+        type: 'string'
+      },
+      category_name: {
+        type: 'string'
+      }
+    }
+  }
+};
+
 export const critterSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
   properties: {
-    critter_id: {
+    critterbase_critter_id: {
       type: 'string',
       format: 'uuid'
     },
-    survey_critter_id: {
+    critter_id: {
       type: 'integer',
       minimum: 1
     },
@@ -27,7 +56,18 @@ export const critterSchema: OpenAPIV3.SchemaObject = {
       type: 'string'
     },
     sex: {
-      type: 'string'
+      type: 'object',
+      additionalProperties: false,
+      description: 'Object describing qualitative_option_id and label of the sex measurement value',
+      properties: {
+        qualitative_option_id: {
+          type: 'string',
+          format: 'uuid',
+          description: 'Critterbase foreign key referencing a sex measurement option'
+        },
+        label: { type: 'string', description: 'Name of the sex measurement value, eg. male' }
+      },
+      nullable: true
     },
     responsible_region_nr_id: {
       type: 'string',
@@ -54,40 +94,7 @@ export const critterSchema: OpenAPIV3.SchemaObject = {
         }
       }
     },
-    collection_units: {
-      type: 'array',
-      items: {
-        type: 'object',
-        additionalProperties: false,
-        required: [
-          'critter_collection_unit_id',
-          'collection_category_id',
-          'collection_unit_id',
-          'unit_name',
-          'category_name'
-        ],
-        properties: {
-          critter_collection_unit_id: {
-            type: 'string',
-            format: 'uuid'
-          },
-          collection_category_id: {
-            type: 'string',
-            format: 'uuid'
-          },
-          collection_unit_id: {
-            type: 'string',
-            format: 'uuid'
-          },
-          unit_name: {
-            type: 'string'
-          },
-          category_name: {
-            type: 'string'
-          }
-        }
-      }
-    }
+    collection_units: collectionUnitsSchema
   }
 };
 

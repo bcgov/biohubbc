@@ -252,6 +252,8 @@ export function getSurveyObservationsBaseQuery(
             knex.raw(`
               json_agg(json_build_object(
                 'observation_subcount_id', observation_subcount.observation_subcount_id,
+                'observation_subcount_sign_id', observation_subcount.observation_subcount_sign_id,
+                'comment', observation_subcount.comment,
                 'subcount', subcount,
                 'qualitative_measurements', COALESCE(w_qualitative_measurements.qualitative_measurements, '[]'::json),
                 'quantitative_measurements', COALESCE(w_quantitative_measurements.quantitative_measurements, '[]'::json),

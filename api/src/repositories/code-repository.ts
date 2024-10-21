@@ -9,7 +9,10 @@ export const ICode = z.object({
 export type ICode = z.infer<typeof ICode>;
 
 export const CodeSet = <T extends z.ZodRawShape>(zodSchema?: T) => {
-  return (zodSchema && z.array(zodSchema.shape)) || z.array(ICode);
+  if (zodSchema) {
+    return z.array(z.object(zodSchema));
+  }
+  return z.array(ICode);
 };
 
 const InvestmentActionCategoryCode = ICode.extend({ agency_id: z.number() });
@@ -21,6 +24,7 @@ const SampleMethodsCode = ICode.extend({ description: z.string() });
 const SurveyProgressCode = ICode.extend({ description: z.string() });
 const MethodResponseMetricsCode = ICode.extend({ description: z.string() });
 const AttractantCode = ICode.extend({ description: z.string() });
+const ObservationSubcountSignCode = ICode.extend({ description: z.string() });
 
 export const IAllCodeSets = z.object({
   management_action_type: CodeSet(),
@@ -41,7 +45,8 @@ export const IAllCodeSets = z.object({
   sample_methods: CodeSet(SampleMethodsCode.shape),
   survey_progress: CodeSet(SurveyProgressCode.shape),
   method_response_metrics: CodeSet(MethodResponseMetricsCode.shape),
-  attractants: CodeSet(AttractantCode.shape)
+  attractants: CodeSet(AttractantCode.shape),
+  observation_subcount_signs: CodeSet(ObservationSubcountSignCode.shape)
 });
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
 
@@ -57,7 +62,7 @@ export class CodeRepository extends BaseRepository {
       SELECT 
         method_lookup_id as id, 
         name, 
-        description 
+        description
       FROM method_lookup
       ORDER BY name ASC;
     `;
@@ -437,6 +442,27 @@ export class CodeRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement, AttractantCode);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetch observation subcount sign codes.
+   *
+   * @return {*}
+   * @memberof CodeRepository
+   */
+  async getObservationSubcountSigns() {
+    const sqlStatement = SQL`
+      SELECT
+        observation_subcount_sign_id AS id,
+        name,
+        description
+      FROM observation_subcount_sign
+      WHERE record_end_date IS null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, ObservationSubcountSignCode);
 
     return response.rows;
   }

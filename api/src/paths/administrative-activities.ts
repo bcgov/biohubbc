@@ -108,6 +108,16 @@ GET.apiDoc = {
                 create_date: {
                   type: 'string',
                   description: 'ISO 8601 date string'
+                },
+                updated_by: {
+                  type: 'string',
+                  description: 'Display name of the user who last updated the record',
+                  nullable: true
+                },
+                update_date: {
+                  type: 'string',
+                  description: 'Date when the record was last updated',
+                  nullable: true
                 }
               }
             }
@@ -164,6 +174,7 @@ export function getAdministrativeActivities(): RequestHandler {
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getAdministrativeActivities', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

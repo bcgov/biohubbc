@@ -1,6 +1,8 @@
 import { mdiLeaf, mdiPaw, mdiToolbox } from '@mdi/js';
 import Box from '@mui/material/Box';
+import { grey } from '@mui/material/colors';
 import Container from '@mui/material/Container';
+import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import PageHeader from 'components/layout/PageHeader';
@@ -40,6 +42,8 @@ const StandardsPage = () => {
           <Box width="300px" flexShrink={0}>
             <StandardsToolbar views={views} currentView={currentView} setCurrentView={setCurrentView} />
           </Box>
+
+          <Divider orientation="vertical" color={grey[500]} flexItem />
 
           <Box flex=" 1 1 auto">
             {/* SPECIES STANDARDS */}

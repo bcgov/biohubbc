@@ -2,20 +2,29 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  bulkDeleteFilesFromS3,
   deleteFileFromS3,
   generateS3FileKey,
   getS3HostUrl,
+  getS3KeyPrefix,
   getS3SignedURL,
   _getClamAvScanner,
   _getObjectStoreBucketName,
   _getObjectStoreUrl,
-  _getS3Client,
-  _getS3KeyPrefix
+  _getS3Client
 } from './file-utils';
 
 describe('deleteFileFromS3', () => {
   it('returns null when no key specified', async () => {
     const result = await deleteFileFromS3(null as unknown as string);
+
+    expect(result).to.be.null;
+  });
+});
+
+describe('bulkDeleteFilesFromS3', () => {
+  it('returns null when no keys provided', async () => {
+    const result = await bulkDeleteFilesFromS3([]);
 
     expect(result).to.be.null;
   });
@@ -55,17 +64,22 @@ describe('generateS3FileKey', () => {
   it('returns project folder file path', async () => {
     process.env.S3_KEY_PREFIX = 'some/s3/prefix';
 
-    const result = generateS3FileKey({ projectId: 1, folder: 'folder', fileName: 'testFileName' });
+    const result = generateS3FileKey({ projectId: 1, folder: 'reports', fileName: 'testFileName' });
 
-    expect(result).to.equal('some/s3/prefix/projects/1/folder/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/reports/testFileName');
   });
 
   it('returns survey folder file path', async () => {
     process.env.S3_KEY_PREFIX = 'some/s3/prefix';
 
-    const result = generateS3FileKey({ projectId: 1, surveyId: 2, folder: 'folder', fileName: 'testFileName' });
+    const result = generateS3FileKey({
+      projectId: 1,
+      surveyId: 2,
+      folder: 'telemetry-credentials',
+      fileName: 'testFileName'
+    });
 
-    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/folder/testFileName');
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/telemetry-credentials/testFileName');
   });
 
   it('returns survey submission folder file path when a submission ID is passed', async () => {
@@ -79,6 +93,36 @@ describe('generateS3FileKey', () => {
     });
 
     expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/submissions/3/testFileName');
+  });
+
+  it('returns critter captures folder file path', async () => {
+    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
+
+    const result = generateS3FileKey({
+      projectId: 1,
+      surveyId: 2,
+      critterId: 3,
+      folder: 'captures',
+      critterbaseCaptureId: '123-456-789',
+      fileName: 'testFileName'
+    });
+
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/critters/3/captures/123-456-789/testFileName');
+  });
+
+  it('returns critter mortalities folder file path', async () => {
+    process.env.S3_KEY_PREFIX = 'some/s3/prefix';
+
+    const result = generateS3FileKey({
+      projectId: 1,
+      surveyId: 2,
+      critterId: 3,
+      folder: 'mortalities',
+      critterbaseMortalityId: '123-456-789',
+      fileName: 'testFileName'
+    });
+
+    expect(result).to.equal('some/s3/prefix/projects/1/surveys/2/critters/3/mortalities/123-456-789/testFileName');
   });
 });
 
@@ -214,7 +258,7 @@ describe('_getObjectStoreUrl', () => {
   });
 });
 
-describe('_getS3KeyPrefix', () => {
+describe('getS3KeyPrefix', () => {
   const OLD_S3_KEY_PREFIX = process.env.S3_KEY_PREFIX;
 
   afterEach(() => {
@@ -224,14 +268,14 @@ describe('_getS3KeyPrefix', () => {
   it('should return an s3 key prefix', () => {
     process.env.S3_KEY_PREFIX = 'test-sims';
 
-    const result = _getS3KeyPrefix();
+    const result = getS3KeyPrefix();
     expect(result).to.equal('test-sims');
   });
 
   it('should return its default value', () => {
     delete process.env.S3_KEY_PREFIX;
 
-    const result = _getS3KeyPrefix();
+    const result = getS3KeyPrefix();
     expect(result).to.equal('sims');
   });
 });

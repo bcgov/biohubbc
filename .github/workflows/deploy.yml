@@ -7,6 +7,7 @@ on:
     types: [opened, reopened, synchronize, ready_for_review]
     branches-ignore:
       - test
+      - test-spi
       - prod
 
 concurrency:
@@ -169,6 +170,12 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v4
 
+      # Install oc, which was removed from the ubuntu-latest image in v24.04
+      - name: Install OpenShift CLI tools
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
+
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -231,6 +238,12 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v4
 
+      # Install oc, which was removed from the ubuntu-latest image in v24.04
+      - name: Install OpenShift CLI tools
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
+
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -292,6 +305,12 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v4
 
+      # Install oc, which was removed from the ubuntu-latest image in v24.04
+      - name: Install OpenShift CLI tools
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
+
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -347,6 +366,12 @@ jobs:
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v4
+
+      # Install oc, which was removed from the ubuntu-latest image in v24.04
+      - name: Install OpenShift CLI tools
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -408,6 +433,12 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v4
 
+      # Install oc, which was removed from the ubuntu-latest image in v24.04
+      - name: Install OpenShift CLI tools
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
+
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -462,6 +493,12 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v4
 
+      # Install oc, which was removed from the ubuntu-latest image in v24.04
+      - name: Install OpenShift CLI tools
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
+
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
@@ -484,7 +521,7 @@ jobs:
   deployDatabaseSetup:
     name: Deploy Database Setup Image
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     if: ${{ github.event.pull_request.merged == false &&
       github.event.pull_request.draft == false &&
       ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
@@ -516,6 +553,12 @@ jobs:
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v4
+
+      # Install oc, which was removed from the ubuntu-latest image in v24.04
+      - name: Install OpenShift CLI tools
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -573,6 +616,12 @@ jobs:
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v4
+
+      # Install oc, which was removed from the ubuntu-latest image in v24.04
+      - name: Install OpenShift CLI tools
+        uses: redhat-actions/openshift-tools-installer@v1
+        with:
+          oc: "4.14"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.

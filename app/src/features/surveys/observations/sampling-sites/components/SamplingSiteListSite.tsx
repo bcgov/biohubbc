@@ -161,7 +161,7 @@ export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
             );
           })}
         </List>
-        <Box height="300px" flex="1 1 auto" mx={1} my={2}>
+        <Box height="250px" flex="1 1 auto" mx={1} m={2}>
           <SurveyMap staticLayers={staticLayers} isLoading={false} />
         </Box>
       </AccordionDetails>

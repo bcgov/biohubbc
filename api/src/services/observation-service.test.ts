@@ -186,4 +186,25 @@ describe('ObservationService', () => {
       expect(response).to.eql(mockObservationCount);
     });
   });
+
+  describe('getObservedSpeciesForSurvey', () => {
+    it('Gets the species observed in a survey', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      const mockTsns = [1, 2, 3];
+      const surveyId = 1;
+      const mockSpecies = mockTsns.map((tsn) => ({ itis_tsn: tsn }));
+
+      const getObservedSpeciesForSurveyStub = sinon
+        .stub(ObservationRepository.prototype, 'getObservedSpeciesForSurvey')
+        .resolves(mockSpecies);
+
+      const observationService = new ObservationService(mockDBConnection);
+
+      const response = await observationService.getObservedSpeciesForSurvey(surveyId);
+
+      expect(getObservedSpeciesForSurveyStub).to.be.calledOnceWith(surveyId);
+      expect(response).to.eql(mockSpecies);
+    });
+  });
 });

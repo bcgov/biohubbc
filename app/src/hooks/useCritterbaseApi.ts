@@ -2,11 +2,9 @@ import { useXrefApi } from 'hooks/cb_api/useXrefApi';
 import { useConfigContext } from 'hooks/useContext';
 import { useMemo } from 'react';
 import useAxios from './api/useAxios';
-import { useAuthentication } from './cb_api/useAuthenticationApi';
 import { useCaptureApi } from './cb_api/useCaptureApi';
 import { useCollectionUnitApi } from './cb_api/useCollectionUnitApi';
 import { useCritterApi } from './cb_api/useCritterApi';
-import { useFamilyApi } from './cb_api/useFamilyApi';
 import { useLookupApi } from './cb_api/useLookupApi';
 import { useMarkingApi } from './cb_api/useMarkingApi';
 import { useMeasurementApi } from './cb_api/useMeasurementApi';
@@ -23,11 +21,7 @@ export const useCritterbaseApi = () => {
 
   const critters = useCritterApi(apiAxios);
 
-  const authentication = useAuthentication(apiAxios);
-
   const lookup = useLookupApi(apiAxios);
-
-  const family = useFamilyApi(apiAxios);
 
   const xref = useXrefApi(apiAxios);
 
@@ -44,9 +38,7 @@ export const useCritterbaseApi = () => {
   return useMemo(
     () => ({
       critters,
-      authentication,
       lookup,
-      family,
       xref,
       marking,
       collectionUnit,

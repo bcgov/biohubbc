@@ -22,7 +22,7 @@ export const SurveySpatialAnimal = () => {
   const crittersApi = useCritterbaseApi();
 
   const critterIds = useMemo(
-    () => surveyContext.critterDataLoader.data?.map((critter) => critter.critter_id) ?? [],
+    () => surveyContext.critterDataLoader.data?.map((critter) => critter.critterbase_critter_id) ?? [],
     [surveyContext.critterDataLoader.data]
   );
 
@@ -90,12 +90,12 @@ export const SurveySpatialAnimal = () => {
   return (
     <>
       {/* Display map with animal capture points */}
-      <Box height={{ sm: 300, md: 500 }} position="relative">
+      <Box height={{ xs: 300, md: 500 }} position="relative">
         <SurveySpatialMap staticLayers={[captureLayer, mortalityLayer]} isLoading={geometryDataLoader.isLoading} />
       </Box>
 
       {/* Display data table with animal capture details */}
-      <Box p={2} position="relative">
+      <Box height={{ xs: 300, md: 500 }} p={2} position="relative">
         <SurveySpatialAnimalTable isLoading={geometryDataLoader.isLoading} />
       </Box>
     </>

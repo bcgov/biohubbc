@@ -1,9 +1,10 @@
 import { ApiPaginationResponseParams } from 'types/misc';
+import { ISex } from './useCritterApi.interface';
 
 export interface IFindAnimalObj {
   wlh_id: string | null;
   animal_id: string;
-  sex: string;
+  sex: ISex;
   itis_tsn: number;
   itis_scientific_name: string;
   critter_comment: string;

@@ -13,7 +13,7 @@ interface ICreateSamplingMethodFormDialogProps {
 }
 
 /**
- * Returns a form for creating a sampling method
+ * Returns a form for creating a sampling method (which is a technique applied to a sampling site)
  *
  * @returns
  */
@@ -22,7 +22,7 @@ export const CreateSamplingMethodFormDialog = (props: ICreateSamplingMethodFormD
 
   return (
     <EditDialog<ISurveySampleMethodFormData>
-      dialogTitle={'Add Sampling Method'}
+      dialogTitle={'Add Sampling Technique'}
       open={open}
       dialogLoading={false}
       component={{

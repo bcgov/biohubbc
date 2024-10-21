@@ -2,6 +2,27 @@ import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
 
 /**
+ * Get the transport types to use for the logger.
+ *
+ * @return {*}  {string[]}
+ */
+const getLoggerTransportTypes = (): string[] => {
+  const transportTypes = [];
+
+  // Do not output logs to file when running unit tests
+  // Note: Both lifecycle events are needed to prevent log files ie: `npm run test` or `npm run test-watch`
+  if (process.env.npm_lifecycle_event !== 'test' && process.env.npm_lifecycle_event !== 'test-watch') {
+    transportTypes.push('file');
+  }
+
+  if (process.env.NODE_ENV !== 'production') {
+    transportTypes.push('console');
+  }
+
+  return transportTypes;
+};
+
+/**
  * Get or create a logger for the given `logLabel`.
  *
  * Centralized logger that uses Winston 3.x.
@@ -56,31 +77,43 @@ import DailyRotateFile from 'winston-daily-rotate-file';
  * @returns
  */
 export const getLogger = function (logLabel: string) {
+  const transportTypes = getLoggerTransportTypes();
+
   const transports = [];
 
-  // Output logs to file
-  transports.push(
-    new DailyRotateFile({
-      dirname: process.env.LOG_FILE_DIR || 'data/logs',
-      filename: process.env.LOG_FILE_NAME || 'sims-api-%DATE%.log',
-      datePattern: process.env.LOG_FILE_DATE_PATTERN || 'YYYY-MM-DD-HH',
-      maxSize: process.env.LOG_FILE_MAX_SIZE || '50m',
-      maxFiles: process.env.LOG_FILE_MAX_FILES || '10',
-      level: process.env.LOG_LEVEL_FILE || 'debug',
-      format: winston.format.combine(
-        winston.format((info) => {
-          const { timestamp, level, ...rest } = info;
-          // Return the properties of info in a specific order
-          return { timestamp, level, logger: logLabel, ...rest };
-        })(),
-        winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-        winston.format.prettyPrint({ colorize: false, depth: 10 })
-      )
-    })
-  );
+  if (transportTypes.includes('file')) {
+    // Output logs to file, except when running unit tests
+    transports.push(
+      new DailyRotateFile({
+        dirname: process.env.LOG_FILE_DIR || 'data/logs',
+        filename: process.env.LOG_FILE_NAME || 'sims-api-%DATE%.log',
+        datePattern: process.env.LOG_FILE_DATE_PATTERN || 'YYYY-MM-DD-HH',
+        maxSize: process.env.LOG_FILE_MAX_SIZE || '50m',
+        maxFiles: process.env.LOG_FILE_MAX_FILES || '10',
+        level: process.env.LOG_LEVEL_FILE || 'debug',
+        format: winston.format.combine(
+          winston.format((info) => {
+            const { timestamp, level, ...rest } = info;
+            // Return the properties of info in a specific order
+            return { timestamp, level, logger: logLabel, ...rest };
+          })(),
+          winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+          winston.format.prettyPrint({ colorize: false, depth: 10 })
+        ),
+        options: {
+          // https://nodejs.org/api/fs.html#file-system-flags
+          // Open file for reading and appending. The file is created if it does not exist.
+          flags: 'a+',
+          // https://nodejs.org/api/fs.html#fs_fs_createwritestream_path_options
+          // Set the file mode to be readable and writable by all users.
+          mode: 0o666
+        }
+      })
+    );
+  }
 
-  if (process.env.NODE_ENV !== 'production') {
-    // Additionally output logs to console in non-production environments
+  if (transportTypes.includes('console')) {
+    // Output logs to console, except when running in production
     transports.push(
       new winston.transports.Console({
         level: process.env.LOG_LEVEL || 'debug',
@@ -110,15 +143,19 @@ export type WinstonLogLevel = (typeof WinstonLogLevels)[number];
  * @param {WinstonLogLevel} logLevel
  */
 export const setLogLevel = (logLevel: WinstonLogLevel) => {
+  const transportTypes = getLoggerTransportTypes();
+
+  if (!transportTypes.includes('console')) {
+    return;
+  }
+
   // Update env var for future loggers
   process.env.LOG_LEVEL = logLevel;
 
-  if (process.env.NODE_ENV !== 'production') {
-    // Update console transport log level, which is the second transport in non-production environments
-    winston.loggers.loggers.forEach((logger) => {
-      logger.transports[1].level = logLevel;
-    });
-  }
+  // Update console transport log level, which is the last transport in all environments
+  winston.loggers.loggers.forEach((logger) => {
+    logger.transports[transportTypes.length - 1].level = logLevel;
+  });
 };
 
 /**
@@ -127,6 +164,12 @@ export const setLogLevel = (logLevel: WinstonLogLevel) => {
  * @param {WinstonLogLevel} logLevel
  */
 export const setLogLevelFile = (logLevelFile: WinstonLogLevel) => {
+  const transportTypes = getLoggerTransportTypes();
+
+  if (!transportTypes.includes('file')) {
+    return;
+  }
+
   // Update env var for future loggers
   process.env.LOG_LEVEL_FILE = logLevelFile;
 

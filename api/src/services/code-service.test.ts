@@ -44,7 +44,8 @@ describe('CodeService', () => {
         'survey_jobs',
         'sample_methods',
         'survey_progress',
-        'method_response_metrics'
+        'method_response_metrics',
+        'observation_subcount_signs'
       );
     });
   });

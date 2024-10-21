@@ -23,41 +23,37 @@ export const MethodStandardsResults = (props: ISpeciesStandardsResultsProps) => 
           key={method.method_lookup_id}
           colour={grey[100]}
           label={method.name}
-          subtitle={method.description}
-          children={
-            <Stack gap={2} my={2}>
-              {method.attributes.qualitative.map((attribute) => (
-                <AccordionStandardCard
-                  key={attribute.name}
-                  colour={grey[200]}
-                  label={attribute.name}
-                  subtitle={attribute.description}
-                  children={
-                    <Stack gap={2} my={2}>
-                      {attribute.options.map((option) => (
-                        <AccordionStandardCard
-                          key={option.name}
-                          label={option.name}
-                          subtitle={option.description}
-                          colour={grey[300]}
-                        />
-                      ))}
-                    </Stack>
-                  }
-                />
-              ))}
-              {method.attributes.quantitative.map((attribute) => (
-                <AccordionStandardCard
-                  key={attribute.name}
-                  colour={grey[200]}
-                  label={attribute.name}
-                  subtitle={attribute.description}
-                  ornament={<ColouredRectangleChip label={attribute.unit} colour={blueGrey} />}
-                />
-              ))}
-            </Stack>
-          }
-        />
+          subtitle={method.description}>
+          <Stack gap={2} my={2}>
+            {method.attributes.qualitative.map((attribute) => (
+              <AccordionStandardCard
+                key={attribute.name}
+                colour={grey[200]}
+                label={attribute.name}
+                subtitle={attribute.description}>
+                <Stack gap={2} my={2}>
+                  {attribute.options.map((option) => (
+                    <AccordionStandardCard
+                      key={option.name}
+                      label={option.name}
+                      subtitle={option.description}
+                      colour={grey[300]}
+                    />
+                  ))}
+                </Stack>
+              </AccordionStandardCard>
+            ))}
+            {method.attributes.quantitative.map((attribute) => (
+              <AccordionStandardCard
+                key={attribute.name}
+                colour={grey[200]}
+                label={attribute.name}
+                subtitle={attribute.description}
+                ornament={<ColouredRectangleChip label={attribute.unit} colour={blueGrey} />}
+              />
+            ))}
+          </Stack>
+        </AccordionStandardCard>
       ))}
     </Stack>
   );

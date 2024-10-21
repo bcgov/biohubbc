@@ -68,6 +68,11 @@ export type ValidationError = {
    */
   row: number;
   /**
+   * CSV column header
+   *
+   */
+  col?: string;
+  /**
    * CSV row error message
    *
    */

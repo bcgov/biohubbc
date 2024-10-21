@@ -23,7 +23,6 @@ GET.apiDoc = {
       }
     }
   ],
-  security: [],
   responses: {
     200: {
       description: 'Environment data standards response object.',
@@ -52,7 +51,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get species data standards
+ * Get environment data standards
  *
  * @returns {RequestHandler}
  */

@@ -1,7 +1,9 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
+import { Request } from 'express';
 import qs from 'qs';
 import { z } from 'zod';
 import { ApiError, ApiErrorType } from '../errors/api-error';
+import { ISex } from '../models/animal-view';
 import { getLogger } from '../utils/logger';
 import { KeycloakService } from './keycloak-service';
 
@@ -12,6 +14,11 @@ export interface ICritterbaseUser {
   keycloak_guid: string;
 }
 
+export const getCritterbaseUser = (req: Request): ICritterbaseUser => ({
+  keycloak_guid: req.system_user?.user_guid ?? '',
+  username: req.system_user?.user_identifier ?? ''
+});
+
 export interface QueryParam {
   key: string;
   value: string;
@@ -21,7 +28,7 @@ export interface ICritter {
   critter_id: string;
   wlh_id: string | null;
   animal_id: string | null;
-  sex: string;
+  sex: ISex | null;
   itis_tsn: number;
   itis_scientific_name: string;
   critter_comment: string | null;
@@ -36,7 +43,7 @@ export interface ICreateCritter {
   critter_id?: string;
   wlh_id?: string | null;
   animal_id: string; // NOTE: In critterbase this is optional. For SIMS it should be required.
-  sex: string;
+  sex_qualitative_option_id?: string | null;
   itis_tsn: number;
   critter_comment?: string | null;
 }
@@ -172,8 +179,8 @@ export interface IQualMeasurement {
   capture_id?: string;
   mortality_id?: string;
   qualitative_option_id: string;
-  measurement_comment: string;
-  measured_timestamp: string;
+  measurement_comment?: string;
+  measured_timestamp?: string;
 }
 
 export interface IQuantMeasurement {
@@ -241,6 +248,14 @@ export interface ICollectionCategory {
   category_name: string;
   description: string | null;
   itis_tsn: number;
+}
+
+/**
+ * Prefixed with critterbase_* to match SIMS database field names
+ */
+export interface IPostCollectionUnit {
+  critterbase_collection_unit_id: string;
+  critterbase_collection_category_id: string;
 }
 
 // Lookup value `asSelect` format
@@ -528,6 +543,14 @@ export class CritterbaseService {
    */
   async getCritter(critter_id: string): Promise<any> {
     const response = await this.axiosInstance.get(`/critters/${critter_id}`, {
+      params: { format: CritterbaseFormatEnum.DETAILED }
+    });
+
+    return response.data;
+  }
+
+  async getCaptureById(capture_id: string): Promise<ICapture> {
+    const response = await this.axiosInstance.get(`/captures/${capture_id}`, {
       params: { format: CritterbaseFormatEnum.DETAILED }
     });
 
