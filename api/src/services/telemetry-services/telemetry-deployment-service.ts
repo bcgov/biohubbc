@@ -16,12 +16,12 @@ import { DBService } from '../db-service';
  * @extends {DBService}
  */
 export class TelemetryDeploymentService extends DBService {
-  deploymentRepository: TelemetryDeploymentRepository;
+  telemetryDeploymentRepository: TelemetryDeploymentRepository;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
-    this.deploymentRepository = new TelemetryDeploymentRepository(connection);
+    this.telemetryDeploymentRepository = new TelemetryDeploymentRepository(connection);
   }
 
   /**
@@ -32,7 +32,7 @@ export class TelemetryDeploymentService extends DBService {
    * @memberof TelemetryDeploymentService
    */
   async createDeployment(deployment: CreateDeployment): Promise<void> {
-    return this.deploymentRepository.createDeployment(deployment);
+    return this.telemetryDeploymentRepository.createDeployment(deployment);
   }
 
   /**
@@ -44,7 +44,7 @@ export class TelemetryDeploymentService extends DBService {
    * @memberof TelemetryDeploymentService
    */
   async getDeploymentById(surveyId: number, deploymentId: number): Promise<DeploymentRecord> {
-    return this.deploymentRepository.getDeploymentById(surveyId, deploymentId);
+    return this.telemetryDeploymentRepository.getDeploymentById(surveyId, deploymentId);
   }
 
   /**
@@ -55,7 +55,7 @@ export class TelemetryDeploymentService extends DBService {
    * @memberof TelemetryDeploymentService
    */
   async getDeploymentsForSurveyId(surveyId: number): Promise<ExtendedDeploymentRecord[]> {
-    return this.deploymentRepository.getDeploymentsForSurveyId(surveyId);
+    return this.telemetryDeploymentRepository.getDeploymentsForSurveyId(surveyId);
   }
 
   /**
@@ -67,7 +67,7 @@ export class TelemetryDeploymentService extends DBService {
    * @memberof TelemetryDeploymentService
    */
   async getDeploymentsForCritterId(surveyId: number, critterId: number): Promise<DeploymentRecord[]> {
-    return this.deploymentRepository.getDeploymentsForCritterId(surveyId, critterId);
+    return this.telemetryDeploymentRepository.getDeploymentsForCritterId(surveyId, critterId);
   }
 
   /**
@@ -80,7 +80,7 @@ export class TelemetryDeploymentService extends DBService {
    * @memberof TelemetryDeploymentService
    */
   async updateDeployment(surveyId: number, deployment2_id: number, deployment: UpdateDeployment): Promise<void> {
-    return this.deploymentRepository.updateDeployment(surveyId, deployment2_id, deployment);
+    return this.telemetryDeploymentRepository.updateDeployment(surveyId, deployment2_id, deployment);
   }
 
   /**
@@ -92,7 +92,7 @@ export class TelemetryDeploymentService extends DBService {
    * @memberof TelemetryDeploymentService
    */
   async deleteDeployment(surveyId: number, deploymentId: number): Promise<void> {
-    return this.deploymentRepository.deleteDeployment(surveyId, deploymentId);
+    return this.telemetryDeploymentRepository.deleteDeployment(surveyId, deploymentId);
   }
 
   /**
@@ -104,6 +104,6 @@ export class TelemetryDeploymentService extends DBService {
    * @memberof TelemetryDeploymentService
    */
   async deleteDeployments(surveyId: number, deploymentIds: number[]): Promise<void> {
-    return this.deploymentRepository.deleteDeployments(surveyId, deploymentIds);
+    return this.telemetryDeploymentRepository.deleteDeployments(surveyId, deploymentIds);
   }
 }
