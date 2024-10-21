@@ -1,6 +1,7 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { TelemetryManualRepository } from '../../repositories/telemetry-repositories/telemetry-manual-repository';
 import { TelemetryVendorRepository } from '../../repositories/telemetry-repositories/telemetry-vendor-repository';
 import { getMockDBConnection } from '../../__mocks__/db';
 import { TelemetryVendorService } from './telemetry-vendor-service';
@@ -46,6 +47,141 @@ describe('TelemetryVendorService', () => {
 
       expect(repoStub).to.have.been.calledWith(1, [1, 2], undefined);
       expect(data).to.deep.equal([]);
+    });
+  });
+
+  describe('bulkCreateManualTelemetry', () => {
+    it('should create manual telemetry records', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const service = new TelemetryVendorService(mockDBConnection);
+
+      const repoStub = sinon.stub(TelemetryManualRepository.prototype, 'bulkCreateManualTelemetry');
+      const validateStub = sinon.stub(service.deploymentService, 'getDeploymentsByIds').resolves([true] as any);
+
+      await service.bulkCreateManualTelemetry(1, [
+        {
+          deployment2_id: 1,
+          latitude: 1,
+          longitude: 1,
+          acquisition_date: '2021-01-01',
+          transmission_date: '2021-01-01'
+        }
+      ]);
+
+      expect(validateStub).to.have.been.calledWith(1, [1]);
+      expect(repoStub).to.have.been.calledWith([
+        {
+          deployment2_id: 1,
+          latitude: 1,
+          longitude: 1,
+          acquisition_date: '2021-01-01',
+          transmission_date: '2021-01-01'
+        }
+      ]);
+    });
+
+    it('should throw error when survey missing reference to one or many deployment IDs', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const service = new TelemetryVendorService(mockDBConnection);
+
+      sinon.stub(service.deploymentService, 'getDeploymentsByIds').resolves([]);
+
+      try {
+        await service.bulkCreateManualTelemetry(1, [
+          {
+            deployment2_id: 1,
+            latitude: 1,
+            longitude: 1,
+            acquisition_date: '2021-01-01',
+            transmission_date: '2021-01-01'
+          }
+        ]);
+        expect.fail();
+      } catch (error: any) {
+        expect(error.message).to.equal('Failed to create manual telemetry');
+      }
+    });
+  });
+
+  describe('bulkUpdateManualTelemetry', () => {
+    it('should update manual telemetry records', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const service = new TelemetryVendorService(mockDBConnection);
+
+      const repoStub = sinon.stub(TelemetryManualRepository.prototype, 'bulkUpdateManualTelemetry');
+      const validateStub = sinon.stub(service.manualRepository, 'getManualTelemetryByIds').resolves([true] as any);
+
+      await service.bulkUpdateManualTelemetry(1, [
+        {
+          telemetry_manual_id: '09556e24-153b-4dbb-add6-f00e74131e48',
+          latitude: 1,
+          longitude: 1,
+          acquisition_date: '2021-01-01',
+          transmission_date: '2021-01-01'
+        }
+      ]);
+
+      expect(validateStub).to.have.been.calledWith(1, ['09556e24-153b-4dbb-add6-f00e74131e48']);
+      expect(repoStub).to.have.been.calledWith([
+        {
+          telemetry_manual_id: '09556e24-153b-4dbb-add6-f00e74131e48',
+          latitude: 1,
+          longitude: 1,
+          acquisition_date: '2021-01-01',
+          transmission_date: '2021-01-01'
+        }
+      ]);
+    });
+
+    it('should throw error when survey missing reference to one or many telemetry manual IDs', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const service = new TelemetryVendorService(mockDBConnection);
+
+      sinon.stub(service.manualRepository, 'getManualTelemetryByIds').resolves([]);
+
+      try {
+        await service.bulkUpdateManualTelemetry(1, [
+          {
+            telemetry_manual_id: '09556e24-153b-4dbb-add6-f00e74131e48',
+            latitude: 1,
+            longitude: 1,
+            acquisition_date: '2021-01-01',
+            transmission_date: '2021-01-01'
+          }
+        ]);
+        expect.fail();
+      } catch (error: any) {
+        expect(error.message).to.equal('Failed to update manual telemetry');
+      }
+    });
+  });
+
+  describe('bulkDeleteManualTelemetry', () => {
+    it('should update manual telemetry records', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const service = new TelemetryVendorService(mockDBConnection);
+
+      const repoStub = sinon.stub(TelemetryManualRepository.prototype, 'bulkDeleteManualTelemetry');
+      const validateStub = sinon.stub(service.manualRepository, 'getManualTelemetryByIds').resolves([true] as any);
+
+      await service.bulkDeleteManualTelemetry(1, ['09556e24-153b-4dbb-add6-f00e74131e48']);
+
+      expect(validateStub).to.have.been.calledWith(1, ['09556e24-153b-4dbb-add6-f00e74131e48']);
+      expect(repoStub).to.have.been.calledWith(['09556e24-153b-4dbb-add6-f00e74131e48']);
+    });
+
+    it('should throw error when survey missing reference to one or many telemetry manual IDs', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const service = new TelemetryVendorService(mockDBConnection);
+
+      sinon.stub(service.manualRepository, 'getManualTelemetryByIds').resolves([]);
+
+      try {
+        await service.bulkDeleteManualTelemetry(1, ['09556e24-153b-4dbb-add6-f00e74131e48']);
+        expect.fail();
+      } catch (error: any) {
+        expect(error.message).to.equal('Failed to delete manual telemetry');
+      }
     });
   });
 });

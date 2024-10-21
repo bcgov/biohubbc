@@ -1,8 +1,15 @@
 import { IDBConnection } from '../../database/db';
+import { ApiGeneralError } from '../../errors/api-error';
+import { TelemetryManualRepository } from '../../repositories/telemetry-repositories/telemetry-manual-repository';
+import {
+  CreateManualTelemetry,
+  UpdateManualTelemetry
+} from '../../repositories/telemetry-repositories/telemetry-manual-repository.interface';
 import { TelemetryVendorRepository } from '../../repositories/telemetry-repositories/telemetry-vendor-repository';
 import { Telemetry } from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
+import { TelemetryDeploymentService } from './telemetry-deployment-service';
 
 /**
  * A service class for working with telemetry vendor data.
@@ -13,11 +20,19 @@ import { DBService } from '../db-service';
  */
 export class TelemetryVendorService extends DBService {
   vendorRepository: TelemetryVendorRepository;
+  manualRepository: TelemetryManualRepository;
+
+  deploymentService: TelemetryDeploymentService;
 
   constructor(connection: IDBConnection) {
     super(connection);
 
+    // Telemetry repositories
     this.vendorRepository = new TelemetryVendorRepository(connection);
+    this.manualRepository = new TelemetryManualRepository(connection);
+
+    // Services
+    this.deploymentService = new TelemetryDeploymentService(connection);
   }
 
   /**
@@ -52,5 +67,70 @@ export class TelemetryVendorService extends DBService {
     pagination?: ApiPaginationOptions
   ): Promise<Telemetry[]> {
     return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, pagination);
+  }
+
+  /**
+   * Create manual telemetry records.
+   *
+   * @async
+   * @param {number} surveyId
+   * @param {CreateManualTelemetry[]} telemetry - List of manual telemetry data to create
+   * @returns {Promise<void>}
+   */
+  async bulkCreateManualTelemetry(surveyId: number, telemetry: CreateManualTelemetry[]): Promise<void> {
+    const deploymentIds = [...new Set(telemetry.map((record) => record.deployment2_id))];
+    const deployments = await this.deploymentService.getDeploymentsByIds(surveyId, deploymentIds);
+
+    if (deployments.length !== deploymentIds.length) {
+      throw new ApiGeneralError('Failed to create manual telemetry', [
+        'TelemetryVendorService->bulkCreateManualTelemetry',
+        'survey missing reference to one or more deployment IDs'
+      ]);
+    }
+
+    return this.manualRepository.bulkCreateManualTelemetry(telemetry);
+  }
+
+  /**
+   * Update manual telemetry records.
+   *
+   * @async
+   * @param {number} surveyId
+   * @param {UpdateManualTelemetry[]} telemetry - List of manual telemetry data to update
+   * @returns {Promise<void>}
+   */
+  async bulkUpdateManualTelemetry(surveyId: number, telemetry: UpdateManualTelemetry[]): Promise<void> {
+    const telemetryManualIds = telemetry.map((record) => record.telemetry_manual_id);
+    const manualTelemetry = await this.manualRepository.getManualTelemetryByIds(surveyId, telemetryManualIds);
+
+    if (manualTelemetry.length !== telemetry.length) {
+      throw new ApiGeneralError('Failed to update manual telemetry', [
+        'TelemetryVendorService->bulkUpdateManualTelemetry',
+        'survey missing reference to one or more telemetry manual IDs'
+      ]);
+    }
+
+    return this.manualRepository.bulkUpdateManualTelemetry(telemetry);
+  }
+
+  /**
+   * Delete manual telemetry records.
+   *
+   * @async
+   * @param {number} surveyId
+   * @param {string[]} telemetryManualIds - List of manual telemetry IDs
+   * @returns {Promise<void>}
+   */
+  async bulkDeleteManualTelemetry(surveyId: number, telemetryManualIds: string[]): Promise<void> {
+    const manualTelemetry = await this.manualRepository.getManualTelemetryByIds(surveyId, telemetryManualIds);
+
+    if (manualTelemetry.length !== telemetryManualIds.length) {
+      throw new ApiGeneralError('Failed to delete manual telemetry', [
+        'TelemetryVendorService->bulkDeleteManualTelemetry',
+        'survey missing reference to one or more telemetry manual IDs'
+      ]);
+    }
+
+    return this.manualRepository.bulkDeleteManualTelemetry(telemetryManualIds);
   }
 }

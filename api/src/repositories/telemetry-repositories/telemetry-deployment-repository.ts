@@ -69,11 +69,11 @@ export class TelemetryDeploymentRepository extends BaseRepository {
    * Get a deployment by its ID. Includes additional device and critter data.
    *
    * @param {number} surveyId The survey ID
-   * @param {number} deploymentId The deployment ID
-   * @return {*}  {Promise<ExtendedDeploymentRecord>}
+   * @param {number[]} deploymentIds A list of deployment IDs
+   * @return {*}  {Promise<ExtendedDeploymentRecord[]>}
    * @memberof TelemetryDeploymentRepository
    */
-  async getDeploymentById(surveyId: number, deploymentId: number): Promise<ExtendedDeploymentRecord> {
+  async getDeploymentsByIds(surveyId: number, deploymentIds: number[]): Promise<ExtendedDeploymentRecord[]> {
     const sqlStatement = SQL`
       SELECT
         -- deployment data
@@ -98,26 +98,20 @@ export class TelemetryDeploymentRepository extends BaseRepository {
       FROM
         deployment2
       INNER JOIN
-        device 
+        device
           ON deployment2.device_id = device.device_id
       INNER JOIN
         critter
           ON deployment2.critter_id = critter.critter_id
       WHERE
-        deployment2.deployment2_id = ${deploymentId} AND
+        deployment2.deployment2_id = ANY (${deploymentIds})
+      AND
         deployment2.survey_id = ${surveyId};
     `;
 
     const response = await this.connection.sql(sqlStatement, ExtendedDeploymentRecord);
 
-    if (response.rowCount !== 1) {
-      throw new ApiExecuteSQLError('Failed to get deployment', [
-        'TelemetryDeploymentRepository->getDeploymentById',
-        'rowCount was != 1, expected rowCount = 1'
-      ]);
-    }
-
-    return response.rows[0];
+    return response.rows;
   }
 
   /**
@@ -152,7 +146,7 @@ export class TelemetryDeploymentRepository extends BaseRepository {
       FROM
         deployment2
       INNER JOIN
-        device 
+        device
           ON deployment2.device_id = device.device_id
       INNER JOIN
         critter

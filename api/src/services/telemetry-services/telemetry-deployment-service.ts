@@ -1,5 +1,6 @@
 import { DeploymentRecord } from '../../database-models/deployment';
 import { IDBConnection } from '../../database/db';
+import { ApiGeneralError } from '../../errors/api-error';
 import { TelemetryDeploymentRepository } from '../../repositories/telemetry-repositories/telemetry-deployment-repository';
 import {
   CreateDeployment,
@@ -44,7 +45,25 @@ export class TelemetryDeploymentService extends DBService {
    * @memberof TelemetryDeploymentService
    */
   async getDeploymentById(surveyId: number, deploymentId: number): Promise<DeploymentRecord> {
-    return this.telemetryDeploymentRepository.getDeploymentById(surveyId, deploymentId);
+    const deployments = await this.telemetryDeploymentRepository.getDeploymentsByIds(surveyId, [deploymentId]);
+
+    if (deployments.length !== 1) {
+      throw new ApiGeneralError(`Failed to get deployment`, ['TelemetryDeploymentService->getDeploymentById']);
+    }
+
+    return deployments[0];
+  }
+
+  /**
+   * Get deployments from a list of deployment IDs.
+   *
+   * @param {number} surveyId The survey ID
+   * @param {number[]} deploymentIds A list of deployment IDs
+   * @return {*}  {Promise<DeploymentRecord>}
+   * @memberof TelemetryDeploymentService
+   */
+  async getDeploymentsByIds(surveyId: number, deploymentIds: number[]): Promise<DeploymentRecord[]> {
+    return this.telemetryDeploymentRepository.getDeploymentsByIds(surveyId, deploymentIds);
   }
 
   /**
