@@ -53,7 +53,7 @@ const AnimalFormYupSchema = yup.object({
     .nullable()
     .required('Species is required'),
   critter_comment: yup.string().nullable(),
-  sex: yup.string().nullable(),
+  sex_qualitative_option_id: yup.string().nullable(),
   ecological_units: yup.array(
     yup
       .object()

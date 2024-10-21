@@ -22,21 +22,22 @@ export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupP
   const { feature } = props;
 
   const surveyContext = useSurveyContext();
-  const telemetryContext = useTelemetryDataContext();
+  const telemetryDataContext = useTelemetryDataContext();
+
+  const deploymentDataLoader = telemetryDataContext.deploymentsDataLoader;
+  const telemetryDataLoader = telemetryDataContext.telemetryDataLoader;
 
   const getTelemetryMetadata = () => {
     const telemetryId = feature.id;
 
-    const telemetryRecord = telemetryContext.telemetryDataLoader.data?.find(
-      (telemetry) => telemetry.id === telemetryId
-    );
+    const telemetryRecord = telemetryDataLoader.data?.find((telemetry) => telemetry.id === telemetryId);
 
     if (!telemetryRecord) {
       return [{ label: 'Telemetry ID', value: telemetryId }];
     }
 
-    const deploymentRecord = surveyContext.deploymentDataLoader.data?.find(
-      (deployment) => deployment.deployment_id === telemetryRecord.deployment_id
+    const deploymentRecord = deploymentDataLoader.data?.deployments.find(
+      (deployment) => deployment.bctw_deployment_id === telemetryRecord.deployment_id
     );
 
     if (!deploymentRecord) {

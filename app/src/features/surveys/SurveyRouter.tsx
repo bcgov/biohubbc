@@ -2,16 +2,17 @@ import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { AnimalPageContextProvider } from 'contexts/animalPageContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import { AnimalRouter } from 'features/surveys/animals/AnimalRouter';
 import EditSurveyPage from 'features/surveys/edit/EditSurveyPage';
 import { SurveyObservationPage } from 'features/surveys/observations/SurveyObservationPage';
 import { SamplingRouter } from 'features/surveys/sampling-information/SamplingRouter';
-import ManualTelemetryPage from 'features/surveys/telemetry/ManualTelemetryPage';
 import SurveyPage from 'features/surveys/view/SurveyPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
+import { TelemetryRouter } from './telemetry/TelemetryRouter';
 
 /**
  * Router for all `/admin/projects/:id/surveys/:survey_id/*` pages.
@@ -47,8 +48,23 @@ const SurveyRouter: React.FC = () => {
         <ProjectRoleRouteGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+          <DialogContextProvider>
+            <AnimalPageContextProvider>
+              <AnimalRouter />
+            </AnimalPageContextProvider>
+          </DialogContextProvider>
+        </ProjectRoleRouteGuard>
+      </RouteWithTitle>
+
+      {/* Telemetry Routes */}
+      <RouteWithTitle path="/admin/projects/:id/surveys/:survey_id/telemetry" title={getTitle('Manage Telemetry')}>
+        <ProjectRoleRouteGuard
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <AnimalPageContextProvider>
-            <AnimalRouter />
+            <TelemetryDataContextProvider>
+              <TelemetryRouter />
+            </TelemetryDataContextProvider>
           </AnimalPageContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
@@ -62,17 +78,6 @@ const SurveyRouter: React.FC = () => {
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <SurveyObservationPage />
-        </ProjectRoleRouteGuard>
-      </RouteWithTitle>
-
-      {/* Telemetry Routes */}
-      <RouteWithTitle exact path="/admin/projects/:id/surveys/:survey_id/telemetry" title={getTitle('Telemetry')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <ManualTelemetryPage />
-          </DialogContextProvider>
         </ProjectRoleRouteGuard>
       </RouteWithTitle>
 

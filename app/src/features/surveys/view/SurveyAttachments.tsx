@@ -1,91 +1,84 @@
-import { mdiAttachment, mdiFilePdfBox, mdiFolderKeyOutline, mdiTrayArrowUp } from '@mdi/js';
+import { mdiAttachment, mdiFilePdfBox, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import FileUploadWithMetaDialog from 'components/dialog/attachments/FileUploadWithMetaDialog';
-import { IUploadHandler } from 'components/file-upload/FileUploadItem';
+import { FileUploadDialog } from 'components/dialog/attachments/FileUploadDialog';
+import { ReportFileUploadDialog } from 'components/dialog/attachments/ReportFileUploadDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
+import { ReportI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { SurveyContext } from 'contexts/surveyContext';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import React, { useContext, useState } from 'react';
-import { AttachmentType } from '../../../constants/attachments';
+import { useDialogContext } from 'hooks/useContext';
+import { useContext, useState } from 'react';
 import SurveyAttachmentsList from './SurveyAttachmentsList';
 
-const SurveyAttachments: React.FC = () => {
+/**
+ * Survey attachments component.
+ *
+ * @return {*}
+ */
+const SurveyAttachments = () => {
   const biohubApi = useBiohubApi();
 
+  const dialogContext = useDialogContext();
   const surveyContext = useContext(SurveyContext);
 
   const { projectId, surveyId } = surveyContext;
 
-  const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
-  const [attachmentType, setAttachmentType] = useState<
-    AttachmentType.REPORT | AttachmentType.OTHER | AttachmentType.KEYX
-  >(AttachmentType.OTHER);
+  const [openUploadDialog, setOpenUploadDialog] = useState<'Attachment' | 'Report' | false>(false);
 
-  const handleUploadReportClick = () => {
-    setAttachmentType(AttachmentType.REPORT);
-    setOpenUploadAttachments(true);
-  };
+  const onSubmitReport = async (fileMeta: IReportMetaForm) => {
+    try {
+      await biohubApi.survey.uploadSurveyReports(projectId, surveyId, fileMeta.attachmentFile, fileMeta);
+    } catch (error) {
+      const apiError = error as APIError;
 
-  const handleUploadKeyxClick = () => {
-    setAttachmentType(AttachmentType.KEYX);
-    setOpenUploadAttachments(true);
-  };
-
-  const handleUploadAttachmentClick = () => {
-    setAttachmentType(AttachmentType.OTHER);
-    setOpenUploadAttachments(true);
-  };
-
-  const getUploadHandler = (): IUploadHandler => {
-    return (file, cancelToken, handleFileUploadProgress) => {
-      return attachmentType === AttachmentType.KEYX
-        ? biohubApi.survey.uploadSurveyKeyx(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
-        : biohubApi.survey.uploadSurveyAttachments(projectId, surveyId, file, cancelToken, handleFileUploadProgress);
-    };
-  };
-
-  const getFinishHandler = () => {
-    return async (fileMeta: IReportMetaForm) => {
-      return biohubApi.survey
-        .uploadSurveyReports(projectId, surveyId, fileMeta.attachmentFile, fileMeta)
-        .finally(() => {
-          setOpenUploadAttachments(false);
-        });
-    };
-  };
-
-  const getDialogTitle = () => {
-    switch (attachmentType) {
-      case AttachmentType.REPORT:
-        return 'Upload Report';
-      case AttachmentType.KEYX:
-        return 'Upload KeyX';
-      case AttachmentType.OTHER:
-        return 'Upload Attachments';
-      default:
-        return '';
+      dialogContext.setErrorDialog({
+        open: true,
+        dialogTitle: ReportI18N.uploadErrorTitle,
+        dialogText: ReportI18N.uploadErrorText,
+        dialogError: apiError.message,
+        dialogErrorDetails: apiError.errors,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        }
+      });
     }
+  };
+
+  const handleUploadAttachments = async (file: File) => {
+    return biohubApi.survey.uploadSurveyAttachments(projectId, surveyId, file);
   };
 
   return (
     <>
-      <FileUploadWithMetaDialog
-        open={openUploadAttachments}
-        dialogTitle={getDialogTitle()}
-        attachmentType={attachmentType}
-        onFinish={getFinishHandler()}
+      <ReportFileUploadDialog
+        open={openUploadDialog === 'Report'}
+        onSubmit={onSubmitReport}
         onClose={() => {
-          setOpenUploadAttachments(false);
           surveyContext.artifactDataLoader.refresh(projectId, surveyId);
+          setOpenUploadDialog(false);
         }}
-        uploadHandler={getUploadHandler()}
       />
+
+      <FileUploadDialog
+        open={openUploadDialog === 'Attachment'}
+        dialogTitle="Upload Attachments"
+        uploadHandler={handleUploadAttachments}
+        onClose={() => {
+          surveyContext.artifactDataLoader.refresh(projectId, surveyId);
+          setOpenUploadDialog(false);
+        }}
+      />
+
       <Box>
         <H2MenuToolbar
           label="Documents"
@@ -97,17 +90,12 @@ const SurveyAttachments: React.FC = () => {
             {
               menuLabel: 'Upload a Report',
               menuIcon: <Icon path={mdiFilePdfBox} size={1} />,
-              menuOnClick: handleUploadReportClick
-            },
-            {
-              menuLabel: 'Upload KeyX Files',
-              menuIcon: <Icon path={mdiFolderKeyOutline} size={1} />,
-              menuOnClick: handleUploadKeyxClick
+              menuOnClick: () => setOpenUploadDialog('Report')
             },
             {
               menuLabel: 'Upload Attachments',
               menuIcon: <Icon path={mdiAttachment} size={1} />,
-              menuOnClick: handleUploadAttachmentClick
+              menuOnClick: () => setOpenUploadDialog('Attachment')
             }
           ]}
           renderButton={(buttonProps) => (
@@ -118,7 +106,9 @@ const SurveyAttachments: React.FC = () => {
             </ProjectRoleGuard>
           )}
         />
-        <Divider></Divider>
+
+        <Divider />
+
         <Box p={2}>
           <SurveyAttachmentsList />
         </Box>

@@ -4,13 +4,12 @@ import { Collapse } from '@mui/material';
 import Box, { BoxProps } from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
-import { useState } from 'react';
+import { PropsWithChildren, useState } from 'react';
 
 interface IAccordionStandardCardProps extends BoxProps {
   label: string;
   subtitle?: string | null;
   ornament?: JSX.Element;
-  children?: JSX.Element;
   colour: string;
   disableCollapse?: boolean;
 }
@@ -20,7 +19,7 @@ interface IAccordionStandardCardProps extends BoxProps {
  * @param props
  * @returns
  */
-export const AccordionStandardCard = (props: IAccordionStandardCardProps) => {
+export const AccordionStandardCard = (props: PropsWithChildren<IAccordionStandardCardProps>) => {
   const { label, subtitle, children, colour, ornament, disableCollapse } = props;
 
   const [isCollapsed, setIsCollapsed] = useState(true);

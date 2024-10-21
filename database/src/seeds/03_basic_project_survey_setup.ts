@@ -21,6 +21,8 @@ const focalTaxonIdOptions = [
 const surveyRegionsA = ['Kootenay-Boundary Natural Resource Region', 'West Coast Natural Resource Region'];
 const surveyRegionsB = ['Cariboo Natural Resource Region', 'South Coast Natural Resource Region'];
 
+const identitySources = ['IDIR', 'BCEIDBUSINESS', 'BCEIDBASIC'];
+
 /**
  * Add spatial transform
  *
@@ -42,6 +44,11 @@ export async function seed(knex: Knex): Promise<void> {
     await knex.raw(`
       ${insertFundingData()}
     `);
+  }
+
+  // Insert access requests
+  for (let i = 0; i < 8; i++) {
+    await knex.raw(`${insertAccessRequest()}`);
   }
 
   // Check if at least 1 project already exists
@@ -601,7 +608,7 @@ const insertObservationSubCount = (surveyObservationId: number) => `
   (
     ${surveyObservationId},
     $$${faker.number.int({ min: 1, max: 20 })}$$,
-    $$${faker.number.int({ min: 1, max: 3 })}$$
+    (SELECT observation_subcount_sign_id FROM observation_subcount_sign ORDER BY random() LIMIT 1)
   );
 `;
 
@@ -729,3 +736,37 @@ const insertSurveyRegionData = (surveyId: string, region: string) => `
   WHERE
     region_name = $$${region}$$;
 `;
+
+/**
+ * SQL to insert system access requests
+ *
+ */
+const insertAccessRequest = () => `
+  INSERT INTO administrative_activity
+    (
+      administrative_activity_status_type_id,
+      administrative_activity_type_id,
+      reported_system_user_id,
+      assigned_system_user_id,
+      description,
+      data,
+      notes
+    )
+  VALUES (
+    (SELECT administrative_activity_status_type_id FROM administrative_activity_status_type ORDER BY random() LIMIT 1),
+    (SELECT administrative_activity_type_id FROM administrative_activity_type WHERE name = 'System Access'),
+    (SELECT system_user_id FROM system_user ORDER BY random() LIMIT 1),
+    (SELECT system_user_id FROM system_user ORDER BY random() LIMIT 1),
+    $$${faker.lorem.sentences(2)}$$,
+    jsonb_build_object(
+        'reason', '${faker.lorem.sentences(1)}',
+        'userGuid', '${faker.string.uuid()}',
+        'name', '${faker.lorem.words(2)}',
+        'username', '${faker.lorem.words(1)}',
+        'email', 'default',
+        'identitySource', '${identitySources[faker.number.int({ min: 0, max: identitySources.length - 1 })]}',
+        'displayName', '${faker.lorem.words(1)}'
+    ),
+    $$${faker.lorem.sentences(2)}$$
+  );
+  `;

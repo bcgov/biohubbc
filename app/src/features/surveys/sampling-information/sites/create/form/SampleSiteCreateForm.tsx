@@ -73,8 +73,8 @@ const SampleSiteCreateForm = (props: ISampleSiteCreateFormProps) => {
           <Divider />
 
           <HorizontalSplitFormComponent
-            title="Sampling Methods"
-            summary="Specify sampling methods that were used to collect data.">
+            title="Sampling Techniques"
+            summary="Specify sampling techniques that were used to collect data.">
             <SamplingMethodFormContainer />
           </HorizontalSplitFormComponent>
 

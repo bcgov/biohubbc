@@ -9,18 +9,22 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
-import { useContext, useMemo } from 'react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useTelemetryDataContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
+import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
+import { useContext, useEffect, useMemo } from 'react';
 
 // Set height so the skeleton loader will match table rows
 const rowHeight = 52;
 
 interface ITelemetryData {
-  id: string;
-  critter_id: string | null;
+  id: number;
+  critter_id: number | null;
   device_id: number;
   frequency: number | null;
   frequency_unit: string | null;
-  start: string;
+  // start: string;
   end: string;
   itis_scientific_name: string;
 }
@@ -38,29 +42,77 @@ interface ISurveyDataTelemetryTableProps {
  */
 export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProps) => {
   const surveyContext = useContext(SurveyContext);
+  const telemetryDataContext = useTelemetryDataContext();
+
+  const biohubApi = useBiohubApi();
+
+  const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
+  const deploymentDataLoader = telemetryDataContext.deploymentsDataLoader;
+  const frequencyUnitDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('frequency_unit'));
+
+  useEffect(() => {
+    deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    critterDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    frequencyUnitDataLoader.load();
+  }, [
+    critterDataLoader,
+    deploymentDataLoader,
+    frequencyUnitDataLoader,
+    surveyContext.projectId,
+    surveyContext.surveyId
+  ]);
+
+  /**
+   * Merges critters with associated deployments
+   *
+   * @returns {ICritterDeployment[]} Critter deployments
+   */
+  const critterDeployments: IAnimalDeploymentWithCritter[] = useMemo(() => {
+    const critterDeployments: IAnimalDeploymentWithCritter[] = [];
+    const critters = critterDataLoader.data ?? [];
+    const deployments = deploymentDataLoader.data?.deployments ?? [];
+
+    if (!critters.length || !deployments.length) {
+      return [];
+    }
+
+    const critterMap = new Map(critters.map((critter) => [critter.critterbase_critter_id, critter]));
+
+    deployments.forEach((deployment) => {
+      const critter = critterMap.get(String(deployment.critterbase_critter_id));
+      if (critter) {
+        critterDeployments.push({ critter, deployment });
+      }
+    });
+
+    return critterDeployments;
+  }, [critterDataLoader.data, deploymentDataLoader.data]);
 
   /**
    * Memoized calculation of table rows based on critter deployments data.
    * Formats dates and combines necessary fields for display.
    */
   const rows: ITelemetryData[] = useMemo(() => {
-    return surveyContext.critterDeployments.map((item) => {
+    return critterDeployments.map((item) => {
       return {
         // Critters in this table may use multiple devices across multiple timespans
         id: item.deployment.deployment_id,
         critter_id: item.critter.critter_id,
         animal_id: item.critter.animal_id,
         device_id: item.deployment.device_id,
-        start: dayjs(item.deployment.attachment_start).format(DATE_FORMAT.MediumDateFormat),
-        end: item.deployment.attachment_end
-          ? dayjs(item.deployment.attachment_end).format(DATE_FORMAT.MediumDateFormat)
+        // start: dayjs(item.deployment.attachment_start).format(DATE_FORMAT.MediumDateFormat),
+        end: item.deployment.attachment_end_date
+          ? dayjs(item.deployment.attachment_end_date).format(DATE_FORMAT.MediumDateFormat)
           : '',
         frequency: item.deployment.frequency ?? null,
-        frequency_unit: item.deployment.frequency_unit ?? null,
+        frequency_unit: item.deployment.frequency_unit
+          ? frequencyUnitDataLoader.data?.find((frequencyCode) => frequencyCode.id === item.deployment.frequency_unit)
+              ?.code ?? null
+          : null,
         itis_scientific_name: item.critter.itis_scientific_name
       };
     });
-  }, [surveyContext.critterDeployments]);
+  }, [critterDeployments, frequencyUnitDataLoader.data]);
 
   // Define table columns
   const columns: GridColDef<ITelemetryData>[] = [
@@ -124,7 +176,7 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
       hasNoData={!rows.length}
       hasNoDataFallback={
         <NoDataOverlay
-          height="250px"
+          height="100%"
           title="Add Telemetry"
           subtitle="Add telemetry devices to animals and upload device data"
           icon={mdiArrowTopRight}

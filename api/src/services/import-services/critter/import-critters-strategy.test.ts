@@ -3,7 +3,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { WorkSheet } from 'xlsx';
 import { getMockDBConnection } from '../../../__mocks__/db';
-import { IBulkCreateResponse } from '../../critterbase-service';
+import { CBQualitativeOption, IBulkCreateResponse } from '../../critterbase-service';
 import { ImportCrittersStrategy } from './import-critters-strategy';
 import { CsvCritter } from './import-critters-strategy.interface';
 
@@ -42,7 +42,7 @@ describe('ImportCrittersStrategy', () => {
 
   describe('_getCritterFromRow', () => {
     it('should get all critter properties', () => {
-      const row: any = {
+      const row: CsvCritter = {
         critter_id: 'id',
         sex: 'Male',
         itis_tsn: 1,
@@ -57,7 +57,7 @@ describe('ImportCrittersStrategy', () => {
 
       expect(critter).to.be.eql({
         critter_id: 'id',
-        sex: 'Male',
+        sex_qualitative_option_id: 'Male',
         itis_tsn: 1,
         animal_id: 'Carl',
         wlh_id: '10-1000',
@@ -68,7 +68,7 @@ describe('ImportCrittersStrategy', () => {
 
   describe('_getCollectionUnitsFromRow', () => {
     it('should get all collection unit properties', () => {
-      const row: any = {
+      const row: CsvCritter = {
         critter_id: 'id',
         sex: 'Male',
         itis_tsn: 1,
@@ -98,8 +98,8 @@ describe('ImportCrittersStrategy', () => {
       const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const getTaxonomyStub = sinon.stub(service.platformService, 'getTaxonomyByTsns').resolves([
-        { tsn: '1', scientificName: 'a' },
-        { tsn: '2', scientificName: 'b' }
+        { tsn: 1, scientificName: 'a' },
+        { tsn: 2, scientificName: 'b' }
       ]);
 
       const tsns = await service._getValidTsns([
@@ -230,7 +230,7 @@ describe('ImportCrittersStrategy', () => {
         critters: [
           {
             critter_id: '1',
-            sex: 'Male',
+            sex_qualitative_option_id: 'Male',
             itis_tsn: 1,
             animal_id: 'Carl',
             wlh_id: '10-1000',
@@ -238,7 +238,7 @@ describe('ImportCrittersStrategy', () => {
           },
           {
             critter_id: '2',
-            sex: 'Female',
+            sex_qualitative_option_id: 'Female',
             itis_tsn: 2,
             animal_id: 'Carl',
             wlh_id: '10-1000',
@@ -313,6 +313,15 @@ describe('ImportCrittersStrategy', () => {
       }
     ];
 
+    const sexOptionsA: CBQualitativeOption[] = [
+      { qualitative_option_id: 'A1', option_label: 'Male', option_value: 0, option_desc: 'description' },
+      { qualitative_option_id: 'A2', option_label: 'Female', option_value: 1, option_desc: 'description' }
+    ];
+    const sexOptionsB: CBQualitativeOption[] = [
+      { qualitative_option_id: 'B1', option_label: 'Female', option_value: 0, option_desc: 'description' },
+      { qualitative_option_id: 'B2', option_label: 'Hermaphroditic', option_value: 1, option_desc: 'description' }
+    ];
+
     it('should return successful', async () => {
       const service = new ImportCrittersStrategy(mockConnection, 1);
 
@@ -320,6 +329,7 @@ describe('ImportCrittersStrategy', () => {
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
       const collectionMapStub = sinon.stub(service, '_getCollectionUnitMap');
+      const sexMapStub = sinon.stub(service, '_getSpeciesSexMap');
 
       getColumnsStub.returns(['COLLECTION', 'HERD']);
       surveyAliasesStub.resolves(new Set(['Not Carl', 'Carlita']));
@@ -330,11 +340,17 @@ describe('ImportCrittersStrategy', () => {
           ['HERD', { collectionUnits: collectionUnitsB, tsn: 2 }]
         ])
       );
+      sexMapStub.resolves(
+        new Map([
+          [1, { sexes: sexOptionsA }],
+          [2, { sexes: sexOptionsB }]
+        ])
+      );
 
       const rows = [
         {
           ITIS_TSN: 1,
-          SEX: 'Male',
+          SEX: sexOptionsA[0].option_label,
           ALIAS: 'Carl',
           WLH_ID: '10-1000',
           DESCRIPTION: 'A',
@@ -342,7 +358,7 @@ describe('ImportCrittersStrategy', () => {
         },
         {
           ITIS_TSN: 2,
-          SEX: 'Female',
+          SEX: sexOptionsB[1].option_label,
           ALIAS: 'Carl2',
           WLH_ID: '10-1000',
           DESCRIPTION: 'B',
@@ -353,9 +369,9 @@ describe('ImportCrittersStrategy', () => {
       const validation = await service.validateRows(rows, {});
 
       if (validation.success) {
-        // Unable to spoof UUID so using contain
+        // The sex property is renamed to sex_qualitative_option_id in _getCrittersFromRow, after validateRows()
         expect(validation.data[0]).to.contain({
-          sex: 'Male',
+          sex: sexOptionsA[0].qualitative_option_id,
           itis_tsn: 1,
           animal_id: 'Carl',
           wlh_id: '10-1000',
@@ -364,7 +380,7 @@ describe('ImportCrittersStrategy', () => {
         });
 
         expect(validation.data[1]).to.contain({
-          sex: 'Female',
+          sex: sexOptionsB[1].qualitative_option_id,
           itis_tsn: 2,
           animal_id: 'Carl2',
           wlh_id: '10-1000',
@@ -376,28 +392,25 @@ describe('ImportCrittersStrategy', () => {
       }
     });
 
-    it('should return error when sex undefined', async () => {
+    it('should allow optional columns to be excluded from the csv', async () => {
       const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
+      const sexMapStub = sinon.stub(service, '_getSpeciesSexMap');
 
       surveyAliasesStub.resolves(new Set([]));
       getValidTsnsStub.resolves(['1']);
+      sexMapStub.resolves(new Map([[1, { sexes: [] }]]));
 
       const rows = [
         {
           ITIS_TSN: 1,
-          SEX: undefined,
-          ALIAS: 'Carl',
-          WLH_ID: '10-1000',
-          DESCRIPTION: 'A'
+          ALIAS: 'Carl1'
         },
         {
           ITIS_TSN: 1,
-          SEX: 'NO', // invalid value
           ALIAS: 'Carl2',
-          WLH_ID: '10-1000',
           DESCRIPTION: 'A'
         }
       ];
@@ -405,12 +418,17 @@ describe('ImportCrittersStrategy', () => {
       const validation = await service.validateRows(rows, {});
 
       if (validation.success) {
-        expect.fail();
+        expect(validation.data[0]).to.contain({
+          itis_tsn: 1,
+          animal_id: 'Carl1'
+        });
+        expect(validation.data[1]).to.contain({
+          itis_tsn: 1,
+          animal_id: 'Carl2',
+          critter_comment: 'A'
+        });
       } else {
-        expect(validation.error.issues).to.deep.equal([
-          { row: 0, message: 'Invalid SEX. Expecting: UNKNOWN, MALE, FEMALE, HERMAPHRODITIC.' },
-          { row: 1, message: 'Invalid SEX. Expecting: UNKNOWN, MALE, FEMALE, HERMAPHRODITIC.' }
-        ]);
+        expect.fail();
       }
     });
 
@@ -419,21 +437,21 @@ describe('ImportCrittersStrategy', () => {
 
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
+      const sexMapStub = sinon.stub(service, '_getSpeciesSexMap');
 
       surveyAliasesStub.resolves(new Set([]));
       getValidTsnsStub.resolves(['1']);
+      sexMapStub.resolves(new Map([[1, { sexes: [] }]]));
 
       const rows = [
         {
           ITIS_TSN: 1,
-          SEX: 'Male',
           ALIAS: 'Carl',
           WLH_ID: '1-1000',
           DESCRIPTION: 'A'
         },
         {
           ITIS_TSN: 1,
-          SEX: 'Male',
           ALIAS: 'Carl2',
           WLH_ID: '101000',
           DESCRIPTION: 'A'
@@ -445,10 +463,11 @@ describe('ImportCrittersStrategy', () => {
       if (validation.success) {
         expect.fail();
       } else {
-        expect(validation.error.issues).to.deep.equal([
-          { row: 0, message: `Invalid WLH_ID. Example format '10-1000R'.` },
-          { row: 1, message: `Invalid WLH_ID. Example format '10-1000R'.` }
-        ]);
+        const errorMessages = validation.error.issues.map((issue) => issue.message);
+        // Define a regex pattern to match the general structure of the error message
+        const errorPattern = /incorrectly formatted\./;
+        // Check that all error messages contain the expected pattern. The full error message is dynamic.
+        expect(errorMessages).to.satisfy((messages: string[]) => messages.every((msg) => errorPattern.test(msg)));
       }
     });
 
@@ -457,21 +476,23 @@ describe('ImportCrittersStrategy', () => {
 
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
+      const sexMapStub = sinon.stub(service, '_getSpeciesSexMap');
 
       surveyAliasesStub.resolves(new Set([]));
       getValidTsnsStub.resolves(['1']);
+      sexMapStub.resolves(new Map([[1, { sexes: [] }]]));
 
       const rows = [
         {
           ITIS_TSN: undefined,
-          SEX: 'Male',
+          SEX: null,
           ALIAS: 'Carl',
           WLH_ID: '10-1000',
           DESCRIPTION: 'A'
         },
         {
           ITIS_TSN: 3,
-          SEX: 'Male',
+          SEX: null,
           ALIAS: 'Carl2',
           WLH_ID: '10-1000',
           DESCRIPTION: 'A'
@@ -483,47 +504,50 @@ describe('ImportCrittersStrategy', () => {
       if (validation.success) {
         expect.fail();
       } else {
-        expect(validation.error.issues).to.deep.equal([
-          { row: 0, message: `Invalid ITIS_TSN.` },
-          { row: 1, message: `Invalid ITIS_TSN.` }
-        ]);
+        const errorMessages = validation.error.issues.map((issue) => issue.message);
+        // Define a regex pattern to match the general structure of the error message
+        const errorPattern = /does not exist\./;
+        // Check that all error messages contain the expected pattern. The full error message is dynamic.
+        expect(errorMessages).to.satisfy((messages: string[]) => messages.every((msg) => errorPattern.test(msg)));
       }
     });
 
-    it('should return error if alias undefined, duplicate or exists in surve', async () => {
+    it('should return error if alias undefined, duplicate or exists in survey', async () => {
       const service = new ImportCrittersStrategy(mockConnection, 1);
 
       const surveyAliasesStub = sinon.stub(service.surveyCritterService, 'getUniqueSurveyCritterAliases');
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
+      const sexMapStub = sinon.stub(service, '_getSpeciesSexMap');
 
       surveyAliasesStub.resolves(new Set(['Carl3']));
       getValidTsnsStub.resolves(['1']);
+      sexMapStub.resolves(new Map([[1, { sexes: [] }]]));
 
       const rows = [
         {
           ITIS_TSN: 1,
-          SEX: 'Male',
+          SEX: null,
           ALIAS: undefined,
           WLH_ID: '10-1000',
           DESCRIPTION: 'A'
         },
         {
           ITIS_TSN: 1,
-          SEX: 'Male',
+          SEX: null,
           ALIAS: 'Carl2',
           WLH_ID: '10-1000',
           DESCRIPTION: 'A'
         },
         {
           ITIS_TSN: 1,
-          SEX: 'Male',
+          SEX: null,
           ALIAS: 'Carl2',
           WLH_ID: '10-1000',
           DESCRIPTION: 'A'
         },
         {
           ITIS_TSN: 1,
-          SEX: 'Male',
+          SEX: null,
           ALIAS: 'Carl3',
           WLH_ID: '10-1000',
           DESCRIPTION: 'A'
@@ -535,12 +559,11 @@ describe('ImportCrittersStrategy', () => {
       if (validation.success) {
         expect.fail();
       } else {
-        expect(validation.error.issues).to.deep.equal([
-          { row: 0, message: `Invalid ALIAS. Must be unique in Survey and CSV.` },
-          { row: 1, message: `Invalid ALIAS. Must be unique in Survey and CSV.` },
-          { row: 2, message: `Invalid ALIAS. Must be unique in Survey and CSV.` },
-          { row: 3, message: `Invalid ALIAS. Must be unique in Survey and CSV.` }
-        ]);
+        const errorMessages = validation.error.issues.map((issue) => issue.message);
+        // Define a regex pattern to match the general structure of the error message
+        const errorPattern = /already exists in the Survey\./;
+        // Check that all error messages contain the expected pattern. The full error message is dynamic.
+        expect(errorMessages).to.satisfy((messages: string[]) => messages.every((msg) => errorPattern.test(msg)));
       }
     });
 
@@ -551,6 +574,7 @@ describe('ImportCrittersStrategy', () => {
       const getValidTsnsStub = sinon.stub(service, '_getValidTsns');
       const collectionMapStub = sinon.stub(service, '_getCollectionUnitMap');
       const getColumnsStub = sinon.stub(service, '_getNonStandardColumns');
+      const sexMapStub = sinon.stub(service, '_getSpeciesSexMap');
 
       surveyAliasesStub.resolves(new Set([]));
       getValidTsnsStub.resolves(['1', '2']);
@@ -561,11 +585,12 @@ describe('ImportCrittersStrategy', () => {
           ['HERD', { collectionUnits: collectionUnitsB, tsn: 2 }]
         ])
       );
+      sexMapStub.resolves(new Map([[1, { sexes: [] }]]));
 
       const rows = [
         {
           ITIS_TSN: 1,
-          SEX: 'Male',
+          SEX: null,
           ALIAS: 'Carl',
           WLH_ID: '10-1000',
           DESCRIPTION: 'A',
@@ -573,7 +598,7 @@ describe('ImportCrittersStrategy', () => {
         },
         {
           ITIS_TSN: 2,
-          SEX: 'Male',
+          SEX: null,
           ALIAS: 'Carl2',
           WLH_ID: '10-1000',
           DESCRIPTION: 'A',

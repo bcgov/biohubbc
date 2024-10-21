@@ -1,9 +1,9 @@
 import Box from '@mui/material/Box';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
+import SurveyObservationTabularDataContainer from 'features/surveys/view/components/data-container/SurveyObservationTabularDataContainer';
 import { SurveySpatialMap } from 'features/surveys/view/survey-spatial/components/map/SurveySpatialMap';
 import { SurveySpatialObservationPointPopup } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservationPointPopup';
-import { SurveySpatialObservationTable } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservationTable';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
@@ -61,13 +61,13 @@ export const SurveySpatialObservation = () => {
   return (
     <>
       {/* Display map with observation points */}
-      <Box height={{ sm: 300, md: 500 }} position="relative">
+      <Box height={{ xs: 300, md: 500 }} position="relative">
         <SurveySpatialMap staticLayers={[observationLayer]} isLoading={observationsGeometryDataLoader.isLoading} />
       </Box>
 
       {/* Display data table with observation details */}
-      <Box p={2} position="relative">
-        <SurveySpatialObservationTable isLoading={observationsGeometryDataLoader.isLoading} />
+      <Box height={{ xs: 300, md: 500 }} display="flex" flexDirection="column" px={2} pt={2}>
+        <SurveyObservationTabularDataContainer isLoading={observationsGeometryDataLoader.isLoading} />
       </Box>
     </>
   );

@@ -3,6 +3,7 @@ import useReferenceApi from 'hooks/api/useReferenceApi';
 import { useConfigContext } from 'hooks/useContext';
 import { useMemo } from 'react';
 import useAdminApi from './api/useAdminApi';
+import useAnalyticsApi from './api/useAnalyticsApi';
 import useAnimalApi from './api/useAnimalApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
@@ -30,6 +31,8 @@ import useUserApi from './api/useUserApi';
 export const useBiohubApi = () => {
   const config = useConfigContext();
   const apiAxios = useAxios(config.API_HOST);
+
+  const analytics = useAnalyticsApi(apiAxios);
 
   const project = useProjectApi(apiAxios);
 
@@ -71,6 +74,7 @@ export const useBiohubApi = () => {
 
   return useMemo(
     () => ({
+      analytics,
       project,
       projectParticipants,
       taxonomy,

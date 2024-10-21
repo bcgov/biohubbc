@@ -44,7 +44,6 @@ describe.skip('SurveyStudyArea', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
-    const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const { container } = render(
@@ -52,13 +51,11 @@ describe.skip('SurveyStudyArea', () => {
         value={{
           projectId: 1,
           surveyId: 1,
-          critterDeployments: [],
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
           techniqueDataLoader: mockTechniqueDataLoader,
           sampleSiteDataLoader: mockSampleSiteDataLoader,
-          critterDataLoader: mockCritterDataLoader,
-          deploymentDataLoader: mockDeploymentDataLoader
+          critterDataLoader: mockCritterDataLoader
         }}>
         <SurveyStudyArea />
       </SurveyContext.Provider>
@@ -83,7 +80,6 @@ describe.skip('SurveyStudyArea', () => {
       const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
-      const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
       const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
       const { container, queryByTestId } = render(
@@ -91,13 +87,11 @@ describe.skip('SurveyStudyArea', () => {
           value={{
             projectId: 1,
             surveyId: 1,
-            critterDeployments: [],
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
             techniqueDataLoader: mockTechniqueDataLoader,
-            critterDataLoader: mockCritterDataLoader,
-            deploymentDataLoader: mockDeploymentDataLoader
+            critterDataLoader: mockCritterDataLoader
           }}>
           <SurveyStudyArea />
         </SurveyContext.Provider>
@@ -114,7 +108,6 @@ describe.skip('SurveyStudyArea', () => {
       const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
       const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
-      const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
       const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
       const { container, getByTestId } = render(
@@ -122,12 +115,10 @@ describe.skip('SurveyStudyArea', () => {
           value={{
             projectId: 1,
             surveyId: 1,
-            critterDeployments: [],
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
             critterDataLoader: mockCritterDataLoader,
-            deploymentDataLoader: mockDeploymentDataLoader,
             techniqueDataLoader: mockTechniqueDataLoader
           }}>
           <SurveyStudyArea />
@@ -149,7 +140,6 @@ describe.skip('SurveyStudyArea', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
-    const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const mockProjectAuthStateContext: IProjectAuthStateContext = {
@@ -167,12 +157,10 @@ describe.skip('SurveyStudyArea', () => {
           value={{
             projectId: 1,
             surveyId: 1,
-            critterDeployments: [],
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
             critterDataLoader: mockCritterDataLoader,
-            deploymentDataLoader: mockDeploymentDataLoader,
             techniqueDataLoader: mockTechniqueDataLoader
           }}>
           <SurveyStudyArea />
@@ -244,7 +232,6 @@ describe.skip('SurveyStudyArea', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockSampleSiteDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
-    const mockDeploymentDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     mockUseApi.survey.getSurveyForView.mockResolvedValue({
@@ -280,13 +267,11 @@ describe.skip('SurveyStudyArea', () => {
           value={{
             projectId: 1,
             surveyId: 1,
-            critterDeployments: [],
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
             sampleSiteDataLoader: mockSampleSiteDataLoader,
             critterDataLoader: mockCritterDataLoader,
-            techniqueDataLoader: mockTechniqueDataLoader,
-            deploymentDataLoader: mockDeploymentDataLoader
+            techniqueDataLoader: mockTechniqueDataLoader
           }}>
           <SurveyStudyArea />
         </SurveyContext.Provider>

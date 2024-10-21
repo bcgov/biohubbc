@@ -1,6 +1,9 @@
 import {
+  CompleteMultipartUploadCommandOutput,
   DeleteObjectCommand,
   DeleteObjectCommandOutput,
+  DeleteObjectsCommand,
+  DeleteObjectsCommandOutput,
   GetObjectCommand,
   GetObjectCommandOutput,
   HeadObjectCommand,
@@ -11,6 +14,7 @@ import {
   PutObjectCommandOutput,
   S3Client
 } from '@aws-sdk/client-s3';
+import { Upload } from '@aws-sdk/lib-storage';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import NodeClam from 'clamscan';
 import { Readable } from 'stream';
@@ -91,7 +95,7 @@ export const getS3HostUrl = (key?: string): string => {
  *
  * @returns {*} {string} The S3 key prefix
  */
-export const _getS3KeyPrefix = (): string => {
+export const getS3KeyPrefix = (): string => {
   return process.env.S3_KEY_PREFIX || 'sims';
 };
 
@@ -120,13 +124,40 @@ export async function deleteFileFromS3(key: string): Promise<DeleteObjectCommand
 }
 
 /**
+ * Bulk delete files from S3 from a list of keys.
+ *
+ * For potential future reference:
+ * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/client/s3/command/DeleteObjectsCommand/
+ *
+ * @export
+ * @param {string} keys - List of S3 keys to delete
+ * @returns {Promise<DeleteObjectCommandOutput>} the response from S3 or null if required parameters are null
+ */
+export async function bulkDeleteFilesFromS3(keys: string[]): Promise<DeleteObjectsCommandOutput | null> {
+  const s3Client = _getS3Client();
+
+  if (!keys.length || !s3Client) {
+    return null;
+  }
+
+  return s3Client.send(
+    new DeleteObjectsCommand({
+      Bucket: _getObjectStoreBucketName(),
+      Delete: {
+        Objects: keys.map((key) => ({ Key: key }))
+      }
+    })
+  );
+}
+
+/**
  * Upload a file to S3.
  *
  * @export
  * @param {Express.Multer.File} file an object containing information about a single piece of media
  * @param {string} key the path where S3 will store the file
  * @param {Record<string, string>} [metadata={}] A metadata object to store additional information with the file
- * @returns {Promise<PutObjectCommandOutput>} the response from S3 or null if required parameters are null
+ * @returns {Promise<PutObjectCommandOutput>} the response from S3
  */
 export async function uploadFileToS3(
   file: Express.Multer.File,
@@ -154,7 +185,7 @@ export async function uploadFileToS3(
  * @param {string} mimetype the mimetype of the buffer
  * @param {string} key the path where S3 will store the file
  * @param {Record<string, string>} [metadata={}] A metadata object to store additional information with the file
- * @returns {Promise<PutObjectCommandOutput>} the response from S3 or null if required parameters are null
+ * @returns {Promise<PutObjectCommandOutput>} the response from S3
  */
 export async function uploadBufferToS3(
   buffer: Buffer,
@@ -173,6 +204,36 @@ export async function uploadBufferToS3(
       Metadata: metadata
     })
   );
+}
+
+/**
+ * Upload a stream to S3.
+ *
+ * @export
+ * @param {stream} Readable the stream to upload
+ * @param {string} mimetype the mimetype of the stream data
+ * @param {string} key the path where S3 will store the file
+ * @param {Record<string, string>} [metadata={}] A metadata object to store additional information with the file
+ * @return {*}  {Promise<CompleteMultipartUploadCommandOutput>} the response from S3
+ */
+export async function uploadStreamToS3(
+  stream: Readable,
+  mimetype: string,
+  key: string,
+  metadata: Record<string, string> = {}
+): Promise<CompleteMultipartUploadCommandOutput> {
+  const streamUpload = new Upload({
+    client: _getS3Client(),
+    params: {
+      Bucket: _getObjectStoreBucketName(),
+      Key: key,
+      Body: stream,
+      ContentType: mimetype,
+      Metadata: metadata
+    }
+  });
+
+  return streamUpload.done();
 }
 
 /**
@@ -231,7 +292,7 @@ export async function getObjectMeta(key: string): Promise<HeadObjectCommandOutpu
  * Get an s3 signed url.
  *
  * @param {string} key S3 object key
- * @returns {Promise<string>} the response from S3 or null if required parameters are null
+ * @return {*}  {(Promise<string | null>)} the response from S3 or null if required parameters are null
  */
 export async function getS3SignedURL(key: string): Promise<string | null> {
   const s3Client = _getS3Client();
@@ -252,34 +313,157 @@ export async function getS3SignedURL(key: string): Promise<string | null> {
   );
 }
 
-export interface IS3FileKey {
-  projectId: number;
-  surveyId?: number;
-  submissionId?: number;
-  folder?: string;
-  fileName: string;
+/**
+ * Get an array of s3 signed urls.
+ *
+ * @export
+ * @param {string[]} keys
+ * @return {*}  {(Promise<(string | null)[]>)}
+ */
+export async function getS3SignedURLs(keys: string[]): Promise<(string | null)[]> {
+  return Promise.all(keys.map((key) => getS3SignedURL(key)));
 }
 
+type Projects3Key = {
+  /**
+   * The project ID the file is associated with.
+   */
+  projectId: number;
+  /**
+   * The sub-folder where the file is stored.
+   *
+   * Note: For regular/generic file attachments, leave this undefined.
+   */
+  folder?: 'reports' | 'telemetry-credentials';
+  /**
+   * The name of the file.
+   */
+  fileName: string;
+};
+
+type SurveyS3Key = {
+  /**
+   * The project ID the file is associated with.
+   */
+  projectId: number;
+  /**
+   * The survey ID the file is associated with.
+   */
+  surveyId: number;
+  /**
+   * The template submission ID the file is associated with.
+   *
+   * @deprecated
+   */
+  submissionId?: number;
+  /**
+   * The sub-folder where the file is stored.
+   *
+   * Note: For regular/generic file attachments, leave this undefined.
+   */
+  folder?: 'reports' | 'telemetry-credentials';
+  /**
+   * The name of the file.
+   */
+  fileName: string;
+};
+
+type CritterCaptureS3Key = {
+  /**
+   * The project ID the file is associated with.
+   */
+  projectId: number;
+  /**
+   * The survey ID the file is associated with.
+   */
+  surveyId: number;
+  /**
+   * The SIMS Critter ID the file is associated with.
+   */
+  critterId: number;
+  /**
+   * The sub-folder where the file is stored.
+   */
+  folder: 'captures';
+  /**
+   * The Critterbase Capture ID (uuid) the file is associated with.
+   */
+  critterbaseCaptureId: string;
+  /**
+   * The name of the file.
+   */
+  fileName: string;
+};
+
+type CritterMortalityS3Key = {
+  /**
+   * The project ID the file is associated with.
+   */
+  projectId: number;
+  /**
+   * The survey ID the file is associated with.
+   */
+  surveyId: number;
+  /**
+   * The SIMS Critter ID the file is associated with.
+   */
+  critterId: number;
+  /**
+   * The sub-folder where the file is stored.
+   */
+  folder: 'mortalities';
+  /**
+   * The Critterbase Mortality ID (uuid) the file is associated with.
+   */
+  critterbaseMortalityId: string;
+  /**
+   * The name of the file.
+   */
+  fileName: string;
+};
+
+export type IS3FileKey = Projects3Key | SurveyS3Key | CritterCaptureS3Key | CritterMortalityS3Key;
+
+/**
+ * Generate an S3 key for a project or survey attachment file.
+ *
+ * @export
+ * @param {IS3FileKey} options
+ * @return {*}  {string}
+ */
 export function generateS3FileKey(options: IS3FileKey): string {
-  const keyParts: (string | number)[] = [_getS3KeyPrefix()];
+  const keyParts: (string | number)[] = [getS3KeyPrefix()];
 
   if (options.projectId) {
     keyParts.push('projects');
     keyParts.push(options.projectId);
   }
 
-  if (options.surveyId) {
+  if ('surveyId' in options && options.surveyId) {
     keyParts.push('surveys');
     keyParts.push(options.surveyId);
   }
 
-  if (options.submissionId) {
+  if ('submissionId' in options && options.submissionId) {
     keyParts.push('submissions');
     keyParts.push(options.submissionId);
   }
 
-  if (options.folder) {
+  if ('critterId' in options && options.critterId) {
+    keyParts.push('critters');
+    keyParts.push(options.critterId);
+  }
+
+  if ('folder' in options && options.folder) {
     keyParts.push(options.folder);
+  }
+
+  if ('critterbaseCaptureId' in options && options.critterbaseCaptureId) {
+    keyParts.push(options.critterbaseCaptureId);
+  }
+
+  if ('critterbaseMortalityId' in options && options.critterbaseMortalityId) {
+    keyParts.push(options.critterbaseMortalityId);
   }
 
   if (options.fileName) {
@@ -289,6 +473,31 @@ export function generateS3FileKey(options: IS3FileKey): string {
   return keyParts.filter(Boolean).join('/');
 }
 
+/**
+ * Generate an S3 key for a data export zip file.
+ *
+ * @export
+ * @return {*}  {string}
+ */
+export function generateS3ExportKey(): string {
+  const keyParts: (string | number)[] = [getS3KeyPrefix()];
+
+  keyParts.push('exports');
+  keyParts.push(`sims_data_export_${new Date().toISOString()}.zip`);
+
+  return keyParts.join('/');
+}
+
+/**
+ * Execute a clamav virus scan against the given file.
+ *
+ * Note: This depends on the external clamav service being available and configured correctly.
+ *
+ * @export
+ * @param {Express.Multer.File} file
+ * @return {*}  {Promise<boolean>} `true` if the file is safe, `false` if the file is a virus or contains malicious
+ * content.
+ */
 export async function scanFileForVirus(file: Express.Multer.File): Promise<boolean> {
   if (process.env.ENABLE_FILE_VIRUS_SCAN !== 'true' || !process.env.CLAMAV_HOST || !process.env.CLAMAV_PORT) {
     // Virus scanning is not enabled or necessary environment variables are not set

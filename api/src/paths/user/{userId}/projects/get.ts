@@ -149,6 +149,7 @@ export function getAllUserProjects(): RequestHandler {
       return res.status(200).json(getUserProjectsListResponse);
     } catch (error) {
       defaultLog.error({ label: 'getAllUserProjects', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

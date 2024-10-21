@@ -3,6 +3,7 @@ import {
   GridCellParams,
   GridColumnVisibilityModel,
   GridPaginationModel,
+  GridRenderEditCellParams,
   GridRowId,
   GridRowModes,
   GridRowModesModel,
@@ -232,6 +233,14 @@ export type IObservationsTableContext = {
    * Sets the disabled state of the table.
    */
   setIsDisabled: React.Dispatch<React.SetStateAction<boolean>>;
+  /**
+   * The row Id of the observation being commented on
+   */
+  commentDialogParams: GridRenderEditCellParams | null;
+  /**
+   * Sets the row Id of the observation being commented on
+   */
+  setCommentDialogParams: React.Dispatch<React.SetStateAction<GridRenderEditCellParams | null>>;
 };
 
 export type IObservationsTableContextProviderProps = PropsWithChildren;
@@ -303,6 +312,9 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
 
   // Internal disabled state for the observations table, should not be used outside of this context
   const [_isDisabled, setIsDisabled] = useState(false);
+
+  // Stores the id of an observation row being commented on. When not null, the comment dialog is open.
+  const [commentDialogParams, setCommentDialogParams] = useState<GridRenderEditCellParams | null>(null);
 
   // Global disabled state for the observations table
   const isDisabled = useMemo(() => {
@@ -493,6 +505,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
     }
 
     const requiredStandardColumns: (keyof IObservationTableRow)[] = [
+      'observation_subcount_sign_id',
       'count',
       'latitude',
       'longitude',
@@ -905,13 +918,15 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       survey_sample_site_id: null as unknown as number,
       survey_sample_method_id: null as unknown as number,
       survey_sample_period_id: null,
+      observation_subcount_sign_id: null as unknown as number,
       count: null as unknown as number,
       observation_date: '',
       observation_time: '',
       latitude: null as unknown as number,
       longitude: null as unknown as number,
       itis_tsn: null as unknown as number,
-      itis_scientific_name: ''
+      itis_scientific_name: '',
+      comment: ''
     };
 
     // Append new record to start of staged rows
@@ -1154,6 +1169,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         // Why?: Currently there is no UI support for setting a subcount value.
         // See https://apps.nrs.gov.bc.ca/int/jira/browse/SIMSBIOHUB-534
         subcount: row.count,
+        comment: row.comment,
+        observation_subcount_sign_id: row.observation_subcount_sign_id,
         qualitative_measurements: measurementsToSave.qualitative,
         quantitative_measurements: measurementsToSave.quantitative,
         qualitative_environments: environmentsToSave.qualitative,
@@ -1236,8 +1253,13 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
           id: String(observationRow.survey_observation_id),
           ...observationRow,
 
-          // Spread the subcount row data into the row
+          // Add the subcount id to the row
           observation_subcount_id: subcountRow.observation_subcount_id,
+          // Add the subcount sign data into the row
+          observation_subcount_sign_id: subcountRow.observation_subcount_sign_id,
+          // // Add the subcount comment into the row
+          comment: subcountRow.comment,
+
           // Reduce the array of qualitative measurements into an object and spread into the row
           ...subcountRow.qualitative_measurements.reduce((acc, cur) => {
             return {
@@ -1516,7 +1538,9 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       environmentColumns,
       setEnvironmentColumns,
       isDisabled,
-      setIsDisabled
+      setIsDisabled,
+      commentDialogParams,
+      setCommentDialogParams
     }),
     [
       _muiDataGridApiRef,
@@ -1546,7 +1570,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       sortModel,
       measurementColumns,
       environmentColumns,
-      isDisabled
+      isDisabled,
+      commentDialogParams
     ]
   );
 

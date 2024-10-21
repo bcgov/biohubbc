@@ -1,6 +1,10 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { IObservationsAdvancedFilters } from 'features/summary/tabular-data/observation/ObservationsListFilterForm';
 import {
+  CBQualitativeMeasurementTypeDefinition,
+  CBQuantitativeMeasurementTypeDefinition
+} from 'interfaces/useCritterApi.interface';
+import {
   IGetSurveyObservationsGeometryResponse,
   IGetSurveyObservationsResponse,
   ObservationRecord,
@@ -8,12 +12,14 @@ import {
   SupplementaryObservationCountData
 } from 'interfaces/useObservationApi.interface';
 import { EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
+import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
 export interface SubcountToSave {
   observation_subcount_id: number | null;
   subcount: number | null;
+  comment: string | null;
   qualitative_measurements: {
     measurement_id: string;
     measurement_option_id: string;
@@ -117,6 +123,43 @@ const useObservationApi = (axios: AxiosInstance) => {
     const { data } = await axios.get<IGetSurveyObservationsResponse>(
       `/api/project/${projectId}/survey/${surveyId}/observations${urlParamsString}`
     );
+
+    return data;
+  };
+
+  /**
+   * Retrieves species observed in a given survey
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<IPartialTaxonomy>}
+   */
+  const getObservedSpecies = async (projectId: number, surveyId: number): Promise<IPartialTaxonomy[]> => {
+    const { data } = await axios.get<IPartialTaxonomy[]>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/taxon`
+    );
+
+    return data;
+  };
+
+  /**
+   * Retrieves all measurements associated with all observation records
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<IObservationTableRow[]>}
+   */
+  const getObservationMeasurementDefinitions = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<{
+    qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+    quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+  }> => {
+    const { data } = await axios.get<{
+      qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+      quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+    }>(`/api/project/${projectId}/survey/${surveyId}/observations/measurements`);
 
     return data;
   };
@@ -295,8 +338,10 @@ const useObservationApi = (axios: AxiosInstance) => {
     insertUpdateObservationRecords,
     getObservationRecords,
     getObservationRecord,
+    getObservedSpecies,
     findObservations,
     getObservationsGeometry,
+    getObservationMeasurementDefinitions,
     deleteObservationRecords,
     deleteObservationMeasurements,
     deleteObservationEnvironments,

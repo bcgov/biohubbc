@@ -20,7 +20,7 @@ describe('useAnimalApi', () => {
         {
           wlh_id: null,
           animal_id: '123456',
-          sex: 'unknown',
+          sex: { qualitative_option_id: 'guid', label: 'unknown' },
           itis_tsn: 123321,
           itis_scientific_name: 'scientific name',
           critter_comment: 'comment',
