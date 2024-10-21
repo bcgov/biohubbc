@@ -1,3 +1,4 @@
+import { TelemetryManualRecord } from '../../database-models/telemetry_manual';
 import { IDBConnection } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
 import { TelemetryManualRepository } from '../../repositories/telemetry-repositories/telemetry-manual-repository';
@@ -10,6 +11,7 @@ import { TelemetryVendorRepository } from '../../repositories/telemetry-reposito
 import { Telemetry } from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
+import { DeploymentService } from '../deployment-services/deployment-service';
 
 /**
  * A service class for working with telemetry vendor data.
@@ -22,12 +24,17 @@ export class TelemetryVendorService extends DBService {
   vendorRepository: TelemetryVendorRepository;
   manualRepository: TelemetryManualRepository;
 
+  deploymentService: DeploymentService;
+
   constructor(connection: IDBConnection) {
     super(connection);
 
     // Telemetry repositories
     this.vendorRepository = new TelemetryVendorRepository(connection);
     this.manualRepository = new TelemetryManualRepository(connection);
+
+    // Services
+    this.deploymentService = new DeploymentService(connection);
   }
 
   /**
@@ -67,25 +74,24 @@ export class TelemetryVendorService extends DBService {
   /**
    * Validate deployment IDs exist in a survey.
    *
-   * TODO: Move this to the deployment service once implemented.
-   *
    * @throws {ApiGeneralError} - If deployment IDs do not exist in the survey
    * @param {number} surveyId
    * @param {number[]} deploymentIds
    * @returns {Promise<void>}
    */
   async _validateSurveyDeploymentIds(surveyId: number, deploymentIds: number[]): Promise<void> {
-    // TODO: Fetch deployment IDs from survey once deployment service is implemented
-    const surveyDeploymentIds: Set<number> = new Set();
+    const surveyDeployments = await this.deploymentService.getDeploymentsForSurveyId(surveyId);
 
-    deploymentIds.forEach((deploymentId) => {
+    const surveyDeploymentIds = new Set(surveyDeployments.map((deployment) => deployment.deployment2_id));
+
+    for (const deploymentId of deploymentIds) {
       if (!surveyDeploymentIds.has(deploymentId)) {
-        throw new ApiGeneralError('Invalid deployment ID provided for Survey', [
+        throw new ApiGeneralError('Invalid deployment ID provided for survey', [
           'TelemetryVendorService->_validateSurveyDeploymentIds',
           `deployment: ${deploymentId} does not exist in survey: ${surveyId}`
         ]);
       }
-    });
+    }
   }
 
   /**
@@ -99,29 +105,38 @@ export class TelemetryVendorService extends DBService {
   async bulkCreateManualTelemetry(surveyId: number, telemetry: CreateManualTelemetry[]): Promise<void> {
     const deploymentIds = telemetry.map((t) => t.deployment2_id);
 
+    // Validate the deployment IDs exist in the survey
     await this._validateSurveyDeploymentIds(surveyId, deploymentIds);
 
     return this.manualRepository.bulkCreateManualTelemetry(telemetry);
   }
 
   /**
-   * Create manual telemetry records.
+   * Update manual telemetry records.
    *
    * @async
    * @param {number} surveyId
-   * @param {UpdateManualTelemetry[]} telemetry - List of manual telemetry data to update
+   * @param {TelemetryManualRecord[]} telemetry - List of manual telemetry data to update
    * @returns {Promise<void>}
    */
-  async bulkUpdateManualTelemetry(surveyId: number, telemetry: UpdateManualTelemetry[]): Promise<void> {
-    const deploymentIds = telemetry.map((t) => t.deployment2_id);
+  async bulkUpdateManualTelemetry(surveyId: number, telemetry: TelemetryManualRecord[]): Promise<void> {
+    const updateTelemetry: UpdateManualTelemetry[] = [];
+    const deploymentIds: number[] = [];
 
+    for (const record of telemetry) {
+      const { deployment2_id, ...updateRecord } = record;
+      deploymentIds.push(deployment2_id); // survey deployment validation
+      updateTelemetry.push(updateRecord); // update payload
+    }
+
+    // Validate the deployment IDs exist in the survey
     await this._validateSurveyDeploymentIds(surveyId, deploymentIds);
 
     return this.manualRepository.bulkUpdateManualTelemetry(telemetry);
   }
 
   /**
-   * Create manual telemetry records.
+   * Delete manual telemetry records.
    *
    * @async
    * @param {number} surveyId

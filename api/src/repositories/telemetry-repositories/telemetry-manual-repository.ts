@@ -39,13 +39,17 @@ export class TelemetryManualRepository extends BaseRepository {
    *
    * Note: Deployment IDs need to be pre-validated against the survey ID in the service.
    *
-   * @param {CreateManualTelemetry[]} telemetry - List of Manual telemetry data to update
+   * @param {UpdateManualTelemetry[]} telemetry - List of Manual telemetry data to update
    * @returns {Promise<void>}
    */
   async bulkUpdateManualTelemetry(telemetry: UpdateManualTelemetry[]): Promise<void> {
     const knex = getKnex();
 
-    const queryBuilder = knex.upsert(telemetry, 'telemetry_manual_id').into('telemetry_manual');
+    const queryBuilder = knex
+      .insert(telemetry)
+      .into('telemetry_manual')
+      .onConflict('telemetry_manual_id')
+      .merge(['latitude', 'longitude', 'acquisition_date', 'transmission_date']);
 
     const response = await this.connection.knex(queryBuilder);
 
