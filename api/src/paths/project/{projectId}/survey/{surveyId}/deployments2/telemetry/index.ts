@@ -134,7 +134,7 @@ GET.apiDoc = {
 export function getTelemetryForDeployments(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const deploymentIds = req.body.deployment_ids;
+    const deploymentIds: number[] = req.body.deployment_ids;
 
     const connection = getDBConnection(req.keycloak_token);
 
