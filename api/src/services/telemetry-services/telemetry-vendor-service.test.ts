@@ -50,6 +50,44 @@ describe('TelemetryVendorService', () => {
     });
   });
 
+  describe('getTelemetryForCritter', () => {
+    it('should return telemetry data for a single critter', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const repoStub = sinon.stub(TelemetryVendorRepository.prototype, 'getTelemetryByDeploymentIds').resolves([]);
+
+      const service = new TelemetryVendorService(mockDBConnection);
+
+      const deploymentServiceStub = sinon
+        .stub(service.deploymentService, 'getDeploymentsForCritterId')
+        .resolves([{ deployment2_id: 8 } as any]);
+
+      const data = await service.getTelemetryForCritter(1, 1);
+
+      expect(deploymentServiceStub).to.have.been.calledWith(1, 1);
+      expect(repoStub).to.have.been.calledWith(1, [8], undefined);
+      expect(data).to.deep.equal([]);
+    });
+  });
+
+  describe('getTelemetryForSurvey', () => {
+    it('should return telemetry data for a survey', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const repoStub = sinon.stub(TelemetryVendorRepository.prototype, 'getTelemetryByDeploymentIds').resolves([]);
+
+      const service = new TelemetryVendorService(mockDBConnection);
+
+      const deploymentServiceStub = sinon
+        .stub(service.deploymentService, 'getDeploymentsForSurveyId')
+        .resolves([{ deployment2_id: 8 } as any]);
+
+      const data = await service.getTelemetryForSurvey(1);
+
+      expect(deploymentServiceStub).to.have.been.calledWith(1);
+      expect(repoStub).to.have.been.calledWith(1, [8], undefined);
+      expect(data).to.deep.equal([]);
+    });
+  });
+
   describe('bulkCreateManualTelemetry', () => {
     it('should create manual telemetry records', async () => {
       const mockDBConnection = getMockDBConnection();
