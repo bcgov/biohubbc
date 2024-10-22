@@ -19,6 +19,13 @@ export interface IHorizontalSplitFormComponentProps {
    */
   summary?: string;
   /**
+   * Optional sidepanel to display helper text, diagrams, etc.
+   *
+   * @type {ReactElement}
+   * @memberof IHorizontalSplitFormComponentProps
+   */
+  sidePanel?: ReactElement;
+  /**
    * The form component to render
    *
    * @type {ReactElement}
@@ -34,7 +41,7 @@ export interface IHorizontalSplitFormComponentProps {
  * @return {*}
  */
 const HorizontalSplitFormComponent = (props: PropsWithChildren<IHorizontalSplitFormComponentProps>) => {
-  const { title, summary, component, children } = props;
+  const { title, summary, component, children, sidePanel } = props;
 
   return (
     <Grid container spacing={3}>
@@ -44,9 +51,10 @@ const HorizontalSplitFormComponent = (props: PropsWithChildren<IHorizontalSplitF
         </Typography>
         {summary && (
           <Box pt={1.25} maxWidth="55ch">
-            <Typography variant="body1" color="textSecondary">
+            <Typography variant="body1" color="textSecondary" mb={3}>
               {summary}
             </Typography>
+            {sidePanel}
           </Box>
         )}
       </Grid>

@@ -6,7 +6,7 @@ import { useSurveyContext } from 'hooks/useContext';
 import { Popup } from 'react-leaflet';
 
 /**
- * Hook to get the study area static layer.
+ * Hook to get the survey area static layer.
  *
  * @return {*}  {IStaticLayer}
  */
@@ -14,7 +14,7 @@ export const useStudyAreaStaticLayer = (): IStaticLayer => {
   const surveyContext = useSurveyContext();
 
   const studyAreaStaticLayer: IStaticLayer = {
-    layerName: 'Study Areas',
+    layerName: 'Survey Areas',
     layerOptions: {
       color: SURVEY_MAP_LAYER_COLOURS.STUDY_AREA_COLOUR,
       fillColor: SURVEY_MAP_LAYER_COLOURS.STUDY_AREA_COLOUR
@@ -51,7 +51,7 @@ export const useStudyAreaStaticLayer = (): IStaticLayer => {
       return (
         <Popup keepInView={false} closeButton={true} autoPan={true}>
           <SurveyMapPopup
-            title="Study Area"
+            title="Survey Area"
             metadata={metadata}
             isLoading={false}
             key={`study-area-popup-${feature.id}`}
@@ -59,7 +59,7 @@ export const useStudyAreaStaticLayer = (): IStaticLayer => {
         </Popup>
       );
     },
-    tooltip: (feature) => <SurveyMapTooltip title="Study Area" key={`study-area-tooltip-${feature.id}`} />
+    tooltip: (feature) => <SurveyMapTooltip title="Survey Area" key={`study-area-tooltip-${feature.id}`} />
   };
 
   return studyAreaStaticLayer;

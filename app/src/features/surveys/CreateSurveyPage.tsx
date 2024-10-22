@@ -25,15 +25,14 @@ import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { AgreementsInitialValues } from './components/agreements/AgreementsForm';
 import { ProprietaryDataInitialValues } from './components/agreements/ProprietaryDataForm';
+import { SurveyLocationInitialValues } from './components/areas/SurveyAreaFormContainer';
 import {
   ISurveyFundingSourceForm,
   SurveyFundingSourceFormInitialValues
 } from './components/funding/SurveyFundingSourceForm';
 import { GeneralInformationInitialValues } from './components/general-information/GeneralInformationForm';
-import { SurveyLocationInitialValues } from './components/locations/StudyAreaForm';
 import { PurposeAndMethodologyInitialValues } from './components/methodology/PurposeAndMethodologyForm';
 import { SurveyUserJobFormInitialValues } from './components/participants/SurveyUserForm';
-import { SurveyBlockInitialValues } from './components/sampling-strategy/blocks/SurveyBlockForm';
 import { SurveySiteSelectionInitialValues } from './components/sampling-strategy/SurveySiteSelectionForm';
 import { SpeciesInitialValues } from './components/species/SpeciesForm';
 import EditSurveyForm from './edit/EditSurveyForm';
@@ -49,7 +48,6 @@ export const defaultSurveyDataFormValues: ICreateSurveyRequest & ISurveyPermitFo
   ...SurveyLocationInitialValues,
   ...SurveySiteSelectionInitialValues,
   ...SurveyUserJobFormInitialValues,
-  ...SurveyBlockInitialValues,
   ...SpeciesInitialValues
 };
 

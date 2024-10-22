@@ -58,7 +58,7 @@ const SurveyDetails = () => {
         </Box>
 
         <Box component="section">
-          <Typography component="h3">Study Area Location</Typography>
+          <Typography component="h3">Survey Area Location</Typography>
           <SurveyStudyArea />
         </Box>
 

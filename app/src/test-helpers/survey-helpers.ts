@@ -1,8 +1,8 @@
 import {
-  IFindSurveysResponse,
-  IGetSurveyForViewResponse,
-  SurveySupplementaryData,
-  SurveyViewObject
+    IFindSurveysResponse,
+    IGetSurveyForViewResponse,
+    SurveySupplementaryData,
+    SurveyViewObject
 } from 'interfaces/useSurveyApi.interface';
 import { geoJsonFeature } from './spatial-helpers';
 
@@ -84,8 +84,8 @@ export const surveyObject: SurveyViewObject = {
   locations: [
     {
       survey_location_id: 1,
-      name: 'study area',
-      description: 'study area description',
+      name: 'survey area',
+      description: 'survey area description',
       geometry: [geoJsonFeature],
       geojson: [geoJsonFeature],
       revision_count: 0

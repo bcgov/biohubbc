@@ -23,6 +23,7 @@ import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
+import { v4 } from 'uuid';
 import EditSurveyForm from './EditSurveyForm';
 
 /**
@@ -106,7 +107,9 @@ const EditSurveyPage = () => {
           geojson: location.geojson,
           name: location.name,
           description: location.description,
-          revision_count: location.revision_count
+          revision_count: location.revision_count,
+          // Unique key for formik values, to be consistent with how the create form works
+          uuid: v4()
         })),
         participants: values.participants,
         partnerships: values.partnerships,

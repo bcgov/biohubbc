@@ -12,7 +12,7 @@ import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import DrawControls, { IDrawControlsRef } from 'components/map/components/DrawControls';
 import FullScreenScrollingEventHandler from 'components/map/components/FullScreenScrollingEventHandler';
-import ImportBoundaryDialog from 'components/map/components/ImportBoundaryDialog';
+import ImportSpatialDialog from 'components/map/components/ImportSpatialDialog';
 import StaticLayers from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { ALL_OF_BC_BOUNDARY, MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
@@ -158,7 +158,7 @@ export const CaptureLocationMapControl = <FormikValuesType extends ICreateCaptur
 
       <Box component="fieldset">
         <Paper variant="outlined">
-          <ImportBoundaryDialog
+          <ImportSpatialDialog
             dialogTitle={`Import ${title}`}
             isOpen={isOpen}
             onClose={() => setIsOpen(false)}

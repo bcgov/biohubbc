@@ -169,25 +169,25 @@ describe.skip('SurveyStudyArea', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Study Area')).toBeVisible();
+      expect(getByText('Survey Area')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(getByText('Edit Survey Study Area')).toBeVisible();
+      expect(getByText('Edit Survey Survey Area')).toBeVisible();
     });
 
     fireEvent.click(getByText('Cancel'));
 
     await waitFor(() => {
-      expect(queryByText('Edit Survey Study Area')).not.toBeInTheDocument();
+      expect(queryByText('Edit Survey Survey Area')).not.toBeInTheDocument();
     });
 
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(getByText('Edit Survey Study Area')).toBeVisible();
+      expect(getByText('Edit Survey Survey Area')).toBeVisible();
     });
 
     fireEvent.click(getByText('Save Changes'));
@@ -219,8 +219,8 @@ describe.skip('SurveyStudyArea', () => {
               }
             ],
             revision_count: 0,
-            name: 'study area',
-            description: 'study area description'
+            name: 'survey area',
+            description: 'survey area description'
           }
         ]
       });
@@ -279,13 +279,13 @@ describe.skip('SurveyStudyArea', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Study Area')).toBeVisible();
+      expect(getByText('Survey Area')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(getByText('Edit Survey Study Area')).toBeVisible();
+      expect(getByText('Edit Survey Survey Area')).toBeVisible();
     });
 
     fireEvent.click(getByText('Save Changes'));

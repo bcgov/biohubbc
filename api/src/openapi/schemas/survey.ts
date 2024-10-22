@@ -506,6 +506,23 @@ export const surveyBlockSchema: OpenAPIV3.SchemaObject = {
       type: 'string',
       nullable: true
     },
+
+    geojson: {
+      description: 'Geojson',
+      type: 'array',
+      items: {
+        type: 'object'
+      }
+    },
+    geometry: {
+      description: 'Geometry',
+      type: 'object',
+      nullable: true
+    },
+    geography: {
+      description: 'Geography',
+      type: 'string'
+    },
     sample_block_count: {
       description: 'Sample block count',
       type: 'number'

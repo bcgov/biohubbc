@@ -99,9 +99,13 @@ POST.apiDoc = {
             proprietor: surveyProprietorSchema,
             purpose_and_methodology: surveyPurposeAndMethodologySchema,
             locations: {
-              description: 'Survey location data',
+              description: 'Survey locations data',
               type: 'array',
               items: surveyLocationSchema
+            },
+            blocks: {
+              type: 'array',
+              items: surveyBlockSchema
             },
             site_selection: {
               title: 'survey site selection response object',
@@ -158,10 +162,6 @@ POST.apiDoc = {
               items: {
                 ...surveyParticipationAndSystemUserSchema
               }
-            },
-            blocks: {
-              type: 'array',
-              items: surveyBlockSchema
             },
             agreements: {
               type: 'object',

@@ -1,6 +1,6 @@
 import { useLeafletContext } from '@react-leaflet/core';
 import { Feature } from 'geojson';
-import L from 'leaflet';
+import L, { PathOptions } from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useRef } from 'react';
@@ -17,6 +17,8 @@ export interface IDrawControlsOptions {
   position?: L.ControlPosition;
   draw?: L.Control.DrawOptions;
   edit?: Omit<L.Control.EditOptions, 'featureGroup'>;
+  style?: PathOptions;
+  toolbar?: boolean;
 }
 
 export interface IDrawControlsProps {
@@ -67,6 +69,16 @@ export interface IDrawControlsRef {
    * Clears all layers from the draw controls layer group.
    */
   clearLayers: () => void;
+
+  /**
+   * Enables polygon drawing mode.
+   */
+  enablePolygonDrawing?: () => void;
+
+  /**
+   * Completes polygon drawing mode.
+   */
+  disablePolygonDrawing?: () => void;
 }
 
 /**
@@ -100,6 +112,10 @@ const DrawControls = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps
    */
   const getDrawControls = (): L.Control.Draw => {
     const featureGroup = getFeatureGroup();
+
+    if (props.options?.style) {
+      featureGroup.setStyle(props.options.style);
+    }
 
     const CustomMarker = L.Icon.extend({
       // The preview icon rendered when you are in the process of adding a marker to the map
@@ -179,9 +195,10 @@ const DrawControls = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps
 
   const drawControlsRef = useRef(getDrawControls());
 
+  // Initialize the draw controls only once, when the component mounts
   useEffect(() => {
-    // Add draw controls to the map
-    drawControlsRef.current.addTo(map);
+    drawControlsRef.current = getDrawControls();
+    // Add the draw controls to the map here if needed
   }, [map]);
 
   // Populate the forward ref
@@ -211,6 +228,15 @@ const DrawControls = forwardRef<IDrawControlsRef | undefined, IDrawControlsProps
       clearLayers: () => {
         const featureGroup = getFeatureGroup();
         featureGroup.clearLayers();
+      },
+      enablePolygonDrawing: () => {
+        // this should be enablign drawing on the ref
+        const polygonDrawer = new L.Draw.Polygon(map as L.DrawMap);
+        polygonDrawer.enable();
+      },
+      disablePolygonDrawing: () => {
+        // const drawControlsRef = useRef(getDrawControls());
+        // polygonDrawer.disable();
       }
     }),
     [getFeatureGroup]

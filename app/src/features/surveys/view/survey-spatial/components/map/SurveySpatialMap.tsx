@@ -21,7 +21,7 @@ interface ISurveyDataMapProps {
 /**
  * Component for displaying survey-related spatial data on a map.
  *
- * Automatically includes the study area and sampling site static layers.
+ * Automatically includes the survey area and sampling site static layers.
  *
  * @param {ISurveyDataMapProps} props
  * @return {*}
