@@ -57,7 +57,7 @@ export class TelemetryVendorService extends DBService {
    *
    * @async
    * @param {number} surveyId
-   * @param {number} deploymentIds
+   * @param {number[]} deploymentIds
    * @param {ApiPaginationOptions} [pagination] - Pagination options
    * @returns {Promise<Telemetry[]>}
    */
@@ -66,6 +66,41 @@ export class TelemetryVendorService extends DBService {
     deploymentIds: number[],
     pagination?: ApiPaginationOptions
   ): Promise<Telemetry[]> {
+    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, pagination);
+  }
+
+  /**
+   * Get telemetry data for a critter.
+   *
+   * @async
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @param {ApiPaginationOptions} [pagination] - Pagination options
+   * @returns {Promise<Telemetry[]>}
+   */
+  async getTelemetryForCritter(
+    surveyId: number,
+    critterId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<Telemetry[]> {
+    const deployments = await this.deploymentService.getDeploymentsForCritterId(surveyId, critterId);
+    const deploymentIds = deployments.map((deployment) => deployment.deployment2_id);
+
+    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, pagination);
+  }
+
+  /**
+   * Get telemetry data for a survey.
+   *
+   * @async
+   * @param {number} surveyId
+   * @param {ApiPaginationOptions} [pagination] - Pagination options
+   * @returns {Promise<Telemetry[]>}
+   */
+  async getTelemetryForSurvey(surveyId: number, pagination?: ApiPaginationOptions): Promise<Telemetry[]> {
+    const deployments = await this.deploymentService.getDeploymentsForSurveyId(surveyId);
+    const deploymentIds = deployments.map((deployment) => deployment.deployment2_id);
+
     return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, pagination);
   }
 

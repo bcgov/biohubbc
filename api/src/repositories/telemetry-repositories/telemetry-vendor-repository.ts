@@ -195,14 +195,16 @@ export class TelemetryVendorRepository extends BaseRepository {
       .andWhere('deployment2.survey_id', surveyId)
       .andWhereRaw('telemetry_manual.acquisition_date >= deployment2.attachment_start_timestamp')
       .andWhereRaw(
-        'telemetry_manual.acquisition_date <= deployment2.attachment_end OR deployment2.attachment_end_timestamp IS NULL'
+        'telemetry_manual.acquisition_date <= deployment2.attachment_end_timestamp OR deployment2.attachment_end_timestamp IS NULL'
       );
 
     return queryBuilder;
   }
 
   /**
-   * Get Lotek telemetry data for list of deployment IDs.
+   * Get all telemetry data for list of deployment IDs.
+   *
+   * Note: Currently supports, `Lotek`, `Vectronic`, `ATS`, and `Manual` telemetry.
    *
    * @param {number} surveyId
    * @param {number[]} deploymentIds
