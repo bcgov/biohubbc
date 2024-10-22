@@ -6,7 +6,8 @@ import {
   ISurveyFundingSourceForm
 } from 'features/surveys/components/funding/SurveyFundingSourceForm';
 import { IGeneralInformationForm } from 'features/surveys/components/general-information/GeneralInformationForm';
-import { ISurveyLocationForm } from 'features/surveys/components/locations/StudyAreaForm';
+import { ISurveyBlock } from 'features/surveys/components/locations/blocks/form/SurveyBlocksForm';
+import { ISurveyLocationForm } from 'features/surveys/components/locations/SurveyAreaFormContainer';
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/methodology/PurposeAndMethodologyForm';
 import { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
 import { ISpeciesForm, ITaxonomyWithEcologicalUnits } from 'features/surveys/components/species/SpeciesForm';
@@ -30,7 +31,6 @@ export interface ICreateSurveyRequest
     IAgreementsForm,
     IParticipantsJobForm,
     ISurveyLocationForm,
-    ISurveyBlockForm,
     ISurveyPartnershipsForm,
     ISurveySiteSelectionForm,
     ISpeciesForm,
@@ -66,12 +66,7 @@ export interface ISurveySiteSelectionForm {
 }
 
 export interface ISurveyBlockForm {
-  blocks: {
-    survey_block_id: number | null;
-    name: string;
-    description: string;
-    sample_block_count: number;
-  }[];
+  blocks: ISurveyBlock[];
 }
 
 export interface IParticipantsJobForm {
@@ -215,11 +210,7 @@ export type IUpdateSurveyRequest = ISurveyLocationForm & {
     disa_required: StringBoolean;
   };
   participants: IGetSurveyParticipant[];
-  blocks: {
-    survey_block_id?: number | null;
-    name: string;
-    description: string;
-  }[];
+  blocks: ISurveyBlock[];
   site_selection: {
     strategies: string[];
     stratums: {

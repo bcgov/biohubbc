@@ -1,6 +1,8 @@
+import { Feature } from 'geojson';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { generateGeometryCollectionSQL } from '../utils/spatial-utils';
 import { BaseRepository } from './base-repository';
 
 export interface PostSurveyBlock {
@@ -8,6 +10,7 @@ export interface PostSurveyBlock {
   survey_id: number;
   name: string;
   description: string;
+  geojson: Feature[];
 }
 
 // This describes the a row in the database for Survey Block
@@ -25,6 +28,9 @@ export const SurveyBlockRecordWithCount = z.object({
   survey_id: z.number(),
   name: z.string(),
   description: z.string(),
+  geometry: z.record(z.any()).nullable(),
+  geography: z.string(),
+  geojson: z.any(),
   revision_count: z.number(),
   sample_block_count: z.number()
 });
@@ -52,6 +58,9 @@ export class SurveyBlockRepository extends BaseRepository {
         sb.survey_id,
         sb.name,
         sb.description,
+        geometry,
+        geography,
+        geojson,
         sb.revision_count,
         COUNT(ssb.survey_block_id)::integer AS sample_block_count
     FROM
@@ -64,6 +73,9 @@ export class SurveyBlockRepository extends BaseRepository {
         sb.survey_block_id,
         sb.survey_id,
         sb.name,
+        sb.geometry,
+        sb.geography,
+        sb.geojson,
         sb.description,
         sb.revision_count;
     `;
@@ -86,7 +98,13 @@ export class SurveyBlockRepository extends BaseRepository {
       SET 
         name = ${block.name}, 
         description = ${block.description}, 
-        survey_id=${block.survey_id} 
+        survey_id=${block.survey_id},
+        geojson = ${JSON.stringify(block.geojson)},
+        geography = public.geography(
+                      public.ST_Force2D(
+                        public.ST_SetSRID(`.append(generateGeometryCollectionSQL(block.geojson)).append(`, 4326)
+                      )
+                    )
       WHERE 
         survey_block_id = ${block.survey_block_id}
       RETURNING 
@@ -94,7 +112,7 @@ export class SurveyBlockRepository extends BaseRepository {
         name,
         description,
         revision_count;
-    `;
+    `);
     const response = await this.connection.sql(sql, SurveyBlockRecord);
 
     if (!response.rowCount) {
@@ -119,18 +137,26 @@ export class SurveyBlockRepository extends BaseRepository {
     INSERT INTO survey_block (
       survey_id,
       name,
-      description
+      description,
+      description,
+      geojson,
+      geography
     ) VALUES (
       ${block.survey_id},
       ${block.name},
-      ${block.description}
-    )
+      ${block.description},
+      ${JSON.stringify(block.geojson)},
+    public.geography(
+            public.ST_Force2D(
+              public.ST_SetSRID(`.append(generateGeometryCollectionSQL(block.geojson)).append(`, 4326)
+            )
+          )
     RETURNING 
       survey_block_id,
       name,
       description,
       revision_count;
-  `;
+  `);
     const response = await this.connection.sql(sql, SurveyBlockRecord);
 
     if (!response.rowCount) {

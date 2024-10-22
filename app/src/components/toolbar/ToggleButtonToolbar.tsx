@@ -6,6 +6,7 @@ export interface IToggleButtonView<T> {
   icon: string;
   value: T;
   isLoading?: boolean;
+  count?: number;
 }
 
 interface IToggleButtonToolbarProps<T> {
@@ -55,6 +56,7 @@ const ToggleButtonToolbar = <T,>(props: IToggleButtonToolbarProps<T>) => {
             value={view.value as string} // Ensure value is a string
           >
             {view.label}
+            {view.count !== undefined && <>&nbsp;({view.count})</>}
           </ToggleButton>
         ))}
       </ToggleButtonGroup>

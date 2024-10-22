@@ -1,10 +1,14 @@
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
+import { HelpBanner } from 'components/help/HelpBanner';
+import { BulletedList } from 'components/list/BulletedLst';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
 import SurveyPermitForm, { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
@@ -24,7 +28,9 @@ import SurveyFundingSourceForm, {
 import GeneralInformationForm, {
   GeneralInformationYupSchema
 } from '../components/general-information/GeneralInformationForm';
-import StudyAreaForm, { SurveyLocationYupSchema } from '../components/locations/StudyAreaForm';
+import { SurveyBlocksYupSchema } from '../components/locations/blocks/view/SurveyBlocksList';
+import { SurveyBoundsYupSchema } from '../components/locations/bounds/view/SurveyBoundsList';
+import SurveyAreaFormContainer from '../components/locations/SurveyAreaFormContainer';
 import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from '../components/methodology/PurposeAndMethodologyForm';
@@ -71,10 +77,12 @@ const EditSurveyForm = <
   const surveyEditYupSchemas = GeneralInformationYupSchema()
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
+    .concat(SurveyBlocksYupSchema)
+    .concat(SurveyBoundsYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)
     .concat(AgreementsYupSchema)
     .concat(SurveyUserJobYupSchema)
-    .concat(SurveyLocationYupSchema)
+    .concat(SurveySiteSelectionYupSchema)
     .concat(SurveySiteSelectionYupSchema)
     .concat(SurveyPartnershipsFormYupSchema)
     .concat(SpeciesYupSchema);
@@ -139,6 +147,39 @@ const EditSurveyForm = <
         <Divider />
 
         <HorizontalSplitFormComponent
+          title="Study Area"
+          summary="Import or draw survey bounds, spatial blocks or grids, and sampling sites."
+          sidePanel={
+            <HelpBanner title="Help">
+              <BulletedList>
+                <ListItem>
+                  <ListItemText>
+                    <strong>Bounds</strong> are general areas that you typically want to extrapolate findings to, such
+                    as watersheds or management areas.
+                  </ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText>
+                    <strong>Blocks</strong> are grid cells or other spatial components used to group or guide the
+                    placement of sampling sites. If you sampled blocks using transects, you should upload your blocks
+                    here and your transects later as sampling sites.
+                  </ListItemText>
+                </ListItem>
+                <ListItem>
+                  <ListItemText>
+                    You can import multiple blocks or bounds from one file. If your file contains <i>name</i> and&nbsp;
+                    <i>description</i> fields, those fields will be imported.
+                  </ListItemText>
+                </ListItem>
+              </BulletedList>
+            </HelpBanner>
+          }
+          component={<SurveyAreaFormContainer />}
+        />
+
+        <Divider />
+
+        <HorizontalSplitFormComponent
           title="Purpose and Methodology"
           summary="Select the types of data collected and describe the survey objectives"
           component={
@@ -170,14 +211,6 @@ const EditSurveyForm = <
           title="Partnerships"
           summary="Enter any partners involved in the survey"
           component={<SurveyPartnershipsForm />}
-        />
-
-        <Divider />
-
-        <HorizontalSplitFormComponent
-          title="Study Area"
-          summary="Import, draw or select a feature from an existing layer to define the study areas for this survey"
-          component={<StudyAreaForm />}
         />
 
         <Divider />

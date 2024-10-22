@@ -30,10 +30,9 @@ import {
   SurveyFundingSourceFormInitialValues
 } from './components/funding/SurveyFundingSourceForm';
 import { GeneralInformationInitialValues } from './components/general-information/GeneralInformationForm';
-import { SurveyLocationInitialValues } from './components/locations/StudyAreaForm';
+import { SurveyLocationInitialValues } from './components/locations/SurveyAreaFormContainer';
 import { PurposeAndMethodologyInitialValues } from './components/methodology/PurposeAndMethodologyForm';
 import { SurveyUserJobFormInitialValues } from './components/participants/SurveyUserForm';
-import { SurveyBlockInitialValues } from './components/sampling-strategy/blocks/SurveyBlockForm';
 import { SurveySiteSelectionInitialValues } from './components/sampling-strategy/SurveySiteSelectionForm';
 import { SpeciesInitialValues } from './components/species/SpeciesForm';
 import EditSurveyForm from './edit/EditSurveyForm';
@@ -49,7 +48,6 @@ export const defaultSurveyDataFormValues: ICreateSurveyRequest & ISurveyPermitFo
   ...SurveyLocationInitialValues,
   ...SurveySiteSelectionInitialValues,
   ...SurveyUserJobFormInitialValues,
-  ...SurveyBlockInitialValues,
   ...SpeciesInitialValues
 };
 
@@ -115,7 +113,7 @@ const CreateSurveyPage = () => {
       const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), {
         blocks: values.blocks,
         funding_sources: values.funding_sources,
-        locations: values.locations.map((location) => ({
+        bounds: values.bounds.map((location) => ({
           survey_location_id: location.survey_location_id,
           geojson: location.geojson,
           name: location.name,

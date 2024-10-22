@@ -101,7 +101,7 @@ const EditSurveyPage = () => {
       const response = await biohubApi.survey.updateSurvey(projectContext.projectId, surveyId, {
         blocks: values.blocks,
         funding_sources: values.funding_sources,
-        locations: values.locations.map((location) => ({
+        bounds: values.bounds.map((location) => ({
           survey_location_id: location.survey_location_id,
           geojson: location.geojson,
           name: location.name,
@@ -205,7 +205,8 @@ const EditSurveyPage = () => {
               purpose_and_methodology: surveyData.purpose_and_methodology,
               species: surveyData.species,
               site_selection: surveyData.site_selection,
-              locations: surveyData.locations,
+              // TODO: Change to bounds
+              bounds: surveyData.locations,
               participants: surveyData.participants,
               partnerships: surveyData.partnerships,
               blocks: surveyData.blocks,

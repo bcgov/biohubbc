@@ -5,7 +5,7 @@ import FileUpload from 'components/file-upload/FileUpload';
 import { Feature } from 'geojson';
 import { boundaryUploadHelper } from 'utils/mapBoundaryUploadHelpers';
 
-export interface IImportBoundaryDialogProps {
+export interface IImportSpatialDialogProps {
   dialogTitle: string;
   isOpen: boolean;
   onClose: () => void;
@@ -13,7 +13,7 @@ export interface IImportBoundaryDialogProps {
   onFailure: (message: string) => void;
 }
 
-const ImportBoundaryDialog = (props: IImportBoundaryDialogProps) => {
+const ImportSpatialDialog = (props: IImportSpatialDialogProps) => {
   const { dialogTitle, isOpen, onClose, onSuccess, onFailure } = props;
   return (
     <ComponentDialog open={isOpen} dialogTitle={dialogTitle} onClose={onClose}>
@@ -39,4 +39,4 @@ const ImportBoundaryDialog = (props: IImportBoundaryDialogProps) => {
   );
 };
 
-export default ImportBoundaryDialog;
+export default ImportSpatialDialog;

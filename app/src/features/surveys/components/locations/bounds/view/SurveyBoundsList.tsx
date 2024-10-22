@@ -11,24 +11,69 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import EditDialog from 'components/dialog/EditDialog';
+import { useFormikContext } from 'formik';
+import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useState } from 'react';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
-import { ISurveyLocation } from './StudyAreaForm';
+import yup from 'utils/YupSchema';
+import { v4 } from 'uuid';
+import SurveyBoundsForm, { ISurveyBound } from '../form/SurveyBoundsForm';
 
-export interface ISurveyAreaListProps {
-  data: ISurveyLocation[];
-  openEdit: (index: number) => void;
-  openDelete: (index: number) => void;
+export const SurveyBoundsYupSchema = yup.object({
+  bounds: yup
+    .array(
+      yup.object({
+        name: yup.string().max(100, 'Name cannot exceed 100 characters').required('Name is Required'),
+        description: yup.string().max(250, 'Description cannot exceed 250 characters').default(''),
+        geojson: yup.array().min(1, 'A geometry is required').required('A geometry is required')
+      })
+    )
+    .min(1, 'You must add at least one boundary to identify your area of interest.')
+});
+
+export const SurveyBoundsInitialValues = {
+  name: '',
+  description: '',
+  uuid: v4()
+};
+
+interface ISurveyBoundsListProps {
+  handleDelete: (index: number) => void;
 }
 
-export const SurveyAreaList = (props: ISurveyAreaListProps) => {
-  const { data, openEdit, openDelete } = props;
+export const SurveyBoundsList = (props: ISurveyBoundsListProps) => {
+  const { handleDelete } = props;
+  const { values, setFieldValue } = useFormikContext<IEditSurveyRequest>();
+
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
-  const [currentItemIndex, setCurrentItemIndex] = useState<number | null>(-1);
+  const [currentItemIndex, setCurrentItemIndex] = useState<number | null>(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setAnchorEl(event.currentTarget);
     setCurrentItemIndex(index);
+  };
+
+  const openEditDialog = () => {
+    if (currentItemIndex !== null) {
+      setIsEditOpen(true);
+      setAnchorEl(null);
+    }
+  };
+
+  const closeEditDialog = () => {
+    setIsEditOpen(false);
+  };
+
+  const handleEditSave = (formValues: { name: string; description: string }) => {
+    if (currentItemIndex !== null) {
+      const bounds = values.bounds.map((bound, index) =>
+        index === currentItemIndex ? { ...bound, ...formValues } : bound
+      );
+      setFieldValue('bounds', bounds);
+    }
+    closeEditDialog();
   };
 
   return (
@@ -46,13 +91,7 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
           vertical: 'top',
           horizontal: 'right'
         }}>
-        <MenuItem
-          onClick={() => {
-            if (currentItemIndex != null) {
-              openEdit(currentItemIndex);
-            }
-            setAnchorEl(null);
-          }}>
+        <MenuItem onClick={openEditDialog}>
           <ListItemIcon>
             <Icon path={mdiPencilOutline} size={1} />
           </ListItemIcon>
@@ -60,8 +99,9 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
         </MenuItem>
         <MenuItem
           onClick={() => {
+            console.log(currentItemIndex);
             if (currentItemIndex != null) {
-              openDelete(currentItemIndex);
+              handleDelete(currentItemIndex);
             }
             setAnchorEl(null);
           }}>
@@ -71,9 +111,29 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
           Remove
         </MenuItem>
       </Menu>
+
+      {/* Edit Dialog */}
+      {currentItemIndex != null && (
+        <EditDialog
+          dialogTitle={'Edit Location Details'}
+          open={isEditOpen}
+          dialogLoading={false}
+          component={{
+            element: <SurveyBoundsForm />,
+            initialValues: values.bounds[currentItemIndex] ?? SurveyBoundsInitialValues,
+            validationSchema: SurveyBoundsYupSchema
+          }}
+          dialogSaveButtonLabel="Save"
+          onCancel={closeEditDialog}
+          onSave={handleEditSave}
+        />
+      )}
+
+      {/* Survey Bounds List */}
       <Box data-testid="study-area-list" display="flex" flexDirection="column" height="100%">
         <List component={TransitionGroup} disablePadding>
-          {data.map((item: ISurveyLocation, index: number) => {
+          {values.bounds.map((item: ISurveyBound, index: number) => {
+            console.log(index);
             return (
               <Collapse
                 key={item.survey_location_id ?? item.uuid}
@@ -94,9 +154,7 @@ export const SurveyAreaList = (props: ISurveyAreaListProps) => {
                       <MoreVertIcon />
                     </IconButton>
                   }
-                  sx={{
-                    minHeight: '55px'
-                  }}>
+                  sx={{ minHeight: '55px' }}>
                   <ListItemText
                     sx={{
                       '& .MuiListItemText-primary': {
