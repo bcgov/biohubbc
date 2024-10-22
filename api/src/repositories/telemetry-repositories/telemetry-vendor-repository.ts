@@ -195,7 +195,7 @@ export class TelemetryVendorRepository extends BaseRepository {
       .andWhere('deployment2.survey_id', surveyId)
       .andWhereRaw('telemetry_manual.acquisition_date >= deployment2.attachment_start_timestamp')
       .andWhereRaw(
-        'telemetry_manual.acquisition_date <= deployment2.attachment_end OR deployment2.attachment_end_timestamp IS NULL'
+        'telemetry_manual.acquisition_date <= deployment2.attachment_end_timestamp OR deployment2.attachment_end_timestamp IS NULL'
       );
 
     return queryBuilder;
