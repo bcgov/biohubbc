@@ -1,0 +1,91 @@
+# ########################################################################################################
+# Creates a build config that builds the database dockerfile
+# Creates an imagestream that references the built database image
+# ########################################################################################################
+
+kind: Template
+apiVersion: template.openshift.io/v1
+metadata:
+  name: postgresql
+parameters:
+  # Imagestream
+  - name: IMAGE_STREAM_NAMESPACE
+    value: af2668-tools
+  - name: IMAGE_STREAM_NAME
+    value: postgres-postgis
+  - name: IMAGE_STREAM_VERSION
+    value: 15-bullseye
+  # Dockerfile
+  - name: SOURCE_CONTEXT_DIR
+    value: 'database'
+  - name: SOURCE_REPOSITORY_REF
+    value: dev
+  - name: SOURCE_REPOSITORY_URL
+    value: https://github.com/bcgov/biohubbc.git
+  - name: DOCKER_FILE_PATH
+    value: 'docker/db/Dockerfile'
+  # Resources
+  - name: CPU_REQUEST
+    value: '50m'
+  - name: CPU_LIMIT
+    value: '200m'
+  - name: MEMORY_REQUEST
+    value: '100Mi'
+  - name: MEMORY_LIMIT
+    value: '2Gi'
+objects:
+  - kind: ImageStream
+    apiVersion: image.openshift.io/v1
+    metadata:
+      name: '${NAME}'
+      labels:
+        shared: 'true'
+    spec:
+      lookupPolicy:
+        local: false
+      tags:
+        - name: '${TAG_NAME}'
+          annotations:
+          from:
+            kind: ImageStreamTag
+            name: '${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}'
+            namespace: ${IMAGE_STREAM_NAMESPACE}
+          generation: 1
+          importPolicy: {}
+          referencePolicy:
+            type: Source
+
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: '${NAME}'
+    spec:
+      failedBuildsHistoryLimit: 5
+      nodeSelector:
+      output:
+        to:
+          kind: ImageStreamTag
+          name: '${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}'
+      postCommit: {}
+      resources:
+        requests:
+          cpu: ${CPU_REQUEST}
+          memory: ${MEMORY_REQUEST}
+        limits:
+          cpu: ${CPU_LIMIT}
+          memory: ${MEMORY_LIMIT}
+      runPolicy: SerialLatestOnly
+      source:
+        type: Git
+        git:
+          uri: '${SOURCE_REPOSITORY_URL}'
+          ref: '${SOURCE_REPOSITORY_REF}'
+        contextDir: '${SOURCE_CONTEXT_DIR}'
+      strategy:
+        type: Docker
+        dockerStrategy:
+          dockerfilePath: ${DOCKER_FILE_PATH}
+      successfulBuildsHistoryLimit: 5
+      triggers:
+        - type: ConfigChange
+        - type: ImageChange
