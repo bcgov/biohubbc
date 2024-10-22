@@ -1,11 +1,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
+import { TelemetryManualRecord } from '../../../../../../../../database-models/telemetry_manual';
 import { getDBConnection } from '../../../../../../../../database/db';
-import {
-  CreateManualTelemetry,
-  UpdateManualTelemetry
-} from '../../../../../../../../repositories/telemetry-repositories/telemetry-manual-repository.interface';
+import { CreateManualTelemetry } from '../../../../../../../../repositories/telemetry-repositories/telemetry-manual-repository.interface';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { TelemetryVendorService } from '../../../../../../../../services/telemetry-services/telemetry-vendor-service';
 import { getLogger } from '../../../../../../../../utils/logger';
@@ -192,7 +190,7 @@ export const PUT: Operation = [
   bulkUpdateManualTelemetry()
 ];
 
-POST.apiDoc = {
+PUT.apiDoc = {
   description: 'Bulk update manual telemetry records.',
   tags: ['telemetry'],
   security: [
@@ -235,11 +233,22 @@ POST.apiDoc = {
               items: {
                 type: 'object',
                 additionalProperties: false,
-                required: ['latitude', 'longitude', 'acquisition_date', 'transmission_date'],
+                required: [
+                  'telemetry_manual_id',
+                  'deployment2_id',
+                  'latitude',
+                  'longitude',
+                  'acquisition_date',
+                  'transmission_date'
+                ],
                 properties: {
                   telemetry_manual_id: {
                     type: 'string',
                     format: 'uuid'
+                  },
+                  deployment2_id: {
+                    type: 'integer',
+                    minimum: 1
                   },
                   latitude: {
                     type: 'number',
@@ -301,7 +310,7 @@ POST.apiDoc = {
 export function bulkUpdateManualTelemetry(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const telemetry: UpdateManualTelemetry[] = req.body.telemetry;
+    const telemetry: TelemetryManualRecord[] = req.body.telemetry;
 
     const connection = getDBConnection(req.keycloak_token);
 

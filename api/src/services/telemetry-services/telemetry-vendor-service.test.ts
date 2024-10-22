@@ -152,6 +152,7 @@ describe('TelemetryVendorService', () => {
       await service.bulkUpdateManualTelemetry(1, [
         {
           telemetry_manual_id: '09556e24-153b-4dbb-add6-f00e74131e48',
+          deployment2_id: 1,
           latitude: 1,
           longitude: 1,
           acquisition_date: '2021-01-01',
@@ -163,6 +164,7 @@ describe('TelemetryVendorService', () => {
       expect(repoStub).to.have.been.calledWith([
         {
           telemetry_manual_id: '09556e24-153b-4dbb-add6-f00e74131e48',
+          deployment2_id: 1,
           latitude: 1,
           longitude: 1,
           acquisition_date: '2021-01-01',
@@ -181,6 +183,7 @@ describe('TelemetryVendorService', () => {
         await service.bulkUpdateManualTelemetry(1, [
           {
             telemetry_manual_id: '09556e24-153b-4dbb-add6-f00e74131e48',
+            deployment2_id: 1,
             latitude: 1,
             longitude: 1,
             acquisition_date: '2021-01-01',
