@@ -1,0 +1,25 @@
+name: Custom Linter
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  push:
+    branches:
+      - dev
+
+jobs:
+  openAPISchemaRequestBodyRequired:
+    name: Check OpenAPI schemas for required:true in 'requestBody'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Run `requestBody` grep
+        run: |
+          # For OpenAPI schemas, search all request bodies that don't have `required:true`
+          # find . -type f -exec awk '/requestBody: {/,/content: {/ {print FILENAME}' {} + | sort -u
+           grep -r --exclude='*.test.ts' -A 3 'requestBody:' paths | grep -v 'required: true && exit 1
+
+
+
