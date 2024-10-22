@@ -202,7 +202,9 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Get Lotek telemetry data for list of deployment IDs.
+   * Get all telemetry data for list of deployment IDs.
+   *
+   * Note: Currently supports, `Lotek`, `Vectronic`, `ATS`, and `Manual` telemetry.
    *
    * @param {number} surveyId
    * @param {number[]} deploymentIds
