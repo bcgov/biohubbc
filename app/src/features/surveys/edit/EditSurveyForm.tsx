@@ -21,6 +21,9 @@ import { ICreateSurveyRequest, IUpdateSurveyRequest } from 'interfaces/useSurvey
 import React, { useContext, useEffect } from 'react';
 import AgreementsForm, { AgreementsYupSchema } from '../components/agreements/AgreementsForm';
 import ProprietaryDataForm, { ProprietaryDataYupSchema } from '../components/agreements/ProprietaryDataForm';
+import { SurveyBlocksYupSchema } from '../components/areas/blocks/view/SurveyBlocksList';
+import { SurveyLocationsYupSchema } from '../components/areas/locations/view/SurveyLocationsList';
+import SurveyAreaFormContainer from '../components/areas/SurveyAreaFormContainer';
 import SurveyFundingSourceForm, {
   ISurveyFundingSourceForm,
   SurveyFundingSourceFormYupSchema
@@ -28,9 +31,6 @@ import SurveyFundingSourceForm, {
 import GeneralInformationForm, {
   GeneralInformationYupSchema
 } from '../components/general-information/GeneralInformationForm';
-import { SurveyBlocksYupSchema } from '../components/locations/blocks/view/SurveyBlocksList';
-import { SurveyBoundsYupSchema } from '../components/locations/bounds/view/SurveyBoundsList';
-import SurveyAreaFormContainer from '../components/locations/SurveyAreaFormContainer';
 import PurposeAndMethodologyForm, {
   PurposeAndMethodologyYupSchema
 } from '../components/methodology/PurposeAndMethodologyForm';
@@ -78,7 +78,7 @@ const EditSurveyForm = <
     .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(SurveyBlocksYupSchema)
-    .concat(SurveyBoundsYupSchema)
+    .concat(SurveyLocationsYupSchema)
     .concat(SurveyFundingSourceFormYupSchema)
     .concat(AgreementsYupSchema)
     .concat(SurveyUserJobYupSchema)
@@ -121,41 +121,15 @@ const EditSurveyForm = <
         <Divider />
 
         <HorizontalSplitFormComponent
-          title="Permits"
-          summary="Enter any permits used in this survey"
-          component={
-            <Box component="fieldset">
-              <Typography component="legend">Were any permits used in this survey?</Typography>
-              <SurveyPermitForm />
-            </Box>
-          }
-        />
-
-        <Divider />
-
-        <HorizontalSplitFormComponent
-          title="Funding Sources"
-          summary="Specify funding sources for this survey"
-          component={
-            <Box component="fieldset">
-              <Typography component="legend">Do any funding agencies require this survey to be submitted?</Typography>
-              <SurveyFundingSourceForm />
-            </Box>
-          }
-        />
-
-        <Divider />
-
-        <HorizontalSplitFormComponent
-          title="Study Area"
-          summary="Import or draw survey bounds, spatial blocks or grids, and sampling sites."
+          title="Survey Area"
+          summary="Import or draw survey bounds and, if applicable, spatial blocks."
           sidePanel={
             <HelpBanner title="Help">
               <BulletedList>
                 <ListItem>
                   <ListItemText>
-                    <strong>Bounds</strong> are general areas that you typically want to extrapolate findings to, such
-                    as watersheds or management areas.
+                    <strong>Bounds</strong> are general areas of interest, such as watersheds or management areas, that
+                    you typically want to extrapolate findings to.
                   </ListItemText>
                 </ListItem>
                 <ListItem>
@@ -195,7 +169,42 @@ const EditSurveyForm = <
                 }) || []
               }
             />
-          }></HorizontalSplitFormComponent>
+          }
+        />
+
+        <Divider />
+
+        <HorizontalSplitFormComponent
+          title="Sampling Strategy"
+          summary="Specify site selection methods, stratums and optional sampling blocks for this survey"
+          component={<SamplingStrategyForm />}
+        />
+
+        <Divider />
+
+        <HorizontalSplitFormComponent
+          title="Permits"
+          summary="Enter any permits used in this survey"
+          component={
+            <Box component="fieldset">
+              <Typography component="legend">Were any permits used in this survey?</Typography>
+              <SurveyPermitForm />
+            </Box>
+          }
+        />
+
+        <Divider />
+
+        <HorizontalSplitFormComponent
+          title="Funding Sources"
+          summary="Specify funding sources for this survey"
+          component={
+            <Box component="fieldset">
+              <Typography component="legend">Do any funding agencies require this survey to be submitted?</Typography>
+              <SurveyFundingSourceForm />
+            </Box>
+          }
+        />
 
         <Divider />
 
@@ -211,14 +220,6 @@ const EditSurveyForm = <
           title="Partnerships"
           summary="Enter any partners involved in the survey"
           component={<SurveyPartnershipsForm />}
-        />
-
-        <Divider />
-
-        <HorizontalSplitFormComponent
-          title="Sampling Strategy"
-          summary="Specify site selection methods, stratums and optional sampling blocks for this survey"
-          component={<SamplingStrategyForm />}
         />
 
         <Divider />

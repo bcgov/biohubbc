@@ -25,12 +25,12 @@ import { Prompt, useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { AgreementsInitialValues } from './components/agreements/AgreementsForm';
 import { ProprietaryDataInitialValues } from './components/agreements/ProprietaryDataForm';
+import { SurveyLocationInitialValues } from './components/areas/SurveyAreaFormContainer';
 import {
   ISurveyFundingSourceForm,
   SurveyFundingSourceFormInitialValues
 } from './components/funding/SurveyFundingSourceForm';
 import { GeneralInformationInitialValues } from './components/general-information/GeneralInformationForm';
-import { SurveyLocationInitialValues } from './components/locations/SurveyAreaFormContainer';
 import { PurposeAndMethodologyInitialValues } from './components/methodology/PurposeAndMethodologyForm';
 import { SurveyUserJobFormInitialValues } from './components/participants/SurveyUserForm';
 import { SurveySiteSelectionInitialValues } from './components/sampling-strategy/SurveySiteSelectionForm';
@@ -113,7 +113,7 @@ const CreateSurveyPage = () => {
       const response = await biohubApi.survey.createSurvey(Number(projectData?.project.project_id), {
         blocks: values.blocks,
         funding_sources: values.funding_sources,
-        bounds: values.bounds.map((location) => ({
+        locations: values.locations.map((location) => ({
           survey_location_id: location.survey_location_id,
           geojson: location.geojson,
           name: location.name,

@@ -20,7 +20,7 @@ const ImportSpatialDialog = (props: IImportSpatialDialogProps) => {
       <Box>
         <Box mb={3}>
           <Alert severity="info">
-            Shapefiles must be compressed into a single zip file. They can include one or more study area features.
+            Shapefiles must be compressed into a single zip file. They can include one or more survey area features.
           </Alert>
         </Box>
         <FileUpload

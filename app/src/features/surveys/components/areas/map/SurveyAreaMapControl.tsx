@@ -6,8 +6,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import DrawControls, { IDrawControlsRef } from 'components/map/components/DrawControls';
@@ -18,10 +18,11 @@ import StaticLayers from 'components/map/components/StaticLayers';
 import { MapBaseCss } from 'components/map/styles/MapBaseCss';
 import { layerContentHandlers, layerNameHandler } from 'components/map/wfs-utils';
 import WFSFeatureGroup from 'components/map/WFSFeatureGroup';
+import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import { MAP_DEFAULT_CENTER, MAP_DEFAULT_ZOOM } from 'constants/spatial';
 import { FormikContextType } from 'formik';
-import { Feature, FeatureCollection } from 'geojson';
-import L, { DrawEvents, LatLngBoundsExpression } from 'leaflet';
+import { Feature } from 'geojson';
+import { DrawEvents, LatLngBoundsExpression, PathOptions } from 'leaflet';
 import { useEffect, useState } from 'react';
 import { FeatureGroup, LayersControl, MapContainer as LeafletMapContainer } from 'react-leaflet';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
@@ -32,15 +33,30 @@ import { ISurveyLocationForm } from '../SurveyAreaFormContainer';
 export interface ISurveyAreMapControlProps {
   map_id: string;
   formik_props: FormikContextType<ISurveyLocationForm>;
-  draw_controls_ref: React.RefObject<IDrawControlsRef>;
+  draw_controls_bounds_ref: React.RefObject<IDrawControlsRef>;
+  draw_controls_blocks_ref: React.RefObject<IDrawControlsRef>;
   toggle_delete_dialog: (isOpen: boolean) => void;
-  label: string;
   onLayerAdd: (event: DrawEvents.Created, id: number) => void;
-  onSelectGeometry: (geo: Feature, layerName: string) => void
+  onLayerEdit: (event: DrawEvents.Edited) => void;
+  onLayerDelete: (event: DrawEvents.Deleted) => void;
+  onSelectGeometry: (geo: Feature, layerName: string) => void;
+  // Style for the draw controls
+  drawStyle?: { blocks: PathOptions; bounds: PathOptions };
 }
 
 export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
-  const { map_id, formik_props, draw_controls_ref, toggle_delete_dialog, label, onLayerAdd, onSelectGeometry } = props;
+  const {
+    map_id,
+    formik_props,
+    draw_controls_bounds_ref,
+    draw_controls_blocks_ref,
+    toggle_delete_dialog,
+    onLayerAdd,
+    onLayerEdit,
+    onLayerDelete,
+    onSelectGeometry,
+    drawStyle
+  } = props;
   const { setFieldValue, setFieldError, values } = formik_props;
   const [updatedBounds, setUpdatedBounds] = useState<LatLngBoundsExpression | undefined>(undefined);
   // BOUNDS
@@ -49,12 +65,17 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
   const [isBlocksOpen, setIsBlocksOpen] = useState(false);
   const [selectedRegion, setSelectedRegion] = useState<IRegionOption | null>(null);
   const [anchorEl, setAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  const [isDrawingBoundsEnabled, setIsDrawingBoundsEnabled] = useState(false);
+  const [isDrawingBlocksEnabled, setIsDrawingBlocksEnabled] = useState(false);
 
   useEffect(() => {
-    if (formik_props.values.bounds.length) {
-      setUpdatedBounds(calculateUpdatedMapBounds(formik_props.values.bounds.map((item) => item.geojson[0])));
+    if (formik_props.values.locations.length) {
+      setUpdatedBounds(calculateUpdatedMapBounds(formik_props.values.locations.map((item) => item.geojson[0])));
     }
-  }, [formik_props.values.bounds]);
+    if (formik_props.values.blocks.length) {
+      setUpdatedBounds(calculateUpdatedMapBounds(formik_props.values.blocks.map((item) => item.geojson[0])));
+    }
+  }, [formik_props.values.locations, formik_props.values.blocks]);
 
   const handleMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setAnchorEl(event.currentTarget);
@@ -62,6 +83,38 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleStartDrawingBounds = () => {
+    setIsDrawingBoundsEnabled(true);
+    const drawControl = draw_controls_bounds_ref.current;
+    if (drawControl && drawControl.enablePolygonDrawing) {
+      drawControl.enablePolygonDrawing();
+    }
+  };
+
+  const handleStartDrawingBlocks = () => {
+    setIsDrawingBlocksEnabled(true);
+    const drawControl = draw_controls_blocks_ref.current;
+    if (drawControl && drawControl.enablePolygonDrawing) {
+      drawControl.enablePolygonDrawing();
+    }
+  };
+
+  const handleFinishDrawingBounds = () => {
+    setIsDrawingBoundsEnabled(false);
+    const drawControl = draw_controls_bounds_ref.current;
+    if (drawControl && drawControl.disablePolygonDrawing) {
+      drawControl.disablePolygonDrawing();
+    }
+  };
+
+  const handleFinishDrawingBlocks = () => {
+    setIsDrawingBlocksEnabled(false);
+    const drawControl = draw_controls_blocks_ref.current;
+    if (drawControl && drawControl.disablePolygonDrawing) {
+      drawControl.disablePolygonDrawing();
+    }
   };
 
   return (
@@ -131,10 +184,10 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
             };
           });
           setUpdatedBounds(calculateUpdatedMapBounds(features));
-          setFieldValue('bounds', [...values.bounds, ...formData]);
+          setFieldValue('locations', [...values.locations, ...formData]);
         }}
         onFailure={(message) => {
-          setFieldError('bounds', message);
+          setFieldError('locations', message);
         }}
       />
 
@@ -154,7 +207,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
             };
           });
           setUpdatedBounds(calculateUpdatedMapBounds(features));
-          setFieldValue('blocks', [...values.bounds, ...formData]);
+          setFieldValue('blocks', [...values.blocks, ...formData]);
         }}
         onFailure={(message) => {
           setFieldError('blocks', message);
@@ -164,21 +217,55 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
       <Toolbar
         disableGutters
         sx={{
-          px: 2
+          px: 2,
+          justifyContent: 'space-between'
         }}>
-        <Typography
-          data-testid="map-control-title"
-          component="div"
-          fontWeight="700"
-          sx={{
-            flex: '1 1 auto'
-          }}>
-          {label}
-        </Typography>
+        <Stack direction="row" gap={1}>
+          {isDrawingBoundsEnabled ? (
+            <Button
+              color="primary"
+              variant="outlined"
+              data-testid="boundary_file-upload"
+              startIcon={<Icon path={mdiShapePolygonPlus} size={1} />}
+              onClick={handleFinishDrawingBounds}>
+              Finish Drawing
+            </Button>
+          ) : (
+            <Button
+              color="primary"
+              variant="outlined"
+              disabled={isDrawingBlocksEnabled}
+              data-testid="boundary_file-upload"
+              startIcon={<Icon path={mdiShapePolygonPlus} size={1} />}
+              onClick={handleStartDrawingBounds}>
+              Draw Bound
+            </Button>
+          )}
+          {isDrawingBlocksEnabled ? (
+            <Button
+              color="primary"
+              variant="outlined"
+              data-testid="boundary_file-upload"
+              startIcon={<Icon path={mdiViewGridPlus} size={1} />}
+              onClick={handleFinishDrawingBlocks}>
+              Finish Drawing
+            </Button>
+          ) : (
+            <Button
+              color="primary"
+              variant="outlined"
+              disabled={isDrawingBoundsEnabled}
+              data-testid="boundary_file-upload"
+              startIcon={<Icon path={mdiViewGridPlus} size={1} />}
+              onClick={handleStartDrawingBlocks}>
+              Draw Block
+            </Button>
+          )}
+        </Stack>
         <Box display="flex">
           <Button
             color="primary"
-            variant="outlined"
+            variant="contained"
             data-testid="boundary_file-upload"
             startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
             onClick={handleMenuClick}>
@@ -197,10 +284,10 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
               color="primary"
               variant="outlined"
               data-testid="boundary_remove-all"
-              disabled={values.bounds.length <= 0}
+              disabled={values.locations.length <= 0}
               startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
               onClick={() => toggle_delete_dialog(true)}
-              aria-label="Remove all study areas">
+              aria-label="Remove all survey areas">
               Remove All
             </Button>
           </Box>
@@ -213,6 +300,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         center={MAP_DEFAULT_CENTER}
         zoom={MAP_DEFAULT_ZOOM}
         style={{ height: 500 }}
+        drawControl={false}
         maxZoom={17}
         fullscreenControl={true}
         scrollWheelZoom={false}>
@@ -224,35 +312,34 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         {/* Programmatically set map bounds */}
         <SetMapBounds bounds={updatedBounds} />
 
-        <FeatureGroup data-id="draw-control-feature-group" key="draw-control-feature-group">
+        {/* Bounds feature group for drawing */}
+        <FeatureGroup data-id="draw-control-bounds-feature-group" key="draw-control-bounds-feature-group">
           <DrawControls
-            ref={draw_controls_ref}
+            ref={draw_controls_bounds_ref}
             options={{
               // Always disable circle, circlemarker and line
-              draw: { circle: false, circlemarker: false, polyline: false }
+              draw: { circle: false, circlemarker: false, polyline: false },
+              style: drawStyle?.bounds,
+              toolbar: false
             }}
             onLayerAdd={onLayerAdd}
-            onLayerEdit={(event: DrawEvents.Edited) => {
-              event.layers.getLayers().forEach((item) => {
-                const layer_id = L.stamp(item);
-                const featureCollection = L.layerGroup([item]).toGeoJSON() as FeatureCollection;
-                const updatedBounds = values.bounds.map((bound) => {
-                  if (bound.leaflet_id === layer_id) {
-                    bound.geojson = [...featureCollection.features];
-                  }
-                  return bound;
-                });
-                setFieldValue('bounds', [...updatedBounds]);
-              });
+            onLayerEdit={onLayerEdit}
+            onLayerDelete={onLayerDelete}
+          />
+        </FeatureGroup>
+
+        {/* Blocks feature group for drawing */}
+        <FeatureGroup data-id="draw-control-blocks-feature-group" key="draw-control-blocks-feature-group">
+          <DrawControls
+            ref={draw_controls_blocks_ref}
+            options={{
+              draw: { circle: false, circlemarker: false, polyline: false },
+              style: drawStyle?.blocks,
+              toolbar: false
             }}
-            onLayerDelete={(event: DrawEvents.Deleted) => {
-              let boundsToFilter = values.bounds;
-              event.layers.getLayers().forEach((item) => {
-                const layer_id = L.stamp(item);
-                boundsToFilter = boundsToFilter.filter((bound) => bound.leaflet_id !== layer_id);
-              });
-              setFieldValue('bounds', [...boundsToFilter]);
-            }}
+            onLayerAdd={onLayerAdd}
+            onLayerEdit={onLayerEdit}
+            onLayerDelete={onLayerDelete}
           />
         </FeatureGroup>
 
@@ -271,19 +358,46 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         )}
         <LayersControl position="bottomright">
           <StaticLayers
-            layers={values.bounds
-              .filter((bound) => !bound?.leaflet_id) // filter out user drawn bounds
-              .map((bound) => {
-                // Map geojson features into layer objects for leaflet
-                return {
-                  layerName: bound.name,
-                  features: bound.geojson.map((geo) => ({
-                    id: bound.uuid ?? v4(),
-                    key: `study-area-${bound.uuid ?? v4()}`,
-                    geoJSON: geo
-                  }))
-                };
-              })}
+            layers={[
+              ...values.locations
+                .filter((bound) => !bound?.leaflet_id) // filter out user drawn bounds
+                .map((bound) => {
+                  // Map geojson features into layer objects for leaflet
+                  return {
+                    layerName: bound.name,
+                    features: bound.geojson.map((geo) => ({
+                      id: bound.uuid ?? v4(),
+                      key: `study-location-${bound.uuid ?? v4()}`,
+                      geoJSON: geo
+                    })),
+                    layerOptions: {
+                      color: SURVEY_MAP_LAYER_COLOURS.STUDY_AREA_COLOUR,
+                      fillColor: SURVEY_MAP_LAYER_COLOURS.STUDY_AREA_COLOUR,
+                      weight: 2,
+                      opacity: 0.8
+                    }
+                  };
+                }),
+              ...values.blocks
+                .filter((block) => !block?.leaflet_id) // filter out user drawn blocks
+                .map((block) => {
+                  // Map geojson features into layer objects for leaflet
+                  return {
+                    layerName: block.name,
+                    features: block.geojson.map((geo) => ({
+                      id: block.uuid ?? v4(),
+                      key: `block-${block.uuid ?? v4()}`,
+                      geoJSON: geo
+                    })),
+                    layerOptions: {
+                      color: SURVEY_MAP_LAYER_COLOURS.BLOCKS_COLOUR,
+                      fillColor: SURVEY_MAP_LAYER_COLOURS.BLOCKS_COLOUR,
+                      weight: 2,
+                      opacity: 0.75
+                    }
+                  };
+                })
+            ]}
           />
           <BaseLayerControls />
         </LayersControl>

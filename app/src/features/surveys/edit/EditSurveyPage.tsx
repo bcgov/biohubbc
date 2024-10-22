@@ -23,6 +23,7 @@ import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
+import { v4 } from 'uuid';
 import EditSurveyForm from './EditSurveyForm';
 
 /**
@@ -101,12 +102,14 @@ const EditSurveyPage = () => {
       const response = await biohubApi.survey.updateSurvey(projectContext.projectId, surveyId, {
         blocks: values.blocks,
         funding_sources: values.funding_sources,
-        bounds: values.bounds.map((location) => ({
+        locations: values.locations.map((location) => ({
           survey_location_id: location.survey_location_id,
           geojson: location.geojson,
           name: location.name,
           description: location.description,
-          revision_count: location.revision_count
+          revision_count: location.revision_count,
+          // Unique key for formik values, to be consistent with how the create form works
+          uuid: v4()
         })),
         participants: values.participants,
         partnerships: values.partnerships,
@@ -205,8 +208,7 @@ const EditSurveyPage = () => {
               purpose_and_methodology: surveyData.purpose_and_methodology,
               species: surveyData.species,
               site_selection: surveyData.site_selection,
-              // TODO: Change to bounds
-              bounds: surveyData.locations,
+              locations: surveyData.locations,
               participants: surveyData.participants,
               partnerships: surveyData.partnerships,
               blocks: surveyData.blocks,

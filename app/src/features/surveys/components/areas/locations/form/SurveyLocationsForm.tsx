@@ -2,7 +2,7 @@ import Box from '@mui/material/Box';
 import CustomTextField from 'components/fields/CustomTextField';
 import { Feature } from 'geojson';
 
-export interface ISurveyBound {
+export interface ISurveyLocation {
   survey_location_id?: number;
   name: string;
   description: string;
@@ -16,7 +16,7 @@ export interface ISurveyBound {
   uuid?: string;
 }
 
-export const SurveyBoundsForm = () => {
+export const SurveyLocationsForm = () => {
   return (
     <form>
       <Box mb={3}>
@@ -37,4 +37,4 @@ export const SurveyBoundsForm = () => {
   );
 };
 
-export default SurveyBoundsForm;
+export default SurveyLocationsForm;

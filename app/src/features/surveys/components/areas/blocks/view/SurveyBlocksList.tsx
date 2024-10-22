@@ -1,21 +1,22 @@
 import { mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import Box from '@mui/material/Box';
+import Checkbox from '@mui/material/Checkbox';
 import Collapse from '@mui/material/Collapse';
-import { grey } from '@mui/material/colors';
-import IconButton from '@mui/material/IconButton';
+import Divider from '@mui/material/Divider';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
 import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Typography from '@mui/material/Typography';
 import EditDialog from 'components/dialog/EditDialog';
 import { useFormikContext } from 'formik';
 import { useState } from 'react';
 import TransitionGroup from 'react-transition-group/TransitionGroup';
 import yup from 'utils/YupSchema';
+import SurveyLocationListItem from '../../components/SurveyLocationsListItem';
 import SurveyBlocksForm, { ISurveyBlock } from '../form/SurveyBlocksForm';
 
 export const SurveyBlocksYupSchema = yup.object({
@@ -33,12 +34,14 @@ export const SurveyBlocksInitialValues = {
   description: ''
 };
 
-interface ISurveyBoundsListProps {
+interface ISurveyLocationsListProps {
+  checkboxSelectedIds: number[];
+  handleCheckboxChange: (index: number[]) => void;
   handleDelete: (index: number) => void;
 }
 
-export const SurveyBlocksList = (props: ISurveyBoundsListProps) => {
-  const { handleDelete } = props;
+export const SurveyBlocksList = (props: ISurveyLocationsListProps) => {
+  const { handleDelete, handleCheckboxChange, checkboxSelectedIds } = props;
 
   const { values, setFieldValue } = useFormikContext<{ blocks: ISurveyBlock[] }>();
 
@@ -108,7 +111,7 @@ export const SurveyBlocksList = (props: ISurveyBoundsListProps) => {
       </Menu>
 
       {/* Edit Dialog */}
-      {currentItemIndex && (
+      {currentItemIndex != null && (
         <EditDialog
           dialogTitle={'Edit Block Details'}
           open={isEditOpen}
@@ -126,46 +129,56 @@ export const SurveyBlocksList = (props: ISurveyBoundsListProps) => {
 
       {/* Survey Blocks List */}
       <Box data-testid="study-area-list" display="flex" flexDirection="column" height="100%">
-        <List component={TransitionGroup} disablePadding>
-          {values.blocks.map((item: ISurveyBlock, index: number) => (
-            <Collapse
-              key={item.survey_block_id ?? item.v4}
-              className="study-area-list-item"
-              sx={{
-                '& + .study-area-list-item': {
-                  borderTop: '1px solid' + grey[300]
-                }
-              }}>
-              <ListItem
-                component="div"
-                secondaryAction={
-                  <IconButton
-                    onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => handleMenuClick(event, index)}
-                    aria-label="settings">
-                    <MoreVertIcon />
-                  </IconButton>
-                }
-                sx={{ minHeight: '55px' }}>
-                <ListItemText
-                  sx={{
-                    '& .MuiListItemText-primary': {
-                      fontWeight: 700
-                    },
-                    '& .MuiListItemText-secondary': {
-                      display: '-webkit-box',
-                      WebkitLineClamp: '2',
-                      WebkitBoxOrient: 'vertical',
-                      maxWidth: '92ch',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis'
-                    }
+        <FormGroup>
+          <FormControlLabel
+            label={
+              <Typography
+                variant="body2"
+                component="span"
+                color="textSecondary"
+                fontWeight={700}
+                sx={{ textTransform: 'uppercase' }}>
+                Select All
+              </Typography>
+            }
+            control={
+              <Checkbox
+                sx={{ mr: 0.5, pl: 4, minHeight: '55px' }}
+                checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === values.blocks.length}
+                indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < values.blocks.length}
+                onClick={() => {
+                  if (checkboxSelectedIds.length === values.blocks.length) {
+                    handleCheckboxChange([]);
+                    return;
+                  }
+                  const locationIndices = values.blocks.map((_, index) => index);
+                  handleCheckboxChange(locationIndices);
+                }}
+                inputProps={{ 'aria-label': 'controlled' }}
+              />
+            }
+          />
+        </FormGroup>
+        <Divider />
+        <List disablePadding>
+          <TransitionGroup>
+            {values.blocks.map((item, index) => (
+              <Collapse key={item.survey_block_id ?? item.uuid}>
+                <SurveyLocationListItem
+                  item={item}
+                  index={index}
+                  onMenuClick={handleMenuClick}
+                  checked={checkboxSelectedIds.includes(index)}
+                  onCheckboxClick={() => {
+                    const selectedIds = checkboxSelectedIds.includes(index)
+                      ? checkboxSelectedIds.filter((idx) => idx !== index)
+                      : [...checkboxSelectedIds, index];
+                    handleCheckboxChange(selectedIds);
                   }}
-                  primary={item.name}
-                  secondary={item.description}
                 />
-              </ListItem>
-            </Collapse>
-          ))}
+              </Collapse>
+            ))}
+          </TransitionGroup>
         </List>
       </Box>
     </>

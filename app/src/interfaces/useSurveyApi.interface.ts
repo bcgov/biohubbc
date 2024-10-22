@@ -1,13 +1,13 @@
 import { PublishStatus } from 'constants/attachments';
 import { IAgreementsForm } from 'features/surveys/components/agreements/AgreementsForm';
 import { IProprietaryDataForm } from 'features/surveys/components/agreements/ProprietaryDataForm';
+import { ISurveyBlock } from 'features/surveys/components/areas/blocks/form/SurveyBlocksForm';
+import { ISurveyLocationForm } from 'features/surveys/components/areas/SurveyAreaFormContainer';
 import {
   ISurveyFundingSource,
   ISurveyFundingSourceForm
 } from 'features/surveys/components/funding/SurveyFundingSourceForm';
 import { IGeneralInformationForm } from 'features/surveys/components/general-information/GeneralInformationForm';
-import { ISurveyBlock } from 'features/surveys/components/locations/blocks/form/SurveyBlocksForm';
-import { ISurveyLocationForm } from 'features/surveys/components/locations/SurveyAreaFormContainer';
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/methodology/PurposeAndMethodologyForm';
 import { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
 import { ISpeciesForm, ITaxonomyWithEcologicalUnits } from 'features/surveys/components/species/SpeciesForm';
@@ -432,6 +432,9 @@ export interface IGetSurveyForUpdateResponse {
       survey_id: number;
       name: string;
       description: string;
+      geometry: null;
+      geography: string;
+      geojson: Feature[];
       sample_block_count: number;
       revision_count: number;
     }[];

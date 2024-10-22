@@ -105,7 +105,7 @@ describe.skip('CreateSurveyPage', () => {
 
       expect(getByText('Purpose and Methodology')).toBeVisible();
 
-      expect(getByText('Study Area')).toBeVisible();
+      expect(getByText('Survey Area')).toBeVisible();
 
       expect(getByText('Proprietary Data')).toBeVisible();
 

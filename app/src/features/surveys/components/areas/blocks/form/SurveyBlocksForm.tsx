@@ -1,13 +1,19 @@
 import Box from '@mui/material/Box';
 import CustomTextField from 'components/fields/CustomTextField';
+import { Feature } from 'geojson';
 
 export interface ISurveyBlock {
-  survey_block_id: number | null;
+  survey_block_id?: number;
   name: string;
   description: string;
-  sample_block_count?: number;
-  // Temporary uuid used for react key prop
-  v4?: string;
+  geojson: Feature[];
+  revision_count?: number;
+  // This is an id meant for the front end only. This is is set if the geojson was drawn by the user (on the leaflet map) vs imported (file upload or region selector)
+  // Locations drawn by the user should be editable in the leaflet map using the draw tools available
+  // Any uploaded or selected regions should not be editable and be placed in the 'static' layer on the map
+  leaflet_id?: number;
+  // This is used to give each location a unique ID so the list/ collapse components have a key
+  uuid?: string;
 }
 
 const SurveyBlocksForm = () => {
