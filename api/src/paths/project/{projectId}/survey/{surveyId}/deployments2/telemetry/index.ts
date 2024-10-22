@@ -34,7 +34,7 @@ export const GET: Operation = [
 
 GET.apiDoc = {
   description: 'Get all telemetry for a list of deployments.',
-  tags: ['deployment'],
+  tags: ['deployment', 'telemetry'],
   security: [
     {
       Bearer: []
