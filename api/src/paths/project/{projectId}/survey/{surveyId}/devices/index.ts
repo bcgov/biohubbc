@@ -303,7 +303,7 @@ export function getDevices(): RequestHandler {
       await connection.commit();
 
       return res.status(200).json({
-        devices,
+        devices: devices,
         count: devicesCount,
         pagination: makePaginationResponse(devicesCount, paginationOptions)
       });
