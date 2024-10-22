@@ -3,7 +3,7 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
-import { EcologicalUnitsSelect } from 'components/species/ecological-units/EcologicalUnitsSelect';
+import { EcologicalUnitDualSelect } from 'components/species/ecological-units/EcologicalUnitDualSelect';
 import { initialEcologicalUnitValues } from 'features/surveys/animals/animal-form/components/ecological-units/EcologicalUnitsForm';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
@@ -11,8 +11,6 @@ import useDataLoader from 'hooks/useDataLoader';
 import { ICreateSurveyRequest, IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import { useEffect } from 'react';
-import { isDefined } from 'utils/Utils';
-import { v4 } from 'uuid';
 
 export interface ISelectedSpeciesProps {
   /**
@@ -61,17 +59,17 @@ export const FocalSpeciesEcologicalUnitsForm = (props: ISelectedSpeciesProps) =>
       name={`species.focal_species.[${index}].ecological_units`}
       render={(arrayHelpers: FieldArrayRenderProps) => (
         <Stack gap={2}>
-          {selectedUnits.map((ecological_unit, ecologicalUnitIndex) => (
-            <EcologicalUnitsSelect
-              key={ecological_unit.critterbase_collection_category_id ?? v4()}
-              categoryFieldName={`species.focal_species.[${index}].ecological_units[${ecologicalUnitIndex}].critterbase_collection_category_id`}
-              unitFieldName={`species.focal_species.[${index}].ecological_units[${ecologicalUnitIndex}].critterbase_collection_unit_id`}
-              selectedCategoryIds={values.species.focal_species[index].ecological_units
-                .map((unit) => unit.critterbase_collection_category_id)
-                .filter(isDefined)}
-              ecologicalUnits={ecologicalUnitsForSpecies}
-              arrayHelpers={arrayHelpers}
-              index={ecologicalUnitIndex}
+          {selectedUnits.map((_, ecologicalUnitIndex) => (
+            <EcologicalUnitDualSelect
+              // Key is intentionally index
+              key={ecologicalUnitIndex}
+              formikCategoryFieldName={`species.focal_species.[${index}].ecological_units[${ecologicalUnitIndex}].critterbase_collection_category_id`}
+              formikUnitFieldName={`species.focal_species.[${index}].ecological_units[${ecologicalUnitIndex}].critterbase_collection_unit_id`}
+              ecologicalCategories={ecologicalUnitsForSpecies}
+              filterUnitIds={values.species.focal_species[index].ecological_units
+                .filter((unit) => unit.critterbase_collection_unit_id)
+                .map((unit) => unit.critterbase_collection_unit_id!)}
+              onDelete={() => arrayHelpers.remove(ecologicalUnitIndex)}
             />
           ))}
           <Box>
@@ -82,7 +80,11 @@ export const FocalSpeciesEcologicalUnitsForm = (props: ISelectedSpeciesProps) =>
               onClick={() => arrayHelpers.push(initialEcologicalUnitValues)}
               startIcon={<Icon path={mdiPlus} size={0.75} />}
               aria-label="Add Ecological Unit"
-              disabled={!(ecologicalUnitsForSpecies.length && selectedUnits.length < ecologicalUnitsForSpecies.length)}
+              disabled={
+                !(
+                  ecologicalUnitsForSpecies.length && selectedUnits.every((unit) => unit.critterbase_collection_unit_id)
+                )
+              }
               sx={{ textTransform: 'uppercase' }}>
               Add Ecological Unit
             </Button>

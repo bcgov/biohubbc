@@ -22,7 +22,12 @@ const ExportHeadersButton = () => {
 
     const headerNames = tableColumns
       .filter((column) => !excludedFields.includes(column.field))
-      .map((column) => column.headerName);
+      .map((column) => column.headerName)
+      // Remove action columns that do not have a label, replaced below
+      .filter(Boolean);
+
+    // Inject action columns that do not have a label (eg. comment)
+    headerNames.push('comment');
 
     const csvObject: Record<string, ''>[] = [Object.fromEntries(headerNames.map((headerName) => [headerName, '']))];
 

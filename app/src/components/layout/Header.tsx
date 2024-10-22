@@ -385,8 +385,8 @@ const Header: React.FC = () => {
         <DialogContent>
           <Typography variant="body1" component="div" color="textSecondary">
             For technical support or questions about this application, please email &zwnj;
-            <a href="mailto:biohub@gov.bc.ca?subject=Support Request - Species Inventory Management System">
-              biohub@gov.bc.ca
+            <a href="mailto:spi_mail@gov.bc.ca?subject=Support Request - Species Inventory Management System">
+              spi_mail@gov.bc.ca
             </a>
           </Typography>
         </DialogContent>

@@ -50,7 +50,7 @@ export const CritterListItem = (props: ICritterListItemProps) => {
           <Icon path={mdiDotsVertical} size={1} />
         </IconButton>
       }>
-      <ListItemIcon>
+      <ListItemIcon sx={{ minWidth: 35 }}>
         <Checkbox
           edge="start"
           checked={isCheckboxSelected}

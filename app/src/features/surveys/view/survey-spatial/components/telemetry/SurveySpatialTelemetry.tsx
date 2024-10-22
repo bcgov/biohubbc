@@ -31,19 +31,22 @@ export const SurveySpatialTelemetry = () => {
 
   // Load telemetry data for all deployments
   useEffect(() => {
-    if (!deploymentDataLoader.data?.length) {
+    if (!deploymentDataLoader.data?.deployments.length) {
       // No deployments data, therefore no telemetry data to load
       return;
     }
 
-    telemetryDataLoader.load(deploymentDataLoader.data?.map((deployment) => deployment.bctw_deployment_id) ?? []);
+    telemetryDataLoader.load(
+      deploymentDataLoader.data?.deployments.map((deployment) => deployment.bctw_deployment_id) ?? []
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deploymentDataLoader.data]);
 
   const isLoading =
     deploymentDataLoader.isLoading ||
     !deploymentDataLoader.isReady ||
-    ((telemetryDataLoader.isLoading || !telemetryDataLoader.isReady) && !!deploymentDataLoader.data?.length);
+    ((telemetryDataLoader.isLoading || !telemetryDataLoader.isReady) &&
+      !!deploymentDataLoader.data?.deployments.length);
 
   /**
    * Combines telemetry, deployment, and critter data into a single list of telemetry points.
@@ -106,7 +109,7 @@ export const SurveySpatialTelemetry = () => {
 
   const telemetryPoints: IStaticLayerFeature[] = useMemo(() => {
     const telemetry = telemetryDataLoader.data ?? [];
-    const deployments = deploymentDataLoader.data ?? [];
+    const deployments = deploymentDataLoader.data?.deployments ?? [];
     const critters = surveyContext.critterDataLoader.data ?? [];
 
     return combineTelemetryData(telemetry, deployments, critters);
