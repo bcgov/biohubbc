@@ -237,9 +237,9 @@ export function getDeploymentById(): RequestHandler {
     try {
       await connection.open();
 
-      const deploymentService = new TelemetryDeploymentService(connection);
+      const telemetryDeploymentService = new TelemetryDeploymentService(connection);
 
-      const deployment = await deploymentService.getDeploymentById(surveyId, deploymentId);
+      const deployment = await telemetryDeploymentService.getDeploymentById(surveyId, deploymentId);
 
       await connection.commit();
 
@@ -451,9 +451,9 @@ export function updateDeployment(): RequestHandler {
     try {
       await connection.open();
 
-      const deploymentService = new TelemetryDeploymentService(connection);
+      const telemetryDeploymentService = new TelemetryDeploymentService(connection);
 
-      await deploymentService.updateDeployment(surveyId, deploymentId, {
+      await telemetryDeploymentService.updateDeployment(surveyId, deploymentId, {
         critter_id: critterId,
         device_id: deviceId,
         frequency: frequency,
@@ -574,9 +574,9 @@ export function deleteDeployment(): RequestHandler {
     try {
       await connection.open();
 
-      const deploymentService = new TelemetryDeploymentService(connection);
+      const telemetryDeploymentService = new TelemetryDeploymentService(connection);
 
-      await deploymentService.deleteDeployment(surveyId, deploymentId);
+      await telemetryDeploymentService.deleteDeployment(surveyId, deploymentId);
 
       await connection.commit();
 

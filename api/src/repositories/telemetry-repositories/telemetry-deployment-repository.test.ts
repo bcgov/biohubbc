@@ -22,7 +22,7 @@ describe('TelemetryDeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
+      const telemetryDeploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const deployment: CreateDeployment = {
         survey_id: 1,
@@ -39,7 +39,7 @@ describe('TelemetryDeploymentRepository', () => {
         critterbase_end_mortality_id: null
       };
 
-      await deploymentRepository.createDeployment(deployment);
+      await telemetryDeploymentRepository.createDeployment(deployment);
 
       expect(mockDbConnection.sql).to.have.been.calledOnce;
     });
@@ -52,7 +52,7 @@ describe('TelemetryDeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
+      const telemetryDeploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const deployment: CreateDeployment = {
         survey_id: 1,
@@ -70,7 +70,7 @@ describe('TelemetryDeploymentRepository', () => {
       };
 
       try {
-        await deploymentRepository.createDeployment(deployment);
+        await telemetryDeploymentRepository.createDeployment(deployment);
       } catch (error) {
         expect(error).to.be.instanceOf(ApiExecuteSQLError);
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to create deployment');
@@ -106,12 +106,12 @@ describe('TelemetryDeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
+      const telemetryDeploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
       const deploymentId = 2;
 
-      const response = await deploymentRepository.getDeploymentById(surveyId, deploymentId);
+      const response = await telemetryDeploymentRepository.getDeploymentById(surveyId, deploymentId);
 
       expect(response).to.eql(mockDeploymentRecord);
     });
@@ -124,13 +124,13 @@ describe('TelemetryDeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
+      const telemetryDeploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
       const deploymentId = 2;
 
       try {
-        await deploymentRepository.getDeploymentById(surveyId, deploymentId);
+        await telemetryDeploymentRepository.getDeploymentById(surveyId, deploymentId);
       } catch (error) {
         expect(error).to.be.instanceOf(ApiExecuteSQLError);
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to get deployment');
@@ -166,11 +166,11 @@ describe('TelemetryDeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
+      const telemetryDeploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
 
-      const response = await deploymentRepository.getDeploymentsForSurveyId(surveyId);
+      const response = await telemetryDeploymentRepository.getDeploymentsForSurveyId(surveyId);
 
       expect(response).to.eql([mockDeploymentRecord]);
     });
@@ -204,12 +204,12 @@ describe('TelemetryDeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
+      const telemetryDeploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
       const critterId = 2;
 
-      const response = await deploymentRepository.getDeploymentsForCritterId(surveyId, critterId);
+      const response = await telemetryDeploymentRepository.getDeploymentsForCritterId(surveyId, critterId);
 
       expect(response).to.eql([mockDeploymentRecord]);
     });
@@ -224,7 +224,7 @@ describe('TelemetryDeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
+      const telemetryDeploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const updateDeployment: UpdateDeployment = {
         critter_id: 1,
@@ -243,7 +243,7 @@ describe('TelemetryDeploymentRepository', () => {
       const surveyId = 1;
       const deploymentId = 2;
 
-      await deploymentRepository.updateDeployment(surveyId, deploymentId, updateDeployment);
+      await telemetryDeploymentRepository.updateDeployment(surveyId, deploymentId, updateDeployment);
 
       expect(mockDbConnection.sql).to.have.been.calledOnce;
     });
@@ -256,7 +256,7 @@ describe('TelemetryDeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
+      const telemetryDeploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const updateDeployment: UpdateDeployment = {
         critter_id: 1,
@@ -276,7 +276,7 @@ describe('TelemetryDeploymentRepository', () => {
       const deploymentId = 2;
 
       try {
-        await deploymentRepository.updateDeployment(surveyId, deploymentId, updateDeployment);
+        await telemetryDeploymentRepository.updateDeployment(surveyId, deploymentId, updateDeployment);
       } catch (error) {
         expect(error).to.be.instanceOf(ApiExecuteSQLError);
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to update deployment');
@@ -293,12 +293,12 @@ describe('TelemetryDeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
+      const telemetryDeploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
       const deploymentId = 2;
 
-      await deploymentRepository.deleteDeployment(surveyId, deploymentId);
+      await telemetryDeploymentRepository.deleteDeployment(surveyId, deploymentId);
 
       expect(mockDbConnection.sql).to.have.been.calledOnce;
     });
@@ -311,13 +311,13 @@ describe('TelemetryDeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
+      const telemetryDeploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
       const deploymentId = 2;
 
       try {
-        await deploymentRepository.deleteDeployment(surveyId, deploymentId);
+        await telemetryDeploymentRepository.deleteDeployment(surveyId, deploymentId);
       } catch (error) {
         expect(error).to.be.instanceOf(ApiExecuteSQLError);
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to delete deployment');
@@ -334,12 +334,12 @@ describe('TelemetryDeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
+      const telemetryDeploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
       const deploymentIds = [1, 2, 3];
 
-      await deploymentRepository.deleteDeployments(surveyId, deploymentIds);
+      await telemetryDeploymentRepository.deleteDeployments(surveyId, deploymentIds);
 
       expect(mockDbConnection.knex).to.have.been.calledOnce;
     });
@@ -352,13 +352,13 @@ describe('TelemetryDeploymentRepository', () => {
 
       const mockDbConnection = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
-      const deploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
+      const telemetryDeploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 
       const surveyId = 1;
       const deploymentIds = [1, 2, 3];
 
       try {
-        await deploymentRepository.deleteDeployments(surveyId, deploymentIds);
+        await telemetryDeploymentRepository.deleteDeployments(surveyId, deploymentIds);
       } catch (error) {
         expect(error).to.be.instanceOf(ApiExecuteSQLError);
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to delete deployments');

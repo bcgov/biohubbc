@@ -230,9 +230,9 @@ export function getDeploymentsInSurvey(): RequestHandler {
     try {
       await connection.open();
 
-      const deploymentService = new TelemetryDeploymentService(connection);
+      const telemetryDeploymentService = new TelemetryDeploymentService(connection);
 
-      const deployments = await deploymentService.getDeploymentsForSurveyId(surveyId);
+      const deployments = await telemetryDeploymentService.getDeploymentsForSurveyId(surveyId);
 
       await connection.commit();
 
