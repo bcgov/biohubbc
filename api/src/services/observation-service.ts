@@ -47,10 +47,6 @@ import {
   TsnMeasurementTypeDefinitionMap,
   validateMeasurements
 } from '../utils/observation-xlsx-utils/measurement-column-utils';
-import {
-  buildSamplingDataToValidate,
-  validateSamplingData
-} from '../utils/observation-xlsx-utils/sampling-column-utils';
 import { CSV_COLUMN_ALIASES } from '../utils/xlsx-utils/column-aliases';
 import { generateColumnCellGetterFromColumnValidator } from '../utils/xlsx-utils/column-validator-utils';
 import {
@@ -87,10 +83,10 @@ export const observationStandardColumnValidator = {
   ITIS_TSN: { type: 'number', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
   COUNT: { type: 'number' },
   OBSERVATION_SUBCOUNT_SIGN: { type: 'code', aliases: CSV_COLUMN_ALIASES.OBSERVATION_SUBCOUNT_SIGN },
-  DATE: { type: 'date' },
-  TIME: { type: 'string' },
-  LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE },
-  LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE },
+  DATE: { type: 'date', optional: true },
+  TIME: { type: 'string', optional: true },
+  LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE, optional: true },
+  LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE, optional: true },
   SAMPLING_SITE: { type: 'string', aliases: CSV_COLUMN_ALIASES.SAMPLING_SITE, optional: true },
   SAMPLING_METHOD: { type: 'string', aliases: CSV_COLUMN_ALIASES.SAMPLING_METHOD, optional: true },
   SAMPLING_PERIOD: { type: 'string', aliases: CSV_COLUMN_ALIASES.SAMPLING_PERIOD, optional: true }
@@ -552,9 +548,7 @@ export class ObservationService extends DBService {
     });
 
     // Fetch all measurement type definitions from Critterbase for all unique TSNs
-    const tsns = worksheetRowObjects.map((row) =>
-      String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES'])
-    );
+    const tsns = worksheetRowObjects.map((row) => String(getColumnCellValue(row, 'ITIS_TSN').cell));
 
     const tsnMeasurementTypeDefinitionMap = await getTsnMeasurementTypeDefinitionMap(tsns, critterBaseService);
 
@@ -563,7 +557,7 @@ export class ObservationService extends DBService {
 
     const measurementsToValidate: IMeasurementDataToValidate[] = worksheetRowObjects.flatMap((row) => {
       return measurementColumnNames.map((columnName) => ({
-        tsn: String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
+        tsn: String(getColumnCellValue(row, 'ITIS_TSN').cell),
         key: columnName,
         value: row[columnName]
       }));
@@ -608,21 +602,13 @@ export class ObservationService extends DBService {
       throw new Error('Failed to process file for importing observations. Environment column validator failed.');
     }
 
-    // VALIDATE SAMPLING INFORMATION -----------------------------------------------------------------------------------------
-
+    // SAMPLING INFORMATION -----------------------------------------------------------------------------------------
     const sampleLocationService = new SampleLocationService(this.connection);
 
-    // Get sampling information for the survey
+    // Get sampling information for the survey to later validate
     const samplingLocations = await sampleLocationService.getSampleLocationsForSurveyId(surveyId);
 
-    // Ensure that all sampling locations exist
-    const samplingDataToValidate = buildSamplingDataToValidate(worksheetRowObjects);
-
-    if (!validateSamplingData(samplingDataToValidate, samplingLocations)) {
-      throw new Error('Failed to process file for importing observations. Sampling data validator failed.');
-    }
-
-    // -----------------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------------------------------------
 
     // SamplePeriodHierarchyIds is only for when all records are being assigned to the same sampling period
     let samplePeriodHierarchyIds: SamplePeriodHierarchyIds;
@@ -691,8 +677,12 @@ export class ObservationService extends DBService {
         };
       }
 
-      // If surveySamplePeriodId was not included, assign the observation to the sampling period specified in the row data
+      // PROCESS AND VALIDATE SAMPLING INFORMATION -----------------------------------------------------------------------------------------
       const samplingData = this._pullSamplingDataFromWorksheetRowObject(row, samplingLocations);
+
+      if (!samplingData && getColumnCellValue(row, 'SAMPLING_SITE').cell) {
+        throw new Error('Failed to process file for importing observations. Sampling data validator failed.');
+      }
 
       return {
         standardColumns: {
@@ -857,7 +847,6 @@ export class ObservationService extends DBService {
    * to their respective IDs using the provided samplingLocations.
    *
    * @param {Record<string, any>} row - The current row of the worksheet being processed.
-   * @param {string[]} samplingColumns - The list of column names relevant to sampling (site, method, period).
    * @param {SampleLocationRecord[]} samplingLocations - The available sampling locations for the survey, used for mapping names to IDs.
    * @return { { sampleSiteId: number, sampleMethodId: number, samplePeriodId: number } | null } The sampling data with IDs, or null if no valid data is found.
    */
@@ -866,61 +855,94 @@ export class ObservationService extends DBService {
     samplingLocations: SampleLocationRecord[]
   ): { sampleSiteId: number; sampleMethodId: number; samplePeriodId: number } | null {
     // Extract site, method, and period data from the row
-    const siteName = row['SAMPLING_SITE'] as string;
-    const techniqueName = row['SAMPLING_METHOD'] as string;
-    const period = row['SAMPLING_PERIOD'] as string;
+    const siteName = getColumnCellValue(row, 'SAMPLING_SITE').cell as string | null;
+    const techniqueName = getColumnCellValue(row, 'SAMPLING_METHOD').cell as string | null;
+    const period = getColumnCellValue(row, 'SAMPLING_PERIOD').cell as string | null;
 
-    if (!siteName || !techniqueName || !period) {
+    if (!siteName) {
       return null;
     }
 
-    const [startDate, endDate] = period.split('-').map((date: string) => dayjs(date).format('YYYY-MM-DD'));
-    const startTime = dayjs(period.split('-')[0]).format('HH:mm:ss');
-    const endTime = dayjs(period.split('-')[1]).format('HH:mm:ss');
-
     // Find the site record by name
     const siteRecord = samplingLocations.find((site) => site.name.toLowerCase() === siteName.toLowerCase());
-    if (!siteRecord) return null;
+
+    // If there is no site, exit early because a site is required when specifying any sampling information for the row.
+    if (!siteRecord) {
+      return null;
+    }
+
+    let methodRecord = null;
 
     // Find the method record by technique name
-    const methodRecord = siteRecord.sample_methods.find((method) => method.technique.name.toLowerCase() === techniqueName.toLowerCase());
-    if (!methodRecord) return null;
-
-    // Find matching periods by date
-    const matchingPeriods = methodRecord.sample_periods.filter(
-      (p) => p.start_date === startDate && p.end_date === endDate
-    );
-
-    // Return if exactly one period matches the date
-    if (matchingPeriods.length === 1) {
-      return {
-        sampleSiteId: siteRecord.survey_sample_site_id,
-        sampleMethodId: methodRecord.survey_sample_method_id,
-        samplePeriodId: matchingPeriods[0].survey_sample_period_id
-      };
+    if (techniqueName) {
+      methodRecord = siteRecord.sample_methods.find(
+        (method) => method.technique.name.toLowerCase() === techniqueName.toLowerCase()
+      );
     }
 
-    // If multiple periods match by date, match also by time
-    const matchingPeriod = matchingPeriods.find((p) => p.start_time === startTime && p.end_time === endTime);
-
-    if (matchingPeriod) {
-      return {
-        sampleSiteId: siteRecord.survey_sample_site_id,
-        sampleMethodId: methodRecord.survey_sample_method_id,
-        samplePeriodId: matchingPeriod.survey_sample_period_id
-      };
+    // If we failed to find a method record based on technique name, we will check whether that site has just 1 technique.
+    // If the site has 1 technique, we will assume that the row belongs to that technique.
+    // This is a convenience for users because they only need to specify the sampling site for sites with 1 technique.
+    if (siteRecord.sample_methods.length === 1) {
+      methodRecord = siteRecord.sample_methods[0];
     }
 
-    // If no periods match by date, check if the observation date falls within a period
-    const observationDate = dayjs(row['DATE'].cell as string).format('YYYY-MM-DD');
-    const observationTime = dayjs(row['TIME'].cell as string).format('HH:mm:ss');
+    // If there are multiple techniques for the site but no technique specified in the row,
+    // exit early because we cannot determine which method to use.
+    if (!methodRecord) {
+      return null;
+    }
 
+    // If period is specified, parse the row value and find a matching record
+    if (period) {
+      // Format the period timestamp data
+      const [startDate, endDate] = period.split('-').map((date: string) => dayjs(date).format('YYYY-MM-DD'));
+      const startTime = dayjs(period.split('-')[0]).format('HH:mm:ss');
+      const endTime = dayjs(period.split('-')[1]).format('HH:mm:ss');
+
+      console.log(startDate, startTime, endDate, endTime);
+
+      // Find matching periods by date
+      const matchingPeriods = methodRecord.sample_periods.filter(
+        (p) => p.start_date === startDate && p.end_date === endDate
+      );
+
+      // Return if exactly one period matches the date,
+      // meaning that we have successfully determined a single site, method, and period Id for each row.
+      if (matchingPeriods.length === 1) {
+        return {
+          sampleSiteId: siteRecord.survey_sample_site_id,
+          sampleMethodId: methodRecord.survey_sample_method_id,
+          samplePeriodId: matchingPeriods[0].survey_sample_period_id
+        };
+      }
+
+      // If multiple periods match by date, try to match also by time
+      const matchingPeriod = matchingPeriods.find((p) => p.start_time === startTime && p.end_time === endTime);
+
+      if (matchingPeriod) {
+        return {
+          sampleSiteId: siteRecord.survey_sample_site_id,
+          sampleMethodId: methodRecord.survey_sample_method_id,
+          samplePeriodId: matchingPeriod.survey_sample_period_id
+        };
+      }
+    }
+
+    // If period is not specified, infer it from the row data
+    const observationDate = getColumnCellValue(row, 'DATE').cell as string | null;
+    const observationTime = getColumnCellValue(row, 'TIME').cell as string | null;
+    const formattedDate = dayjs(observationDate).format('YYYY-MM-DD');
+    const formattedTime = dayjs(observationTime).format('HH:mm:ss');
+
+    // If no periods match by date/time but the site and method is given, check if the observation date falls within a period.
+    // If true, we will infer the period based on the observation date.
     const encompassingPeriod = methodRecord.sample_periods.find(
       (p) =>
-        observationDate >= p.start_date &&
-        observationDate <= p.end_date &&
-        (!p.start_time || observationTime >= p.start_time) &&
-        (!p.end_time || observationTime <= p.end_time)
+        formattedDate >= p.start_date &&
+        formattedDate <= p.end_date &&
+        (!p.start_time || formattedTime >= p.start_time) &&
+        (!p.end_time || formattedTime <= p.end_time)
     );
 
     if (encompassingPeriod) {
@@ -931,6 +953,20 @@ export class ObservationService extends DBService {
       };
     }
 
+    // If there is no observation date and exactly 1 period for the matching method, and there is no period specified in the row,
+    // we will assume that the observation belongs to that period. This is a convenience for users since they don't need to specify
+    // the period if they have only 1 for the matching method.
+    // TODO: Might be worth checking if (!observationDate && methodRecord.sample_periods.length === 1), therefore
+    // failing if the specified date is not in a period
+    if (methodRecord.sample_periods.length === 1) {
+      return {
+        sampleSiteId: siteRecord.survey_sample_site_id,
+        sampleMethodId: methodRecord.survey_sample_method_id,
+        samplePeriodId: methodRecord.sample_periods[0].survey_sample_period_id
+      };
+    }
+
+    // If the function hasn't returned yet, we are unable to determine sampling information from the row data
     return null;
   }
 

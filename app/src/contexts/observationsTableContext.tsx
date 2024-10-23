@@ -492,6 +492,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       row.itis_tsn && getTsnMeasurementTypeDefinitionMap(row.itis_tsn);
     }
 
+    // TODO: Either latitude/longitude OR sampling period is required, and either observation date OR sampling period is required
     const requiredStandardColumns: (keyof IObservationTableRow)[] = [
       'observation_subcount_sign_id',
       'count',

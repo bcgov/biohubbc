@@ -31,11 +31,11 @@ export const ObservationRecord = z.object({
   survey_sample_site_id: z.number().nullable(),
   survey_sample_method_id: z.number().nullable(),
   survey_sample_period_id: z.number().nullable(),
-  latitude: z.number(),
-  longitude: z.number(),
+  latitude: z.number().nullable(),
+  longitude: z.number().nullable(),
   count: z.number(),
-  observation_time: z.string(),
-  observation_date: z.string(),
+  observation_time: z.string().nullable(),
+  observation_date: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -319,16 +319,18 @@ export class ObservationRepository extends BaseRepository {
             observation.survey_sample_method_id ?? 'NULL',
             observation.survey_sample_period_id ?? 'NULL',
             observation.count,
-            observation.latitude,
-            observation.longitude,
-            `'${observation.observation_date}'`,
-            `'${observation.observation_time}'`,
+            observation.latitude ?? 'NULL',
+            observation.longitude ?? 'NULL',
+            observation.observation_date ? `'${observation.observation_date}'` : 'NULL',
+            observation.observation_time ? `'${observation.observation_time}'` : 'NULL',
             observation.itis_tsn ?? 'NULL',
             observation.itis_scientific_name ? `'${observation.itis_scientific_name}'` : 'NULL'
           ].join(', ')})`;
         })
         .join(', ')
     );
+
+    console.log(sqlStatement);
 
     sqlStatement.append(`
       ON CONFLICT
@@ -372,6 +374,9 @@ export class ObservationRepository extends BaseRepository {
         knex.raw("JSON_BUILD_OBJECT('type', 'Point', 'coordinates', JSON_BUILD_ARRAY(longitude, latitude)) as geometry")
       )
       .from('survey_observation')
+      // TODO: For observations without lat/lon, get a location from the sampling site?
+      .whereNotNull('latitude')
+      .whereNotNull('longitude')
       .where('survey_id', surveyId);
 
     const response = await this.connection.knex(query, ObservationGeometryRecord);

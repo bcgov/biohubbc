@@ -60,19 +60,23 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
             nullable: true
           },
           latitude: {
-            type: 'number'
+            type: 'number',
+            nullable: true
           },
           longitude: {
-            type: 'number'
+            type: 'number',
+            nullable: true
           },
           count: {
             type: 'integer'
           },
           observation_date: {
-            type: 'string'
+            type: 'string',
+            nullable: true
           },
           observation_time: {
-            type: 'string'
+            type: 'string',
+            nullable: true
           },
           survey_sample_site_name: {
             type: 'string',
