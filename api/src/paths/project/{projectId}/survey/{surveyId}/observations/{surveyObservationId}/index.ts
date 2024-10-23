@@ -203,6 +203,8 @@ export function getSurveyObservation(): RequestHandler {
 
       const observationData = await observationService.getSurveyObservationById(surveyId, surveyObservationId);
 
+      await connection.commit();
+
       return res.status(200).json(observationData);
     } catch (error) {
       defaultLog.error({ label: 'getSurveyObservation', message: 'error', error });

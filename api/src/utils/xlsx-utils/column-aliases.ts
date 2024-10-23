@@ -5,5 +5,6 @@ export const CSV_COLUMN_ALIASES: Record<Uppercase<string>, Uppercase<string>[]> 
   DESCRIPTION: ['COMMENT', 'COMMENTS', 'NOTES'],
   ALIAS: ['NICKNAME', 'ANIMAL'],
   MARKING_TYPE: ['TYPE'],
-  OBSERVATION_SUBCOUNT_SIGN: ['SIGN']
+  OBSERVATION_SUBCOUNT_SIGN: ['SIGN'],
+  COMMENT: ['COMMENTS', 'NOTE', 'NOTES']
 };

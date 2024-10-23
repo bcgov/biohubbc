@@ -218,7 +218,7 @@ const phases = {
     s3KeyPrefix: 'sims',
     tz: config.timezone.api,
     sso: config.sso.prod,
-    featureFlags: 'API_FF_SUBMIT_BIOHUB',
+    featureFlags: 'API_FF_SUBMIT_BIOHUB,API_FF_DISABLE_MULTIPLE_ACTIVE_DEPLOYMENTS_CHECK',
     logLevel: 'silent',
     logLevelFile: 'debug',
     logFileDir: 'data/logs',

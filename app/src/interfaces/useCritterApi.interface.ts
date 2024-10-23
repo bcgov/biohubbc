@@ -89,10 +89,22 @@ export interface IMeasurementsUpdate {
 }
 
 export interface ICreateCaptureRequest extends IMarkings, IMeasurementsCreate {
+  attachments: {
+    capture_attachments: {
+      create: Record<string, File>;
+      delete?: never;
+    };
+  };
   capture: ICapturePostData;
 }
 
 export interface IEditCaptureRequest extends IMarkings, IMeasurementsUpdate {
+  attachments: {
+    capture_attachments: {
+      create: Record<string, File>;
+      delete: number[];
+    };
+  };
   capture: ICapturePostData;
 }
 
@@ -108,6 +120,22 @@ export interface ICollectionUnitMultiTsnResponse {
   tsn: number;
   categories: ICollectionCategory[];
 }
+
+interface ICritterAttachmentBase {
+  uuid: string;
+  critter_id: number;
+  file_type: string;
+  file_name: string;
+  file_size: number;
+  title: string | null;
+  description: string | null;
+  key: string;
+}
+
+export type ICritterCaptureAttachment = {
+  critter_capture_attachment_id: number;
+  critterbase_capture_id: string;
+} & ICritterAttachmentBase;
 
 export interface ICollectionCategory {
   collection_category_id: string;
@@ -150,6 +178,19 @@ type ILocationResponse = {
   region_env_id: string | null;
   region_nr_id: string | null;
   wmu_id: string | null;
+};
+
+export type ILocationCreate = {
+  location_id?: string;
+  latitude: number;
+  longitude: number;
+  coordinate_uncertainty?: number | null;
+  coordinate_uncertainty_unit?: string;
+  temperature?: number | null;
+  location_comment?: string | null;
+  region_env_id?: string | null;
+  region_nr_id?: string | null;
+  wmu_id?: string | null;
 };
 
 export type ICaptureResponse = {
@@ -299,6 +340,9 @@ export type ICritterDetailedResponse = {
   };
   family_parent: IFamilyParentResponse[];
   family_child: IFamilyChildResponse[];
+  attachments: {
+    capture_attachments: ICritterCaptureAttachment[];
+  };
 };
 
 export interface ICritterSimpleResponse {

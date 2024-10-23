@@ -225,6 +225,7 @@ PUT.apiDoc = {
                       required: [
                         'subcount',
                         'observation_subcount_sign_id',
+                        'comment',
                         'qualitative_measurements',
                         'quantitative_measurements',
                         'qualitative_environments',
@@ -243,6 +244,11 @@ PUT.apiDoc = {
                           minimum: 1,
                           description:
                             'The observation subcount sign ID, indicating whether the subcount was a direct sighting, footprints, scat, etc.'
+                        },
+                        comment: {
+                          type: 'string',
+                          nullable: true,
+                          description: 'A comment or note about the subcount'
                         },
                         subcount: {
                           type: 'number',
@@ -393,6 +399,8 @@ export function getSurveyObservations(): RequestHandler {
           surveyId,
           ensureCompletePaginationOptions(paginationOptions)
         );
+
+      await connection.commit();
 
       const observationCount = observationData.supplementaryObservationData.observationCount;
 

@@ -76,7 +76,7 @@ export const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContaine
               }
             }}>
             <RouterLink
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.critterbase_critter_id}/mortality/${selectedMortality}/edit`}>
+              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.critter_id}/mortality/${selectedMortality}/edit`}>
               <ListItemIcon>
                 <Icon path={mdiPencilOutline} size={1} />
               </ListItemIcon>

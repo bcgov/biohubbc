@@ -174,6 +174,7 @@ export function getAdministrativeActivities(): RequestHandler {
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getAdministrativeActivities', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
