@@ -16,8 +16,8 @@ import { DialogContext } from 'contexts/dialogContext';
 import { default as dayjs } from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import useDataLoader from 'hooks/useDataLoader';
 import { usePersistentState } from 'hooks/usePersistentState';
+import { IAllTelemetry } from 'interfaces/useTelemetryApi.interface';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
@@ -147,17 +147,18 @@ export type IAllTelemetryTableContext = {
 export const TelemetryTableContext = createContext<IAllTelemetryTableContext | undefined>(undefined);
 
 type IAllTelemetryTableContextProviderProps = PropsWithChildren<{
-  deployment_ids: string[];
+  isLoading: boolean;
+  telemetryData: IAllTelemetry[];
+  refreshRecords: () => Promise<void>;
 }>;
 
 export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextProviderProps) => {
-  const { children, deployment_ids } = props;
+  const { children, isLoading, telemetryData, refreshRecords } = props;
 
   const _muiDataGridApiRef = useGridApiRef();
 
   const biohubApi = useBiohubApi();
 
-  const telemetryDataLoader = useDataLoader(biohubApi.telemetry.getAllTelemetryByDeploymentIds);
   const dialogContext = useContext(DialogContext);
 
   // The data grid rows
@@ -189,9 +190,6 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
 
   // Count of table records
   const recordCount = rows.length;
-
-  // True if telemetry is fetching
-  const isLoading = telemetryDataLoader.isLoading;
 
   // True if table has unsaved changes, deferring value to prevent ui issue with controls rendering
   const hasUnsavedChanges = _modifiedRowIds.current.length > 0 || _stagedRowIds.current.length > 0;
@@ -346,34 +344,6 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
     // Add row to modified rows array
     _modifiedRowIds.current = Array.from(new Set([..._modifiedRowIds.current, String(id)]));
   }, []);
-
-  /**
-   * Refresh the telemetry records and pre-parse to table date format
-   *
-   * @async
-   * @returns {Promise<void>}
-   */
-  const refreshRecords = useCallback(async () => {
-    const telemetry = (deployment_ids.length && (await telemetryDataLoader.refresh(deployment_ids))) || [];
-
-    // Format the rows to use date and time
-    const rows: IManualTelemetryTableRow[] = telemetry.map((item) => {
-      return {
-        id: item.id,
-        deployment_id: item.deployment_id,
-        device_id: item.device_id,
-        latitude: item.latitude,
-        longitude: item.longitude,
-        date: dayjs(item.acquisition_date).format('YYYY-MM-DD'),
-        time: dayjs(item.acquisition_date).format('HH:mm:ss'),
-        telemetry_type: item.telemetry_type
-      };
-    });
-
-    // Set initial rows for the table context
-    setRows(rows);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deployment_ids]);
 
   /**
    * Validates all edited rows of table.
@@ -702,14 +672,31 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   }, [_validateRows, _getEditedIds, _getEditedRows, _saveRecords]);
 
   /**
-   * Refetch the telemetry when the deployment ids change
+   * Parse the telemetry data to the table format and set the rows.
    *
    */
   useEffect(() => {
-    if (deployment_ids.length) {
-      refreshRecords();
+    if (!telemetryData) {
+      // No telemetry data, clear the table
+      setRows([]);
+      return;
     }
-  }, [deployment_ids, refreshRecords]);
+
+    const rows: IManualTelemetryTableRow[] = telemetryData.map((item) => {
+      return {
+        id: item.id,
+        deployment_id: item.deployment_id,
+        device_id: item.device_id,
+        latitude: item.latitude,
+        longitude: item.longitude,
+        date: dayjs(item.acquisition_date).format('YYYY-MM-DD'),
+        time: dayjs(item.acquisition_date).format('HH:mm:ss'),
+        telemetry_type: item.telemetry_type
+      };
+    });
+
+    setRows(rows);
+  }, [telemetryData]);
 
   const telemetryTableContext: IAllTelemetryTableContext = useMemo(
     () => ({

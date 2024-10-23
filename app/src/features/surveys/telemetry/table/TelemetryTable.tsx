@@ -48,7 +48,7 @@ export const TelemetryTable = (props: IManualTelemetryTableProps) => {
   const critterDeployments: IAnimalDeploymentWithCritter[] = useMemo(() => {
     const critterDeployments: IAnimalDeploymentWithCritter[] = [];
     const critters = critterDataLoader.data ?? [];
-    const deployments = deploymentDataLoader.data ?? [];
+    const deployments = deploymentDataLoader.data?.deployments ?? [];
 
     if (!critters.length || !deployments.length) {
       return [];

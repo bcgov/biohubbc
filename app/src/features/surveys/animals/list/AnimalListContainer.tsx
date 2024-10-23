@@ -327,7 +327,7 @@ export const AnimalListContainer = () => {
                       control={
                         <Checkbox
                           sx={{
-                            mr: 1.3
+                            mr: 0.5
                           }}
                           checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === crittersCount}
                           indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < crittersCount}
@@ -352,6 +352,7 @@ export const AnimalListContainer = () => {
                   <List>
                     {critters?.map((critter) => (
                       <CritterListItem
+                        key={critter.critter_id}
                         critter={critter}
                         isSelectedAnimal={selectedAnimal?.critter_id === critter.critter_id}
                         onAnimalClick={setSelectedAnimal}

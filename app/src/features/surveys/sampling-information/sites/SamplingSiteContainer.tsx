@@ -8,7 +8,6 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
@@ -160,104 +159,98 @@ const SamplingSiteContainer = () => {
         </MenuItem>
       </Menu>
 
-      <Paper>
-        <Toolbar sx={{ flex: '0 0 auto', pr: 3, pl: 2 }}>
-          <Typography variant="h3" component="h2" flexGrow={1}>
-            Sampling Sites &zwnj;
-            <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-              ({sampleSiteCount})
-            </Typography>
+      <Toolbar sx={{ flex: '0 0 auto', pr: 3, pl: 2 }}>
+        <Typography variant="h3" component="h2" flexGrow={1}>
+          Sampling Sites &zwnj;
+          <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
+            ({sampleSiteCount})
           </Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            disabled={Boolean(!surveyContext.techniqueDataLoader.data?.count)}
-            component={RouterLink}
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/create`}
-            startIcon={<Icon path={mdiPlus} size={0.8} />}>
-            Add
-          </Button>
-          <IconButton
-            edge="end"
-            sx={{ ml: 1 }}
-            aria-label="header-settings"
-            disabled={!siteSelection.length}
-            onClick={handleHeaderMenuClick}
-            title="Bulk Actions">
-            <Icon path={mdiDotsVertical} size={1} />
-          </IconButton>
-        </Toolbar>
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          disabled={Boolean(!surveyContext.techniqueDataLoader.data?.count)}
+          component={RouterLink}
+          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/create`}
+          startIcon={<Icon path={mdiPlus} size={0.8} />}>
+          Add
+        </Button>
+        <IconButton
+          edge="end"
+          sx={{ ml: 1 }}
+          aria-label="header-settings"
+          disabled={!siteSelection.length}
+          onClick={handleHeaderMenuClick}
+          title="Bulk Actions">
+          <Icon path={mdiDotsVertical} size={1} />
+        </IconButton>
+      </Toolbar>
 
-        <Divider flexItem />
+      <Divider flexItem />
 
-        <Box>
-          <LoadingGuard
-            isLoading={surveyContext.sampleSiteDataLoader.isLoading}
-            isLoadingFallback={
-              <>
-                <SkeletonMap />
-                <SkeletonTable numberOfLines={5} />
-              </>
-            }
-            isLoadingFallbackDelay={100}>
-            <SamplingSiteMapContainer samplingSites={sampleSites} />
+      <Box>
+        <LoadingGuard
+          isLoading={surveyContext.sampleSiteDataLoader.isLoading}
+          isLoadingFallback={
+            <>
+              <SkeletonMap />
+              <SkeletonTable numberOfLines={5} />
+            </>
+          }
+          isLoadingFallbackDelay={100}>
+          <SamplingSiteMapContainer samplingSites={sampleSites} />
 
-            {/* Toggle buttons for changing between sites, methods, and periods */}
-            <SamplingSiteTabs activeView={activeView} setActiveView={setActiveView} viewCounts={viewCounts} />
+          {/* Toggle buttons for changing between sites, methods, and periods */}
+          <SamplingSiteTabs activeView={activeView} setActiveView={setActiveView} viewCounts={viewCounts} />
 
-            <Divider flexItem />
+          <Divider flexItem />
 
-            {/* Data tables */}
-            <Box p={2}>
-              {activeView === SamplingSiteManageTableView.SITES && (
-                <LoadingGuard
-                  isLoading={
-                    surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady
-                  }
-                  isLoadingFallback={<SkeletonTable />}
-                  isLoadingFallbackDelay={100}
-                  hasNoData={!viewCounts[SamplingSiteManageTableView.SITES]}
-                  hasNoDataFallback={
-                    <NoDataOverlay
-                      height="200px"
-                      title="Add Sampling Sites"
-                      subtitle="Apply your techniques to sampling sites to show where you collected data"
-                      icon={mdiArrowTopRight}
-                    />
-                  }
-                  hasNoDataFallbackDelay={100}>
-                  <SamplingSiteTable
-                    sites={sampleSites}
-                    setBulkActionSites={setSiteSelection}
-                    bulkActionSites={siteSelection}
+          {/* Data tables */}
+          <Box p={2}>
+            {activeView === SamplingSiteManageTableView.SITES && (
+              <LoadingGuard
+                isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}
+                isLoadingFallback={<SkeletonTable />}
+                isLoadingFallbackDelay={100}
+                hasNoData={!viewCounts[SamplingSiteManageTableView.SITES]}
+                hasNoDataFallback={
+                  <NoDataOverlay
+                    height="200px"
+                    title="Add Sampling Sites"
+                    subtitle="Apply your techniques to sampling sites to show where you collected data"
+                    icon={mdiArrowTopRight}
                   />
-                </LoadingGuard>
-              )}
+                }
+                hasNoDataFallbackDelay={100}>
+                <SamplingSiteTable
+                  sites={sampleSites}
+                  setBulkActionSites={setSiteSelection}
+                  bulkActionSites={siteSelection}
+                />
+              </LoadingGuard>
+            )}
 
-              {activeView === SamplingSiteManageTableView.PERIODS && (
-                <LoadingGuard
-                  isLoading={
-                    surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady
-                  }
-                  isLoadingFallback={<SkeletonTable />}
-                  isLoadingFallbackDelay={100}
-                  hasNoData={!viewCounts[SamplingSiteManageTableView.PERIODS]}
-                  hasNoDataFallback={
-                    <NoDataOverlay
-                      height="200px"
-                      title="Add Periods"
-                      subtitle="Add periods when you create sampling sites to show when you collected species observations"
-                      icon={mdiArrowTopRight}
-                    />
-                  }
-                  hasNoDataFallbackDelay={100}>
-                  <SamplingPeriodTable periods={samplePeriods} />
-                </LoadingGuard>
-              )}
-            </Box>
-          </LoadingGuard>
-        </Box>
-      </Paper>
+            {activeView === SamplingSiteManageTableView.PERIODS && (
+              <LoadingGuard
+                isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}
+                isLoadingFallback={<SkeletonTable />}
+                isLoadingFallbackDelay={100}
+                hasNoData={!viewCounts[SamplingSiteManageTableView.PERIODS]}
+                hasNoDataFallback={
+                  <NoDataOverlay
+                    height="200px"
+                    title="Add Periods"
+                    subtitle="Add periods when you create sampling sites to show when you collected species observations"
+                    icon={mdiArrowTopRight}
+                  />
+                }
+                hasNoDataFallbackDelay={100}>
+                <SamplingPeriodTable periods={samplePeriods} />
+              </LoadingGuard>
+            )}
+          </Box>
+        </LoadingGuard>
+      </Box>
     </>
   );
 };
