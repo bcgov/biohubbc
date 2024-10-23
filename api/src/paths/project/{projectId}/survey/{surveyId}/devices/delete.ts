@@ -3,10 +3,10 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { TelemetryDeploymentService } from '../../../../../../services/telemetry-services/telemetry-deployment-service';
+import { TelemetryDeviceService } from '../../../../../../services/telemetry-services/telemetry-device-service';
 import { getLogger } from '../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments2/delete');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/devices2/delete');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -24,12 +24,12 @@ export const POST: Operation = [
       ]
     };
   }),
-  deleteDeploymentsInSurvey()
+  deleteDevices()
 ];
 
 POST.apiDoc = {
-  description: 'Delete deployments.',
-  tags: ['deployment'],
+  description: 'Delete devices.',
+  tags: ['device'],
   security: [
     {
       Bearer: []
@@ -56,15 +56,15 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Array of one or more deployment IDs to delete.',
+    description: 'Array of one or more device IDs to delete.',
     content: {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['deployment_ids'],
+          required: ['device_ids'],
           additionalProperties: false,
           properties: {
-            deployment_ids: {
+            device_ids: {
               type: 'array',
               items: {
                 type: 'integer',
@@ -79,7 +79,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Delete OK.'
+      description: 'Deletes OK.'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -103,30 +103,30 @@ POST.apiDoc = {
 };
 
 /**
- * Deletes deployments.
+ * Deletes devices.
  *
  * @export
  * @return {*}  {RequestHandler}
  */
-export function deleteDeploymentsInSurvey(): RequestHandler {
+export function deleteDevices(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const deploymentIds: number[] = req.body.deployment_ids;
+    const deviceIds: number[] = req.body.device_ids;
 
     const connection = getDBConnection(req.keycloak_token);
 
     try {
       await connection.open();
 
-      const telemetryDeploymentService = new TelemetryDeploymentService(connection);
+      const deviceService = new TelemetryDeviceService(connection);
 
-      await telemetryDeploymentService.deleteDeployments(surveyId, deploymentIds);
+      await deviceService.deleteDevices(surveyId, deviceIds);
 
       await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'deleteDeploymentsInSurvey', message: 'error', error });
+      defaultLog.error({ label: 'deleteDevices', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
