@@ -24,7 +24,7 @@ jobs:
   # }
   #
   openApiRequiredRequestBody:
-    name: Schema missing `required:true` in `requestBody`
+    name: OpenAPI requestBody missing required:true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
