@@ -39,10 +39,12 @@ jobs:
           # Print to stdout line num + filename and return exit code
           find api/src/paths -type f ! -name '*.test.ts' -exec \
           awk '
-          /requestBody:/ {found=0}
-          /required: true/ {found=1}
+          BEGIN {found=0}
+          /requestBody:/ {found=1}
+          /required: true/ {found=0}
           /content:/ {
-            if (!found) print "line: " NR, FILENAME
+            if (found) print "line: " NR, FILENAME;
+            found=0;
           }
           ' {} \; \
           | grep . && exit 1 || exit 0
