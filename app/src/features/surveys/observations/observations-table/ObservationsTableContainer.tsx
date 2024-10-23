@@ -9,9 +9,10 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef, GridRenderEditCellParams } from '@mui/x-data-grid';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
 import {
+  GenericCommentColDef,
   GenericDateColDef,
   GenericLatitudeColDef,
   GenericLongitudeColDef,
@@ -48,6 +49,7 @@ import { useEffect, useMemo } from 'react';
 import { getCodesName } from 'utils/Utils';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
+import { ObservationSubcountCommentDialog } from './grid-column-definitions/comment/ObservationSubcountCommentDialog';
 import {
   getEnvironmentColumnDefinitions,
   getMeasurementColumnDefinitions
@@ -159,13 +161,26 @@ const ObservationsTableContainer = () => {
         observationsTableContext.hasError
       ),
       // Add environment columns to the table
-      ...getEnvironmentColumnDefinitions(observationsTableContext.environmentColumns, observationsTableContext.hasError)
+      ...getEnvironmentColumnDefinitions(
+        observationsTableContext.environmentColumns,
+        observationsTableContext.hasError
+      ),
+      GenericCommentColDef({
+        field: 'comment',
+        headerName: '',
+        hasError: observationsTableContext.hasError,
+        handleOpen: (params: GridRenderEditCellParams) => observationsTableContext.setCommentDialogParams(params),
+        handleClose: () => observationsTableContext.setCommentDialogParams(null)
+      })
     ],
+    // observationsTableContext is listed as a missing dependency
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       observationSubcountSignOptions,
       observationsTableContext.environmentColumns,
       observationsTableContext.hasError,
       observationsTableContext.measurementColumns,
+      observationsTableContext.setCommentDialogParams,
       sampleMethodOptions,
       samplePeriodOptions,
       sampleSiteOptions
@@ -237,6 +252,25 @@ const ObservationsTableContainer = () => {
       <DataGridValidationAlert
         validationModel={observationsTableContext.validationModel}
         muiDataGridApiRef={observationsTableContext._muiDataGridApiRef.current}
+      />
+
+      <ObservationSubcountCommentDialog
+        // The key prop is necessary for the dialog to correctly reset if the user discards changes
+        key={observationsTableContext.commentDialogParams?.id ?? 'comment-dialog-key'}
+        open={Boolean(observationsTableContext.commentDialogParams)}
+        initialValue={observationsTableContext.commentDialogParams?.value}
+        handleClose={() => observationsTableContext.setCommentDialogParams(null)}
+        handleSave={(value) => {
+          if (!observationsTableContext.commentDialogParams) {
+            return;
+          }
+
+          observationsTableContext.commentDialogParams.api.setEditCellValue({
+            value,
+            id: observationsTableContext.commentDialogParams.id,
+            field: observationsTableContext.commentDialogParams.field
+          });
+        }}
       />
 
       <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">

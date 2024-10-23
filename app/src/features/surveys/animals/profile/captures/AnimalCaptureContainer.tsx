@@ -8,7 +8,9 @@ import Typography from '@mui/material/Typography';
 import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
 import { AnimalCaptureCardContainer } from 'features/surveys/animals/profile/captures/components/AnimalCaptureCardContainer';
 import { AnimalCapturesToolbar } from 'features/surveys/animals/profile/captures/components/AnimalCapturesToolbar';
-import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
+import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useAnimalPageContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import {
   ICaptureResponse,
@@ -31,6 +33,8 @@ export interface ICaptureWithSupplementaryData extends ICaptureResponse {
  */
 export const AnimalCaptureContainer = () => {
   const critterbaseApi = useCritterbaseApi();
+  const biohubApi = useBiohubApi();
+  const dialogContext = useDialogContext();
 
   const history = useHistory();
 
@@ -73,36 +77,73 @@ export const AnimalCaptureContainer = () => {
     })) || [];
 
   const handleDelete = async (selectedCapture: string, critter_id: number) => {
-    // Delete markings and measurements associated with the capture to avoid foreign key constraint error
-    await critterbaseApi.critters.bulkUpdate({
-      markings: data?.markings
-        .filter((marking) => marking.capture_id === selectedCapture)
-        .map((marking) => ({
-          ...marking,
-          critter_id: selectedAnimal.critterbase_critter_id,
-          _delete: true
-        })),
-      qualitative_measurements:
-        data?.measurements.qualitative
-          .filter((measurement) => measurement.capture_id === selectedCapture)
-          .map((measurement) => ({
-            ...measurement,
+    try {
+      // Delete markings and measurements associated with the capture to avoid foreign key constraint error
+      await critterbaseApi.critters.bulkUpdate({
+        markings: data?.markings
+          .filter((marking) => marking.capture_id === selectedCapture)
+          .map((marking) => ({
+            ...marking,
+            critter_id: selectedAnimal.critterbase_critter_id,
             _delete: true
-          })) ?? [],
-      quantitative_measurements:
-        data?.measurements.quantitative
-          .filter((measurement) => measurement.capture_id === selectedCapture)
-          .map((measurement) => ({
-            ...measurement,
-            _delete: true
-          })) ?? []
-    });
+          })),
+        qualitative_measurements:
+          data?.measurements.qualitative
+            .filter((measurement) => measurement.capture_id === selectedCapture)
+            .map((measurement) => ({
+              ...measurement,
+              _delete: true
+            })) ?? [],
+        quantitative_measurements:
+          data?.measurements.quantitative
+            .filter((measurement) => measurement.capture_id === selectedCapture)
+            .map((measurement) => ({
+              ...measurement,
+              _delete: true
+            })) ?? []
+      });
 
-    // Delete the actual capture
-    await critterbaseApi.capture.deleteCapture(selectedCapture);
+      // Delete the actual capture
+      await critterbaseApi.capture.deleteCapture(selectedCapture);
 
-    // Refresh capture container
-    animalPageContext.critterDataLoader.refresh(projectId, surveyId, critter_id);
+      // Delete all capture attachments
+      await biohubApi.animal.deleteCaptureAttachments({
+        projectId,
+        surveyId,
+        critterId: selectedAnimal.critter_id,
+        critterbaseCaptureId: selectedCapture
+      });
+
+      // Refresh capture container
+      animalPageContext.critterDataLoader.refresh(projectId, surveyId, critter_id);
+
+      // Show success snackbar
+      dialogContext.setSnackbar({
+        open: true,
+        onClose: () => dialogContext.setSnackbar({ open: false }),
+        snackbarMessage: (
+          <Typography variant="body2" component="div">
+            Successfully deleted Capture
+          </Typography>
+        )
+      });
+    } catch (error) {
+      const apiError = error as APIError;
+
+      dialogContext.setErrorDialog({
+        open: true,
+        dialogTitle: 'Error deleting Capture',
+        dialogText: 'An error occurred while deleting the Capture.',
+        dialogError: apiError.message,
+        dialogErrorDetails: apiError.errors,
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        }
+      });
+    }
   };
 
   const capturesWithLocation = captures.filter((capture) => capture.capture_location);

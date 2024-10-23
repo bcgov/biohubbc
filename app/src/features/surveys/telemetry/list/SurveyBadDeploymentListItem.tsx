@@ -10,6 +10,7 @@ import IconButton from '@mui/material/IconButton';
 import List from '@mui/material/List';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { FeatureFlagGuard } from 'components/security/Guards';
 import { WarningSchema } from 'interfaces/useBioHubApi.interface';
 
 export interface ISurveyBadDeploymentListItemProps {
@@ -68,16 +69,28 @@ export const SurveyBadDeploymentListItem = (props: ISurveyBadDeploymentListItemP
               pr: 2,
               overflow: 'hidden'
             }}>
-            <Checkbox
-              edge="start"
-              checked={isChecked}
-              sx={{ py: 0 }}
-              onClick={(event) => {
-                event.stopPropagation();
-                handleCheckboxChange(data.data.sims_deployment_id);
-              }}
-              inputProps={{ 'aria-label': 'controlled' }}
-            />
+            {/* TODO: This delete is commented out as a temporary bug fix to prevent deployment data from being deleted */}
+            <FeatureFlagGuard
+              featureFlags={['APP_FF_DISABLE_BAD_DEPLOYMENT_DELETE']}
+              fallback={
+                <Checkbox
+                  edge="start"
+                  checked={isChecked}
+                  sx={{ py: 0, visibility: 'hidden' }}
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+              }>
+              <Checkbox
+                edge="start"
+                checked={isChecked}
+                sx={{ py: 0 }}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleCheckboxChange(data.data.sims_deployment_id);
+                }}
+                inputProps={{ 'aria-label': 'controlled' }}
+              />
+            </FeatureFlagGuard>
             <Box>
               <Stack gap={1} direction="row">
                 <Typography
@@ -100,13 +113,16 @@ export const SurveyBadDeploymentListItem = (props: ISurveyBadDeploymentListItemP
             </Box>
           </Stack>
         </AccordionSummary>
-        <IconButton
-          sx={{ position: 'absolute', right: '24px' }}
-          edge="end"
-          onClick={() => handleDelete(data.data.sims_deployment_id as number)}
-          aria-label="deployment-settings">
-          <Icon path={mdiTrashCanOutline} size={1}></Icon>
-        </IconButton>
+        {/* TODO: This delete is commented out as a temporary bug fix to prevent deployment data from being deleted */}
+        <FeatureFlagGuard featureFlags={['APP_FF_DISABLE_BAD_DEPLOYMENT_DELETE']}>
+          <IconButton
+            sx={{ position: 'absolute', right: '24px' }}
+            edge="end"
+            onClick={() => handleDelete(data.data.sims_deployment_id as number)}
+            aria-label="deployment-settings">
+            <Icon path={mdiTrashCanOutline} size={1}></Icon>
+          </IconButton>
+        </FeatureFlagGuard>
       </Box>
       <AccordionDetails sx={{ mt: 0, pt: 0 }}>
         <List
