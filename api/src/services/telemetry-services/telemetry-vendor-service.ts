@@ -1,10 +1,8 @@
+import { TelemetryManualRecord } from '../../database-models/telemetry_manual';
 import { IDBConnection } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
 import { TelemetryManualRepository } from '../../repositories/telemetry-repositories/telemetry-manual-repository';
-import {
-  CreateManualTelemetry,
-  UpdateManualTelemetry
-} from '../../repositories/telemetry-repositories/telemetry-manual-repository.interface';
+import { CreateManualTelemetry } from '../../repositories/telemetry-repositories/telemetry-manual-repository.interface';
 import { TelemetryVendorRepository } from '../../repositories/telemetry-repositories/telemetry-vendor-repository';
 import { Telemetry } from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
@@ -129,12 +127,14 @@ export class TelemetryVendorService extends DBService {
   /**
    * Update manual telemetry records.
    *
+   * Note: Since this is a bulk update request, the payload must include all the properties to PUT.
+   *
    * @async
    * @param {number} surveyId
-   * @param {UpdateManualTelemetry[]} telemetry - List of manual telemetry data to update
+   * @param {TelemetryManualRecord[]} telemetry - List of manual telemetry data to update
    * @returns {Promise<void>}
    */
-  async bulkUpdateManualTelemetry(surveyId: number, telemetry: UpdateManualTelemetry[]): Promise<void> {
+  async bulkUpdateManualTelemetry(surveyId: number, telemetry: TelemetryManualRecord[]): Promise<void> {
     const telemetryManualIds = telemetry.map((record) => record.telemetry_manual_id);
     const manualTelemetry = await this.manualRepository.getManualTelemetryByIds(surveyId, telemetryManualIds);
 

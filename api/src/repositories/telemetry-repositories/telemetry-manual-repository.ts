@@ -2,7 +2,7 @@ import { TelemetryManualRecord } from '../../database-models/telemetry_manual';
 import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
 import { BaseRepository } from '../base-repository';
-import { CreateManualTelemetry, UpdateManualTelemetry } from './telemetry-manual-repository.interface';
+import { CreateManualTelemetry } from './telemetry-manual-repository.interface';
 
 /**
  * A repository class for working with Manual telemetry data.
@@ -61,16 +61,17 @@ export class TelemetryManualRepository extends BaseRepository {
    *
    * Note: Deployment IDs need to be pre-validated against the survey ID in the service.
    *
-   * @param {UpdateManualTelemetry[]} telemetry - List of Manual telemetry data to update
+   * @param {TelemetryManualRecord[]} telemetry - List of Manual telemetry data to update
    * @returns {Promise<void>}
    */
-  async bulkUpdateManualTelemetry(telemetry: UpdateManualTelemetry[]): Promise<void> {
+  async bulkUpdateManualTelemetry(telemetry: TelemetryManualRecord[]): Promise<void> {
     const knex = getKnex();
 
     const queryBuilder = knex
       .insert(telemetry)
       .into('telemetry_manual')
       .onConflict('telemetry_manual_id')
+      // intentionally omitting the deployment_id
       .merge(['latitude', 'longitude', 'acquisition_date', 'transmission_date']);
 
     const response = await this.connection.knex(queryBuilder);
