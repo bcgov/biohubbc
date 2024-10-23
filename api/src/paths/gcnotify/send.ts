@@ -33,6 +33,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Send notification to given recipient',
+    required: true,
     content: {
       'application/json': {
         schema: {
