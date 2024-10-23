@@ -82,7 +82,7 @@ const defaultLog = getLogger('services/observation-service');
 export const observationStandardColumnValidator = {
   ITIS_TSN: { type: 'number', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
   COUNT: { type: 'number' },
-  OBSERVATION_SUBCOUNT_SIGN: { type: 'code', aliases: CSV_COLUMN_ALIASES.OBSERVATION_SUBCOUNT_SIGN },
+  OBSERVATION_SUBCOUNT_SIGN: { type: 'code', aliases: CSV_COLUMN_ALIASES.OBSERVATION_SUBCOUNT_SIGN, optional: true },
   DATE: { type: 'date', optional: true },
   TIME: { type: 'string', optional: true },
   LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE, optional: true },
@@ -629,10 +629,16 @@ export class ObservationService extends DBService {
       // TODO: This observationSubcountSignId logic is specifically catered to the observation_subcount_signs code set,
       // as it is the only code set currently being used in the observation CSVs, and is required. This logic will need
       // to be updated to be more generic if other code sets are used in the future, or if they can be nullable.
-      const observationSubcountSignId = codeTypeDefinitions.OBSERVATION_SUBCOUNT_SIGN.find(
-        (option) =>
-          option.name.toLowerCase() === getColumnCellValue(row, 'OBSERVATION_SUBCOUNT_SIGN')?.cell?.toLowerCase()
-      )?.id;
+      const observationSubcountSignId = getColumnCellValue(row, 'OBSERVATION_SUBCOUNT_SIGN').cell
+        ? codeTypeDefinitions.OBSERVATION_SUBCOUNT_SIGN.find(
+            (option) =>
+              option.name.toLowerCase() === getColumnCellValue(row, 'OBSERVATION_SUBCOUNT_SIGN').cell.toLowerCase()
+          )?.id
+        : codeTypeDefinitions.OBSERVATION_SUBCOUNT_SIGN.find(
+            (option) => option.name.toLowerCase() === 'direct sighting'
+          )?.id;
+
+      console.log(observationSubcountSignId);
 
       const newSubcount: InsertSubCount = {
         observation_subcount_id: null,
