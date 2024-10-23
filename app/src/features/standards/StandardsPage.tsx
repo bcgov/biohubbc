@@ -6,6 +6,7 @@ import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import PageHeader from 'components/layout/PageHeader';
+import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { useState } from 'react';
 import { StandardsToolbar } from './components/StandardsToolbar';
 import { EnvironmentStandards } from './view/environment/EnvironmentStandards';
@@ -37,6 +38,7 @@ const StandardsPage = () => {
     <>
       <PageHeader title="Standards" />
       <Container maxWidth="xl" sx={{ py: 3 }}>
+      <SystemAlertBanner alertTypes={['Surveys']}/>
         <Stack direction="row" gap={3} component={Paper} sx={{ p: 3 }}>
           {/* TOOLBAR FOR SWITCHING VIEWS */}
           <Box width="300px" flexShrink={0}>

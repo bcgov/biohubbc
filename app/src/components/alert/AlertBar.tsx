@@ -1,6 +1,5 @@
 import Alert from '@mui/material/Alert';
 import AlertTitle from '@mui/material/AlertTitle';
-import Box from '@mui/material/Box';
 import React from 'react';
 
 interface IAlertBarProps {
@@ -14,12 +13,12 @@ const AlertBar: React.FC<IAlertBarProps> = (props) => {
   const { severity, variant, title, text } = props;
 
   return (
-    <Box mb={3}>
-      <Alert variant={variant} severity={severity}>
+    <>
+      <Alert variant={variant} severity={severity} sx={{ flex: '1 1 auto' }}>
         <AlertTitle>{title}</AlertTitle>
         {text}
       </Alert>
-    </Box>
+    </>
   );
 };
 

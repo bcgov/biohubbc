@@ -52,7 +52,7 @@ describe('UsersDetailProjects', () => {
   });
 
   it('shows circular spinner when assignedProjects not yet loaded', async () => {
-    history.push('/admin/users/1');
+    history.push('/admin/manage/users/1');
 
     const { getAllByTestId } = render(
       <Router history={history}>
@@ -66,7 +66,7 @@ describe('UsersDetailProjects', () => {
   });
 
   it('renders empty list correctly when assignedProjects empty and loaded', async () => {
-    history.push('/admin/users/1');
+    history.push('/admin/manage/users/1');
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }]
@@ -87,7 +87,7 @@ describe('UsersDetailProjects', () => {
   });
 
   it('renders list of a single project correctly when assignedProjects are loaded', async () => {
-    history.push('/admin/users/1');
+    history.push('/admin/manage/users/1');
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }],
@@ -119,7 +119,7 @@ describe('UsersDetailProjects', () => {
   });
 
   it('renders list of a multiple projects correctly when assignedProjects are loaded', async () => {
-    history.push('/admin/users/1');
+    history.push('/admin/manage/users/1');
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }],
@@ -161,7 +161,7 @@ describe('UsersDetailProjects', () => {
   });
 
   it('routes to project id details on click', async () => {
-    history.push('/admin/users/1');
+    history.push('/admin/manage/users/1');
 
     mockUseApi.codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }],
@@ -199,7 +199,7 @@ describe('UsersDetailProjects', () => {
 
   describe('Are you sure? Dialog', () => {
     it('does nothing if the user clicks `Cancel` or away from the dialog', async () => {
-      history.push('/admin/users/1');
+      history.push('/admin/manage/users/1');
 
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
@@ -239,12 +239,12 @@ describe('UsersDetailProjects', () => {
       fireEvent.click(getByText('Cancel'));
 
       await waitFor(() => {
-        expect(history.location.pathname).toEqual('/admin/users/1');
+        expect(history.location.pathname).toEqual('/admin/manage/users/1');
       });
     });
 
     it('deletes User from project if the user clicks on `Remove` ', async () => {
-      history.push('/admin/users/1');
+      history.push('/admin/manage/users/1');
 
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
@@ -317,7 +317,7 @@ describe('UsersDetailProjects', () => {
 
   describe('Change users Project Role', () => {
     it('renders list of roles to change per project', async () => {
-      history.push('/admin/users/1');
+      history.push('/admin/manage/users/1');
 
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
@@ -361,7 +361,7 @@ describe('UsersDetailProjects', () => {
     });
 
     it('renders dialog pop on role selection, does nothing if user clicks `Cancel` ', async () => {
-      history.push('/admin/users/1');
+      history.push('/admin/manage/users/1');
 
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],
@@ -414,12 +414,12 @@ describe('UsersDetailProjects', () => {
       fireEvent.click(getByText('Cancel'));
 
       await waitFor(() => {
-        expect(history.location.pathname).toEqual('/admin/users/1');
+        expect(history.location.pathname).toEqual('/admin/manage/users/1');
       });
     });
 
     it('renders dialog pop on role selection, Changes role on click of `Change Role` ', async () => {
-      history.push('/admin/users/1');
+      history.push('/admin/manage/users/1');
 
       mockUseApi.codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }],

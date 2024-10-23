@@ -11,8 +11,8 @@ import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import dayjs from 'dayjs';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCodesContext } from 'hooks/useContext';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { useContext, useState } from 'react';
 import ReviewAccessRequestForm, {
   IReviewAccessRequestForm,
@@ -22,7 +22,6 @@ import ReviewAccessRequestForm, {
 
 interface IAccessRequestPendingListProps {
   accessRequests: IGetAccessRequestsListResponse[];
-  codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
 
@@ -33,7 +32,10 @@ interface IAccessRequestPendingListProps {
  * @returns
  */
 const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
-  const { accessRequests, codes, refresh } = props;
+  const { accessRequests, refresh } = props;
+
+  const codesContext = useCodesContext();
+  const codes = codesContext.codesDataLoader?.data
 
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);

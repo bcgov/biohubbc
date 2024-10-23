@@ -60,7 +60,6 @@ describe('ActiveUsersList', () => {
   it('shows `No Active Users` when there are no active users', async () => {
     const { getByText } = renderContainer({
       activeUsers: [],
-      codes: codes,
       refresh: () => {}
     });
 
@@ -72,7 +71,6 @@ describe('ActiveUsersList', () => {
   it('renders the add new users button correctly', async () => {
     const { getByTestId } = renderContainer({
       activeUsers: [],
-      codes: codes,
       refresh: () => {}
     });
 

@@ -9,7 +9,6 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup/ToggleButtonGroup
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { useState } from 'react';
 import AccessRequestActionedList from './list/actioned/AccessRequestActionedList';
 import AccessRequestPendingList from './list/pending/AccessRequestPendingList';
@@ -17,7 +16,6 @@ import AccessRequestRejectedList from './list/rejected/AccessRequestRejectedList
 
 export interface IAccessRequestContainerProps {
   accessRequests: IGetAccessRequestsListResponse[];
-  codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
 
@@ -32,7 +30,8 @@ enum AccessRequestViewEnum {
  *
  */
 const AccessRequestContainer = (props: IAccessRequestContainerProps) => {
-  const { accessRequests, codes, refresh } = props;
+  const { accessRequests, refresh } = props;
+
   const [activeView, setActiveView] = useState<AccessRequestViewEnum>(AccessRequestViewEnum.PENDING);
 
   const views = [
@@ -107,7 +106,7 @@ const AccessRequestContainer = (props: IAccessRequestContainerProps) => {
       <Divider />
       <Box p={2}>
         {activeView === AccessRequestViewEnum.PENDING && (
-          <AccessRequestPendingList accessRequests={pendingRequests} codes={codes} refresh={refresh} />
+          <AccessRequestPendingList accessRequests={pendingRequests} refresh={refresh} />
         )}
         {activeView === AccessRequestViewEnum.ACTIONED && (
           <AccessRequestActionedList accessRequests={actionedRequests} />
