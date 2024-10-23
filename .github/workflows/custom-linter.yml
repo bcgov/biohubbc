@@ -10,19 +10,27 @@ on:
 jobs:
   # OpenAPI request bodies should contain the property `required` and be set to true
   #
+  # // Valid (request body required)
+  #
   # requestBody: {
-  #   required: true, // Request body must be defined
+  #   required: true,
   #   content: {}
   # }
   #
-  findOptionalRequestBodies:
-    name: Check OpenAPI schemas for missing `required:true` in 'requestBody'
+  # // Invalid (request body not required)
+  #
+  # requestBody: {
+  #   content: {}
+  # }
+  #
+  openApiRequiredRequestBody:
+    name: Schema missing `required:true` in `requestBody`
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Run required `requestBody` finder
+      - name: Find schemas with optional request bodies
         run: |
           # For OpenAPI endpoint schemas, find all request bodies that don't have `required:true`
           #
