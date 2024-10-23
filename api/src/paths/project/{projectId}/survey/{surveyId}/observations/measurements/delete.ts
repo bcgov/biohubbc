@@ -57,6 +57,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Survey observation measurement delete request body.',
+    required: true,
     content: {
       'application/json': {
         schema: {

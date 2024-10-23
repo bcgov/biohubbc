@@ -146,6 +146,8 @@ export function getDeploymentById(): RequestHandler {
       // Fetch deployments from the deployment service for the given surveyId
       const surveyDeployment = await deploymentService.getDeploymentById(deploymentId);
 
+      await connection.commit();
+
       // Return early if there are no deployments
       if (!surveyDeployment) {
         // Return 400 if the provided deployment ID does not exist
@@ -306,6 +308,7 @@ PUT.apiDoc = {
   ],
   requestBody: {
     description: 'Specifies a deployment id and the new timerange to update it with.',
+    required: true,
     content: {
       'application/json': {
         schema: {

@@ -15,7 +15,7 @@ import { useContext } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import yup from 'utils/YupSchema';
 import SurveySamplingSiteEditForm from '../../components/map/SurveySampleSiteEditForm';
-import SampleSiteGeneralInformationForm from './SampleSiteGeneralInformationForm';
+import SampleSiteGeneralInformationEditForm from './SampleSiteGeneralInformationForm';
 
 export const SampleSiteEditFormYupSchema = yup.object({
   name: yup.string().default('').min(1, 'Minimum 1 character.').max(50, 'Maximum 50 characters.'),
@@ -50,7 +50,7 @@ const SampleSiteEditForm = (props: ISampleSiteEditFormProps) => {
           <HorizontalSplitFormComponent
             title="General Information"
             summary="Specify the name and description for this sampling site">
-            <SampleSiteGeneralInformationForm />
+            <SampleSiteGeneralInformationEditForm />
           </HorizontalSplitFormComponent>
 
           <Divider />
