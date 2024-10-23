@@ -39,11 +39,16 @@ import { Knex } from 'knex';
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`--sql
-    SET SEARCH_PATH=biohub;
-
+    ----------------------------------------------------------------------------------------
+    -- Add btree gist extension
+    ----------------------------------------------------------------------------------------
+    CREATE EXTENSION IF NOT EXISTS btree_gist;
+    
     ----------------------------------------------------------------------------------------
     -- Create telemetry_ats table
     ----------------------------------------------------------------------------------------
+    SET SEARCH_PATH=biohub;
+
     CREATE TABLE telemetry_ats (
       telemetry_ats_id        uuid DEFAULT public.gen_random_uuid() NOT NULL,
       device_key              varchar GENERATED ALWAYS AS ('ats:' || collarserialnumber::text) STORED,
