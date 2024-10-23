@@ -32,7 +32,7 @@ jobs:
 
       - name: Find schemas with optional request bodies
         run: |
-          # For OpenAPI endpoint schemas, find all request bodies that don't have `required:true`
+          # For OpenAPI schemas, find all request bodies that don't have `required:true`
           #
           # Find all non-test files in apr/src/paths
           # Find all request bodies that don't contain required:true property
