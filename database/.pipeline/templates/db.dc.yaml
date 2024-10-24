@@ -19,7 +19,7 @@ parameters:
   - name: IMAGE_STREAM_NAME
     description: The OpenShift ImageStream name.
     required: true
-    value: 'postgis-postgres'
+    value: 'postgres-postgis'
   - name: IMAGE_STREAM_VERSION
     description: Version of PostgreSQL image to be used (9.2, 9.4, 9.5 or latest).
     required: true
@@ -56,6 +56,10 @@ parameters:
     name: POSTGRESQL_DATABASE
     required: true
     value: 'biohubbc'
+  - name: PGDATA
+    description: Path to PostgreSQL data directory
+    value: '/var/lib/pgsql/data'
+    required: false
   - name: TZ
     description: Database timezone
     required: false
