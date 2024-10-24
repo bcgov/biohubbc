@@ -9,20 +9,15 @@ import {
   DeploymentDetailsForm,
   DeploymentDetailsFormInitialValues,
   DeploymentDetailsFormYupSchema
-} from 'features/surveys/telemetry/deployments/components/form/deployment-details/DeploymentDetailsForm';
-import {
-  DeploymentDeviceDetailsForm,
-  DeploymentDeviceDetailsFormInitialValues,
-  DeploymentDeviceDetailsFormYupSchema
-} from 'features/surveys/telemetry/deployments/components/form/device-details/DeploymentDeviceDetailsForm';
+} from 'features/surveys/telemetry/manage/deployments/form/deployment-details/DeploymentDetailsForm';
 import {
   DeploymentTimelineForm,
   DeploymentTimelineFormInitialValues,
   DeploymentTimelineFormYupSchema
-} from 'features/surveys/telemetry/deployments/components/form/timeline/DeploymentTimelineForm';
+} from 'features/surveys/telemetry/manage/deployments/form/timeline/DeploymentTimelineForm';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useSurveyContext } from 'hooks/useContext';
+import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useEffect } from 'react';
@@ -30,13 +25,10 @@ import { useHistory } from 'react-router';
 
 export const DeploymentFormInitialValues = {
   ...DeploymentDetailsFormInitialValues,
-  ...DeploymentTimelineFormInitialValues,
-  ...DeploymentDeviceDetailsFormInitialValues
+  ...DeploymentTimelineFormInitialValues
 };
 
-export const DeploymentFormYupSchema = DeploymentDetailsFormYupSchema.concat(DeploymentTimelineFormYupSchema).concat(
-  DeploymentDeviceDetailsFormYupSchema
-);
+export const DeploymentFormYupSchema = DeploymentDetailsFormYupSchema.concat(DeploymentTimelineFormYupSchema);
 
 interface IDeploymentFormProps {
   isSubmitting: boolean;
@@ -50,10 +42,11 @@ interface IDeploymentFormProps {
  * @return {*}
  */
 export const DeploymentForm = (props: IDeploymentFormProps) => {
-  const { isSubmitting, isEdit } = props;
+  const { isSubmitting } = props;
 
   const { submitForm, values } = useFormikContext<ICreateAnimalDeployment>();
 
+  const codesContext = useCodesContext();
   const surveyContext = useSurveyContext();
 
   const biohubApi = useBiohubApi();
@@ -63,15 +56,6 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
   const critterDataLoader = useDataLoader((critterId: number) =>
     biohubApi.survey.getCritterById(surveyContext.projectId, surveyContext.surveyId, critterId)
   );
-
-  const frequencyUnitDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('frequency_unit'));
-  const deviceMakesDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('device_make'));
-
-  // Fetch frequency unit and device make code values from BCTW on component mount
-  useEffect(() => {
-    frequencyUnitDataLoader.load();
-    deviceMakesDataLoader.load();
-  }, [deviceMakesDataLoader, frequencyUnitDataLoader]);
 
   // Fetch critter data when critter_id changes (ie. when the user selects a critter)
   useEffect(() => {
@@ -88,8 +72,12 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
           <HorizontalSplitFormComponent title="Deployment Details" summary="Enter information about the deployment">
             <DeploymentDetailsForm
               surveyAnimals={surveyContext.critterDataLoader.data ?? []}
-              frequencyUnits={frequencyUnitDataLoader.data?.map((data) => ({ label: data.code, value: data.id })) ?? []}
-              isEdit={isEdit}
+              frequencyUnits={
+                codesContext.codesDataLoader.data?.frequency_unit?.map((data) => ({
+                  label: data.name,
+                  value: data.id
+                })) ?? []
+              }
             />
           </HorizontalSplitFormComponent>
 
@@ -99,17 +87,6 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
             <DeploymentTimelineForm
               captures={critterDataLoader.data?.captures ?? []}
               mortalities={critterDataLoader.data?.mortality ?? []}
-            />
-          </HorizontalSplitFormComponent>
-
-          <Divider />
-
-          <HorizontalSplitFormComponent
-            title="Device Metadata"
-            summary="Enter additional information about the device and optionally enable automatic data 
-            retrievals for compatible device makes">
-            <DeploymentDeviceDetailsForm
-              deviceMakes={deviceMakesDataLoader.data?.map((data) => ({ label: data.code, value: data.id })) ?? []}
             />
           </HorizontalSplitFormComponent>
 

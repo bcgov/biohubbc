@@ -15,8 +15,8 @@ import yup from 'utils/YupSchema';
 export const DeploymentDetailsFormInitialValues: yup.InferType<typeof DeploymentDetailsFormYupSchema> = {
   device_id: null as unknown as string,
   critter_id: null as unknown as number,
-  frequency: null,
-  frequency_unit: null
+  frequency: null as unknown as number,
+  frequency_unit_id: null as unknown as number
 };
 
 export const DeploymentDetailsFormYupSchema = yup.object({
@@ -26,15 +26,17 @@ export const DeploymentDetailsFormYupSchema = yup.object({
     yup
       .number()
       .nullable()
-      .when('frequency_unit', {
-        is: (frequency_unit: number) => isDefined(frequency_unit), // when frequency_unit is defined
+      .default(null)
+      .when('frequency_unit_id', {
+        is: (frequency_unit_id: number) => isDefined(frequency_unit_id), // when frequency_unit_id is defined
         then: yup.number().nullable().required('Frequency is required')
       })
   ),
-  frequency_unit: yup.lazy(() =>
+  frequency_unit_id: yup.lazy(() =>
     yup
       .number()
       .nullable()
+      .default(null)
       .when('frequency', {
         is: (frequency: number) => isDefined(frequency), // when frequency is defined
         then: yup.number().nullable().required('Frequency unit is required')
@@ -45,7 +47,6 @@ export const DeploymentDetailsFormYupSchema = yup.object({
 interface IDeploymentDetailsFormProps {
   surveyAnimals: ICritterSimpleResponse[];
   frequencyUnits: IAutocompleteFieldOption<number>[];
-  isEdit?: boolean;
 }
 
 /**
@@ -55,7 +56,7 @@ interface IDeploymentDetailsFormProps {
  * @return {*}
  */
 export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
-  const { surveyAnimals, frequencyUnits, isEdit } = props;
+  const { surveyAnimals, frequencyUnits } = props;
 
   const { setFieldValue, values } = useFormikContext<ICreateAnimalDeployment>();
 
@@ -86,15 +87,6 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
             </Typography>
             &nbsp;page.
           </Typography>
-          <CustomTextField
-            name="device_id"
-            label="Device ID"
-            maxLength={200}
-            other={{
-              required: true,
-              disabled: isEdit
-            }}
-          />
         </Grid>
         <Grid item xs={12}>
           <AnimalAutocompleteField
@@ -118,16 +110,16 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
               other={{
                 type: 'number',
                 sx: { flex: 1 },
-                required: !!(values.frequency_unit || values.frequency)
+                required: !!(values.frequency_unit_id || values.frequency)
               }}
             />
             <AutocompleteField
               sx={{ flex: 0.4 }}
-              name="frequency_unit"
-              id="frequency_unit"
+              name="frequency_unit_id"
+              id="frequency_unit_id"
               label={'Unit'}
               options={frequencyUnits}
-              required={!!(values.frequency || values.frequency_unit)}
+              required={!!(values.frequency || values.frequency_unit_id)}
             />
           </Stack>
         </Grid>

@@ -24,37 +24,33 @@ import yup from 'utils/YupSchema';
 type DeploymentEndType = 'capture' | 'mortality' | 'fell_off';
 
 export const DeploymentTimelineFormInitialValues: yup.InferType<typeof DeploymentTimelineFormYupSchema> = {
+  attachment_start_date: null as unknown as string,
+  attachment_start_time: null,
+  attachment_end_date: null,
+  attachment_end_time: null,
   critterbase_start_capture_id: null as unknown as string,
   critterbase_end_mortality_id: null,
-  critterbase_end_capture_id: null,
-  attachment_end_date: null,
-  attachment_end_time: null
+  critterbase_end_capture_id: null
 };
 
 export const DeploymentTimelineFormYupSchema = yup.object({
-  critterbase_start_capture_id: yup.string().nullable().required('You must select the initial capture event'),
-  critterbase_end_mortality_id: yup.string().uuid().nullable(),
-  critterbase_end_capture_id: yup.string().uuid().nullable(),
-  attachment_end_date: yup.lazy(() =>
-    yup
-      .string()
-      .nullable()
-      .when('attachment_end_time', {
-        is: (attachment_end_time: string | null) => attachment_end_time !== null,
-        then: yup.string().nullable().required('End Date is required'),
-        otherwise: yup.string().nullable()
-      })
-  ),
+  attachment_start_date: yup.string().required('Start date is required'),
+  attachment_start_time: yup.string().nullable().default(null),
+  attachment_end_date: yup.string().nullable().default(null),
   attachment_end_time: yup.lazy(() =>
     yup
       .string()
       .nullable()
+      .default(null)
       .when('attachment_end_date', {
         is: (attachment_end_date: string | null) => attachment_end_date !== null,
         then: yup.string().nullable().required('End time is required'),
         otherwise: yup.string().nullable()
       })
-  )
+  ),
+  critterbase_start_capture_id: yup.string().nullable().required('You must select the initial capture event'),
+  critterbase_end_mortality_id: yup.string().uuid().nullable().default(null),
+  critterbase_end_capture_id: yup.string().uuid().nullable().default(null)
 });
 
 interface IDeploymentTimelineFormProps {

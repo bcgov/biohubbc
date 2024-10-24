@@ -3,27 +3,31 @@ import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/A
 import CustomTextField from 'components/fields/CustomTextField';
 import yup from 'utils/YupSchema';
 
-export const DeploymentDeviceDetailsFormInitialValues: yup.InferType<typeof DeploymentDeviceDetailsFormYupSchema> = {
-  device_make: null as unknown as number,
-  device_model: null
+export const DeviceDetailsFormInitialValues: yup.InferType<typeof DeviceDetailsFormYupSchema> = {
+  serial: null as unknown as string,
+  device_make_id: null as unknown as number,
+  model: null,
+  comment: null
 };
 
-export const DeploymentDeviceDetailsFormYupSchema = yup.object({
-  device_make: yup.number().nullable().required('You must enter the device make'),
-  device_model: yup.string().nullable()
+export const DeviceDetailsFormYupSchema = yup.object({
+  serial: yup.string().required('You must enter the device serial number'),
+  device_make_id: yup.number().required('You must enter the device make'),
+  model: yup.string().nullable().default(null),
+  comment: yup.string().nullable().default(null)
 });
 
-interface IDeploymentDeviceDetailsFormProps {
+interface IDeviceDetailsFormProps {
   deviceMakes: IAutocompleteFieldOption<number>[];
 }
 
 /**
- * Deployment form - device details section.
+ * Device form - details section.
  *
- * @param {IDeploymentDeviceDetailsFormProps} props
+ * @param {IDeviceDetailsFormProps} props
  * @return {*}
  */
-export const DeploymentDeviceDetailsForm = (props: IDeploymentDeviceDetailsFormProps) => {
+export const DeviceDetailsForm = (props: IDeviceDetailsFormProps) => {
   const { deviceMakes } = props;
 
   return (
