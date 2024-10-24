@@ -63,6 +63,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Critterbase Measurements CSV import file.',
+    required: true,
     content: {
       'multipart/form-data': {
         schema: {

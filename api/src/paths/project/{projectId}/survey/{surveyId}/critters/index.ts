@@ -140,6 +140,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Critterbase create critter request object',
+    required: true,
     content: {
       'application/json': {
         schema: {

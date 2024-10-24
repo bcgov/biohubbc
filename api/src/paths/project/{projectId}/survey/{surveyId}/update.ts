@@ -71,6 +71,7 @@ PUT.apiDoc = {
   ],
   requestBody: {
     description: 'Survey put request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {

@@ -31,6 +31,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Device body',
+    required: true,
     content: {
       'application/json': {
         schema: {

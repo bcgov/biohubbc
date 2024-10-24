@@ -183,6 +183,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Funding source post request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {
