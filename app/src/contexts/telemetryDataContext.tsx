@@ -1,7 +1,7 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
-import { WarningSchema } from 'interfaces/useBioHubApi.interface';
-import { IAllTelemetry, IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
+import { IAllTelemetry } from 'interfaces/useTelemetryApi.interface';
+import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 import { createContext, PropsWithChildren, useMemo } from 'react';
 
 /**
@@ -14,15 +14,12 @@ export interface ITelemetryDataContext {
   /**
    * The Data Loader used to load deployments.
    *
-   * @type {DataLoader<[project_id: number, survey_id: number], { deployments: IAnimalDeployment[]; bad_deployments: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }>[] }, unknown>}
+   * @type {DataLoader<[project_id: number, survey_id: number], { deployments: TelemetryDeployment[] }>[] }, unknown>}
    * @memberof ITelemetryDataContext
    */
   deploymentsDataLoader: DataLoader<
     [project_id: number, survey_id: number],
-    {
-      deployments: IAnimalDeployment[];
-      bad_deployments: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }>[];
-    },
+    { deployments: TelemetryDeployment[] },
     unknown
   >;
   /**
@@ -39,7 +36,7 @@ export const TelemetryDataContext = createContext<ITelemetryDataContext | undefi
 export const TelemetryDataContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
   const biohubApi = useBiohubApi();
 
-  const deploymentsDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
+  const deploymentsDataLoader = useDataLoader(biohubApi.telemetryDeployment.getDeploymentsInSurvey);
   const telemetryDataLoader = useDataLoader(biohubApi.telemetry.getAllTelemetryByDeploymentIds);
 
   const telemetryDataContext: ITelemetryDataContext = useMemo(() => {

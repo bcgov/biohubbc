@@ -21,13 +21,13 @@ import YesNoDialog from 'components/dialog/YesNoDialog';
 import { TelemetryTableI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
+import { TelemetryDeviceKeysButton } from 'features/surveys/telemetry/manage/device-keys/TelemetryDeviceKeysButton';
 import { TelemetryTable } from 'features/surveys/telemetry/table/TelemetryTable';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import { useContext, useDeferredValue, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
-import { TelemetryDeviceKeysButton } from '../device-keys/TelemetryDeviceKeysButton';
 
 export const TelemetryTableContainer = () => {
   const biohubApi = useBiohubApi();

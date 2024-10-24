@@ -11,7 +11,7 @@ import { AxiosProgressEvent, CancelTokenSource } from 'axios';
 import AlertBar from 'components/alert/AlertBar';
 import FileUpload from 'components/file-upload/FileUpload';
 import { AttachmentTypeFileExtensions } from 'constants/attachments';
-import { TelemetryDeviceKeysList } from 'features/surveys/telemetry/device-keys/TelemetryDeviceKeysList';
+import { TelemetryDeviceKeysList } from 'features/surveys/telemetry/manage/device-keys/TelemetryDeviceKeysList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';

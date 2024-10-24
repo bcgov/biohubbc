@@ -1,8 +1,8 @@
 import { mdiKeyVariant } from '@mdi/js';
 import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
-import { TelemetryDeviceKeysDialog } from 'features/surveys/telemetry/device-keys/TelemetryDeviceKeysDialog';
 import { useState } from 'react';
+import { TelemetryDeviceKeysDialog } from './TelemetryDeviceKeysDialog';
 
 export interface ITelemetryDeviceKeysButtonProps {
   /**

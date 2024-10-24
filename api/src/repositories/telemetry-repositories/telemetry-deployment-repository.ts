@@ -1,7 +1,9 @@
 import SQL from 'sql-template-strings';
+import { z } from 'zod';
 import { DeploymentRecord } from '../../database-models/deployment';
 import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
+import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { BaseRepository } from '../base-repository';
 import {
   CreateDeployment,
@@ -117,45 +119,54 @@ export class TelemetryDeploymentRepository extends BaseRepository {
   /**
    * Get deployments for a survey ID. Includes additional device and critter data.
    *
-   * @param {number} surveyId The survey ID
+   * @param {number} surveyId
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<ExtendedDeploymentRecord[]>}
    * @memberof TelemetryDeploymentRepository
    */
-  async getDeploymentsForSurveyId(surveyId: number): Promise<ExtendedDeploymentRecord[]> {
-    const sqlStatement = SQL`
-      SELECT
-        -- deployment data
-        deployment2.deployment2_id,
-        deployment2.survey_id,
-        deployment2.critter_id,
-        deployment2.device_id,
-        deployment2.frequency,
-        deployment2.frequency_unit_id,
-        deployment2.attachment_start_date,
-        deployment2.attachment_start_time,
-        deployment2.attachment_end_date,
-        deployment2.attachment_end_time,
-        deployment2.critterbase_start_capture_id,
-        deployment2.critterbase_end_capture_id,
-        deployment2.critterbase_end_mortality_id,
-        -- device data
-        device.device_make_id,
-        device.model,
-        -- critter data
-        critter.critterbase_critter_id
-      FROM
-        deployment2
-      INNER JOIN
-        device
-          ON deployment2.device_id = device.device_id
-      INNER JOIN
-        critter
-          ON deployment2.critter_id = critter.critter_id
-      WHERE
-        deployment2.survey_id = ${surveyId};
-    `;
+  async getDeploymentsForSurveyId(
+    surveyId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<ExtendedDeploymentRecord[]> {
+    const knex = getKnex();
 
-    const response = await this.connection.sql(sqlStatement, ExtendedDeploymentRecord);
+    const queryBuilder = knex
+      .queryBuilder()
+      .select(
+        // deployment data
+        'deployment2.deployment2_id',
+        'deployment2.survey_id',
+        'deployment2.critter_id',
+        'deployment2.device_id',
+        'deployment2.frequency',
+        'deployment2.frequency_unit_id',
+        'deployment2.attachment_start_date',
+        'deployment2.attachment_start_time',
+        'deployment2.attachment_end_date',
+        'deployment2.attachment_end_time',
+        'deployment2.critterbase_start_capture_id',
+        'deployment2.critterbase_end_capture_id',
+        'deployment2.critterbase_end_mortality_id',
+        // device data
+        'device.device_make_id',
+        'device.model',
+        // critter data
+        'critter.critterbase_critter_id'
+      )
+      .from('deployment2')
+      .innerJoin('device', 'deployment2.device_id', 'device.device_id')
+      .innerJoin('critter', 'deployment2.critter_id', 'critter.critter_id')
+      .where('deployment2.survey_id', surveyId);
+
+    if (pagination) {
+      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        queryBuilder.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(queryBuilder, ExtendedDeploymentRecord);
 
     return response.rows;
   }
@@ -193,6 +204,25 @@ export class TelemetryDeploymentRepository extends BaseRepository {
     return response.rows;
   }
 
+  /**
+   * Get the total count of all deployments for a survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>}
+   * @memberof TelemetryDeploymentRepository
+   */
+  async getDeploymentsCount(surveyId: number): Promise<number> {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .select(knex.raw('count(*)::integer as count'))
+      .from('deployment2')
+      .where('survey_id', surveyId);
+
+    const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
+
+    return response.rows[0].count;
+  }
   /**
    * Update a deployment.
    *

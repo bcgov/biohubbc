@@ -3,7 +3,6 @@ import { IAllTelemetryAdvancedFilters } from 'features/summary/tabular-data/tele
 import { IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
   IAllTelemetry,
-  ICodeResponse,
   ICreateManualTelemetry,
   IFindTelemetryResponse,
   IManualTelemetry,
@@ -11,7 +10,7 @@ import {
   TelemetryDeviceKeyFile
 } from 'interfaces/useTelemetryApi.interface';
 import qs from 'qs';
-import { ApiPaginationRequestOptions } from 'types/misc';
+import { ApiPaginationRequestOptions, ApiPaginationResponseParams } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with telemetry.
@@ -53,6 +52,29 @@ const useTelemetryApi = (axios: AxiosInstance) => {
         bctwDeploymentIds: deploymentIds
       }
     });
+    return data;
+  };
+
+  /**
+   * Get all telemetry for a survey.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @return {*}  {Promise<{ telemetry: IAllTelemetry[]; count: number; pagination: ApiPaginationResponseParams }>}
+   */
+  const getTelemetryForSurvey = async (
+    projectId: number,
+    surveyId: number,
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<{ telemetry: IAllTelemetry[]; count: number; pagination: ApiPaginationResponseParams }> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/telemetry`, {
+      params: {
+        ...pagination
+      },
+      paramsSerializer: (params) => qs.stringify(params)
+    });
+
     return data;
   };
 
@@ -138,24 +160,6 @@ const useTelemetryApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Returns a list of code values for a given code header.
-   *
-   * @param {string} codeHeader
-   * @return {*}  {Promise<ICodeResponse[]>}
-   */
-  const getCodeValues = async (codeHeader: string): Promise<ICodeResponse[]> => {
-    try {
-      const { data } = await axios.get(`/api/telemetry/code?codeHeader=${codeHeader}`);
-      return data;
-    } catch (e) {
-      if (e instanceof Error) {
-        console.error(e.message);
-      }
-    }
-    return [];
-  };
-
-  /**
    * Upload a telemetry device credential file.
    *
    * @param {number} projectId
@@ -206,12 +210,12 @@ const useTelemetryApi = (axios: AxiosInstance) => {
   return {
     findTelemetry,
     getAllTelemetryByDeploymentIds,
+    getTelemetryForSurvey,
     createManualTelemetry,
     updateManualTelemetry,
     deleteManualTelemetry,
     uploadCsvForImport,
     processTelemetryCsvSubmission,
-    getCodeValues,
     uploadTelemetryDeviceCredentialFile,
     getTelemetryDeviceKeyFiles
   };
