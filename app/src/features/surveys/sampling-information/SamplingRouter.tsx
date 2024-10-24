@@ -22,30 +22,18 @@ export const SamplingRouter = () => {
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling"
         title={getTitle('Manage Sampling Information')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR,
-            PROJECT_PERMISSION.OBSERVER
-          ]}
-          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <SamplingSiteManagePage />
-          </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        <DialogContextProvider>
+          <SamplingSiteManagePage />
+        </DialogContextProvider>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling/create"
         title={getTitle('Create Sampling Sites')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <CreateSamplingSitePage />
-          </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        <DialogContextProvider>
+          <CreateSamplingSitePage />
+        </DialogContextProvider>
       </RouteWithTitle>
 
       <RouteWithTitle
@@ -65,26 +53,18 @@ export const SamplingRouter = () => {
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling/techniques/create"
         title={getTitle('Create Technique')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <CreateTechniquePage />
-          </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        <DialogContextProvider>
+          <CreateTechniquePage />
+        </DialogContextProvider>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
         path="/admin/projects/:id/surveys/:survey_id/sampling/techniques/:method_technique_id/edit"
         title={getTitle('Edit Technique')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <DialogContextProvider>
-            <EditTechniquePage />
-          </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        <DialogContextProvider>
+          <EditTechniquePage />
+        </DialogContextProvider>
       </RouteWithTitle>
     </Switch>
   );

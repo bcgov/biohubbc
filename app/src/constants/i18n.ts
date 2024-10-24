@@ -477,17 +477,6 @@ export const TelemetryDeviceKeyFileI18N = {
     'An error has occurred while attempting to download the device key file, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const TelemetryDeviceI18N = {
-  cancelTitle: 'Discard changes and exit?',
-  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
-  createErrorTitle: 'Error Creating Device',
-  createErrorText:
-    'An error has occurred while attempting to create your device. Please try again. If the error persists, please contact your system administrator.',
-  editErrorTitle: 'Error Editing Device',
-  editErrorText:
-    'An error has occurred while attempting to edit your device. Please try again. If the error persists, please contact your system administrator.'
-};
-
 export const CreateAnimalDeploymentI18N = {
   cancelTitle: 'Discard changes and exit?',
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
@@ -501,7 +490,7 @@ export const EditAnimalDeploymentI18N = {
   cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
   createErrorTitle: 'Error Creating Deployment',
   createErrorText:
-    'An error has occurred while attempting to edit your deployment. Please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to create your deployment. Please try again. If the error persists, please contact your system administrator.'
 };
 
 export const SurveyExportI18N = {

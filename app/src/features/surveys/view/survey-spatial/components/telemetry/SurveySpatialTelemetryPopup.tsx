@@ -30,14 +30,14 @@ export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupP
   const getTelemetryMetadata = () => {
     const telemetryId = feature.id;
 
-    const telemetryRecord = telemetryDataLoader.data?.find((telemetry) => telemetry.telemetry_id === telemetryId);
+    const telemetryRecord = telemetryDataLoader.data?.find((telemetry) => telemetry.id === telemetryId);
 
     if (!telemetryRecord) {
       return [{ label: 'Telemetry ID', value: telemetryId }];
     }
 
     const deploymentRecord = deploymentDataLoader.data?.deployments.find(
-      (deployment) => deployment.deployment2_id === telemetryRecord.deployment_id
+      (deployment) => deployment.bctw_deployment_id === telemetryRecord.deployment_id
     );
 
     if (!deploymentRecord) {

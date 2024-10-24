@@ -66,13 +66,5 @@ export const codes: IGetAllCodeSetsResponse = {
   observation_subcount_signs: [
     { id: 1, name: 'Scat', description: 'Scat left by the species.' },
     { id: 2, name: 'Direct sighting', description: 'A direct sighting of the species.' }
-  ],
-  device_make: [
-    { id: 1, name: 'Vectronic' },
-    { id: 2, name: 'Lotek' }
-  ],
-  frequency_unit: [
-    { id: 1, name: 'Hz' },
-    { id: 2, name: 'Mhz' }
   ]
 };

@@ -23,7 +23,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { RowValidationError, TableValidationModel } from '../components/data-grid/DataGridValidationAlert';
 
 export interface IManualTelemetryRecord {
-  deployment_id: number;
+  deployment_id: string;
   device_id: string;
   latitude: number;
   longitude: number;
@@ -684,14 +684,14 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
 
     const rows: IManualTelemetryTableRow[] = telemetryData.map((item) => {
       return {
-        id: item.deployment_id,
+        id: item.id,
         deployment_id: item.deployment_id,
-        device_id: item.serial,
+        device_id: item.device_id,
         latitude: item.latitude,
         longitude: item.longitude,
         date: dayjs(item.acquisition_date).format('YYYY-MM-DD'),
         time: dayjs(item.acquisition_date).format('HH:mm:ss'),
-        telemetry_type: item.vendor
+        telemetry_type: item.telemetry_type
       };
     });
 

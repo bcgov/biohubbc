@@ -1,9 +1,8 @@
-import { DeploymentFormYupSchema } from 'features/surveys/telemetry/manage/deployments/form/DeploymentForm';
+import { DeploymentFormYupSchema } from 'features/surveys/telemetry/deployments/components/form/DeploymentForm';
 import { FeatureCollection } from 'geojson';
 import { ApiPaginationResponseParams } from 'types/misc';
 import yup from 'utils/YupSchema';
 
-// TODO Nick - Replace with new schema
 export interface IFindTelementryObj {
   telemetry_id: string;
   acquisition_date: string | null;
@@ -29,6 +28,17 @@ export interface IFindTelemetryResponse {
   pagination: ApiPaginationResponseParams;
 }
 
+export interface ICritterDeploymentResponse {
+  critter_id: string;
+  device_id: number;
+  deployment_id: string;
+  survey_critter_id: string;
+  alias: string;
+  attachment_start: string;
+  attachment_end?: string;
+  taxon: string;
+}
+
 export interface IUpdateManualTelemetry {
   telemetry_manual_id: string;
   latitude: number;
@@ -46,23 +56,16 @@ export interface IManualTelemetry extends ICreateManualTelemetry {
   telemetry_manual_id: string;
 }
 
-/**
- * Normalized telemetry record for all vendor types.
- *
- * @export
- * @interface IAllTelemetry
- */
 export interface IAllTelemetry {
-  telemetry_id: string;
-  deployment_id: number;
-  critter_id: number;
-  vendor: string;
-  serial: string;
+  id: string;
+  deployment_id: string;
+  telemetry_manual_id: string;
+  telemetry_id: number | null;
+  device_id: string;
+  latitude: number;
+  longitude: number;
   acquisition_date: string;
-  latitude: number | null;
-  longitude: number | null;
-  elevation: number | null;
-  temperature: number | null;
+  telemetry_type: string;
 }
 
 export type IAnimalDeployment = {
@@ -147,6 +150,10 @@ export type IAnimalDeployment = {
 
 export type ICreateAnimalDeployment = yup.InferType<typeof DeploymentFormYupSchema>;
 
+export interface ICreateAnimalDeploymentPostData extends Omit<ICreateAnimalDeployment, 'device_id'> {
+  device_id: number;
+}
+
 export type IAllTelemetryPointCollection = { points: FeatureCollection; tracks: FeatureCollection };
 
 export interface ITelemetry {
@@ -182,6 +189,15 @@ export interface ITelemetry {
    * Will either be 'MANUAL' (for manual telementry) or the name of the vendor (for vendor telemetry).
    */
   telemetry_type: string;
+}
+
+export interface ICodeResponse {
+  code_header_title: string;
+  code_header_name: string;
+  id: number;
+  code: string;
+  description: string;
+  long_description: string;
 }
 
 export type TelemetryDeviceKeyFile = {

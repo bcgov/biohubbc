@@ -5,6 +5,7 @@ import { ISurveyCritter } from 'contexts/animalPageContext';
 import { ISurveyAdvancedFilters } from 'features/summary/list-data/survey/SurveysListFilterForm';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import { SurveyExportConfig } from 'features/surveys/view/survey-export/SurveyExportForm';
+import { WarningSchema } from 'interfaces/useBioHubApi.interface';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetReportDetails, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import {
@@ -16,7 +17,11 @@ import {
   IGetSurveyForViewResponse,
   IUpdateSurveyRequest
 } from 'interfaces/useSurveyApi.interface';
-import { IAllTelemetryPointCollection } from 'interfaces/useTelemetryApi.interface';
+import {
+  IAllTelemetryPointCollection,
+  IAnimalDeployment,
+  ICreateAnimalDeploymentPostData
+} from 'interfaces/useTelemetryApi.interface';
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
@@ -434,6 +439,91 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Create a new deployment with associated device hardware metadata. Must include critterbase critter id.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} critterId
+   * @param {Omit<ICreateAnimalDeploymentPostData, 'critter_id'>} body
+   * @return {*}  {Promise<{ deploymentId: number }>}
+   */
+  const createDeployment = async (
+    projectId: number,
+    surveyId: number,
+    critterId: number,
+    body: Omit<ICreateAnimalDeploymentPostData, 'critter_id'>
+  ): Promise<{ deploymentId: number }> => {
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
+      body
+    );
+    return data;
+  };
+
+  /**
+   * Update a deployment with a new time span.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} deploymentId
+   * @param {ICreateAnimalDeploymentPostData} body
+   * @return {*}  {Promise<number>}
+   */
+  const updateDeployment = async (
+    projectId: number,
+    surveyId: number,
+    deploymentId: number,
+    body: ICreateAnimalDeploymentPostData
+  ): Promise<number> => {
+    const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`, body);
+    return data;
+  };
+
+  /**
+   * Get all deployments associated with the given survey ID.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<{
+   *     deployments: IAnimalDeployment[];
+   *     bad_deployments: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }>[];
+   *   }>}
+   */
+  const getDeploymentsInSurvey = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<{
+    deployments: IAnimalDeployment[];
+    bad_deployments: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }>[];
+  }> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments`);
+    return data;
+  };
+
+  /**
+   * Get deployment by Id, using the integer Id from SIMS instead of the BCTW GUID
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} deploymentId
+   * @return {*}  {(Promise<
+   *     | { deployment: IAnimalDeployment; bad_deployment: null }
+   *     | { deployment: null; bad_deployment: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }> }
+   *   >)}
+   */
+  const getDeploymentById = async (
+    projectId: number,
+    surveyId: number,
+    deploymentId: number
+  ): Promise<
+    | { deployment: IAnimalDeployment; bad_deployment: null }
+    | { deployment: null; bad_deployment: WarningSchema<{ sims_deployment_id: number; bctw_deployment_id: string }> }
+  > => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
+    return data;
+  };
+
+  /**
    * Get all telemetry points for a critter in a survey within a given time span.
    *
    * TODO: Unused?
@@ -455,6 +545,35 @@ const useSurveyApi = (axios: AxiosInstance) => {
     const { data } = await axios.get(
       `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/telemetry?startDate=${startDate}&endDate=${endDate}`
     );
+    return data;
+  };
+
+  /**
+   * Deletes a deployment. Will trigger deletion in SIMS and invalidates the deployment in BCTW.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} deploymentId
+   * @return {*}  {Promise<string>}
+   */
+  const deleteDeployment = async (projectId: number, surveyId: number, deploymentId: number): Promise<string> => {
+    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
+    return data;
+  };
+
+  /**
+   * Deletes a list of deployments. Will trigger deletion in SIMS and invalidates the deployments in BCTW.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number[]} deploymentIds
+   * @return {*}  {Promise<string>}
+   */
+  const deleteDeployments = async (projectId: number, surveyId: number, deploymentIds: number[]): Promise<string> => {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/deployments/delete`, {
+      deployment_ids: deploymentIds
+    });
+
     return data;
   };
 
@@ -600,6 +719,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveysBasicFieldsByProjectId,
     getSurveyForUpdate,
     findSurveys,
+    getDeploymentById,
     updateSurvey,
     uploadSurveyAttachments,
     uploadSurveyReports,
@@ -612,13 +732,18 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyCritters,
     createCritterAndAddToSurvey,
     removeCrittersFromSurvey,
+    createDeployment,
     getSurveyCrittersDetailed,
+    getDeploymentsInSurvey,
     getCritterById,
+    updateDeployment,
     getCritterTelemetry,
     importCrittersFromCsv,
     importCapturesFromCsv,
     importMarkingsFromCsv,
     importMeasurementsFromCsv,
+    deleteDeployment,
+    deleteDeployments,
     exportData
   };
 };

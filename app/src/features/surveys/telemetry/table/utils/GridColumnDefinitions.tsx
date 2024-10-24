@@ -38,12 +38,12 @@ export const DeploymentColDef = (props: {
     renderCell: (params) => {
       const error = props.hasError(params);
       return (
-        <AutocompleteDataGridViewCell<IManualTelemetryTableRow, number>
+        <AutocompleteDataGridViewCell<IManualTelemetryTableRow, string>
           dataGridProps={params}
           options={props.critterDeployments.map((item) => {
             return {
               label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
-              value: item.deployment.deployment2_id
+              value: item.deployment.bctw_deployment_id
             };
           })}
           error={error}
@@ -54,11 +54,11 @@ export const DeploymentColDef = (props: {
       const error = props.hasError(params);
 
       return (
-        <AutocompleteDataGridEditCell<IManualTelemetryTableRow, number>
+        <AutocompleteDataGridEditCell<IManualTelemetryTableRow, string>
           dataGridProps={params}
           options={props.critterDeployments.map((item) => ({
             label: `${item.critter.animal_id}: ${item.deployment.device_id}`,
-            value: item.deployment.deployment2_id
+            value: item.deployment.bctw_deployment_id
           }))}
           error={error}
         />
@@ -82,7 +82,7 @@ export const DeviceColDef = (props: {
       <Typography>
         {
           props.critterDeployments.find(
-            (deployment) => deployment.deployment.deployment2_id === params.row.deployment_id
+            (deployment) => deployment.deployment.bctw_deployment_id === params.row.deployment_id
           )?.deployment.device_id
         }
       </Typography>

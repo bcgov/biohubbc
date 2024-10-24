@@ -15,11 +15,11 @@ import { PulsatingDot } from 'components/misc/PulsatingDot';
 import dayjs from 'dayjs';
 import { SurveyDeploymentListItemDetails } from 'features/surveys/telemetry/list/SurveyDeploymentListItemDetails';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
-import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
+import { IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 
 export interface ISurveyDeploymentListItemProps {
   animal: ICritterSimpleResponse;
-  deployment: Omit<TelemetryDeployment, 'frequency_unit'> & { frequency_unit: string | null };
+  deployment: Omit<IAnimalDeployment, 'frequency_unit'> & { frequency_unit: string | null };
   isChecked: boolean;
   handleDeploymentMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, deploymentId: number) => void;
   handleCheckboxChange: (deploymentId: number) => void;
@@ -85,7 +85,7 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
               sx={{ py: 0 }}
               onClick={(event) => {
                 event.stopPropagation();
-                handleCheckboxChange(deployment.deployment2_id);
+                handleCheckboxChange(deployment.deployment_id);
               }}
               inputProps={{ 'aria-label': 'controlled' }}
             />
@@ -130,7 +130,7 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
           sx={{ position: 'absolute', right: '24px' }}
           edge="end"
           onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) =>
-            handleDeploymentMenuClick(event, deployment.deployment2_id)
+            handleDeploymentMenuClick(event, deployment.deployment_id)
           }
           aria-label="deployment-settings">
           <Icon path={mdiDotsVertical} size={1}></Icon>

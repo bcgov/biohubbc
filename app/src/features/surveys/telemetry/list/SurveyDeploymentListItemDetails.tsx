@@ -8,11 +8,11 @@ import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
+import { IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useEffect } from 'react';
 
 interface ISurveyDeploymentListItemDetailsProps {
-  deployment: Omit<TelemetryDeployment, 'frequency_unit'> & { frequency_unit: string | null };
+  deployment: Omit<IAnimalDeployment, 'frequency_unit'> & { frequency_unit: string | null };
 }
 
 /**
