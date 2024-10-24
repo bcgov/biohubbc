@@ -4,8 +4,6 @@ import { Knex } from 'knex';
  * Get the base query for retrieving survey observations with sampling data.
  *
  * @param {Knex} knex The Knex instance.
- * @param {Knex.QueryBuilder} getSurveyIdsQuery A knex query builder that returns a list of survey IDs, which will be
- * used to filter the observations.
  * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey observations, filtered by survey IDs returned by
  * the getSurveyIdsQuery.
  */

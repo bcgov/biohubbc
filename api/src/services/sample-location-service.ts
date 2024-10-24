@@ -74,7 +74,7 @@ export class SampleLocationService extends DBService {
    * Returns the geometry for all sampling locations in the Survey
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<number>}
+   * @return {*}  {Promise<SampleSiteGeometryRecord[]>}
    * @memberof SampleLocationService
    */
   async getSampleLocationsGeometryBySurveyId(surveyId: number): Promise<SampleSiteGeometryRecord[]> {
@@ -98,7 +98,7 @@ export class SampleLocationService extends DBService {
    *
    * @param {number} surveyId
    * @param {number[]} surveySampleSiteIds
-   * @return {*}  {Promise<SampleSiteRecord>}
+   * @return {*}  {Promise<SampleLocationBasicRecord[]>}
    * @memberof SampleLocationService
    */
   async getBasicSurveySampleLocationsBySiteIds(

@@ -2,7 +2,9 @@
 # This DockerFile is used for local development (via compose.yml) only.
 # ########################################################################################################
 
-FROM postgres:14.2
+ARG POSTGRES_VERSION=14.2
+
+FROM postgres:$POSTGRES_VERSION
 
 # read env variables
 ARG TZ=America/Vancouver

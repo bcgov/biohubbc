@@ -1,4 +1,5 @@
-import { Box, Divider } from '@mui/material';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
 import { GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';

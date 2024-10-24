@@ -412,6 +412,7 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
           items: {
             type: 'object',
             additionalProperties: false,
+            description: 'Basic data about a sampling site with associated methods and period data',
             required: ['survey_sample_site_id', 'name', 'sample_methods'],
             properties: {
               survey_sample_site_id: {

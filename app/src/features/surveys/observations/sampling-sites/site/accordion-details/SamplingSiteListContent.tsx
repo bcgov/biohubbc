@@ -1,7 +1,7 @@
+import Box from '@mui/material/Box';
 import List from '@mui/material/List';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
-import { Box } from '@mui/system';
 import { SamplingStratumChips } from 'features/surveys/sampling-information/sites/edit/form/SamplingStratumChips';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';

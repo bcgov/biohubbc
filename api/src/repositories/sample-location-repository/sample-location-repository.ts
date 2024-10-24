@@ -402,7 +402,7 @@ export class SampleLocationRepository extends BaseRepository {
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to get sample site by ID', [
-        'SampleLocationRepository->getSurveySampleSiteById',
+        'SampleLocationRepository->getSurveySampleLocationBySiteId',
         'rowCount was < 1, expected rowCount > 0'
       ]);
     }
@@ -477,6 +477,13 @@ export class SampleLocationRepository extends BaseRepository {
       .whereIn('sss.survey_sample_site_id', surveySampleSiteIds);
 
     const response = await this.connection.knex(queryBuilder, SampleLocationBasicRecord);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get sample sites by IDs', [
+        'SampleLocationRepository->getBasicSurveySampleLocationsBySiteIds',
+        'rowCount was < 1, expected rowCount > 0'
+      ]);
+    }
 
     return response.rows;
   }
