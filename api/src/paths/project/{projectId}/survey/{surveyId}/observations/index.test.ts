@@ -160,7 +160,8 @@ describe('getSurveyObservations', () => {
           qualitative_measurements: [],
           quantitative_measurements: [],
           qualitative_environments: [],
-          quantitative_environments: []
+          quantitative_environments: [],
+          sample_sites: []
         }
       });
 
@@ -190,7 +191,8 @@ describe('getSurveyObservations', () => {
         qualitative_measurements: [],
         quantitative_measurements: [],
         qualitative_environments: [],
-        quantitative_environments: []
+        quantitative_environments: [],
+        sample_sites: []
       },
       pagination: {
         total: 59,
@@ -220,7 +222,8 @@ describe('getSurveyObservations', () => {
           qualitative_measurements: [],
           quantitative_measurements: [],
           qualitative_environments: [],
-          quantitative_environments: []
+          quantitative_environments: [],
+          sample_sites: []
         }
       });
 
@@ -248,7 +251,8 @@ describe('getSurveyObservations', () => {
         qualitative_measurements: [],
         quantitative_measurements: [],
         qualitative_environments: [],
-        quantitative_environments: []
+        quantitative_environments: [],
+        sample_sites: []
       },
       pagination: {
         total: 50,
@@ -278,7 +282,8 @@ describe('getSurveyObservations', () => {
           qualitative_measurements: [],
           quantitative_measurements: [],
           qualitative_environments: [],
-          quantitative_environments: []
+          quantitative_environments: [],
+          sample_sites: []
         }
       });
 
@@ -301,7 +306,8 @@ describe('getSurveyObservations', () => {
         qualitative_measurements: [],
         quantitative_measurements: [],
         qualitative_environments: [],
-        quantitative_environments: []
+        quantitative_environments: [],
+        sample_sites: []
       },
       pagination: {
         total: 2,

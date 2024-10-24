@@ -217,7 +217,8 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
         'qualitative_measurements',
         'quantitative_measurements',
         'qualitative_environments',
-        'quantitative_environments'
+        'quantitative_environments',
+        'sample_sites'
       ],
       properties: {
         observationCount: {
@@ -401,6 +402,82 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
               unit: {
                 type: 'string',
                 nullable: true
+              }
+            }
+          }
+        },
+        sample_sites: {
+          description: 'All sampling sites necessary for the paginated observation response.',
+          type: 'array',
+          items: {
+            type: 'object',
+            additionalProperties: false,
+            description: 'Basic data about a sampling site with associated methods and period data',
+            required: ['survey_sample_site_id', 'name', 'sample_methods'],
+            properties: {
+              survey_sample_site_id: {
+                type: 'integer',
+                minimum: 1
+              },
+              name: {
+                type: 'string',
+                description: 'The name of the sampling site'
+              },
+              sample_methods: {
+                type: 'array',
+                minItems: 1,
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: [
+                    'survey_sample_method_id',
+                    'technique',
+                    'method_response_metric_id',
+                    'survey_sample_site_id'
+                  ],
+                  properties: {
+                    survey_sample_method_id: { type: 'integer', minimum: 1 },
+                    survey_sample_site_id: { type: 'integer', minimum: 1 },
+                    method_response_metric_id: { type: 'integer', minimum: 1 },
+                    technique: {
+                      type: 'object',
+                      additionalProperties: false,
+                      required: ['method_technique_id', 'name'],
+                      properties: {
+                        method_technique_id: { type: 'integer', minimum: 1 },
+                        name: {
+                          type: 'string',
+                          description: 'The name of the technique associated with the sampling method'
+                        }
+                      }
+                    },
+                    sample_periods: {
+                      type: 'array',
+                      minItems: 1,
+                      items: {
+                        type: 'object',
+                        description: 'A period associated with the sampling method',
+                        additionalProperties: false,
+                        required: [
+                          'survey_sample_period_id',
+                          'survey_sample_method_id',
+                          'start_date',
+                          'end_date',
+                          'start_time',
+                          'end_time'
+                        ],
+                        properties: {
+                          survey_sample_period_id: { type: 'integer' },
+                          survey_sample_method_id: { type: 'integer', minimum: 1 },
+                          start_date: { type: 'string' },
+                          end_date: { type: 'string' },
+                          start_time: { type: 'string', nullable: true },
+                          end_time: { type: 'string', nullable: true }
+                        }
+                      }
+                    }
+                  }
+                }
               }
             }
           }

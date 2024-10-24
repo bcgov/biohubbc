@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { UpdateSampleBlockRecord } from '../repositories/sample-blocks-repository';
-import { SampleLocationRepository } from '../repositories/sample-location-repository';
+import { SampleLocationRepository } from '../repositories/sample-location-repository/sample-location-repository';
 import { UpdateSampleStratumRecord } from '../repositories/sample-stratums-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { SampleBlockService } from './sample-block-service';
@@ -112,7 +112,7 @@ describe('SampleLocationService', () => {
           survey_id: 1,
           name: 'Sample Site 1',
           description: '',
-          geojson: [],
+          geometry_type: 'Point',
           blocks: [],
           sample_methods: [],
           stratums: []
@@ -138,6 +138,50 @@ describe('SampleLocationService', () => {
 
       expect(repoStub).to.be.calledOnceWith(1001);
       expect(response).to.equal(20);
+    });
+  });
+
+  describe('getSampleLocationsGeometryBySurveyId', () => {
+    it('should return the sample site geometries successfully', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
+      const mockRows = [{ survey_sample_site_id: 1, geojson: {} }];
+
+      const repoStub = sinon
+        .stub(SampleLocationRepository.prototype, 'getSampleLocationsGeometryBySurveyId')
+        .resolves(mockRows);
+
+      const sampleLocationService = new SampleLocationService(dbConnectionObj);
+      const response = await sampleLocationService.getSampleLocationsGeometryBySurveyId(1001);
+
+      expect(repoStub).to.be.calledOnceWith(1001);
+      expect(response).to.eql(mockRows);
+    });
+  });
+
+  describe('getBasicSurveySampleLocationsBySiteIds', () => {
+    it('should successfully return sampling location records with basic data', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
+      const mockSurveySampleSiteIds = [1, 2];
+      const mockRows = mockSurveySampleSiteIds.map((site) => ({
+        survey_sample_site_id: site,
+        name: '',
+        sample_methods: []
+      }));
+
+      const repoStub = sinon
+        .stub(SampleLocationRepository.prototype, 'getBasicSurveySampleLocationsBySiteIds')
+        .resolves(mockRows);
+
+      const sampleLocationService = new SampleLocationService(dbConnectionObj);
+      const response = await sampleLocationService.getBasicSurveySampleLocationsBySiteIds(
+        1001,
+        mockSurveySampleSiteIds
+      );
+
+      expect(repoStub).to.be.calledOnceWith(1001);
+      expect(response).to.eql(mockRows);
     });
   });
 

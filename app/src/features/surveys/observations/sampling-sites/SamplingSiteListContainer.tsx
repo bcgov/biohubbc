@@ -14,14 +14,21 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import TablePagination from '@mui/material/TablePagination';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import { GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
-import { SamplingSiteListSite } from 'features/surveys/observations/sampling-sites/components/SamplingSiteListSite';
+import { SamplingSiteListSite } from 'features/surveys/observations/sampling-sites/site/SamplingSiteListSite';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useObservationsPageContext, useSurveyContext } from 'hooks/useContext';
-import { useEffect, useState } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { ApiPaginationRequestOptions } from 'types/misc';
+import { firstOrNull } from 'utils/Utils';
+
+const pageSizeOptions = [10, 25, 50];
 
 /**
  * Renders a list of sampling sites.
@@ -34,16 +41,43 @@ export const SamplingSiteListContainer = () => {
   const observationsPageContext = useObservationsPageContext();
   const biohubApi = useBiohubApi();
 
-  useEffect(() => {
-    surveyContext.sampleSiteDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [surveyContext.projectId, surveyContext.sampleSiteDataLoader, surveyContext.surveyId]);
-
   const [sampleSiteAnchorEl, setSampleSiteAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [headerAnchorEl, setHeaderAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [selectedSampleSiteId, setSelectedSampleSiteId] = useState<number | undefined>();
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
 
-  const sampleSites = surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [];
+  const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: pageSizeOptions[1]
+  });
+  const [sortModel] = useState<GridSortModel>([]);
+
+  const sampleSiteDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
+    biohubApi.samplingSite.getSampleSites(surveyContext.projectId, surveyContext.surveyId, pagination)
+  );
+
+  const pagination: ApiPaginationRequestOptions = useMemo(() => {
+    const sort = firstOrNull(sortModel);
+
+    return {
+      limit: paginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+
+      // API pagination pages begin at 1, but MUI DataGrid pagination begins at 0.
+      page: paginationModel.page + 1
+    };
+  }, [sortModel, paginationModel]);
+
+  // Refresh survey list when pagination or sort changes
+  useEffect(() => {
+    sampleSiteDataLoader.refresh(pagination);
+
+    // Adding a DataLoader as a dependency causes an infinite rerender loop if a useEffect calls `.refresh`
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination]);
+
+  const sampleSites = sampleSiteDataLoader.data?.sampleSites ?? [];
 
   const handleSampleSiteMenuClick = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -67,7 +101,7 @@ export const SamplingSiteListContainer = () => {
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setSampleSiteAnchorEl(null);
-        surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+        sampleSiteDataLoader.refresh(pagination);
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
@@ -133,7 +167,7 @@ export const SamplingSiteListContainer = () => {
         dialogContext.setYesNoDialog({ open: false });
         setCheckboxSelectedIds([]);
         setHeaderAnchorEl(null);
-        surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+        sampleSiteDataLoader.refresh(pagination);
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
@@ -153,6 +187,14 @@ export const SamplingSiteListContainer = () => {
           open: true
         });
       });
+  };
+
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setPaginationModel({ page: 0, pageSize: parseInt(event.target.value, 10) });
+  };
+
+  const handleChangePage = (_: React.MouseEvent<HTMLButtonElement> | null, newPage: number) => {
+    setPaginationModel((model) => ({ ...model, page: newPage }));
   };
 
   const handlePromptConfirmBulkDelete = () => {
@@ -179,7 +221,10 @@ export const SamplingSiteListContainer = () => {
     });
   };
 
-  const samplingSiteCount = sampleSites.length ?? 0;
+  const samplingSiteCount = useMemo(
+    () => sampleSiteDataLoader.data?.pagination.total ?? 0,
+    [sampleSites, sampleSiteDataLoader.data]
+  );
 
   return (
     <>
@@ -287,102 +332,107 @@ export const SamplingSiteListContainer = () => {
           </IconButton>
         </Toolbar>
         <Divider flexItem />
-        <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
-          <Box position="absolute" top="0" right="0" bottom="0" left="0">
-            {surveyContext.sampleSiteDataLoader.isLoading ? (
-              <SkeletonList />
-            ) : (
-              <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
-                <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
-                  <FormGroup>
-                    <FormControlLabel
-                      label={
-                        <Typography
-                          variant="body2"
-                          component="span"
-                          color="textSecondary"
-                          fontWeight={700}
-                          sx={{ textTransform: 'uppercase' }}>
-                          Select All
-                        </Typography>
-                      }
-                      control={
-                        <Checkbox
-                          sx={{
-                            mr: 0.75
-                          }}
-                          checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === samplingSiteCount}
-                          indeterminate={
-                            checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount
-                          }
-                          onClick={() => {
-                            if (checkboxSelectedIds.length === samplingSiteCount) {
-                              setCheckboxSelectedIds([]);
-                              return;
-                            }
-
-                            const sampleSiteIds = sampleSites.map((sampleSite) => sampleSite.survey_sample_site_id);
-                            setCheckboxSelectedIds(sampleSiteIds);
-                          }}
-                          inputProps={{ 'aria-label': 'controlled' }}
-                        />
-                      }
-                    />
-                  </FormGroup>
-                </Box>
-                <Divider flexItem></Divider>
-                <Box
-                  flex="1 1 auto"
+        <Box position="relative" display="flex" alignItems="center" px={2} height={55}>
+          <FormGroup>
+            <FormControlLabel
+              label={
+                <Typography
+                  variant="body2"
+                  component="span"
+                  color="textSecondary"
+                  fontWeight={700}
+                  sx={{ textTransform: 'uppercase' }}>
+                  Select All
+                </Typography>
+              }
+              control={
+                <Checkbox
                   sx={{
-                    background: grey[100]
-                  }}>
-                  {/* Display text if the sample site data loader has no items in it */}
-                  {!surveyContext.sampleSiteDataLoader.data?.sampleSites.length && (
-                    <Stack
-                      sx={{
-                        background: grey[100]
-                      }}
-                      display="flex"
-                      alignItems="center"
-                      justifyContent="center"
-                      flex="1 1 auto"
-                      position="absolute"
-                      top={0}
-                      right={0}
-                      left={0}
-                      bottom={0}
-                      height="100%">
-                      <Typography variant="body2">No Sampling Sites</Typography>
-                    </Stack>
-                  )}
+                    mr: 0.75
+                  }}
+                  checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === samplingSiteCount}
+                  indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < samplingSiteCount}
+                  onClick={() => {
+                    if (checkboxSelectedIds.length === samplingSiteCount) {
+                      setCheckboxSelectedIds([]);
+                      return;
+                    }
 
-                  {surveyContext.sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
-                    return (
-                      <SamplingSiteListSite
-                        sampleSite={sampleSite}
-                        isChecked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
-                        handleSampleSiteMenuClick={handleSampleSiteMenuClick}
-                        handleCheckboxChange={handleCheckboxChange}
-                        key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
-                      />
-                    );
-                  })}
-                </Box>
-                {/* TODO how should we handle controlling pagination? */}
-                {/* <Paper square sx={{ position: 'sticky', bottom: 0, marginTop: '-1px' }}>
-                <Divider flexItem></Divider>
-                  <TablePagination
-                    rowsPerPage={10}
-                    page={1}
-                    onPageChange={(event) => {}}
-                    rowsPerPageOptions={[10, 50]}
-                    count={69}
-                  />
-                </Paper> */}
-              </Stack>
-            )}
-          </Box>
+                    const sampleSiteIds = sampleSites.map((sampleSite) => sampleSite.survey_sample_site_id);
+                    setCheckboxSelectedIds(sampleSiteIds);
+                  }}
+                  inputProps={{ 'aria-label': 'controlled' }}
+                />
+              }
+            />
+          </FormGroup>
         </Box>
+        <Divider flexItem />
+        <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
+          {sampleSiteDataLoader.isLoading ? (
+            <SkeletonList />
+          ) : (
+            <Stack height="100%" width="100%" position="absolute" sx={{ overflowY: 'auto' }}>
+              <Box
+                flex="1 1 auto"
+                sx={{
+                  background: grey[100]
+                }}>
+                {/* Display text if the sample site data loader has no items in it */}
+                {!sampleSiteDataLoader.data?.sampleSites.length && (
+                  <Stack
+                    sx={{
+                      background: grey[100]
+                    }}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    flex="1 1 auto"
+                    position="absolute"
+                    top={0}
+                    right={0}
+                    left={0}
+                    bottom={0}
+                    height="100%">
+                    <Typography variant="body2">No Sampling Sites</Typography>
+                  </Stack>
+                )}
+
+                {sampleSiteDataLoader.data?.sampleSites.map((sampleSite) => {
+                  return (
+                    <SamplingSiteListSite
+                      sampleSite={sampleSite}
+                      isChecked={checkboxSelectedIds.includes(sampleSite.survey_sample_site_id)}
+                      handleSampleSiteMenuClick={handleSampleSiteMenuClick}
+                      handleCheckboxChange={handleCheckboxChange}
+                      key={`${sampleSite.survey_sample_site_id}-${sampleSite.name}`}
+                    />
+                  );
+                })}
+              </Box>
+            </Stack>
+          )}
+        </Box>
+        {/* Pagination control */}
+        <Paper square sx={{ bottom: 0, marginTop: '-1px', width: '100%', maxWidth: '100%', zIndex: 99 }}>
+          <Divider flexItem />
+          <TablePagination
+            sx={{
+              flex: 1,
+              display: 'flex',
+              justifyContent: 'space-between',
+              '& .MuiTablePagination-toolbar': { width: '100%' },
+              '& .MuiTablePagination-displayedRows': { minWidth: '125px', textAlign: 'right' }
+            }}
+            labelRowsPerPage="Rows:"
+            rowsPerPage={paginationModel.pageSize}
+            page={paginationModel.page}
+            onPageChange={handleChangePage}
+            rowsPerPageOptions={pageSizeOptions}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            count={sampleSiteDataLoader.data?.pagination.total ?? 0}
+          />
+        </Paper>
       </Paper>
     </>
   );

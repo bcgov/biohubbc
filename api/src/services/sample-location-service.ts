@@ -2,11 +2,13 @@ import { IDBConnection } from '../database/db';
 import { InsertSampleBlockRecord } from '../repositories/sample-blocks-repository';
 import {
   InsertSampleSiteRecord,
+  SampleLocationBasicRecord,
   SampleLocationRecord,
   SampleLocationRepository,
+  SampleSiteGeometryRecord,
   SampleSiteRecord,
   UpdateSampleLocationRecord
-} from '../repositories/sample-location-repository';
+} from '../repositories/sample-location-repository/sample-location-repository';
 import { InsertSampleMethodRecord } from '../repositories/sample-method-repository';
 import { InsertSampleStratumRecord } from '../repositories/sample-stratums-repository';
 import { getLogger } from '../utils/logger';
@@ -69,6 +71,17 @@ export class SampleLocationService extends DBService {
   }
 
   /**
+   * Returns the geometry for all sampling locations in the Survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SampleSiteGeometryRecord[]>}
+   * @memberof SampleLocationService
+   */
+  async getSampleLocationsGeometryBySurveyId(surveyId: number): Promise<SampleSiteGeometryRecord[]> {
+    return this.sampleLocationRepository.getSampleLocationsGeometryBySurveyId(surveyId);
+  }
+
+  /**
    * Gets a sample site record by sample site ID.
    *
    * @param {number} surveyId
@@ -78,6 +91,21 @@ export class SampleLocationService extends DBService {
    */
   async getSurveySampleSiteById(surveyId: number, surveySampleSiteId: number): Promise<SampleSiteRecord> {
     return this.sampleLocationRepository.getSurveySampleSiteById(surveyId, surveySampleSiteId);
+  }
+
+  /**
+   * Gets basic data for survey sample sites for supplementary observations data
+   *
+   * @param {number} surveyId
+   * @param {number[]} surveySampleSiteIds
+   * @return {*}  {Promise<SampleLocationBasicRecord[]>}
+   * @memberof SampleLocationService
+   */
+  async getBasicSurveySampleLocationsBySiteIds(
+    surveyId: number,
+    surveySampleSiteIds: number[]
+  ): Promise<SampleLocationBasicRecord[]> {
+    return this.sampleLocationRepository.getBasicSurveySampleLocationsBySiteIds(surveyId, surveySampleSiteIds);
   }
 
   /**

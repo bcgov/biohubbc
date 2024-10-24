@@ -40,7 +40,8 @@ describe('useObservationApi', () => {
         qualitative_measurements: [],
         quantitative_measurements: [],
         qualitative_environments: [],
-        quantitative_environments: []
+        quantitative_environments: [],
+        sample_sites: []
       },
       pagination: {
         total: 100,

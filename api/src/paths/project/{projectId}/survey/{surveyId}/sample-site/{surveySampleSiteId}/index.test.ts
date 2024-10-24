@@ -5,7 +5,7 @@ import sinonChai from 'sinon-chai';
 import { deleteSurveySampleSiteRecord, getSurveySampleLocationRecord, updateSurveySampleSite } from '.';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
-import { UpdateSampleSiteRecord } from '../../../../../../../repositories/sample-location-repository';
+import { UpdateSampleSiteRecord } from '../../../../../../../repositories/sample-location-repository/sample-location-repository';
 import { ObservationService } from '../../../../../../../services/observation-service';
 import { SampleLocationService } from '../../../../../../../services/sample-location-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
