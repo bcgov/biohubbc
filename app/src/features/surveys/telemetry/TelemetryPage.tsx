@@ -16,40 +16,28 @@ export const TelemetryPage = () => {
   const projectContext = useProjectContext();
   const surveyContext = useSurveyContext();
 
-  const deploymentsDataLoader = useDataLoader(biohubApi.survey.getDeploymentsInSurvey);
-  const telemetryDataLoader = useDataLoader(biohubApi.telemetry.getAllTelemetryByDeploymentIds);
+  const deploymentDataLoader = useDataLoader((projectId: number, surveyId: number) =>
+    biohubApi.telemetryDeployment.getDeploymentsInSurvey(projectId, surveyId)
+  );
+
+  const telemetryDataLoader = useDataLoader((projectId: number, surveyId: number) =>
+    biohubApi.telemetry.getTelemetryForSurvey(projectId, surveyId)
+  );
 
   /**
    * Load the deployments and telemetry data when the page is initially loaded.
    */
   useEffect(() => {
-    deploymentsDataLoader.load(surveyContext.projectId, surveyContext.surveyId).then((deployments) => {
-      const deploymentIds = deployments?.deployments.map((deployment) => deployment.bctw_deployment_id) ?? [];
-
-      if (!deploymentIds.length) {
-        // No deployments, no telemetry to load
-        return;
-      }
-
-      telemetryDataLoader.load(deploymentIds);
-    });
-  }, [deploymentsDataLoader, surveyContext.projectId, surveyContext.surveyId, telemetryDataLoader]);
+    deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    telemetryDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+  }, [deploymentDataLoader, telemetryDataLoader, surveyContext.projectId, surveyContext.surveyId]);
 
   /**
    * Refresh the data for the telemetry page.
    */
   const refreshData = async () => {
-    deploymentsDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId).then((deployments) => {
-      const deploymentIds = deployments?.deployments.map((deployment) => deployment.bctw_deployment_id) ?? [];
-
-      if (!deploymentIds.length) {
-        // No deployments, refresh (clear) the telemetry data
-        telemetryDataLoader.clearData();
-        return;
-      }
-
-      telemetryDataLoader.refresh(deploymentIds);
-    });
+    deploymentDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    telemetryDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
   };
 
   if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
@@ -76,9 +64,8 @@ export const TelemetryPage = () => {
         {/* Telematry List */}
         <Box flex="0 0 auto" position="relative" width="400px">
           <SurveyDeploymentList
-            deployments={deploymentsDataLoader.data?.deployments ?? []}
-            badDeployments={deploymentsDataLoader.data?.bad_deployments ?? []}
-            isLoading={deploymentsDataLoader.isLoading}
+            deployments={deploymentDataLoader.data?.deployments ?? []}
+            isLoading={deploymentDataLoader.isLoading}
             refreshRecords={() => {
               refreshData();
             }}

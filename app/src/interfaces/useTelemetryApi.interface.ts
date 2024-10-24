@@ -1,4 +1,4 @@
-import { DeploymentFormYupSchema } from 'features/surveys/telemetry/deployments/components/form/DeploymentForm';
+import { DeploymentFormYupSchema } from 'features/surveys/telemetry/manage/deployments/form/DeploymentForm';
 import { FeatureCollection } from 'geojson';
 import { ApiPaginationResponseParams } from 'types/misc';
 import yup from 'utils/YupSchema';

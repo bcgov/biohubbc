@@ -57,6 +57,29 @@ const useTelemetryApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get all telemetry for a survey.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @return {*}  {Promise<IAllTelemetry[]>}
+   */
+  const getTelemetryForSurvey = async (
+    projectId: number,
+    surveyId: number,
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<IAllTelemetry[]> => {
+    const { data } = await axios.get<IAllTelemetry[]>(`/api/project/${projectId}/survey/${surveyId}/telemetry`, {
+      params: {
+        ...pagination
+      },
+      paramsSerializer: (params) => qs.stringify(params)
+    });
+
+    return data;
+  };
+
+  /**
    * Bulk create Manual Telemetry
    *
    * @param {ICreateManualTelemetry[]} manualTelemetry Manual Telemetry create objects
@@ -206,6 +229,7 @@ const useTelemetryApi = (axios: AxiosInstance) => {
   return {
     findTelemetry,
     getAllTelemetryByDeploymentIds,
+    getTelemetryForSurvey,
     createManualTelemetry,
     updateManualTelemetry,
     deleteManualTelemetry,

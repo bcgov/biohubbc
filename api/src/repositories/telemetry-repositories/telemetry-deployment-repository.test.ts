@@ -164,7 +164,7 @@ describe('TelemetryDeploymentRepository', () => {
         rows: [mockDeploymentRecord]
       } as any as Promise<QueryResult<any>>;
 
-      const mockDbConnection = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
+      const mockDbConnection = getMockDBConnection({ knex: sinon.stub().resolves(mockResponse) });
 
       const telemetryDeploymentRepository = new TelemetryDeploymentRepository(mockDbConnection);
 

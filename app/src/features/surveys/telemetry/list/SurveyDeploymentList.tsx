@@ -18,22 +18,16 @@ import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
-import { SurveyBadDeploymentListItem } from 'features/surveys/telemetry/list/SurveyBadDeploymentListItem';
 import { SurveyDeploymentListItem } from 'features/surveys/telemetry/list/SurveyDeploymentListItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { WarningSchema } from 'interfaces/useBioHubApi.interface';
-import { IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
+import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 export interface ISurveyDeploymentListProps {
-  deployments: IAnimalDeployment[];
-  badDeployments: WarningSchema<{
-    sims_deployment_id: number;
-    bctw_deployment_id: string;
-  }>[];
+  deployments: TelemetryDeployment[];
   /**
    * Flag to indicate if the deployments are loading.
    *
@@ -55,7 +49,7 @@ export interface ISurveyDeploymentListProps {
  * @returns {*}
  */
 export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
-  const { deployments, badDeployments, isLoading, refreshRecords } = props;
+  const { deployments, isLoading, refreshRecords } = props;
 
   const dialogContext = useDialogContext();
   const surveyContext = useSurveyContext();
@@ -71,7 +65,7 @@ export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
   const frequencyUnitDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('frequency_unit'));
   const deviceMakesDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('device_make'));
 
-  const deploymentCount = (deployments?.length ?? 0) + (badDeployments?.length ?? 0);
+  const deploymentCount = deployments?.length ?? 0;
 
   useEffect(() => {
     frequencyUnitDataLoader.load();
@@ -112,7 +106,7 @@ export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
    * Callback for when the bulk delete deployment action is confirmed.
    */
   const handleBulkDeleteDeployment = async () => {
-    await biohubApi.survey
+    await biohubApi.telemetryDeployment
       .deleteDeployments(surveyContext.projectId, surveyContext.surveyId, checkboxSelectedIds)
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
@@ -142,7 +136,7 @@ export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
    * Callback for when the delete deployment action is confirmed.
    */
   const handleDeleteDeployment = async (deploymentId: number) => {
-    await biohubApi.survey
+    await biohubApi.telemetryDeployment
       .deleteDeployment(surveyContext.projectId, surveyContext.surveyId, deploymentId)
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
@@ -391,11 +385,7 @@ export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
                             }
 
                             // Select all
-                            const deploymentIds = deployments.map((deployment) => deployment.deployment_id);
-                            // const badDeploymentIds = badDeployments.map(
-                            //   (deployment) => deployment.data.sims_deployment_id
-                            // );
-                            // TODO: Temporary bug fix - prevent bad deployment ids from being selected and deleted
+                            const deploymentIds = deployments.map((deployment) => deployment.deployment2_id);
                             setCheckboxSelectedIds([...deploymentIds]);
                           }}
                           inputProps={{ 'aria-label': 'controlled' }}
@@ -416,17 +406,6 @@ export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
                     title="There's a Bug!"
                     variant="standard"
                   />
-                  {badDeployments.map((badDeployment) => {
-                    return (
-                      <SurveyBadDeploymentListItem
-                        key={badDeployment.data.sims_deployment_id}
-                        data={badDeployment}
-                        isChecked={checkboxSelectedIds.includes(badDeployment.data.sims_deployment_id)}
-                        handleDelete={(deploymentId) => renderDeleteDeploymentDialog(deploymentId)}
-                        handleCheckboxChange={(deploymentId) => handleCheckboxChange(deploymentId)}
-                      />
-                    );
-                  })}
                   {deployments.map((deployment) => {
                     const animal = surveyContext.critterDataLoader.data?.find(
                       (animal) => animal.critterbase_critter_id === deployment.critterbase_critter_id
@@ -441,16 +420,16 @@ export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
                       ...deployment,
                       frequency_unit:
                         frequencyUnitDataLoader.data?.find(
-                          (frequencyUnitOption) => frequencyUnitOption.id === deployment.frequency_unit
+                          (frequencyUnitOption) => frequencyUnitOption.id === deployment.frequency_unit_id
                         )?.code ?? null
                     };
 
                     return (
                       <SurveyDeploymentListItem
-                        key={deployment.deployment_id}
+                        key={deployment.deployment2_id}
                         animal={animal}
                         deployment={hydratedDeployment}
-                        isChecked={checkboxSelectedIds.includes(deployment.deployment_id)}
+                        isChecked={checkboxSelectedIds.includes(deployment.deployment2_id)}
                         handleDeploymentMenuClick={handledDeploymentMenuClick}
                         handleCheckboxChange={handleCheckboxChange}
                       />
