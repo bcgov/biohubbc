@@ -3,8 +3,11 @@ import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 import { useCodesContext } from 'hooks/useContext';
 import { getCodesName } from 'utils/Utils';
+
+dayjs.extend(duration);
 
 export interface ISamplingSitePeriodRowData {
   id: number;
@@ -20,6 +23,32 @@ export interface ISamplingSitePeriodRowData {
 interface ISamplingPeriodTableProps {
   periods: ISamplingSitePeriodRowData[];
 }
+
+/**
+ * Calculates the duration between two dates and times.
+ *
+ * @param startDate string - start date
+ * @param startTime string | null - start time
+ * @param endDate string - end date
+ * @param endTime string | null - end time
+ * @returns string - duration in days and hours
+ */
+const calculateDuration = (
+  startDate: string,
+  startTime: string | null,
+  endDate: string,
+  endTime: string | null
+): string => {
+  const start = dayjs(`${startDate} ${startTime ?? '00:00'}`);
+  const end = dayjs(`${endDate} ${endTime ?? '00:00'}`);
+
+  const diff = dayjs.duration(end.diff(start));
+
+  const days = diff.days();
+  const hours = diff.hours();
+
+  return `${days} day(s) and ${hours} hour(s)`;
+};
 
 /**
  * Renders a table of sampling periods.
@@ -82,6 +111,20 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       field: 'end_time',
       headerName: 'End time',
       flex: 1
+    },
+    {
+      field: 'duration',
+      headerName: 'Duration',
+      flex: 1,
+      renderCell: (params) => {
+        const duration = calculateDuration(
+          params.row.start_date,
+          params.row.start_time,
+          params.row.end_date,
+          params.row.end_time
+        );
+        return <Typography variant="body2">{duration}</Typography>;
+      }
     }
   ];
 
