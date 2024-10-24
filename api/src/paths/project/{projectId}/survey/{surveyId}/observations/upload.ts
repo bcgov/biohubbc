@@ -52,6 +52,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Survey observation submission file to upload',
+    required: true,
     content: {
       'multipart/form-data': {
         schema: {

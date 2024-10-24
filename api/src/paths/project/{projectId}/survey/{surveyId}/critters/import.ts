@@ -61,6 +61,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Survey critters csv file to import',
+    required: true,
     content: {
       'multipart/form-data': {
         schema: {
