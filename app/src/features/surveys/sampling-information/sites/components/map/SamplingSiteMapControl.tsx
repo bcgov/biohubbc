@@ -84,7 +84,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
 
   useEffect(() => {
     samplingSiteDataLoader.load();
-  });
+  }, []);
 
   let numSites = samplingSiteDataLoader.data?.sampleSites.length ?? 0;
 

@@ -40,8 +40,7 @@ export interface IEditSampleSiteRequest {
   };
 }
 
-// Types without spatial information
-export interface IGetSampleSiteNonSpatialResponse {
+export interface IGetSampleLocationNonSpatialResponse {
   sampleSites: IGetSampleLocationNonSpatialDetails[];
   pagination: ApiPaginationResponseParams;
 }
@@ -55,12 +54,6 @@ export interface IGetSampleLocationNonSpatialDetails {
   sample_methods: IGetSampleMethodDetails[];
   blocks: IGetSampleBlockDetails[];
   stratums: IGetSampleStratumDetails[];
-}
-
-// Types with spatial information
-export interface IGetSampleSiteResponse {
-  sampleSites: IGetSampleLocationDetails[];
-  pagination: ApiPaginationResponseParams;
 }
 
 export interface IGetSampleLocationRecord {

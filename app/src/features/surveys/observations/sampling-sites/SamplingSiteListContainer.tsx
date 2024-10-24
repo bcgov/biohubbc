@@ -373,7 +373,6 @@ export const SamplingSiteListContainer = () => {
             <SkeletonList />
           ) : (
             <Stack height="100%" width="100%" position="absolute" sx={{ overflowY: 'auto' }}>
-              <Divider flexItem />
               <Box
                 flex="1 1 auto"
                 sx={{

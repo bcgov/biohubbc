@@ -32,7 +32,7 @@ export interface ISurveyContext {
   /**
    * The Data Loader used to load survey techniques
    *
-   * @type {DataLoader<[project_id: number, survey_id: number], IGetSampleSiteResponse, unknown>}
+   * @type {DataLoader<[project_id: number, survey_id: number], IGetTechniquesResponse, unknown>}
    * @memberof ISurveyContext
    */
   techniqueDataLoader: DataLoader<[project_id: number, survey_id: number], IGetTechniquesResponse, unknown>;

@@ -13,7 +13,7 @@ import { SampleStratumRecord, UpdateSampleStratumRecord } from '../sample-stratu
 import { getSamplingLocationBaseQuery } from './utils';
 
 /**
- * An aggregate record without spatial data that includes a single sample site, all of its child sample methods,
+ * An aggregate record of a sample site without spatial data, including all of the child sample methods,
  * and for each child sample method, all of its child sample periods. Also includes any survey blocks or survey
  * stratums that this site belongs to.
  */
@@ -492,7 +492,7 @@ export class SampleLocationRepository extends BaseRepository {
    * Gets geometry for sampling sites in the survey
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<SampleSiteRecord>}
+   * @return {*}  {Promise<SampleSiteGeometryRecord[]>}
    * @memberof SampleLocationRepository
    */
   async getSampleLocationsGeometryBySurveyId(surveyId: number): Promise<SampleSiteGeometryRecord[]> {
