@@ -216,7 +216,7 @@ export class TelemetryDeploymentRepository extends BaseRepository {
 
     const queryBuilder = knex
       .select(knex.raw('count(*)::integer as count'))
-      .from('deployments2')
+      .from('deployment2')
       .where('survey_id', surveyId);
 
     const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
