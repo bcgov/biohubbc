@@ -3,6 +3,8 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { TelemetryManualRepository } from '../../repositories/telemetry-repositories/telemetry-manual-repository';
 import { TelemetryVendorRepository } from '../../repositories/telemetry-repositories/telemetry-vendor-repository';
+import { TelemetryVendorEnum } from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
+import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { getMockDBConnection } from '../../__mocks__/db';
 import { TelemetryVendorService } from './telemetry-vendor-service';
 
@@ -70,21 +72,89 @@ describe('TelemetryVendorService', () => {
   });
 
   describe('getTelemetryForSurvey', () => {
-    it('should return telemetry data for a survey', async () => {
-      const mockDBConnection = getMockDBConnection();
-      const repoStub = sinon.stub(TelemetryVendorRepository.prototype, 'getTelemetryByDeploymentIds').resolves([]);
+    describe('with pagination', () => {
+      it('should return telemetry data for a survey', async () => {
+        const mockDBConnection = getMockDBConnection();
 
-      const service = new TelemetryVendorService(mockDBConnection);
+        const mockTelemetry = [
+          {
+            telemetry_id: '123-456-789',
+            deployment_id: 8,
+            critter_id: 3,
+            vendor: TelemetryVendorEnum.VECTRONIC,
+            serial: '123456',
+            acquisition_date: '2021-01-01T00:00:00.000Z',
+            latitude: -49,
+            longitude: 125,
+            elevation: null,
+            temperature: null
+          }
+        ];
+        const getTelemetryByDeploymentIdsStub = sinon
+          .stub(TelemetryVendorRepository.prototype, 'getTelemetryByDeploymentIds')
+          .resolves(mockTelemetry);
 
-      const deploymentServiceStub = sinon
-        .stub(service.deploymentService, 'getDeploymentsForSurveyId')
-        .resolves([{ deployment2_id: 8 } as any]);
+        const mockCount = 1;
+        const getTelemetryCountByDeploymentIdsStub = sinon
+          .stub(TelemetryVendorRepository.prototype, 'getTelemetryCountByDeploymentIds')
+          .resolves(mockCount);
 
-      const data = await service.getTelemetryForSurvey(1);
+        const service = new TelemetryVendorService(mockDBConnection);
 
-      expect(deploymentServiceStub).to.have.been.calledWith(1);
-      expect(repoStub).to.have.been.calledWith(1, [8], undefined);
-      expect(data).to.deep.equal([]);
+        const deploymentServiceStub = sinon
+          .stub(service.deploymentService, 'getDeploymentsForSurveyId')
+          .resolves([{ deployment2_id: 8 } as any]);
+
+        const surveyId = 1;
+        const pagination: ApiPaginationOptions = { page: 1, limit: 10 };
+
+        const data = await service.getTelemetryForSurvey(surveyId, pagination);
+
+        expect(deploymentServiceStub).to.have.been.calledWith(surveyId);
+        expect(getTelemetryByDeploymentIdsStub).to.have.been.calledWith(surveyId, [8], pagination);
+        expect(getTelemetryCountByDeploymentIdsStub).to.have.been.calledWith(surveyId, [8]);
+
+        expect(data).to.deep.equal([mockTelemetry, mockCount]);
+      });
+    });
+
+    describe('without pagination', () => {
+      it('should return telemetry data for a survey', async () => {
+        const mockDBConnection = getMockDBConnection();
+
+        const mockTelemetry = [
+          {
+            telemetry_id: '123-456-789',
+            deployment_id: 8,
+            critter_id: 3,
+            vendor: TelemetryVendorEnum.VECTRONIC,
+            serial: '123456',
+            acquisition_date: '2021-01-01T00:00:00.000Z',
+            latitude: -49,
+            longitude: 125,
+            elevation: null,
+            temperature: null
+          }
+        ];
+        const getTelemetryByDeploymentIdsStub = sinon
+          .stub(TelemetryVendorRepository.prototype, 'getTelemetryByDeploymentIds')
+          .resolves(mockTelemetry);
+
+        const service = new TelemetryVendorService(mockDBConnection);
+
+        const deploymentServiceStub = sinon
+          .stub(service.deploymentService, 'getDeploymentsForSurveyId')
+          .resolves([{ deployment2_id: 8 } as any]);
+
+        const surveyId = 1;
+        const pagination = undefined;
+
+        const data = await service.getTelemetryForSurvey(surveyId, pagination);
+
+        expect(deploymentServiceStub).to.have.been.calledWith(surveyId);
+        expect(getTelemetryByDeploymentIdsStub).to.have.been.calledWith(surveyId, [8], undefined);
+        expect(data).to.deep.equal([mockTelemetry, 1]);
+      });
     });
   });
 

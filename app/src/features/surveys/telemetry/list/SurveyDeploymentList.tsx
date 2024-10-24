@@ -20,10 +20,9 @@ import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { SurveyDeploymentListItem } from 'features/surveys/telemetry/list/SurveyDeploymentListItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useSurveyContext } from 'hooks/useContext';
-import useDataLoader from 'hooks/useDataLoader';
+import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
 export interface ISurveyDeploymentListProps {
@@ -52,6 +51,7 @@ export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
   const { deployments, isLoading, refreshRecords } = props;
 
   const dialogContext = useDialogContext();
+  const codesContext = useCodesContext();
   const surveyContext = useSurveyContext();
 
   const biohubApi = useBiohubApi();
@@ -62,15 +62,7 @@ export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
   const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
   const [selectedDeploymentId, setSelectedDeploymentId] = useState<number | null>();
 
-  const frequencyUnitDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('frequency_unit'));
-  const deviceMakesDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('device_make'));
-
   const deploymentCount = deployments?.length ?? 0;
-
-  useEffect(() => {
-    frequencyUnitDataLoader.load();
-    deviceMakesDataLoader.load();
-  }, [deviceMakesDataLoader, frequencyUnitDataLoader, surveyContext.projectId, surveyContext.surveyId]);
 
   const handleBulkActionMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setBulkDeploymentAnchorEl(event.currentTarget);
@@ -419,9 +411,9 @@ export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
                     const hydratedDeployment = {
                       ...deployment,
                       frequency_unit:
-                        frequencyUnitDataLoader.data?.find(
+                        codesContext.codesDataLoader.data?.frequency_unit.find(
                           (frequencyUnitOption) => frequencyUnitOption.id === deployment.frequency_unit_id
-                        )?.code ?? null
+                        )?.name ?? null
                     };
 
                     return (

@@ -75,7 +75,7 @@ export const TelemetryPage = () => {
         <Box flex="1 1 auto" position="relative">
           <TelemetryTableContextProvider
             isLoading={telemetryDataLoader.isLoading}
-            telemetryData={telemetryDataLoader.data ?? []}
+            telemetryData={telemetryDataLoader.data?.telemetry ?? []}
             refreshRecords={async () => {
               refreshData();
             }}>
