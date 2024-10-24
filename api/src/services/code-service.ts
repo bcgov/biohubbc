@@ -44,7 +44,8 @@ export class CodeService extends DBService {
       survey_progress,
       method_response_metrics,
       attractants,
-      observation_subcount_signs
+      observation_subcount_signs,
+      telemetry_device_makes
     ] = await Promise.all([
       await this.codeRepository.getManagementActionType(),
       await this.codeRepository.getFirstNations(),
@@ -65,7 +66,8 @@ export class CodeService extends DBService {
       await this.codeRepository.getSurveyProgress(),
       await this.codeRepository.getMethodResponseMetrics(),
       await this.codeRepository.getAttractants(),
-      await this.codeRepository.getObservationSubcountSigns()
+      await this.codeRepository.getObservationSubcountSigns(),
+      await this.codeRepository.getActiveTelemetryDeviceMakes()
     ]);
 
     return {
@@ -88,7 +90,8 @@ export class CodeService extends DBService {
       survey_progress,
       method_response_metrics,
       attractants,
-      observation_subcount_signs
+      observation_subcount_signs,
+      telemetry_device_makes
     };
   }
 
