@@ -7,12 +7,12 @@ interface IDeviceKey {
    */
   vendor: string;
   /**
-   * Device serial identifier as a string.
+   * Device serial identifier.
    *
-   * @example '1234'
-   * @type {string}
+   * @example 'a123' || 12345
+   * @type {string | number}
    */
-  serial: string;
+  serial: string | number;
 }
 
 /**
@@ -26,5 +26,5 @@ interface IDeviceKey {
  * @returns {string}
  */
 export const getTelemetryDeviceKey = ({ vendor, serial }: IDeviceKey): string => {
-  return `${vendor.trim().toLowerCase()}:${serial.trim().toLowerCase()}`;
+  return `${vendor.trim().toLowerCase()}:${String(serial).trim().toLowerCase()}`;
 };

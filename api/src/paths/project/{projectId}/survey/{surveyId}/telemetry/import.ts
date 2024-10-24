@@ -59,6 +59,7 @@ POST.apiDoc = {
         schema: {
           type: 'object',
           additionalProperties: false,
+          required: ['media'],
           properties: {
             media: {
               description: 'A survey telemetry submission file.',

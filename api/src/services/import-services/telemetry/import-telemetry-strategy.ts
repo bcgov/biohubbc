@@ -31,7 +31,7 @@ export class ImportTelemetryStrategy extends DBService implements CSVImportStrat
    * enforcing uppercase object keys.
    */
   columnValidator = {
-    SERIAL: { type: 'string', aliases: ['DEVICE_ID'] }, // 1234
+    SERIAL: { type: 'stringOrNumber', aliases: ['DEVICE_ID'] }, // 1234
     VENDOR: { type: 'string' }, // lotek
     LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE },
     LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE },
@@ -67,23 +67,23 @@ export class ImportTelemetryStrategy extends DBService implements CSVImportStrat
 
     for (const row of rows) {
       // Raw column cell values
-      const serial = getColumnCell(row, 'SERIAL').cell.toLowerCase();
       const vendor = getColumnCell(row, 'VENDOR').cell.toLowerCase();
+      const serial = getColumnCell(row, 'SERIAL').cell;
       const latitude = getColumnCell(row, 'LATITUDE').cell;
       const longitude = getColumnCell(row, 'LONGITUDE').cell;
       const date = getColumnCell(row, 'DATE').cell;
       const time = getColumnCell(row, 'TIME').cell;
 
-      // Format additional fields for filtering
-      const telemetryDate = dayjs(`${date} ${time}`).format('YYYY-MM-DD HH:mm:ss');
+      // Format additional values
+      const timestamp = dayjs(`${date} ${time}`).format('YYYY-MM-DD HH:mm:ss');
       const deviceKey = getTelemetryDeviceKey({ vendor, serial });
 
       // Find the deployment that matches the device key and is within the telemetry date range
       // This is making the assumption that only one match can be found (database date/deviceKey constraints)
       const deployment = deployments.find((deployment) => {
         const telemetryWithinDeployment =
-          telemetryDate >= deployment.attachment_start_timestamp &&
-          (deployment.attachment_end_timestamp === null || telemetryDate <= deployment.attachment_end_timestamp);
+          timestamp >= deployment.attachment_start_timestamp &&
+          (deployment.attachment_end_timestamp === null || timestamp <= deployment.attachment_end_timestamp);
 
         return deployment.device_key === deviceKey && telemetryWithinDeployment;
       });
@@ -93,7 +93,7 @@ export class ImportTelemetryStrategy extends DBService implements CSVImportStrat
         deployment2_id: deployment?.deployment2_id,
         latitude: latitude,
         longitude: longitude,
-        acquisition_date: telemetryDate,
+        acquisition_date: timestamp,
         transmission_date: null
       });
     }
