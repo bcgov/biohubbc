@@ -12,14 +12,18 @@ parameters:
     name: NAME
     required: true
     value: 'postgresql'
-  - description: The OpenShift ImageStream name.
-    displayName: IMAGE_STREAM_NAME
-    name: IMAGE_STREAM_NAME
-    value: 'postgis-postgres'
-  - description: The OpenShift Namespace where the ImageStream resides.
-    displayName: Namespace
-    name: IMAGE_STREAM_NAMESPACE
+  - name: IMAGE_STREAM_NAMESPACE
+    description: The OpenShift Namespace where the ImageStream resides.
+    required: true
     value: 'af2668-tools'
+  - name: IMAGE_STREAM_NAME
+    description: The OpenShift ImageStream name.
+    required: true
+    value: 'postgres-postgis'
+  - name: IMAGE_STREAM_VERSION
+    description: Version of PostgreSQL image to be used (9.2, 9.4, 9.5 or latest).
+    required: true
+    value: '15-bullseye'
   - description: The name of the OpenShift Service exposed for the database.
     displayName: Database Service Name
     name: DATABASE_SERVICE_NAME
@@ -27,31 +31,24 @@ parameters:
     value: 'postgresql'
   - description: Username for PostgreSQL user that will be used for accessing the database.
     displayName: PostgreSQL Connection Username
-    name: POSTGRESQL_USER
-    required: true
-    value: 'postgres'
-  - description: Admin Username for PostgreSQL user that will be used for accessing the database.
-    displayName: PostgreSQL Admin Connection Username
-    name: POSTGRESQL_ADMIN_USER
+    name: POSTGRES_USER
     required: true
     value: 'postgres'
   - description: Password for the PostgreSQL connection user.
     displayName: PostgreSQL Connection Password
     from: '[a-zA-Z0-9]{16}'
     generate: expression
-    name: POSTGRESQL_PASSWORD
-    required: true
-  - description: Password for the PostgreSQL admin user.
-    displayName: PostgreSQL Admin Connection Password
-    from: '[a-zA-Z0-9]{16}'
-    generate: expression
-    name: POSTGRESQL_ADMIN_PASSWORD
+    name: POSTGRES_PASSWORD
     required: true
   - description: Name of the PostgreSQL database accessed.
     displayName: PostgreSQL Database Name
-    name: POSTGRESQL_DATABASE
+    name: POSTGRES_DB
     required: true
     value: 'biohubbc'
+  - name: PGDATA
+    description: Path to PostgreSQL data directory
+    value: '/var/lib/pgsql/data/userdata'
+    required: false
   - name: TZ
     description: Database timezone
     required: false
@@ -61,19 +58,6 @@ parameters:
     name: VOLUME_CAPACITY
     required: true
     value: '500Mi'
-  - description: Version of PostgreSQL image to be used (9.2, 9.4, 9.5 or latest).
-    displayName: Version of PostgreSQL Image
-    name: IMAGE_STREAM_VERSION
-    required: true
-    value: '12-31'
-  - description: Indicator to enable pgcrypto extension (provided out-of-the-box with PostgreSQL).
-    displayName: Flag to enable pgcrypto PostgreSQL extension.
-    name: PGCRYPTO_EXTENSION
-    value: 'Y'
-  - description: Indicator to enable postgis extension (from official PostgeSQL YUM repo).
-    displayName: Flag to enable postgis PostgreSQL extension.
-    name: POSTGIS_EXTENSION
-    value: 'Y'
   - name: CPU_REQUEST
     value: '50m'
   - name: CPU_LIMIT
@@ -90,16 +74,14 @@ objects:
     metadata:
       annotations:
         template.openshift.io/expose-database_name: "{.data['database-name']}"
-        template.openshift.io/expose-password: "{.data['database-user-password']}"
-        template.openshift.io/expose-admin-password: "{.data['database-admin-password']}"
-        template.openshift.io/expose-admin-username: "{.data['database-user']}"
+        template.openshift.io/expose-database-user: "{.data['database-admin']}"
+        template.openshift.io/expose-database-user-password: "{.data['database-admin-password']}"
         as-copy-of: biohubbc-creds
       name: '${DATABASE_SERVICE_NAME}'
     stringData:
-      database-name: '${POSTGRESQL_DATABASE}'
-      database-user-password: '${POSTGRESQL_PASSWORD}'
-      database-admin-password: '${POSTGRESQL_ADMIN_PASSWORD}'
-      database-user: '${POSTGRESQL_USER}'
+      database-name: '${POSTGRES_DB}'
+      database-user: '${POSTGRES_USER}'
+      database-user-password: '${POSTGRES_PASSWORD}'
 
   - kind: Service
     apiVersion: v1
@@ -165,30 +147,23 @@ objects:
           containers:
             - name: postgresql
               env:
-                - name: POSTGRESQL_USER
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-user
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRESQL_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-user-password
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRESQL_ADMIN_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-admin-password
-                      name: '${DATABASE_SERVICE_NAME}'
-                - name: POSTGRESQL_DATABASE
+                - name: POSTGRES_DB
                   valueFrom:
                     secretKeyRef:
                       key: database-name
                       name: '${DATABASE_SERVICE_NAME}'
-                - name: PGCRYPTO_EXTENSION
-                  value: 'N'
-                - name: POSTGIS_EXTENSION
-                  value: 'N'
+                - name: POSTGRES_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-admin
+                      name: '${DATABASE_SERVICE_NAME}'
+                - name: POSTGRES_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-admin-password
+                      name: '${DATABASE_SERVICE_NAME}'
+                - name: PGDATA
+                  value: '${PGDATA}'
                 - name: PGOPTIONS
                   value: '-c maintenance_work_mem=128MB'
                 - name: PGTZ
@@ -209,7 +184,7 @@ objects:
                     - '/bin/sh'
                     - '-i'
                     - '-c'
-                    - psql -h 127.0.0.1 -U $POSTGRESQL_USER -q -d $POSTGRESQL_DATABASE -c 'SELECT 1'
+                    - psql -h 127.0.0.1 -U $POSTGRES_USER -q -d $POSTGRES_DB -c 'SELECT 1'
                 initialDelaySeconds: 5
                 timeoutSeconds: 1
               resources:
@@ -219,23 +194,21 @@ objects:
                 limits:
                   cpu: ${CPU_LIMIT}
                   memory: ${MEMORY_LIMIT}
-              securityContext:
-                capabilities: {}
-                privileged: false
+              securityContext: {}
               terminationMessagePath: '/dev/termination-log'
               volumeMounts:
-                - mountPath: '/var/lib/pgsql/data'
-                  name: '${DATABASE_SERVICE_NAME}-data'
-                - mountPath: '/var/run/postgresql'
-                  name: '${DATABASE_SERVICE_NAME}-run'
+                - name: '${DATABASE_SERVICE_NAME}-data'
+                  mountPath: '/var/lib/pgsql/data'
+                # - name: '${DATABASE_SERVICE_NAME}-run'
+                #   mountPath: '/var/run/postgresql'
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           volumes:
             - name: '${DATABASE_SERVICE_NAME}-data'
               persistentVolumeClaim:
                 claimName: '${DATABASE_SERVICE_NAME}'
-            - name: '${DATABASE_SERVICE_NAME}-run'
-              emptyDir: {}
+            # - name: '${DATABASE_SERVICE_NAME}-run'
+            #   emptyDir: {}
       triggers:
         - imageChangeParams:
             automatic: true
@@ -245,6 +218,5 @@ objects:
               kind: ImageStreamTag
               name: '${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}'
               namespace: '${IMAGE_STREAM_NAMESPACE}'
-            lastTriggeredImage: ''
           type: ImageChange
         - type: ConfigChange

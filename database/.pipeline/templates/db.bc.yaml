@@ -1,7 +1,7 @@
 kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
-  name: postgresql null
+  name: postgresql
 parameters:
   - name: NAME
     displayName: Name
@@ -29,7 +29,7 @@ objects:
           annotations:
           from:
             kind: ImageStreamTag
-            name: postgis-postgres:12-31
+            name: postgres-postgis:15-bullseye
             namespace: af2668-tools
           generation: 1
           importPolicy: {}
