@@ -73,7 +73,7 @@ export const useTelemetryDeploymentApi = (axios: AxiosInstance) => {
     surveyId: number,
     deploymentId: number
   ): Promise<{ deployment: TelemetryDeployment }> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments2/${deploymentId}`);
 
     return data;
   };
@@ -91,7 +91,7 @@ export const useTelemetryDeploymentApi = (axios: AxiosInstance) => {
     surveyId: number,
     pagination?: ApiPaginationRequestOptions
   ): Promise<{ deployments: TelemetryDeployment[]; count: number; pagination: ApiPaginationResponseParams }> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments`, {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments2`, {
       params: {
         ...pagination
       },
@@ -110,7 +110,7 @@ export const useTelemetryDeploymentApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<void>}
    */
   const deleteDeployment = async (projectId: number, surveyId: number, deploymentId: number): Promise<void> => {
-    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
+    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/deployments2/${deploymentId}`);
 
     return data;
   };
@@ -124,7 +124,7 @@ export const useTelemetryDeploymentApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<string>}
    */
   const deleteDeployments = async (projectId: number, surveyId: number, deploymentIds: number[]): Promise<string> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/deployments/delete`, {
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/deployments2/delete`, {
       deployment_ids: deploymentIds
     });
 
