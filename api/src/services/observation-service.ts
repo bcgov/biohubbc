@@ -1,7 +1,8 @@
+import dayjs from 'dayjs';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { IObservationAdvancedFilters } from '../models/observation-view';
-import { CodeRepository } from '../repositories/code-repository';
+import { CodeRepository, ICode } from '../repositories/code-repository';
 import {
   InsertObservation,
   ObservationGeometryRecord,
@@ -22,6 +23,7 @@ import {
   InsertObservationSubCountQualitativeMeasurementRecord,
   InsertObservationSubCountQuantitativeMeasurementRecord
 } from '../repositories/observation-subcount-measurement-repository';
+import { SampleLocationRecord } from '../repositories/sample-location-repository';
 import { SamplePeriodHierarchyIds } from '../repositories/sample-period-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
@@ -65,6 +67,7 @@ import { DBService } from './db-service';
 import { ObservationSubCountEnvironmentService } from './observation-subcount-environment-service';
 import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
 import { PlatformService } from './platform-service';
+import { SampleLocationService } from './sample-location-service';
 import { SamplePeriodService } from './sample-period-service';
 import { SubCountService } from './subcount-service';
 
@@ -79,11 +82,14 @@ const defaultLog = getLogger('services/observation-service');
 export const observationStandardColumnValidator = {
   ITIS_TSN: { type: 'number', aliases: CSV_COLUMN_ALIASES.ITIS_TSN },
   COUNT: { type: 'number' },
-  OBSERVATION_SUBCOUNT_SIGN: { type: 'code', aliases: CSV_COLUMN_ALIASES.OBSERVATION_SUBCOUNT_SIGN },
-  DATE: { type: 'date' },
-  TIME: { type: 'string' },
-  LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE },
-  LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE },
+  OBSERVATION_SUBCOUNT_SIGN: { type: 'code', aliases: CSV_COLUMN_ALIASES.OBSERVATION_SUBCOUNT_SIGN, optional: true },
+  DATE: { type: 'date', optional: true },
+  TIME: { type: 'string', optional: true },
+  LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE, optional: true },
+  LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE, optional: true },
+  SAMPLING_SITE: { type: 'string', aliases: CSV_COLUMN_ALIASES.SAMPLING_SITE, optional: true },
+  SAMPLING_METHOD: { type: 'string', aliases: CSV_COLUMN_ALIASES.SAMPLING_METHOD, optional: true },
+  SAMPLING_PERIOD: { type: 'string', aliases: CSV_COLUMN_ALIASES.SAMPLING_PERIOD, optional: true },
   COMMENT: { type: 'string', aliases: CSV_COLUMN_ALIASES.COMMENT, optional: true }
 } satisfies IXLSXCSVValidator;
 
@@ -545,9 +551,7 @@ export class ObservationService extends DBService {
     });
 
     // Fetch all measurement type definitions from Critterbase for all unique TSNs
-    const tsns = worksheetRowObjects.map((row) =>
-      String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES'])
-    );
+    const tsns = worksheetRowObjects.map((row) => String(getColumnCellValue(row, 'ITIS_TSN').cell));
 
     const tsnMeasurementTypeDefinitionMap = await getTsnMeasurementTypeDefinitionMap(tsns, critterBaseService);
 
@@ -556,7 +560,7 @@ export class ObservationService extends DBService {
 
     const measurementsToValidate: IMeasurementDataToValidate[] = worksheetRowObjects.flatMap((row) => {
       return measurementColumnNames.map((columnName) => ({
-        tsn: String(row['ITIS_TSN'] ?? row['TSN'] ?? row['TAXON'] ?? row['SPECIES']),
+        tsn: String(getColumnCellValue(row, 'ITIS_TSN').cell),
         key: columnName,
         value: row[columnName]
       }));
@@ -601,8 +605,15 @@ export class ObservationService extends DBService {
       throw new Error('Failed to process file for importing observations. Environment column validator failed.');
     }
 
-    // -----------------------------------------------------------------------------------------
+    // SAMPLING INFORMATION -----------------------------------------------------------------------------------------
+    const sampleLocationService = new SampleLocationService(this.connection);
 
+    // Get sampling information for the survey to later validate
+    const samplingLocations = await sampleLocationService.getSampleLocationsForSurveyId(surveyId);
+
+    // --------------------------------------------------------------------------------------------------------------
+
+    // SamplePeriodHierarchyIds is only for when all records are being assigned to the same sampling period
     let samplePeriodHierarchyIds: SamplePeriodHierarchyIds;
 
     if (options?.surveySamplePeriodId) {
@@ -615,13 +626,11 @@ export class ObservationService extends DBService {
 
     // Merge all the table rows into an array of InsertUpdateObservations[]
     const newRowData: InsertUpdateObservations[] = worksheetRowObjects.map((row) => {
-      // TODO: This observationSubcountSignId logic is specifically catered to the observation_subcount_signs code set,
-      // as it is the only code set currently being used in the observation CSVs, and is required. This logic will need
-      // to be updated to be more generic if other code sets are used in the future, or if they can be nullable.
-      const observationSubcountSignId = codeTypeDefinitions.OBSERVATION_SUBCOUNT_SIGN.find(
-        (option) =>
-          option.name.toLowerCase() === getColumnCellValue(row, 'OBSERVATION_SUBCOUNT_SIGN')?.cell?.toLowerCase()
-      )?.id;
+      const observationSubcountSignId = this._getCodeIdFromCellValue(
+        getColumnCellValue(row, 'OBSERVATION_SUBCOUNT_SIGN').cell,
+        codeTypeDefinitions.OBSERVATION_SUBCOUNT_SIGN,
+        'direct sighting'
+      );
 
       const newSubcount: InsertSubCount = {
         observation_subcount_id: null,
@@ -650,14 +659,41 @@ export class ObservationService extends DBService {
       newSubcount.qualitative_environments = environments.qualitative_environments;
       newSubcount.quantitative_environments = environments.quantitative_environments;
 
+      // If surveySamplePeriodId was included in the initial request, assign all rows to that sampling period
+      if (options?.surveySamplePeriodId) {
+        return {
+          standardColumns: {
+            survey_id: surveyId,
+            itis_tsn: getColumnCellValue(row, 'ITIS_TSN').cell as number,
+            itis_scientific_name: null,
+            survey_sample_site_id: samplePeriodHierarchyIds?.survey_sample_site_id ?? null,
+            survey_sample_method_id: samplePeriodHierarchyIds?.survey_sample_method_id ?? null,
+            survey_sample_period_id: samplePeriodHierarchyIds?.survey_sample_period_id ?? null,
+            latitude: getColumnCellValue(row, 'LATITUDE').cell as number,
+            longitude: getColumnCellValue(row, 'LONGITUDE').cell as number,
+            count: getColumnCellValue(row, 'COUNT').cell as number,
+            observation_time: getColumnCellValue(row, 'TIME').cell as string,
+            observation_date: getColumnCellValue(row, 'DATE').cell as string
+          },
+          subcounts: [newSubcount]
+        };
+      }
+
+      // PROCESS AND VALIDATE SAMPLING INFORMATION -----------------------------------------------------------------------------------------
+      const samplingData = this._pullSamplingDataFromWorksheetRowObject(row, samplingLocations);
+
+      if (!samplingData && getColumnCellValue(row, 'SAMPLING_SITE').cell) {
+        throw new Error('Failed to process file for importing observations. Sampling data validator failed.');
+      }
+
       return {
         standardColumns: {
           survey_id: surveyId,
           itis_tsn: getColumnCellValue(row, 'ITIS_TSN').cell as number,
           itis_scientific_name: null,
-          survey_sample_site_id: samplePeriodHierarchyIds?.survey_sample_site_id ?? null,
-          survey_sample_method_id: samplePeriodHierarchyIds?.survey_sample_method_id ?? null,
-          survey_sample_period_id: samplePeriodHierarchyIds?.survey_sample_period_id ?? null,
+          survey_sample_site_id: samplingData?.sampleSiteId ?? null,
+          survey_sample_method_id: samplingData?.sampleMethodId ?? null,
+          survey_sample_period_id: samplingData?.samplePeriodId ?? null,
           latitude: getColumnCellValue(row, 'LATITUDE').cell as number,
           longitude: getColumnCellValue(row, 'LONGITUDE').cell as number,
           count: getColumnCellValue(row, 'COUNT').cell as number,
@@ -797,6 +833,145 @@ export class ObservationService extends DBService {
     });
 
     return foundEnvironments;
+  }
+
+  /**
+   * Extracts sampling data from the worksheet row object and maps site names, method techniques, and periods
+   * to their respective IDs using the provided samplingLocations.
+   *
+   * @param {Record<string, any>} row - The current row of the worksheet being processed.
+   * @param {string[]} samplingColumns - The list of column names relevant to sampling (site, method, period).
+   * @param {SampleLocationRecord[]} samplingLocations - The available sampling locations for the survey, used for mapping names to IDs.
+   * @return { { sampleSiteId: number, sampleMethodId: number, samplePeriodId: number } | null } The sampling data with IDs, or null if no valid data is found.
+   */
+  /**
+   * Extracts sampling data from the worksheet row object and maps site names, method techniques, and periods
+   * to their respective IDs using the provided samplingLocations.
+   *
+   * @param {Record<string, any>} row - The current row of the worksheet being processed.
+   * @param {SampleLocationRecord[]} samplingLocations - The available sampling locations for the survey, used for mapping names to IDs.
+   * @return { { sampleSiteId: number, sampleMethodId: number, samplePeriodId: number } | null } The sampling data with IDs, or null if no valid data is found.
+   */
+  _pullSamplingDataFromWorksheetRowObject(
+    row: Record<string, any>,
+    samplingLocations: SampleLocationRecord[]
+  ): { sampleSiteId: number; sampleMethodId: number; samplePeriodId: number } | null {
+    // Extract site, method, and period data from the row
+    const siteName = getColumnCellValue(row, 'SAMPLING_SITE').cell as string | null;
+    const techniqueName = getColumnCellValue(row, 'SAMPLING_METHOD').cell as string | null;
+    const period = getColumnCellValue(row, 'SAMPLING_PERIOD').cell as string | null;
+
+    if (!siteName) {
+      return null;
+    }
+
+    // Find the site record by name
+    const siteRecord = samplingLocations.find((site) => site.name.toLowerCase() === siteName.toLowerCase());
+
+    // If there is no site, exit early because a site is required when specifying any sampling information for the row.
+    if (!siteRecord) {
+      return null;
+    }
+
+    let methodRecord = null;
+
+    // Find the method record by technique name
+    if (techniqueName) {
+      methodRecord = siteRecord.sample_methods.find(
+        (method) => method.technique.name.toLowerCase() === techniqueName.toLowerCase()
+      );
+    }
+
+    // If we failed to find a method record based on technique name, we will check whether that site has just 1 technique.
+    // If the site has 1 technique, we will assume that the row belongs to that technique.
+    // This is a convenience for users because they only need to specify the sampling site for sites with 1 technique.
+    if (siteRecord.sample_methods.length === 1) {
+      methodRecord = siteRecord.sample_methods[0];
+    }
+
+    // If there are multiple techniques for the site but no technique specified in the row,
+    // exit early because we cannot determine which method to use.
+    if (!methodRecord) {
+      return null;
+    }
+
+    // If period is specified, parse the row value and find a matching record
+    if (period) {
+      // Format the period timestamp data
+      const [startDate, endDate] = period.split('-').map((date: string) => dayjs(date).format('YYYY-MM-DD'));
+      const startTime = dayjs(period.split('-')[0]).format('HH:mm:ss');
+      const endTime = dayjs(period.split('-')[1]).format('HH:mm:ss');
+
+      // Find matching periods by date
+      const matchingPeriods = methodRecord.sample_periods.filter(
+        (p) => p.start_date === startDate && p.end_date === endDate
+      );
+
+      // Return if exactly one period matches the date,
+      // meaning that we have successfully determined a single site, method, and period Id for each row.
+      if (matchingPeriods.length === 1) {
+        return {
+          sampleSiteId: siteRecord.survey_sample_site_id,
+          sampleMethodId: methodRecord.survey_sample_method_id,
+          samplePeriodId: matchingPeriods[0].survey_sample_period_id
+        };
+      }
+
+      // If multiple periods match by date, try to match also by time
+      const matchingPeriod = matchingPeriods.find((p) => p.start_time === startTime && p.end_time === endTime);
+
+      if (matchingPeriod) {
+        return {
+          sampleSiteId: siteRecord.survey_sample_site_id,
+          sampleMethodId: methodRecord.survey_sample_method_id,
+          samplePeriodId: matchingPeriod.survey_sample_period_id
+        };
+      }
+    }
+
+    // If period is not specified, infer it from the row data
+    const observationDate = getColumnCellValue(row, 'DATE').cell as string | null;
+    const observationTime = getColumnCellValue(row, 'TIME').cell as string | null;
+
+    const formattedDate = dayjs(observationDate);
+    const formattedTime = dayjs(`${observationDate} ${observationTime}`).format('HH:mm:ss');
+
+    // TODO: Fix timezone of the observation date. Observation date is assumed to be UTC instead of local time,
+    // so the observation date being imported from the csv is incorrectly offset by 1 day. eg. "July 28, 2024" is
+    // imported at July 27, 2024
+    //
+    // If no periods match by date/time but the site and method is given, check if the observation date falls within a period.
+    // If true, we will infer the period based on the observation date.
+    const encompassingPeriod = methodRecord.sample_periods.find(
+      (p) =>
+        (formattedDate.isAfter(dayjs(p.start_date)) || formattedDate.isSame(dayjs(p.start_date))) &&
+        (formattedDate.isBefore(dayjs(p.end_date)) || formattedDate.isAfter(dayjs(p.end_date))) &&
+        (!p.start_time || formattedTime >= dayjs(`${p.start_date} ${p.start_time}`).format('HH:mm:ss')) &&
+        (!p.end_time || formattedTime <= dayjs(`${p.end_date} ${p.end_time}`).format('HH:mm:ss'))
+    );
+
+    if (encompassingPeriod) {
+      return {
+        sampleSiteId: siteRecord.survey_sample_site_id,
+        sampleMethodId: methodRecord.survey_sample_method_id,
+        samplePeriodId: encompassingPeriod.survey_sample_period_id
+      };
+    }
+
+    // If there is no observation date and exactly 1 period for the matching method, and there is no period specified in the row,
+    // we will assume that the observation belongs to that period. This is a convenience for users since they don't need to specify
+    // the period if they have only 1 for the matching method.
+    // TODO: Might be worth checking if (!observationDate && methodRecord.sample_periods.length === 1), therefore
+    // failing if the specified date is not in a period
+    if (methodRecord.sample_periods.length === 1) {
+      return {
+        sampleSiteId: siteRecord.survey_sample_site_id,
+        sampleMethodId: methodRecord.survey_sample_method_id,
+        samplePeriodId: methodRecord.sample_periods[0].survey_sample_period_id
+      };
+    }
+
+    return null;
   }
 
   /**
@@ -1018,5 +1193,31 @@ export class ObservationService extends DBService {
 
     // Return true if both environments and measurements are valid
     return true;
+  }
+
+  /**
+   * Gets the code id value with a matching name from a set of options. If the function returns null, the
+   * request should probably throw an error.
+   *
+   * @param cellValue The name of a code to find the id for
+   * @param codeOptions The reference codes from which to find the id
+   * @param defaultValue A default value for when cellValue is null
+   * @returns
+   */
+  _getCodeIdFromCellValue(cellValue: string | null, codeOptions: ICode[], defaultValue?: string | null): number | null {
+    const value = cellValue?.toLowerCase(); // Normalize the cell value
+
+    // No value exists and no default value, so must be null
+    if (!value && !defaultValue) {
+      return null;
+    }
+
+    // The cell has no value so return the default
+    if (!value && defaultValue) {
+      return codeOptions.find((option) => option.name.toLowerCase() === defaultValue.toLowerCase())?.id || null;
+    }
+
+    // Try to find a matching code, otherwise return null
+    return codeOptions.find((option) => option.name.toLowerCase() === value)?.id || null;
   }
 }
