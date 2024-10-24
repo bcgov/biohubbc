@@ -30,7 +30,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # copy postgis init script to docker init directory
 RUN mkdir -p /docker-entrypoint-initdb.d
-COPY ./docker/db/create_postgis.sql /docker-entrypoint-initdb.d/postgis.sql
+COPY ./.docker/db/create_postgis.sql /docker-entrypoint-initdb.d/postgis.sql
 
 EXPOSE $PORT
 
