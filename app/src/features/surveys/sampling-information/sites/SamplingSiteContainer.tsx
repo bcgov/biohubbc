@@ -192,10 +192,10 @@ const SamplingSiteContainer = () => {
         <LoadingGuard
           isLoading={surveyContext.sampleSiteDataLoader.isLoading}
           isLoadingFallback={
-            <>
+            <Box height="300px">
               <SkeletonMap />
               <SkeletonTable numberOfLines={5} />
-            </>
+            </Box>
           }
           isLoadingFallbackDelay={100}>
           <SamplingSiteMapContainer samplingSites={sampleSites} />

@@ -1,13 +1,11 @@
 import { mdiArrowTopRight, mdiAutoFix, mdiCalendarRange, mdiMapMarker } from '@mdi/js';
-import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Stack from '@mui/material/Stack';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
-import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { SkeletonList, SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import {
   ISamplingSitePeriodRowData,
   SamplingPeriodTable
@@ -16,12 +14,9 @@ import {
   ISurveySitesRowData,
   SurveySitesTable
 } from 'features/surveys/view/components/sampling-data/components/SurveySitesTable';
-import {
-  ISurveyTechniqueRowData,
-  SurveyTechniquesTable
-} from 'features/surveys/view/components/sampling-data/components/SurveyTechniquesTable';
 import { useSurveyContext } from 'hooks/useContext';
 import { useEffect, useMemo, useState } from 'react';
+import { SurveyTechniquesCardContainer } from './technique/SurveyTechniqueCardContainer';
 
 export enum SurveySamplingView {
   TECHNIQUES = 'TECHNIQUES',
@@ -34,16 +29,11 @@ export const SurveySamplingTabs = () => {
 
   const [activeView, setActiveView] = useState<SurveySamplingView>(SurveySamplingView.TECHNIQUES);
 
-  useEffect(() => {
-    // Refresh the data for the active view if the project or survey ID changes
-    if (activeView === SurveySamplingView.TECHNIQUES) {
-      surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    }
-    if (activeView === SurveySamplingView.SITES) {
-      surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeView]);
+  const views = [
+    { value: SurveySamplingView.TECHNIQUES, label: 'Techniques', icon: mdiAutoFix },
+    { value: SurveySamplingView.SITES, label: 'Sampling Sites', icon: mdiMapMarker },
+    { value: SurveySamplingView.PERIODS, label: 'Sampling Periods', icon: mdiCalendarRange }
+  ];
 
   useEffect(() => {
     // Load the data initially once per tab, if/when the active view changes
@@ -60,16 +50,6 @@ export const SurveySamplingTabs = () => {
     surveyContext.projectId,
     surveyContext.surveyId
   ]);
-
-  const techniques: ISurveyTechniqueRowData[] =
-    surveyContext.techniqueDataLoader.data?.techniques.map((technique) => ({
-      id: technique.method_technique_id,
-      name: technique.name,
-      method_lookup_id: technique.method_lookup_id,
-      description: technique.description,
-      attractants: technique.attractants,
-      distance_threshold: technique.distance_threshold
-    })) ?? [];
 
   const sampleSites: ISurveySitesRowData[] = useMemo(
     () =>
@@ -112,79 +92,30 @@ export const SurveySamplingTabs = () => {
   const samplePeriodsCount = samplePeriods.length;
 
   return (
-    <>
-      <Box p={2} display="flex" flexDirection="row" justifyContent="space-between">
-        <ToggleButtonGroup
-          value={activeView}
-          onChange={(_, view) => {
-            if (!view) {
-              // An active view must be selected at all times
-              return;
-            }
-
-            setActiveView(view);
-          }}
-          exclusive
-          sx={{
-            display: 'flex',
-            gap: 1,
-            '& Button': {
-              py: 0.25,
-              px: 1.5,
-              border: 'none',
-              borderRadius: '4px !important',
-              fontSize: '0.875rem',
-              fontWeight: 700,
-              letterSpacing: '0.02rem'
-            }
-          }}>
-          <ToggleButton
-            key="sampling-techniques-view"
-            component={Button}
-            color="primary"
-            startIcon={<Icon path={mdiAutoFix} size={0.75} />}
-            value={SurveySamplingView.TECHNIQUES}>
-            {`${SurveySamplingView.TECHNIQUES} (${techniquesCount ?? 0})`}
-          </ToggleButton>
-          <ToggleButton
-            key="sampling-sites-view"
-            component={Button}
-            color="primary"
-            startIcon={<Icon path={mdiMapMarker} size={0.75} />}
-            value={SurveySamplingView.SITES}>
-            {`${SurveySamplingView.SITES} (${sampleSitesCount ?? 0})`}
-          </ToggleButton>
-          <ToggleButton
-            key="sampling-sites-view"
-            component={Button}
-            color="primary"
-            startIcon={<Icon path={mdiCalendarRange} size={0.75} />}
-            value={SurveySamplingView.PERIODS}>
-            {`${SurveySamplingView.PERIODS} (${samplePeriodsCount ?? 0})`}
-          </ToggleButton>
-        </ToggleButtonGroup>
+    <Stack direction="row">
+      <Box p={2} display="flex" flexDirection="row" justifyContent="space-between" minWidth="250px">
+        <CustomToggleButtonGroup views={views} activeView={activeView} onViewChange={setActiveView} />
       </Box>
 
-      <Divider />
+      <Divider flexItem orientation="vertical" />
 
-      <Box px={2} position="relative">
+      <Box p={2} position="relative" flex="1 1 auto" minHeight="250px">
         {activeView === SurveySamplingView.TECHNIQUES && (
           <>
             <LoadingGuard
               isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
-              isLoadingFallback={<SkeletonTable />}
+              isLoadingFallback={<SkeletonList />}
               isLoadingFallbackDelay={100}
               hasNoData={!techniquesCount}
               hasNoDataFallback={
                 <NoDataOverlay
-                  height="250px"
                   title="Add Techniques"
                   subtitle="Techniques describe how you collected species observations"
                   icon={mdiArrowTopRight}
                 />
               }
               hasNoDataFallbackDelay={100}>
-              <SurveyTechniquesTable techniques={techniques} />
+              <SurveyTechniquesCardContainer techniques={surveyContext.techniqueDataLoader.data?.techniques ?? []} />
             </LoadingGuard>
           </>
         )}
@@ -198,7 +129,6 @@ export const SurveySamplingTabs = () => {
               hasNoData={!sampleSitesCount}
               hasNoDataFallback={
                 <NoDataOverlay
-                  height="250px"
                   title="Add Sampling Sites"
                   subtitle="Apply your techniques to sampling sites to show where you collected data"
                   icon={mdiArrowTopRight}
@@ -219,7 +149,6 @@ export const SurveySamplingTabs = () => {
               hasNoData={!samplePeriodsCount}
               hasNoDataFallback={
                 <NoDataOverlay
-                  height="250px"
                   title="Add Periods"
                   subtitle="Add periods when you create sampling sites to show when 
                   you collected species observations"
@@ -232,6 +161,6 @@ export const SurveySamplingTabs = () => {
           </>
         )}
       </Box>
-    </>
+    </Stack>
   );
 };

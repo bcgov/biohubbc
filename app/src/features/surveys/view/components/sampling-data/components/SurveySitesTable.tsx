@@ -68,7 +68,7 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
           {params.row.stratums.map((stratum) => (
-            <Box key={stratum} mr={1} mb={1}>
+            <Box key={stratum} mr={1} mb={1} sx={{ maxWidth: '14ch' }}>
               <ColouredRectangleChip label={stratum} colour={blueGrey} />
             </Box>
           ))}
@@ -81,7 +81,6 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
     <StyledDataGrid
       noRowsMessage={'No Sites'}
       rowSelection={false}
-      autoHeight
       getRowHeight={() => 'auto'}
       rows={sites}
       getRowId={(row) => row.id}

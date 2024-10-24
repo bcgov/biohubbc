@@ -87,8 +87,6 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
 
   return (
     <StyledDataGrid
-      autoHeight
-      getRowHeight={() => 'auto'}
       disableColumnMenu
       rows={periods}
       getRowId={(row: ISamplingSitePeriodRowData) => row.id}
