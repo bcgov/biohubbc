@@ -47,7 +47,7 @@ parameters:
     value: 'biohubbc'
   - name: PGDATA
     description: Path to PostgreSQL data directory
-    value: '/var/lib/pgsql/data'
+    value: '/var/lib/pgsql/data/pgdata'
     required: false
   - name: TZ
     description: Database timezone
@@ -194,23 +194,21 @@ objects:
                 limits:
                   cpu: ${CPU_LIMIT}
                   memory: ${MEMORY_LIMIT}
-              securityContext:
-                capabilities: {}
-                privileged: false
+              securityContext: {}
               terminationMessagePath: '/dev/termination-log'
               volumeMounts:
-                - mountPath: '/var/lib/pgsql/data'
-                  name: '${DATABASE_SERVICE_NAME}-data'
-                - mountPath: '/var/run/postgresql'
-                  name: '${DATABASE_SERVICE_NAME}-run'
+                - name: '${DATABASE_SERVICE_NAME}-data'
+                  mountPath: '/var/lib/pgsql/data'
+                # - name: '${DATABASE_SERVICE_NAME}-run'
+                #   mountPath: '/var/run/postgresql'
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           volumes:
             - name: '${DATABASE_SERVICE_NAME}-data'
               persistentVolumeClaim:
                 claimName: '${DATABASE_SERVICE_NAME}'
-            - name: '${DATABASE_SERVICE_NAME}-run'
-              emptyDir: {}
+            # - name: '${DATABASE_SERVICE_NAME}-run'
+            #   emptyDir: {}
       triggers:
         - imageChangeParams:
             automatic: true
@@ -220,6 +218,5 @@ objects:
               kind: ImageStreamTag
               name: '${IMAGE_STREAM_NAME}:${IMAGE_STREAM_VERSION}'
               namespace: '${IMAGE_STREAM_NAMESPACE}'
-            lastTriggeredImage: ''
           type: ImageChange
         - type: ConfigChange
