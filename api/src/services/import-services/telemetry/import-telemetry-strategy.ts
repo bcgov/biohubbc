@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import { z } from 'zod';
+import { TelemetryManualRecord } from '../../../database-models/telemetry_manual';
 import { IDBConnection } from '../../../database/db';
 import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
 import { generateColumnCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
@@ -8,7 +9,6 @@ import { DBService } from '../../db-service';
 import { getTelemetryDeviceKey } from '../../telemetry-services/telemetry-utils';
 import { TelemetryVendorService } from '../../telemetry-services/telemetry-vendor-service';
 import { CSVImportStrategy, Row } from '../import-csv.interface';
-import { CsvManualTelemetry, CsvManualTelemetrySchema } from './import-telemetry-strategy.interface';
 
 /**
  * ImportTelemetryStrategy
@@ -63,7 +63,7 @@ export class ImportTelemetryStrategy extends DBService implements CSVImportStrat
     const getColumnCell = generateColumnCellGetterFromColumnValidator(this.columnValidator);
     const deployments = await this.telemetryVendorService.deploymentService.getDeploymentsForSurveyId(this.surveyId);
 
-    const rowsToValidate: Partial<CsvManualTelemetry>[] = [];
+    const rowsToValidate: Partial<TelemetryManualRecord>[] = [];
 
     for (const row of rows) {
       // Raw column cell values
@@ -99,17 +99,29 @@ export class ImportTelemetryStrategy extends DBService implements CSVImportStrat
     }
 
     // Validate the rows against the zod schema
-    return z.array(CsvManualTelemetrySchema).safeParse(rowsToValidate);
+    return z
+      .array(
+        z.object({
+          deployment2_id: z.number({
+            required_error: `Unable to infer matching deployment with vendor and serial. Make sure telemetry date and time intersect with deployment attachment start and end dates.`
+          }),
+          latitude: z.number(),
+          longitude: z.number(),
+          acquisition_date: z.string(),
+          transmission_date: z.string().nullable()
+        })
+      )
+      .safeParse(rowsToValidate);
   }
 
   /**
    * Insert manual telemetry into SIMS.
    *
    * @async
-   * @param {CsvManualTelemetry[]} telemetry - Parsed CSV telemetry
+   * @param {TelemetryManualRecord[]} telemetry - Parsed CSV telemetry
    * @returns {Promise<void>}
    */
-  async insert(telemetry: CsvManualTelemetry[]): Promise<void> {
+  async insert(telemetry: TelemetryManualRecord[]): Promise<void> {
     return this.telemetryVendorService.bulkCreateManualTelemetry(this.surveyId, telemetry);
   }
 }
