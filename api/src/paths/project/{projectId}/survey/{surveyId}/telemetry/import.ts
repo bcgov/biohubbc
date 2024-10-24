@@ -4,9 +4,10 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { TelemetryService } from '../../../../../../services/telemetry-service';
-import { uploadFileToS3 } from '../../../../../../utils/file-utils';
+import { importCSV } from '../../../../../../services/import-services/import-csv';
+import { ImportTelemetryStrategy } from '../../../../../../services/import-services/telemetry/import-telemetry-strategy';
 import { getLogger } from '../../../../../../utils/logger';
+import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../utils/request';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/telemetry/upload');
@@ -27,7 +28,7 @@ export const POST: Operation = [
       ]
     };
   }),
-  uploadMedia()
+  importTelemetryCSV()
 ];
 
 POST.apiDoc = {
@@ -52,11 +53,13 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Survey telemetry submission file to upload',
+    required: true,
     content: {
       'multipart/form-data': {
         schema: {
           type: 'object',
           additionalProperties: false,
+          required: ['media'],
           properties: {
             media: {
               description: 'A survey telemetry submission file.',
@@ -72,20 +75,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Upload OK',
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              submission_id: {
-                type: 'number'
-              }
-            }
-          }
-        }
-      }
+      description: 'Import OK'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -106,12 +96,13 @@ POST.apiDoc = {
 };
 
 /**
- * Uploads a media file to S3 and inserts a matching record in the `survey_telemetry_submission` table.
+ * Imports manual telemetry from a CSV file.
  *
  * @return {*}  {RequestHandler}
  */
-export function uploadMedia(): RequestHandler {
+export function importTelemetryCSV(): RequestHandler {
   return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
     const rawMediaFile = getFileFromRequest(req);
 
     const connection = getDBConnection(req.keycloak_token);
@@ -119,31 +110,18 @@ export function uploadMedia(): RequestHandler {
     try {
       await connection.open();
 
-      // Insert a new record in the `survey_telemetry_submission` table
-      const service = new TelemetryService(connection);
-      const { submission_id: submissionId, key } = await service.insertSurveyTelemetrySubmission(
-        rawMediaFile,
-        Number(req.params.projectId),
-        Number(req.params.surveyId)
-      );
+      const telemetryStrategy = new ImportTelemetryStrategy(connection, surveyId);
 
-      // Upload file to S3
-      const metadata = {
-        filename: rawMediaFile.originalname,
-        username: req.keycloak_token?.preferred_username ?? '',
-        email: req.keycloak_token?.email ?? ''
-      };
-
-      const result = await uploadFileToS3(rawMediaFile, key, metadata);
-
-      defaultLog.debug({ label: 'uploadMedia', message: 'result', result });
+      // Pass CSV file and importer as dependencies
+      await importCSV(parseMulterFile(rawMediaFile), telemetryStrategy);
 
       await connection.commit();
 
-      return res.status(200).json({ submission_id: submissionId });
+      return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'uploadMedia', message: 'error', error });
+      defaultLog.error({ label: 'importTelemetry', message: 'error', error });
       await connection.rollback();
+
       throw error;
     } finally {
       connection.release();

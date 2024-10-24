@@ -18,7 +18,7 @@ export const DeploymentModel = z.object({
   attachment_start_timestamp: z.string(),
   attachment_end_date: z.string().nullable(),
   attachment_end_time: z.string().nullable(),
-  attachment_end_timestamp: z.string(),
+  attachment_end_timestamp: z.string().nullable(),
   critterbase_start_capture_id: z.string().uuid().nullable(),
   critterbase_end_capture_id: z.string().uuid().nullable(),
   critterbase_end_mortality_id: z.string().uuid().nullable(),
@@ -37,11 +37,6 @@ export type DeploymentModel = z.infer<typeof DeploymentModel>;
  * @description Data record for `deployment`.
  */
 export const DeploymentRecord = DeploymentModel.omit({
-  // internal fields
-  device_key: true,
-  attachment_start_timestamp: true,
-  attachment_end_timestamp: true,
-  // audit fields
   create_date: true,
   create_user: true,
   update_date: true,

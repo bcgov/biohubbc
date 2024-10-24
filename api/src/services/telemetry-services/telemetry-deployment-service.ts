@@ -41,10 +41,10 @@ export class TelemetryDeploymentService extends DBService {
    *
    * @param {number} surveyId The survey ID
    * @param {number} deploymentId The deployment ID
-   * @return {*}  {Promise<DeploymentRecord>}
+   * @return {*}  {Promise<ExtendedDeploymentRecord>}
    * @memberof TelemetryDeploymentService
    */
-  async getDeploymentById(surveyId: number, deploymentId: number): Promise<DeploymentRecord> {
+  async getDeploymentById(surveyId: number, deploymentId: number): Promise<ExtendedDeploymentRecord> {
     const deployments = await this.telemetryDeploymentRepository.getDeploymentsByIds(surveyId, [deploymentId]);
 
     if (deployments.length !== 1) {
@@ -59,10 +59,10 @@ export class TelemetryDeploymentService extends DBService {
    *
    * @param {number} surveyId The survey ID
    * @param {number[]} deploymentIds A list of deployment IDs
-   * @return {*}  {Promise<DeploymentRecord>}
+   * @return {*}  {Promise<ExtendedDeploymentRecord[]>}
    * @memberof TelemetryDeploymentService
    */
-  async getDeploymentsByIds(surveyId: number, deploymentIds: number[]): Promise<DeploymentRecord[]> {
+  async getDeploymentsByIds(surveyId: number, deploymentIds: number[]): Promise<ExtendedDeploymentRecord[]> {
     return this.telemetryDeploymentRepository.getDeploymentsByIds(surveyId, deploymentIds);
   }
 
