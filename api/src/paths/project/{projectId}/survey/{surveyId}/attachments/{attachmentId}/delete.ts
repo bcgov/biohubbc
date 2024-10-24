@@ -61,6 +61,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Current attachment type for survey attachment.',
+    required: true,
     content: {
       'application/json': {
         schema: {

@@ -124,6 +124,8 @@ export function getSurveyObservedSpecies(): RequestHandler {
 
       const observedSpecies = await observationService.getObservedSpeciesForSurvey(surveyId);
 
+      await connection.commit();
+
       const species = await platformService.getTaxonomyByTsns(observedSpecies.flatMap((species) => species.itis_tsn));
 
       const formattedResponse = species.map((taxon) => ({ ...taxon, tsn: taxon.tsn }));

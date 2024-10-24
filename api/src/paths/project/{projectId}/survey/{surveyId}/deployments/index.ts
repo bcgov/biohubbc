@@ -9,6 +9,7 @@ import { authorizeRequestHandler } from '../../../../../../request-handlers/secu
 import { BctwDeploymentService } from '../../../../../../services/bctw-service/bctw-deployment-service';
 import { ICritterbaseUser } from '../../../../../../services/critterbase-service';
 import { DeploymentService } from '../../../../../../services/deployment-service';
+import { isFeatureFlagPresent } from '../../../../../../utils/feature-flag-utils';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments/index');
@@ -127,6 +128,8 @@ export function getDeploymentsInSurvey(): RequestHandler {
       // Fetch deployments from the deployment service for the given surveyId
       const surveyDeployments = await deploymentService.getDeploymentsForSurveyId(surveyId);
 
+      await connection.commit();
+
       // Extract deployment IDs from survey deployments
       const deploymentIds = surveyDeployments.map((deployment) => deployment.bctw_deployment_id);
 
@@ -152,25 +155,27 @@ export function getDeploymentsInSurvey(): RequestHandler {
           (deployment) => deployment.deployment_id === surveyDeployment.bctw_deployment_id
         );
 
-        if (matchingBctwDeployments.length > 1) {
-          defaultLog.warn({
-            label: 'getDeploymentById',
-            message: 'Multiple active deployments found for the same deployment ID, when only one should exist.',
-            sims_deployment_id: surveyDeployment.deployment_id,
-            bctw_deployment_id: surveyDeployment.bctw_deployment_id
-          });
-
-          badDeployments.push({
-            name: 'BCTW Data Error',
-            message: 'Multiple active deployments found for the same deployment ID, when only one should exist.',
-            data: {
+        // TODO: If the feature flag exists, then we allow multiple active deployments to exist for the same deployment
+        // ID (when normally we would return a bad deployment).
+        if (!isFeatureFlagPresent(['API_FF_DISABLE_MULTIPLE_ACTIVE_DEPLOYMENTS_CHECK'])) {
+          if (matchingBctwDeployments.length > 1) {
+            defaultLog.warn({
+              label: 'getDeploymentById',
+              message: 'Multiple active deployments found for the same deployment ID, when only one should exist.',
               sims_deployment_id: surveyDeployment.deployment_id,
               bctw_deployment_id: surveyDeployment.bctw_deployment_id
-            }
-          });
-
-          // Don't continue processing this deployment
-          continue;
+            });
+            badDeployments.push({
+              name: 'BCTW Data Error',
+              message: 'Multiple active deployments found for the same deployment ID, when only one should exist.',
+              data: {
+                sims_deployment_id: surveyDeployment.deployment_id,
+                bctw_deployment_id: surveyDeployment.bctw_deployment_id
+              }
+            });
+            // Don't continue processing this deployment
+            continue;
+          }
         }
 
         if (matchingBctwDeployments.length === 0) {

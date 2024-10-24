@@ -91,6 +91,7 @@ export function getSelf(): RequestHandler {
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'getAllProjectParticipantsSQL', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

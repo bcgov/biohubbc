@@ -59,6 +59,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Array of one or more deployment IDs to delete.',
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -132,6 +133,8 @@ export function deleteDeploymentsInSurvey(): RequestHandler {
       });
 
       await Promise.all(deletePromises);
+
+      await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
