@@ -88,18 +88,26 @@ export class TelemetryVendorService extends DBService {
   }
 
   /**
-   * Get telemetry data for a survey.
+   * Get paginated telemetry data for a survey.
    *
    * @async
    * @param {number} surveyId
    * @param {ApiPaginationOptions} [pagination] - Pagination options
-   * @returns {Promise<Telemetry[]>}
+   * @return {Promise<[Telemetry[], number]>} - A tuple containing the paginated telemetry data and the total count
    */
-  async getTelemetryForSurvey(surveyId: number, pagination?: ApiPaginationOptions): Promise<Telemetry[]> {
+  async getTelemetryForSurvey(surveyId: number, pagination?: ApiPaginationOptions): Promise<[Telemetry[], number]> {
     const deployments = await this.deploymentService.getDeploymentsForSurveyId(surveyId);
     const deploymentIds = deployments.map((deployment) => deployment.deployment2_id);
 
-    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, pagination);
+    if (!pagination) {
+      const telemetry = await this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, pagination);
+      return [telemetry, telemetry.length];
+    }
+
+    return Promise.all([
+      this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, pagination),
+      this.vendorRepository.getTelemetryCountByDeploymentIds(surveyId, deploymentIds)
+    ]);
   }
 
   /**

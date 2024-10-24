@@ -2,9 +2,18 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import {
+  paginationRequestQueryParamSchema,
+  paginationResponseSchema
+} from '../../../../../../openapi/schemas/pagination';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { TelemetryDeploymentService } from '../../../../../../services/telemetry-services/telemetry-deployment-service';
 import { getLogger } from '../../../../../../utils/logger';
+import {
+  ensureCompletePaginationOptions,
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
+} from '../../../../../../utils/pagination';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments2/index');
 
@@ -57,7 +66,8 @@ GET.apiDoc = {
         minimum: 1
       },
       required: true
-    }
+    },
+    ...paginationRequestQueryParamSchema
   ],
   responses: {
     200: {
@@ -188,7 +198,12 @@ GET.apiDoc = {
                     }
                   }
                 }
-              }
+              },
+              count: {
+                type: 'number',
+                description: 'Count of telemetry deployments in the respective survey.'
+              },
+              pagination: { ...paginationResponseSchema }
             }
           }
         }
@@ -228,15 +243,27 @@ export function getDeploymentsInSurvey(): RequestHandler {
     const connection = getDBConnection(req.keycloak_token);
 
     try {
+      const paginationOptions = makePaginationOptionsFromRequest(req);
+
       await connection.open();
 
       const telemetryDeploymentService = new TelemetryDeploymentService(connection);
 
-      const deployments = await telemetryDeploymentService.getDeploymentsForSurveyId(surveyId);
+      const [deployments, deploymentsCount] = await Promise.all([
+        telemetryDeploymentService.getDeploymentsForSurveyId(
+          surveyId,
+          ensureCompletePaginationOptions(paginationOptions)
+        ),
+        telemetryDeploymentService.getDeploymentsCount(surveyId)
+      ]);
 
       await connection.commit();
 
-      return res.status(200).json({ deployments: deployments });
+      return res.status(200).json({
+        deployments: deployments,
+        count: deploymentsCount,
+        pagination: makePaginationResponse(deploymentsCount, paginationOptions)
+      });
     } catch (error) {
       defaultLog.error({ label: 'getDeploymentsInSurvey', message: 'error', error });
       await connection.rollback();
