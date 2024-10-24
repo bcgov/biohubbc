@@ -3,7 +3,7 @@ import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
-import { EcologicalUnitsSelect } from 'components/species/ecological-units/EcologicalUnitsSelect';
+import { EcologicalUnitDualSelect } from 'components/species/ecological-units/EcologicalUnitDualSelect';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -45,13 +45,12 @@ export const EcologicalUnitsForm = () => {
             {values.ecological_units.map((ecological_unit, index) => (
               <Collapse key={ecological_unit.critter_collection_unit_id ?? index}>
                 <Box mb={2}>
-                  <EcologicalUnitsSelect
-                    categoryFieldName={`ecological_units[${index}].collection_category_id`}
-                    unitFieldName={`ecological_units[${index}].collection_unit_id`}
-                    selectedCategoryIds={values.ecological_units.map((unit) => unit.collection_category_id)}
-                    ecologicalUnits={ecologicalUnitsDataLoader?.data ?? []}
-                    arrayHelpers={arrayHelpers}
-                    index={index}
+                  <EcologicalUnitDualSelect
+                    formikCategoryFieldName={`ecological_units[${index}].collection_category_id`}
+                    formikUnitFieldName={`ecological_units[${index}].collection_unit_id`}
+                    ecologicalCategories={ecologicalUnitsDataLoader.data ?? []}
+                    filterCategoryIds={values.ecological_units.map((unit) => unit.collection_category_id)}
+                    onDelete={() => arrayHelpers.remove(index)}
                   />
                 </Box>
               </Collapse>

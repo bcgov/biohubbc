@@ -43,6 +43,7 @@ PATCH.apiDoc = {
   ],
   requestBody: {
     description: 'Update system role for a user request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {

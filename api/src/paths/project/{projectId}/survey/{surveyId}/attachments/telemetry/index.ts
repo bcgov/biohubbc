@@ -65,6 +65,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Telemetry device credential file upload post request object.',
+    required: true,
     content: {
       'multipart/form-data': {
         schema: {

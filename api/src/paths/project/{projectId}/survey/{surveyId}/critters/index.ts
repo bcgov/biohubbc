@@ -140,6 +140,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Critterbase create critter request object',
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -238,6 +239,8 @@ export function getCrittersFromSurvey(): RequestHandler {
       const critterIds = surveyCritters.map((critter) => String(critter.critterbase_critter_id));
 
       const critterbaseCritters = await surveyService.critterbaseService.getMultipleCrittersByIds(critterIds);
+
+      await connection.commit();
 
       const response = [];
 
