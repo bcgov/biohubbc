@@ -47,7 +47,7 @@ parameters:
     value: 'biohubbc'
   - name: PGDATA
     description: Path to PostgreSQL data directory
-    value: '/var/lib/pgsql/data/pgdata'
+    value: '/var/lib/pgsql/data/userdata'
     required: false
   - name: TZ
     description: Database timezone
