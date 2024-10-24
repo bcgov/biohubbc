@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import { z } from 'zod';
 import { TelemetryManualRecord } from '../../../database-models/telemetry_manual';
 import { IDBConnection } from '../../../database/db';
@@ -9,6 +8,7 @@ import { DBService } from '../../db-service';
 import { getTelemetryDeviceKey } from '../../telemetry-services/telemetry-utils';
 import { TelemetryVendorService } from '../../telemetry-services/telemetry-vendor-service';
 import { CSVImportStrategy, Row } from '../import-csv.interface';
+import { formatTimestampString } from '../utils/datetime';
 
 /**
  * ImportTelemetryStrategy
@@ -75,7 +75,7 @@ export class ImportTelemetryStrategy extends DBService implements CSVImportStrat
       const time = getColumnCell(row, 'TIME').cell;
 
       // Format additional values
-      const timestamp = dayjs(`${date} ${time}`).format('YYYY-MM-DD HH:mm:ss');
+      const timestamp = formatTimestampString(date, time);
       const deviceKey = getTelemetryDeviceKey({ vendor, serial });
 
       // Find the deployment that matches the device key and is within the telemetry date range

@@ -34,6 +34,23 @@ export const formatTimeString = (time?: string | null): string | undefined => {
 };
 
 /**
+ * Format date and time into timestamp string.
+ *
+ * @param {string} date - Date string
+ * @param {string} [time] - Time string
+ * @returns {string} Formatted date and time string
+ */
+export const formatTimestampString = (date: string, time?: string): string => {
+  const formattedTime = formatTimeString(time);
+
+  if (formattedTime) {
+    return dayjs(`${date} ${formattedTime}`).format('YYYY-MM-DD HH:mm:ss');
+  }
+
+  return dayjs(date).format('YYYY-MM-DD HH:mm:ss');
+};
+
+/**
  * Checks if two date strings are equal.
  *
  * Note: This will attempt to unify the formatting between the dates.
