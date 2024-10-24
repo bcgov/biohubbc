@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { IObservationAdvancedFilters } from '../models/observation-view';
-import { CodeRepository } from '../repositories/code-repository';
+import { CodeRepository, ICode } from '../repositories/code-repository';
 import {
   InsertObservation,
   ObservationGeometryRecord,
@@ -626,19 +626,11 @@ export class ObservationService extends DBService {
 
     // Merge all the table rows into an array of InsertUpdateObservations[]
     const newRowData: InsertUpdateObservations[] = worksheetRowObjects.map((row) => {
-      // TODO: This observationSubcountSignId logic is specifically catered to the observation_subcount_signs code set,
-      // as it is the only code set currently being used in the observation CSVs, and is required. This logic will need
-      // to be updated to be more generic if other code sets are used in the future, or if they can be nullable.
-      const observationSubcountSignId = getColumnCellValue(row, 'OBSERVATION_SUBCOUNT_SIGN').cell
-        ? codeTypeDefinitions.OBSERVATION_SUBCOUNT_SIGN.find(
-            (option) =>
-              option.name.toLowerCase() === getColumnCellValue(row, 'OBSERVATION_SUBCOUNT_SIGN').cell.toLowerCase()
-          )?.id
-        : codeTypeDefinitions.OBSERVATION_SUBCOUNT_SIGN.find(
-            (option) => option.name.toLowerCase() === 'direct sighting'
-          )?.id;
-
-      console.log(observationSubcountSignId);
+      const observationSubcountSignId = this._getCodeIdFromCellValue(
+        getColumnCellValue(row, 'OBSERVATION_SUBCOUNT_SIGN').cell,
+        codeTypeDefinitions.OBSERVATION_SUBCOUNT_SIGN,
+        'direct sighting'
+      );
 
       const newSubcount: InsertSubCount = {
         observation_subcount_id: null,
@@ -910,8 +902,6 @@ export class ObservationService extends DBService {
       const startTime = dayjs(period.split('-')[0]).format('HH:mm:ss');
       const endTime = dayjs(period.split('-')[1]).format('HH:mm:ss');
 
-      console.log(startDate, startTime, endDate, endTime);
-
       // Find matching periods by date
       const matchingPeriods = methodRecord.sample_periods.filter(
         (p) => p.start_date === startDate && p.end_date === endDate
@@ -942,17 +932,22 @@ export class ObservationService extends DBService {
     // If period is not specified, infer it from the row data
     const observationDate = getColumnCellValue(row, 'DATE').cell as string | null;
     const observationTime = getColumnCellValue(row, 'TIME').cell as string | null;
-    const formattedDate = dayjs(observationDate).format('YYYY-MM-DD');
-    const formattedTime = dayjs(observationTime).format('HH:mm:ss');
 
+    const formattedDate = dayjs(observationDate);
+    const formattedTime = dayjs(`${observationDate} ${observationTime}`).format('HH:mm:ss');
+
+    // TODO: Fix timezone of the observation date. Observation date is assumed to be UTC instead of local time,
+    // so the observation date being imported from the csv is incorrectly offset by 1 day. eg. "July 28, 2024" is
+    // imported at July 27, 2024
+    //
     // If no periods match by date/time but the site and method is given, check if the observation date falls within a period.
     // If true, we will infer the period based on the observation date.
     const encompassingPeriod = methodRecord.sample_periods.find(
       (p) =>
-        formattedDate >= p.start_date &&
-        formattedDate <= p.end_date &&
-        (!p.start_time || formattedTime >= p.start_time) &&
-        (!p.end_time || formattedTime <= p.end_time)
+        (formattedDate.isAfter(dayjs(p.start_date)) || formattedDate.isSame(dayjs(p.start_date))) &&
+        (formattedDate.isBefore(dayjs(p.end_date)) || formattedDate.isAfter(dayjs(p.end_date))) &&
+        (!p.start_time || formattedTime >= dayjs(`${p.start_date} ${p.start_time}`).format('HH:mm:ss')) &&
+        (!p.end_time || formattedTime <= dayjs(`${p.end_date} ${p.end_time}`).format('HH:mm:ss'))
     );
 
     if (encompassingPeriod) {
@@ -976,7 +971,6 @@ export class ObservationService extends DBService {
       };
     }
 
-    // If the function hasn't returned yet, we are unable to determine sampling information from the row data
     return null;
   }
 
@@ -1199,5 +1193,31 @@ export class ObservationService extends DBService {
 
     // Return true if both environments and measurements are valid
     return true;
+  }
+
+  /**
+   * Gets the code id value with a matching name from a set of options. If the function returns null, the
+   * request should probably throw an error.
+   *
+   * @param cellValue The name of a code to find the id for
+   * @param codeOptions The reference codes from which to find the id
+   * @param defaultValue A default value for when cellValue is null
+   * @returns
+   */
+  _getCodeIdFromCellValue(cellValue: string | null, codeOptions: ICode[], defaultValue?: string | null): number | null {
+    const value = cellValue?.toLowerCase(); // Normalize the cell value
+
+    // No value exists and no default value, so must be null
+    if (!value && !defaultValue) {
+      return null;
+    }
+
+    // The cell has no value so return the default
+    if (!value && defaultValue) {
+      return codeOptions.find((option) => option.name.toLowerCase() === defaultValue.toLowerCase())?.id || null;
+    }
+
+    // Try to find a matching code, otherwise return null
+    return codeOptions.find((option) => option.name.toLowerCase() === value)?.id || null;
   }
 }

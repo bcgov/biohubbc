@@ -118,6 +118,7 @@ export const getHeaderIndex = (worksheet: xlsx.WorkSheet, headerName: string): n
  * @return {*}  {string[][]}
  */
 export const getWorksheetRows = (worksheet: xlsx.WorkSheet): string[][] => {
+
   const originalRange = getWorksheetRange(worksheet);
 
   if (!originalRange) {
@@ -143,6 +144,8 @@ export const getWorksheetRows = (worksheet: xlsx.WorkSheet): string[][] => {
 
       rowHasValues = true;
     }
+
+    console.log(row)
 
     if (row.length && rowHasValues) {
       rowsToReturn.push(row);
