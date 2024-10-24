@@ -6,14 +6,13 @@ import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useTelemetryDataContext } from 'hooks/useContext';
+import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
-import { useContext, useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 // Set height so the skeleton loader will match table rows
 const rowHeight = 52;
@@ -41,26 +40,20 @@ interface ISurveyDataTelemetryTableProps {
  * @returns {JSX.Element} The rendered component.
  */
 export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProps) => {
-  const surveyContext = useContext(SurveyContext);
-  const telemetryDataContext = useTelemetryDataContext();
+  const codesContext = useCodesContext();
+  const surveyContext = useSurveyContext();
 
   const biohubApi = useBiohubApi();
 
+  const deploymentsDataLoader = useDataLoader(biohubApi.telemetryDeployment.getDeploymentsInSurvey);
+  const telemetryDataLoader = useDataLoader(biohubApi.telemetry.getTelemetryForSurvey);
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
-  const deploymentDataLoader = telemetryDataContext.deploymentsDataLoader;
-  const frequencyUnitDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('frequency_unit'));
 
   useEffect(() => {
-    deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    deploymentsDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+    telemetryDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
     critterDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-    frequencyUnitDataLoader.load();
-  }, [
-    critterDataLoader,
-    deploymentDataLoader,
-    frequencyUnitDataLoader,
-    surveyContext.projectId,
-    surveyContext.surveyId
-  ]);
+  }, [deploymentsDataLoader, telemetryDataLoader, critterDataLoader, surveyContext.projectId, surveyContext.surveyId]);
 
   /**
    * Merges critters with associated deployments
@@ -70,7 +63,7 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
   const critterDeployments: IAnimalDeploymentWithCritter[] = useMemo(() => {
     const critterDeployments: IAnimalDeploymentWithCritter[] = [];
     const critters = critterDataLoader.data ?? [];
-    const deployments = deploymentDataLoader.data?.deployments ?? [];
+    const deployments = deploymentsDataLoader.data?.deployments ?? [];
 
     if (!critters.length || !deployments.length) {
       return [];
@@ -86,7 +79,7 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
     });
 
     return critterDeployments;
-  }, [critterDataLoader.data, deploymentDataLoader.data]);
+  }, [critterDataLoader.data, deploymentsDataLoader.data]);
 
   /**
    * Memoized calculation of table rows based on critter deployments data.
@@ -96,7 +89,7 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
     return critterDeployments.map((item) => {
       return {
         // Critters in this table may use multiple devices across multiple timespans
-        id: item.deployment.deployment_id,
+        id: item.deployment.deployment2_id,
         critter_id: item.critter.critter_id,
         animal_id: item.critter.animal_id,
         device_id: item.deployment.device_id,
@@ -105,14 +98,14 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
           ? dayjs(item.deployment.attachment_end_date).format(DATE_FORMAT.MediumDateFormat)
           : '',
         frequency: item.deployment.frequency ?? null,
-        frequency_unit: item.deployment.frequency_unit
-          ? frequencyUnitDataLoader.data?.find((frequencyCode) => frequencyCode.id === item.deployment.frequency_unit)
-              ?.code ?? null
-          : null,
+        frequency_unit:
+          codesContext.codesDataLoader.data?.frequency_unit?.find(
+            (frequencyCode) => frequencyCode.id === item.deployment.frequency_unit_id
+          )?.name ?? null,
         itis_scientific_name: item.critter.itis_scientific_name
       };
     });
-  }, [critterDeployments, frequencyUnitDataLoader.data]);
+  }, [codesContext.codesDataLoader.data?.frequency_unit, critterDeployments]);
 
   // Define table columns
   const columns: GridColDef<ITelemetryData>[] = [
