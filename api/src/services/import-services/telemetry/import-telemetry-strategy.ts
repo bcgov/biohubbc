@@ -79,10 +79,11 @@ export class ImportTelemetryStrategy extends DBService implements CSVImportStrat
       const deviceKey = getTelemetryDeviceKey({ vendor, serial });
 
       // Find the deployment that matches the device key and is within the telemetry date range
+      // This is making the assumption that only one match can be found (database date/deviceKey constraints)
       const deployment = deployments.find((deployment) => {
         const telemetryWithinDeployment =
           telemetryDate >= deployment.attachment_start_timestamp &&
-          (telemetryDate <= deployment.attachment_end_timestamp || deployment.attachment_end_timestamp === null);
+          (deployment.attachment_end_timestamp === null || telemetryDate <= deployment.attachment_end_timestamp);
 
         return deployment.device_key === deviceKey && telemetryWithinDeployment;
       });

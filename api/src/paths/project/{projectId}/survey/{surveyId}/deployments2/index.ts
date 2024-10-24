@@ -80,12 +80,15 @@ GET.apiDoc = {
                     'survey_id',
                     'critter_id',
                     'device_id',
+                    'device_key',
                     'frequency',
                     'frequency_unit_id',
                     'attachment_start_date',
                     'attachment_start_time',
+                    'attachment_start_timestamp',
                     'attachment_end_date',
                     'attachment_end_time',
+                    'attachment_end_timestamp',
                     'critterbase_start_capture_id',
                     'critterbase_end_capture_id',
                     'critterbase_end_mortality_id',
@@ -113,6 +116,11 @@ GET.apiDoc = {
                       type: 'integer',
                       description: 'Id of the device, as reported by users. Not unique.'
                     },
+                    device_key: {
+                      type: 'string',
+                      description: 'Generated: Device make + device serial.',
+                      example: 'lotek:123456'
+                    },
                     frequency: {
                       type: 'integer',
                       description:
@@ -138,6 +146,11 @@ GET.apiDoc = {
                       example: '12:00:00',
                       nullable: true
                     },
+                    attachment_start_timestamp: {
+                      type: 'string',
+                      description: 'Generated: start timestamp of the deployment.',
+                      example: '2021-01-01 12:00:00'
+                    },
                     attachment_end_date: {
                       type: 'string',
                       description: 'End date of the deployment.',
@@ -150,11 +163,18 @@ GET.apiDoc = {
                       example: '12:00:00',
                       nullable: true
                     },
+                    attachment_end_timestamp: {
+                      type: 'string',
+                      description: 'Generated: end timestamp of the deployment.',
+                      example: '2021-01-01 12:00:00',
+                      nullable: true
+                    },
                     critterbase_start_capture_id: {
                       type: 'string',
                       description:
                         'Critterbase capture event. The capture event during which the device was attached to the animal.',
-                      format: 'uuid'
+                      format: 'uuid',
+                      nullable: true
                     },
                     critterbase_end_capture_id: {
                       type: 'string',

@@ -18,7 +18,7 @@ export const DeploymentModel = z.object({
   attachment_start_timestamp: z.string(),
   attachment_end_date: z.string().nullable(),
   attachment_end_time: z.string().nullable(),
-  attachment_end_timestamp: z.string(),
+  attachment_end_timestamp: z.string().nullable(),
   critterbase_start_capture_id: z.string().uuid().nullable(),
   critterbase_end_capture_id: z.string().uuid().nullable(),
   critterbase_end_mortality_id: z.string().uuid().nullable(),
