@@ -7,6 +7,7 @@ import {
   ExtendedDeploymentRecord,
   UpdateDeployment
 } from '../../repositories/telemetry-repositories/telemetry-deployment-repository.interface';
+import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
 
 /**
@@ -69,12 +70,16 @@ export class TelemetryDeploymentService extends DBService {
   /**
    * Get deployments for a Survey.
    *
-   * @param {number} surveyId The survey ID
+   * @param {number} surveyId
+   * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<ExtendedDeploymentRecord[]>}
    * @memberof TelemetryDeploymentService
    */
-  async getDeploymentsForSurveyId(surveyId: number): Promise<ExtendedDeploymentRecord[]> {
-    return this.telemetryDeploymentRepository.getDeploymentsForSurveyId(surveyId);
+  async getDeploymentsForSurveyId(
+    surveyId: number,
+    pagination?: ApiPaginationOptions
+  ): Promise<ExtendedDeploymentRecord[]> {
+    return this.telemetryDeploymentRepository.getDeploymentsForSurveyId(surveyId, pagination);
   }
 
   /**
@@ -87,6 +92,17 @@ export class TelemetryDeploymentService extends DBService {
    */
   async getDeploymentsForCritterId(surveyId: number, critterId: number): Promise<DeploymentRecord[]> {
     return this.telemetryDeploymentRepository.getDeploymentsForCritterId(surveyId, critterId);
+  }
+
+  /**
+   * Get the total count of all deployments for a survey.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number>}
+   * @memberof telemetryDeploymentRepository
+   */
+  async getDeploymentsCount(surveyId: number): Promise<number> {
+    return this.telemetryDeploymentRepository.getDeploymentsCount(surveyId);
   }
 
   /**
