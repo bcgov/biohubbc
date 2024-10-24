@@ -61,6 +61,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Survey post request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {

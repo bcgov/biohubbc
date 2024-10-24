@@ -52,6 +52,7 @@ PATCH.apiDoc = {
   ],
   requestBody: {
     description: 'Critterbase bulk patch request object',
+    required: true,
     content: {
       'application/json': {
         schema: critterBulkRequestObject

@@ -49,6 +49,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Request body',
+    required: true,
     content: {
       'application/json': {
         schema: {

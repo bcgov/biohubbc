@@ -134,6 +134,7 @@ PUT.apiDoc = {
   ],
   requestBody: {
     description: 'Survey observation record data',
+    required: true,
     content: {
       'application/json': {
         schema: {

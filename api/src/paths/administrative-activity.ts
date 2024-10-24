@@ -23,6 +23,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Administrative Activity post request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {

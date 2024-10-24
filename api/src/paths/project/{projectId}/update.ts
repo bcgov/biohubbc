@@ -243,6 +243,7 @@ PUT.apiDoc = {
   ],
   requestBody: {
     description: 'Project put request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {
