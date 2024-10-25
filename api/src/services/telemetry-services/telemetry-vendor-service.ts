@@ -97,8 +97,8 @@ export class TelemetryVendorService extends DBService {
     const deployments = await this.deploymentService.getDeploymentsForSurveyId(surveyId);
     const deploymentIds = deployments.map((deployment) => deployment.deployment2_id);
 
-    if (!options) {
-      const telemetry = await this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds);
+    if (!options?.pagination) {
+      const telemetry = await this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, options);
       return [telemetry, telemetry.length];
     }
 
