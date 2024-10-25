@@ -4,8 +4,10 @@ import { ApiGeneralError } from '../../errors/api-error';
 import { TelemetryManualRepository } from '../../repositories/telemetry-repositories/telemetry-manual-repository';
 import { CreateManualTelemetry } from '../../repositories/telemetry-repositories/telemetry-manual-repository.interface';
 import { TelemetryVendorRepository } from '../../repositories/telemetry-repositories/telemetry-vendor-repository';
-import { Telemetry } from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
-import { ApiPaginationOptions } from '../../zod-schema/pagination';
+import {
+  Telemetry,
+  TelemetryOptions
+} from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 import { DBService } from '../db-service';
 import { TelemetryDeploymentService } from './telemetry-deployment-service';
 
@@ -39,15 +41,15 @@ export class TelemetryVendorService extends DBService {
    * @async
    * @param {number} surveyId
    * @param {number} deploymentId
-   * @param {ApiPaginationOptions} [pagination] - Pagination options
+   * @param {TelemetryOptions} [options] - Telemetry options
    * @returns {Promise<Telemetry[]>}
    */
   async getTelemetryForDeployment(
     surveyId: number,
     deploymentId: number,
-    pagination?: ApiPaginationOptions
+    options?: TelemetryOptions
   ): Promise<Telemetry[]> {
-    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, [deploymentId], pagination);
+    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, [deploymentId], options);
   }
 
   /**
@@ -56,15 +58,15 @@ export class TelemetryVendorService extends DBService {
    * @async
    * @param {number} surveyId
    * @param {number[]} deploymentIds
-   * @param {ApiPaginationOptions} [pagination] - Pagination options
+   * @param {TelemetryOptions} [options] - Telemetry options
    * @returns {Promise<Telemetry[]>}
    */
   async getTelemetryForDeployments(
     surveyId: number,
     deploymentIds: number[],
-    pagination?: ApiPaginationOptions
+    options?: TelemetryOptions
   ): Promise<Telemetry[]> {
-    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, pagination);
+    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, options);
   }
 
   /**
@@ -73,18 +75,14 @@ export class TelemetryVendorService extends DBService {
    * @async
    * @param {number} surveyId
    * @param {number} critterId
-   * @param {ApiPaginationOptions} [pagination] - Pagination options
+   * @param {TelemetryOptions} [options] - Telemetry options
    * @returns {Promise<Telemetry[]>}
    */
-  async getTelemetryForCritter(
-    surveyId: number,
-    critterId: number,
-    pagination?: ApiPaginationOptions
-  ): Promise<Telemetry[]> {
+  async getTelemetryForCritter(surveyId: number, critterId: number, options?: TelemetryOptions): Promise<Telemetry[]> {
     const deployments = await this.deploymentService.getDeploymentsForCritterId(surveyId, critterId);
     const deploymentIds = deployments.map((deployment) => deployment.deployment2_id);
 
-    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, pagination);
+    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, options);
   }
 
   /**
@@ -92,14 +90,14 @@ export class TelemetryVendorService extends DBService {
    *
    * @async
    * @param {number} surveyId
-   * @param {ApiPaginationOptions} [pagination] - Pagination options
+   * @param {TelemetryOptions} [options] - Telemetry options
    * @returns {Promise<Telemetry[]>}
    */
-  async getTelemetryForSurvey(surveyId: number, pagination?: ApiPaginationOptions): Promise<Telemetry[]> {
+  async getTelemetryForSurvey(surveyId: number, options?: TelemetryOptions): Promise<Telemetry[]> {
     const deployments = await this.deploymentService.getDeploymentsForSurveyId(surveyId);
     const deploymentIds = deployments.map((deployment) => deployment.deployment2_id);
 
-    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, pagination);
+    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, options);
   }
 
   /**
