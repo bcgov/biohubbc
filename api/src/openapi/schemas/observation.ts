@@ -61,11 +61,15 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
           },
           latitude: {
             type: 'number',
-            nullable: true
+            nullable: true,
+            minimum: -90,
+            maximum: 90
           },
           longitude: {
             type: 'number',
-            nullable: true
+            nullable: true,
+            minimum: -180,
+            maximum: 180
           },
           count: {
             type: 'integer'

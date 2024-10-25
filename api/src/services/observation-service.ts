@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { IObservationAdvancedFilters } from '../models/observation-view';
-import { CodeRepository, ICode } from '../repositories/code-repository';
+import { CodeRepository } from '../repositories/code-repository';
 import {
   InsertObservation,
   ObservationGeometryRecord,
@@ -72,6 +72,7 @@ import { SamplePeriodService } from './sample-period-service';
 import { SubCountService } from './subcount-service';
 
 const defaultLog = getLogger('services/observation-service');
+const defaultSubcountSign = 'direct sighting';
 
 /**
  * An XLSX validation config for the standard columns of an Observation CSV.
@@ -624,12 +625,18 @@ export class ObservationService extends DBService {
       );
     }
 
+    // Get subcount sign options and default option for when sign is null
+    const codeMap = new Map(
+      codeTypeDefinitions.OBSERVATION_SUBCOUNT_SIGN.map((option) => [option.name.toLowerCase(), option.id])
+    );
+    const defaultSubcountSignId = codeMap.get(defaultSubcountSign) || null;
+
     // Merge all the table rows into an array of InsertUpdateObservations[]
     const newRowData: InsertUpdateObservations[] = worksheetRowObjects.map((row) => {
       const observationSubcountSignId = this._getCodeIdFromCellValue(
         getColumnCellValue(row, 'OBSERVATION_SUBCOUNT_SIGN').cell,
-        codeTypeDefinitions.OBSERVATION_SUBCOUNT_SIGN,
-        'direct sighting'
+        codeMap,
+        defaultSubcountSignId
       );
 
       const newSubcount: InsertSubCount = {
@@ -835,15 +842,6 @@ export class ObservationService extends DBService {
     return foundEnvironments;
   }
 
-  /**
-   * Extracts sampling data from the worksheet row object and maps site names, method techniques, and periods
-   * to their respective IDs using the provided samplingLocations.
-   *
-   * @param {Record<string, any>} row - The current row of the worksheet being processed.
-   * @param {string[]} samplingColumns - The list of column names relevant to sampling (site, method, period).
-   * @param {SampleLocationRecord[]} samplingLocations - The available sampling locations for the survey, used for mapping names to IDs.
-   * @return { { sampleSiteId: number, sampleMethodId: number, samplePeriodId: number } | null } The sampling data with IDs, or null if no valid data is found.
-   */
   /**
    * Extracts sampling data from the worksheet row object and maps site names, method techniques, and periods
    * to their respective IDs using the provided samplingLocations.
@@ -1196,28 +1194,27 @@ export class ObservationService extends DBService {
   }
 
   /**
-   * Gets the code id value with a matching name from a set of options. If the function returns null, the
+   * Gets the code id value with a matching name from a pre-mapped set of options. If the function returns null, the
    * request should probably throw an error.
    *
    * @param cellValue The name of a code to find the id for
-   * @param codeOptions The reference codes from which to find the id
-   * @param defaultValue A default value for when cellValue is null
-   * @returns
+   * @param codeMap A Map where the key is the normalized code name and the value is the ID
+   * @param defaultCodeId A precomputed default code ID for cases where cellValue is null
+   * @returns The ID of the matching code, or the default ID, or null if no match is found
    */
-  _getCodeIdFromCellValue(cellValue: string | null, codeOptions: ICode[], defaultValue?: string | null): number | null {
+  _getCodeIdFromCellValue(
+    cellValue: string | null,
+    codeMap: Map<string, number>,
+    defaultCodeId?: number | null
+  ): number | null {
     const value = cellValue?.toLowerCase(); // Normalize the cell value
 
-    // No value exists and no default value, so must be null
-    if (!value && !defaultValue) {
-      return null;
+    // If no value exists, return the default code ID or null
+    if (!value) {
+      return defaultCodeId || null;
     }
 
-    // The cell has no value so return the default
-    if (!value && defaultValue) {
-      return codeOptions.find((option) => option.name.toLowerCase() === defaultValue.toLowerCase())?.id || null;
-    }
-
-    // Try to find a matching code, otherwise return null
-    return codeOptions.find((option) => option.name.toLowerCase() === value)?.id || null;
+    // Return the ID from the map if it exists, otherwise return null
+    return codeMap.get(value) || null;
   }
 }
