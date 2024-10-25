@@ -42,6 +42,7 @@ describe('getDeploymentsInSurvey', () => {
     ];
 
     sinon.stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurveyId').resolves(mockDeployments);
+    sinon.stub(TelemetryDeploymentService.prototype, 'getDeploymentsCount').resolves(1);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -54,7 +55,18 @@ describe('getDeploymentsInSurvey', () => {
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(mockRes.json).to.have.been.calledOnceWith({ deployments: mockDeployments });
+    expect(mockRes.json).to.have.been.calledOnceWith({
+      deployments: mockDeployments,
+      count: 1,
+      pagination: {
+        total: 1,
+        per_page: 1,
+        current_page: 1,
+        last_page: 1,
+        sort: undefined,
+        order: undefined
+      }
+    });
     expect(mockRes.status).calledOnceWith(200);
     expect(mockDBConnection.release).to.have.been.calledOnce;
   });

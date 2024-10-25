@@ -3,7 +3,6 @@ import sinon from 'sinon';
 import * as db from '../../../../../../../database/db';
 import { SurveyDeployment } from '../../../../../../../models/survey-deployment';
 import { BctwTelemetryService, IAllTelemetry } from '../../../../../../../services/bctw-service/bctw-telemetry-service';
-import { DeploymentService } from '../../../../../../../services/deployment-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import { getCritterTelemetry } from './telemetry';
 

@@ -177,7 +177,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getDevices()
+  getDevicesInSurvey()
 ];
 
 GET.apiDoc = {
@@ -283,15 +283,16 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getDevices(): RequestHandler {
+export function getDevicesInSurvey(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
+
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      await connection.open();
-
       const paginationOptions = makePaginationOptionsFromRequest(req);
+
+      await connection.open();
 
       const telemetryDeviceService = new TelemetryDeviceService(connection);
 

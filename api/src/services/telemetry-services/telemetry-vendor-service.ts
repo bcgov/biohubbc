@@ -86,18 +86,26 @@ export class TelemetryVendorService extends DBService {
   }
 
   /**
-   * Get telemetry data for a survey.
+   * Get paginated telemetry data for a survey.
    *
    * @async
    * @param {number} surveyId
    * @param {TelemetryOptions} [options] - Telemetry options
-   * @returns {Promise<Telemetry[]>}
+   * @returns {Promise<[Telemetry[], number]>} Tuple of telemetry data and total count
    */
-  async getTelemetryForSurvey(surveyId: number, options?: TelemetryOptions): Promise<Telemetry[]> {
+  async getTelemetryForSurvey(surveyId: number, options?: TelemetryOptions): Promise<[Telemetry[], number]> {
     const deployments = await this.deploymentService.getDeploymentsForSurveyId(surveyId);
     const deploymentIds = deployments.map((deployment) => deployment.deployment2_id);
 
-    return this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, options);
+    if (!options) {
+      const telemetry = await this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds);
+      return [telemetry, telemetry.length];
+    }
+
+    return Promise.all([
+      this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, options),
+      this.vendorRepository.getTelemetryCountByDeploymentIds(surveyId, deploymentIds)
+    ]);
   }
 
   /**

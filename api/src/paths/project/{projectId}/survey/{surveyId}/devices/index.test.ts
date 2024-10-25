@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import { getDevices } from '.';
+import { getDevicesInSurvey } from '.';
 import * as db from '../../../../../../database/db';
 import { TelemetryDeviceService } from '../../../../../../services/telemetry-services/telemetry-device-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 
-describe('getDevices', () => {
+describe('getDevicesInSurvey', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -36,7 +36,7 @@ describe('getDevices', () => {
       surveyId: '2'
     };
 
-    const requestHandler = getDevices();
+    const requestHandler = getDevicesInSurvey();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -72,7 +72,7 @@ describe('getDevices', () => {
       surveyId: '2'
     };
 
-    const requestHandler = getDevices();
+    const requestHandler = getDevicesInSurvey();
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);
