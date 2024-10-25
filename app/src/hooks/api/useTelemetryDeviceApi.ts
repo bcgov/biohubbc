@@ -7,7 +7,7 @@ import {
   UpdateTelemetryDevice
 } from 'interfaces/useTelemetryDeviceApi.interface';
 import qs from 'qs';
-import { ApiPaginationRequestOptions } from 'types/misc';
+import { ApiPaginationRequestOptions, ApiPaginationResponseParams } from 'types/misc';
 
 /**
  * Returns a set of supported api methods for working with telemetry devices.
@@ -73,14 +73,14 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {number} deviceId
-   * @return {*}  {Promise<{ device: TelemetryDevice }>}
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @return {*}  {Promise<{ devices: TelemetryDevice[]; count: number; pagination: ApiPaginationResponseParams }>}
    */
   const getDevicesInSurvey = async (
     projectId: number,
     surveyId: number,
     pagination?: ApiPaginationRequestOptions
-  ): Promise<{ devices: TelemetryDevice[] }> => {
+  ): Promise<{ devices: TelemetryDevice[]; count: number; pagination: ApiPaginationResponseParams }> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/devices`, {
       params: {
         ...pagination
