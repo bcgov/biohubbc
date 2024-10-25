@@ -23,7 +23,7 @@ export interface IXLSXCSVColumn {
    *
    * time: HH:mm:ss
    */
-  type: 'string' | 'number' | 'date' | 'code';
+  type: 'string' | 'number' | 'date' | 'code' | 'stringOrNumber';
   /**
    * Allowed aliases / mappings for column headers.
    *
@@ -261,6 +261,10 @@ export const validateWorksheetColumnTypes = (
 
       if (columnSpec.type === type) {
         validated = true;
+      }
+
+      if (columnSpec.type === 'stringOrNumber') {
+        validated = type === 'string' || type === 'number';
       }
 
       // Undefined values only allowed if column spec is set to optional

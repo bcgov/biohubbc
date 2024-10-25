@@ -19,15 +19,21 @@ describe('getDeploymentById', () => {
       survey_id: 3,
       critter_id: 4,
       device_id: 5,
+      device_key: 'lotek:12345',
       frequency: 100,
       frequency_unit_id: 1,
       attachment_start_date: '2021-01-01',
       attachment_start_time: '00:00',
+      attachment_start_timestamp: '2021-01-01 00:00',
       attachment_end_date: '2021-01-02',
       attachment_end_time: '00:00',
+      attachment_end_timestamp: '2021-01-01 00:00',
       critterbase_start_capture_id: '123-456-789',
       critterbase_end_capture_id: null,
-      critterbase_end_mortality_id: null
+      critterbase_end_mortality_id: null,
+      device_make_id: 1,
+      critterbase_critter_id: 'uuid',
+      model: 'model'
     };
 
     sinon.stub(TelemetryDeploymentService.prototype, 'getDeploymentById').resolves(mockDeployment);

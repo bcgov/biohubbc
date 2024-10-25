@@ -25,6 +25,7 @@ const SurveyProgressCode = ICode.extend({ description: z.string() });
 const MethodResponseMetricsCode = ICode.extend({ description: z.string() });
 const AttractantCode = ICode.extend({ description: z.string() });
 const ObservationSubcountSignCode = ICode.extend({ description: z.string() });
+const DeviceMakeCode = ICode.extend({ description: z.string() });
 
 export const IAllCodeSets = z.object({
   management_action_type: CodeSet(),
@@ -46,7 +47,8 @@ export const IAllCodeSets = z.object({
   survey_progress: CodeSet(SurveyProgressCode.shape),
   method_response_metrics: CodeSet(MethodResponseMetricsCode.shape),
   attractants: CodeSet(AttractantCode.shape),
-  observation_subcount_signs: CodeSet(ObservationSubcountSignCode.shape)
+  observation_subcount_signs: CodeSet(ObservationSubcountSignCode.shape),
+  telemetry_device_makes: CodeSet(DeviceMakeCode.shape)
 });
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
 
@@ -59,9 +61,9 @@ export class CodeRepository extends BaseRepository {
    */
   async getSampleMethods() {
     const sql = SQL`
-      SELECT 
-        method_lookup_id as id, 
-        name, 
+      SELECT
+        method_lookup_id as id,
+        name,
         description
       FROM method_lookup
       ORDER BY name ASC;
@@ -104,7 +106,7 @@ export class CodeRepository extends BaseRepository {
         first_nations_id as id,
         name
       FROM first_nations
-      WHERE record_end_date is null 
+      WHERE record_end_date is null
       ORDER BY name ASC;
     `;
 
@@ -125,7 +127,7 @@ export class CodeRepository extends BaseRepository {
         agency_id as id,
         name
       FROM agency
-      WHERE record_end_date is null 
+      WHERE record_end_date is null
       ORDER BY name ASC;
     `;
 
@@ -144,7 +146,7 @@ export class CodeRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         proprietor_type_id as id,
-        name, 
+        name,
         is_first_nation
       FROM proprietor_type
       WHERE record_end_date is null;
@@ -186,7 +188,7 @@ export class CodeRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         intended_outcome_id as id,
-        name, 
+        name,
         description
       FROM intended_outcome
       WHERE record_end_date is null;
@@ -210,7 +212,7 @@ export class CodeRepository extends BaseRepository {
         agency_id,
         name
       FROM investment_action_category
-      WHERE record_end_date is null 
+      WHERE record_end_date is null
       ORDER BY name ASC;
     `;
 
@@ -314,7 +316,7 @@ export class CodeRepository extends BaseRepository {
         name
       FROM project_role
       WHERE record_end_date is null
-      ORDER BY 
+      ORDER BY
         CASE WHEN name = 'Coordinator' THEN 0 ELSE 1 END;
     `;
 
@@ -463,6 +465,29 @@ export class CodeRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement, ObservationSubcountSignCode);
+
+    return response.rows;
+  }
+
+  /**
+   * Get active telemetry device makes.
+   *
+   * @return {*}
+   * @memberof CodeRepository
+   */
+  async getActiveTelemetryDeviceMakes() {
+    const sqlStatement = SQL`
+      SELECT
+        device_make_id as id,
+        name,
+        description
+      FROM device_make
+      WHERE
+        record_effective_date IS NOT NULL
+      AND record_end_date is null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, DeviceMakeCode);
 
     return response.rows;
   }

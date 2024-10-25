@@ -40,6 +40,10 @@ const telemetryCSVColumnValidator: IXLSXCSVValidator = {
   LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE }
 };
 
+/**
+ *
+ * @deprecated Dropped after BCTW migration
+ */
 export class TelemetryService extends DBService {
   telemetryRepository: TelemetryRepository;
 

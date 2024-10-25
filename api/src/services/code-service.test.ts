@@ -45,7 +45,8 @@ describe('CodeService', () => {
         'sample_methods',
         'survey_progress',
         'method_response_metrics',
-        'observation_subcount_signs'
+        'observation_subcount_signs',
+        'telemetry_device_makes'
       );
     });
   });

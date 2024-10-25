@@ -4,6 +4,11 @@ import { DeploymentRecord } from '../../database-models/deployment';
 import { DeviceRecord } from '../../database-models/device';
 
 export const CreateDeployment = DeploymentRecord.omit({
+  // Database generated columns
+  device_key: true,
+  attachment_start_timestamp: true,
+  attachment_end_timestamp: true,
+  // Primary key
   deployment2_id: true
 });
 
@@ -23,6 +28,11 @@ export const ExtendedDeploymentRecord = DeploymentRecord.merge(
 export type ExtendedDeploymentRecord = z.infer<typeof ExtendedDeploymentRecord>;
 
 export const UpdateDeployment = DeploymentRecord.omit({
+  // Database generated columns
+  device_key: true,
+  attachment_start_timestamp: true,
+  attachment_end_timestamp: true,
+  // Primary key and survey not updatable
   deployment2_id: true,
   survey_id: true
 });
