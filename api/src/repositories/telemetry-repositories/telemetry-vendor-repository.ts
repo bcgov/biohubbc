@@ -1,4 +1,5 @@
 import { Knex } from 'knex';
+import { z } from 'zod';
 import { getKnex } from '../../database/db';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { BaseRepository } from '../base-repository';
@@ -255,5 +256,48 @@ export class TelemetryVendorRepository extends BaseRepository {
     const response = await this.connection.knex(queryBuilder, TelemetrySchema);
 
     return response.rows;
+  }
+
+  /**
+   * Get the total count of all telemetry records for list of deployment IDs.
+   *
+   * Note: Currently supports, `Lotek`, `Vectronic`, `ATS`, and `Manual` telemetry.
+   *
+   * @param {number} surveyId
+   * @param {number[]} deploymentIds
+   * @return {*}  {Promise<number>}
+   * @memberof TelemetryVendorRepository
+   */
+  async getTelemetryCountByDeploymentIds(surveyId: number, deploymentIds: number[]): Promise<number> {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .queryBuilder()
+      .with('telemetry', (withQueryBuilder) => {
+        withQueryBuilder.unionAll([
+          /**
+           * LOTEK Telemetry
+           */
+          this.getLotekTelemetryByDeploymentIdsBaseQuery(surveyId, deploymentIds),
+          /**
+           * VECTRONIC Telemetry
+           */
+          this.getVectronicTelemetryByDeploymentIdsBaseQuery(surveyId, deploymentIds),
+          /**
+           * ATS Telemetry
+           */
+          this.getATSTelemetryByDeploymentIdsBaseQuery(surveyId, deploymentIds),
+          /**
+           * MANUAL Telemetry
+           */
+          this.getManualTelemetryByDeploymentIdsBaseQuery(surveyId, deploymentIds)
+        ]);
+      })
+      .select(knex.raw('count(*)::integer as count'))
+      .from('telemetry');
+
+    const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
+
+    return response.rows[0].count;
   }
 }
