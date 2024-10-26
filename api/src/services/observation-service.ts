@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { DefaultDateFormat } from '../constants/dates';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { IObservationAdvancedFilters } from '../models/observation-view';
@@ -896,7 +897,7 @@ export class ObservationService extends DBService {
     // If period is specified, parse the row value and find a matching record
     if (period) {
       // Format the period timestamp data
-      const [startDate, endDate] = period.split('-').map((date: string) => dayjs(date).format('YYYY-MM-DD'));
+      const [startDate, endDate] = period.split('-').map((date: string) => dayjs(date).format(DefaultDateFormat));
       const startTime = dayjs(period.split('-')[0]).format('HH:mm:ss');
       const endTime = dayjs(period.split('-')[1]).format('HH:mm:ss');
 
