@@ -56,7 +56,6 @@ GET.apiDoc = {
     {
       in: 'query',
       name: 'startDate',
-      required: true,
       schema: {
         type: 'string'
       }
@@ -64,7 +63,6 @@ GET.apiDoc = {
     {
       in: 'query',
       name: 'endDate',
-      required: true,
       schema: {
         type: 'string'
       }
@@ -77,8 +75,15 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: TelemetrySchema
+            type: 'object',
+            required: ['telemetry'],
+            additionalProperties: false,
+            properties: {
+              telemetry: {
+                type: 'array',
+                items: TelemetrySchema
+              }
+            }
           }
         }
       }
@@ -105,8 +110,8 @@ export function getCritterTelemetry(): RequestHandler {
   return async (req, res) => {
     const critterId = Number(req.params.critterId);
     const surveyId = Number(req.params.surveyId);
-    const startDate = String(req.query.startDate);
-    const endDate = String(req.query.endDate);
+    const startDate = req.query.startDate && String(req.query.startDate);
+    const endDate = req.query.endDate && String(req.query.endDate);
 
     const connection = getDBConnection(req.keycloak_token);
     try {
