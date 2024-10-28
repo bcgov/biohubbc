@@ -1,13 +1,13 @@
 import { mdiFileDocumentPlusOutline, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
+import SatelliteAltIcon from '@mui/icons-material/SatelliteAlt';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useSurveyContext } from 'hooks/useContext';
 import { Link as RouterLink } from 'react-router-dom';
-import SatelliteAltIcon from '@mui/icons-material/SatelliteAlt';
-import Tooltip from '@mui/material/Tooltip';
 
 interface ICapturesToolbarProps {
   capturesCount: number;
@@ -52,22 +52,22 @@ export const AnimalCapturesToolbar = (props: ICapturesToolbarProps) => {
           sx={{ mr: 0.2, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}>
           Add Capture
         </Button>
-        <Tooltip title="Bulk upload capture information for your animals"
-        placement ="top"> 
-        <Button
-          variant="contained"
-          color="primary"
-          component={RouterLink}
-          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/captures`}
-          startIcon={<Icon path={mdiFileDocumentPlusOutline} size={1} />}
-          sx={{ mr: 0.5, borderTopLeftRadius: 0, borderBottomLeftRadius: 0, '& .MuiButton-startIcon': { mx: 0 } }}
-        />
+        <Tooltip title="Bulk upload capture information for your animals" placement="top">
+          <Button
+            variant="contained"
+            color="primary"
+            component={RouterLink}
+            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/captures`}
+            startIcon={<Icon path={mdiFileDocumentPlusOutline} size={1} />}
+            sx={{ mr: 0.5, borderTopLeftRadius: 0, borderBottomLeftRadius: 0, '& .MuiButton-startIcon': { mx: 0 } }}
+          />
         </Tooltip>
         <Button
-          component={RouterLink} to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/deployment/create`}
+          component={RouterLink}
+          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/deployment/create`}
           variant="outlined"
           color="primary"
-          startIcon={<SatelliteAltIcon/>}>
+          startIcon={<SatelliteAltIcon />}>
           Add Telemetry
         </Button>
       </Box>
