@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ApiPaginationOptions } from '../../zod-schema/pagination';
 
 /**
  * Telemetry vendor enumeration.
@@ -46,3 +47,8 @@ export const TelemetrySchema = z.object({
 });
 
 export type Telemetry = z.infer<typeof TelemetrySchema>;
+
+export type TelemetryOptions = {
+  pagination?: ApiPaginationOptions;
+  dateRange?: { startDate?: string; endDate?: string };
+};

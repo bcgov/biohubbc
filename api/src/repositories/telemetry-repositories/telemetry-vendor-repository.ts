@@ -1,9 +1,13 @@
 import { Knex } from 'knex';
 import { z } from 'zod';
 import { getKnex } from '../../database/db';
-import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { BaseRepository } from '../base-repository';
-import { Telemetry, TelemetrySchema, TelemetryVendorEnum } from './telemetry-vendor-repository.interface';
+import {
+  Telemetry,
+  TelemetryOptions,
+  TelemetrySchema,
+  TelemetryVendorEnum
+} from './telemetry-vendor-repository.interface';
 
 /**
  * A repository class for working with telemetry vendor data.
@@ -209,13 +213,13 @@ export class TelemetryVendorRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number[]} deploymentIds
-   * @param {ApiPaginationOptions} [pagination] - Pagination options
+   * @param {TelemetryOptions} [options] - Telemetry request options
    * @returns {Promise<Telemetry[]>}
    */
   async getTelemetryByDeploymentIds(
     surveyId: number,
     deploymentIds: number[],
-    pagination?: ApiPaginationOptions
+    options?: TelemetryOptions
   ): Promise<Telemetry[]> {
     const knex = getKnex();
 
@@ -244,12 +248,23 @@ export class TelemetryVendorRepository extends BaseRepository {
       .select('*')
       .from('telemetry');
 
-    // Inject pagination / sorting if provided
-    if (pagination) {
-      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+    // Inject date range if provided
+    if (options?.dateRange) {
+      if (options.dateRange.startDate) {
+        queryBuilder.where('telemetry.acquisition_date', '>=', options.dateRange.startDate);
+      }
 
-      if (pagination.sort && pagination.order) {
-        queryBuilder.orderBy(pagination.sort, pagination.order);
+      if (options.dateRange.endDate) {
+        queryBuilder.where('telemetry.acquisition_date', '<=', options.dateRange.endDate);
+      }
+    }
+
+    // Inject pagination / sorting if provided
+    if (options?.pagination) {
+      queryBuilder.limit(options.pagination.limit).offset((options.pagination.page - 1) * options.pagination.limit);
+
+      if (options.pagination.sort && options.pagination.order) {
+        queryBuilder.orderBy(options.pagination.sort, options.pagination.order);
       }
     }
 

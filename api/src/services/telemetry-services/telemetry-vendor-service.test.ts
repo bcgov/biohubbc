@@ -108,10 +108,10 @@ describe('TelemetryVendorService', () => {
         const surveyId = 1;
         const pagination: ApiPaginationOptions = { page: 1, limit: 10 };
 
-        const data = await service.getTelemetryForSurvey(surveyId, pagination);
+        const data = await service.getTelemetryForSurvey(surveyId, { pagination });
 
         expect(deploymentServiceStub).to.have.been.calledWith(surveyId);
-        expect(getTelemetryByDeploymentIdsStub).to.have.been.calledWith(surveyId, [8], pagination);
+        expect(getTelemetryByDeploymentIdsStub).to.have.been.calledWith(surveyId, [8], { pagination });
         expect(getTelemetryCountByDeploymentIdsStub).to.have.been.calledWith(surveyId, [8]);
 
         expect(data).to.deep.equal([mockTelemetry, mockCount]);

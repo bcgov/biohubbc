@@ -185,10 +185,9 @@ export function getTelemetryInSurvey(): RequestHandler {
 
       const telemetryVendorService = new TelemetryVendorService(connection);
 
-      const [telemetry, telemetryCount] = await telemetryVendorService.getTelemetryForSurvey(
-        surveyId,
-        ensureCompletePaginationOptions(paginationOptions)
-      );
+      const [telemetry, telemetryCount] = await telemetryVendorService.getTelemetryForSurvey(surveyId, {
+        pagination: ensureCompletePaginationOptions(paginationOptions)
+      });
 
       await connection.commit();
 
