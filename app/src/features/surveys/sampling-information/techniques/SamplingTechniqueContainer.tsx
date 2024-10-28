@@ -12,8 +12,10 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
+import { TechniqueHelpI18N } from 'constants/help-i18n';
 import { DeleteTechniquesBulkI18N } from 'constants/i18n';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
@@ -128,30 +130,33 @@ export const SamplingTechniqueContainer = () => {
           pl: 3
         }}>
         <Typography variant="h3" component="h2" flexGrow={1}>
-          Techniques &zwnj;
+          Sampling Techniques &zwnj;
           <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
             ({techniqueCount})
           </Typography>
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          component={RouterLink}
-          to={'sampling/techniques/create'}
-          startIcon={<Icon path={mdiPlus} size={0.8} />}>
-          Add
-        </Button>
-        <IconButton
-          edge="end"
-          sx={{
-            ml: 1
-          }}
-          aria-label="header-settings"
-          disabled={!bulkActionTechniques.length}
-          onClick={(event) => setBulkActionMenuAnchorEl(event.currentTarget)}
-          title="Bulk Actions">
-          <Icon path={mdiDotsVertical} size={1} />
-        </IconButton>
+        <Stack gap={1} direction="row">
+          <HelpButtonDialog dialogTitle={TechniqueHelpI18N.infoTitle} dialogText={TechniqueHelpI18N.infoText} />
+          <Button
+            variant="contained"
+            color="primary"
+            component={RouterLink}
+            to={'sampling/techniques/create'}
+            startIcon={<Icon path={mdiPlus} size={0.8} />}>
+            Add
+          </Button>
+          <IconButton
+            edge="end"
+            sx={{
+              ml: 1
+            }}
+            aria-label="header-settings"
+            disabled={!bulkActionTechniques.length}
+            onClick={(event) => setBulkActionMenuAnchorEl(event.currentTarget)}
+            title="Bulk Actions">
+            <Icon path={mdiDotsVertical} size={1} />
+          </IconButton>
+        </Stack>
       </Toolbar>
 
       <Divider flexItem></Divider>

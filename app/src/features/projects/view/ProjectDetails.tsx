@@ -1,9 +1,17 @@
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
+import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import Stack from '@mui/material/Stack';
 import useTheme from '@mui/material/styles/useTheme';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import assert from 'assert';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
+import { ProjectDetailsHelpI18N } from 'constants/help-i18n';
+import { PROJECT_ROLE_ICONS } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext } from 'react';
 import ProjectObjectives from './components/ProjectObjectives';
@@ -62,9 +70,58 @@ const ProjectDetails = () => {
   return (
     <Box>
       <Toolbar>
-        <Typography variant="h4" component="h2">
+        <Typography variant="h4" component="h2" flex="1 1 auto">
           Project Details
         </Typography>
+        <HelpButtonDialog
+          dialogTitle={ProjectDetailsHelpI18N.infoTitle}
+          dialogText={ProjectDetailsHelpI18N.infoText}
+          dialogContent={
+            <>
+              <Box mt={3}>
+                <Typography component="legend">{ProjectDetailsHelpI18N.membersTitle}</Typography>
+                <Typography color="textSecondary">{ProjectDetailsHelpI18N.membersInfoText}</Typography>
+              </Box>
+              <List sx={{ '& .MuiListItem-root': { display: 'block', mb: 2 } }}>
+                <ListItem>
+                  <Stack direction="row" gap={1}>
+                    <Icon path={PROJECT_ROLE_ICONS['Coordinator']} size={1} color={grey[700]} />
+                    <Typography fontWeight={700} component="legend" color="textSecondary">
+                      Coordinator
+                    </Typography>
+                  </Stack>
+                  <Typography color="textSecondary" sx={{ ml: 4 }}>
+                    {ProjectDetailsHelpI18N.coordinatorsInfoText}
+                  </Typography>
+                </ListItem>
+
+                <ListItem>
+                  <Stack direction="row" gap={1}>
+                    <Icon path={PROJECT_ROLE_ICONS['Collaborator']} size={1} color={grey[700]} />
+                    <Typography fontWeight={700} component="legend" color="textSecondary">
+                      Collaborator
+                    </Typography>
+                  </Stack>
+                  <Typography color="textSecondary" sx={{ ml: 4 }}>
+                    {ProjectDetailsHelpI18N.collaboratorsInfoText}
+                  </Typography>
+                </ListItem>
+
+                <ListItem>
+                  <Stack direction="row" gap={1}>
+                    <Icon path={PROJECT_ROLE_ICONS['Observer']} size={1} color={grey[700]} />
+                    <Typography fontWeight={700} component="legend" color="textSecondary">
+                      Observer
+                    </Typography>
+                  </Stack>
+                  <Typography color="textSecondary" sx={{ ml: 4 }}>
+                    {ProjectDetailsHelpI18N.observersInfoText}
+                  </Typography>
+                </ListItem>
+              </List>
+            </>
+          }
+        />
       </Toolbar>
       <Divider />
       <Box p={3} sx={classes.projectMetadata}>

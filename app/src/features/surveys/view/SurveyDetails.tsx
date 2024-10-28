@@ -8,7 +8,9 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
+import { SurveyMetadataHelpI18N } from 'constants/help-i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import Permits from 'features/surveys/view/components/Permits';
 import SurveyParticipants from 'features/surveys/view/components/SurveyParticipants';
@@ -35,6 +37,19 @@ const SurveyDetails = () => {
         <Typography variant="h4" component="h2" sx={{ flex: '1 1 auto' }}>
           Survey Details
         </Typography>
+        <Stack gap={1} direction="row">
+          <HelpButtonDialog
+            dialogTitle={SurveyMetadataHelpI18N.infoTitle}
+            dialogText={SurveyMetadataHelpI18N.infoText}
+            dialogContent={
+              <>
+                <Box mt={3}>
+                  <Typography component="legend">{SurveyMetadataHelpI18N.infoTitle}</Typography>
+                  <Typography color="textSecondary">{SurveyMetadataHelpI18N.infoText}</Typography>
+                </Box>
+              </>
+            }
+          />
         <ProjectRoleGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
@@ -48,6 +63,7 @@ const SurveyDetails = () => {
             Edit
           </Button>
         </ProjectRoleGuard>
+        </Stack>
       </Toolbar>
 
       <Divider sx={{ m: 0 }}></Divider>

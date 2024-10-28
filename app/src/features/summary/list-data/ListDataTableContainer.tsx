@@ -1,10 +1,15 @@
 import { mdiFolder, mdiListBoxOutline, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
+import { ProjectSurveyHelpI18N } from 'constants/help-i18n';
 import ProjectsListContainer from 'features/summary/list-data/project/ProjectsListContainer';
 import SurveysListContainer from 'features/summary/list-data/survey/SurveysListContainer';
 import { useSearchParams } from 'hooks/useSearchParams';
@@ -74,6 +79,7 @@ export const ListDataTableContainer = () => {
           sx={{
             display: 'flex',
             gap: 1,
+            flex: '1 1 auto',
             '& .MuiButton-root': buttonSx
           }}>
           {views.map((view) => (
@@ -87,20 +93,37 @@ export const ListDataTableContainer = () => {
             </ToggleButton>
           ))}
         </ToggleButtonGroup>
-
-        <Button
-          color="primary"
-          sx={buttonSx}
-          onClick={() => {
-            setSearchParams(
-              searchParams.set(SHOW_SEARCH_KEY, showSearch ? SHOW_SEARCH_VALUE.false : SHOW_SEARCH_VALUE.true)
-            );
-            setShowSearch(!showSearch);
-          }}
-          component={Button}
-          startIcon={<Icon path={mdiMagnify} size={1} />}>
-          Search
-        </Button>
+        <Stack gap={1} direction="row">
+          <HelpButtonDialog
+            dialogTitle={ProjectSurveyHelpI18N.infoTitle}
+            dialogText={ProjectSurveyHelpI18N.infoText}
+            dialogContent={
+              <>
+                <Box my={3}>
+                  <Typography component="legend">{ProjectSurveyHelpI18N.projectInfoTitle}</Typography>
+                  <Typography color='textSecondary'>{ProjectSurveyHelpI18N.projectInfoText}</Typography>
+                </Box>
+                <Box>
+                  <Typography component="legend">{ProjectSurveyHelpI18N.surveyInfoTitle}</Typography>
+                  <Typography color='textSecondary'>{ProjectSurveyHelpI18N.surveyInfoText}</Typography>
+                </Box>
+              </>
+            }
+          />
+          <Button
+            color="primary"
+            variant="outlined"
+            onClick={() => {
+              setSearchParams(
+                searchParams.set(SHOW_SEARCH_KEY, showSearch ? SHOW_SEARCH_VALUE.false : SHOW_SEARCH_VALUE.true)
+              );
+              setShowSearch(!showSearch);
+            }}
+            component={Button}
+            startIcon={<Icon path={mdiMagnify} size={1} />}>
+            Search
+          </Button>
+        </Stack>
       </Toolbar>
       <Divider />
       {activeView === ACTIVE_VIEW_VALUE.projects && <ProjectsListContainer showSearch={showSearch} />}

@@ -8,12 +8,15 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonMap, SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import { SamplingSiteHelpI18N } from 'constants/help-i18n';
 import {
   ISamplingSitePeriodRowData,
   SamplingPeriodTable
@@ -166,24 +169,42 @@ const SamplingSiteContainer = () => {
             ({sampleSiteCount})
           </Typography>
         </Typography>
-        <Button
-          variant="contained"
-          color="primary"
-          disabled={Boolean(!surveyContext.techniqueDataLoader.data?.count)}
-          component={RouterLink}
-          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/create`}
-          startIcon={<Icon path={mdiPlus} size={0.8} />}>
-          Add
-        </Button>
-        <IconButton
-          edge="end"
-          sx={{ ml: 1 }}
-          aria-label="header-settings"
-          disabled={!siteSelection.length}
-          onClick={handleHeaderMenuClick}
-          title="Bulk Actions">
-          <Icon path={mdiDotsVertical} size={1} />
-        </IconButton>
+        <Stack gap={1} direction="row">
+          <HelpButtonDialog
+            dialogTitle={SamplingSiteHelpI18N.infoTitle}
+            dialogText={SamplingSiteHelpI18N.infoText}
+            dialogContent={
+              <>
+                <Box my={3}>
+                  <Typography component="legend">{SamplingSiteHelpI18N.determiningSitesInfoTitle}</Typography>
+                  <Typography color="textSecondary">{SamplingSiteHelpI18N.determiningSitesInfoText}</Typography>
+                </Box>
+                <Box>
+                  <Typography component="legend">{SamplingSiteHelpI18N.repeatSitesInfoTitle}</Typography>
+                  <Typography color="textSecondary">{SamplingSiteHelpI18N.repeatSitesInfoText}</Typography>
+                </Box>
+              </>
+            }
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            disabled={Boolean(!surveyContext.techniqueDataLoader.data?.count)}
+            component={RouterLink}
+            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/create`}
+            startIcon={<Icon path={mdiPlus} size={0.8} />}>
+            Add
+          </Button>
+          <IconButton
+            edge="end"
+            sx={{ ml: 1 }}
+            aria-label="header-settings"
+            disabled={!siteSelection.length}
+            onClick={handleHeaderMenuClick}
+            title="Bulk Actions">
+            <Icon path={mdiDotsVertical} size={1} />
+          </IconButton>
+        </Stack>
       </Toolbar>
 
       <Divider flexItem />
