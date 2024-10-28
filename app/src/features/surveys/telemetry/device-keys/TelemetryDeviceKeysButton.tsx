@@ -29,7 +29,7 @@ export const TelemetryDeviceKeysButton = (props: ITelemetryDeviceKeysButtonProps
       />
 
       <Button
-        variant="outlined"
+        variant="contained"
         color="primary"
         onClick={() => setOpen(true)}
         disabled={disabled}

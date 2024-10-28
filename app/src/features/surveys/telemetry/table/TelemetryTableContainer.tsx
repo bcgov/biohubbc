@@ -28,6 +28,8 @@ import { useTelemetryTableContext } from 'hooks/useContext';
 import { useContext, useDeferredValue, useState } from 'react';
 import { pluralize as p } from 'utils/Utils';
 import { TelemetryDeviceKeysButton } from '../device-keys/TelemetryDeviceKeysButton';
+import { Link as RouterLink } from 'react-router-dom';
+import PetsIcon from '@mui/icons-material/Pets';
 
 export const TelemetryTableContainer = () => {
   const biohubApi = useBiohubApi();
@@ -145,6 +147,10 @@ export const TelemetryTableContainer = () => {
           </Typography>
 
           <Stack flexDirection="row" alignItems="center" gap={1} overflow="hidden" whiteSpace="nowrap">
+            <Button component={RouterLink} to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/details`}
+                  variant="outlined"
+                  color="primary" 
+                  startIcon={<PetsIcon/>}>Manage Animals</Button>
             <TelemetryDeviceKeysButton />
             <Button
               variant="contained"
