@@ -111,7 +111,7 @@ export function isStringCellWithDateValue(cell: CellObject): false | string {
   }
 
   const matchedFormats = [DefaultDateFormat, DefaultDateFormatReverse, AltDateFormat, AltDateFormatReverse].filter(
-    (format) => dayjs(String(cell.v), format, true).isValid()
+    (format) => dayjs(String(cell.v), format).isValid()
   );
 
   // Ensure only one format matched

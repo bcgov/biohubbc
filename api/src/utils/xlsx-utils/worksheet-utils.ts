@@ -53,7 +53,7 @@ export const constructXLSXWorkbook = (file: MediaFile): xlsx.WorkBook => {
     cellDates: true,
     cellNF: true,
     cellHTML: false,
-    dateNF: 'yyyy-mm-dd HH:mm:ss',
+    dateNF: '_',
     raw: false
   });
 };
