@@ -9,6 +9,7 @@ import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import useExternalApi from './api/useExternalApi';
 import useFundingSourceApi from './api/useFundingSourceApi';
+import { useMarkdownApi } from './api/useMarkdownApi';
 import useObservationApi from './api/useObservationApi';
 import useProjectApi from './api/useProjectApi';
 import useProjectParticipationApi from './api/useProjectParticipationApi';
@@ -22,7 +23,6 @@ import useTaxonomyApi from './api/useTaxonomyApi';
 import useTechniqueApi from './api/useTechniqueApi';
 import useTelemetryApi from './api/useTelemetryApi';
 import useUserApi from './api/useUserApi';
-import { useMarkdownApi } from './api/useMarkdownApi';
 
 /**
  * Returns a set of supported api methods.

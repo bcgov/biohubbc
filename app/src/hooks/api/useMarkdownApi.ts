@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { IGetMarkdownResponse, IMarkdownFilterObject } from 'interfaces/useMarkdownApi.interface';
+import { IGetMarkdownResponse, IMarkdownFilterObject, MarkdownScoreObject } from 'interfaces/useMarkdownApi.interface';
 import qs from 'qs';
 
 /**
@@ -28,14 +28,16 @@ export const useMarkdownApi = (axios: AxiosInstance) => {
   /**
    * Vote to increase or decrease the score of the markdown
    *
-   * @param {number} score
-   * @return {*} {Promise<IFindProjectsResponse>}
+   * @param {MarkdownScoreObject} markdownScoreObject
+   * @return {*} {Promise<void>}
    */
-  const vote = async (score: number): Promise<IGetMarkdownResponse> => {
-    const { data } = await axios.post('/api/markdown', { score });
+  const insertScore = async (markdownScoreObject: MarkdownScoreObject): Promise<void> => {
+    const { data } = await axios.post(`/api/markdown/${markdownScoreObject.markdownId}`, {
+      score: markdownScoreObject.score
+    });
 
     return data;
   };
 
-  return { getMarkdown, vote };
+  return { getMarkdown, insertScore };
 };

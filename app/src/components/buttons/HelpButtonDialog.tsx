@@ -10,7 +10,6 @@ interface IHelpButtonDialogProps {
   markdownTypeName: string;
 }
 
-// These should match the names of records in the markdown type table
 export enum MarkdownTypeNameEnum {
   PROJECTS_AND_SURVEYS = 'Projects and Surveys',
   SUMMARY_DATA = 'Summary Data',
@@ -24,39 +23,37 @@ export enum MarkdownTypeNameEnum {
   SURVEY_METADATA = 'Survey Metadata'
 }
 
-/**
- * Returns a help button that opens an info dialog when clicked, intended as a more informative alternative to a tooltip
- *
- * @param props PropsWithChildren<IHelpButtonDialogProps>
- * @returns
- */
-const HelpButtonDialog = (props: PropsWithChildren<IHelpButtonDialogProps>) => {
-  const { markdownTypeName, children } = props;
-
+const HelpButtonDialog = ({ markdownTypeName, children }: PropsWithChildren<IHelpButtonDialogProps>) => {
   const dialogContext = useDialogContext();
   const biohubApi = useBiohubApi();
 
   const handleOpenDialog = async () => {
-    // Fetch the markdown content based on the markdownTypeName. Each dialog should correspond to a different markdownTypeName
     const { markdown } = await biohubApi.markdown.getMarkdown({ typeName: markdownTypeName });
 
     if (markdown) {
-      dialogContext.setVoteDialog({
-        open: true,
-        dialogContent: <CustomMarkdown markdown={markdown.data} />,
-        onSubmit: !markdown.participated
-          ? async (score: number) => {
-              await biohubApi.markdown.vote(score);
-            }
-          : undefined,
-        onOk: () => dialogContext.setVoteDialog({ open: false })
-      });
+      dialogContext.setVoteDialog(createDialogConfig(markdown));
     }
   };
 
+  const createDialogConfig = (markdown: any) => ({
+    open: true,
+    dialogContent: <CustomMarkdown markdown={markdown.data} />,
+    hasSubmitted: markdown.participated,
+    onSubmit: !markdown.participated
+      ? async (score: number) => {
+          await biohubApi.markdown.insertScore({ markdownId: markdown.markdown_id, score });
+          // Directly update dialog context without local state
+          dialogContext.setVoteDialog({ hasSubmitted: true });
+        }
+      : undefined,
+    onOk: () => {
+      dialogContext.setVoteDialog({ open: false });
+    }
+  });
+
   return (
     <Button variant="outlined" startIcon={<Icon path={mdiHelpCircleOutline} size={1} />} onClick={handleOpenDialog}>
-      {children ? children : 'Help'}
+      {children ?? 'Help'}
     </Button>
   );
 };

@@ -23,4 +23,33 @@ export class MarkdownService extends DBService {
 
     return response;
   }
+
+  /**
+   * Change the score of a markdown record
+   *
+   * @param {number} markdownId
+   * @param {number} systemUserId
+   * @param {number} delta - The amount to change the score by (positive for increase, negative for decrease)
+   * @return {*} Promise<number>
+   * @memberof MarkdownService
+   */
+  async updateScore(markdownId: number, systemUserId: number, delta: number): Promise<number> {
+    const response = await this.markdownRepository.updateScore(markdownId, systemUserId, delta);
+
+    return response;
+  }
+
+  /**
+   * Decrease the score of a markdown record
+   *
+   * @param {number} markdownId
+   * @param {number} systemUserId
+   * @return {*} Promise<number>
+   * @memberof MarkdownService
+   */
+  async insertUserParticipation(markdownId: number, systemUserId: number): Promise<number> {
+    const response = await this.markdownRepository.insertUserParticipation(markdownId, systemUserId);
+
+    return response;
+  }
 }

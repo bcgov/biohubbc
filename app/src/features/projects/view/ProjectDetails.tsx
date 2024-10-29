@@ -66,7 +66,7 @@ const ProjectDetails = () => {
         <Typography variant="h4" component="h2" flex="1 1 auto">
           Project Details
         </Typography>
-        <HelpButtonDialog markdownTypeName='Projects and Surveys' />
+        <HelpButtonDialog markdownTypeName="Projects and Surveys" />
       </Toolbar>
       <Divider />
       <Box p={3} sx={classes.projectMetadata}>

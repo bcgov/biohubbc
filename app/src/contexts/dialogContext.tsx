@@ -171,7 +171,7 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
   };
 
   const setVoteDialog = function (partialProps: Partial<IVoteDialogProps>) {
-    setVoteDialogProps({ ...voteDialogProps, ...partialProps });
+    setVoteDialogProps((prev) => ({ ...prev, ...partialProps }));
   };
 
   return (

@@ -14,10 +14,12 @@ export const MarkdownVoteButtons = (props: IMarkdownVoteButtonsProps) => {
 
   return (
     <Stack gap={2} direction="row" sx={{ '& .MuiButton-text': { fontWeight: 700 } }}>
-      <Button startIcon={<Icon path={mdiThumbUpOutline} size={1} />} onClick={() => handleSubmit(1)} >
+      <Button startIcon={<Icon path={mdiThumbUpOutline} size={1} />} onClick={() => handleSubmit(1)}>
         {positiveText}
       </Button>
-      <Button startIcon={<Icon path={mdiThumbDownOutline} size={1} />} onClick={() => handleSubmit(-1)} >{negativeText}</Button>
+      <Button startIcon={<Icon path={mdiThumbDownOutline} size={1} />} onClick={() => handleSubmit(-1)}>
+        {negativeText}
+      </Button>
     </Stack>
   );
 };

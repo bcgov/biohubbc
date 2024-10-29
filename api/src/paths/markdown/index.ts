@@ -6,7 +6,7 @@ import { authorizeRequestHandler } from '../../request-handlers/security/authori
 import { MarkdownService } from '../../services/markdown-service';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('paths/observation/index');
+const defaultLog = getLogger('paths/markdown/index');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
@@ -22,7 +22,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: "Gets a markdown record to display in a help dialog",
+  description: 'Gets a markdown record to display in a help dialog',
   tags: ['markdown'],
   security: [
     {

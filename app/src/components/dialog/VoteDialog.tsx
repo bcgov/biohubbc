@@ -137,18 +137,21 @@ const VoteDialog = (props: IVoteDialogProps) => {
         {props.dialogContent}
       </DialogContent>
       <DialogActions>
-        {props.onSubmit &&
-          (props.hasSubmitted ? (
-            <Typography>Thanks for voting!</Typography>
-          ) : (
-            <Box mr={5}>
+        {props.onSubmit && (
+          <Box mr={3}>
+            {props.hasSubmitted ? (
+              <Typography color="textSecondary">
+                Thanks for voting! We'll update this text based on feedback.
+              </Typography>
+            ) : (
               <MarkdownVoteButtons
                 positiveText="This is helpful"
                 negativeText="This is confusing"
                 handleSubmit={props.onSubmit}
               />
-            </Box>
-          ))}
+            )}
+          </Box>
+        )}
         <LoadingButton
           data-testid="ok-button"
           onClick={props.onOk}

@@ -15,7 +15,7 @@ export class MarkdownRepository extends BaseRepository {
    *
    * @param {markdownQueryObject} markdownQueryObject
    * @return {*}  {Promise<MarkdownObject>}
-   * @memberof MarkdownRepositor
+   * @memberof MarkdownRepository
    */
   async getMarkdownByTypeName(markdownQueryObject: markdownQueryObject): Promise<MarkdownObject> {
     const sqlStatement = SQL`
@@ -36,6 +36,55 @@ export class MarkdownRepository extends BaseRepository {
       `;
 
     const response = await this.connection.sql(sqlStatement, MarkdownObject);
+
+    return response.rows[0];
+  }
+
+  /**
+   * Update the score of a markdown record if the user hasn't voted before
+   *
+   * @param {number} markdownId
+   * @param {number} systemUserId
+   * @return {*}  {Promise<number>}
+   * @memberof MarkdownRepository
+   */
+  async updateScore(markdownId: number, systemUserId: number, delta: number): Promise<number> {
+    const sqlStatement = SQL`
+       UPDATE markdown
+       SET score = score + ${delta}
+       WHERE markdown_id = ${markdownId}
+       AND NOT EXISTS (
+           SELECT 1
+           FROM markdown_user
+           WHERE markdown_id = ${markdownId} AND system_user_id = ${systemUserId}
+       )
+       RETURNING score;
+     `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    return response.rows[0];
+  }
+
+  /**
+   * Decreases the score of a markdown record
+   *
+   * @param {number} markdownId
+   * @param {number} systemUserId
+   * @return {*}  {Promise<number>}
+   * @memberof MarkdownRepository
+   */
+  async insertUserParticipation(markdownId: number, systemUserId: number): Promise<number> {
+    const sqlStatement = SQL`
+        INSERT INTO 
+          markdown_user (markdown_id, system_user_id) 
+        VALUES 
+          (${markdownId}, ${systemUserId})
+        ON CONFLICT (system_user_id, markdown_id) DO NOTHING;
+      ;
+      `;
+
+    const response = await this.connection.sql(sqlStatement);
 
     return response.rows[0];
   }
