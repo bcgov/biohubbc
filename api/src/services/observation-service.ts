@@ -1212,10 +1212,10 @@ export class ObservationService extends DBService {
 
     // If no value exists, return the default code ID or null
     if (!value) {
-      return defaultCodeId || null;
+      return defaultCodeId ?? null;
     }
 
     // Return the ID from the map if it exists, otherwise return null
-    return codeMap.get(value) || null;
+    return codeMap.get(value) ?? null;
   }
 }
