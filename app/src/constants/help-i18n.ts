@@ -1,19 +1,22 @@
 export const ProjectSurveyHelpI18N = {
   infoTitle: 'Projects and Surveys',
   infoText:
-    'Projects and Surveys let you organize ecological data collected in the field. You can think of Projects and Surveys as folders and subfolders, respectively.',
+    'Projects and Surveys let you organize and manage access to ecological data. You can think of Projects and Surveys as folders and subfolders, respectively.',
   projectInfoTitle: 'Projects',
   projectInfoText:
-    'Projects let you collaboratively manage data with team members from multiple organizations. All of the Projects you have created or been invited to will appear in your Projects list. If you need access to a Project created by your collaborator, your collaborator can invite you.',
+    'You can invite other users to a Project to give them access to information in the Project. All of the Projects you have created or been invited to will appear in your Projects list. If you need access to a Project created by your collaborator, your collaborator can invite you.',
   surveyInfoTitle: 'Surveys',
   surveyInfoText:
-    'Surveys let you organize ecological data collected for some objective. You can create as many or as few Surveys as you need to organize your data. If you do multiple fieldwork trips with a common goal, such as checking hair snares every three months, you can add the new data to an existing Survey. Surveys must belong to a Project, determining who can access them. '
+    'Surveys let you organize ecological data collected in the field. When you return from the field with new data, you can choose to create a new Survey or add the data to an existing Survey. If you do multiple fieldwork trips with a common goal, such as checking hair snares every three months, we recommend adding new data to the existing Survey representing why you are collecting hair.',
+  accessInfoTitle: 'Access to Surveys',
+  accessInfoText:
+    'Surveys must belong to a Project, which determines who can access them. To give someone access to a Survey, you can invite them to the Project. To revoke access, you can remove them from the Project. The development team is working on providing more granular access to specific Surveys in a Project.'
 };
 
 export const SummaryDataHelpI18N = {
   infoTitle: 'Data',
   infoText:
-    'This section lets you view all of the data that you have access to, combining data across surveys. When you add data to a Survey, those data will show up here. If you are looking for something specific, you can filter the data with search criteria.'
+    'This section lets you view all of the data that you have access to, combining data across surveys. When you add data to a Survey, those data will show up here. If you are looking for something specific, you can filter the data using search criteria.'
 };
 
 export const SamplingInformationHelpI18N = {
@@ -50,16 +53,16 @@ export const SurveyDataHelpI18N = {
 export const ProjectDetailsHelpI18N = {
   infoTitle: 'Project Details',
   infoText:
-    'This section shows the objectives and members of the Project. You can edit this information by editing the Project using the Settings button.',
+    'This section shows the objectives and members of the Project. You can edit this information by editing the Project using the settings button.',
   membersTitle: 'Team Members',
   membersInfoText:
-    'Team members can access all of the information in this Project, but whether they can edit information depends on their role.',
+    'Team members can access all information in the Project, but only members with the Coordinator and Collaborator role can edit and add new information. You can change the role of a team member when editing the Project.',
   coordinatorsInfoText:
-    'Coordinators manage the project, including inviting team members, updating data, and publishing to BiodiversityHub BC. There can be multiple coordinators for a project.',
+    'Coordinators manage the Project, including inviting new team members, adding and editing data, and publishing Surveys to BiodiversityHub BC. A Project can have multiple Coordinators.',
   collaboratorsInfoText:
-    'Collaborators can add and edit data to any of the Surveys, but they cannot invite team members or publish the project to BiodiversityHub BC.',
+    'Collaborators can add and edit data, including create new Surveys, but they cannot invite team members or publish Surveys to BiodiversityHub BC.',
   observersInfoText:
-    'Observers have view-only access to data. This role is ideal for those who need access to information without the need to contribute any new information.'
+    'Observers have view-only access to information. This role is ideal for those who need access without the need to contribute any new information.'
 };
 
 export const SurveyListHelpI18N = {
@@ -107,5 +110,5 @@ export const SamplingSiteHelpI18N = {
 
 export const SurveyMetadataHelpI18N = {
   infoTitle: '',
-  infoText: '',
-}
+  infoText: ''
+};

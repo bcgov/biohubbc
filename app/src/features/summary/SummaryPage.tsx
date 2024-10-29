@@ -6,9 +6,9 @@ import Paper from '@mui/material/Paper';
 import PageHeader from 'components/layout/PageHeader';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { ListDataTableContainer } from 'features/summary/list-data/ListDataTableContainer';
-import { TabularDataTableContainer } from 'features/summary/tabular-data/TabularDataTableContainer';
 import { Link as RouterLink } from 'react-router-dom';
+import { ListDataTableContainer } from './list-data/ListDataTableContainer';
+import { TabularDataTableContainer } from './tabular-data/TabularDataTableContainer';
 
 /**
  * Page to display a summary of a user's field data.

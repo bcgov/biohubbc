@@ -1,58 +1,75 @@
 import LoadingButton from '@mui/lab/LoadingButton/LoadingButton';
+import Box from '@mui/material/Box';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Typography from '@mui/material/Typography';
+import { MarkdownVoteButtons } from 'components/buttons/MarkdownVoteButtons';
 import { ReactNode } from 'react';
 
-export interface IInfoDialogProps {
+export interface IVoteDialogProps {
   /**
    * optional component to render underneath the dialog text.
    *
    * @type {ReactNode}
-   * @memberof IInfoDialogProps
+   * @memberof IVoteDialogProps
    */
   dialogContent?: ReactNode;
   /**
    * The dialog window title text.
    *
    * @type {string}
-   * @memberof IInfoDialogProps
+   * @memberof IVoteDialogProps
    */
   dialogTitle: string;
   /**
    * The dialog window body text.
    *
    * @type {string}
-   * @memberof IInfoDialogProps
+   * @memberof IVoteDialogProps
    */
   dialogText: string;
   /**
    * Set to `true` to open the dialog, `false` to close the dialog.
    *
    * @type {boolean}
-   * @memberof IInfoDialogProps
+   * @memberof IVoteDialogProps
    */
   open: boolean;
   /**
    * Callback fired if the dialog is closed.
    *
-   * @memberof IInfoDialogProps
+   * @memberof IVoteDialogProps
    */
   onClose: () => void;
   /**
    * Callback fired if the 'Ok' button is clicked.
    *
-   * @memberof IInfoDialogProps
+   * @memberof IVoteDialogProps
    */
   onOk: () => Promise<void> | void;
+
+  /**
+   * Indicates whether the user has already submitted before, in which case they cannot submit
+   *
+   * @memberof IVoteDialogProps
+   */
+  hasSubmitted?: boolean;
+
+  /**
+   * Callback fired if the user votes on the dialog content
+   *
+   * @memberof IVoteDialogProps
+   */
+  onSubmit?: (score: number) => Promise<void> | void;
 
   /**
    * The ok button label.
    *
    * @type {string}
-   * @memberof IInfoDialogProps
+   * @memberof IVoteDialogProps
    */
   okButtonLabel?: string;
 
@@ -60,7 +77,7 @@ export interface IInfoDialogProps {
    * The no button label.
    *
    * @type {string}
-   * @memberof IInfoDialogProps
+   * @memberof IVoteDialogProps
    */
   noButtonLabel?: string;
 
@@ -88,7 +105,7 @@ export interface IInfoDialogProps {
    * Optional Boolean to state if button should be loading
    *
    * @type {boolean}
-   * @memberof IInfoDialogProps
+   * @memberof IVoteDialogProps
    */
   isLoading?: boolean;
 }
@@ -100,7 +117,7 @@ export interface IInfoDialogProps {
  * @param {*} props
  * @return {*}
  */
-const InfoDialog = (props: IInfoDialogProps) => {
+const VoteDialog = (props: IVoteDialogProps) => {
   if (!props.open) {
     return <></>;
   }
@@ -109,17 +126,29 @@ const InfoDialog = (props: IInfoDialogProps) => {
     <Dialog
       fullWidth
       open={props.open}
-      maxWidth='md'
+      maxWidth="md"
       onClose={props.onClose}
       data-testid="ok-no-dialog"
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
-      <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
+      {props.dialogTitle && <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>}
       <DialogContent>
         {props.dialogText && <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>}
         {props.dialogContent}
       </DialogContent>
       <DialogActions>
+        {props.onSubmit &&
+          (props.hasSubmitted ? (
+            <Typography>Thanks for voting!</Typography>
+          ) : (
+            <Box mr={5}>
+              <MarkdownVoteButtons
+                positiveText="This is helpful"
+                negativeText="This is confusing"
+                handleSubmit={props.onSubmit}
+              />
+            </Box>
+          ))}
         <LoadingButton
           data-testid="ok-button"
           onClick={props.onOk}
@@ -134,4 +163,4 @@ const InfoDialog = (props: IInfoDialogProps) => {
   );
 };
 
-export default InfoDialog;
+export default VoteDialog;

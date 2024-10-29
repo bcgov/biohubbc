@@ -1,15 +1,12 @@
 import { mdiFolder, mdiListBoxOutline, mdiMagnify } from '@mdi/js';
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
-import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
-import { ProjectSurveyHelpI18N } from 'constants/help-i18n';
+import HelpButtonDialog, { MarkdownTypeNameEnum } from 'components/buttons/HelpButtonDialog';
 import ProjectsListContainer from 'features/summary/list-data/project/ProjectsListContainer';
 import SurveysListContainer from 'features/summary/list-data/survey/SurveysListContainer';
 import { useSearchParams } from 'hooks/useSearchParams';
@@ -94,22 +91,7 @@ export const ListDataTableContainer = () => {
           ))}
         </ToggleButtonGroup>
         <Stack gap={1} direction="row">
-          <HelpButtonDialog
-            dialogTitle={ProjectSurveyHelpI18N.infoTitle}
-            dialogText={ProjectSurveyHelpI18N.infoText}
-            dialogContent={
-              <>
-                <Box my={3}>
-                  <Typography component="legend">{ProjectSurveyHelpI18N.projectInfoTitle}</Typography>
-                  <Typography color='textSecondary'>{ProjectSurveyHelpI18N.projectInfoText}</Typography>
-                </Box>
-                <Box>
-                  <Typography component="legend">{ProjectSurveyHelpI18N.surveyInfoTitle}</Typography>
-                  <Typography color='textSecondary'>{ProjectSurveyHelpI18N.surveyInfoText}</Typography>
-                </Box>
-              </>
-            }
-          />
+          <HelpButtonDialog markdownTypeName={MarkdownTypeNameEnum.PROJECTS_AND_SURVEYS} />
           <Button
             color="primary"
             variant="outlined"

@@ -22,6 +22,7 @@ import useTaxonomyApi from './api/useTaxonomyApi';
 import useTechniqueApi from './api/useTechniqueApi';
 import useTelemetryApi from './api/useTelemetryApi';
 import useUserApi from './api/useUserApi';
+import { useMarkdownApi } from './api/useMarkdownApi';
 
 /**
  * Returns a set of supported api methods.
@@ -72,6 +73,8 @@ export const useBiohubApi = () => {
 
   const telemetry = useTelemetryApi(apiAxios);
 
+  const markdown = useMarkdownApi(apiAxios);
+
   return useMemo(
     () => ({
       analytics,
@@ -93,7 +96,8 @@ export const useBiohubApi = () => {
       samplingSite,
       standards,
       reference,
-      telemetry
+      telemetry,
+      markdown
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

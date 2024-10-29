@@ -1,4 +1,4 @@
-import { mdiEye, mdiHelpCircleOutline, mdiPaw, mdiWifiMarker } from '@mdi/js';
+import { mdiEye, mdiPaw, mdiWifiMarker } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -7,11 +7,10 @@ import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
-import { SummaryDataHelpI18N } from 'constants/help-i18n';
+import HelpButtonDialog, { MarkdownTypeNameEnum } from 'components/buttons/HelpButtonDialog';
 import AnimalsListContainer from 'features/summary/tabular-data/animal/AnimalsListContainer';
 import ObservationsListContainer from 'features/summary/tabular-data/observation/ObservationsListContainer';
 import TelemetryListContainer from 'features/summary/tabular-data/telemetry/TelemetryListContainer';
-import { useDialogContext } from 'hooks/useContext';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { useState } from 'react';
 
@@ -57,8 +56,6 @@ export const TabularDataTableContainer = () => {
   const [activeView, setActiveView] = useState(searchParams.get(ACTIVE_VIEW_KEY) ?? ACTIVE_VIEW_VALUE.observations);
   const showSearch = true;
 
-  const dialogContext = useDialogContext();
-
   const views = [
     { value: ACTIVE_VIEW_VALUE.observations, label: 'observations', icon: mdiEye },
     { value: ACTIVE_VIEW_VALUE.animals, label: 'animals', icon: mdiPaw },
@@ -80,19 +77,7 @@ export const TabularDataTableContainer = () => {
       <Stack mx={2} my={1} width="225px" gap={1}>
         <Box display="flex" justifyContent="space-between" alignItems="center" minHeight="75px">
           <Typography variant="h4">Data</Typography>
-          <Button
-            variant="outlined"
-            startIcon={<Icon path={mdiHelpCircleOutline} size={1} />}
-            onClick={() => {
-              dialogContext.setInfoDialog({
-                open: true,
-                dialogTitle: 'Data on the Summary Page',
-                dialogContent: <Typography>{SummaryDataHelpI18N.infoText}</Typography>,
-                onOk: () => dialogContext.setInfoDialog({ open: false })
-              });
-            }}>
-            Help
-          </Button>
+          <HelpButtonDialog markdownTypeName={MarkdownTypeNameEnum.SUMMARY_DATA} />
         </Box>
         <ToggleButtonGroup
           orientation="vertical"

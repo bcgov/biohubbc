@@ -12,9 +12,8 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
+import HelpButtonDialog, { MarkdownTypeNameEnum } from 'components/buttons/HelpButtonDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
-import { SurveyDataHelpI18N } from 'constants/help-i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -124,26 +123,7 @@ export const SurveySpatialToolbar = (props: ISurveySpatialToolbarProps) => {
             Survey Data
           </Typography>
           <Stack gap={1} direction="row">
-            <HelpButtonDialog
-              dialogTitle={SurveyDataHelpI18N.infoTitle}
-              dialogText={SurveyDataHelpI18N.infoText}
-              dialogContent={
-                <>
-                  <Box my={3}>
-                    <Typography component="legend">{SurveyDataHelpI18N.observationsTitle}</Typography>
-                    <Typography color="textSecondary">{SurveyDataHelpI18N.observationsInfoText}</Typography>
-                  </Box>
-                  <Box mb={3}>
-                    <Typography component="legend">{SurveyDataHelpI18N.animalTitle}</Typography>
-                    <Typography color="textSecondary">{SurveyDataHelpI18N.animalInfoText}</Typography>
-                  </Box>
-                  <Box mb={3}>
-                    <Typography component="legend">{SurveyDataHelpI18N.telemetryTitle}</Typography>
-                    <Typography color="textSecondary">{SurveyDataHelpI18N.telemetryInfoText}</Typography>
-                  </Box>
-                </>
-              }
-            />
+            <HelpButtonDialog markdownTypeName={MarkdownTypeNameEnum.SURVEY_DATA} />
             <ProjectRoleGuard
               validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>

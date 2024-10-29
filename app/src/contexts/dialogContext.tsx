@@ -2,7 +2,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import InfoDialog from 'components/dialog/InfoDialog';
+import VoteDialog, { IVoteDialogProps } from 'components/dialog/VoteDialog';
 import YesNoDialog, { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
 import React, { createContext, ReactNode, useState } from 'react';
 
@@ -53,29 +53,20 @@ export interface IDialogContext {
    */
   snackbarProps: ISnackbarProps;
   /**
-   * Set the info dialog props.
+   * Set the vote dialog props.
    *
    * Note: Any props that are not provided, will default to whatever value was previously set (or the default value)
    *
    * @memberof IDialogContext
    */
-  setInfoDialog: (props: Partial<IInfoDialogProps>) => void;
+  setVoteDialog: (props: Partial<IVoteDialogProps>) => void;
   /**
-   * The current info dialog props.
+   * The current vote dialog props.
    *
-   * @type {IInfoDialogProps}
+   * @type {IVoteDialogProps}
    * @memberof IDialogContext
    */
-  infoDialogProps: IInfoDialogProps;
-}
-
-export interface IInfoDialogProps {
-  open: boolean;
-  dialogTitle: string;
-  dialogText: string;
-  dialogContent: ReactNode;
-  onClose: () => void;
-  onOk: () => void;
+  voteDialogProps: IVoteDialogProps;
 }
 
 export interface ISnackbarProps {
@@ -117,7 +108,7 @@ export const defaultSnackbarProps: ISnackbarProps = {
   open: false
 };
 
-export const defaultInfoDialogProps: IInfoDialogProps = {
+export const defaultVoteDialogProps: IVoteDialogProps = {
   dialogTitle: '',
   dialogText: '',
   dialogContent: <></>,
@@ -126,6 +117,9 @@ export const defaultInfoDialogProps: IInfoDialogProps = {
     // default do nothing
   },
   onOk: () => {
+    // default do nothing
+  },
+  onSubmit: () => {
     // default do nothing
   }
 };
@@ -143,10 +137,10 @@ export const DialogContext = createContext<IDialogContext>({
     // default do nothing
   },
   snackbarProps: defaultSnackbarProps,
-  setInfoDialog: () => {
+  setVoteDialog: () => {
     // default do nothing
   },
-  infoDialogProps: defaultInfoDialogProps
+  voteDialogProps: defaultVoteDialogProps
 });
 
 /**
@@ -160,7 +154,7 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>(defaultErrorDialogProps);
 
-  const [infoDialogProps, setInfoDialogProps] = useState<IInfoDialogProps>(defaultInfoDialogProps);
+  const [voteDialogProps, setVoteDialogProps] = useState<IVoteDialogProps>(defaultVoteDialogProps);
 
   const [snackbarProps, setSnackbarProps] = useState<ISnackbarProps>(defaultSnackbarProps);
 
@@ -176,8 +170,8 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
     setErrorDialogProps({ ...errorDialogProps, ...partialProps });
   };
 
-  const setInfoDialog = function (partialProps: Partial<IInfoDialogProps>) {
-    setInfoDialogProps({ ...infoDialogProps, ...partialProps });
+  const setVoteDialog = function (partialProps: Partial<IVoteDialogProps>) {
+    setVoteDialogProps({ ...voteDialogProps, ...partialProps });
   };
 
   return (
@@ -189,13 +183,13 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
         errorDialogProps,
         setSnackbar,
         snackbarProps,
-        setInfoDialog,
-        infoDialogProps
+        setVoteDialog,
+        voteDialogProps
       }}>
       {props.children}
       <YesNoDialog {...yesNoDialogProps} />
       <ErrorDialog {...errorDialogProps} />
-      <InfoDialog {...infoDialogProps} />
+      <VoteDialog {...voteDialogProps} />
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',

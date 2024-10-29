@@ -9,14 +9,13 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
-import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
+import HelpButtonDialog, { MarkdownTypeNameEnum } from 'components/buttons/HelpButtonDialog';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { SurveyListHelpI18N } from 'constants/help-i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
@@ -142,7 +141,7 @@ const SurveysListPage = () => {
           </Typography>
         </Typography>
         <Stack gap={1} direction="row">
-          <HelpButtonDialog dialogTitle={SurveyListHelpI18N.infoTitle} dialogText={SurveyListHelpI18N.infoText} />
+          <HelpButtonDialog markdownTypeName={MarkdownTypeNameEnum.SURVEY_PAGE} />
           <ProjectRoleGuard
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>

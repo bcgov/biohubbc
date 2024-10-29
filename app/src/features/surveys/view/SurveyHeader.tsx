@@ -13,20 +13,17 @@ import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import Link from '@mui/material/Link';
-import List from '@mui/material/List';
-import ListItem from '@mui/material/ListItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
+import HelpButtonDialog, { MarkdownTypeNameEnum } from 'components/buttons/HelpButtonDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import PublishSurveyIdDialog from 'components/publish/PublishSurveyDialog';
 import { FeatureFlagGuard, ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { SurveyPageHelpI18N } from 'constants/help-i18n';
 import { DeleteSurveyI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
@@ -173,59 +170,7 @@ const SurveyHeader = () => {
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Stack flexDirection="row" alignItems="center" gap={2}>
-              <HelpButtonDialog
-                dialogTitle={SurveyPageHelpI18N.infoTitle}
-                dialogText={SurveyPageHelpI18N.infoText}
-                dialogContent={
-                  <>
-                    <Box mt={3}>
-                      <Typography component="legend">{SurveyPageHelpI18N.componentsInfoTitle}</Typography>
-                      <List sx={{ '& .MuiListItem-root': { alignItems: 'flex-start' } }}>
-                        <ListItem>
-                          <Typography fontWeight={700} color="textSecondary" minWidth='20ch'>
-                            Sampling Information
-                          </Typography>
-                          <Typography color="textSecondary" sx={{ ml: 4 }}>
-                            {SurveyPageHelpI18N.samplingInfoText}
-                          </Typography>
-                        </ListItem>
-                        <ListItem>
-                          <Typography fontWeight={700} color="textSecondary" minWidth='20ch'>
-                            Survey Data
-                          </Typography>
-                          <Typography color="textSecondary" sx={{ ml: 4 }}>
-                            {SurveyPageHelpI18N.dataInfoText}
-                          </Typography>
-                        </ListItem>
-                        <ListItem>
-                          <Typography fontWeight={700} color="textSecondary" minWidth='20ch'>
-                            Attachments
-                          </Typography>
-                          <Typography color="textSecondary" sx={{ ml: 4 }}>
-                            {SurveyPageHelpI18N.attachmentsInfoText}
-                          </Typography>
-                        </ListItem>
-                        <ListItem>
-                          <Typography fontWeight={700} color="textSecondary" minWidth='20ch'>
-                            Metadata
-                          </Typography>
-                          <Typography color="textSecondary" sx={{ ml: 4 }}>
-                            {SurveyPageHelpI18N.metadata}
-                          </Typography>
-                        </ListItem>
-                      </List>
-                    </Box>
-                    <Box mb={3}>
-                      <Typography component="legend">{SurveyPageHelpI18N.editInfoTitle}</Typography>
-                      <Typography color="textSecondary">{SurveyPageHelpI18N.editInfoText}</Typography>
-                    </Box>
-                    <Box mb={3}>
-                      <Typography component="legend">{SurveyPageHelpI18N.publishInfoTitle}</Typography>
-                      <Typography color="textSecondary">{SurveyPageHelpI18N.publishInfoText}</Typography>
-                    </Box>
-                  </>
-                }
-              />
+              <HelpButtonDialog markdownTypeName={MarkdownTypeNameEnum.SURVEY_PAGE} />
               <FeatureFlagGuard featureFlags={['APP_FF_SUBMIT_BIOHUB']}>
                 <ProjectRoleGuard
                   validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
