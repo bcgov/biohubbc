@@ -1,5 +1,6 @@
-import { default as dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import xlsx, { CellObject } from 'xlsx';
+import { DefaultDateFormat } from '../../../constants/dates';
 import { safeTrim } from '../../string-utils';
 
 /**
@@ -106,7 +107,7 @@ export function replaceCellDates(cell: CellObject) {
   }
 
   if (isDateFormatCell(cell)) {
-    const DateFormat = 'YYYY-MM-DD';
+    const DateFormat = DefaultDateFormat;
     cell.v = cellDate.format(DateFormat);
     return cell;
   }

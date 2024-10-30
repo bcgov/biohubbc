@@ -231,6 +231,7 @@ PUT.apiDoc = {
   ],
   requestBody: {
     description: 'Funding source put request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {

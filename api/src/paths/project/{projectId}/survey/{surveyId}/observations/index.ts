@@ -134,6 +134,7 @@ PUT.apiDoc = {
   ],
   requestBody: {
     description: 'Survey observation record data',
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -399,6 +400,8 @@ export function getSurveyObservations(): RequestHandler {
           surveyId,
           ensureCompletePaginationOptions(paginationOptions)
         );
+
+      await connection.commit();
 
       const observationCount = observationData.supplementaryObservationData.observationCount;
 

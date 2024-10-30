@@ -40,6 +40,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Add system user request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {

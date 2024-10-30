@@ -83,6 +83,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Attachment upload post request object.',
+    required: true,
     content: {
       'multipart/form-data': {
         schema: {

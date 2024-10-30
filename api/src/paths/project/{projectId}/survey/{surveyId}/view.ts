@@ -172,6 +172,7 @@ export function getSurvey(): RequestHandler {
       return res.status(200).json({ surveyData: surveyData, surveySupplementaryData: surveySupplementaryData });
     } catch (error) {
       defaultLog.error({ label: 'getSurveyForView', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
