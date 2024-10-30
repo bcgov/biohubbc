@@ -59,6 +59,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Survey technique delete request object.',
+    required: true,
     content: {
       'application/json': {
         schema: {

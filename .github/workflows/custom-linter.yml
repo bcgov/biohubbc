@@ -1,0 +1,53 @@
+name: Custom Linter
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+  push:
+    branches:
+      - dev
+
+jobs:
+  # OpenAPI request bodies should contain the property `required` and be set to true
+  #
+  # // Valid (request body required)
+  #
+  # requestBody: {
+  #   required: true,
+  #   content: {}
+  # }
+  #
+  # // Invalid (request body not required)
+  #
+  # requestBody: {
+  #   content: {}
+  # }
+  #
+  openApiRequiredRequestBody:
+    name: OpenAPI requestBody missing required:true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Find schemas with optional request bodies
+        run: |
+          # For OpenAPI schemas, find all request bodies that don't have `required:true`
+          #
+          # Find all non-test files in apr/src/paths
+          # Find all request bodies that don't contain required:true property
+          # Print to stdout line num + filename and return exit code
+          find api/src/paths -type f ! -name '*.test.ts' -exec \
+          awk '
+          BEGIN {found=0}
+          /requestBody:/ {found=1}
+          /required: true/ {found=0}
+          /content:/ {
+            if (found) print "line: " NR, FILENAME;
+            found=0;
+          }
+          ' {} \; \
+          | grep . && exit 1 || exit 0
+
+
+

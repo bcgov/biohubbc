@@ -52,6 +52,7 @@ PATCH.apiDoc = {
   ],
   requestBody: {
     description: 'Critterbase bulk patch request object',
+    required: true,
     content: {
       'application/json': {
         schema: critterBulkRequestObject
@@ -234,6 +235,8 @@ export function getCrittersFromSurvey(): RequestHandler {
         critterAttachmentService.findAllCritterAttachments(surveyCritter.critter_id),
         critterbaseService.getCritter(surveyCritter.critterbase_critter_id)
       ]);
+
+      await connection.commit();
 
       if (!critterbaseCritter || critterbaseCritter.length === 0) {
         return res.status(404).json({ error: `Critter ${surveyCritter.critterbase_critter_id} not found.` });

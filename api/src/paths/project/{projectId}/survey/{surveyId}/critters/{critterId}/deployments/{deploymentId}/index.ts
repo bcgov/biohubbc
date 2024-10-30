@@ -80,6 +80,7 @@ PATCH.apiDoc = {
   ],
   requestBody: {
     description: 'Specifies a deployment id and the new timerange to update it with.',
+    required: true,
     content: {
       'application/json': {
         schema: {
