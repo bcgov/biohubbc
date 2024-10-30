@@ -30,9 +30,5 @@ export const SamplingSiteListMap = (props: ISamplingSiteListMapProps) => {
     }
   ];
 
-  return (
-    <>
-      <SurveyMap staticLayers={staticLayers} isLoading={false} />
-    </>
-  );
+  return <SurveyMap staticLayers={staticLayers} isLoading={false} />;
 };

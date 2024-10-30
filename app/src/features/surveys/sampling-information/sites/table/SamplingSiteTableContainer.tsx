@@ -28,7 +28,6 @@ const pageSizeOptions = [10, 25, 50];
 /**
  * Returns a table of sampling sites with edit actions
  *
- * @param props {<ISamplingSiteTableContainerProps>}
  * @returns {*}
  */
 export const SamplingSiteTableContainer = () => {

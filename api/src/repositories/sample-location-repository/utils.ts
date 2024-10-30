@@ -1,11 +1,10 @@
 import { Knex } from 'knex';
 
 /**
- * Get the base query for retrieving survey observations with sampling data.
+ * Get the base query for retrieving survey sample locations
  *
  * @param {Knex} knex The Knex instance.
- * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey observations, filtered by survey IDs returned by
- * the getSurveyIdsQuery.
+ * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey sample locations
  */
 export function getSamplingLocationBaseQuery(knex: Knex): Knex.QueryBuilder {
   return (

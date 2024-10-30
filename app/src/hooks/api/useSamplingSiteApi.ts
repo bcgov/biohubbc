@@ -35,9 +35,9 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
   /**
    * Get Sample Sites
    *
-   * @param {ApiPaginationRequestOptions} pagination
    * @param {number} projectId
    * @param {number} surveyId
+   * @param {ApiPaginationRequestOptions} pagination
    * @return {*}  {Promise<IGetSampleLocationNonSpatialResponse>}
    */
   const getSampleSites = async (

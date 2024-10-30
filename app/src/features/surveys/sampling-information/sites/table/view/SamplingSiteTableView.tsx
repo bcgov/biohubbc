@@ -43,31 +43,29 @@ export const SamplingSiteTableView = (props: ISamplingSiteTableViewProps) => {
   };
 
   return (
-    <>
-      <ToggleButtonGroup
-        value={activeView}
-        onChange={updateDatasetView}
-        exclusive
-        sx={{
-          flex: '1 1 auto',
-          display: 'flex',
-          gap: 1,
-          '& Button': {
-            py: 0.5,
-            px: 1.5,
-            border: 'none',
-            borderRadius: '4px !important',
-            fontSize: '0.875rem',
-            fontWeight: 700,
-            letterSpacing: '0.02rem'
-          }
-        }}>
-        {views.map((view) => (
-          <ToggleButton key={view.value} component={Button} color="primary" value={view.value} startIcon={view.icon}>
-            {view.value}
-          </ToggleButton>
-        ))}
-      </ToggleButtonGroup>
-    </>
+    <ToggleButtonGroup
+      value={activeView}
+      onChange={updateDatasetView}
+      exclusive
+      sx={{
+        flex: '1 1 auto',
+        display: 'flex',
+        gap: 1,
+        '& Button': {
+          py: 0.5,
+          px: 1.5,
+          border: 'none',
+          borderRadius: '4px !important',
+          fontSize: '0.875rem',
+          fontWeight: 700,
+          letterSpacing: '0.02rem'
+        }
+      }}>
+      {views.map((view) => (
+        <ToggleButton key={view.value} component={Button} color="primary" value={view.value} startIcon={view.icon}>
+          {view.value}
+        </ToggleButton>
+      ))}
+    </ToggleButtonGroup>
   );
 };
