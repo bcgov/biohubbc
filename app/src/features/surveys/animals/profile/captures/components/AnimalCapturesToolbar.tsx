@@ -1,6 +1,5 @@
 import { mdiFileDocumentPlusOutline, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
-import SatelliteAltIcon from '@mui/icons-material/SatelliteAlt';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
@@ -62,14 +61,6 @@ export const AnimalCapturesToolbar = (props: ICapturesToolbarProps) => {
             sx={{ mr: 0.5, borderTopLeftRadius: 0, borderBottomLeftRadius: 0, '& .MuiButton-startIcon': { mx: 0 } }}
           />
         </Tooltip>
-        <Button
-          component={RouterLink}
-          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/deployment/create`}
-          variant="outlined"
-          color="primary"
-          startIcon={<SatelliteAltIcon />}>
-          Add Telemetry
-        </Button>
       </Box>
     </Toolbar>
   );

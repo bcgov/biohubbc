@@ -1,7 +1,11 @@
+import { mdiWifiMarker } from '@mdi/js';
+import { Icon } from '@mdi/react';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
+import { useSurveyContext } from 'hooks/useContext';
 import { Link as RouterLink } from 'react-router-dom';
 
 export interface IAnimalHeaderProps {
@@ -19,6 +23,7 @@ export interface IAnimalHeaderProps {
  */
 export const AnimalHeader = (props: IAnimalHeaderProps) => {
   const { project_id, project_name, survey_id, survey_name } = props;
+  const surveyContext = useSurveyContext();
   return (
     <PageHeader
       title="Manage Animals"
@@ -37,6 +42,16 @@ export const AnimalHeader = (props: IAnimalHeaderProps) => {
             Manage Animals
           </Typography>
         </Breadcrumbs>
+      }
+      buttonJSX={
+        <Button
+          component={RouterLink}
+          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry`}
+          variant="outlined"
+          color="primary"
+          startIcon={<Icon path={mdiWifiMarker} size={1} />}>
+          Manage Telemetry
+        </Button>
       }
     />
   );

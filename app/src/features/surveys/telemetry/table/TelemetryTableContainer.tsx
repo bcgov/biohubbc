@@ -1,6 +1,5 @@
 import { mdiCogOutline, mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import PetsIcon from '@mui/icons-material/Pets';
 import { LoadingButton } from '@mui/lab';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -27,7 +26,6 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTelemetryTableContext } from 'hooks/useContext';
 import { useContext, useDeferredValue, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { pluralize as p } from 'utils/Utils';
 import { TelemetryDeviceKeysButton } from '../device-keys/TelemetryDeviceKeysButton';
 
@@ -147,14 +145,6 @@ export const TelemetryTableContainer = () => {
           </Typography>
 
           <Stack flexDirection="row" alignItems="center" gap={1} overflow="hidden" whiteSpace="nowrap">
-            <Button
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/details`}
-              variant="outlined"
-              color="primary"
-              startIcon={<PetsIcon />}>
-              Manage Animals
-            </Button>
             <TelemetryDeviceKeysButton />
             <Button
               variant="contained"

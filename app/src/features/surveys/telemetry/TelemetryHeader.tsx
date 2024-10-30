@@ -1,7 +1,11 @@
+import { mdiPaw } from '@mdi/js';
+import Icon from '@mdi/react';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
+import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
+import { useSurveyContext } from 'hooks/useContext';
 import { Link as RouterLink } from 'react-router-dom';
 
 export interface TelemetryHeaderProps {
@@ -13,6 +17,7 @@ export interface TelemetryHeaderProps {
 
 export const TelemetryHeader = (props: TelemetryHeaderProps) => {
   const { project_id, project_name, survey_id, survey_name } = props;
+  const surveyContext = useSurveyContext();
   return (
     <PageHeader
       title="Manage Telemetry"
@@ -31,6 +36,16 @@ export const TelemetryHeader = (props: TelemetryHeaderProps) => {
             Manage Telemetry
           </Typography>
         </Breadcrumbs>
+      }
+      buttonJSX={
+        <Button
+          component={RouterLink}
+          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/details`}
+          variant="outlined"
+          color="primary"
+          startIcon={<Icon path={mdiPaw} size={1} />}>
+          Manage Animals
+        </Button>
       }
     />
   );
