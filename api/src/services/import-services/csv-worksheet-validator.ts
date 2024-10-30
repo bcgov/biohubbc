@@ -1,123 +1,213 @@
+import { difference, xor } from 'lodash';
 import { WorkSheet } from 'xlsx';
+import { z } from 'zod';
+import { getWorksheetRowObjects } from '../../utils/xlsx-utils/worksheet-utils';
 import { Row } from './import-csv.interface';
 
-interface CSVErrors {
-  [column: string]: {
-    [row: number]: string[];
+// 1. Get list of rows from the worksheet
+// 2. Convert the non-standard column names to standard column names
+// 3. Track the used alias
+interface CSVError {
+  row: number;
+  column?: string;
+  errors: string[];
+}
+
+type CSVRow = Record<string, { cell: unknown; alias?: string }>;
+
+type CSVTemplate = CSVRow[];
+
+export interface CSVConfig {
+  standardColumns: {
+    [standardColumnName: string]: {
+      aliases?: string[];
+      parseCell?: (value: unknown, row: CSVRow, template: CSVTemplate) => unknown;
+      validateCell: (value: unknown, row: CSVRow, template: CSVTemplate) => { errors: string[] };
+      setCell?: (value: any, row: CSVRow, template: CSVTemplate) => any;
+    };
+  };
+  unknownColumns?: {
+    parseCell?: (value: unknown, row: CSVRow, template: CSVTemplate) => unknown;
+    validateCell: (value: unknown, row: CSVRow, template: CSVTemplate) => { errors: string[] };
+    setCell?: (value: any, row: CSVRow, template: CSVTemplate) => any;
   };
 }
 
-export interface CSVStandardSchema {
-  [standardColumnName: string]: {
-    /**
-     * Column aliases
-     */
-    aliases: string[];
-    /**
-     * Is the column optional
-     */
-    optional?: true;
-    /**
-     * 1. Pre-parse the cell value before validation
-     */
-    preParseCell?: (value: any, row: Row) => any;
-    /**
-     * 2. Validate the cell value
-     */
-    validateCell: (value: any, row: Row) => string[] | undefined;
-    /**
-     * 3. Get the cell value after validation
-     */
-    getCellValue?: (value: any, row: Row) => any;
-  };
-}
+export class ValidateCSVService {
+  worksheet: WorkSheet;
+  config: CSVConfig;
 
-export interface CSVUnknownSchema {
-  parseCell?: (value: any, row: Row) => any;
-  validateCell: (value: any, row: Row) => string[] | undefined;
-}
+  constructor(worksheet: WorkSheet, config: CSVConfig) {
+    this.worksheet = worksheet;
+    this.config = config;
+  }
 
-export type CSVSchema = { standardColumns: CSVStandardSchema; unknownColumns?: CSVUnknownSchema };
+  /**
+   * Get the cell details for a given row and column.
+   *
+   * @param {Row} row - The row object
+   * @param {string} column - The column name
+   * @returns {*} - The cell value, column name, and alias if found
+   */
+  getCellDetails(row: Row, column: string) {
+    if (column in row) {
+      return { cell: row[column], column, alias: undefined };
+    }
 
-export interface CSVImportStrategy {
-  cellValidatorService: CSVCellValidatorService;
-
-  getCSVSchema(worksheet: WorkSheet): Promise<CSVSchema>;
-  import(rows: Row[]): Promise<any>;
-}
-
-export class CSVCellValidatorService {
-  validateStringCell(value: unknown) {
-    if (typeof value !== 'string') {
-      return ['Value is not a string.'];
+    for (const alias of this.config.standardColumns[column]?.aliases ?? []) {
+      if (alias in row) {
+        return { cell: row[alias], column, alias };
+      }
     }
   }
 
-  validateNumberCell(value: unknown, min?: number, max?: number) {
+  convertWorksheetToCSVTemplate(): CSVTemplate {
+    const csv: CSVTemplate = [];
+
+    const worksheetRows = getWorksheetRowObjects(this.worksheet);
+
+    for (const worksheetRow of worksheetRows) {
+      const csvRow: CSVRow = {};
+
+      for (const header of Object.keys(worksheetRow)) {
+        const cellDetails = this.getCellDetails(worksheetRow, header);
+
+        if (cellDetails) {
+          // Standard columns
+          csvRow[cellDetails.column] = { cell: cellDetails.cell, alias: cellDetails.alias };
+        } else {
+          // Unknown columns
+          csvRow[header] = { cell: worksheetRow[header] };
+        }
+      }
+
+      csv.push(csvRow);
+    }
+
+    return csv;
+  }
+
+  validateColumnHeaders(template: CSVTemplate): CSVError | undefined {
     const errors: string[] = [];
 
-    if (typeof value !== 'number') {
-      return ['Value is not a number']; // Early return
+    const csvWorksheetColumns = Object.keys(template[0]);
+    const configStandardColumns = Object.keys(this.config.standardColumns);
+
+    if (!csvWorksheetColumns.length) {
+      return { row: 0, errors: ['CSV is empty'] };
     }
 
-    if (min !== undefined && value < min) {
-      errors.push(`Value is less than minimum: ${min}.`);
+    const missingColumns = difference(configStandardColumns, csvWorksheetColumns);
+
+    if (missingColumns.length) {
+      errors.push(`CSV missing required columns: ${missingColumns.join(', ')}`);
     }
 
-    if (max !== undefined && value > max) {
-      errors.push(`Value is greater than maximum: ${max}.`);
+    const unknownColumns = xor(csvWorksheetColumns, configStandardColumns);
+
+    if (unknownColumns.length && !this.config.unknownColumns) {
+      errors.push(`CSV contains unknown columns: ${unknownColumns.join(', ')}`);
     }
 
-    return errors;
+    if (errors.length) {
+      return { row: 0, errors };
+    }
   }
 
-  validateCodeCell(value: unknown, codes: Set<any>) {
-    if (!codes.has(value)) {
-      return [`Value is not a valid code: ${value}.`];
+  // TODO: Conditional worksheet / error return?
+  validateCSV(): { template: CSVTemplate; errors: CSVError[] } {
+    const template = this.convertWorksheetToCSVTemplate();
+    const columnErrors = this.validateColumnHeaders(template);
+
+    // If there are column errors, return early
+    if (columnErrors) {
+      return { template, errors: [columnErrors] };
     }
+
+    const errors: CSVError[] = [];
+
+    for (let index = 0; index < template.length; index++) {
+      const row = template[index];
+
+      for (const column of Object.keys(row)) {
+        const { cell, alias } = row[column];
+
+        let columnConfig = this.config.standardColumns[column];
+
+        if (!columnConfig && this.config.unknownColumns) {
+          columnConfig = this.config.unknownColumns;
+        }
+
+        let cellValue = columnConfig.parseCell?.(cell, row, template) ?? cell;
+
+        const cellErrors = columnConfig.validateCell(cellValue, row, template);
+
+        if (cellErrors?.errors.length) {
+          errors.push({ row: index + 1, errors: cellErrors.errors, column: alias ?? column });
+        }
+
+        cellValue = columnConfig.setCell?.(cell, row, template) ?? cell;
+
+        template[index][column] = { cell: cellValue, alias };
+      }
+    }
+
+    return { template, errors };
   }
 }
 
-class ImportCritter implements CSVImportStrategy {
-  cellValidator: CSVCellValidatorService;
+const getZodErrors = (value: unknown, schema: z.ZodSchema): { errors: string[] } => {
+  const parsedValue = schema.safeParse(value);
 
-  constructor() {
-    this.cellValidator = new CSVCellValidatorService();
+  if (parsedValue.error) {
+    return { errors: parsedValue.error.issues.map((issue) => issue.message) };
   }
 
-  async getCSVSchema(): Promise<CSVSchema> {
+  return { errors: [] };
+};
+
+export class ImportCritter implements CSVImportStrategy {
+  async getCSVConfig(): Promise<CSVConfig> {
     const surveyAliases = new Set(['ANIMAL_NAME', 'CRITTER_NAME']);
 
     return {
       standardColumns: {
         NAME: {
           aliases: ['ANIMAL_NAME', 'CRITTER_NAME'],
-          preParseCell: (value) => value.toLowerCase(),
-          validateCell: (value) => this.cellValidator.validateStringCell(value)
+          parseCell: (value) => `${value} critter`,
+          validateCell: (value) => getZodErrors(value, z.string())
         },
         AGE: {
           aliases: ['ANIMAL_AGE', 'CRITTER_AGE'],
-          validateCell: (value) => this.cellValidator.validateNumberCell(value, 0, 100)
+          validateCell: (value) => getZodErrors(value, z.number().min(0).max(100)),
+          setCell: (value) => value + 'blah'
         },
         ALIAS: {
           aliases: ['ANIMAL_ALIAS', 'CRITTER_ALIAS'],
-          optional: true,
-          preParseCell: (value) => value.toLowerCase(),
           validateCell: (value) => {
-            if (surveyAliases.has(value)) {
-              return ['Value already exists in Survey. Duplicates are not allowed.'];
+            const errors: string[] = [];
+
+            if (surveyAliases.has(value as string)) {
+              errors.push('Value already exists in Survey. Duplicates are not allowed.');
             }
+
+            return { errors };
           }
         }
       },
       unknownColumns: {
-        validateCell: (value) => this.cellValidator.validateStringCell(value)
+        validateCell: () => ({ errors: ['Unknown column'] })
       }
     };
   }
 
-  async import(rows: Row[]): Promise<any> {
-    console.log(rows);
+  async importCSVTemplate(template: CSVTemplate): Promise<any> {
+    console.log(template);
     // Import critters
   }
+}
+
+export interface CSVImportStrategy {
+  getCSVConfig(worksheet: WorkSheet): Promise<CSVConfig>;
+  importCSVTemplate(template: CSVTemplate[]): Promise<any>;
 }
