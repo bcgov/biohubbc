@@ -97,6 +97,14 @@ export function scoreMarkdown(): RequestHandler {
 
       const markdownService = new MarkdownService(connection);
 
+      // Confirm that the user has not already voted on the markdown record
+      const participation = await markdownService.getUserParticipation(markdownId, systemUserId);
+
+      // Throw 500 error if the user has already voted
+      if (participation?.system_user_id) {
+        return res.status(500).json();
+      }
+
       // Increase or decrease the score of a markdown record
       await markdownService.updateScore(markdownId, systemUserId, score);
 

@@ -16,7 +16,7 @@ export const SurveySamplingHeader = () => {
         Sampling Information
       </Typography>
       <Stack gap={1} direction="row">
-        <HelpButtonDialog markdownTypeName={MarkdownTypeNameEnum.SAMPLING_INFORMATION} />
+        <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SAMPLING_INFORMATION} />
         <ProjectRoleGuard
           validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>

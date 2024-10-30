@@ -7,7 +7,7 @@ import { useDialogContext } from 'hooks/useContext';
 import { PropsWithChildren } from 'react';
 
 interface IHelpButtonDialogProps {
-  markdownTypeName: string;
+  markdownType: MarkdownTypeNameEnum;
 }
 
 export enum MarkdownTypeNameEnum {
@@ -20,15 +20,16 @@ export enum MarkdownTypeNameEnum {
   SURVEY_PAGE = 'Survey Page',
   TECHNIQUES = 'Techniques',
   SAMPLING_SITES = 'Sampling Sites',
-  SURVEY_METADATA = 'Survey Metadata'
+  SURVEY_METADATA = 'Survey Metadata',
+  OBSERVATIONS = 'Observations'
 }
 
-const HelpButtonDialog = ({ markdownTypeName, children }: PropsWithChildren<IHelpButtonDialogProps>) => {
+const HelpButtonDialog = ({ markdownType, children }: PropsWithChildren<IHelpButtonDialogProps>) => {
   const dialogContext = useDialogContext();
   const biohubApi = useBiohubApi();
 
   const handleOpenDialog = async () => {
-    const { markdown } = await biohubApi.markdown.getMarkdown({ typeName: markdownTypeName });
+    const { markdown } = await biohubApi.markdown.getMarkdown({ typeName: markdownType });
 
     if (markdown) {
       dialogContext.setVoteDialog(createDialogConfig(markdown));
@@ -39,13 +40,10 @@ const HelpButtonDialog = ({ markdownTypeName, children }: PropsWithChildren<IHel
     open: true,
     dialogContent: <CustomMarkdown markdown={markdown.data} />,
     hasSubmitted: markdown.participated,
-    onSubmit: !markdown.participated
-      ? async (score: number) => {
-          await biohubApi.markdown.insertScore({ markdownId: markdown.markdown_id, score });
-          // Directly update dialog context without local state
-          dialogContext.setVoteDialog({ hasSubmitted: true });
-        }
-      : undefined,
+    onSubmit: async (score: number) => {
+      await biohubApi.markdown.insertScore({ markdownId: markdown.markdown_id, score });
+      dialogContext.setVoteDialog({ hasSubmitted: true });
+    },
     onOk: () => {
       dialogContext.setVoteDialog({ open: false });
     }

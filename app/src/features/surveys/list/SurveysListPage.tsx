@@ -141,7 +141,7 @@ const SurveysListPage = () => {
           </Typography>
         </Typography>
         <Stack gap={1} direction="row">
-          <HelpButtonDialog markdownTypeName={MarkdownTypeNameEnum.SURVEY_PAGE} />
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEYS} />
           <ProjectRoleGuard
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>

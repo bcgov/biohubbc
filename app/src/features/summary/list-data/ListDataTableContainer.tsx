@@ -91,7 +91,7 @@ export const ListDataTableContainer = () => {
           ))}
         </ToggleButtonGroup>
         <Stack gap={1} direction="row">
-          <HelpButtonDialog markdownTypeName={MarkdownTypeNameEnum.PROJECTS_AND_SURVEYS} />
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.PROJECTS_AND_SURVEYS} />
           <Button
             color="primary"
             variant="outlined"

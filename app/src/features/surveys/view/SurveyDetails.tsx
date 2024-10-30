@@ -37,7 +37,7 @@ const SurveyDetails = () => {
           Survey Details
         </Typography>
         <Stack gap={1} direction="row">
-          <HelpButtonDialog markdownTypeName={MarkdownTypeNameEnum.SURVEY_METADATA} />
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_METADATA} />
           <ProjectRoleGuard
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>

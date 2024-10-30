@@ -52,7 +52,7 @@ export interface IVoteDialogProps {
   onOk: () => Promise<void> | void;
 
   /**
-   * Indicates whether the user has already submitted before, in which case they cannot submit
+   * Indicates whether the user has already submitted before, in which case they cannot submit again
    *
    * @memberof IVoteDialogProps
    */
@@ -141,7 +141,7 @@ const VoteDialog = (props: IVoteDialogProps) => {
           <Box mr={3}>
             {props.hasSubmitted ? (
               <Typography color="textSecondary">
-                Thanks for voting! We'll update this text based on feedback.
+                Thanks for your feedback!
               </Typography>
             ) : (
               <MarkdownVoteButtons

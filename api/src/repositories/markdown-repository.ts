@@ -1,5 +1,5 @@
 import SQL from 'sql-template-strings';
-import { MarkdownObject, markdownQueryObject } from '../models/markdown-view';
+import { MarkdownObject, markdownQueryObject, MarkdownUserObject } from '../models/markdown-view';
 import { BaseRepository } from './base-repository';
 
 /**
@@ -67,7 +67,34 @@ export class MarkdownRepository extends BaseRepository {
   }
 
   /**
-   * Decreases the score of a markdown record
+   * Gets a participation record for a given markdown record and system user id, to check whether a user has already scored a markdown record
+   *
+   * @param {number} markdownId
+   * @param {number} systemUserId
+   * @return {*}  {Promise<MarkdownUserObject>}
+   * @memberof MarkdownRepository
+   */
+  async getUserParticipation(markdownId: number, systemUserId: number): Promise<MarkdownUserObject> {
+    const sqlStatement = SQL`
+        SELECT 
+          markdown_user_id,
+          system_user_id,
+          markdown_id
+        FROM 
+          markdown_user 
+        WHERE 
+          markdown_id = ${markdownId} 
+        AND 
+          system_user_id = ${systemUserId};
+      `;
+
+    const response = await this.connection.sql(sqlStatement, MarkdownUserObject);
+
+    return response.rows[0];
+  }
+
+  /**
+   * Insert a record indicating that the user has scored the given markdown record
    *
    * @param {number} markdownId
    * @param {number} systemUserId
@@ -80,8 +107,7 @@ export class MarkdownRepository extends BaseRepository {
           markdown_user (markdown_id, system_user_id) 
         VALUES 
           (${markdownId}, ${systemUserId})
-        ON CONFLICT (system_user_id, markdown_id) DO NOTHING;
-      ;
+        RETURNING markdown_user_id;
       `;
 
     const response = await this.connection.sql(sqlStatement);

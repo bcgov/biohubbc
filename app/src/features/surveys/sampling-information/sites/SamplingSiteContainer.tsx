@@ -169,7 +169,7 @@ const SamplingSiteContainer = () => {
           </Typography>
         </Typography>
         <Stack gap={1} direction="row">
-          <HelpButtonDialog markdownTypeName={MarkdownTypeNameEnum.SAMPLING_SITES} />
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SAMPLING_SITES} />
           <Button
             variant="contained"
             color="primary"

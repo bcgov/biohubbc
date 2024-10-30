@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { MarkdownObject, markdownQueryObject } from '../models/markdown-view';
+import { MarkdownObject, markdownQueryObject, MarkdownUserObject } from '../models/markdown-view';
 import { MarkdownRepository } from '../repositories/markdown-repository';
 import { DBService } from './db-service';
 
@@ -40,7 +40,21 @@ export class MarkdownService extends DBService {
   }
 
   /**
-   * Decrease the score of a markdown record
+   * Gets a participation record for a given markdown record and system user id, to check whether a user has already scored a markdown record
+   *
+   * @param {number} markdownId
+   * @param {number} systemUserId
+   * @return {*} Promise<MarkdownUserObject>
+   * @memberof MarkdownService
+   */
+  async getUserParticipation(markdownId: number, systemUserId: number): Promise<MarkdownUserObject> {
+    const response = await this.markdownRepository.getUserParticipation(markdownId, systemUserId);
+
+    return response;
+  }
+
+  /**
+   * Insert a record indicating that the user has scored the given markdown record
    *
    * @param {number} markdownId
    * @param {number} systemUserId

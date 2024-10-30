@@ -170,7 +170,7 @@ const SurveyHeader = () => {
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Stack flexDirection="row" alignItems="center" gap={2}>
-              <HelpButtonDialog markdownTypeName={MarkdownTypeNameEnum.SURVEY_PAGE} />
+              <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_PAGE} />
               <FeatureFlagGuard featureFlags={['APP_FF_SUBMIT_BIOHUB']}>
                 <ProjectRoleGuard
                   validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}

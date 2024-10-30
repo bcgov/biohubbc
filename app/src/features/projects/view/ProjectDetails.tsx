@@ -4,7 +4,7 @@ import useTheme from '@mui/material/styles/useTheme';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import assert from 'assert';
-import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
+import HelpButtonDialog, { MarkdownTypeNameEnum } from 'components/buttons/HelpButtonDialog';
 import { ProjectContext } from 'contexts/projectContext';
 import { useContext } from 'react';
 import ProjectObjectives from './components/ProjectObjectives';
@@ -66,7 +66,7 @@ const ProjectDetails = () => {
         <Typography variant="h4" component="h2" flex="1 1 auto">
           Project Details
         </Typography>
-        <HelpButtonDialog markdownTypeName="Projects and Surveys" />
+        <HelpButtonDialog markdownType={MarkdownTypeNameEnum.PROJECT_DETAILS} />
       </Toolbar>
       <Divider />
       <Box p={3} sx={classes.projectMetadata}>

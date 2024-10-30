@@ -77,7 +77,7 @@ export const TabularDataTableContainer = () => {
       <Stack mx={2} my={1} width="225px" gap={1}>
         <Box display="flex" justifyContent="space-between" alignItems="center" minHeight="75px">
           <Typography variant="h4">Data</Typography>
-          <HelpButtonDialog markdownTypeName={MarkdownTypeNameEnum.SUMMARY_DATA} />
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SUMMARY_DATA} />
         </Box>
         <ToggleButtonGroup
           orientation="vertical"
