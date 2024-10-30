@@ -1,4 +1,5 @@
-import { default as dayjs } from 'dayjs';
+import dayjs from 'dayjs';
+import { DefaultDateFormat, DefaultTimeFormat } from '../constants/dates';
 import { IDBConnection } from '../database/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { IAllTelemetryAdvancedFilters } from '../models/telemetry-view';
@@ -149,13 +150,15 @@ export class TelemetryService extends DBService {
       if (foundDeployment) {
         itemsToAdd.push({
           deployment_id: foundDeployment.deployment_id,
-          acquisition_date: dateTime.format('YYYY-MM-DD HH:mm:ss'),
+          acquisition_date: dateTime.format(`${DefaultDateFormat} ${DefaultTimeFormat}`),
           latitude: row['LATITUDE'],
           longitude: row['LONGITUDE']
         });
       } else {
         throw new ApiGeneralError(
-          `No deployment was found for device: ${deviceId} on: ${dateTime.format('YYYY-MM-DD HH:mm:ss')}`
+          `No deployment was found for device: ${deviceId} on: ${dateTime.format(
+            `${DefaultDateFormat} ${DefaultTimeFormat}`
+          )}`
         );
       }
     });
