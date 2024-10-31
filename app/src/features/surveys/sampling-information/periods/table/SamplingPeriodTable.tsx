@@ -3,13 +3,9 @@ import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
-import relativeTime from 'dayjs/plugin/relativeTime';
 import { useCodesContext } from 'hooks/useContext';
+import { humanizeTimeDifference } from 'utils/datetime';
 import { getCodesName } from 'utils/Utils';
-
-dayjs.extend(duration);
-dayjs.extend(relativeTime);
 
 export interface ISamplingSitePeriodRowData {
   id: number;
@@ -92,19 +88,8 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       field: 'duration',
       headerName: 'Duration',
       flex: 1,
-      renderCell: (params) => {
-        const startDateTime = params.row.start_time
-          ? dayjs(`${params.row.start_date} ${params.row.start_time}`)
-          : dayjs(params.row.start_date);
-        const endDateTime = params.row.end_time
-          ? dayjs(`${params.row.end_date} ${params.row.end_time}`)
-          : dayjs(params.row.end_date);
-
-        // Calculate the difference in milliseconds
-        const diff = endDateTime.diff(startDateTime);
-
-        return dayjs.duration(diff, 'millisecond').humanize();
-      }
+      renderCell: (params) =>
+        humanizeTimeDifference(params.row.start_date, params.row.start_time, params.row.end_date, params.row.end_time)
     }
   ];
 
