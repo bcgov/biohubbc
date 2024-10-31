@@ -1,5 +1,8 @@
 import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 import { pluralize } from './Utils';
+
+dayjs.extend(duration);
 
 /**
  * Combine date and time and return ISO string.
@@ -34,16 +37,22 @@ export const formatTimeDifference = (
   const endDateTime = endTime ? dayjs(`${endDate} ${endTime}`) : dayjs(endDate);
 
   // Calculate the total difference
-  const years = endDateTime.diff(startDateTime, 'years');
-  const days = endDateTime.diff(startDateTime, 'days') % 365;
-  const hours = endDateTime.diff(startDateTime, 'hours') % 24;
-  const minutes = endDateTime.diff(startDateTime, 'minutes') % 60;
-  const seconds = endDateTime.diff(startDateTime, 'seconds') % 60;
+  const diff = dayjs.duration(endDateTime.diff(startDateTime));
+
+  const years = diff.years();
+  const months = diff.months();
+  const days = diff.days();
+  const hours = diff.hours();
+  const minutes = diff.minutes();
+  const seconds = diff.seconds();
 
   const parts = [];
 
   if (years > 0) {
     parts.push(`${years} ${pluralize(years, 'year')}`);
+  }
+  if (months > 0) {
+    parts.push(`${months} ${pluralize(months, 'month')}`);
   }
   if (days > 0) {
     parts.push(`${days} ${pluralize(days, 'day')}`);
