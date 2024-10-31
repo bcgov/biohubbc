@@ -26,6 +26,7 @@ const MethodResponseMetricsCode = ICode.extend({ description: z.string() });
 const AttractantCode = ICode.extend({ description: z.string() });
 const ObservationSubcountSignCode = ICode.extend({ description: z.string() });
 const DeviceMakeCode = ICode.extend({ description: z.string() });
+const FrequencyUnitCode = ICode.extend({ description: z.string() });
 
 export const IAllCodeSets = z.object({
   management_action_type: CodeSet(),
@@ -48,7 +49,8 @@ export const IAllCodeSets = z.object({
   method_response_metrics: CodeSet(MethodResponseMetricsCode.shape),
   attractants: CodeSet(AttractantCode.shape),
   observation_subcount_signs: CodeSet(ObservationSubcountSignCode.shape),
-  telemetry_device_makes: CodeSet(DeviceMakeCode.shape)
+  telemetry_device_makes: CodeSet(DeviceMakeCode.shape),
+  frequency_units: CodeSet(FrequencyUnitCode.shape)
 });
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
 
@@ -482,12 +484,31 @@ export class CodeRepository extends BaseRepository {
         name,
         description
       FROM device_make
-      WHERE
-        record_effective_date IS NOT NULL
-      AND record_end_date is null;
+      WHERE record_end_date is null;
     `;
 
     const response = await this.connection.sql(sqlStatement, DeviceMakeCode);
+
+    return response.rows;
+  }
+
+  /**
+   * Get frequency unit codes.
+   *
+   * @return {*}
+   * @memberof CodeRepository
+   */
+  async getFrequencyUnits() {
+    const sqlStatement = SQL`
+      SELECT
+        frequency_unit_id as id,
+        name,
+        description
+      FROM frequency_unit
+      WHERE record_end_date is null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, FrequencyUnitCode);
 
     return response.rows;
   }

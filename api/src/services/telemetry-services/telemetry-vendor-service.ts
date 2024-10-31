@@ -6,7 +6,8 @@ import { CreateManualTelemetry } from '../../repositories/telemetry-repositories
 import { TelemetryVendorRepository } from '../../repositories/telemetry-repositories/telemetry-vendor-repository';
 import {
   Telemetry,
-  TelemetryOptions
+  TelemetryOptions,
+  TelemetrySpatial
 } from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 import { DBService } from '../db-service';
 import { TelemetryDeploymentService } from './telemetry-deployment-service';
@@ -106,6 +107,25 @@ export class TelemetryVendorService extends DBService {
       this.vendorRepository.getTelemetryByDeploymentIds(surveyId, deploymentIds, options),
       this.vendorRepository.getTelemetryCountByDeploymentIds(surveyId, deploymentIds)
     ]);
+  }
+
+  /**
+   * Get telemetry spatial data for a survey.
+   *
+   * @async
+   * @param {number} surveyId
+   * @return {Promise<[TelemetrySpatial[], number]>} - A tuple containing the telemetry spatial data and the total count
+   */
+  async getTelemetrySpatialForSurvey(surveyId: number): Promise<[TelemetrySpatial[], number]> {
+    const deployments = await this.deploymentService.getDeploymentsForSurveyId(surveyId);
+    const deploymentIds = deployments.map((deployment) => deployment.deployment2_id);
+
+    const telemetry = await this.vendorRepository.getTelemetrySpatialByDeploymentIds(surveyId, deploymentIds);
+    return [telemetry, telemetry.length];
+  }
+
+  async getTelemetryRecordById(surveyId: number, telemetryId: string): Promise<Telemetry> {
+    return this.vendorRepository.getTelemetryRecordById(surveyId, telemetryId);
   }
 
   /**

@@ -242,10 +242,12 @@ GET.apiDoc = {
                       type: 'number'
                     },
                     model: {
-                      type: 'string'
+                      type: 'string',
+                      nullable: true
                     },
                     comment: {
-                      type: 'string'
+                      type: 'string',
+                      nullable: true
                     }
                   }
                 }

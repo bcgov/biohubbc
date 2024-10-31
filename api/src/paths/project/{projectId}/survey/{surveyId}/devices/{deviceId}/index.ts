@@ -102,11 +102,13 @@ GET.apiDoc = {
                   },
                   model: {
                     type: 'string',
-                    maxLength: 100
+                    maxLength: 100,
+                    nullable: true
                   },
                   comment: {
                     type: 'string',
-                    maxLength: 250
+                    maxLength: 250,
+                    nullable: true
                   }
                 }
               }
