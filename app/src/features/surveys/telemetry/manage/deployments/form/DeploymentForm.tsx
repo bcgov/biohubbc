@@ -9,20 +9,15 @@ import {
   DeploymentDetailsForm,
   DeploymentDetailsFormInitialValues,
   DeploymentDetailsFormYupSchema
-} from 'features/surveys/telemetry/deployments/components/form/deployment-details/DeploymentDetailsForm';
-import {
-  DeploymentDeviceDetailsForm,
-  DeploymentDeviceDetailsFormInitialValues,
-  DeploymentDeviceDetailsFormYupSchema
-} from 'features/surveys/telemetry/deployments/components/form/device-details/DeploymentDeviceDetailsForm';
+} from 'features/surveys/telemetry/manage/deployments/form/deployment-details/DeploymentDetailsForm';
 import {
   DeploymentTimelineForm,
   DeploymentTimelineFormInitialValues,
   DeploymentTimelineFormYupSchema
-} from 'features/surveys/telemetry/deployments/components/form/timeline/DeploymentTimelineForm';
+} from 'features/surveys/telemetry/manage/deployments/form/timeline/DeploymentTimelineForm';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useSurveyContext } from 'hooks/useContext';
+import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useEffect } from 'react';
@@ -30,13 +25,10 @@ import { useHistory } from 'react-router';
 
 export const DeploymentFormInitialValues = {
   ...DeploymentDetailsFormInitialValues,
-  ...DeploymentTimelineFormInitialValues,
-  ...DeploymentDeviceDetailsFormInitialValues
+  ...DeploymentTimelineFormInitialValues
 };
 
-export const DeploymentFormYupSchema = DeploymentDetailsFormYupSchema.concat(DeploymentTimelineFormYupSchema).concat(
-  DeploymentDeviceDetailsFormYupSchema
-);
+export const DeploymentFormYupSchema = DeploymentDetailsFormYupSchema.concat(DeploymentTimelineFormYupSchema);
 
 interface IDeploymentFormProps {
   isSubmitting: boolean;
@@ -50,30 +42,45 @@ interface IDeploymentFormProps {
  * @return {*}
  */
 export const DeploymentForm = (props: IDeploymentFormProps) => {
-  const { isSubmitting, isEdit } = props;
+  const { isSubmitting } = props;
 
   const { submitForm, values } = useFormikContext<ICreateAnimalDeployment>();
 
+  const codesContext = useCodesContext();
   const surveyContext = useSurveyContext();
 
   const biohubApi = useBiohubApi();
 
   const history = useHistory();
 
+  // Fetch all devices for the survey
+  const devicesDataLoader = useDataLoader(() =>
+    biohubApi.telemetryDevice.getDevicesInSurvey(surveyContext.projectId, surveyContext.surveyId)
+  );
+
+  // Fetch all critters for the survey
+  const crittersDataLoader = useDataLoader(() =>
+    biohubApi.survey.getSurveyCritters(surveyContext.projectId, surveyContext.surveyId)
+  );
+
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+    devicesDataLoader.load();
+    crittersDataLoader.load();
+  }, [
+    codesContext.codesDataLoader,
+    crittersDataLoader,
+    devicesDataLoader,
+    surveyContext.projectId,
+    surveyContext.surveyId
+  ]);
+
+  // Fetch a single critter's data
   const critterDataLoader = useDataLoader((critterId: number) =>
     biohubApi.survey.getCritterById(surveyContext.projectId, surveyContext.surveyId, critterId)
   );
 
-  const frequencyUnitDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('frequency_unit'));
-  const deviceMakesDataLoader = useDataLoader(() => biohubApi.telemetry.getCodeValues('device_make'));
-
-  // Fetch frequency unit and device make code values from BCTW on component mount
-  useEffect(() => {
-    frequencyUnitDataLoader.load();
-    deviceMakesDataLoader.load();
-  }, [deviceMakesDataLoader, frequencyUnitDataLoader]);
-
-  // Fetch critter data when critter_id changes (ie. when the user selects a critter)
+  // Fetch individual critter data when critter_id changes (ie. when the user selects a critter)
   useEffect(() => {
     if (values.critter_id) {
       critterDataLoader.refresh(values.critter_id);
@@ -87,9 +94,14 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
         <Stack gap={5}>
           <HorizontalSplitFormComponent title="Deployment Details" summary="Enter information about the deployment">
             <DeploymentDetailsForm
-              surveyAnimals={surveyContext.critterDataLoader.data ?? []}
-              frequencyUnits={frequencyUnitDataLoader.data?.map((data) => ({ label: data.code, value: data.id })) ?? []}
-              isEdit={isEdit}
+              surveyAnimals={crittersDataLoader.data ?? []}
+              surveyDevices={devicesDataLoader.data?.devices ?? []}
+              frequencyUnits={
+                codesContext.codesDataLoader.data?.frequency_units?.map((frequencyUnit) => ({
+                  label: frequencyUnit.name,
+                  value: frequencyUnit.id
+                })) ?? []
+              }
             />
           </HorizontalSplitFormComponent>
 
@@ -99,17 +111,6 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
             <DeploymentTimelineForm
               captures={critterDataLoader.data?.captures ?? []}
               mortalities={critterDataLoader.data?.mortality ?? []}
-            />
-          </HorizontalSplitFormComponent>
-
-          <Divider />
-
-          <HorizontalSplitFormComponent
-            title="Device Metadata"
-            summary="Enter additional information about the device and optionally enable automatic data 
-            retrievals for compatible device makes">
-            <DeploymentDeviceDetailsForm
-              deviceMakes={deviceMakesDataLoader.data?.map((data) => ({ label: data.code, value: data.id })) ?? []}
             />
           </HorizontalSplitFormComponent>
 
@@ -130,7 +131,9 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry`);
+                history.push(
+                  `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`
+                );
               }}>
               Cancel
             </Button>

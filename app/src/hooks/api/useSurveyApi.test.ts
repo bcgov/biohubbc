@@ -9,7 +9,6 @@ import {
   SurveyBasicFieldsObject
 } from 'interfaces/useSurveyApi.interface';
 import { ApiPaginationResponseParams } from 'types/misc';
-import { v4 } from 'uuid';
 import useSurveyApi from './useSurveyApi';
 
 describe('useSurveyApi', () => {
@@ -26,7 +25,6 @@ describe('useSurveyApi', () => {
   const projectId = 1;
   const surveyId = 1;
   const critterId = 1;
-  const deploymentId = 1;
 
   describe('createSurvey', () => {
     it('creates a survey', async () => {
@@ -88,85 +86,6 @@ describe('useSurveyApi', () => {
       mock.onPost(`/api/project/${projectId}/survey/${surveyId}/critters/delete`).reply(200, 1);
 
       const result = await useSurveyApi(axios).removeCrittersFromSurvey(projectId, surveyId, [critterId]);
-
-      expect(result).toBe(1);
-    });
-  });
-
-  describe('createDeployment', () => {
-    it('should add deployment to survey critter', async () => {
-      mock.onPost(`/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`).reply(201, 1);
-
-      const result = await useSurveyApi(axios).createDeployment(projectId, surveyId, critterId, {
-        device_id: 1,
-        device_make: 22,
-        device_model: 'E',
-        frequency: 1,
-        frequency_unit: 33,
-        critterbase_start_capture_id: '',
-        critterbase_end_capture_id: '',
-        critterbase_end_mortality_id: '',
-        attachment_end_date: '',
-        attachment_end_time: ''
-      });
-
-      expect(result).toBe(1);
-    });
-  });
-
-  describe('getDeploymentsInSurvey', () => {
-    it('should get one deployment', async () => {
-      const response = {
-        deployments: [
-          {
-            assignment_id: v4(),
-            collar_id: v4(),
-            critterbase_critter_id: v4(),
-            critter_id: 123,
-            critterbase_start_capture_id: '',
-            critterbase_end_capture_id: '',
-            critterbase_end_mortality_id: '',
-            attachment_start_date: '',
-            attachment_start_time: '',
-            attachment_end_date: '',
-            attachment_end_time: '',
-            deployment_id: 123,
-            bctw_deployment_id: v4(),
-            device_id: 123,
-            device_make: 22,
-            device_model: 'a',
-            frequency: 1,
-            frequency_unit: 33
-          }
-        ],
-        bad_deployments: []
-      };
-
-      mock.onGet(`/api/project/${projectId}/survey/${surveyId}/deployments`).reply(200, response);
-
-      const result = await useSurveyApi(axios).getDeploymentsInSurvey(projectId, surveyId);
-
-      expect(result.deployments.length).toBe(1);
-      expect(result.deployments[0].device_id).toBe(123);
-    });
-  });
-
-  describe('updateDeployment', () => {
-    it('should update a deployment', async () => {
-      mock.onPut(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`).reply(200, 1);
-      const result = await useSurveyApi(axios).updateDeployment(projectId, surveyId, deploymentId, {
-        critter_id: 1,
-        critterbase_start_capture_id: '',
-        critterbase_end_capture_id: '',
-        critterbase_end_mortality_id: '',
-        attachment_end_date: '',
-        attachment_end_time: '',
-        frequency: 10.5,
-        frequency_unit: 44,
-        device_id: 1,
-        device_make: 22,
-        device_model: ''
-      });
 
       expect(result).toBe(1);
     });

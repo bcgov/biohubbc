@@ -66,6 +66,12 @@ export const DeploymentFormHeader = (props: IDeploymentFormHeaderProps) => {
               underline="none">
               Manage Telemetry
             </Link>
+            <Link
+              component={RouterLink}
+              to={`/admin/projects/${project_id}/surveys/${survey_id}/telemetry/manage`}
+              underline="none">
+              Manage Devices and Deployments
+            </Link>
             <Typography component="span" variant="body2" color="textSecondary">
               {breadcrumb}
             </Typography>
@@ -93,7 +99,7 @@ export const DeploymentFormHeader = (props: IDeploymentFormHeaderProps) => {
                 variant="outlined"
                 color="primary"
                 onClick={() => {
-                  history.push(`/admin/projects/${project_id}/surveys/${survey_id}/telemetry`);
+                  history.push(`/admin/projects/${project_id}/surveys/${survey_id}/telemetry/manage`);
                 }}>
                 Cancel
               </Button>

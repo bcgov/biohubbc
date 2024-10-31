@@ -24,37 +24,33 @@ import yup from 'utils/YupSchema';
 type DeploymentEndType = 'capture' | 'mortality' | 'fell_off';
 
 export const DeploymentTimelineFormInitialValues: yup.InferType<typeof DeploymentTimelineFormYupSchema> = {
+  attachment_start_date: null as unknown as string,
+  attachment_start_time: null,
+  attachment_end_date: null,
+  attachment_end_time: null,
   critterbase_start_capture_id: null as unknown as string,
   critterbase_end_mortality_id: null,
-  critterbase_end_capture_id: null,
-  attachment_end_date: null,
-  attachment_end_time: null
+  critterbase_end_capture_id: null
 };
 
 export const DeploymentTimelineFormYupSchema = yup.object({
-  critterbase_start_capture_id: yup.string().nullable().required('You must select the initial capture event'),
-  critterbase_end_mortality_id: yup.string().uuid().nullable(),
-  critterbase_end_capture_id: yup.string().uuid().nullable(),
+  attachment_start_date: yup.string().nullable().required('Start date is required'),
+  attachment_start_time: yup.string().nullable().default(null),
   attachment_end_date: yup.lazy(() =>
     yup
       .string()
       .nullable()
+      .default(null)
       .when('attachment_end_time', {
         is: (attachment_end_time: string | null) => attachment_end_time !== null,
-        then: yup.string().nullable().required('End Date is required'),
-        otherwise: yup.string().nullable()
+        then: yup.string().nullable().required('End date is required'),
+        otherwise: yup.string().nullable().default(null)
       })
   ),
-  attachment_end_time: yup.lazy(() =>
-    yup
-      .string()
-      .nullable()
-      .when('attachment_end_date', {
-        is: (attachment_end_date: string | null) => attachment_end_date !== null,
-        then: yup.string().nullable().required('End time is required'),
-        otherwise: yup.string().nullable()
-      })
-  )
+  attachment_end_time: yup.string().nullable().default(null),
+  critterbase_start_capture_id: yup.string().nullable().required('You must select the initial capture event'),
+  critterbase_end_mortality_id: yup.string().uuid().nullable().default(null),
+  critterbase_end_capture_id: yup.string().uuid().nullable().default(null)
 });
 
 interface IDeploymentTimelineFormProps {
@@ -96,8 +92,9 @@ export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
     <Grid container spacing={3}>
       <Grid item xs={12}>
         <Typography component="legend" variant="h5">
-          Start of deployment
+          Capture event
         </Typography>
+
         <Typography color="textSecondary" mb={3}>
           You must&nbsp;
           {values.critter_id ? (
@@ -126,7 +123,34 @@ export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
         />
       </Grid>
 
-      <Grid item xs={12} mt={3} flex="1 1 auto">
+      <Grid item xs={12} mt={3}>
+        <Typography component="legend" variant="h5">
+          Start of deployment
+        </Typography>
+
+        <Typography color="textSecondary" mb={3}>
+          You must specify the start date of the deployment.
+        </Typography>
+
+        <Box sx={{ width: '100%' }} display="flex">
+          <DateField
+            id="attachment_start_date"
+            name="attachment_start_date"
+            label="Start date"
+            required={values.attachment_start_time !== null}
+            formikProps={formikProps}
+          />
+          <TimeField
+            id="attachment_start_time"
+            name="attachment_start_time"
+            label="Start time"
+            required={values.attachment_start_date !== null}
+            formikProps={formikProps}
+          />
+        </Box>
+      </Grid>
+
+      <Grid item xs={12} flex="1 1 auto">
         <Typography component="legend" variant="h5">
           End of deployment (optional)
         </Typography>
@@ -195,7 +219,6 @@ export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
           <FormControlLabel
             value="mortality"
             control={<Radio color="primary" />}
-            disabled={!mortalities.length}
             label="Mortality"
             onChange={() => {
               setDeploymentEndType('mortality');
