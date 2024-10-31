@@ -26,7 +26,7 @@ export const combineDateTime = (date: string, time?: string | null) => {
  * @param {string|null} startTime
  * @param {string} endDate
  * @param {string | null} endTime
- * @returns {string} 
+ * @returns {string}
  */
 export const humanizeTimeDifference = (
   startDate: string,

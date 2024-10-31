@@ -88,8 +88,10 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       field: 'duration',
       headerName: 'Duration',
       flex: 1,
-      renderCell: (params) =>
-        humanizeTimeDifference(params.row.start_date, params.row.start_time, params.row.end_date, params.row.end_time)
+      renderCell: (params) => {
+        const { start_date, start_time, end_date, end_time } = params.row;
+        return humanizeTimeDifference(start_date, start_time, end_date, end_time);
+      }
     }
   ];
 
