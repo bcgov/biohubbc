@@ -3,12 +3,13 @@ import Typography from '@mui/material/Typography';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { AlertI18N } from 'constants/i18n';
-import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
+import { ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCodesContext, useDialogContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IAlertUpdateObject } from 'interfaces/useAlertApi.interface';
-import { useContext, useState } from 'react';
+import { useEffect, useState } from 'react';
 import yup from 'utils/YupSchema';
 import AlertForm from '../form/AlertForm';
 
@@ -20,16 +21,29 @@ interface IEditAlertProps {
 
 /**
  * Dialog containing the alert form for editing an existing system alert
- * 
+ *
+ * @param {IEditAlertProps} props
+ *
  */
 const EditAlert = (props: IEditAlertProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const dialogContext = useContext(DialogContext);
+  const dialogContext = useDialogContext();
+  const codesContext = useCodesContext();
 
   const biohubApi = useBiohubApi();
 
   const alertDataLoader = useDataLoader(() => biohubApi.alert.getAlertById(props.alertId));
-  alertDataLoader.load();
+
+  useEffect(() => {
+    alertDataLoader.load();
+    codesContext.codesDataLoader.load();
+  }, [alertDataLoader, codesContext]);
+
+  const alertTypeOptions =
+    codesContext.codesDataLoader.data?.alert_types.map((type) => ({
+      value: type.id,
+      label: type.name
+    })) ?? [];
 
   // This is placed inside the `EditAlert` component to make use of an API call to check for used names
   // The API call would violate the rules of react hooks if placed in an object outside of the component
@@ -65,11 +79,9 @@ const EditAlert = (props: IEditAlertProps) => {
 
       showSnackBar({
         snackbarMessage: (
-          <>
-            <Typography variant="body2" component="div">
-              Funding source '<strong>{values.name}</strong>' saved
-            </Typography>
-          </>
+          <Typography variant="body2" component="div">
+            Funding source '<strong>{values.name}</strong>' saved
+          </Typography>
         ),
         open: true
       });
@@ -94,7 +106,7 @@ const EditAlert = (props: IEditAlertProps) => {
       dialogLoading={isSubmitting}
       size="md"
       component={{
-        element: <AlertForm />,
+        element: <AlertForm alertTypeOptions={alertTypeOptions} />,
         initialValues: {
           alert_id: alertDataLoader.data.alert_id,
           name: alertDataLoader.data.name,

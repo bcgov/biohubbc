@@ -16,7 +16,7 @@ export class AlertService extends DBService {
    * Get all alert records, including deactivated alerts
    *
    * @param {IAlertFilterObject} filterObject
-   * @return {*}  {IAlertModel[]}
+   * @return {*}  Promise<IAlert[]>
    * @memberof AlertService
    */
   async getAlerts(filterObject: IAlertFilterObject): Promise<IAlert[]> {
@@ -27,7 +27,7 @@ export class AlertService extends DBService {
    * Get a specific alert by its ID
    *
    * @param {number} alertId
-   * @return {*}  {IAlertModel}
+   * @return {*}  Promise<IAlert>
    * @memberof AlertService
    */
   async getAlertById(alertId: number): Promise<IAlert> {
@@ -38,7 +38,7 @@ export class AlertService extends DBService {
    * Create and associate alert for survey.
    *
    * @param {IAlertCreateObjectt} alert
-   * @return {*}  {IAlertModel[]}
+   * @return {*}  Promise<number>
    * @memberof AlertService
    */
   async createAlert(alert: IAlertCreateObject): Promise<number> {
@@ -49,7 +49,7 @@ export class AlertService extends DBService {
    * Update a survey alert.
    *
    * @param {IAlert} alert
-   * @return {*}  {IAlertModel[]}
+   * @return {*}  Promise<number>
    * @memberof AlertService
    */
   async updateAlert(alert: IAlert): Promise<number> {
@@ -61,7 +61,7 @@ export class AlertService extends DBService {
    *
    * @param {number} alertId
    * @param {number} recordEndDate
-   * @return {*}  QueryResult<any>
+   * @return {*}  Promise<number>
    * @memberof AlertService
    */
   async deactivateAlert(alertId: number, recordEndDate: string): Promise<number> {
@@ -72,7 +72,7 @@ export class AlertService extends DBService {
    * Delete a survey alert.
    *
    * @param {number} alertId
-   * @return {*}  QueryResult<any>
+   * @return {*}  Promise<number>
    * @memberof AlertService
    */
   async deleteAlert(alertId: number): Promise<number> {

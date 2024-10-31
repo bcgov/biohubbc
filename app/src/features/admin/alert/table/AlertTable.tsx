@@ -7,7 +7,7 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useCodesContext } from 'hooks/useContext';
-import { IAlert } from 'interfaces/useAlertApi.interface';
+import { AlertSeverity, IAlert } from 'interfaces/useAlertApi.interface';
 import AlertTableActionsMenu from './components/AlertTableActionsMenu';
 
 export interface IAlertTableTableProps {
@@ -20,7 +20,7 @@ export interface IAlertTableTableProps {
 export interface IAlertTableRow {
   id: number;
   alert_type_id: number;
-  severity: 'info' | 'warning' | 'error' | 'warning';
+  severity: AlertSeverity;
   name: string;
   message: string;
   data: object | null;
@@ -31,6 +31,7 @@ export interface IAlertTableRow {
 /**
  * Data grid table displaying alerts created by system administrators
  *
+ * @param {IAlertTableTableProps} props
  */
 const AlertTable = (props: IAlertTableTableProps) => {
   const codesContext = useCodesContext();

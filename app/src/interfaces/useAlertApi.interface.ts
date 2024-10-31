@@ -2,7 +2,7 @@ export interface IGetAlertsResponse {
   alerts: IAlert[];
 }
 
-export type AlertSeverity = 'info' | 'warning' | 'error' | 'warning';
+export type AlertSeverity = 'info' | 'success' | 'error' | 'warning';
 export interface IAlert {
   alert_id: number;
   alert_type_id: number;

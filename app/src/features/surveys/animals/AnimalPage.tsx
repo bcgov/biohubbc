@@ -1,7 +1,7 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/system/Box';
-import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
+import { SystemAlertBanner, SystemAlertBannerEnum } from 'features/alert/banner/SystemAlertBanner';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
@@ -57,7 +57,7 @@ export const SurveyAnimalPage = () => {
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
-      <SystemAlertBanner alertTypes={['Animals']}/>
+      <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.ANIMALS]} />
       <Stack
         direction="row"
         gap={1.5}

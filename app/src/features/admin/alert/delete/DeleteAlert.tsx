@@ -6,14 +6,20 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect } from 'react';
 
-interface IDeleteAlert {
+interface IDeleteAlertProps {
   alertId: number;
   open: boolean;
   onClose: (refresh?: boolean) => void;
   openViewModal: (alertId: number) => void;
 }
 
-const DeleteAlert: React.FC<IDeleteAlert> = (props) => {
+/**
+ * Dialog for deleting an alert
+ *
+ * @param {IDeleteAlertProps} props
+ * @returns
+ */
+const DeleteAlert = (props: IDeleteAlertProps) => {
   const { alertId, open, onClose } = props;
   const dialogContext = useContext(DialogContext);
   const biohubApi = useBiohubApi();
@@ -21,8 +27,8 @@ const DeleteAlert: React.FC<IDeleteAlert> = (props) => {
   const alertDataLoader = useDataLoader(() => biohubApi.alert.getAlertById(alertId));
 
   useEffect(() => {
-    alertDataLoader.load(), [];
-  });
+    alertDataLoader.load();
+  }, [alertDataLoader]);
 
   // API Error dialog
   const showDeleteErrorDialog = () => {
@@ -48,11 +54,9 @@ const DeleteAlert: React.FC<IDeleteAlert> = (props) => {
 
       showSnackBar({
         snackbarMessage: (
-          <>
-            <Typography variant="body2" component="div">
-              Alert deleted
-            </Typography>
-          </>
+          <Typography variant="body2" component="div">
+            Alert deleted
+          </Typography>
         ),
         open: true
       });

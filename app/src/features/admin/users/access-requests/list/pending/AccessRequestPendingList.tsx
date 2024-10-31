@@ -35,7 +35,7 @@ const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
   const { accessRequests, refresh } = props;
 
   const codesContext = useCodesContext();
-  const codes = codesContext.codesDataLoader?.data
+  const codes = codesContext.codesDataLoader?.data;
 
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);

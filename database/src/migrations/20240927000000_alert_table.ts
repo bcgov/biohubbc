@@ -87,7 +87,7 @@ export async function up(knex: Knex): Promise<void> {
     -- Create constraints/indexes on foreign keys
     ----------------------------------------------------------------------------------------
 
-    ALTER TABLE alert ADD CONSTRAINT "alert_fk1"
+    ALTER TABLE alert ADD CONSTRAINT alert_fk1
       FOREIGN KEY (alert_type_id)
       REFERENCES alert_type(alert_type_id);
   
@@ -102,7 +102,7 @@ export async function up(knex: Knex): Promise<void> {
     VALUES 
       ('General', 'General alerts'), 
       ('Telemetry', 'Telemetry alerts'), 
-      ('Observations', 'Telemetry alerts'),
+      ('Observations', 'Observation alerts'),
       ('Surveys', 'Survey alerts'),
       ('Animals', 'Animal alerts'),
       ('Projects', 'Project alerts'),
@@ -117,7 +117,6 @@ export async function up(knex: Knex): Promise<void> {
     SET SEARCH_PATH=biohub_dapi_v1;
 
     CREATE OR REPLACE VIEW alert AS SELECT * FROM biohub.alert;
-
 
   `);
 }

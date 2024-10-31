@@ -266,7 +266,11 @@ const Header: React.FC = () => {
                   </MenuItem>
                 </AuthGuard>
                 <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <MenuItem id="menu_admin_users" component={RouterLink} to="/admin/manage/users" onClick={hideMobileMenu}>
+                  <MenuItem
+                    id="menu_admin_users"
+                    component={RouterLink}
+                    to="/admin/manage/users"
+                    onClick={hideMobileMenu}>
                     Admin
                   </MenuItem>
                   <MenuItem

@@ -1,5 +1,11 @@
 import { AxiosInstance } from 'axios';
-import { IAlert, IAlertCreateObject, IAlertFilterParams, IAlertUpdateObject, IGetAlertsResponse } from 'interfaces/useAlertApi.interface';
+import {
+  IAlert,
+  IAlertCreateObject,
+  IAlertFilterParams,
+  IAlertUpdateObject,
+  IGetAlertsResponse
+} from 'interfaces/useAlertApi.interface';
 import qs from 'qs';
 
 /**
@@ -46,7 +52,7 @@ export const useAlertApi = (axios: AxiosInstance) => {
    * Create a new project alert
    *
    * @param {IAlertCreateObject} alert
-   * @return {*}  {Promise<ICreateAlertResponse>}
+   * @return {*} {Promise<void>}
    */
   const createAlert = async (alert: IAlertCreateObject): Promise<void> => {
     const { data } = await axios.post(`/api/alert`, alert);
@@ -58,7 +64,7 @@ export const useAlertApi = (axios: AxiosInstance) => {
    * Create a new project alert
    *
    * @param {IAlert} alert
-   * @return {*}  {Promise<ICreateAlertResponse>}
+   * @return {*} {Promise<void>}
    */
   const updateAlert = async (alert: IAlertUpdateObject): Promise<void> => {
     const { data } = await axios.patch(`/api/alert/${alert.alert_id}`, alert);
@@ -70,7 +76,7 @@ export const useAlertApi = (axios: AxiosInstance) => {
    * Get project alert details based on its ID for viewing purposes.
    *
    * @param {number} alertId
-   * @return {*} {Promise<IGetAlertsResponse[]>}
+   * @return {*} {Promise<void>}
    */
   const deleteAlert = async (alertId: number): Promise<void> => {
     const { data } = await axios.delete(`/api/alert/${alertId}`);

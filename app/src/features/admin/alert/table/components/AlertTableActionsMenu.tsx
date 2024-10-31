@@ -17,6 +17,7 @@ export interface IAlertTableActionsMenuProps {
 /**
  * Actions displayed in the context menu of an alert row in the alert table data grid
  *
+ * @param {IAlertTableActionsMenuProps} props
  */
 const AlertTableActionsMenu = (props: IAlertTableActionsMenuProps) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -32,11 +33,7 @@ const AlertTableActionsMenu = (props: IAlertTableActionsMenuProps) => {
 
   return (
     <>
-      <IconButton
-        aria-label="Alert actions"
-        onClick={handleClick}
-        data-testid="alert-table-row-action"
-        tabIndex={0}>
+      <IconButton aria-label="Alert actions" onClick={handleClick} data-testid="alert-table-row-action" tabIndex={0}>
         <Icon path={mdiDotsVertical} size={1} />
       </IconButton>
       <Menu

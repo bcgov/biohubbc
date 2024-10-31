@@ -5,7 +5,7 @@ import Stack from '@mui/material/Stack';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
-import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
+import { SystemAlertBanner, SystemAlertBannerEnum } from 'features/alert/banner/SystemAlertBanner';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import React, { useContext, useEffect } from 'react';
 import { SurveySamplingContainer } from './components/sampling-data/SurveySamplingContainer';
@@ -35,7 +35,7 @@ const SurveyPage: React.FC = () => {
     <>
       <SurveyHeader />
       <Container maxWidth="xl" sx={{ py: 3 }}>
-      <SystemAlertBanner alertTypes={['Surveys']}/>
+        <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.SURVEYS]} />
         <Stack gap={3}>
           <Paper>
             <SurveySamplingContainer />

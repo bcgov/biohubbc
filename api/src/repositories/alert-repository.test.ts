@@ -65,9 +65,9 @@ describe('AlertRepository', () => {
 
       const alertRepository = new AlertRepository(mockDBConnection);
 
-      const response = await alertRepository.getAlerts({ recordEndDate: '2024-01-01', types: ['type1'] });
+      const response = await alertRepository.getAlerts({ expiresBefore: '2024-01-01', types: ['type1'] });
 
-      expect(response).to.be.an('array').that.is.not.empty;
+      expect(response).to.equal(mockRows);
     });
   });
 

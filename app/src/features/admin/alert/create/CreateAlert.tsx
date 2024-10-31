@@ -2,11 +2,12 @@ import Typography from '@mui/material/Typography';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { AlertI18N } from 'constants/i18n';
-import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
+import { ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useCodesContext, useDialogContext } from 'hooks/useContext';
 import { AlertSeverity, IAlertCreateObject } from 'interfaces/useAlertApi.interface';
-import { useContext, useState } from 'react';
+import { useEffect, useState } from 'react';
 import yup from 'utils/YupSchema';
 import AlertForm from '../form/AlertForm';
 
@@ -26,12 +27,24 @@ interface ICreateAlertProps {
 /**
  * Dialog containing the alert form for creating a new system alert
  *
+ * @param {ICreateAlertProps} props
  */
 const CreateAlert = (props: ICreateAlertProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const dialogContext = useContext(DialogContext);
+  const dialogContext = useDialogContext();
+  const codesContext = useCodesContext();
 
   const biohubApi = useBiohubApi();
+
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext]);
+
+  const alertTypeOptions =
+    codesContext.codesDataLoader.data?.alert_types.map((type) => ({
+      value: type.id,
+      label: type.name
+    })) ?? [];
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
@@ -58,11 +71,9 @@ const CreateAlert = (props: ICreateAlertProps) => {
 
       showSnackBar({
         snackbarMessage: (
-          <>
-            <Typography variant="body2" component="span">
-              Alert '<strong>{values.name}</strong>' created
-            </Typography>
-          </>
+          <Typography variant="body2" component="span">
+            Alert '<strong>{values.name}</strong>' created
+          </Typography>
         ),
         open: true
       });
@@ -84,7 +95,7 @@ const CreateAlert = (props: ICreateAlertProps) => {
       size="md"
       dialogLoading={isSubmitting}
       component={{
-        element: <AlertForm />,
+        element: <AlertForm alertTypeOptions={alertTypeOptions} />,
         initialValues: {
           name: '',
           message: '',

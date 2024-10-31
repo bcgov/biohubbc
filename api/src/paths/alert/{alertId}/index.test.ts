@@ -2,8 +2,7 @@ import chai, { expect } from 'chai';
 import { afterEach, describe, it } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { deleteAlert } from '.';
-import { getAlerts } from '..';
+import { deleteAlert, getAlertById } from '.';
 import { SYSTEM_IDENTITY_SOURCE } from '../../../constants/database';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import * as db from '../../../database/db';
@@ -52,7 +51,7 @@ describe('getAlerts', () => {
         agency: null
       };
 
-      const requestHandler = getAlerts();
+      const requestHandler = getAlertById();
 
       await requestHandler(mockReq, mockRes, mockNext);
 
@@ -68,7 +67,7 @@ describe('getAlerts', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
       mockReq.params.alertId = '1';
-      const requestHandler = getAlerts();
+      const requestHandler = getAlertById();
 
       try {
         await requestHandler(mockReq, mockRes, mockNext);
@@ -89,9 +88,14 @@ describe('deleteAlert', () => {
 
   describe('as a system user', () => {
     it('rejects an unauthorized request', async () => {
-      const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub() });
+      const mockDBConnection = getMockDBConnection({
+        open: sinon.stub(),
+        commit: sinon.stub(),
+        rollback: sinon.stub(),
+        release: sinon.stub()
+      });
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-      sinon.stub(AlertService.prototype, 'deleteAlert').resolves(1);
+      sinon.stub(AlertService.prototype, 'deleteAlert').rejects(new Error('a test error'));
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
       mockReq.params.alertId = '1';

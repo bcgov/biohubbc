@@ -9,11 +9,31 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
-interface ISystemAlertBannerProps {
-  alertTypes?: string[];
+export enum SystemAlertBannerEnum {
+  GENERAL = 'General',
+  TELEMETRY = 'Telemetry',
+  OBSERVATIONS = 'Observations',
+  SURVEYS = 'Surveys',
+  ANIMALS = 'Animals',
+  PROJECTS = 'Projects',
+  STANDARDS = 'Standards',
+  ADMINISTRATOR = 'Administrator',
+  SAMPLING = 'Sampling'
 }
 
-export const SystemAlertBanner = ({ alertTypes }: ISystemAlertBannerProps) => {
+interface ISystemAlertBannerProps {
+  alertTypes?: SystemAlertBannerEnum[];
+}
+
+/**
+ * Stack of system alerts created by system administrators
+ *
+ * @param {ISystemAlertBannerProps} props
+ * @returns
+ */
+export const SystemAlertBanner = (props: ISystemAlertBannerProps) => {
+  const { alertTypes } = props;
+
   const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const biohubApi = useBiohubApi();
 
@@ -32,7 +52,7 @@ export const SystemAlertBanner = ({ alertTypes }: ISystemAlertBannerProps) => {
     alertsToRender.map((alert) => (
       <Collapse key={alert.alert_id}>
         <Box my={0.5}>
-          <AlertBar severity={alert.severity} text={alert.message} title={alert.name} variant="outlined" />
+          <AlertBar severity={alert.severity} text={alert.message} title={alert.name} variant="standard" />
         </Box>
       </Collapse>
     ));

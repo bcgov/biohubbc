@@ -2,30 +2,24 @@ import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
-import AutocompleteField from 'components/fields/AutocompleteField';
+import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { DateField } from 'components/fields/DateField';
 import { useFormikContext } from 'formik';
-import { useCodesContext } from 'hooks/useContext';
 import { IAlertCreateObject } from 'interfaces/useAlertApi.interface';
-import { useEffect } from 'react';
+
+interface IAlertFormProps {
+  alertTypeOptions: IAutocompleteFieldOption<number>[];
+}
 
 /**
  * Form used to create and update system alerts, used by system administrators
  *
  */
-const AlertForm = () => {
-  const codesContext = useCodesContext();
+const AlertForm = (props: IAlertFormProps) => {
+  const { alertTypeOptions } = props;
 
   const { values } = useFormikContext<IAlertCreateObject>();
-
-  const alertTypes = codesContext.codesDataLoader.data?.alert_types ?? [];
-
-  useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, []);
-
-  const alertTypeOptions = alertTypes.map((type) => ({ value: type.id, label: type.name }));
 
   return (
     <>
@@ -48,7 +42,13 @@ const AlertForm = () => {
           />
         </Box>
         <Stack gap={1} mt={0.5} mb={3} display="flex" direction="row">
-          <AutocompleteField id={'alert_type_id'} name={'alert_type_id'} label={'Type'} required options={alertTypeOptions} />
+          <AutocompleteField
+            id={'alert_type_id'}
+            name={'alert_type_id'}
+            label={'Type'}
+            required
+            options={alertTypeOptions}
+          />
           <AutocompleteField
             id={'severity'}
             name={'severity'}

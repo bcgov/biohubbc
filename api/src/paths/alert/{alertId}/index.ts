@@ -7,7 +7,7 @@ import { authorizeRequestHandler } from '../../../request-handlers/security/auth
 import { AlertService } from '../../../services/alert-service';
 import { getLogger } from '../../../utils/logger';
 
-const defaultLog = getLogger('paths/alert/index');
+const defaultLog = getLogger('paths/alert/{alertId}/index');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
@@ -19,11 +19,11 @@ export const GET: Operation = [
       ]
     };
   }),
-  getAlerts()
+  getAlertById()
 ];
 
 GET.apiDoc = {
-  description: 'Gets a list of system alerts.',
+  description: 'Gets a specific system alert.',
   tags: ['alerts'],
   security: [
     {
@@ -67,13 +67,13 @@ GET.apiDoc = {
 };
 
 /**
- * Get system alerts created by system administrators describing important information, deadlines, etc.
+ * Get a specific system alert by its id
  *
  * @returns {RequestHandler}
  */
-export function getAlerts(): RequestHandler {
+export function getAlertById(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getAlerts' });
+    defaultLog.debug({ label: 'getAlertById' });
 
     const connection = getDBConnection(req.keycloak_token);
 
@@ -90,7 +90,7 @@ export function getAlerts(): RequestHandler {
 
       return res.status(200).json(alert);
     } catch (error) {
-      defaultLog.error({ label: 'getAlerts', message: 'error', error });
+      defaultLog.error({ label: 'getAlertById', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -32,17 +32,17 @@ export class AlertRepository extends BaseRepository {
         'alert.severity',
         'alert.record_end_date',
         knex.raw(`
-    CASE
-      WHEN alert.record_end_date < NOW() THEN 'expired'
-      ELSE 'active'
-    END AS status
-  `)
+          CASE
+            WHEN alert.record_end_date < NOW() THEN 'expired'
+            ELSE 'active'
+          END AS status
+        `)
       )
       .from('alert');
   }
 
   /**
-   * Get alert records with filters
+   * Get alert records with optional filters applied
    *
    * @param {IAlertFilterObject} filterObject
    * @return {*}  {Promise<IAlert[]>}
@@ -116,7 +116,7 @@ export class AlertRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response?.rows?.[0] ?? null;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get update Alert', [
@@ -132,7 +132,7 @@ export class AlertRepository extends BaseRepository {
    * Create system alert.
    *
    * @param {IAlertCreateObject} alert
-   * @return {*}  number
+   * @return {*}  Promise<number>
    * @memberof AlertRepository
    */
   async createAlert(alert: IAlertCreateObject): Promise<number> {
@@ -149,7 +149,7 @@ export class AlertRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response?.rows?.[0] ?? null;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get Create Alert', [
@@ -166,7 +166,7 @@ export class AlertRepository extends BaseRepository {
    *
    * @param {number} alertId
    * @param {number} recordEndDate
-   * @return {*}  number
+   * @return {*}  Promise<number>
    * @memberof AlertRepository
    */
   async deactivateAlert(alertId: number, recordEndDate: string): Promise<number> {
@@ -182,7 +182,7 @@ export class AlertRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response?.rows?.[0] ?? null;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get Delete Alert', [
@@ -198,7 +198,7 @@ export class AlertRepository extends BaseRepository {
    * Delete system alert.
    *
    * @param {number} alertId
-   * @return {*}  number
+   * @return {*}  Promise<number>
    * @memberof AlertRepository
    */
   async deleteAlert(alertId: number): Promise<number> {
@@ -213,7 +213,7 @@ export class AlertRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = (response && response.rows && response.rows[0]) || null;
+    const result = response?.rows?.[0] ?? null;
 
     if (!result) {
       throw new ApiExecuteSQLError('Failed to get Delete Alert', [

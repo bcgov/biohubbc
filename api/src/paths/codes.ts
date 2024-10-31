@@ -385,8 +385,7 @@ GET.apiDoc = {
               },
               alert_types: {
                 type: 'array',
-                description:
-                  'Alert type options for system administrators managing alert messages.',
+                description: 'Alert type options for system administrators managing alert messages.',
                 items: {
                   type: 'object',
                   additionalProperties: false,
