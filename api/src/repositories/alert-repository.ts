@@ -39,7 +39,7 @@ export class AlertRepository extends BaseRepository {
         `)
       )
       .from('alert')
-      .orderBy('alert.create_date');
+      .orderBy('alert.create_date', 'DESC');
   }
 
   /**
@@ -120,7 +120,7 @@ export class AlertRepository extends BaseRepository {
     const result = response?.rows?.[0] ?? null;
 
     if (!result) {
-      throw new ApiExecuteSQLError('Failed to get update Alert', [
+      throw new ApiExecuteSQLError('Failed to update alert', [
         'AlertRepository->updateAlert',
         'row[0] was null or undefined, expected row[0] != null'
       ]);
@@ -153,7 +153,7 @@ export class AlertRepository extends BaseRepository {
     const result = response?.rows?.[0] ?? null;
 
     if (!result) {
-      throw new ApiExecuteSQLError('Failed to get Create Alert', [
+      throw new ApiExecuteSQLError('Failed to create alert', [
         'AlertRepository->createAlert',
         'row[0] was null or undefined, expected row[0] != null'
       ]);
@@ -186,7 +186,7 @@ export class AlertRepository extends BaseRepository {
     const result = response?.rows?.[0] ?? null;
 
     if (!result) {
-      throw new ApiExecuteSQLError('Failed to get Delete Alert', [
+      throw new ApiExecuteSQLError('Failed to deactivate alert', [
         'AlertRepository->deleteAlert',
         'row[0] was null or undefined, expected row[0] != null'
       ]);
@@ -217,7 +217,7 @@ export class AlertRepository extends BaseRepository {
     const result = response?.rows?.[0] ?? null;
 
     if (!result) {
-      throw new ApiExecuteSQLError('Failed to get Delete Alert', [
+      throw new ApiExecuteSQLError('Failed to delete alert', [
         'AlertRepository->deleteAlert',
         'row[0] was null or undefined, expected row[0] != null'
       ]);

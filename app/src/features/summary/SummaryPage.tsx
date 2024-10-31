@@ -37,7 +37,7 @@ const SummaryPage = () => {
       />
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.GENERAL]} />
+        <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.SUMMARY]} />
 
         <Paper>
           <ListDataTableContainer />

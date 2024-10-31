@@ -9,7 +9,6 @@ import { useState } from 'react';
 
 export interface IAlertTableActionsMenuProps {
   alertId: number;
-  onView: (alertId: number) => void;
   onEdit: (alertId: number) => void;
   onDelete: (alertId: number) => void;
 }

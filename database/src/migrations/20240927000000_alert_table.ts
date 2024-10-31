@@ -100,15 +100,16 @@ export async function up(knex: Knex): Promise<void> {
     INSERT INTO 
       alert_type (name, description) 
     VALUES 
-      ('General', 'General alerts'), 
-      ('Telemetry', 'Telemetry alerts'), 
-      ('Observations', 'Observation alerts'),
-      ('Surveys', 'Survey alerts'),
-      ('Animals', 'Animal alerts'),
-      ('Projects', 'Project alerts'),
-      ('Standards', 'Standards alerts'),
-      ('Administrator', 'Administrator alerts'),
-      ('Sampling', 'Sampling alerts');
+      ('Summary', 'General alerts for the summary page.'), 
+      ('Manage Telemetry', 'Alerts about telemetry.'), 
+      ('Manage Observations', 'Alerts about observations.'),
+      ('Manage Animals', 'Alerts about animals.'),
+      ('Manage Sampling', 'Alerts about sampling information.'),
+      ('Project', 'Alerts about Projects.'),
+      ('Survey', 'Alerts about Surveys.'),
+      ('Standards', 'Alerts about standards.'),
+      ('Funding', 'Alerts about funding sources.'),
+      ('Administrator', 'Alerts about administrator functions.');
 
     ----------------------------------------------------------------------------------------
     -- Create views

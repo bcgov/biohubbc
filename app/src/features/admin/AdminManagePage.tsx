@@ -31,13 +31,13 @@ const AdminManagePage = () => {
 
   useEffect(() => {
     accessRequestsDataLoader.load();
-  }, []);
+  }, [accessRequestsDataLoader]);
 
   // ACTIVE USERS
   const activeUsersDataLoader = useDataLoader(() => biohubApi.user.getUsersList());
   useEffect(() => {
     activeUsersDataLoader.load();
-  }, []);
+  }, [activeUsersDataLoader]);
 
   const refreshAccessRequests = () => {
     accessRequestsDataLoader.refresh();

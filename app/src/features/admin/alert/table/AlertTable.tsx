@@ -12,7 +12,6 @@ import AlertTableActionsMenu from './components/AlertTableActionsMenu';
 
 export interface IAlertTableTableProps {
   alerts: IAlert[];
-  onView: (alertId: number) => void;
   onEdit: (alertId: number) => void;
   onDelete: (alertId: number) => void;
 }
@@ -56,13 +55,13 @@ const AlertTable = (props: IAlertTableTableProps) => {
     },
     {
       field: 'alert_type_id',
-      headerName: 'Type',
-      description: 'Type of the alert.',
+      headerName: 'Page',
+      description: 'Page that the alert displays on.',
       headerAlign: 'left',
       align: 'left',
       width: 150,
       renderCell: (params) =>
-        codesContext.codesDataLoader.data?.alert_types.find((code) => code.id === params.row.id)?.name
+        codesContext.codesDataLoader.data?.alert_types.find((code) => code.id === params.row.alert_type_id)?.name
     },
     {
       field: 'record_end_date',
@@ -92,12 +91,7 @@ const AlertTable = (props: IAlertTableTableProps) => {
       align: 'right',
       flex: 0,
       renderCell: (params) => (
-        <AlertTableActionsMenu
-          alertId={params.row.id}
-          onView={props.onView}
-          onEdit={props.onEdit}
-          onDelete={props.onDelete}
-        />
+        <AlertTableActionsMenu alertId={params.row.id} onEdit={props.onEdit} onDelete={props.onDelete} />
       )
     }
   ];

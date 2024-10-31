@@ -10,15 +10,16 @@ import { useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 
 export enum SystemAlertBannerEnum {
-  GENERAL = 'General',
-  TELEMETRY = 'Telemetry',
-  OBSERVATIONS = 'Observations',
-  SURVEYS = 'Surveys',
-  ANIMALS = 'Animals',
+  SUMMARY = 'Summary',
+  TELEMETRY = 'Manage Telemetry',
+  OBSERVATIONS = 'Manage Observations',
+  ANIMALS = 'Manage Animals',
+  SAMPLING = 'Manage Sampling',
   PROJECTS = 'Projects',
+  SURVEYS = 'Surveys',
   STANDARDS = 'Standards',
   ADMINISTRATOR = 'Administrator',
-  SAMPLING = 'Sampling'
+  FUNDING = 'Funding'
 }
 
 interface ISystemAlertBannerProps {

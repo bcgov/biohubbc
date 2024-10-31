@@ -10,6 +10,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import PageHeader from 'components/layout/PageHeader';
 import { FundingSourceI18N } from 'constants/i18n';
+import { SystemAlertBanner, SystemAlertBannerEnum } from 'features/alert/banner/SystemAlertBanner';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -111,6 +112,7 @@ const FundingSourcesListPage: React.FC = () => {
       />
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
+        <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.FUNDING]} />
         <Paper>
           <Toolbar style={{ display: 'flex', justifyContent: 'space-between' }}>
             <Typography variant="h4" component="h2" data-testid="funding-source-list-found">

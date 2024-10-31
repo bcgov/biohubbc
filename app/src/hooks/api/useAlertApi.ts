@@ -64,9 +64,9 @@ export const useAlertApi = (axios: AxiosInstance) => {
    * Create a new project alert
    *
    * @param {IAlert} alert
-   * @return {*} {Promise<void>}
+   * @return {*} {Promise<{ alert_id: number }>}
    */
-  const updateAlert = async (alert: IAlertUpdateObject): Promise<void> => {
+  const updateAlert = async (alert: IAlertUpdateObject): Promise<{ alert_id: number }> => {
     const { data } = await axios.put(`/api/alert/${alert.alert_id}`, alert);
 
     return data;
@@ -76,9 +76,9 @@ export const useAlertApi = (axios: AxiosInstance) => {
    * Get project alert details based on its ID for viewing purposes.
    *
    * @param {number} alertId
-   * @return {*} {Promise<void>}
+   * @return {*} {Promise<{ alert_id: number }>}
    */
-  const deleteAlert = async (alertId: number): Promise<void> => {
+  const deleteAlert = async (alertId: number): Promise<{ alert_id: number }> => {
     const { data } = await axios.delete(`/api/alert/${alertId}`);
 
     return data;

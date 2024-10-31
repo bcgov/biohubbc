@@ -54,10 +54,6 @@ const AlertListContainer = () => {
     setAlertId(null);
   };
 
-  const openViewModal = (id: number) => {
-    setAlertId(id);
-  };
-
   useEffect(() => {
     alertDataLoader.refresh(filters);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -121,7 +117,6 @@ const AlertListContainer = () => {
 
         <AlertTable
           alerts={alertDataLoader.data?.alerts ?? []}
-          onView={openViewModal}
           onEdit={(id) => {
             setAlertId(id);
             setModalState((prev) => ({ ...prev, edit: true }));
