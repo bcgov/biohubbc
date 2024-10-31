@@ -22,10 +22,10 @@ export const combineDateTime = (date: string, time?: string | null) => {
  * Formats the time difference between two timestamps into a human-readable string.
  *
  * @param {string} startDate
- * @param {string|null} startTime
+ * @param {string | null} startTime
  * @param {string} endDate
- * @param {string|null} endTime
- * @returns {string|null}
+ * @param {string | null} endTime
+ * @returns {string | null} A formatted string indicating an amount of time
  */
 export const formatTimeDifference = (
   startDate: string,
