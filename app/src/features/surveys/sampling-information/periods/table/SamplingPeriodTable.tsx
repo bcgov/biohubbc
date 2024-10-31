@@ -4,10 +4,12 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { useCodesContext } from 'hooks/useContext';
 import { getCodesName } from 'utils/Utils';
 
 dayjs.extend(duration);
+dayjs.extend(relativeTime);
 
 export interface ISamplingSitePeriodRowData {
   id: number;
@@ -23,32 +25,6 @@ export interface ISamplingSitePeriodRowData {
 interface ISamplingPeriodTableProps {
   periods: ISamplingSitePeriodRowData[];
 }
-
-/**
- * Calculates the duration between two dates and times.
- *
- * @param startDate string - start date
- * @param startTime string | null - start time
- * @param endDate string - end date
- * @param endTime string | null - end time
- * @returns string - duration in days and hours
- */
-const calculateDuration = (
-  startDate: string,
-  startTime: string | null,
-  endDate: string,
-  endTime: string | null
-): string => {
-  const start = dayjs(`${startDate} ${startTime ?? '00:00'}`);
-  const end = dayjs(`${endDate} ${endTime ?? '00:00'}`);
-
-  const diff = dayjs.duration(end.diff(start));
-
-  const days = diff.days();
-  const hours = diff.hours();
-
-  return `${days} day(s) and ${hours} hour(s)`;
-};
 
 /**
  * Renders a table of sampling periods.
@@ -117,13 +93,17 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       headerName: 'Duration',
       flex: 1,
       renderCell: (params) => {
-        const duration = calculateDuration(
-          params.row.start_date,
-          params.row.start_time,
-          params.row.end_date,
-          params.row.end_time
-        );
-        return <Typography variant="body2">{duration}</Typography>;
+        const startDateTime = params.row.start_time
+          ? dayjs(`${params.row.start_date} ${params.row.start_time}`)
+          : dayjs(params.row.start_date);
+        const endDateTime = params.row.end_time
+          ? dayjs(`${params.row.end_date} ${params.row.end_time}`)
+          : dayjs(params.row.end_date);
+
+        // Calculate the difference in milliseconds
+        const diff = endDateTime.diff(startDateTime);
+
+        return dayjs.duration(diff, 'millisecond').humanize();
       }
     }
   ];
