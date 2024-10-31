@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiInformationOutline, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
@@ -52,17 +52,6 @@ const AlertTableActionsMenu = (props: IAlertTableActionsMenuProps) => {
         MenuListProps={{
           'aria-labelledby': 'basic-button'
         }}>
-        <MenuItem
-          onClick={() => {
-            handleClose();
-            props.onView(props.alertId);
-          }}
-          data-testid="alert-table-row-view">
-          <ListItemIcon>
-            <Icon path={mdiInformationOutline} size={1} />
-          </ListItemIcon>
-          <Typography variant="inherit">View Details</Typography>
-        </MenuItem>
         <MenuItem
           onClick={() => {
             handleClose();

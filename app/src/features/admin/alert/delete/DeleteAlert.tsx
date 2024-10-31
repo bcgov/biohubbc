@@ -10,7 +10,6 @@ interface IDeleteAlertProps {
   alertId: number;
   open: boolean;
   onClose: (refresh?: boolean) => void;
-  openViewModal: (alertId: number) => void;
 }
 
 /**

@@ -67,7 +67,7 @@ export const useAlertApi = (axios: AxiosInstance) => {
    * @return {*} {Promise<void>}
    */
   const updateAlert = async (alert: IAlertUpdateObject): Promise<void> => {
-    const { data } = await axios.patch(`/api/alert/${alert.alert_id}`, alert);
+    const { data } = await axios.put(`/api/alert/${alert.alert_id}`, alert);
 
     return data;
   };

@@ -116,7 +116,7 @@ const AlertListContainer = () => {
         <CreateAlert open={modalState.create} onClose={closeModal} />
         {alertId && modalState.edit && <EditAlert alertId={alertId} open={modalState.edit} onClose={closeModal} />}
         {alertId && modalState.delete && (
-          <DeleteAlert alertId={alertId} open={modalState.delete} onClose={closeModal} openViewModal={openViewModal} />
+          <DeleteAlert alertId={alertId} open={modalState.delete} onClose={closeModal} />
         )}
 
         <AlertTable

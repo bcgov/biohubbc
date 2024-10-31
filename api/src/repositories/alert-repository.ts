@@ -38,7 +38,8 @@ export class AlertRepository extends BaseRepository {
           END AS status
         `)
       )
-      .from('alert');
+      .from('alert')
+      .orderBy('alert.create_date');
   }
 
   /**
@@ -94,8 +95,8 @@ export class AlertRepository extends BaseRepository {
   /**
    * Update system alert.
    *
-   * @param {IAlert} alert
-   * @return {*}  number
+   * @param {IAlertUpdateObject} alert
+   * @return {*} Promise<number>
    * @memberof AlertRepository
    */
   async updateAlert(alert: IAlertUpdateObject): Promise<number> {

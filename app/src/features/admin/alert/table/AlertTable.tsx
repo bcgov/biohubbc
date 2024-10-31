@@ -1,5 +1,5 @@
 import Box from '@mui/material/Box';
-import { green } from '@mui/material/colors';
+import { green, red } from '@mui/material/colors';
 import { GridColDef } from '@mui/x-data-grid';
 import AlertBar from 'components/alert/AlertBar';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
@@ -49,7 +49,7 @@ const AlertTable = (props: IAlertTableTableProps) => {
             severity={params.row.severity}
             text={params.row.message}
             title={params.row.name}
-            variant="outlined"
+            variant="standard"
           />
         </Box>
       )
@@ -81,7 +81,9 @@ const AlertTable = (props: IAlertTableTableProps) => {
       headerAlign: 'center',
       align: 'center',
       width: 150,
-      renderCell: (params) => <ColouredRectangleChip colour={green} label={params.row.status} />
+      renderCell: (params) => (
+        <ColouredRectangleChip colour={params.row.status === 'active' ? green : red} label={params.row.status} />
+      )
     },
     {
       field: 'actions',

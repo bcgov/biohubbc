@@ -68,7 +68,7 @@ const EditAlert = (props: IEditAlertProps) => {
     });
   };
 
-  const handleSubmitFundingService = async (values: IAlertUpdateObject) => {
+  const handleSubmit = async (values: IAlertUpdateObject) => {
     try {
       setIsSubmitting(true);
 
@@ -80,7 +80,7 @@ const EditAlert = (props: IEditAlertProps) => {
       showSnackBar({
         snackbarMessage: (
           <Typography variant="body2" component="div">
-            Funding source '<strong>{values.name}</strong>' saved
+            Alert '<strong>{values.name}</strong>' saved
           </Typography>
         ),
         open: true
@@ -121,7 +121,7 @@ const EditAlert = (props: IEditAlertProps) => {
       dialogSaveButtonLabel="Save"
       onCancel={() => props.onClose()}
       onSave={(formValues) => {
-        handleSubmitFundingService(formValues);
+        handleSubmit(formValues);
       }}
     />
   );

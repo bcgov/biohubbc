@@ -2,7 +2,6 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import PageHeader from 'components/layout/PageHeader';
 import { AdministrativeActivityStatusType, AdministrativeActivityType } from 'constants/misc';
-import { SystemAlertBanner, SystemAlertBannerEnum } from 'features/alert/banner/SystemAlertBanner';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect } from 'react';
@@ -53,7 +52,6 @@ const AdminManagePage = () => {
     <>
       <PageHeader title="Admin" />
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.ADMINISTRATOR]} />
         <AccessRequestContainer accessRequests={accessRequestsDataLoader.data ?? []} refresh={refreshAccessRequests} />
         <Box mt={3}>
           <AlertContainer />

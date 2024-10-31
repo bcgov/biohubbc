@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { IAlert, IAlertCreateObject, IAlertFilterObject } from '../models/alert-view';
+import { IAlert, IAlertCreateObject, IAlertFilterObject, IAlertUpdateObject } from '../models/alert-view';
 import { AlertRepository } from '../repositories/alert-repository';
 import { DBService } from './db-service';
 
@@ -48,11 +48,11 @@ export class AlertService extends DBService {
   /**
    * Update a survey alert.
    *
-   * @param {IAlert} alert
+   * @param {IAlertUpdateObject} alert
    * @return {*}  Promise<number>
    * @memberof AlertService
    */
-  async updateAlert(alert: IAlert): Promise<number> {
+  async updateAlert(alert: IAlertUpdateObject): Promise<number> {
     return this.alertRepository.updateAlert(alert);
   }
 

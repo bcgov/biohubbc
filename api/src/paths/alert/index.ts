@@ -167,6 +167,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Alert post request object.',
+    required: true,
     content: {
       'application/json': {
         schema: systemAlertCreateSchema

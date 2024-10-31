@@ -198,3 +198,113 @@ export function deleteAlert(): RequestHandler {
     }
   };
 }
+
+export const PUT: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          discriminator: 'SystemUser',
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        }
+      ]
+    };
+  }),
+  updateAlert()
+];
+
+PUT.apiDoc = {
+  description: 'Update an alert by its id.',
+  tags: ['alerts'],
+  security: [
+    {
+      Bearer: []
+    }
+  ],
+  parameters: [
+    {
+      in: 'query',
+      name: 'alertId',
+      schema: {
+        type: 'string'
+      }
+    }
+  ],
+  requestBody: {
+    description: 'Alert post request object.',
+    required: true,
+    content: {
+      'application/json': {
+        schema: systemAlertSchema
+      }
+    }
+  },
+  responses: {
+    200: {
+      description: 'System alert response object',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['alert_id'],
+            properties: {
+              alert_id: {
+                type: 'number'
+              }
+            }
+          }
+        }
+      }
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/403'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
+
+/**
+ * Updates a system alert by its id
+ *
+ * @returns {RequestHandler}
+ */
+export function updateAlert(): RequestHandler {
+  return async (req, res) => {
+    defaultLog.debug({ label: 'updateAlert' });
+
+    const connection = getDBConnection(req.keycloak_token);
+
+    try {
+      await connection.open();
+
+      const alertId = Number(req.params.alertId);
+      const alert = req.body;
+
+      const alertService = new AlertService(connection);
+
+      const id = await alertService.updateAlert({ ...alert, alert_id: alertId });
+
+      await connection.commit();
+
+      return res.status(200).json({ alert_id: id });
+    } catch (error) {
+      defaultLog.error({ label: 'updateAlert', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
