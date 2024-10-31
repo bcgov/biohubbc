@@ -1,8 +1,5 @@
 import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
 import { pluralize } from './Utils';
-
-dayjs.extend(duration);
 
 /**
  * Combine date and time and return ISO string.
@@ -36,27 +33,36 @@ export const formatTimeDifference = (
   const startDateTime = startTime ? dayjs(`${startDate} ${startTime}`) : dayjs(startDate);
   const endDateTime = endTime ? dayjs(`${endDate} ${endTime}`) : dayjs(endDate);
 
-  // Calculate the difference in milliseconds
-  const diff = endDateTime.diff(startDateTime);
+  // Calculate the total difference
+  const years = endDateTime.diff(startDateTime, 'years');
+  const days = endDateTime.diff(startDateTime, 'days') % 365;
+  const hours = endDateTime.diff(startDateTime, 'hours') % 24;
+  const minutes = endDateTime.diff(startDateTime, 'minutes') % 60;
+  const seconds = endDateTime.diff(startDateTime, 'seconds') % 60;
 
-  // Calculate years, days, hours, minutes, and seconds
-  const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365));
-  const days = Math.floor((diff / (1000 * 60 * 60 * 24)) % 365);
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-  const minutes = Math.floor((diff / (1000 * 60)) % 60);
-  const seconds = Math.floor((diff / 1000) % 60);
+  const parts = [];
 
-  // Construct the time difference string
-  const formatParts = [];
+  if (years > 0) {
+    parts.push(`${years} ${pluralize(years, 'year')}`);
+  }
+  if (days > 0) {
+    parts.push(`${days} ${pluralize(days, 'day')}`);
+  }
+  if (hours > 0) {
+    parts.push(`${hours} ${pluralize(hours, 'hour')}`);
+  }
+  if (minutes > 0) {
+    parts.push(`${minutes} ${pluralize(minutes, 'minute')}`);
+  }
+  if (seconds > 0) {
+    parts.push(`${seconds} ${pluralize(seconds, 'second')}`);
+  }
 
-  if (years > 0) formatParts.push(`${years} ${pluralize(years, 'year')}`);
-  if (days > 0) formatParts.push(`${days} ${pluralize(days, 'day')}`);
-  if (hours > 0) formatParts.push(`${hours} ${pluralize(hours, 'hour')}`);
-  if (minutes > 0) formatParts.push(`${minutes} ${pluralize(minutes, 'minute')}`);
-  if (seconds > 0) formatParts.push(`${seconds} ${pluralize(seconds, 'second')}`);
+  if (parts.length > 0) {
+    // Slice to omit unnecessary level of detail. ie. If the duration is > 1 year, hours don't matter.
+    return parts.slice(0, 2).join(' and ');
+  }
 
-  // Return formatted string.
-  // Slice to omit unnecessary detail with the assumption that if the duration is > 1 hour, seconds do not matter, if > 1 year, minutes do not matter, etc.
-  // If duration is 0, return null
-  return formatParts.length > 0 ? formatParts.slice(0, 2).join(' and ') : null;
+  // Return null if no time difference
+  return null;
 };
