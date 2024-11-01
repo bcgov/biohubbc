@@ -484,7 +484,9 @@ export class CodeRepository extends BaseRepository {
         name,
         description
       FROM device_make
-      WHERE record_end_date is null;
+      WHERE record_end_date is null
+      -- Some legacy device makes have no effective date, as they are no longer supported, and must be excluded
+      AND record_effective_date IS NOT NULL;
     `;
 
     const response = await this.connection.sql(sqlStatement, DeviceMakeCode);

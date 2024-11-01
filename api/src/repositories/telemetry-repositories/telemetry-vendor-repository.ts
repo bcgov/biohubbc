@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
 import { z } from 'zod';
 import { getKnex } from '../../database/db';
+import { ApiExecuteSQLError } from '../../errors/api-error';
 import { BaseRepository } from '../base-repository';
 import {
   Telemetry,
@@ -60,8 +61,10 @@ export class TelemetryVendorRepository extends BaseRepository {
       .join('deployment2', 'telemetry_lotek.device_key', 'deployment2.device_key')
       .andWhere('deployment2.survey_id', surveyId)
       .andWhereRaw('telemetry_lotek.uploadtimestamp >= deployment2.attachment_start_timestamp')
-      .andWhereRaw(
-        'telemetry_lotek.uploadtimestamp <= deployment2.attachment_end_timestamp OR deployment2.attachment_end_timestamp IS NULL'
+      .andWhere((qb) =>
+        qb
+          .orWhereRaw('telemetry_lotek.uploadtimestamp <= deployment2.attachment_end_timestamp')
+          .orWhereRaw('deployment2.attachment_end_timestamp IS NULL')
       );
   }
 
@@ -130,8 +133,10 @@ export class TelemetryVendorRepository extends BaseRepository {
       .join('deployment2', 'telemetry_vectronic.device_key', 'deployment2.device_key')
       .andWhere('deployment2.survey_id', surveyId)
       .andWhereRaw('telemetry_vectronic.acquisitiontime >= deployment2.attachment_start_timestamp')
-      .andWhereRaw(
-        'telemetry_vectronic.acquisitiontime <= deployment2.attachment_end_timestamp OR deployment2.attachment_end_timestamp IS NULL'
+      .andWhere((qb) =>
+        qb
+          .orWhereRaw('telemetry_vectronic.acquisitiontime <= deployment2.attachment_end_timestamp')
+          .orWhereRaw('deployment2.attachment_end_timestamp IS NULL')
       );
   }
 
@@ -201,8 +206,10 @@ export class TelemetryVendorRepository extends BaseRepository {
       .join('deployment2', 'telemetry_ats.device_key', 'deployment2.device_key')
       .andWhere('deployment2.survey_id', surveyId)
       .andWhereRaw('telemetry_ats.date >= deployment2.attachment_start_timestamp')
-      .andWhereRaw(
-        'telemetry_ats.date <= deployment2.attachment_end_timestamp OR deployment2.attachment_end_timestamp IS NULL'
+      .andWhere((qb) =>
+        qb
+          .orWhereRaw('telemetry_ats.date <= deployment2.attachment_end_timestamp')
+          .orWhereRaw('deployment2.attachment_end_timestamp IS NULL')
       );
   }
 
@@ -270,8 +277,10 @@ export class TelemetryVendorRepository extends BaseRepository {
     return queryBuilder
       .andWhere('deployment2.survey_id', surveyId)
       .andWhereRaw('telemetry_manual.acquisition_date >= deployment2.attachment_start_timestamp')
-      .andWhereRaw(
-        'telemetry_manual.acquisition_date <= deployment2.attachment_end_timestamp OR deployment2.attachment_end_timestamp IS NULL'
+      .andWhere((qb) =>
+        qb
+          .orWhereRaw('telemetry_manual.acquisition_date <= deployment2.attachment_end_timestamp')
+          .orWhereRaw('deployment2.attachment_end_timestamp IS NULL')
       );
   }
 
@@ -300,6 +309,50 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
+   * Get normalized telemetry data for all vendors for list of deployment IDs.
+   *
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {number} surveyId
+   * @param {number[]} deploymentIds
+   * @return {*}  {Knex.QueryBuilder}
+   * @memberof TelemetryVendorRepository
+   */
+  getTelemetryByDeploymentIdsBaseQuery(
+    queryBuilder: Knex.QueryBuilder,
+    surveyId: number,
+    deploymentIds: number[]
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    return queryBuilder.unionAll([
+      /**
+       * LOTEK Telemetry
+       */
+      this.getLotekTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getLotekTelemetryBySurveyIdClause, surveyId)
+        .modify(this.getLotekTelemetryByDeploymentIdsClause, deploymentIds),
+      /**
+       * VECTRONIC Telemetry
+       */
+      this.getVectronicTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getVectronicTelemetryBySurveyIdClause, surveyId)
+        .modify(this.getVectronicTelemetryByDeploymentIdsClause, deploymentIds),
+      /**
+       * ATS Telemetry
+       */
+      this.getATSTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getATSTelemetryBySurveyIdClause, surveyId)
+        .modify(this.getATSTelemetryByDeploymentIdsClause, deploymentIds),
+      /**
+       * MANUAL Telemetry
+       */
+      this.getManualTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getManualTelemetryBySurveyIdClause, surveyId)
+        .modify(this.getManualTelemetryByDeploymentIdsClause, deploymentIds)
+    ]);
+  }
+
+  /**
    * Get all telemetry data for list of deployment IDs.
    *
    * Note: Currently supports, `Lotek`, `Vectronic`, `ATS`, and `Manual` telemetry.
@@ -318,41 +371,8 @@ export class TelemetryVendorRepository extends BaseRepository {
 
     const queryBuilder = knex
       .queryBuilder()
-      .with('telemetry', (withQueryBuilder) => {
-        withQueryBuilder.unionAll([
-          /**
-           * LOTEK Telemetry
-           */
-          knex
-            .queryBuilder()
-            .modify(this.getLotekTelemetryBaseQuery)
-            .modify(this.getLotekTelemetryBySurveyIdClause, surveyId)
-            .modify(this.getLotekTelemetryByDeploymentIdsClause, deploymentIds),
-          /**
-           * VECTRONIC Telemetry
-           */
-          knex
-            .queryBuilder()
-            .modify(this.getVectronicTelemetryBaseQuery)
-            .modify(this.getVectronicTelemetryBySurveyIdClause, surveyId)
-            .modify(this.getVectronicTelemetryByDeploymentIdsClause, deploymentIds),
-          /**
-           * ATS Telemetry
-           */
-          knex
-            .queryBuilder()
-            .modify(this.getATSTelemetryBaseQuery)
-            .modify(this.getATSTelemetryBySurveyIdClause, surveyId)
-            .modify(this.getATSTelemetryByDeploymentIdsClause, deploymentIds),
-          /**
-           * MANUAL Telemetry
-           */
-          knex
-            .queryBuilder()
-            .modify(this.getManualTelemetryBaseQuery)
-            .modify(this.getManualTelemetryBySurveyIdClause, surveyId)
-            .modify(this.getManualTelemetryByDeploymentIdsClause, deploymentIds)
-        ]);
+      .with('telemetry', (qb) => {
+        this.getTelemetryByDeploymentIdsBaseQuery(qb, surveyId, deploymentIds);
       })
       .select('*')
       .from('telemetry');
@@ -397,41 +417,8 @@ export class TelemetryVendorRepository extends BaseRepository {
     const queryBuilder = knex.queryBuilder();
 
     queryBuilder
-      .with('telemetry', (withQueryBuilder) => {
-        withQueryBuilder.unionAll([
-          /**
-           * LOTEK Telemetry
-           */
-          knex
-            .queryBuilder()
-            .modify(this.getLotekTelemetryBaseQuery)
-            .modify(this.getLotekTelemetryBySurveyIdClause, surveyId)
-            .modify(this.getLotekTelemetryByDeploymentIdsClause, deploymentIds),
-          /**
-           * VECTRONIC Telemetry
-           */
-          knex
-            .queryBuilder()
-            .modify(this.getVectronicTelemetryBaseQuery)
-            .modify(this.getVectronicTelemetryBySurveyIdClause, surveyId)
-            .modify(this.getVectronicTelemetryByDeploymentIdsClause, deploymentIds),
-          /**
-           * ATS Telemetry
-           */
-          knex
-            .queryBuilder()
-            .modify(this.getATSTelemetryBaseQuery)
-            .modify(this.getATSTelemetryBySurveyIdClause, surveyId)
-            .modify(this.getATSTelemetryByDeploymentIdsClause, deploymentIds),
-          /**
-           * MANUAL Telemetry
-           */
-          knex
-            .queryBuilder()
-            .modify(this.getManualTelemetryBaseQuery)
-            .modify(this.getManualTelemetryBySurveyIdClause, surveyId)
-            .modify(this.getManualTelemetryByDeploymentIdsClause, deploymentIds)
-        ]);
+      .with('telemetry', (qb) => {
+        this.getTelemetryByDeploymentIdsBaseQuery(qb, surveyId, deploymentIds);
       })
       .select(
         'telemetry.telemetry_id',
@@ -463,41 +450,8 @@ export class TelemetryVendorRepository extends BaseRepository {
 
     const queryBuilder = knex
       .queryBuilder()
-      .with('telemetry', (withQueryBuilder) => {
-        withQueryBuilder.unionAll([
-          /**
-           * LOTEK Telemetry
-           */
-          knex
-            .queryBuilder()
-            .modify(this.getLotekTelemetryBaseQuery)
-            .modify(this.getLotekTelemetryBySurveyIdClause, surveyId)
-            .modify(this.getLotekTelemetryByDeploymentIdsClause, deploymentIds),
-          /**
-           * VECTRONIC Telemetry
-           */
-          knex
-            .queryBuilder()
-            .modify(this.getVectronicTelemetryBaseQuery)
-            .modify(this.getVectronicTelemetryBySurveyIdClause, surveyId)
-            .modify(this.getVectronicTelemetryByDeploymentIdsClause, deploymentIds),
-          /**
-           * ATS Telemetry
-           */
-          knex
-            .queryBuilder()
-            .modify(this.getATSTelemetryBaseQuery)
-            .modify(this.getATSTelemetryBySurveyIdClause, surveyId)
-            .modify(this.getATSTelemetryByDeploymentIdsClause, deploymentIds),
-          /**
-           * MANUAL Telemetry
-           */
-          knex
-            .queryBuilder()
-            .modify(this.getManualTelemetryBaseQuery)
-            .modify(this.getManualTelemetryBySurveyIdClause, surveyId)
-            .modify(this.getManualTelemetryByDeploymentIdsClause, deploymentIds)
-        ]);
+      .with('telemetry', (qb) => {
+        this.getTelemetryByDeploymentIdsBaseQuery(qb, surveyId, deploymentIds);
       })
       .select(knex.raw('count(*)::integer as count'))
       .from('telemetry');
@@ -525,42 +479,40 @@ export class TelemetryVendorRepository extends BaseRepository {
           /**
            * LOTEK Telemetry
            */
-          knex
-            .queryBuilder()
-            .modify(this.getLotekTelemetryBaseQuery)
+          this.getLotekTelemetryBaseQuery(knex.queryBuilder())
             .modify(this.getLotekTelemetryBySurveyIdClause, surveyId)
             .modify(this.getLotekTelemetryByTelemetryIdClause, telemetryId),
           /**
            * VECTRONIC Telemetry
            */
-          knex
-            .queryBuilder()
-            .modify(this.getVectronicTelemetryBaseQuery)
+          this.getVectronicTelemetryBaseQuery(knex.queryBuilder())
             .modify(this.getVectronicTelemetryBySurveyIdClause, surveyId)
             .modify(this.getVectronicTelemetryByTelemetryIdClause, telemetryId),
           /**
            * ATS Telemetry
            */
-          knex
-            .queryBuilder()
-            .modify(this.getATSTelemetryBaseQuery)
+          this.getATSTelemetryBaseQuery(knex.queryBuilder())
             .modify(this.getATSTelemetryBySurveyIdClause, surveyId)
             .modify(this.getATSTelemetryByTelemetryIdClause, telemetryId),
           /**
            * MANUAL Telemetry
            */
-          knex
-            .queryBuilder()
-            .modify(this.getManualTelemetryBaseQuery)
+          this.getManualTelemetryBaseQuery(knex.queryBuilder())
             .modify(this.getManualTelemetryBySurveyIdClause, surveyId)
             .modify(this.getManualTelemetryByTelemetryIdClause, telemetryId)
         ]);
       })
       .select('*')
-      .from('telemetry')
-      .where('telemetry.telemetry_id', telemetryId);
+      .from('telemetry');
 
     const response = await this.connection.knex(queryBuilder, TelemetrySchema);
+
+    if (response.rowCount !== 1) {
+      throw new ApiExecuteSQLError('Failed to get telemetry record', [
+        'TelemetryVendorRepository->getTelemetryRecordById',
+        'rowCount was != 1, expected rowCount = 1'
+      ]);
+    }
 
     return response.rows[0];
   }

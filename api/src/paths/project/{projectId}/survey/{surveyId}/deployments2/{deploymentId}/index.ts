@@ -332,6 +332,7 @@ PUT.apiDoc = {
   ],
   requestBody: {
     description: 'Deployment data to update.',
+    required: true,
     content: {
       'application/json': {
         schema: {

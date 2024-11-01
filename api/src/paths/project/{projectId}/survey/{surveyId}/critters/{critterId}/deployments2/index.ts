@@ -66,6 +66,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Object with device information and associated captures to create a deployment',
+    required: true,
     content: {
       'application/json': {
         schema: {
