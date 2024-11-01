@@ -36,6 +36,10 @@ export const formatTimeDifference = (
   const startDateTime = startTime ? dayjs(`${startDate} ${startTime}`) : dayjs(startDate);
   const endDateTime = endTime ? dayjs(`${endDate} ${endTime}`) : dayjs(endDate);
 
+  if (!startDateTime.isValid() || !endDateTime.isValid()) {
+    return null;
+  }
+
   // Calculate the total difference
   const diff = dayjs.duration(endDateTime.diff(startDateTime));
 
