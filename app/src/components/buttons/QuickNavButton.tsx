@@ -45,7 +45,7 @@ export const NavMenuButton = (props: PropsWithChildren<INavMenuButtonProps>) => 
             onClick={() => {
               handleMenuClose();
             }}>
-            <Icon path={item.icon ?? ''} size={0.8} style={{ marginRight: '10px' }} />
+            {item.icon && <Icon path={item.icon ?? ''} size={0.8} style={{ marginRight: '10px' }} />}
             {item.label}
           </MenuItem>
         ))}
@@ -60,7 +60,7 @@ export const NavMenuButton = (props: PropsWithChildren<INavMenuButtonProps>) => 
           mx: 1,
           fontSize: '0.85rem',
           textTransform: 'none',
-          fontWeight: 700,
+          fontWeight: 700
         }}>
         {children}
       </Button>

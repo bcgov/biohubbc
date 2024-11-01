@@ -28,24 +28,22 @@ export const TelemetryHeader = (props: TelemetryHeaderProps) => {
   ];
 
   return (
-    <>
-      <PageHeader
-        title="Manage Telemetry"
-        breadCrumbJSX={
-          <Breadcrumbs aria-label="breadcrumb" separator={'>'} sx={{ display: 'flex !important' }}>
-            <Link component={RouterLink} underline="hover" to={`/admin/projects/${project_id}`}>
-              {project_name}
-            </Link>
-            <Link
-              component={RouterLink}
-              underline="hover"
-              to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
-              {survey_name}
-            </Link>
-            <NavMenuButton menuItems={menuItems}>Telemetry</NavMenuButton>
-          </Breadcrumbs>
-        }
-      />
-    </>
+    <PageHeader
+      title="Manage Telemetry"
+      breadCrumbJSX={
+        <Breadcrumbs aria-label="breadcrumb" separator={'>'} sx={{ display: 'flex !important' }}>
+          <Link component={RouterLink} underline="hover" to={`/admin/projects/${project_id}`}>
+            {project_name}
+          </Link>
+          <Link
+            component={RouterLink}
+            underline="hover"
+            to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
+            {survey_name}
+          </Link>
+          <NavMenuButton menuItems={menuItems}>Telemetry</NavMenuButton>
+        </Breadcrumbs>
+      }
+    />
   );
 };

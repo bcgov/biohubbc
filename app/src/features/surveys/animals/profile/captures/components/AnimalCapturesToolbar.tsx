@@ -50,14 +50,14 @@ export const AnimalCapturesToolbar = (props: ICapturesToolbarProps) => {
           sx={{ mr: 0.2, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}>
           Add Capture
         </Button>
-          <Button
-            variant="contained"
-            color="primary"
-            component={RouterLink}
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/captures`}
-            startIcon={<Icon path={mdiFileDocumentPlusOutline} size={1} />}
-            sx={{ mr: 0.5, borderTopLeftRadius: 0, borderBottomLeftRadius: 0, '& .MuiButton-startIcon': { mx: 0 } }}
-          />
+        <Button
+          variant="contained"
+          color="primary"
+          component={RouterLink}
+          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/captures`}
+          startIcon={<Icon path={mdiFileDocumentPlusOutline} size={1} />}
+          sx={{ mr: 0.5, borderTopLeftRadius: 0, borderBottomLeftRadius: 0, '& .MuiButton-startIcon': { mx: 0 } }}
+        />
       </Box>
     </Toolbar>
   );
