@@ -1,4 +1,4 @@
-import { default as dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import { intersection, isUndefined } from 'lodash';
 import xlsx, { CellObject } from 'xlsx';
@@ -46,11 +46,16 @@ export interface IXLSXCSVValidator {
  *
  * @export
  * @param {MediaFile} file
- * @param {xlsx.ParsingOptions} [options]
  * @return {*}  {xlsx.WorkBook}
  */
-export const constructXLSXWorkbook = (file: MediaFile, options?: xlsx.ParsingOptions): xlsx.WorkBook => {
-  return xlsx.read(file.buffer, { cellDates: true, cellNF: true, cellHTML: false, ...options });
+export const constructXLSXWorkbook = (file: MediaFile): xlsx.WorkBook => {
+  return xlsx.read(file.buffer, {
+    cellDates: true,
+    cellNF: true,
+    cellHTML: false,
+    dateNF: '_',
+    raw: false
+  });
 };
 
 /**
