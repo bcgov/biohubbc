@@ -24,7 +24,7 @@ describe('ImportMarkingsStrategy', () => {
         G1: { t: 's', v: 'PRIMARY_COLOUR' },
         H1: { t: 's', v: 'SECONDARY_COLOUR' },
         I1: { t: 's', v: 'DESCRIPTION' }, // testing alias works
-        A2: { z: 'm/d/yy', t: 'd', v: '2024-10-10T07:00:00.000Z', w: '10/10/24' },
+        A2: { z: 'yyyy-mm-dd', t: 'd', v: new Date('2024-10-10T07:00:00.000Z'), w: '2024-10-10' },
         B2: { t: 's', v: 'Carl' },
         C2: { t: 's', v: '10:10:12' },
         D2: { t: 's', v: 'Left ear' }, // testing case insensitivity
@@ -100,8 +100,8 @@ describe('ImportMarkingsStrategy', () => {
       try {
         const data = await importCSV(new MediaFile('test', 'test', 'test' as unknown as Buffer), strategy);
         expect(data).to.deep.equal(2);
-      } catch (err: any) {
-        expect.fail();
+      } catch (error: any) {
+        expect.fail(error);
       }
     });
   });

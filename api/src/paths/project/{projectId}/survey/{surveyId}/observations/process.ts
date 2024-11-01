@@ -68,7 +68,7 @@ POST.apiDoc = {
                 surveySamplePeriodId: {
                   type: 'integer',
                   description:
-                    'The optional ID of a survey sample period to associate the parsed observation records with.'
+                    'The optional ID of a survey sample period to associate the parsed observation records with. This is used when uploading all observations to a specific sample period, not when each record is for a different sample period.'
                 }
               }
             }

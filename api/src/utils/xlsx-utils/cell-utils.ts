@@ -1,5 +1,11 @@
-import { default as dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { CellObject } from 'xlsx';
+import {
+  AltDateFormat,
+  AltDateFormatReverse,
+  DefaultDateFormat,
+  DefaultDateFormatReverse
+} from '../../constants/dates';
 import { safeTrim } from '../string-utils';
 
 /**
@@ -25,8 +31,8 @@ export function trimCellWhitespace(cell: CellObject) {
 }
 
 /**
- * Attempts to update the cells value with a formatted date or time value if the cell is a date type cell that has a
- * date or time format.
+ * Attempts to identify and update cells whose values are either date strings or date objects to a consistent date
+ * format.
  *
  * @see https://docs.sheetjs.com/docs/csf/cell for details on cell fields
  * @export
@@ -34,28 +40,38 @@ export function trimCellWhitespace(cell: CellObject) {
  * @return {*}
  */
 export function replaceCellDates(cell: CellObject) {
-  if (!isDateCell(cell)) {
+  if (!cell.v) {
+    // Cell has no value
     return cell;
   }
 
-  const cellDate = dayjs(cell.v as any);
+  // If the cell was already interpreted as a date, format it to the default date format, and return
+  if (isDateCell(cell) && cell.v instanceof Date) {
+    // Attempt to parse the date using the format and update the cell value
+    cell.v = dayjs((cell.v as Date).toISOString(), DefaultDateFormat).format(DefaultDateFormat);
+    // Update the format to desired default format
+    cell.z = DefaultDateFormat;
+    // Ensure the cell type is set to date
+    cell.t = 'd';
 
-  if (!cellDate.isValid()) {
     return cell;
   }
 
-  if (isDateFormatCell(cell)) {
-    const DateFormat = 'YYYY-MM-DD';
-    cell.v = cellDate.format(DateFormat);
+  // If the cell is a string cell with a valid date value, update the cell value to a date type cell using the default
+  // format, and return
+  const matchingStringDateFormat = isStringCellWithDateValue(cell);
+  if (matchingStringDateFormat) {
+    // Attempt to parse the date using the format and update the cell value
+    cell.v = dayjs(cell.v as string, matchingStringDateFormat).format(DefaultDateFormat);
+    // Update the format to desired default format
+    cell.z = DefaultDateFormat;
+    // Ensure the cell type is set to date
+    cell.t = 'd';
+
     return cell;
   }
 
-  if (isTimeFormatCell(cell)) {
-    const TimeFormat = 'HH:mm:ss';
-    cell.v = cellDate.format(TimeFormat);
-    return cell;
-  }
-
+  // The cell neither a date type cell nor a string type cell with a valid date string value
   return cell;
 }
 
@@ -82,13 +98,34 @@ export function isDateCell(cell: CellObject): boolean {
 }
 
 /**
+ * Checks if the cell value is a date string in a known date format.
+ *
+ * @export
+ * @param {CellObject} cell
+ * @return {*}  {(false | string)} Return the matched date format if the cell value is a date string matching one known
+ * date format, return `false` otherwise.
+ */
+export function isStringCellWithDateValue(cell: CellObject): false | string {
+  if (!isStringCell(cell)) {
+    return false;
+  }
+
+  const matchedFormats = [DefaultDateFormat, DefaultDateFormatReverse, AltDateFormat, AltDateFormatReverse].filter(
+    (format) => dayjs(String(cell.v), format).isValid()
+  );
+
+  // Ensure only one format matched
+  return matchedFormats.length === 1 ? matchedFormats[0] : false;
+}
+
+/**
  * Checks if the cell has a format, and if the format is likely a date format.
  *
  * @export
  * @param {CellObject} cell
  * @return {*}  {boolean} `true` if the cell has a date format, `false` otherwise.
  */
-export function isDateFormatCell(cell: CellObject): boolean {
+export function doesCellHaveDateFormat(cell: CellObject): boolean {
   if (!cell.z) {
     return false;
   }
@@ -104,7 +141,7 @@ export function isDateFormatCell(cell: CellObject): boolean {
  * @param {CellObject} cell
  * @return {*}  {boolean} `true` if the cell has a time format, `false` otherwise.
  */
-export function isTimeFormatCell(cell: CellObject): boolean {
+export function doesCellHaveTimeFormat(cell: CellObject): boolean {
   if (!cell.z) {
     // Not a date cell and/or has no date format
     return false;
