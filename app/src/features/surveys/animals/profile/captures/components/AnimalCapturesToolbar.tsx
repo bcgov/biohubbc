@@ -3,7 +3,6 @@ import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
-import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { useSurveyContext } from 'hooks/useContext';
 import { Link as RouterLink } from 'react-router-dom';
@@ -51,7 +50,6 @@ export const AnimalCapturesToolbar = (props: ICapturesToolbarProps) => {
           sx={{ mr: 0.2, borderTopRightRadius: 0, borderBottomRightRadius: 0 }}>
           Add Capture
         </Button>
-        <Tooltip title="Bulk upload capture information for your animals" placement="top">
           <Button
             variant="contained"
             color="primary"
@@ -60,7 +58,6 @@ export const AnimalCapturesToolbar = (props: ICapturesToolbarProps) => {
             startIcon={<Icon path={mdiFileDocumentPlusOutline} size={1} />}
             sx={{ mr: 0.5, borderTopLeftRadius: 0, borderBottomLeftRadius: 0, '& .MuiButton-startIcon': { mx: 0 } }}
           />
-        </Tooltip>
       </Box>
     </Toolbar>
   );
