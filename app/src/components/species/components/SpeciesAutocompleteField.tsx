@@ -191,6 +191,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
       getOptionLabel={(option) => option.scientificName}
       filterOptions={(item) => item}
       inputValue={inputValue}
+      fullWidth
       // Text field value changed
       onInputChange={(_, value, reason) => {
         if (reason === 'reset') {

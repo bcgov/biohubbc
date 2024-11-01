@@ -26,7 +26,7 @@ const HelpButtonTooltip = ({ content, children, iconSx }: HelpButtonTooltipProps
       sx={{
         position: 'relative',
         '& input': {
-          pr: 7,
+          px: 7,
           overflow: 'hidden',
           textOverflow: 'ellipsis'
         },
@@ -60,7 +60,6 @@ const HelpButtonTooltip = ({ content, children, iconSx }: HelpButtonTooltipProps
         }}>
         <IconButton
           sx={{
-            position: 'absolute',
             top: '8px',
             right: '8px',
             color: '#38598A',

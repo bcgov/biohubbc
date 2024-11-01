@@ -2,6 +2,7 @@ import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCard';
 import { FocalSpeciesAlert } from 'features/surveys/components/species/components/FocalSpeciesAlert';
@@ -30,20 +31,23 @@ export const FocalSpeciesForm = () => {
           <Stack gap={2}>
             <FocalSpeciesAlert />
 
-            <SpeciesAutocompleteField
-              formikFieldName={'species.focal_species'}
-              label={'Species'}
-              required={true}
-              handleSpecies={(species) => {
-                if (values.species.focal_species.some((focalSpecies) => focalSpecies.tsn === species.tsn)) {
-                  // Species was already added, do not add again
-                  return;
-                }
+            <Stack direction="row" gap={1} flexGrow={1}>
+              <SpeciesAutocompleteField
+                formikFieldName={'species.focal_species'}
+                label={'Species'}
+                required={true}
+                handleSpecies={(species) => {
+                  if (values.species.focal_species.some((focalSpecies) => focalSpecies.tsn === species.tsn)) {
+                    // Species was already added, do not add again
+                    return;
+                  }
 
-                arrayHelpers.push({ ...species, ecological_units: [] });
-              }}
-              clearOnSelect={true}
-            />
+                  arrayHelpers.push({ ...species, ecological_units: [] });
+                }}
+                clearOnSelect={true}
+              />
+              <HelpButtonTooltip content="Select the species that this Survey targets. If you targetted multiple related species, you can select a higher taxon, such as Mammalia. The taxonomomic data source is the Integrated Taxonomic Information System." />
+            </Stack>
 
             <TransitionGroup>
               {selectedSpecies.map((species, index) => (
