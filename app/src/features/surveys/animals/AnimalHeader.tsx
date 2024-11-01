@@ -1,11 +1,8 @@
-import { mdiWifiMarker } from '@mdi/js';
-import { Icon } from '@mdi/react';
+import { mdiEye, mdiWifiMarker } from '@mdi/js';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
+import { NavMenuButton } from 'components/buttons/QuickNavButton';
 import PageHeader from 'components/layout/PageHeader';
-import { useSurveyContext } from 'hooks/useContext';
 import { Link as RouterLink } from 'react-router-dom';
 
 export interface IAnimalHeaderProps {
@@ -23,7 +20,20 @@ export interface IAnimalHeaderProps {
  */
 export const AnimalHeader = (props: IAnimalHeaderProps) => {
   const { project_id, project_name, survey_id, survey_name } = props;
-  const surveyContext = useSurveyContext();
+
+  const menuItems = [
+    {
+      label: 'Telemetry',
+      to: `/admin/projects/${project_id}/surveys/${survey_id}/telemetry/details`,
+      icon: mdiWifiMarker
+    },
+    {
+      label: 'Observations',
+      to: `/admin/projects/${project_id}/surveys/${survey_id}/observations`,
+      icon: mdiEye
+    }
+  ];
+
   return (
     <PageHeader
       title="Manage Animals"
@@ -38,20 +48,8 @@ export const AnimalHeader = (props: IAnimalHeaderProps) => {
             to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
             {survey_name}
           </Link>
-          <Typography component="span" variant="inherit" color="textSecondary">
-            Manage Animals
-          </Typography>
+          <NavMenuButton menuItems={menuItems}>Animals</NavMenuButton>
         </Breadcrumbs>
-      }
-      buttonJSX={
-        <Button
-          component={RouterLink}
-          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry`}
-          variant="outlined"
-          color="primary"
-          startIcon={<Icon path={mdiWifiMarker} size={1} />}>
-          Manage Telemetry
-        </Button>
       }
     />
   );

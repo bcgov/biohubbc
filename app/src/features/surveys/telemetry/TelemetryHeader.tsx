@@ -1,13 +1,9 @@
-import { mdiPaw } from '@mdi/js';
-import Icon from '@mdi/react';
+import { mdiEye, mdiPaw } from '@mdi/js';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
-import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
+import { NavMenuButton } from 'components/buttons/QuickNavButton';
 import PageHeader from 'components/layout/PageHeader';
-import { useSurveyContext } from 'hooks/useContext';
 import { Link as RouterLink } from 'react-router-dom';
-
 export interface TelemetryHeaderProps {
   project_id: number;
   project_name: string;
@@ -17,36 +13,39 @@ export interface TelemetryHeaderProps {
 
 export const TelemetryHeader = (props: TelemetryHeaderProps) => {
   const { project_id, project_name, survey_id, survey_name } = props;
-  const surveyContext = useSurveyContext();
+
+  const menuItems = [
+    {
+      label: 'Animals',
+      to: `/admin/projects/${project_id}/surveys/${survey_id}/animals`,
+      icon: mdiPaw
+    },
+    {
+      label: 'Observations',
+      to: `/admin/projects/${project_id}/surveys/${survey_id}/observations`,
+      icon: mdiEye
+    }
+  ];
+
   return (
-    <PageHeader
-      title="Manage Telemetry"
-      breadCrumbJSX={
-        <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-          <Link component={RouterLink} underline="hover" to={`/admin/projects/${project_id}`}>
-            {project_name}
-          </Link>
-          <Link
-            component={RouterLink}
-            underline="hover"
-            to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
-            {survey_name}
-          </Link>
-          <Typography component="span" variant="inherit" color="textSecondary">
-            Manage Telemetry
-          </Typography>
-        </Breadcrumbs>
-      }
-      buttonJSX={
-        <Button
-          component={RouterLink}
-          to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/details`}
-          variant="outlined"
-          color="primary"
-          startIcon={<Icon path={mdiPaw} size={1} />}>
-          Manage Animals
-        </Button>
-      }
-    />
+    <>
+      <PageHeader
+        title="Manage Telemetry"
+        breadCrumbJSX={
+          <Breadcrumbs aria-label="breadcrumb" separator={'>'} sx={{ display: 'flex !important' }}>
+            <Link component={RouterLink} underline="hover" to={`/admin/projects/${project_id}`}>
+              {project_name}
+            </Link>
+            <Link
+              component={RouterLink}
+              underline="hover"
+              to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
+              {survey_name}
+            </Link>
+            <NavMenuButton menuItems={menuItems}>Telemetry</NavMenuButton>
+          </Breadcrumbs>
+        }
+      />
+    </>
   );
 };
