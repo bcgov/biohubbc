@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { GeoJSONPointZodSchema } from '../../zod-schema/geoJsonZodSchema';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 
 /**
@@ -47,6 +48,13 @@ export const TelemetrySchema = z.object({
 });
 
 export type Telemetry = z.infer<typeof TelemetrySchema>;
+
+export const TelemetrySpatialSchema = z.object({
+  telemetry_id: z.string(), // Telemetry ID (Primary Key)
+  geometry: GeoJSONPointZodSchema.nullable() // GeoJSON Point
+});
+
+export type TelemetrySpatial = z.infer<typeof TelemetrySpatialSchema>;
 
 export type TelemetryOptions = {
   pagination?: ApiPaginationOptions;

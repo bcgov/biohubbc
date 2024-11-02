@@ -65,6 +65,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
+    required: true,
     content: {
       'application/json': {
         schema: {
@@ -242,10 +243,12 @@ GET.apiDoc = {
                       type: 'number'
                     },
                     model: {
-                      type: 'string'
+                      type: 'string',
+                      nullable: true
                     },
                     comment: {
-                      type: 'string'
+                      type: 'string',
+                      nullable: true
                     }
                   }
                 }

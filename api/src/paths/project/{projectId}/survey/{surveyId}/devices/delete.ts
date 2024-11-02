@@ -57,6 +57,7 @@ POST.apiDoc = {
   ],
   requestBody: {
     description: 'Array of one or more device IDs to delete.',
+    required: true,
     content: {
       'application/json': {
         schema: {
