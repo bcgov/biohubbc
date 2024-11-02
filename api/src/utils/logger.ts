@@ -1,5 +1,8 @@
 import winston from 'winston';
 import DailyRotateFile from 'winston-daily-rotate-file';
+import { ENVConfig } from './env-config';
+
+const ENV = ENVConfig();
 
 /**
  * Get the transport types to use for the logger.
@@ -11,11 +14,11 @@ const getLoggerTransportTypes = (): string[] => {
 
   // Do not output logs to file when running unit tests
   // Note: Both lifecycle events are needed to prevent log files ie: `npm run test` or `npm run test-watch`
-  if (process.env.npm_lifecycle_event !== 'test' && process.env.npm_lifecycle_event !== 'test-watch') {
+  if (ENV.NODE_ENV !== 'test') {
     transportTypes.push('file');
   }
 
-  if (process.env.NODE_ENV !== 'production') {
+  if (ENV.NODE_ENV !== 'production') {
     transportTypes.push('console');
   }
 
@@ -85,12 +88,12 @@ export const getLogger = function (logLabel: string) {
     // Output logs to file, except when running unit tests
     transports.push(
       new DailyRotateFile({
-        dirname: process.env.LOG_FILE_DIR || 'data/logs',
-        filename: process.env.LOG_FILE_NAME || 'sims-api-%DATE%.log',
-        datePattern: process.env.LOG_FILE_DATE_PATTERN || 'YYYY-MM-DD-HH',
-        maxSize: process.env.LOG_FILE_MAX_SIZE || '50m',
-        maxFiles: process.env.LOG_FILE_MAX_FILES || '10',
-        level: process.env.LOG_LEVEL_FILE || 'debug',
+        dirname: ENV.LOG_FILE_DIR,
+        filename: ENV.LOG_FILE_NAME,
+        datePattern: ENV.LOG_FILE_DATE_PATTERN,
+        maxSize: ENV.LOG_FILE_MAX_SIZE,
+        maxFiles: ENV.LOG_FILE_MAX_FILES,
+        level: ENV.LOG_LEVEL_FILE,
         format: winston.format.combine(
           winston.format((info) => {
             const { timestamp, level, ...rest } = info;
@@ -116,7 +119,7 @@ export const getLogger = function (logLabel: string) {
     // Output logs to console, except when running in production
     transports.push(
       new winston.transports.Console({
-        level: process.env.LOG_LEVEL || 'debug',
+        level: ENV.LOG_LEVEL,
         format: winston.format.combine(
           winston.format((info) => {
             const { timestamp, level, ...rest } = info;
@@ -150,7 +153,7 @@ export const setLogLevel = (logLevel: WinstonLogLevel) => {
   }
 
   // Update env var for future loggers
-  process.env.LOG_LEVEL = logLevel;
+  ENVConfig({ LOG_LEVEL: logLevel });
 
   // Update console transport log level, which is the last transport in all environments
   winston.loggers.loggers.forEach((logger) => {
@@ -161,7 +164,7 @@ export const setLogLevel = (logLevel: WinstonLogLevel) => {
 /**
  * Set the winston logger log level for the file transport.
  *
- * @param {WinstonLogLevel} logLevel
+ * @param {WinstonLogLevel} logLevelFile
  */
 export const setLogLevelFile = (logLevelFile: WinstonLogLevel) => {
   const transportTypes = getLoggerTransportTypes();
@@ -171,7 +174,7 @@ export const setLogLevelFile = (logLevelFile: WinstonLogLevel) => {
   }
 
   // Update env var for future loggers
-  process.env.LOG_LEVEL_FILE = logLevelFile;
+  ENVConfig({ LOG_LEVEL_FILE: logLevelFile });
 
   // Update file transport log level, which is the first transport in all environments
   winston.loggers.loggers.forEach((logger) => {

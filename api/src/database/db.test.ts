@@ -6,6 +6,7 @@ import SQL from 'sql-template-strings';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { HTTPError } from '../errors/http-error';
+import { ENVConfig } from '../utils/env-config';
 import { DatabaseUserInformation, IdirUserInformation, KeycloakUserInformation } from '../utils/keycloak-utils';
 import * as db from './db';
 import {
@@ -309,7 +310,7 @@ describe('db', () => {
 
   describe('getAPIUserDBConnection', () => {
     beforeEach(() => {
-      process.env.DB_USER_API = 'example_db_username';
+      ENVConfig({ DB_USER_API: 'example_db_username' });
     });
 
     afterEach(() => {
@@ -334,7 +335,7 @@ describe('db', () => {
 
   describe('getServiceClientDBConnection', () => {
     beforeEach(() => {
-      process.env.DB_USER_API = 'example_db_username';
+      ENVConfig({ DB_USER_API: 'example_db_username' });
     });
 
     afterEach(() => {

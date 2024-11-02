@@ -4,6 +4,7 @@ import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError } from '../errors/api-error';
+import { ENVConfig } from '../utils/env-config';
 import {
   DatabaseUserInformation,
   getUserGuid,
@@ -15,29 +16,21 @@ import {
 import { getLogger } from '../utils/logger';
 import { asyncErrorWrapper, getGenericizedKeycloakUserInformation, syncErrorWrapper } from './db-utils';
 
+const CONFIG = ENVConfig();
+
 const defaultLog = getLogger('database/db');
-
-const getDbHost = () => process.env.DB_HOST;
-const getDbPort = () => Number(process.env.DB_PORT);
-const getDbUsername = () => process.env.DB_USER_API;
-const getDbPassword = () => process.env.DB_USER_API_PASS;
-const getDbDatabase = () => process.env.DB_DATABASE;
-
-const DB_POOL_SIZE: number = Number(process.env.DB_POOL_SIZE) || 20;
-const DB_CONNECTION_TIMEOUT: number = Number(process.env.DB_CONNECTION_TIMEOUT) || 0;
-const DB_IDLE_TIMEOUT: number = Number(process.env.DB_IDLE_TIMEOUT) || 10000;
 
 export const DB_CLIENT = 'pg';
 
 export const defaultPoolConfig: pg.PoolConfig = {
-  user: getDbUsername(),
-  password: getDbPassword(),
-  database: getDbDatabase(),
-  port: getDbPort(),
-  host: getDbHost(),
-  max: DB_POOL_SIZE,
-  connectionTimeoutMillis: DB_CONNECTION_TIMEOUT,
-  idleTimeoutMillis: DB_IDLE_TIMEOUT
+  user: CONFIG.DB_USER_API,
+  password: CONFIG.DB_USER_API_PASS,
+  database: CONFIG.DB_DATABASE,
+  port: CONFIG.DB_PORT,
+  host: CONFIG.DB_HOST,
+  max: CONFIG.DB_POOL_SIZE,
+  connectionTimeoutMillis: CONFIG.DB_CONNECTION_TIMEOUT,
+  idleTimeoutMillis: CONFIG.DB_IDLE_TIMEOUT
 };
 
 // Custom type handler for psq `DATE` type to prevent local time/zone information from being added.
@@ -612,9 +605,9 @@ export const getServiceClientDBConnection = (sourceSystem: SOURCE_SYSTEM): IDBCo
  */
 export const getAPIUserDBConnection = (): IDBConnection => {
   return getDBConnection({
-    database_user_guid: getDbUsername(),
+    database_user_guid: CONFIG.DB_USER_API,
     identity_provider: SYSTEM_IDENTITY_SOURCE.DATABASE.toLowerCase(),
-    username: getDbUsername()
+    username: CONFIG.DB_USER_API
   } as DatabaseUserInformation);
 };
 

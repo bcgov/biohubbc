@@ -13,20 +13,13 @@ import {
 } from './middleware/critterbase-proxy';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest, authenticateRequestOptional } from './request-handlers/security/authentication';
+import { ENVConfig } from './utils/env-config';
 import { scanFileForVirus } from './utils/file-utils';
 import { getLogger } from './utils/logger';
 
+const ENV = ENVConfig();
+
 const defaultLog = getLogger('app');
-
-const HOST = process.env.API_HOST;
-const PORT = Number(process.env.API_PORT);
-
-// Max size of the body of the request (bytes)
-const MAX_REQ_BODY_SIZE = Number(process.env.MAX_REQ_BODY_SIZE) || 52428800;
-// Max number of files in a single request
-const MAX_UPLOAD_NUM_FILES = Number(process.env.MAX_UPLOAD_NUM_FILES) || 10;
-// Max size of a single file (bytes)
-const MAX_UPLOAD_FILE_SIZE = Number(process.env.MAX_UPLOAD_FILE_SIZE) || 52428800;
 
 // Get initial express app
 const app: express.Express = express();
@@ -73,12 +66,12 @@ const openAPIFramework = initialize({
   promiseMode: true, // allow endpoint handlers to return promises
   docsPath: '/raw-api-docs', // path to view raw openapi spec
   consumesMiddleware: {
-    'application/json': express.json({ limit: MAX_REQ_BODY_SIZE }),
+    'application/json': express.json({ limit: ENV.MAX_REQ_BODY_SIZE }),
     'multipart/form-data': function (req, res, next) {
       const multerRequestHandler = multer({
         storage: multer.memoryStorage(), // TODO change to local/PVC storage and stream file uploads to S3?
-        limits: { fileSize: MAX_UPLOAD_FILE_SIZE }
-      }).array('media', MAX_UPLOAD_NUM_FILES);
+        limits: { fileSize: ENV.MAX_UPLOAD_FILE_SIZE }
+      }).array('media', ENV.MAX_UPLOAD_NUM_FILES);
 
       /**
        * Multer transforms and moves the incoming files from `req.body.media` --> `req.files`.
@@ -120,7 +113,7 @@ const openAPIFramework = initialize({
         return next();
       });
     },
-    'application/x-www-form-urlencoded': express.urlencoded({ limit: MAX_REQ_BODY_SIZE, extended: true })
+    'application/x-www-form-urlencoded': express.urlencoded({ limit: ENV.MAX_REQ_BODY_SIZE, extended: true })
   },
   securityHandlers: {
     Bearer: async function (req: any) {
@@ -169,8 +162,8 @@ app.use('/api-docs', swaggerUIExperss.serve, swaggerUIExperss.setup(openAPIFrame
 try {
   initDBPool(defaultPoolConfig);
 
-  app.listen(PORT, () => {
-    defaultLog.info({ label: 'start api', message: `started api on ${HOST}:${PORT}/api` });
+  app.listen(ENV.API_PORT, () => {
+    defaultLog.info({ label: 'start api', message: `started api on ${ENV.API_HOST}:${ENV.API_PORT}/api` });
   });
 } catch (error) {
   defaultLog.error({ label: 'start api', message: 'error', error });
