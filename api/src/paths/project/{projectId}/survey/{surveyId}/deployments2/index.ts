@@ -132,10 +132,9 @@ GET.apiDoc = {
                       example: 'lotek:123456'
                     },
                     frequency: {
-                      type: 'integer',
+                      type: 'number',
                       description:
                         'The frequency of the device. Property "frequency_unit_id" must also be provided if this is provided.',
-                      minimum: 1,
                       nullable: true
                     },
                     frequency_unit_id: {
