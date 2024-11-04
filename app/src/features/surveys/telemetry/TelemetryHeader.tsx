@@ -1,7 +1,7 @@
 import { mdiEye, mdiPaw } from '@mdi/js';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
-import { NavMenuButton } from 'components/buttons/QuickNavButton';
+import { BreadcrumbNavButton } from 'components/buttons/BreadcrumbNavButton';
 import PageHeader from 'components/layout/PageHeader';
 import { Link as RouterLink } from 'react-router-dom';
 export interface TelemetryHeaderProps {
@@ -31,7 +31,7 @@ export const TelemetryHeader = (props: TelemetryHeaderProps) => {
     <PageHeader
       title="Manage Telemetry"
       breadCrumbJSX={
-        <Breadcrumbs aria-label="breadcrumb" separator={'>'} sx={{ display: 'flex !important' }}>
+        <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
           <Link component={RouterLink} underline="hover" to={`/admin/projects/${project_id}`}>
             {project_name}
           </Link>
@@ -41,7 +41,7 @@ export const TelemetryHeader = (props: TelemetryHeaderProps) => {
             to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
             {survey_name}
           </Link>
-          <NavMenuButton menuItems={menuItems}>Telemetry</NavMenuButton>
+          <BreadcrumbNavButton menuItems={menuItems}>Telemetry</BreadcrumbNavButton>
         </Breadcrumbs>
       }
     />

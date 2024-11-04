@@ -7,17 +7,17 @@ import MenuItem from '@mui/material/MenuItem';
 import { PropsWithChildren, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
-interface INavMenuButtonProps {
+interface IBreadcrumbNavButtonProps {
   menuItems: { label: string; to: string; icon?: string }[];
 }
 
 /**
- * Returns a button that opens a menu of navlinks when clicked
+ * Returns a button that opens a menu of router links when clicked
  *
- * @param {PropsWithChildren<INavMenuButtonProps>} props
- * @returns
+ * @param {PropsWithChildren<IBreadcrumbNavButtonProps>} props
+ * @returns {*}
  */
-export const NavMenuButton = (props: PropsWithChildren<INavMenuButtonProps>) => {
+export const BreadcrumbNavButton = (props: PropsWithChildren<IBreadcrumbNavButtonProps>) => {
   const { menuItems, children } = props;
 
   // State for managing the menu

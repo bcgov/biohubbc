@@ -1,7 +1,7 @@
 import { mdiPaw, mdiWifiMarker } from '@mdi/js';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
-import { NavMenuButton } from 'components/buttons/QuickNavButton';
+import { BreadcrumbNavButton } from 'components/buttons/BreadcrumbNavButton';
 import PageHeader from 'components/layout/PageHeader';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -42,7 +42,7 @@ const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) 
             to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
             {survey_name}
           </Link>
-          <NavMenuButton menuItems={menuItems}>Observations</NavMenuButton>
+          <BreadcrumbNavButton menuItems={menuItems}>Observations</BreadcrumbNavButton>
         </Breadcrumbs>
       }
     />

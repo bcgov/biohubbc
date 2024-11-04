@@ -1,7 +1,7 @@
 import { mdiEye, mdiWifiMarker } from '@mdi/js';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
-import { NavMenuButton } from 'components/buttons/QuickNavButton';
+import { BreadcrumbNavButton } from 'components/buttons/BreadcrumbNavButton';
 import PageHeader from 'components/layout/PageHeader';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -48,7 +48,7 @@ export const AnimalHeader = (props: IAnimalHeaderProps) => {
             to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
             {survey_name}
           </Link>
-          <NavMenuButton menuItems={menuItems}>Animals</NavMenuButton>
+          <BreadcrumbNavButton menuItems={menuItems}>Animals</BreadcrumbNavButton>
         </Breadcrumbs>
       }
     />

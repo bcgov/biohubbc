@@ -56,7 +56,7 @@ export const AnimalCapturesToolbar = (props: ICapturesToolbarProps) => {
           component={RouterLink}
           to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/captures`}
           startIcon={<Icon path={mdiFileDocumentPlusOutline} size={1} />}
-          sx={{ mr: 0.5, borderTopLeftRadius: 0, borderBottomLeftRadius: 0, '& .MuiButton-startIcon': { mx: 0 } }}
+          sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, '& .MuiButton-startIcon': { mx: 0 } }}
         />
       </Box>
     </Toolbar>
