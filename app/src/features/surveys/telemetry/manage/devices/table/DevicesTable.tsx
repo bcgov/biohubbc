@@ -7,6 +7,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
@@ -128,12 +129,15 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     {
       field: 'device_id',
       headerName: 'Device ID',
+      description: 'The unique key for the device',
       width: 100,
       minWidth: 100,
-      renderHeader: () => (
-        <Typography color={grey[500]} variant="body2" fontWeight={700}>
-          ID
-        </Typography>
+      renderHeader: (params) => (
+        <Tooltip title={params.colDef.description}>
+          <Typography color={grey[500]} variant="body2" fontWeight={700}>
+            ID
+          </Typography>
+        </Tooltip>
       ),
       renderCell: (params) => (
         <Typography color={grey[500]} variant="body2">
@@ -143,12 +147,14 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     },
     {
       field: 'serial',
-      headerName: 'Serial',
+      headerName: 'Serial Number',
+      description: 'The serial number of the device',
       flex: 1
     },
     {
       field: 'device_make_id',
       headerName: 'Make',
+      description: 'The manufacturer of the device',
       flex: 1,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
@@ -161,6 +167,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     {
       field: 'model',
       headerName: 'Model',
+      description: 'The model of the device',
       flex: 1
     },
     {

@@ -150,13 +150,16 @@ export const DeviceAutocompleteField = <T extends string | number>(props: IDevic
             <Box py={1} width="100%">
               <Box justifyContent="space-between" display="flex">
                 <Typography fontWeight={700}>{renderOption.serial}&nbsp;</Typography>
-                <Typography color="textSecondary">{renderOption.device_id}</Typography>
+                <Typography color="textSecondary">
+                  {
+                    codesContext.codesDataLoader.data?.telemetry_device_makes.find(
+                      (make) => make.id === renderOption.device_make_id
+                    )?.name
+                  }
+                </Typography>
               </Box>
               <Typography color="textSecondary" variant="body2">
                 {renderOption.model}
-              </Typography>
-              <Typography color="textSecondary" variant="body2">
-                {renderOption.comment}
               </Typography>
             </Box>
           </Box>

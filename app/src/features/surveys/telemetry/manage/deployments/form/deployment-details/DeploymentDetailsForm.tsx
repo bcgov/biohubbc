@@ -70,13 +70,12 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
     <>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography color="textSecondary" variant="body2">
+          <Typography color="textSecondary">
             You must&nbsp;
             <Typography
               sx={{
                 textDecoration: 'none'
               }}
-              variant="body2"
               component={RouterLink}
               to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}>
               add the device
@@ -86,22 +85,11 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
               sx={{
                 textDecoration: 'none'
               }}
-              variant="body2"
               component={RouterLink}
               to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`}>
               animal
             </Typography>
-            &nbsp;to your Survey before associating it to a deployment. Add devices via the&nbsp;
-            <Typography
-              sx={{
-                textDecoration: 'none'
-              }}
-              variant="body2"
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`}>
-              Manage Devices and Deployments
-            </Typography>
-            &nbsp;page.
+            &nbsp;to your Survey before associating the two in a deployment.
           </Typography>
         </Grid>
         <Grid item xs={12}>
@@ -134,7 +122,7 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <Stack direction="row" flex="1 1 auto">
+          <Stack direction="row" flex={1}>
             <TextField
               name="frequency"
               label="Device frequency"
@@ -146,12 +134,18 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
               onBlur={handleBlur}
               variant="outlined"
               value={get(values, 'frequency') || null}
-              fullWidth={true}
               error={get(touched, 'frequency') && Boolean(get(errors, 'frequency'))}
               helperText={get(touched, 'frequency') && get(errors, 'frequency')}
+              sx={{
+                flex: 0.8,
+                '& .MuiOutlinedInput-root': { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
+              }}
             />
             <AutocompleteField
-              sx={{ flex: 0.4 }}
+              sx={{
+                flex: 0.2,
+                '& .MuiOutlinedInput-root': { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }
+              }}
               name="frequency_unit_id"
               id="frequency_unit_id"
               label={'Unit'}
