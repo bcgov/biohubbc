@@ -16,21 +16,21 @@ import {
 import { getLogger } from '../utils/logger';
 import { asyncErrorWrapper, getGenericizedKeycloakUserInformation, syncErrorWrapper } from './db-utils';
 
-const CONFIG = ENVConfig();
+const ENV = ENVConfig();
 
 const defaultLog = getLogger('database/db');
 
 export const DB_CLIENT = 'pg';
 
 export const defaultPoolConfig: pg.PoolConfig = {
-  user: CONFIG.DB_USER_API,
-  password: CONFIG.DB_USER_API_PASS,
-  database: CONFIG.DB_DATABASE,
-  port: CONFIG.DB_PORT,
-  host: CONFIG.DB_HOST,
-  max: CONFIG.DB_POOL_SIZE,
-  connectionTimeoutMillis: CONFIG.DB_CONNECTION_TIMEOUT,
-  idleTimeoutMillis: CONFIG.DB_IDLE_TIMEOUT
+  user: ENV.DB_USER_API,
+  password: ENV.DB_USER_API_PASS,
+  database: ENV.DB_DATABASE,
+  port: ENV.DB_PORT,
+  host: ENV.DB_HOST,
+  max: ENV.DB_POOL_SIZE,
+  connectionTimeoutMillis: ENV.DB_CONNECTION_TIMEOUT,
+  idleTimeoutMillis: ENV.DB_IDLE_TIMEOUT
 };
 
 // Custom type handler for psq `DATE` type to prevent local time/zone information from being added.
@@ -605,9 +605,9 @@ export const getServiceClientDBConnection = (sourceSystem: SOURCE_SYSTEM): IDBCo
  */
 export const getAPIUserDBConnection = (): IDBConnection => {
   return getDBConnection({
-    database_user_guid: CONFIG.DB_USER_API,
+    database_user_guid: ENV.DB_USER_API,
     identity_provider: SYSTEM_IDENTITY_SOURCE.DATABASE.toLowerCase(),
-    username: CONFIG.DB_USER_API
+    username: ENV.DB_USER_API
   } as DatabaseUserInformation);
 };
 

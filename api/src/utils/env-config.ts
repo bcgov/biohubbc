@@ -3,11 +3,11 @@ import { z } from 'zod';
 // Global variable to store parsed environment configuration
 let ENV: ENVConfig;
 
-// Check if the environment is testing
-const IS_TEST =
+const IS_TEST_ENVIRONMENT =
   process.env.NODE_ENV === 'test' ||
   process.env.npm_lifecycle_event === 'test' ||
-  process.env.npm_lifecycle_event === 'test-watch';
+  process.env.npm_lifecycle_event === 'test-watch' ||
+  process.env.npm_lifecycle_event === 'coverage';
 
 // Custom Zod string type for environment variables ie: HOST=' ' || HOST='' === 'Required'
 const ZodENVString = z.string().trim().min(1, { message: 'Required' });
@@ -111,20 +111,21 @@ export function ENVConfig(config?: Partial<ENVConfig>): ENVConfig {
   return ENV;
 }
 
-/**
- * This block of code is used to parse the environment variables and set the global ENV variable.
- *
- * WARNING: Intentionally crashes the server if the environment variables are invalid.
- */
-// Parse the environment variables against the schema (test environment allows partial values)
-const parsedENV = IS_TEST ? ENVConfigSchema.partial().safeParse(process.env) : ENVConfigSchema.safeParse(process.env);
+// If TEST, skip parsing and enable minimum ENV variables for test suite
+if (IS_TEST_ENVIRONMENT) {
+  ENVConfig({ NODE_ENV: 'test', LOG_FILE_DIR: 'data/logs' });
+} else {
+  // Parse the environment variables against the schema (test environment allows partial values)
+  const parsedENV = ENVConfigSchema.safeParse(process.env);
 
-// If the environment variables are invalid, log the error and crash the server
-if (!parsedENV.success) {
-  console.error('FATAL: Invalid environment variables:', parsedENV.error.flatten().fieldErrors);
+  // If the environment variables are invalid, log the error and crash the server
+  if (!parsedENV.success) {
+    //WARNING: Intentionally crashes the server if the environment variables are invalid.
+    console.error('FATAL: Invalid environment variables:', parsedENV.error.flatten().fieldErrors);
 
-  process.exit(1);
+    process.exit(1);
+  }
+
+  // Update the global ENV variable
+  ENV = parsedENV.data as ENVConfig;
 }
-
-// Update the global ENV variable
-ENV = parsedENV.data as ENVConfig;
