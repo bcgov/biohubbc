@@ -23,19 +23,14 @@ import yup from 'utils/YupSchema';
 // Types to know how the deployment ended, determining which form components to display
 type DeploymentEndType = 'capture' | 'mortality' | 'fell_off';
 
-export const DeploymentTimelineFormInitialValues: yup.InferType<typeof DeploymentTimelineFormYupSchema> = {
-  attachment_start_date: null as unknown as string,
-  attachment_start_time: null,
+export const DeploymentEndFormInitialValues: yup.InferType<typeof DeploymentEndFormYupSchema> = {
   attachment_end_date: null,
   attachment_end_time: null,
-  critterbase_start_capture_id: null as unknown as string,
   critterbase_end_mortality_id: null,
   critterbase_end_capture_id: null
 };
 
-export const DeploymentTimelineFormYupSchema = yup.object({
-  attachment_start_date: yup.string().nullable().required('Start date is required'),
-  attachment_start_time: yup.string().nullable().default(null),
+export const DeploymentEndFormYupSchema = yup.object({
   attachment_end_date: yup.lazy(() =>
     yup
       .string()
@@ -48,23 +43,22 @@ export const DeploymentTimelineFormYupSchema = yup.object({
       })
   ),
   attachment_end_time: yup.string().nullable().default(null),
-  critterbase_start_capture_id: yup.string().nullable().required('You must select the initial capture event'),
   critterbase_end_mortality_id: yup.string().uuid().nullable().default(null),
   critterbase_end_capture_id: yup.string().uuid().nullable().default(null)
 });
 
-interface IDeploymentTimelineFormProps {
+interface IDeploymentEndFormProps {
   captures: ICaptureResponse[];
   mortalities: IMortalityResponse[];
 }
 
 /**
- * Deployment form - deployment timeline section.
+ * Deployment form - end of deployment details
  *
- * @param {IDeploymentTimelineFormProps} props
+ * @param {IDeploymentEndFormProps} props
  * @return {*}
  */
-export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
+export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
   const { captures, mortalities } = props;
 
   const formikProps = useFormikContext<ICreateAnimalDeployment>();
@@ -90,72 +84,9 @@ export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <Typography component="legend" variant="h5">
-          Capture event
-        </Typography>
-
-        <Typography color="textSecondary" mb={3}>
-          You must&nbsp;
-          {values.critter_id ? (
-            <Typography
-              sx={{
-                textDecoration: 'none'
-              }}
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/${values.critter_id}/capture/create`}>
-              add the capture
-            </Typography>
-          ) : (
-            'add the capture'
-          )}
-          &nbsp;during which the device was deployed before adding the deployment.
-        </Typography>
-        <AutocompleteField
-          name="critterbase_start_capture_id"
-          id="critterbase_start_capture_id"
-          label={'Initial capture event'}
-          options={captures.map((capture) => ({
-            value: capture.capture_id,
-            label: dayjs(capture.capture_date).format(DATE_FORMAT.LongDateTimeFormat)
-          }))}
-          required
-        />
-      </Grid>
-
-      <Grid item xs={12} mt={3}>
-        <Typography component="legend" variant="h5">
-          Start of deployment
-        </Typography>
-
-        <Typography color="textSecondary" mb={3}>
-          You must specify the start date of the deployment.
-        </Typography>
-
-        <Box sx={{ width: '100%' }} display="flex">
-          <DateField
-            id="attachment_start_date"
-            name="attachment_start_date"
-            label="Start date"
-            required={values.attachment_start_time !== null}
-            formikProps={formikProps}
-          />
-          <TimeField
-            id="attachment_start_time"
-            name="attachment_start_time"
-            label="Start time"
-            required={values.attachment_start_date !== null}
-            formikProps={formikProps}
-          />
-        </Box>
-      </Grid>
-
       <Grid item xs={12} flex="1 1 auto">
-        <Typography component="legend" variant="h5">
-          End of deployment (optional)
-        </Typography>
-        <Typography color="textSecondary" mb={3}>
-          Select how the deployment ended. If due to a mortality, you must&nbsp;
+        <Typography color="textSecondary" mb={2}>
+          Select how the deployment ended, if applicable. If due to a mortality, you must&nbsp;
           {values.critter_id ? (
             <Typography
               sx={{

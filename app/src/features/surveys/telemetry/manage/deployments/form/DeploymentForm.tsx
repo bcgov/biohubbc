@@ -10,11 +10,6 @@ import {
   DeploymentDetailsFormInitialValues,
   DeploymentDetailsFormYupSchema
 } from 'features/surveys/telemetry/manage/deployments/form/deployment-details/DeploymentDetailsForm';
-import {
-  DeploymentTimelineForm,
-  DeploymentTimelineFormInitialValues,
-  DeploymentTimelineFormYupSchema
-} from 'features/surveys/telemetry/manage/deployments/form/timeline/DeploymentTimelineForm';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
@@ -22,13 +17,25 @@ import useDataLoader from 'hooks/useDataLoader';
 import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useEffect } from 'react';
 import { useHistory } from 'react-router';
+import {
+  DeploymentEndForm,
+  DeploymentEndFormInitialValues,
+  DeploymentEndFormYupSchema
+} from './timeline/DeploymentEndForm';
+import {
+  DeploymentStartForm,
+  DeploymentStartFormInitialValues,
+  DeploymentStartFormYupSchema
+} from './timeline/DeploymentStartForm';
 
 export const DeploymentFormInitialValues = {
   ...DeploymentDetailsFormInitialValues,
-  ...DeploymentTimelineFormInitialValues
+  ...DeploymentStartFormInitialValues,
+  ...DeploymentEndFormInitialValues
 };
 
-export const DeploymentFormYupSchema = DeploymentDetailsFormYupSchema.concat(DeploymentTimelineFormYupSchema);
+export const DeploymentFormYupSchema =
+  DeploymentDetailsFormYupSchema.concat(DeploymentStartFormYupSchema).concat(DeploymentEndFormYupSchema);
 
 interface IDeploymentFormProps {
   isSubmitting: boolean;
@@ -92,7 +99,9 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
     <Container maxWidth="xl" sx={{ py: 3 }}>
       <Paper sx={{ p: 5 }}>
         <Stack gap={5}>
-          <HorizontalSplitFormComponent title="Deployment Details" summary="Enter information about the deployment">
+          <HorizontalSplitFormComponent
+            title="Deployment Details"
+            summary="Enter information about the device and animal">
             <DeploymentDetailsForm
               surveyAnimals={crittersDataLoader.data ?? []}
               surveyDevices={devicesDataLoader.data?.devices ?? []}
@@ -107,8 +116,18 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
 
           <Divider />
 
-          <HorizontalSplitFormComponent title="Timeline" summary="Enter information about when the device was deployed">
-            <DeploymentTimelineForm
+          <HorizontalSplitFormComponent
+            title="Start Date"
+            summary="Select the capture when the device was deployed, and enter a start time to truncate the data to a specific time range.">
+            <DeploymentStartForm captures={critterDataLoader.data?.captures ?? []} />
+          </HorizontalSplitFormComponent>
+
+          <Divider />
+
+          <HorizontalSplitFormComponent
+            title="End Date (optional)"
+            summary="Enter information about when the deployment ended">
+            <DeploymentEndForm
               captures={critterDataLoader.data?.captures ?? []}
               mortalities={critterDataLoader.data?.mortality ?? []}
             />
