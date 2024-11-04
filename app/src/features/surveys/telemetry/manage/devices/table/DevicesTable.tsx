@@ -1,6 +1,7 @@
 import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
+import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -125,9 +126,20 @@ export const DevicesTable = (props: IDevicesTableProps) => {
 
   const columns: GridColDef<IDeviceRowData>[] = [
     {
-      field: 'id',
-      headerName: 'ID',
-      flex: 1
+      field: 'device_id',
+      headerName: 'Device ID',
+      width: 100,
+      minWidth: 100,
+      renderHeader: () => (
+        <Typography color={grey[500]} variant="body2" fontWeight={700}>
+          ID
+        </Typography>
+      ),
+      renderCell: (params) => (
+        <Typography color={grey[500]} variant="body2">
+          {params.row.device_id}
+        </Typography>
+      )
     },
     {
       field: 'serial',

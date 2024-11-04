@@ -70,45 +70,36 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
     <>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography color="textSecondary" mb={1}>
+          <Typography color="textSecondary" variant="body2">
             You must&nbsp;
             <Typography
               sx={{
                 textDecoration: 'none'
               }}
+              variant="body2"
               component={RouterLink}
               to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}>
               add the device
+            </Typography>
+            &nbsp;and&nbsp;
+            <Typography
+              sx={{
+                textDecoration: 'none'
+              }}
+              variant="body2"
+              component={RouterLink}
+              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`}>
+              animal
             </Typography>
             &nbsp;to your Survey before associating it to a deployment. Add devices via the&nbsp;
             <Typography
               sx={{
                 textDecoration: 'none'
               }}
+              variant="body2"
               component={RouterLink}
               to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`}>
               Manage Devices and Deployments
-            </Typography>
-            &nbsp;page.
-          </Typography>
-          <Typography color="textSecondary">
-            You must&nbsp;
-            <Typography
-              sx={{
-                textDecoration: 'none'
-              }}
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`}>
-              add the animal
-            </Typography>
-            &nbsp;to your Survey before associating it to a deployment. Add animals via the&nbsp;
-            <Typography
-              sx={{
-                textDecoration: 'none'
-              }}
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals`}>
-              Manage Animals
             </Typography>
             &nbsp;page.
           </Typography>

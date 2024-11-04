@@ -152,7 +152,6 @@ export const DevicesContainer = () => {
           isLoading={devicesDataLoader.isLoading}
           isLoadingFallback={<SkeletonTable numberOfLines={5} />}
           isLoadingFallbackDelay={100}>
-          <Divider flexItem />
           <Box p={2}>
             <LoadingGuard
               isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady}
