@@ -5,6 +5,7 @@ import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { TelemetryDeploymentService } from '../../../../../../../services/telemetry-services/telemetry-deployment-service';
 import { getLogger } from '../../../../../../../utils/logger';
+import { numberOrNull } from '../../../../../../../utils/string-utils';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/deployments/{deploymentId}/index');
 
@@ -456,8 +457,8 @@ export function updateDeployment(): RequestHandler {
 
     const critterId = req.body.critter_id;
     const deviceId = req.body.device_id;
-    const frequency = req.body.frequency;
-    const frequencyUnitId = req.body.frequency_unit_id;
+    const frequency = numberOrNull(req.body.frequency);
+    const frequencyUnitId = numberOrNull(req.body.frequency_unit_id);
     const attachmentStartDate = req.body.attachment_start_date;
     const attachmentStartTime = req.body.attachment_start_time;
     const attachmentEndDate = req.body.attachment_end_date;

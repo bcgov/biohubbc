@@ -12,6 +12,7 @@ import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { TelemetryDevice } from 'interfaces/useTelemetryDeviceApi.interface';
 import get from 'lodash-es/get';
 import { Link as RouterLink } from 'react-router-dom';
+import { numberOrNull } from 'utils/string-utils';
 import { isDefined } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 
@@ -149,23 +150,25 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
               label="Device frequency"
               inputProps={{ 'data-testid': 'frequency' }}
               onChange={(event) => {
-                // Ensure that the value is set to null if the input is empty, and not empty-string
-                setFieldValue('frequency', event.target.value || null);
+                // Ensure that the formik value is set to null if the input is empty, and not empty-string
+                setFieldValue('frequency', numberOrNull(event.target.value));
               }}
               onBlur={handleBlur}
               variant="outlined"
-              value={get(values, 'frequency') || null}
+              value={get(values, 'frequency') || ''} // Ensure that the value is an empty string if it is null (controlled component)
               fullWidth={true}
               error={get(touched, 'frequency') && Boolean(get(errors, 'frequency'))}
               helperText={get(touched, 'frequency') && get(errors, 'frequency')}
+              type="number"
+              sx={{ flex: 0.6 }}
             />
             <AutocompleteField
-              sx={{ flex: 0.4 }}
               name="frequency_unit_id"
               id="frequency_unit_id"
               label={'Unit'}
               options={frequencyUnits}
               required={!!(values.frequency || values.frequency_unit_id)}
+              sx={{ flex: 0.4 }}
             />
           </Stack>
         </Grid>

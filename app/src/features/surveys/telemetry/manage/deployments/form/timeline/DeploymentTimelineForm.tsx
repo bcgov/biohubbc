@@ -132,7 +132,7 @@ export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
           You must specify the start date of the deployment.
         </Typography>
 
-        <Box sx={{ width: '100%' }} display="flex">
+        <Stack direction="row" flex="1 1 auto">
           <DateField
             id="attachment_start_date"
             name="attachment_start_date"
@@ -144,10 +144,10 @@ export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
             id="attachment_start_time"
             name="attachment_start_time"
             label="Start time"
-            required={values.attachment_start_date !== null}
+            required={false}
             formikProps={formikProps}
           />
-        </Box>
+        </Stack>
       </Grid>
 
       <Grid item xs={12} flex="1 1 auto">

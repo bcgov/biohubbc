@@ -21,13 +21,13 @@ export $(shell sed 's/=.*//' .env)
 
 env: | setup ## Copies the default ./env_config/env.docker to ./.env
 
-postgres: | close build-postgres run-postgres ## Performs all commands necessary to run the postgres project (db) in docker
-backend: | close build-backend run-backend ## Performs all commands necessary to run all backend projects (db, api) in docker
-web: | close build-web check-env run-web ## Performs all commands necessary to run all backend+web projects (db, api, app) in docker
+postgres: | close check-env build-postgres run-postgres ## Performs all commands necessary to run the postgres project (db) in docker
+backend: | close check-env build-backend run-backend ## Performs all commands necessary to run all backend projects (db, api) in docker
+web: | close check-env build-web run-web ## Performs all commands necessary to run all backend+web projects (db, api, app) in docker
 
 db-setup: | build-db-setup run-db-setup ## Performs all commands necessary to run the database migrations and seeding
 
-clamav: | build-clamav run-clamav ## Performs all commands necessary to run clamav
+clamav: | check-env build-clamav run-clamav ## Performs all commands necessary to run clamav
 
 fix: | lint-fix format-fix ## Performs both lint-fix and format-fix commands
 
@@ -61,11 +61,11 @@ prune: ## Deletes ALL docker artifacts (even those not associated to this projec
 	@docker system prune --all --volumes -f
 	@docker volume prune --all -f
 
-check-env: ## Check for missing env vars
+check-env: ## Logs any env vars that are missing or have no value, in .env
 	@echo "==============================================="
 	@echo "Make: check-env - checking for missing env vars"
 	@echo "==============================================="
-	@awk -F '=' 'NR==FNR && !/^#/ && NF {a[$$1]; next} !/^#/ && NF && !($$1 in a)' .env env_config/env.docker
+	@awk -F '=' 'NR==FNR && !/^#/ && NF {a[$$1]; next} !/^#/ && NF && !($$1 in a)' .env env_config/env.docker | while read -r line; do echo "Warning: Missing value for $$line in .env"; done
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Postgres DB Commands
@@ -324,13 +324,13 @@ log-db-setup: ## Runs `docker logs <container> -f` for the database setup contai
 ## Runs ts-trace to find typescript compilation issues and hotspots
 ## Docs: https://github.com/microsoft/typescript-analyze-trace
 ## ------------------------------------------------------------------------------
-trace-app:
+trace-app: ## Runs ts-trace to find typescript compilation issues and hotspots in the app
 	@echo "==============================================="
 	@echo "Typscript trace - searching App hotspots"
 	@echo "==============================================="
 	@cd app && npx tsc -p ./tsconfig.json --generateTrace ts-traces || npx @typescript/analyze-trace --skipMillis 100 --forceMillis 300 --expandTypes ts-traces
 
-trace-api:
+trace-api: ## Runs ts-trace to find typescript compilation issues and hotspots in the api
 	@echo "==============================================="
 	@echo "Typscript trace - searching for Api hotspots"
 	@echo "==============================================="
