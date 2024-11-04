@@ -71,7 +71,7 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
     <>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <Typography color="textSecondary" mb={1}>
+          <Typography color="textSecondary">
             You must&nbsp;
             <Typography
               sx={{
@@ -81,37 +81,16 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
               to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}>
               add the device
             </Typography>
-            &nbsp;to your Survey before associating it to a deployment. Add devices via the&nbsp;
-            <Typography
-              sx={{
-                textDecoration: 'none'
-              }}
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`}>
-              Manage Devices and Deployments
-            </Typography>
-            &nbsp;page.
-          </Typography>
-          <Typography color="textSecondary">
-            You must&nbsp;
+            &nbsp;and&nbsp;
             <Typography
               sx={{
                 textDecoration: 'none'
               }}
               component={RouterLink}
               to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`}>
-              add the animal
+              animal
             </Typography>
-            &nbsp;to your Survey before associating it to a deployment. Add animals via the&nbsp;
-            <Typography
-              sx={{
-                textDecoration: 'none'
-              }}
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals`}>
-              Manage Animals
-            </Typography>
-            &nbsp;page.
+            &nbsp;to your Survey before associating the two in a deployment.
           </Typography>
         </Grid>
         <Grid item xs={12}>
@@ -144,7 +123,7 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <Stack direction="row" flex="1 1 auto">
+          <Stack direction="row" flex={1}>
             <TextField
               name="frequency"
               label="Device frequency"
@@ -156,11 +135,12 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
               onBlur={handleBlur}
               variant="outlined"
               value={get(values, 'frequency') || ''} // Ensure that the value is an empty string if it is null (controlled component)
-              fullWidth={true}
               error={get(touched, 'frequency') && Boolean(get(errors, 'frequency'))}
               helperText={get(touched, 'frequency') && get(errors, 'frequency')}
-              type="number"
-              sx={{ flex: 0.6 }}
+              sx={{
+                flex: 0.8,
+                '& .MuiOutlinedInput-root': { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
+              }}
             />
             <AutocompleteField
               name="frequency_unit_id"
@@ -168,7 +148,10 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
               label={'Unit'}
               options={frequencyUnits}
               required={!!(values.frequency || values.frequency_unit_id)}
-              sx={{ flex: 0.4 }}
+              sx={{
+                flex: 0.2,
+                '& .MuiOutlinedInput-root': { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }
+              }}
             />
           </Stack>
         </Grid>

@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCog, mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -301,7 +301,12 @@ export const SurveyDeploymentList = (props: ISurveyDeploymentListProps) => {
             </Typography>
           </Typography>
 
-          <Button variant="contained" color="primary" component={RouterLink} to={'manage'}>
+          <Button
+            variant="contained"
+            color="primary"
+            component={RouterLink}
+            to={'manage'}
+            startIcon={<Icon path={mdiCog} size={0.75} />}>
             Manage
           </Button>
 

@@ -91,7 +91,7 @@ export const DeviceAutocompleteField = <T extends string | number>(props: IDevic
   const { formikFieldName, label, options, onSelect, defaultDevice, required, disabled, clearOnSelect, placeholder } =
     props;
 
-  const { touched, errors, setFieldValue } = useFormikContext<IAutocompleteFieldOption<T>>();
+  const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOption<T>>();
 
   const codesContext = useCodesContext();
 
@@ -103,7 +103,7 @@ export const DeviceAutocompleteField = <T extends string | number>(props: IDevic
   const [inputValue, setInputValue] = useState(String(defaultDevice?.device_id ?? ''));
 
   useEffect(() => {
-    if (!defaultDevice) {
+    if (!defaultDevice || get(values, formikFieldName)) {
       return;
     }
 
@@ -150,13 +150,16 @@ export const DeviceAutocompleteField = <T extends string | number>(props: IDevic
             <Box py={1} width="100%">
               <Box justifyContent="space-between" display="flex">
                 <Typography fontWeight={700}>{renderOption.serial}&nbsp;</Typography>
-                <Typography color="textSecondary">{renderOption.device_id}</Typography>
+                <Typography color="textSecondary">
+                  {
+                    codesContext.codesDataLoader.data?.telemetry_device_makes.find(
+                      (make) => make.id === renderOption.device_make_id
+                    )?.name
+                  }
+                </Typography>
               </Box>
               <Typography color="textSecondary" variant="body2">
                 {renderOption.model}
-              </Typography>
-              <Typography color="textSecondary" variant="body2">
-                {renderOption.comment}
               </Typography>
             </Box>
           </Box>
@@ -174,7 +177,7 @@ export const DeviceAutocompleteField = <T extends string | number>(props: IDevic
           error={get(touched, formikFieldName) && Boolean(get(errors, formikFieldName))}
           helperText={get(touched, formikFieldName) && get(errors, formikFieldName)}
           fullWidth
-          placeholder={placeholder || 'Search for an device in the Survey'}
+          placeholder={placeholder || 'Search for a device in the Survey'}
           InputProps={{
             ...params.InputProps,
             endAdornment: <>{params.InputProps.endAdornment}</>

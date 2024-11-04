@@ -1,25 +1,34 @@
 import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
+import blue from '@mui/material/colors/blue';
+import green from '@mui/material/colors/green';
+import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
+import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { combineDateTime } from 'utils/datetime';
 
 export interface IDeploymentRowData {
   id: number;
   deployment2_id: number;
   critter_id: number;
   device_id: number;
+  device_key: string;
   frequency: number | null;
   frequency_unit_id: number | null;
   attachment_start_date: string;
@@ -126,6 +135,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
     deployment2_id: deployment.deployment2_id,
     critter_id: deployment.critter_id,
     device_id: deployment.device_id,
+    device_key: deployment.device_key,
     frequency: deployment.frequency,
     frequency_unit_id: deployment.frequency_unit_id,
     attachment_start_date: deployment.attachment_start_date,
@@ -139,31 +149,109 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
 
   const columns: GridColDef<IDeploymentRowData>[] = [
     {
-      field: 'id',
-      headerName: 'ID',
-      flex: 1
+      field: 'deployment2_id',
+      headerName: 'Deployment ID',
+      width: 100,
+      minWidth: 100,
+      renderHeader: (params) => (
+        <Tooltip title={params.colDef.description}>
+          <Typography color={grey[500]} variant="body2" fontWeight={700}>
+            ID
+          </Typography>
+        </Tooltip>
+      ),
+      renderCell: (params) => (
+        <Typography color={grey[500]} variant="body2">
+          {params.row.deployment2_id}
+        </Typography>
+      )
     },
     {
-      field: 'device_id',
-      headerName: 'Device ID',
-      flex: 1
+      field: 'critter_id',
+      headerName: 'Animal',
+      flex: 1,
+      renderCell: (params) => (
+        <>
+          {
+            surveyContext.critterDataLoader.data?.find((critter) => critter.critter_id === params.row.critter_id)
+              ?.animal_id
+          }
+        </>
+      )
+    },
+    {
+      field: 'device_key',
+      headerName: 'Device',
+      flex: 1,
+      renderCell: (params) => {
+        const [vendor, serial] = params.row.device_key.split(':');
+        return (
+          <>
+            {serial}&nbsp;
+            <Typography fontSize="inherit" color="textSecondary" component="span">
+              {vendor}
+            </Typography>
+          </>
+        );
+      }
     },
     {
       field: 'frequency',
       headerName: 'Frequency',
-      flex: 1
-    },
-    {
-      field: 'frequency_unit_id',
-      headerName: 'Frequency Unit',
       flex: 1,
       renderCell: (params) => (
-        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-          {codesContext.codesDataLoader.data?.frequency_units.find(
-            (frequencyUnit) => frequencyUnit.id === params.row.frequency_unit_id
-          )?.name ?? null}
-        </Box>
+        <Typography>
+          {params.row.frequency}&nbsp;
+          <Typography component="span" color="textSecondary">
+            {codesContext.codesDataLoader.data?.frequency_units.find(
+              (frequencyUnit) => frequencyUnit.id === params.row.frequency_unit_id
+            )?.name ?? null}
+          </Typography>
+        </Typography>
       )
+    },
+    {
+      field: 'attachment_start_date',
+      headerName: 'Start',
+      flex: 1,
+      renderCell: (params) => (
+        <>
+          {params.row.attachment_start_time
+            ? dayjs(`${params.row.attachment_start_date} ${params.row.attachment_start_time}`).format(
+                DATE_FORMAT.MediumDateTimeFormat
+              )
+            : dayjs(params.row.attachment_start_date).format(DATE_FORMAT.MediumDateFormat)}
+        </>
+      )
+    },
+    {
+      field: 'attachment_end_date',
+      headerName: 'End',
+      flex: 1,
+      renderCell: (params) => (
+        <>
+          {params.row.attachment_end_time
+            ? dayjs(`${params.row.attachment_end_date} ${params.row.attachment_end_time}`).format(
+                DATE_FORMAT.MediumDateTimeFormat
+              )
+            : dayjs(params.row.attachment_end_date).format(DATE_FORMAT.MediumDateFormat)}
+        </>
+      )
+    },
+    {
+      field: 'status',
+      headerName: 'Status',
+      flex: 1,
+      renderCell: (params) => {
+        if (
+          params.row.attachment_end_date &&
+          dayjs().isBefore(combineDateTime(params.row.attachment_end_date, params.row.attachment_end_time))
+        ) {
+          <ColouredRectangleChip colour={blue} label="Done" />;
+        }
+
+        return <ColouredRectangleChip colour={green} label="active" />;
+      }
     },
     {
       field: 'actions',
