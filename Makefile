@@ -142,6 +142,15 @@ api-container: ## Executes into the api container.
 	@docker compose exec api bash
 
 ## ------------------------------------------------------------------------------
+## Cronjob commands
+## ------------------------------------------------------------------------------
+telemetry-cronjob: ## Run the telemetry cronjob
+	@echo "==============================================="
+	@echo "Telemetry Cronjob"
+	@echo "==============================================="
+	@docker compose exec api npm run telemetry-cronjob
+
+## ------------------------------------------------------------------------------
 ## Database migration commands
 ## ------------------------------------------------------------------------------
 

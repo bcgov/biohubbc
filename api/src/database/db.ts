@@ -112,13 +112,15 @@ export interface IDBConnection {
    */
   getClient: () => Promise<pg.PoolClient>;
   /**
-   * Opens a new connection, begins a transaction, and sets the user context.
+   * Opens a new connection, optionally begins a transaction, and sets the user context.
    *
    * Note: Does nothing if the connection is already open.
+   * Note: Optionally skips the transaction if `config.skipTransaction` is true.
    *
+   * @param {{skipTransaction: true}} [config] Optional configuration object
    * @memberof IDBConnection
    */
-  open: () => Promise<void>;
+  open: (config?: { noTransaction: true }) => Promise<void>;
   /**
    * Releases (closes) the connection.
    *
@@ -253,10 +255,12 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
    * Opens a new connection, begins a transaction, and sets the user context.
    *
    * Note: Does nothing if the connection is already open.
+   * Note: Optionally skips the transaction if `config.skipTransaction` is true.
    *
+   * @param {{skipTransaction: true}} [config] Optional configuration object
    * @throws {Error} if called when the DBPool has not been initialized via `initDBPool`
    */
-  const _open = async () => {
+  const _open = async (config?: { noTransaction: true }) => {
     if (_client || _isOpen) {
       return;
     }
@@ -272,7 +276,10 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
     _isReleased = false;
 
     await _setUserContext();
-    await _client.query('BEGIN');
+
+    if (!config?.noTransaction) {
+      await _client.query('BEGIN');
+    }
   };
 
   /**
