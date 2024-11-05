@@ -99,7 +99,7 @@ export const AnimalAutocompleteField = <T extends string | number>(props: IAnima
     }
 
     setInputValue(String(defaultAnimal.animal_id));
-  }, [defaultAnimal]);
+  }, [defaultAnimal, formikFieldName, values]);
 
   // Survey animals to choose from
   const options = surveyContext.critterDataLoader.data;

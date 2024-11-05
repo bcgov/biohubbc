@@ -43,7 +43,7 @@ const HorizontalSplitFormComponent = (props: PropsWithChildren<IHorizontalSplitF
           {title}
         </Typography>
         {summary && (
-          <Box pt={1.25} maxWidth="55ch" width='85%'>
+          <Box pt={1.25} maxWidth="55ch" width="85%">
             <Typography variant="body1" color="textSecondary">
               {summary}
             </Typography>

@@ -19,16 +19,16 @@ export $(shell sed 's/=.*//' .env)
 # 2. Edit the `.env` file as needed to update variables and secrets
 # 3. Run `make web`
 
-setup: | env-setup env-check ## Copies the default ./env_config/env.docker to ./.env
-env: | env-setup env-check ## Copies the default ./env_config/env.docker to ./.env
+setup: | setup-env check-env ## Copies the default ./env_config/env.docker to ./.env
+env: | setup-env check-env ## Copies the default ./env_config/env.docker to ./.env
 
-postgres: | close env-check build-postgres run-postgres ## Performs all commands necessary to run the postgres project (db) in docker
-backend: | close env-check build-backend run-backend ## Performs all commands necessary to run all backend projects (db, api) in docker
-web: | close env-check build-web run-web ## Performs all commands necessary to run all backend+web projects (db, api, app) in docker
+postgres: | close check-env build-postgres run-postgres ## Performs all commands necessary to run the postgres project (db) in docker
+backend: | close check-env build-backend run-backend ## Performs all commands necessary to run all backend projects (db, api) in docker
+web: | close check-env build-web run-web ## Performs all commands necessary to run all backend+web projects (db, api, app) in docker
 
-db-setup: | env-check build-db-setup run-db-setup ## Performs all commands necessary to run the database migrations and seeding
+db-setup: | check-env build-db-setup run-db-setup ## Performs all commands necessary to run the database migrations and seeding
 
-clamav: | env-check build-clamav run-clamav ## Performs all commands necessary to run clamav
+clamav: | check-env build-clamav run-clamav ## Performs all commands necessary to run clamav
 
 fix: | lint-fix format-fix ## Performs both lint-fix and format-fix commands
 
@@ -36,15 +36,15 @@ fix: | lint-fix format-fix ## Performs both lint-fix and format-fix commands
 ## Setup Commands
 ## ------------------------------------------------------------------------------
 
-env-setup: ## Prepares the environment variables used by all project docker containers, by copying the sample 'env.docker' to '.env'. Note: Some variables may need to be updated, like secrets
+setup-env: ## Prepares the environment variables used by all project docker containers, by copying the sample 'env.docker' to '.env'. Note: Some variables may need to be updated, like secrets
 	@echo "==============================================="
-	@echo "Make: env-setup - copying env.docker to .env"
+	@echo "Make: setup-env - copying env.docker to .env"
 	@echo "==============================================="
 	@cp -i env_config/env.docker .env
 
-env-check: ## Logs any env vars that are missing or have no value, in the '.env' file
+check-env: ## Logs any env vars that are missing or have no value, in the '.env' file
 	@echo "==============================================="
-	@echo "Make: env-check - checking for missing env vars"
+	@echo "Make: check-env - checking for missing env vars"
 	@echo "==============================================="
 	@awk -F '=' 'NR==FNR && !/^#/ && NF {a[$$1]; next} !/^#/ && NF && !($$1 in a)' .env env_config/env.docker | while read -r line; do echo "Warning: Missing value for $$line in .env"; done
 
@@ -163,7 +163,7 @@ run-db-setup: ## Run the database migrations and seeding
 	@docker compose up db_setup
 
 ## ------------------------------------------------------------------------------
-## clamav commands
+## Clamav commands
 ## ------------------------------------------------------------------------------
 
 build-clamav: ## Build the clamav image

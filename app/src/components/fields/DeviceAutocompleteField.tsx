@@ -108,7 +108,7 @@ export const DeviceAutocompleteField = <T extends string | number>(props: IDevic
     }
 
     setInputValue(String(defaultDevice.device_id));
-  }, [defaultDevice]);
+  }, [defaultDevice, formikFieldName, values]);
 
   return (
     <Autocomplete
