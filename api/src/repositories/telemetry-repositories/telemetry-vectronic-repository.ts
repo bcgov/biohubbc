@@ -1,8 +1,7 @@
 import SQL from 'sql-template-strings';
-import { TelemetryCredentialVectronicRecord } from '../../database-models/telemetry_credential_vectronic';
 import { getKnex } from '../../database/db';
 import { BaseRepository } from '../base-repository';
-import { CreateVectronicTelemetry } from './telemetry-vectronic-repository.interface';
+import { CreateVectronicTelemetry, ExtendedVectronicCredential } from './telemetry-vectronic-repository.interface';
 
 /**
  * A repository class for working with raw vectronic telemetry data.
@@ -28,23 +27,37 @@ export class TelemetryVectronicRepository extends BaseRepository {
   }
 
   /**
-   * Get all vectronic credentials.
+   * Get all Vectronic credentials.
    *
-   * @returns {*} {Promise<TelemetryCredentialVectronicRecord[]>}
+   * Note: This query also returns the maximum idposition (Vectronic record identifier) for each credential.
+   * This allows telemetry to be fetched using the max idposition as a starting point.
+   *
+   * @returns {*} {Promise<ExtendedVectronicCredential[]>}
    */
-  async getAllVectronicCredentials(): Promise<TelemetryCredentialVectronicRecord[]> {
+  async getAllVectronicCredentials(): Promise<ExtendedVectronicCredential[]> {
     const sqlStatement = SQL`
       SELECT
-        telemetry_credential_vectronic_id,
-        device_key,
-        idcollar,
-        comtype,
-        idcom,
-        collarkey,
-        collartype
-      FROM telemetry_credential_vectronic;
+        tcv.telemetry_credential_vectronic_id,
+        tcv.device_key,
+        tcv.idcollar,
+        tcv.comtype,
+        tcv.idcom,
+        tcv.collarkey,
+        tcv.collartype,
+        MAX(tv.idposition) AS max_idposition
+      FROM telemetry_credential_vectronic tcv
+      LEFT JOIN telemetry_vectronic tv
+        ON tv.device_key = tcv.device_key
+      GROUP BY
+        tcv.telemetry_credential_vectronic_id,
+        tcv.device_key,
+        tcv.idcollar,
+        tcv.comtype,
+        tcv.idcom,
+        tcv.collarkey,
+        tcv.collartype;
     `;
-    const result = await this.connection.sql(sqlStatement, TelemetryCredentialVectronicRecord);
+    const result = await this.connection.sql(sqlStatement, ExtendedVectronicCredential);
 
     return result.rows;
   }

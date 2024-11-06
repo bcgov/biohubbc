@@ -1,5 +1,6 @@
 import { parseArgs } from 'util';
 import { defaultPoolConfig, getAPIUserDBConnection, initDBPool } from '../../database/db';
+import { VectronicAPIQuery } from '../../repositories/telemetry-repositories/telemetry-vectronic-repository.interface';
 import { TelemetryVectronicService } from '../../services/telemetry-services/telemetry-vectronic-service';
 import { getLogger } from '../../utils/logger';
 
@@ -77,23 +78,28 @@ type Arguments = ReturnType<typeof parseArguments>;
  * @returns {*} {Promise<void>}
  */
 const processVectronicTelemetry = async (vectronicService: TelemetryVectronicService, args: Arguments) => {
-  defaultLog.info({ vendor: 'VECTRONIC', message: 'Processing start.' });
-
   // Fetch the Vectronic device credentials from SIMS
   const credentials = await vectronicService.getDeviceCredentials();
 
   defaultLog.info({ vendor: 'VECTRONIC', message: `${credentials.length} credentials retrieved.` });
 
   // Inject the date range provided by the CLI arguments into the query
-  const queries = credentials.map((credential) => ({
+  const queries: VectronicAPIQuery[] = credentials.map((credential) => ({
+    gtId: credential.max_idposition ? credential.max_idposition.toString() : undefined,
     idcollar: credential.idcollar,
     collarkey: credential.collarkey,
-    dtstart: args.start,
-    dtend: args.end
+    beforeAcquisition: args.end,
+    afterAcquisition: args.start
   }));
 
   // Fetch the telemetry data from the Vectronic API - fetches concurrently using a queue
   const processedDevices = await vectronicService.processTelemetry(queries, args.concurrently, args.batch);
+
+  defaultLog.info({
+    vendor: 'VECTRONIC',
+    message: 'Processed devices.',
+    devices: processedDevices
+  });
 
   const errors = processedDevices.filter((device) => device.error).map((device) => device.error);
 
@@ -103,12 +109,6 @@ const processVectronicTelemetry = async (vectronicService: TelemetryVectronicSer
     defaultLog.warn({
       vendor: 'VECTRONIC',
       message: 'Failed to retrieve telemetry from API.'
-    });
-  } else {
-    defaultLog.info({
-      vendor: 'VECTRONIC',
-      message: 'Processing complete.',
-      devices: processedDevices
     });
   }
 };

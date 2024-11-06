@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { TelemetryCredentialVectronicRecord } from '../../database-models/telemetry_credential_vectronic';
 import { TelemetryVectronicRecord } from '../../database-models/telemetry_vectronic';
 
 /**
@@ -7,18 +8,23 @@ import { TelemetryVectronicRecord } from '../../database-models/telemetry_vectro
  */
 export type CreateVectronicTelemetry = Omit<TelemetryVectronicRecord, 'telemetry_vectronic_id' | 'device_key'>;
 
-const VectronicCredential = z.object({
-  idcollar: z.number(),
-  collarkey: z.string()
-});
-
-export type VectronicCredential = z.infer<typeof VectronicCredential>;
-
 const VectronicAPIQuery = z.object({
   idcollar: z.number(),
   collarkey: z.string(),
-  dtstart: z.string().optional(),
-  dtend: z.string().optional()
+  afterAcquisition: z.string().optional(),
+  beforeAcquisition: z.string().optional(),
+  gtId: z.string().optional() // gt-id
 });
 
 export type VectronicAPIQuery = z.infer<typeof VectronicAPIQuery>;
+
+/**
+ * Extended Vectronic Credential Record.
+ *
+ * Note: `max_idposition` is the maximum `idposition` value in the telemetry data for the given credential.
+ */
+export const ExtendedVectronicCredential = TelemetryCredentialVectronicRecord.merge(
+  z.object({ max_idposition: z.number().nullable() })
+);
+
+export type ExtendedVectronicCredential = z.infer<typeof ExtendedVectronicCredential>;

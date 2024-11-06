@@ -1,3 +1,5 @@
+import { CreateVectronicTelemetry } from '../../repositories/telemetry-repositories/telemetry-vectronic-repository.interface';
+
 interface IDeviceKey {
   /**
    * Device vendor / manufacturer.
@@ -29,12 +31,12 @@ export const getTelemetryDeviceKey = ({ vendor, serial }: IDeviceKey): string =>
   return `${vendor.trim().toLowerCase()}:${String(serial).trim().toLowerCase()}`;
 };
 
-export const formatVectronicAPITelemetry = (telemetry: Record<string, number>) => {
+export const formatVectronicAPITelemetry = (telemetry: Record<string, any>): CreateVectronicTelemetry => {
   return {
     idposition: telemetry.idPosition,
     idcollar: telemetry.idCollar,
     acquisitiontime: telemetry.acquisitionTime,
-    scst: telemetry.scts,
+    scts: telemetry.scts,
     origincode: telemetry.originCode,
     ecefx: telemetry.ecefX,
     ecefy: telemetry.ecefY,
@@ -76,6 +78,7 @@ export const formatVectronicAPITelemetry = (telemetry: Record<string, number>) =
     backupvoltage: telemetry.backupVoltage,
     temperature: telemetry.temperature,
     transformedx: telemetry.transformedX,
-    transformedy: telemetry.transformedY
+    transformedy: telemetry.transformedY,
+    geom: `POINT(${telemetry.longitude} ${telemetry.latitude})` // TODO: Should this be generated or is it even needed anymore?
   };
 };

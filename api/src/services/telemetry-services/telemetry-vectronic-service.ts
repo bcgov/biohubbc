@@ -1,19 +1,15 @@
 import axios from 'axios';
 import fastq from 'fastq';
 import { chunk } from 'lodash';
-import { TelemetryCredentialVectronicRecord } from '../../database-models/telemetry_credential_vectronic';
 import { IDBConnection } from '../../database/db';
 import { TelemetryVectronicRepository } from '../../repositories/telemetry-repositories/telemetry-vectronic-repository';
 import {
   CreateVectronicTelemetry,
+  ExtendedVectronicCredential,
   VectronicAPIQuery
 } from '../../repositories/telemetry-repositories/telemetry-vectronic-repository.interface';
-import { getLogger } from '../../utils/logger';
 import { DBService } from '../db-service';
-
-const defaultLog = getLogger('telemetry-vectronic-service');
-
-const VECTRONIC_API_HOST = process.env.VECTRONIC_API_HOST ?? 'http://api.vectronic-wildlife.com/v2';
+import { TelemetryQueueResult } from './telemetry.interface';
 
 /**
  * This service is responsible for fetching telemetry data from the Vectronic API and storing it in SIMS.
@@ -41,11 +37,11 @@ export class TelemetryVectronicService extends DBService {
    * @returns {URL}
    */
   getVectronicBaseURL(): URL {
-    return new URL(VECTRONIC_API_HOST);
+    return new URL(process.env.VECTRONIC_API_HOST ?? 'https://api.vectronic-wildlife.com/v2');
   }
 
   /**
-   * Get the URL for fetching Vectronic telemetry data for a specific collar credential.
+   * Get the URL for fetching Vectronic telemetry data for a specific device.
    *
    * @param {VectronicAPIQuery} query - Vectronic API request query
    * @returns {URL}
@@ -53,15 +49,17 @@ export class TelemetryVectronicService extends DBService {
   getVectronicTelemetryURL(query: VectronicAPIQuery): URL {
     const url = this.getVectronicBaseURL();
 
-    url.pathname = `${query.idcollar}/gps`;
-    url.searchParams.append('collarkey', query.collarkey);
+    url.pathname += `/${query.idcollar}/gps`;
 
-    if (query.dtstart) {
-      url.searchParams.append('dtstart', query.dtstart);
+    url.searchParams.append('collarkey', query.collarkey);
+    url.searchParams.append('onlyValid', 'true'); // TODO: Invesitgate this param
+
+    if (query.beforeAcquisition) {
+      url.searchParams.append('beforeAcquisition', query.beforeAcquisition);
     }
 
-    if (query.dtend) {
-      url.searchParams.append('dtend', query.dtend);
+    if (query.afterAcquisition) {
+      url.searchParams.append('afterAcquisition', query.afterAcquisition);
     }
 
     return url;
@@ -82,7 +80,7 @@ export class TelemetryVectronicService extends DBService {
   }
 
   /**
-   * Process (fetch and insert) telemetry data for a list of vectronic API queries.
+   * Process (fetch and insert) telemetry data for a list of vectronic API queries (device credential + date range).
    *
    * @param {VectronicAPIQuery[]} queries - List of vectronic API queries
    * @param {number} concurrently - Number of requests to make concurrently
@@ -90,11 +88,11 @@ export class TelemetryVectronicService extends DBService {
    * @returns {Promise<>}
    */
   async processTelemetry(queries: VectronicAPIQuery[], concurrently: number, batchSize: number) {
-    const queueProcess: { serial: number; telemetry: number; error?: Error }[] = [];
-
-    let telemetryCount = 0;
+    const queueResult: TelemetryQueueResult[] = [];
 
     const queue = fastq.promise(async (task: VectronicAPIQuery): Promise<void> => {
+      let telemetryCount = 0;
+
       try {
         // 1. Fetch telemetry data for a single device
         const deviceTelemetry = await this.fetchDeviceTelemetry(task);
@@ -102,20 +100,10 @@ export class TelemetryVectronicService extends DBService {
         // 2. Batch insert telemetry data into SIMS
         telemetryCount = await this.batchCreateTelemetry(deviceTelemetry, batchSize);
 
-        // Todo: Is this needed? Do we want this to run for every device? Or just the cronjob?
-        defaultLog.info({
-          QProcess: {
-            length: queue.length(),
-            concurrency: queue.concurrency,
-            serial: task.idcollar,
-            telemetry: telemetryCount
-          }
-        });
-
         // 3. Update telemetry
-        queueProcess.push({ serial: task.idcollar, telemetry: telemetryCount, error: undefined });
+        queueResult.push({ serial: task.idcollar, telemetry: telemetryCount, error: undefined });
       } catch (error: any) {
-        queueProcess.push({ serial: task.idcollar, telemetry: telemetryCount, error: error.message });
+        queueResult.push({ serial: task.idcollar, telemetry: telemetryCount, error: error.message });
       }
     }, concurrently);
 
@@ -125,15 +113,15 @@ export class TelemetryVectronicService extends DBService {
 
     await queue.drain();
 
-    return queueProcess;
+    return queueResult;
   }
 
   /**
    * Get all Vectronic credentials from SIMS.
    *
-   * @returns {*} {Promise<TelemetryCredentialVectronicRecord[]>}
+   * @returns {*} {Promise<ExtendedVectronicCredential[]>}
    */
-  async getDeviceCredentials(): Promise<TelemetryCredentialVectronicRecord[]> {
+  async getDeviceCredentials(): Promise<ExtendedVectronicCredential[]> {
     return this.telemetryVectronicRepository.getAllVectronicCredentials();
   }
 
