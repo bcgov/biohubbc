@@ -155,12 +155,13 @@ export const techniqueViewSchema: OpenAPIV3.SchemaObject = {
 
 export const vantageModeSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
-  description: 'Vantage modes allowed for a technique.',
+  description: 'Vantage modes allowed for method lookup options that can be applied to a technique',
   required: ['vantage_modes'],
   additionalProperties: false,
   properties: {
     vantage_modes: {
       type: 'array',
+      description: 'Possible vantage modes',
       items: {
         type: 'object',
         required: ['vantage_mode_id', 'name', 'vantage_id', 'description'],

@@ -470,7 +470,7 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
-   * Fetch vantages for techniques
+   * Fetch vantages associated with vantage modes
    *
    * @return {*}
    * @memberof CodeRepository

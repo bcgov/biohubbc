@@ -2,16 +2,17 @@ import { Knex } from 'knex';
 
 /**
  * UPDATES TO EXISTING CONCEPTS:
- * 
- * - Adds a table for storing options for qualitative attributes of techniques, making the options reusable 
- * - (ie. avoid duplicate options for attributes with the same options) 
- * 
+ *
+ * - Adds a table for storing options for qualitative attributes of techniques, making the options reusable
+ * - (ie. avoid duplicate records for qualitative attributes with the same options)
+ *
  * - eg. If camera trap and dip net both have a "material" attribute with "plastic" as an option, there should be one "plastic" record that gets reused.
- * 
+ *
  * NEW CONCEPT: Vantage
- * 
+ *
  * - Adds tables for vantage and vantage modes
- * - Alters technique table to include reference to a vantage mode
+ * - Adds a join table to assign vantage modes to method lookup options, setting which vantage modes can be used for a method lookup option
+ * - Adds a join table to assign vantage modes to techniques
  *
  * @export
  * @param {Knex} knex
@@ -19,6 +20,12 @@ import { Knex } from 'knex';
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
+
+    -- Drop view to allow name and description column to be deleted
+
+    SET SEARCH_PATH=biohub_dapi_v1;
+    
+    DROP VIEW IF EXISTS method_lookup_attribute_qualitative_option;
 
     SET SEARCH_PATH=biohub;
 
@@ -29,7 +36,6 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TABLE technique_attribute_qualitative_option (
         technique_attribute_qualitative_option_id      integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
         name                                           varchar(50)       NOT NULL,
-        record_effective_date                          date              DEFAULT now() NOT NULL,
         description                                    varchar(3000),
         record_end_date                                date,
         create_date                                    timestamptz(6)    DEFAULT now() NOT NULL,
@@ -40,19 +46,13 @@ export async function up(knex: Knex): Promise<void> {
         CONSTRAINT technique_attribute_qualitative_option_pk PRIMARY KEY (technique_attribute_qualitative_option_id)
     );
     
-    CREATE TRIGGER audit_technique_attribute_qualitative_option BEFORE INSERT OR UPDATE OR DELETE ON technique_attribute_qualitative_option for each ROW EXECUTE PROCEDURE tr_audit_trigger();
-    CREATE TRIGGER journal_technique_attribute_qualitative_option AFTER INSERT OR UPDATE OR DELETE ON technique_attribute_qualitative_option for each ROW EXECUTE PROCEDURE tr_journal_trigger();
-
-    ALTER TABLE method_lookup_attribute_qualitative_option ADD COLUMN technique_attribute_qualitative_option_id INTEGER;
-
-    ALTER TABLE method_lookup_attribute_qualitative_option ADD CONSTRAINT method_lookup_attribute_qualitative_option_fk2 FOREIGN KEY (technique_attribute_qualitative_option_id)
-    REFERENCES technique_attribute_qualitative_option (technique_attribute_qualitative_option_id);
+    -- Triggers, indexes and comments for the new table
 
     CREATE INDEX method_lookup_attribute_qualitative_option_idx2 ON method_lookup_attribute_qualitative_option(method_lookup_attribute_qualitative_option_id);
-    
-    CREATE UNIQUE INDEX technique_attribute_qualitative_option_nuk1 ON technique_attribute_qualitative_option(name, description, (record_end_date is NULL)) where record_end_date is null;
-        
-    COMMENT ON COLUMN method_lookup_attribute_qualitative_option.technique_attribute_qualitative_option_id IS 'Foreign key to a technique attribute option.';
+    CREATE UNIQUE INDEX technique_attribute_qualitative_option_nuk1 ON technique_attribute_qualitative_option(name, (record_end_date is NULL)) where record_end_date is null;
+
+    CREATE TRIGGER audit_technique_attribute_qualitative_option BEFORE INSERT OR UPDATE OR DELETE ON technique_attribute_qualitative_option for each ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_technique_attribute_qualitative_option AFTER INSERT OR UPDATE OR DELETE ON technique_attribute_qualitative_option for each ROW EXECUTE PROCEDURE tr_journal_trigger();
 
     COMMENT ON TABLE technique_attribute_qualitative_option IS 'Options to be selected for a technique_attribute_qualitative record, representing values for categorical attributes.';
     COMMENT ON COLUMN technique_attribute_qualitative_option.technique_attribute_qualitative_option_id IS 'System generated surrogate primary key identifier.';
@@ -64,6 +64,15 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN technique_attribute_qualitative_option.update_date IS 'The datetime the record was updated.';
     COMMENT ON COLUMN technique_attribute_qualitative_option.update_user IS 'The id of the user who updated the record as identified in the system user table.';
     COMMENT ON COLUMN technique_attribute_qualitative_option.revision_count IS 'Revision count used for concurrency control.';
+
+    -- Alter the qualitative options table to include a reference to the new table
+
+    ALTER TABLE method_lookup_attribute_qualitative_option ADD COLUMN technique_attribute_qualitative_option_id INTEGER;
+
+    ALTER TABLE method_lookup_attribute_qualitative_option ADD CONSTRAINT method_lookup_attribute_qualitative_option_fk2 FOREIGN KEY (technique_attribute_qualitative_option_id)
+      REFERENCES technique_attribute_qualitative_option (technique_attribute_qualitative_option_id);
+
+    COMMENT ON COLUMN method_lookup_attribute_qualitative_option.technique_attribute_qualitative_option_id IS 'Foreign key to a technique attribute option.';
 
 
     -- Populate new table from existing options
@@ -83,6 +92,8 @@ export async function up(knex: Knex): Promise<void> {
     SET technique_attribute_qualitative_option_id = w_insert.technique_attribute_qualitative_option_id
     FROM w_insert
     WHERE method_lookup_attribute_qualitative_option.name = w_insert.name;
+
+    -- Add not null constraints and drop name and description, which are replaced with the foreign key reference totechnique_attribute_qualitative_option
     
     ALTER TABLE method_lookup_attribute_qualitative_option ALTER COLUMN technique_attribute_qualitative_option_id SET NOT NULL;
 
@@ -91,14 +102,13 @@ export async function up(knex: Knex): Promise<void> {
 
 
     ----------------------------------------------------------------------------------------
-    -- ADD NEW VANTAGE TABLES
+    -- ADD NEW VANTAGE-RELATED TABLES
     ----------------------------------------------------------------------------------------
 
     CREATE TABLE vantage (
-        vantage_id                                     integer                        GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+        vantage_id                                     integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
         name                                           varchar(50)       NOT NULL,
         description                                    varchar(1000),
-        record_effective_date                          date              DEFAULT now() NOT NULL,
         record_end_date                                date,
         create_date                                    timestamptz(6)    DEFAULT now() NOT NULL,
         create_user                                    integer           NOT NULL,
@@ -108,12 +118,12 @@ export async function up(knex: Knex): Promise<void> {
         CONSTRAINT vantage_pk PRIMARY KEY (vantage_id)
     );
         
-    CREATE UNIQUE INDEX vantage_nuk1 ON vantage(name, description, (record_end_date is NULL)) where record_end_date is null;
+    CREATE UNIQUE INDEX vantage_nuk1 ON vantage(name, (record_end_date is NULL)) where record_end_date is null;
 
     CREATE TRIGGER audit_vantage BEFORE INSERT OR UPDATE OR DELETE ON vantage for each ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_vantage AFTER INSERT OR UPDATE OR DELETE ON vantage for each ROW EXECUTE PROCEDURE tr_journal_trigger();
 
-    COMMENT ON TABLE vantage IS 'Vantages that vantage modes can belong to, like categories of modes.';
+    COMMENT ON TABLE vantage IS 'Vantages that vantage_mode records belong to, like categories of modes.';
     COMMENT ON COLUMN vantage.vantage_id IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN vantage.name IS 'The name of the record.';
     COMMENT ON COLUMN vantage.description IS 'The description of the record.';
@@ -131,7 +141,6 @@ export async function up(knex: Knex): Promise<void> {
         vantage_id                                     integer           NOT NULL,
         name                                           varchar(50)       NOT NULL,
         description                                    varchar(1000),
-        record_effective_date                          date              DEFAULT now() NOT NULL,
         record_end_date                                date,
         create_date                                    timestamptz(6)    DEFAULT now() NOT NULL,
         create_user                                    integer           NOT NULL,
@@ -150,9 +159,9 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TRIGGER audit_vantage_mode BEFORE INSERT OR UPDATE OR DELETE ON vantage_mode for each ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_vantage_mode AFTER INSERT OR UPDATE OR DELETE ON vantage_mode for each ROW EXECUTE PROCEDURE tr_journal_trigger();
 
-    COMMENT ON TABLE vantage_mode IS 'Vantage mode options that can be applied to techniques.';
+    COMMENT ON TABLE vantage_mode IS 'Vantage mode options that can be made available for method lookup options.';
     COMMENT ON COLUMN vantage_mode.vantage_mode_id IS 'System generated surrogate primary key identifier.';
-    COMMENT ON COLUMN vantage_mode.vantage_id IS 'The vantage option of the record.';
+    COMMENT ON COLUMN vantage_mode.vantage_id IS 'The vantage of the record.';
     COMMENT ON COLUMN vantage_mode.name IS 'The name of the record.';
     COMMENT ON COLUMN vantage_mode.description IS 'The description of the record.';
     COMMENT ON COLUMN vantage_mode.record_end_date IS 'Record level end date.';
@@ -169,7 +178,6 @@ export async function up(knex: Knex): Promise<void> {
         vantage_mode_id                                integer           NOT NULL,
         method_lookup_id                               integer           NOT NULL,
         description                                    varchar(1000),
-        record_effective_date                          date              DEFAULT now() NOT NULL,
         record_end_date                                date,
         create_date                                    timestamptz(6)    DEFAULT now() NOT NULL,
         create_user                                    integer           NOT NULL,
@@ -230,7 +238,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE TRIGGER audit_method_technique_vantage_mode BEFORE INSERT OR UPDATE OR DELETE ON method_technique_vantage_mode for each ROW EXECUTE PROCEDURE tr_audit_trigger();
     CREATE TRIGGER journal_method_technique_vantage_mode AFTER INSERT OR UPDATE OR DELETE ON method_technique_vantage_mode for each ROW EXECUTE PROCEDURE tr_journal_trigger();
 
-    COMMENT ON TABLE method_technique_vantage_mode IS 'Join table indicating which vantage modes apply to which method lookup options.';
+    COMMENT ON TABLE method_technique_vantage_mode IS 'Join table applying vantage modes to techniques.';
     COMMENT ON COLUMN method_technique_vantage_mode.method_technique_vantage_mode_id IS 'System generated surrogate primary key identifier.';
     COMMENT ON COLUMN method_technique_vantage_mode.method_technique_id IS 'The method technique of the record.';
     COMMENT ON COLUMN method_technique_vantage_mode.vantage_mode_method_id IS 'The vantage mode of the record.';
@@ -250,7 +258,7 @@ export async function up(knex: Knex): Promise<void> {
     INSERT INTO 
       vantage (name, description) 
     VALUES 
-      ('air', 'Aerial view from an aircraft or drone.'),
+      ('air', 'View from an aircraft or drone.'),
       ('arboreal', 'View from the tree canopy.'),
       ('water', 'View from a body of water.'),
       ('benthic', 'View from the bottom of a waterbody.'),
@@ -277,11 +285,11 @@ export async function up(knex: Knex): Promise<void> {
       -- Ground Vantage Modes
       ((SELECT vantage_id FROM vantage WHERE name = 'ground'), 'stationary fixture', 'At a fixed position on the ground.'),
       ((SELECT vantage_id FROM vantage WHERE name = 'ground'), 'foot', 'On foot.'),
-      ((SELECT vantage_id FROM vantage WHERE name = 'ground'), 'vehicle', 'In a truck, car, or similar vehicle.'),
-      ((SELECT vantage_id FROM vantage WHERE name = 'ground'), 'quad', 'On a quad or all-terrain vehicle.'),
+      ((SELECT vantage_id FROM vantage WHERE name = 'ground'), 'on-road vehicle', 'In a truck, car, or similar on-road vehicle.'),
+      ((SELECT vantage_id FROM vantage WHERE name = 'ground'), 'off-road vehicle', 'On a quad, dirtbike, or similar all-terrain vehicle.'),
       ((SELECT vantage_id FROM vantage WHERE name = 'ground'), 'horseback', 'On horseback.'),
       ((SELECT vantage_id FROM vantage WHERE name = 'ground'), 'snowmobile', 'On a snowmobile.'),
-      ((SELECT vantage_id FROM vantage WHERE name = 'ground'), 'bike', 'On a bicycle'),
+      ((SELECT vantage_id FROM vantage WHERE name = 'ground'), 'bike', 'On a bicycle.'),
 
       -- Benthic Vantage Modes
       ((SELECT vantage_id FROM vantage WHERE name = 'benthic'), 'stationary fixture', 'At a fixed position on the bottom of a waterbody.'),
@@ -317,9 +325,9 @@ export async function up(knex: Knex): Promise<void> {
       ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'visual encounter'), 
       (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'foot' AND v.name = 'ground')),
       ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'visual encounter'), 
-      (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'vehicle' AND v.name = 'ground')),
+      (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'on-road vehicle' AND v.name = 'ground')),
       ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'visual encounter'), 
-      (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'quad' AND v.name = 'ground')),
+      (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'off-road vehicle' AND v.name = 'ground')),
       ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'visual encounter'), 
       (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'horseback' AND v.name = 'ground')),
       ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'visual encounter'), 
@@ -349,14 +357,16 @@ export async function up(knex: Knex): Promise<void> {
       (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'kayak or canoe' AND v.name = 'water')),
       ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'audio encounter'), 
       (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'submersible' AND v.name = 'water')),
+      ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'audio encounter'), 
+      (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'stationary fixture' AND v.name = 'water')),
 
       -- Ground Vantage Modes
       ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'audio encounter'), 
       (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'foot' AND v.name = 'ground')),
       ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'audio encounter'), 
-      (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'vehicle' AND v.name = 'ground')),
+      (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'on-road vehicle' AND v.name = 'ground')),
       ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'audio encounter'), 
-      (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'quad' AND v.name = 'ground')),
+      (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'off-road vehicle' AND v.name = 'ground')),
       ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'audio encounter'), 
       (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'horseback' AND v.name = 'ground')),
       ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'audio encounter'), 
@@ -377,7 +387,9 @@ export async function up(knex: Knex): Promise<void> {
       ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'radar'), 
       (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'foot' AND v.name = 'ground')),
       ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'radar'), 
-      (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'vehicle' AND v.name = 'ground')),
+      (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'on-road vehicle' AND v.name = 'ground')),
+      ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'radar'), 
+      (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'off-road vehicle' AND v.name = 'ground')),
       ((SELECT method_lookup_id FROM method_lookup WHERE LOWER(name) = 'radar'), 
       (SELECT vantage_mode_id FROM vantage_mode vm JOIN vantage v ON v.vantage_id = vm.vantage_id WHERE vm.name = 'stationary fixture' AND v.name = 'ground')),
 

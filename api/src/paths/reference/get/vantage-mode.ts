@@ -10,7 +10,7 @@ const defaultLog = getLogger('paths/reference/get/vantage-mode');
 export const GET: Operation = [getVantageModes()];
 
 GET.apiDoc = {
-  description: 'Find vantage modes applicable to techniques',
+  description: 'Find vantage modes applicable to method lookup options',
   tags: ['reference'],
   parameters: [
     {
@@ -28,7 +28,7 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Vantage s for a method lookup id.',
+      description: 'Vantages for a method lookup id.',
       content: {
         'application/json': {
           schema: vantageModeSchema

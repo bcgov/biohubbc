@@ -114,15 +114,20 @@ export class TechniqueAttributeRepository extends BaseRepository {
             'method_lookup_attribute_qualitative_id',
             knex.raw(`
               json_agg(json_build_object(
-                'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id,
-                'name', name,
-                'description', description
+                'method_lookup_attribute_qualitative_option_id', mlaqo.method_lookup_attribute_qualitative_option_id,
+                'name', taqo.name,
+                'description', taqo.description
               )) as options
             `)
           )
-          .from('method_lookup_attribute_qualitative_option')
-          .where('record_end_date', null)
-          .groupBy('method_lookup_attribute_qualitative_id')
+          .from('method_lookup_attribute_qualitative_option as mlaqo')
+          .join(
+            'technique_attribute_qualitative_option as taqo',
+            'taqo.technique_attribute_qualitative_option_id',
+            'mlaqo.technique_attribute_qualitative_option_id'
+          )
+          .where('mlaqo.record_end_date', null)
+          .groupBy('mlaqo.method_lookup_attribute_qualitative_id')
       )
       .with(
         'w_qualitative_attributes',
@@ -212,14 +217,19 @@ export class TechniqueAttributeRepository extends BaseRepository {
             'method_lookup_attribute_qualitative_id',
             knex.raw(`
               json_agg(json_build_object(
-                'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id,
-                'name', name,
-                'description', description
+                'method_lookup_attribute_qualitative_option_id', mlaqo.method_lookup_attribute_qualitative_option_id,
+                'name', taqo.name,
+                'description', taqo.description
               )) as options
             `)
           )
-          .from('method_lookup_attribute_qualitative_option')
-          .where('record_end_date', null)
+          .from('method_lookup_attribute_qualitative_option as mlaqo')
+          .join(
+            'technique_attribute_qualitative_option as taqo',
+            'taqo.technique_attribute_qualitative_option_id',
+            'mlaqo.technique_attribute_qualitative_option_id'
+          )
+          .where('mlaqo.record_end_date', null)
           .groupBy('method_lookup_attribute_qualitative_id')
       )
       .with(
