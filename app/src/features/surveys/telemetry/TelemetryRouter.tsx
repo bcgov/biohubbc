@@ -33,7 +33,6 @@ export const TelemetryRouter = () => {
           validProjectPermissions={[
             PROJECT_PERMISSION.COORDINATOR,
             PROJECT_PERMISSION.COLLABORATOR,
-            PROJECT_PERMISSION.OBSERVER
           ]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>

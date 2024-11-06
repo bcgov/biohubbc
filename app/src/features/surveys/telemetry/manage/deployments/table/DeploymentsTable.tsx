@@ -151,6 +151,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
     {
       field: 'deployment2_id',
       headerName: 'Deployment ID',
+      description: 'The unique key for the deployment',
       width: 100,
       minWidth: 100,
       renderHeader: (params) => (
@@ -169,6 +170,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
     {
       field: 'critter_id',
       headerName: 'Animal',
+      description: 'The nickname of the animal that the device is on',
       flex: 1,
       renderCell: (params) => (
         <>
@@ -182,22 +184,24 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
     {
       field: 'device_key',
       headerName: 'Device',
+      description: 'The serial number and make of the device that is deployed',
       flex: 1,
       renderCell: (params) => {
         const [vendor, serial] = params.row.device_key.split(':');
         return (
-          <>
-            {serial}&nbsp;
-            <Typography fontSize="inherit" color="textSecondary" component="span">
+          <Typography variant='body2'>
+            {serial}
+            <Typography fontSize="inherit" color="textSecondary">
               {vendor}
             </Typography>
-          </>
+          </Typography>
         );
       }
     },
     {
       field: 'frequency',
       headerName: 'Frequency',
+      description: 'The frequency of the device',
       flex: 1,
       renderCell: (params) => (
         <Typography>
@@ -213,6 +217,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
     {
       field: 'attachment_start_date',
       headerName: 'Start',
+      description: 'The start date of the deployment',
       flex: 1,
       renderCell: (params) => (
         <>
@@ -227,6 +232,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
     {
       field: 'attachment_end_date',
       headerName: 'End',
+      description: 'The end date of the deployment',
       flex: 1,
       renderCell: (params) => (
         <>
@@ -241,6 +247,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
     {
       field: 'status',
       headerName: 'Status',
+      description: 'The status of the deployment, based on whether the end date has passed',
       flex: 1,
       renderCell: (params) => {
         if (
