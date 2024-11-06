@@ -31,6 +31,7 @@ import PurposeAndMethodologyForm, {
 import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/participants/SurveyUserForm';
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
 import SpeciesForm, { SpeciesYupSchema } from '../components/species/SpeciesForm';
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 
 export interface IEditSurveyForm<
   T extends
@@ -117,7 +118,11 @@ const EditSurveyForm = <
           summary="Enter any permits used in this survey"
           component={
             <Box component="fieldset">
-              <Typography component="legend">Were any permits used in this survey?</Typography>
+            <Stack direction ="row" spacing={1} alignItems="flex-start"><Typography>Were any permits used in this survey?</Typography>
+            <Box sx={{ display: 'flex', transform: 'translateY(-15px)' }}>
+              <HelpButtonTooltip content="Please include information for any permits granted and executed for the data acquisition purposes of this survey." />
+            </Box>
+            </Stack>
               <SurveyPermitForm />
             </Box>
           }
@@ -160,7 +165,7 @@ const EditSurveyForm = <
 
         <HorizontalSplitFormComponent
           title="Survey Participants"
-          summary="Specify people who participated in this survey. Only people who have signed up for SIMS can be selected."
+          summary="Specify people who participated in this survey"
           component={<SurveyUserForm jobs={codes.survey_jobs} />}
         />
 
