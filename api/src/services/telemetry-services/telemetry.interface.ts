@@ -4,11 +4,8 @@ export interface TelemetryQueueResult {
    * @type {number}
    */
   serial: number;
-  /**
-   * The number of telemetry records processed.
-   * @type {number}
-   */
-  telemetry: number;
+  new: number;
+  created: number;
   /**
    * The error that occurred during processing.
    * @type {Error | undefined}

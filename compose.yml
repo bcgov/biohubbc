@@ -114,6 +114,11 @@ services:
       - CB_API_HOST=${CB_API_HOST}
       # Feature Flags
       - FEATURE_FLAGS=${FEATURE_FLAGS}
+      # Telemetry TODO: Add to CI/CD pipelines
+      - LOTEK_API_HOST${LOTEK_API_HOST}
+      - LOTEK_ACCOUNT_USERNAME=${LOTEK_ACCOUNT_USERNAME}
+      - LOTEK_ACCOUNT_PASSWORD=${LOTEK_ACCOUNT_PASSWORD}
+      - VECTRONIC_API_HOST${VECTRONIC_API_HOST}
     volumes:
       - ./api:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules

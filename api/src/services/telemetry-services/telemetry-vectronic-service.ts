@@ -37,7 +37,7 @@ export class TelemetryVectronicService extends DBService {
    * @returns {URL}
    */
   getVectronicBaseURL(): URL {
-    return new URL(process.env.VECTRONIC_API_HOST ?? 'https://api.vectronic-wildlife.com/v2');
+    return new URL(process.env.VECTRONIC_API_HOST ?? 'https://api.vectronic-wildlife.com');
   }
 
   /**
@@ -49,7 +49,7 @@ export class TelemetryVectronicService extends DBService {
   getVectronicTelemetryURL(query: VectronicAPIQuery): URL {
     const url = this.getVectronicBaseURL();
 
-    url.pathname += `/${query.idcollar}/gps`;
+    url.pathname = `v2/${query.idcollar}/gps`;
 
     url.searchParams.append('collarkey', query.collarkey);
     url.searchParams.append('onlyValid', 'true'); // TODO: Invesitgate this param
@@ -91,19 +91,19 @@ export class TelemetryVectronicService extends DBService {
     const queueResult: TelemetryQueueResult[] = [];
 
     const queue = fastq.promise(async (task: VectronicAPIQuery): Promise<void> => {
-      let telemetryCount = 0;
+      let created = 0;
 
       try {
         // 1. Fetch telemetry data for a single device
         const deviceTelemetry = await this.fetchDeviceTelemetry(task);
 
         // 2. Batch insert telemetry data into SIMS
-        telemetryCount = await this.batchCreateTelemetry(deviceTelemetry, batchSize);
+        created = await this.batchCreateTelemetry(deviceTelemetry, batchSize);
 
         // 3. Update telemetry
-        queueResult.push({ serial: task.idcollar, telemetry: telemetryCount, error: undefined });
+        queueResult.push({ serial: task.idcollar, new: 0, created });
       } catch (error: any) {
-        queueResult.push({ serial: task.idcollar, telemetry: telemetryCount, error: error.message });
+        queueResult.push({ serial: task.idcollar, new: 0, created, error: error.message });
       }
     }, concurrently);
 

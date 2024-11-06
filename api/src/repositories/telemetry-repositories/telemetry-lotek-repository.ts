@@ -1,5 +1,4 @@
 import SQL from 'sql-template-strings';
-import { TelemetryCredentialVectronicRecord } from '../../database-models/telemetry_credential_vectronic';
 import { getKnex } from '../../database/db';
 import { BaseRepository } from '../base-repository';
 import { CreateVectronicTelemetry } from './telemetry-vectronic-repository.interface';
@@ -18,8 +17,8 @@ export class TelemetryLotekRepository extends BaseRepository {
     const queryBuilder = knex
       .queryBuilder()
       .insert(telemetry)
-      .into('vectronic_telemetry')
-      .onConflict('idposition')
+      .into('vectronic_lotek')
+      .onConflict(['uploadtimestamp'])
       .ignore();
 
     const result = await this.connection.knex(queryBuilder);
@@ -27,24 +26,17 @@ export class TelemetryLotekRepository extends BaseRepository {
     return result.rowCount ?? 0;
   }
 
-  /**
-   * Get all Lotek credentials.
-   *
-   * @returns {*} {Promise<TelemetryCredentialVectronicRecord[]>}
-   */
-  async getAllLotekCredentials(): Promise<TelemetryCredentialVectronicRecord[]> {
+  async getDeviceSerialStats() {
     const sqlStatement = SQL`
       SELECT
-        telemetry_credential_vectronic_id,
-        device_key,
-        idcollar,
-        comtype,
-        idcom,
-        collarkey,
-        collartype
-      FROM telemetry_credential_vectronic;
+        deviceid as serial,
+        COUNT(*) AS telemetry_count,
+        MAX(uploadtimestamp) as last_acquistion
+      FROM telemetry_lotek
+      GROUP BY serial;
     `;
-    const result = await this.connection.sql(sqlStatement, TelemetryCredentialVectronicRecord);
+
+    const result = await this.connection.sql(sqlStatement);
 
     return result.rows;
   }

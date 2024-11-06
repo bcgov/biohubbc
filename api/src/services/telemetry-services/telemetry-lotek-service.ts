@@ -2,10 +2,12 @@ import axios from 'axios';
 import fastq from 'fastq';
 import { chunk } from 'lodash';
 import { IDBConnection } from '../../database/db';
+import { ApiGeneralError } from '../../errors/api-error';
 import { TelemetryLotekRepository } from '../../repositories/telemetry-repositories/telemetry-lotek-repository';
 import { LotekAPIQuery } from '../../repositories/telemetry-repositories/telemetry-lotek-repository.interface';
 import { CreateVectronicTelemetry } from '../../repositories/telemetry-repositories/telemetry-vectronic-repository.interface';
 import { DBService } from '../db-service';
+import { LotekAPIDevice } from './telemetry-lotek-service.interface';
 import { formatVectronicAPITelemetry } from './telemetry-utils';
 import { TelemetryVectronicAPIRecord } from './telemetry-vectronic-service.interface';
 import { TelemetryQueueResult } from './telemetry.interface';
@@ -18,6 +20,8 @@ import { TelemetryQueueResult } from './telemetry.interface';
  * @extends {DBService}
  */
 export class TelemetryLotekService extends DBService {
+  token: string | undefined;
+
   telemetryLotekRepository: TelemetryLotekRepository;
 
   /**
@@ -28,6 +32,7 @@ export class TelemetryLotekService extends DBService {
   constructor(connection: IDBConnection) {
     super(connection);
 
+    this.token = undefined;
     this.telemetryLotekRepository = new TelemetryLotekRepository(connection);
   }
 
@@ -37,7 +42,7 @@ export class TelemetryLotekService extends DBService {
    * @returns {URL}
    */
   getLotekBaseURL(): URL {
-    return new URL(process.env.LOTEK_API_HOST ?? 'https://api.lotek.com/API');
+    return new URL(process.env.LOTEK_API_HOST ?? 'https://webservice.lotek.com');
   }
 
   /**
@@ -49,59 +54,129 @@ export class TelemetryLotekService extends DBService {
   getLotekTelemetryURL(query: LotekAPIQuery): URL {
     const url = this.getLotekBaseURL();
 
-    url.pathname += '/gps';
+    url.pathname = 'API/gps';
 
     url.searchParams.append('deviceId', String(query.deviceId));
 
     if (query.dtstart) {
       url.searchParams.append('dtstart', query.dtstart);
     }
+
     if (query.dtend) {
       url.searchParams.append('dtend', query.dtend);
     }
+
     return url;
   }
 
   /**
-   * Authenticate admin account with the Lotek API.
+   * Authenticate Lotek API account and return access token.
    *
+   * @throws {ApiGeneralError} Failed to authenticate with Lotek API
    * @returns {Promise<string>} The access token
    */
-  async authenticate(): Promise<string> {
+  async fetchTokenFromLotek(): Promise<string> {
+    // Return cached token if already authenticated
+    if (this.token) {
+      return this.token;
+    }
+
     const url = this.getLotekBaseURL();
 
-    url.pathname += 'user/login';
+    url.pathname = 'API/user/login';
 
-    const response = await axios.post(
-      url.toString(),
-      {
-        username: process.env.LOTEK_ACCOUNT_USERNAME, // Todo: Add these values to ENV
-        password: process.env.LOTEK_ACCOUNT_PASSWORD,
-        grant_type: 'password'
-      },
-      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-    );
+    try {
+      const response = await axios.post(
+        url.toString(),
+        {
+          username: process.env.LOTEK_ACCOUNT_USERNAME,
+          password: process.env.LOTEK_ACCOUNT_PASSWORD,
+          grant_type: 'password'
+        },
+        { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+      );
 
-    return response.data.access_token;
+      // Cache token for future requests
+      this.token = response.data.access_token;
+
+      return response.data.access_token;
+    } catch (error: any) {
+      throw new ApiGeneralError('Failed to authenticate with Lotek.', [error.response.data]);
+    }
   }
 
   /**
-   * Fetch device telemetry data from Lotek API.
+   * Fetch devices associated with the authenticated Lotek API account.
+   *
+   * @throws {ApiGeneralError} Failed to fetch devices from Lotek API
+   * @returns {Promise<LotekAPIDevice[]>} The list of devices
+   */
+  async fetchDevicesFromLotek(): Promise<LotekAPIDevice[]> {
+    const token = await this.fetchTokenFromLotek();
+    const url = this.getLotekBaseURL();
+
+    url.pathname = 'API/devices';
+
+    try {
+      const response = await axios.get<LotekAPIDevice[]>(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      return response.data;
+    } catch (error: any) {
+      throw new ApiGeneralError('Failed to fetch devices from Lotek.', [error.response.data]);
+    }
+  }
+
+  /**
+   * Fetch telemetry data count for a single device from Lotek API.
+   *
+   * @throws {ApiGeneralError} Failed to fetch device telemetry count from Lotek API
+   * @param {LotekAPIQuery} query - Lotek API request query
+   * @returns {Promise<number>} The number of telemetry records
+   */
+  async fetchTelemetryCountFromLotek(query: LotekAPIQuery): Promise<number> {
+    const token = await this.fetchTokenFromLotek();
+    const url = this.getLotekTelemetryURL(query);
+
+    url.pathname = 'API/gps/count';
+
+    try {
+      const response = await axios.get<TelemetryVectronicAPIRecord[]>(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      return response.data.length;
+    } catch (error: any) {
+      throw new ApiGeneralError('Failed to fetch device telemetry count from Lotek.', [error.response.data]);
+    }
+  }
+
+  /**
+   * Fetch telemetry data for a single device from Lotek API.
    *
    * @param {LotekAPIQuery} query - Lotek API request query
-   * @param {string} token - Lotek access token
    * @returns {Promise<TelemetryVectronicAPIRecord[]>} Raw API telemetry data
    */
-  async fetchDeviceTelemetry(query: LotekAPIQuery, token: string): Promise<TelemetryVectronicAPIRecord[]> {
-    const url = this.getLotekTelemetryURL(query).toString();
+  async fetchTelemetryFromLotek(query: LotekAPIQuery): Promise<TelemetryVectronicAPIRecord[]> {
+    const token = await this.fetchTokenFromLotek();
+    const url = this.getLotekTelemetryURL(query);
 
-    const response = await axios.get<TelemetryVectronicAPIRecord[]>(url, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    try {
+      const response = await axios.get<TelemetryVectronicAPIRecord[]>(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
 
-    return response.data;
+      return response.data;
+    } catch (error: any) {
+      throw new ApiGeneralError('Failed to fetch device telemetry from Lotek.', [error.response.data]);
+    }
   }
 
   /**
@@ -117,39 +192,61 @@ export class TelemetryLotekService extends DBService {
     concurrently: number,
     batchSize: number
   ): Promise<TelemetryQueueResult[]> {
-    const token = await this.authenticate();
     const queueResult: TelemetryQueueResult[] = [];
 
-    const queue = fastq.promise(async (task: LotekAPIQuery): Promise<void> => {
-      let telemetryCount = 0;
+    const simsTelemetryCount = await this.telemetryLotekRepository.getDeviceSerialStats();
+    const simsTelemetryMap = new Map(
+      simsTelemetryCount.map((value) => [
+        value.serial,
+        { count: value.telemetry_count, lastAcquisition: value.last_acquistion }
+      ])
+    );
 
-      try {
-        // 1. Fetch single device telemetry data from Lotek API
-        const deviceTelemetry = await this.fetchDeviceTelemetry(task, token);
+    const queue = fastq.promise(async (task: LotekAPIQuery) => {
+      const created = 0;
+      let newTelemetry = 0;
 
-        // 2. Format telemetry data for SIMS insert
-        const formattedTelemetry = deviceTelemetry.map((telemetry) => formatVectronicAPITelemetry(telemetry));
+      //try {
+      const lotekCount = await this.fetchTelemetryCountFromLotek(task);
+      const simsLotekDeviceStats = simsTelemetryMap.get(task.deviceId) ?? { count: 0, lastAcquisition: undefined };
 
-        // 3. Batch insert telemetry data
-        telemetryCount = await this.batchCreateTelemetry(formattedTelemetry, batchSize);
+      newTelemetry = lotekCount - simsLotekDeviceStats.count;
 
-        // 4. Track results
-        queueResult.push({ serial: task.deviceId, telemetry: telemetryCount, error: undefined });
-      } catch (error: any) {
-        queueResult.push({ serial: task.deviceId, telemetry: telemetryCount, error: error.message });
+      if (!newTelemetry) {
+        return { serial: task.deviceId, new: 0, created: 0 };
       }
+
+      // 1. Fetch single device telemetry data from Lotek API
+      // Note: If dtstart is not provided, use the last telemetry date from SIMS
+      const deviceTelemetry = await this.fetchTelemetryFromLotek({
+        deviceId: task.deviceId,
+        dtend: task.dtend,
+        dtstart: task.dtstart ?? simsLotekDeviceStats.lastAcquisition
+      });
+
+      // 2. Format telemetry data for SIMS insert
+      const formattedTelemetry = deviceTelemetry.map((telemetry) => formatVectronicAPITelemetry(telemetry));
+
+      // 3. Batch insert telemetry data
+      await this.batchCreateTelemetry(formattedTelemetry, batchSize);
+
+      return { serial: task.deviceId, new: newTelemetry, created };
     }, concurrently);
 
     for (const query of queries) {
       queue.push(query);
     }
 
-    await queue.drain();
-
     return queueResult;
   }
 
-  // TODO: update type (createVectonicTelemetry)
+  /**
+   * Batch insert telemetry data into SIMS.
+   *
+   * @param {CreateVectronicTelemetry[]} telemetry - List of telemetry data to create
+   * @param {number} [batchSize=1000] - Number of items to insert in a single batch
+   * @returns {Promise<number>} The number of telemetry records created
+   */
   async batchCreateTelemetry(telemetry: CreateVectronicTelemetry[], batchSize = 1000): Promise<number> {
     const telemetryBatches = chunk(telemetry, batchSize);
 

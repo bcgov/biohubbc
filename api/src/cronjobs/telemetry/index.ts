@@ -3,8 +3,40 @@ import { defaultPoolConfig, getAPIUserDBConnection, initDBPool } from '../../dat
 import { VectronicAPIQuery } from '../../repositories/telemetry-repositories/telemetry-vectronic-repository.interface';
 import { TelemetryVectronicService } from '../../services/telemetry-services/telemetry-vectronic-service';
 import { getLogger } from '../../utils/logger';
+import { taskQueue } from '../../utils/task-queue';
 
 const defaultLog = getLogger('TelemetryCronjob');
+
+async function worker(item: number): Promise<number> {
+  if (item === 5) {
+    throw new Error('Error processing item 5');
+  }
+  return await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(item * 2);
+    }, 1000);
+  });
+}
+
+const run = async () => {
+  const result = await taskQueue([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], worker, 2);
+
+  console.time('promise');
+
+  const a = new Promise((resolve) => setTimeout(() => resolve('a'), 2000));
+
+  const b = await new Promise((resolve) => setTimeout(() => resolve('b'), 2000));
+
+  await new Promise((resolve) => setTimeout(() => resolve('b'), 2000));
+
+  await a;
+
+  console.log({ a, b });
+
+  console.timeEnd('promise');
+
+  console.log({ result });
+};
 
 /**
  * Telemetry retrieval cronjob.
@@ -14,18 +46,20 @@ const defaultLog = getLogger('TelemetryCronjob');
  * @returns {*} {Promise<void>}
  */
 export async function main(): Promise<void> {
-  defaultLog.info({ message: 'Cronjob starting.' });
-
   const args = parseArguments(); // Parse the CLI arguments
+
+  defaultLog.info({ message: 'Cronjob starting.', args });
 
   initDBPool(defaultPoolConfig); // Initialize the database connection pool
 
   const connection = getAPIUserDBConnection(); // Get the API user database connection
 
   try {
-    await connection.open({ noTransaction: true }); // Open a connection to the database without a transaction
+    //const lotekService = new TelemetryLotekService(connection); // Create a new Lotek telemetry service
 
-    await processVectronicTelemetry(new TelemetryVectronicService(connection), args);
+    await run();
+
+    await connection.open({ noTransaction: true }); // Open a connection to the database without a transaction
 
     defaultLog.info({ message: 'Cronjob completed.' });
   } catch (error) {
@@ -77,7 +111,7 @@ type Arguments = ReturnType<typeof parseArguments>;
  * @param {Arguments} args The CLI arguments.
  * @returns {*} {Promise<void>}
  */
-const processVectronicTelemetry = async (vectronicService: TelemetryVectronicService, args: Arguments) => {
+export const processVectronicTelemetry = async (vectronicService: TelemetryVectronicService, args: Arguments) => {
   // Fetch the Vectronic device credentials from SIMS
   const credentials = await vectronicService.getDeviceCredentials();
 

@@ -1,3 +1,10 @@
+export interface LotekAPIDevice {
+  nDeviceID: number;
+  strSpecialID: string;
+  dtCreated: string;
+  strSatellite: string;
+}
+
 export interface TelemetryLotekAPIRecord {
   channelstatus: string;
   uploadtimestamp: string;
