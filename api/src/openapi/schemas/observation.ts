@@ -419,9 +419,9 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
           type: 'array',
           items: {
             type: 'object',
-            additionalProperties: false,
             description: 'Basic data about a sampling site with associated methods and period data',
             required: ['survey_sample_site_id', 'name', 'sample_methods'],
+            additionalProperties: false,
             properties: {
               survey_sample_site_id: {
                 type: 'integer',
@@ -436,23 +436,35 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
                 minItems: 1,
                 items: {
                   type: 'object',
-                  additionalProperties: false,
                   required: [
                     'survey_sample_method_id',
-                    'technique',
+                    'survey_sample_site_id',
                     'method_response_metric_id',
-                    'survey_sample_site_id'
+                    'technique'
                   ],
+                  additionalProperties: false,
                   properties: {
-                    survey_sample_method_id: { type: 'integer', minimum: 1 },
-                    survey_sample_site_id: { type: 'integer', minimum: 1 },
-                    method_response_metric_id: { type: 'integer', minimum: 1 },
+                    survey_sample_method_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    survey_sample_site_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    method_response_metric_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
                     technique: {
                       type: 'object',
                       additionalProperties: false,
                       required: ['method_technique_id', 'name'],
                       properties: {
-                        method_technique_id: { type: 'integer', minimum: 1 },
+                        method_technique_id: {
+                          type: 'integer',
+                          minimum: 1
+                        },
                         name: {
                           type: 'string',
                           description: 'The name of the technique associated with the sampling method'
@@ -465,7 +477,6 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
                       items: {
                         type: 'object',
                         description: 'A period associated with the sampling method',
-                        additionalProperties: false,
                         required: [
                           'survey_sample_period_id',
                           'survey_sample_method_id',
@@ -474,13 +485,29 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
                           'start_time',
                           'end_time'
                         ],
+                        additionalProperties: false,
                         properties: {
-                          survey_sample_period_id: { type: 'integer' },
-                          survey_sample_method_id: { type: 'integer', minimum: 1 },
-                          start_date: { type: 'string' },
-                          end_date: { type: 'string' },
-                          start_time: { type: 'string', nullable: true },
-                          end_time: { type: 'string', nullable: true }
+                          survey_sample_period_id: {
+                            type: 'integer'
+                          },
+                          survey_sample_method_id: {
+                            type: 'integer',
+                            minimum: 1
+                          },
+                          start_date: {
+                            type: 'string'
+                          },
+                          end_date: {
+                            type: 'string'
+                          },
+                          start_time: {
+                            type: 'string',
+                            nullable: true
+                          },
+                          end_time: {
+                            type: 'string',
+                            nullable: true
+                          }
                         }
                       }
                     }

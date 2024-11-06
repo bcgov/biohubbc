@@ -29,7 +29,7 @@ import {
   ObservationSubcountSignColDef,
   SampleMethodColDef,
   SamplePeriodColDef,
-  SampleSiteColDef,
+  SampleSiteColDef2,
   TaxonomyColDef
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitions';
 import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-obsevations/ImportObservationsButton';
@@ -65,7 +65,8 @@ const ObservationsTableContainer = () => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  // Collect sample sites
+  // Get initial sample site information from the observations records (this only includes the sample sites for the
+  // observations that have been loaded, not all sample sites that exist for the survey)
   const surveySampleSites: IGetBasicSampleLocation[] = useMemo(
     () => observationsContext.observationsDataLoader.data?.supplementaryObservationData.sample_sites ?? [],
     [observationsContext.observationsDataLoader.data?.supplementaryObservationData.sample_sites]
@@ -79,6 +80,8 @@ const ObservationsTableContainer = () => {
       })) ?? [],
     [surveySampleSites]
   );
+
+  //   const onSelectSampleSite = (x: any) => {};
 
   // Collect sample methods
   const surveySampleMethods: IGetBasicSampleMethod[] = surveySampleSites
@@ -120,7 +123,7 @@ const ObservationsTableContainer = () => {
     () => [
       // Add standard observation columns to the table
       TaxonomyColDef({ hasError: observationsTableContext.hasError }),
-      SampleSiteColDef({ sampleSiteOptions, hasError: observationsTableContext.hasError }),
+      SampleSiteColDef2({ sampleSiteOptions, hasError: observationsTableContext.hasError }),
       SampleMethodColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
       SamplePeriodColDef({ samplePeriodOptions, hasError: observationsTableContext.hasError }),
       ObservationSubcountSignColDef({ observationSubcountSignOptions, hasError: observationsTableContext.hasError }),

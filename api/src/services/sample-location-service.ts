@@ -48,15 +48,21 @@ export class SampleLocationService extends DBService {
    * Gets a paginated set of survey Sample Locations for the given survey.
    *
    * @param {number} surveyId
-   * @param {ApiPaginationOptions} [pagination]
+   * @param {{
+   *       keyword?: string;
+   *       pagination?: ApiPaginationOptions;
+   *     }} [options]
    * @return {*}  {Promise<SampleLocationRecord[]>}
    * @memberof SampleLocationService
    */
   async getSampleLocationsForSurveyId(
     surveyId: number,
-    pagination?: ApiPaginationOptions
+    options?: {
+      keyword?: string;
+      pagination?: ApiPaginationOptions;
+    }
   ): Promise<SampleLocationRecord[]> {
-    return this.sampleLocationRepository.getSampleLocationsForSurveyId(surveyId, pagination);
+    return this.sampleLocationRepository.getSampleLocationsForSurveyId(surveyId, options);
   }
 
   /**

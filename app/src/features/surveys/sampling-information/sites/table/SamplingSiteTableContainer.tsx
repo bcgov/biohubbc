@@ -48,7 +48,7 @@ export const SamplingSiteTableContainer = () => {
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   const samplingSitesDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
-    biohubApi.samplingSite.getSampleSites(surveyContext.projectId, surveyContext.surveyId, pagination)
+    biohubApi.samplingSite.getSampleSites(surveyContext.projectId, surveyContext.surveyId, { pagination })
   );
 
   const pagination: ApiPaginationRequestOptions = useMemo(() => {

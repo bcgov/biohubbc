@@ -28,7 +28,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 
-const pageSizeOptions = [10, 25, 50];
+const pageSizeOptions = [10, 25, 50, 1000];
 
 /**
  * Renders a list of sampling sites.
@@ -53,7 +53,7 @@ export const SamplingSiteListContainer = () => {
   const [sortModel] = useState<GridSortModel>([]);
 
   const sampleSiteDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
-    biohubApi.samplingSite.getSampleSites(surveyContext.projectId, surveyContext.surveyId, pagination)
+    biohubApi.samplingSite.getSampleSites(surveyContext.projectId, surveyContext.surveyId, { pagination })
   );
 
   const pagination: ApiPaginationRequestOptions = useMemo(() => {
@@ -223,7 +223,7 @@ export const SamplingSiteListContainer = () => {
 
   const samplingSiteCount = useMemo(
     () => sampleSiteDataLoader.data?.pagination.total ?? 0,
-    [sampleSites, sampleSiteDataLoader.data]
+    [sampleSiteDataLoader.data]
   );
 
   return (
@@ -370,7 +370,9 @@ export const SamplingSiteListContainer = () => {
         <Divider flexItem />
         <Box position="relative" display="flex" flex="1 1 auto" overflow="hidden">
           {sampleSiteDataLoader.isLoading ? (
-            <SkeletonList />
+            <Stack height="100%" width="100%" position="absolute" sx={{ overflowY: 'auto' }}>
+              <SkeletonList />
+            </Stack>
           ) : (
             <Stack height="100%" width="100%" position="absolute" sx={{ overflowY: 'auto' }}>
               <Box
@@ -420,11 +422,19 @@ export const SamplingSiteListContainer = () => {
             sx={{
               flex: 1,
               display: 'flex',
-              justifyContent: 'space-between',
               '& .MuiTablePagination-toolbar': { width: '100%' },
-              '& .MuiTablePagination-displayedRows': { minWidth: '125px', textAlign: 'right' }
+              '& .MuiTablePagination-selectLabel': { flexShrink: 0 },
+              '& .MuiTablePagination-select': {
+                paddingRight: '24px',
+                minWidth: '16px',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden'
+              },
+              '& .MuiTablePagination-displayedRows': { flexShrink: 0 },
+              '& .MuiTablePagination-actions': { marginLeft: '20px', flexShrink: 0 }
             }}
-            labelRowsPerPage="Rows:"
+            labelRowsPerPage="Rows per page:"
             rowsPerPage={paginationModel.pageSize}
             page={paginationModel.page}
             onPageChange={handleChangePage}

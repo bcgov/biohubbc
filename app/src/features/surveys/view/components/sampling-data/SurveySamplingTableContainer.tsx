@@ -17,7 +17,7 @@ import { firstOrNull } from 'utils/Utils';
 import { SurveySitesTable } from './components/site/SurveySitesTable';
 import { SurveySamplingHeader } from './components/SurveySamplingHeader';
 import { SurveyTechniquesTable } from './components/technique/SurveyTechniquesTable';
-import { SurveySamplingViewTabs } from './components/view/SurveySamplingView';
+import { SurveySamplingViewTabs } from './components/view/SurveySamplingViewTabs';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -49,7 +49,7 @@ export const SurveySamplingTableContainer = () => {
 
   // Sampling sites data loader and pagination
   const samplingSitesDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
-    biohubApi.samplingSite.getSampleSites(surveyContext.projectId, surveyContext.surveyId, pagination)
+    biohubApi.samplingSite.getSampleSites(surveyContext.projectId, surveyContext.surveyId, { pagination })
   );
   const sitesPagination: ApiPaginationRequestOptions = useMemo(() => {
     const sort = firstOrNull(sitesSortModel);

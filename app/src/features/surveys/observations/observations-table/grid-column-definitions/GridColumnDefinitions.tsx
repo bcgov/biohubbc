@@ -4,6 +4,8 @@ import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/Auto
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
 import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
 import ConditionalAutocompleteDataGridViewCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridViewCell';
+import SampleSiteDataGridEditCell from 'components/data-grid/sample-site/SampleSiteDataGridEditCell';
+import SampleSiteDataGridViewCell from 'components/data-grid/sample-site/SampleSiteDataGridViewCell';
 import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyDataGridEditCell';
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
@@ -61,6 +63,46 @@ export const TaxonomyColDef = (props: {
     },
     renderEditCell: (params) => {
       return <TaxonomyDataGridEditCell dataGridProps={params} error={hasError(params)} />;
+    }
+  };
+};
+
+export const SampleSiteColDef2 = (props: {
+  sampleSiteOptions: ISampleSiteOption[];
+  hasError: (params: GridCellParams) => boolean;
+}): GridColDef<IObservationTableRow> => {
+  const { sampleSiteOptions, hasError } = props;
+
+  return {
+    field: 'survey_sample_site_id',
+    description: 'The sampling site where the observation was made',
+    headerName: 'Site',
+    editable: true,
+    hideable: true,
+    flex: 1,
+    minWidth: 180,
+    disableColumnMenu: true,
+    headerAlign: 'left',
+    align: 'left',
+    valueSetter: (params) => {
+      return { ...params.row, itis_tsn: Number(params.value) };
+    },
+    renderCell: (params) => {
+      const sampleSite = sampleSiteOptions.find((item) => item.survey_sample_site_id === params.value);
+
+      return <SampleSiteDataGridViewCell dataGridProps={params} sampleSite={sampleSite} error={hasError(params)} />;
+    },
+    renderEditCell: (params) => {
+      const sampleSite = sampleSiteOptions.find((item) => item.survey_sample_site_id === params.value);
+
+      return (
+        <SampleSiteDataGridEditCell
+          dataGridProps={params}
+          onSelectSampleSite={() => {}}
+          initialSampleSite={sampleSite}
+          error={hasError(params)}
+        />
+      );
     }
   };
 };

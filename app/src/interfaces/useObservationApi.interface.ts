@@ -21,7 +21,7 @@ export interface IGetSurveyObservationsGeometryObject {
 
 export interface IGetSurveyObservationsGeometryResponse {
   surveyObservationsGeometry: IGetSurveyObservationsGeometryObject[];
-  supplementaryObservationData: SupplementaryObservationData;
+  supplementaryObservationData: SupplementaryObservationCountData;
 }
 
 type ObservationSamplingData = {

@@ -46,6 +46,10 @@ export interface IAsyncAutocompleteDataGridEditCell<
    * Optional function to render the autocomplete option.
    */
   renderOption?: AutocompleteProps<AutocompleteOptionType, false, false, false>['renderOption'];
+  /**
+   * Optional callback fired when an option is selected.
+   */
+  onSelectOption?: (selectedOption: AutocompleteOptionType | null) => void;
 }
 
 /**
@@ -64,7 +68,7 @@ const AsyncAutocompleteDataGridEditCell = <
 >(
   props: IAsyncAutocompleteDataGridEditCell<DataGridType, AutocompleteOptionType, ValueType>
 ) => {
-  const { dataGridProps, getCurrentOption, getOptions, error, renderOption } = props;
+  const { dataGridProps, getCurrentOption, getOptions, error, renderOption, onSelectOption } = props;
 
   const ref = useRef<HTMLInputElement>();
 
@@ -168,6 +172,7 @@ const AsyncAutocompleteDataGridEditCell = <
       onChange={(_, selectedOption) => {
         setOptions(selectedOption ? [selectedOption, ...options] : options);
         setCurrentOption(selectedOption);
+        onSelectOption?.(selectedOption);
 
         // Set the data grid cell value with selected options value
         dataGridProps.api.setEditCellValue({

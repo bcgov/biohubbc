@@ -185,14 +185,24 @@ export class SampleLocationRepository extends BaseRepository {
    * Gets a paginated set of Sample Locations for the given survey for a given Survey
    *
    * @param {number} surveyId
+   * @param {{
+   *       keyword?: string;
+   *       pagination?: ApiPaginationOptions;
+   *     }} [options]
    * @return {*}  {Promise<SampleLocationNonSpatialRecord[]>}
    * @memberof SampleLocationRepository
    */
   async getSampleLocationsForSurveyId(
     surveyId: number,
-    pagination?: ApiPaginationOptions
+    options?: {
+      keyword?: string;
+      pagination?: ApiPaginationOptions;
+    }
   ): Promise<SampleLocationNonSpatialRecord[]> {
+    const { keyword, pagination } = options || {};
+
     const knex = getKnex();
+
     const queryBuilder = knex
       .queryBuilder()
       .with('w_method_technique_attractant', (qb) => {
@@ -310,7 +320,13 @@ export class SampleLocationRepository extends BaseRepository {
       .leftJoin('w_survey_sample_stratum as wssst', 'wssst.survey_sample_site_id', 'sss.survey_sample_site_id')
       .where('sss.survey_id', surveyId);
 
-    if (pagination) {
+    if (keyword) {
+      // Filter results by keyword
+      queryBuilder.andWhere((qb) => {
+        qb.orWhere('sss.name', 'ilike', `%${keyword}%`).orWhere('sss.description', 'ilike', `%${keyword}%`);
+      });
+    } else if (pagination) {
+      // Filter results by pagination
       queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
 
       if (pagination.sort && pagination.order) {

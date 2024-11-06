@@ -70,6 +70,16 @@ GET.apiDoc = {
       },
       required: true
     },
+    {
+      in: 'query',
+      name: 'keyword',
+      schema: {
+        type: 'string',
+        description:
+          'A keyword to search for in the sample site name or description. If provided, pagination will be ignored.'
+      },
+      required: false
+    },
     ...paginationRequestQueryParamSchema
   ],
   responses: {
@@ -258,29 +268,28 @@ GET.apiDoc = {
 };
 
 /**
- * Get all survey sample sites.
+ * Get all survey sample sites, paginated or filtered by keyword.
  *
  * @returns {RequestHandler}
  */
 export function getSurveySampleLocationRecord(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required param `surveyId`');
-    }
+    const surveyId = Number(req.params.surveyId);
 
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      await connection.open();
-
-      const surveyId = Number(req.params.surveyId);
       const paginationOptions = makePaginationOptionsFromRequest(req);
 
+      const keyword = req.query.keyword as string | undefined;
+
+      await connection.open();
+
       const sampleLocationService = new SampleLocationService(connection);
-      const sampleSites = await sampleLocationService.getSampleLocationsForSurveyId(
-        surveyId,
-        ensureCompletePaginationOptions(paginationOptions)
-      );
+      const sampleSites = await sampleLocationService.getSampleLocationsForSurveyId(surveyId, {
+        keyword: keyword,
+        pagination: ensureCompletePaginationOptions(paginationOptions)
+      });
 
       const sampleSitesTotalCount = await sampleLocationService.getSampleLocationsCountBySurveyId(surveyId);
 
@@ -583,7 +592,7 @@ export function createSurveySampleSiteRecord(): RequestHandler {
 
       return res.status(201).send();
     } catch (error) {
-      defaultLog.error({ label: 'insertProjectParticipants', message: 'error', error });
+      defaultLog.error({ label: 'createSurveySampleSiteRecord', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

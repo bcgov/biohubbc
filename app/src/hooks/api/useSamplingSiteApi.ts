@@ -6,7 +6,6 @@ import {
   IGetSampleLocationNonSpatialResponse,
   IGetSampleSiteGeometryResponse
 } from 'interfaces/useSamplingSiteApi.interface';
-import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
 
 /**
@@ -33,7 +32,7 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get Sample Sites
+   * Get Sample Sites, paginated or filtered by keyword.
    *
    * @param {number} projectId
    * @param {number} surveyId
@@ -43,21 +42,25 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
   const getSampleSites = async (
     projectId: number,
     surveyId: number,
-    pagination?: ApiPaginationRequestOptions
+    options?: {
+      keyword?: string;
+      pagination?: ApiPaginationRequestOptions;
+    }
   ): Promise<IGetSampleLocationNonSpatialResponse> => {
     const params = {
-      ...pagination
+      keyword: options?.keyword,
+      pagination: options?.pagination
     };
+
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/sample-site`, {
-      params,
-      paramsSerializer: (params) => qs.stringify(params)
+      params
     });
 
     return data;
   };
 
   /**
-   * Get Sample Sites
+   * Get Sample Sites geometry data
    *
    * @param {number} projectId
    * @param {number} surveyId
