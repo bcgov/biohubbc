@@ -82,12 +82,12 @@ export async function up(knex: Knex): Promise<void> {
     UPDATE method_lookup_attribute_qualitative_option
     SET technique_attribute_qualitative_option_id = w_insert.technique_attribute_qualitative_option_id
     FROM w_insert
-    WHERE method_lookup_attribute_qualitative_option.name = w_insert.name
-      AND method_lookup_attribute_qualitative_option.description = w_insert.description;
+    WHERE method_lookup_attribute_qualitative_option.name = w_insert.name;
     
-    -- add NOT NULL constraint    
-    -- ALTER TABLE method_lookup_attribute_qualitative_option ALTER COLUMN technique_attribute_qualitative_option_id SET NOT NULL;
+    ALTER TABLE method_lookup_attribute_qualitative_option ALTER COLUMN technique_attribute_qualitative_option_id SET NOT NULL;
 
+    ALTER TABLE method_lookup_attribute_qualitative_option DROP COLUMN name;
+    ALTER TABLE method_lookup_attribute_qualitative_option DROP COLUMN description;
 
 
     ----------------------------------------------------------------------------------------
@@ -286,8 +286,6 @@ export async function up(knex: Knex): Promise<void> {
       -- Benthic Vantage Modes
       ((SELECT vantage_id FROM vantage WHERE name = 'benthic'), 'stationary fixture', 'At a fixed position on the bottom of a waterbody.'),
       ((SELECT vantage_id FROM vantage WHERE name = 'benthic'), 'submersible', 'View from a submersible on the bottom of a waterbody.');
-
-    -- Assigning Vantage Modes to Method Lookup Options
 
     INSERT INTO 
       vantage_mode_method (method_lookup_id, vantage_mode_id)
