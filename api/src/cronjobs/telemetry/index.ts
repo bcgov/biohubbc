@@ -1,99 +1,83 @@
 import { parseArgs } from 'util';
 import { defaultPoolConfig, getAPIUserDBConnection, initDBPool } from '../../database/db';
-import { VectronicAPIQuery } from '../../repositories/telemetry-repositories/telemetry-vectronic-repository.interface';
+import { TelemetryLotekService } from '../../services/telemetry-services/telemetry-lotek-service';
 import { TelemetryVectronicService } from '../../services/telemetry-services/telemetry-vectronic-service';
 import { getLogger } from '../../utils/logger';
-import { taskQueue } from '../../utils/task-queue';
 
 const defaultLog = getLogger('TelemetryCronjob');
 
-async function worker(item: number): Promise<number> {
-  if (item === 5) {
-    throw new Error('Error processing item 5');
-  }
-  return await new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(item * 2);
-    }, 1000);
-  });
-}
-
-export const run = async () => {
-  console.time('run');
-  //const queue = fastq.promise(worker, 2);
-  //
-  //const results: any[] = [];
-  //
-  //for (let i = 0; i < 10; i++) {
-  //  queue
-  //    .push(i)
-  //    .then((result) => results.push(result))
-  //    .catch((error) => console.log(error));
-  //}
-  //
-  //await queue.drained();
-  //
-  //console.timeEnd('run');
-
-  const result = await taskQueue([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], worker, 5);
-  console.log({ result });
-  console.timeEnd('run');
-  //
-  //console.log({ result });
-  //console.time('promise');
-  //
-  //const a = new Promise((resolve) => setTimeout(() => resolve('a'), 2000));
-  //
-  //const b = await new Promise((resolve) => setTimeout(() => resolve('b'), 2000));
-  //
-  //await a;
-  //
-  //console.log({ a, b });
-  //
-  //console.timeEnd('promise');
-  //console.log({ result });
-};
-
 /**
- * Telemetry retrieval cronjob.
+ * Telemetry Cronjob: Handles fetching Vectronic and Lotek telemetry and inserting it into the database.
  *
- * Handles fetching Vectronic and Lotek telemetry from their respective APIs and storing it in the database.
+ * Information:
+ *
+ * How to run:
+ *  - Default: `npm run telemetry-cronjob` // concurrently = 100 and batchSize = 1000
+ *  - CLI args: `npm run telemetry-cronjob -- --concurrently 100 --batchSize 1000 --startDate 2021-01-01 --endDate 2021-01-31`
+ *
+ * Date Ranges:
+ *  If a date range is provided, the cronjob will fetch telemetry for that date range.
+ *  If no date range is provided, the cronjob will fetch all telemetry data after the last record in the database.
+ *    Lotek: We find the last record in the database and use the timestamp as the start date.
+ *    Vectronic: We find the largest idposition (Vectronic PK) and use the gt-id query parameter.
+ *
+ * Web Services:
+ *  - Lotek: https://webservice.lotek.com/API/Help
+ *  - Vectronic: https://api.vectronic-wildlife.com/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#
  *
  * @returns {*} {Promise<void>}
  */
 export async function main(): Promise<void> {
+  // 0. SETUP
   const args = parseArguments(); // Parse the CLI arguments
-
   defaultLog.info({ message: 'Cronjob starting.', args });
 
   initDBPool(defaultPoolConfig); // Initialize the database connection pool
-
   const connection = getAPIUserDBConnection(); // Get the API user database connection
 
   try {
     await connection.open({ noTransaction: true }); // Open a connection to the database without a transaction
 
-    await run();
-    //const lotekService = new TelemetryLotekService(connection); // Create a new Lotek telemetry service
+    // 1. INITIALIZE SERVICES
+    defaultLog.info({ message: 'Initializing services.' });
+    const vectronicService = new TelemetryVectronicService(connection);
+    const lotekService = new TelemetryLotekService(connection);
 
-    //const devices = await lotekService.fetchDevicesFromLotek();
-    //
-    //const devicesStub = devices.slice(0, 20);
-    //
-    //await lotekService.processTelemetry(
-    //  devicesStub.map((device) => ({ deviceId: device.nDeviceID })),
-    //  args.concurrently,
-    //  args.batchSize
-    //);
+    // 2. FETCH DEVICES AND CREDENTIALS
+    defaultLog.info({ message: 'Fetching devices and credentials.' });
+    const lotekDevices = await lotekService.fetchDevicesFromLotek(); // Fetch the lotek account devices
+    const vectronicDevices = await vectronicService.getDeviceCredentials(); // Fetch the vectronic account devices
 
-    defaultLog.info({ message: 'Cronjob completed.' });
+    // 3. GENERATE QUEUE TASKS
+    defaultLog.info({ message: 'Generating tasks.' });
+    const lotekTasks = lotekDevices.map((device) => ({ serial: device.nDeviceID })); // Create a task for each device
+    const vectronicTasks = vectronicDevices.map((device) => ({ serial: device.idcollar, key: device.collarkey }));
+
+    // 4. PROCESS TELEMETRY (FETCH AND INSERT)
+    defaultLog.info({ message: 'Processing telemetry.' });
+    const lotekResult = await lotekService.processTelemetry(lotekTasks.slice(200, 400), args);
+    await vectronicService.processTelemetry(vectronicTasks, args);
+
+    // 5. LOG STATISTICS
+    const statistics = { new: 0, created: 0, errors: 0 };
+    for (const result of lotekResult) {
+      if (result.value) {
+        statistics.new += result.value.new;
+        statistics.created += result.value.created;
+      }
+      if (result.error) {
+        statistics.errors++;
+      }
+    }
+
+    defaultLog.info({ message: 'Cronjob completed.', statistics });
   } catch (error) {
     defaultLog.error({ message: 'Cronjob failed to complete.', error });
     process.exit(1);
   } finally {
     defaultLog.info({ message: 'Cronjob cleaning up open connections.' });
 
-    connection.release(); // No commit or rollback is needed when transaction is not used
+    connection.release(); // No commit or rollback is needed
     process.exit(0);
   }
 }
@@ -111,9 +95,9 @@ const parseArguments = () => {
       concurrently: { type: 'string', default: '10' },
       // The number of items to insert in a single batch
       batchSize: { type: 'string', default: '1000' },
-      // The start date for the telemetry data retrieval
+      // The start date for fetching telemetry data
       startDate: { type: 'string' },
-      // The end date for the telemetry data retrieval
+      // The end date for fetching telemetry data
       endDate: { type: 'string' }
     },
     allowPositionals: true
@@ -125,51 +109,6 @@ const parseArguments = () => {
     startDate: parsedArgs.values.startDate,
     endDate: parsedArgs.values.endDate
   };
-};
-
-type Arguments = ReturnType<typeof parseArguments>;
-
-/**
- * Fetch and insert the Vectronic telemetry data.
- *
- * @param {TelemetryVectronicService} vectronicService The Vectronic telemetry service.
- * @param {Arguments} args The CLI arguments.
- * @returns {*} {Promise<void>}
- */
-export const processVectronicTelemetry = async (vectronicService: TelemetryVectronicService, args: Arguments) => {
-  // Fetch the Vectronic device credentials from SIMS
-  const credentials = await vectronicService.getDeviceCredentials();
-
-  defaultLog.info({ vendor: 'VECTRONIC', message: `${credentials.length} credentials retrieved.` });
-
-  // Inject the date range provided by the CLI arguments into the query
-  const queries: VectronicAPIQuery[] = credentials.map((credential) => ({
-    gtId: credential.max_idposition ? credential.max_idposition.toString() : undefined,
-    idcollar: credential.idcollar,
-    collarkey: credential.collarkey,
-    beforeAcquisition: args.endDate,
-    afterAcquisition: args.startDate
-  }));
-
-  // Fetch the telemetry data from the Vectronic API - fetches concurrently using a queue
-  const processedDevices = await vectronicService.processTelemetry(queries, args.concurrently, args.batchSize);
-
-  defaultLog.info({
-    vendor: 'VECTRONIC',
-    message: 'Processed devices.',
-    devices: processedDevices
-  });
-
-  const errors = processedDevices.filter((device) => device.error).map((device) => device.error);
-
-  const everyRequestFailed = processedDevices.length && processedDevices.length === errors.length;
-
-  if (everyRequestFailed) {
-    defaultLog.warn({
-      vendor: 'VECTRONIC',
-      message: 'Failed to retrieve telemetry from API.'
-    });
-  }
 };
 
 // Run the telemetry cronjob

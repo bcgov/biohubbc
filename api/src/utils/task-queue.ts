@@ -3,7 +3,7 @@ import { getLogger } from './logger';
 
 const defaultLog = getLogger('TaskQueue');
 
-type QueueResult<T, J> =
+export type QueueResult<T, J> =
   | {
       task: T;
       value: J;
@@ -48,11 +48,12 @@ export const taskQueue = async <T, J>(
     queue
       .push(task)
       .then((value) => results.push({ task, value }))
-      .catch((error) => results.push({ task, error }));
+      .catch((error) => results.push({ task, error })); // Catch errors and push into results
   }
 
-  // 4. Wait for the queue to drain for any remaining tasks
-  // WARNING: Use queue.drainED() not queue.drain(). The latter will not wait for the tasks to complete.
+  // 4. Wait for the queue to drain (all tasks to complete)
+  // WARNING: Use `queue.drainED()` not `queue.drain()`.
+  // The latter will not wait for the tasks to complete.
   await queue.drained();
 
   defaultLog.info({
@@ -60,11 +61,4 @@ export const taskQueue = async <T, J>(
   });
 
   return results;
-};
-
-/**
- *
- */
-export const taskQueueHasError = <T, J>(queueResult: QueueResult<T, J>[]): boolean => {
-  return queueResult.some((result) => Boolean(result.error));
 };

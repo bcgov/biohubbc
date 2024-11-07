@@ -1,7 +1,8 @@
 import SQL from 'sql-template-strings';
+import { z } from 'zod';
 import { getKnex } from '../../database/db';
 import { BaseRepository } from '../base-repository';
-import { CreateVectronicTelemetry } from './telemetry-vectronic-repository.interface';
+import { LotekPayload } from './telemetry-lotek-repository.interface';
 
 /**
  * A repository class for working with raw Lotek telemetry data.
@@ -11,14 +12,14 @@ import { CreateVectronicTelemetry } from './telemetry-vectronic-repository.inter
  * @extends {BaseRepository}
  */
 export class TelemetryLotekRepository extends BaseRepository {
-  async createLotekTelemetry(telemetry: CreateVectronicTelemetry[]): Promise<number> {
+  async createLotekTelemetry(telemetry: LotekPayload[]): Promise<number> {
     const knex = getKnex();
 
     const queryBuilder = knex
       .queryBuilder()
       .insert(telemetry)
-      .into('vectronic_lotek')
-      .onConflict(['uploadtimestamp'])
+      .into('telemetry_lotek')
+      .onConflict(['recdatetime', 'deviceid'])
       .ignore();
 
     const result = await this.connection.knex(queryBuilder);
@@ -30,13 +31,16 @@ export class TelemetryLotekRepository extends BaseRepository {
     const sqlStatement = SQL`
       SELECT
         deviceid as serial,
-        COUNT(*) AS telemetry_count,
-        MAX(uploadtimestamp) as last_acquistion
+        COUNT(*)::int AS telemetry_count,
+        MAX(recdatetime) as last_acquistion
       FROM telemetry_lotek
       GROUP BY serial;
     `;
 
-    const result = await this.connection.sql(sqlStatement);
+    const result = await this.connection.sql(
+      sqlStatement,
+      z.object({ serial: z.number(), telemetry_count: z.number(), last_acquistion: z.string().nullable() })
+    );
 
     return result.rows;
   }

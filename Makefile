@@ -148,7 +148,7 @@ telemetry-cronjob: ## Run the telemetry cronjob
 	@echo "==============================================="
 	@echo "Telemetry Cronjob"
 	@echo "==============================================="
-	@docker compose exec api npm run telemetry-cronjob
+	@docker compose exec api npm run telemetry-cronjob -- --concurrently 100 --batchSize 1000
 
 ## ------------------------------------------------------------------------------
 ## Database migration commands

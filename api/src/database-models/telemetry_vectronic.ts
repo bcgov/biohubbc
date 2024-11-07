@@ -56,7 +56,7 @@ export const TelemetryVectronicModel = z.object({
   temperature: z.number().nullable(),
   transformedx: z.number().nullable(),
   transformedy: z.number().nullable(),
-  geom: z.string().nullable(),
+  geography: z.string().nullable(),
 
   create_date: z.string(),
   create_user: z.number(),

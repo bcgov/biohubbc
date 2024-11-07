@@ -309,8 +309,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     CREATE INDEX telemetry_lotek_idx1 ON telemetry_lotek(device_key);
     CREATE INDEX telemetry_lotek_idx2 ON telemetry_lotek USING gist (geography);
-    CREATE INDEX telemetry_lotek_idx3 ON telemetry_lotek(uploadtimestamp);
-    CREATE UNIQUE INDEX telemetry_lotek_idx4 ON telemetry_lotek(uploadtimestamp, deviceid);
+    CREATE UNIQUE INDEX telemetry_lotek_idx3 ON telemetry_lotek(recdatetime, deviceid);
 
     COMMENT ON TABLE telemetry_lotek IS 'The raw telemetry data from Lotek. This data should only be updated by the Cronjob.';
     COMMENT ON COLUMN telemetry_lotek.telemetry_lotek_id IS 'Primary key for telemetry_lotek table';

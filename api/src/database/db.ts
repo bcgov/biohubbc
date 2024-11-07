@@ -234,6 +234,7 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
   let _isOpen = false;
   let _isReleased = false;
   let _systemUserId: number | null = null;
+  let _isTransaction = false;
   const _token = keycloakToken;
 
   /**
@@ -278,6 +279,7 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
     await _setUserContext();
 
     if (!config?.noTransaction) {
+      _isTransaction = true;
       await _client.query('BEGIN');
     }
   };
@@ -311,6 +313,10 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
       throw Error('DBConnection is not open');
     }
 
+    if (!_isTransaction) {
+      throw Error('DBConnection is not in a transaction');
+    }
+
     await _client.query('COMMIT');
   };
 
@@ -322,6 +328,10 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
   const _rollback = async () => {
     if (!_client || !_isOpen) {
       throw Error('DBConnection is not open');
+    }
+
+    if (!_isTransaction) {
+      throw Error('DBConnection is not in a transaction');
     }
 
     await _client.query('ROLLBACK');
