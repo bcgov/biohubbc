@@ -24,9 +24,8 @@ const HelpButtonTooltip = ({ content, children, iconSx }: HelpButtonTooltipProps
   return (
     <Box
       sx={{
-        position: 'relative',
         '& input': {
-          pr: 7,
+          // pr: 7,
           overflow: 'hidden',
           textOverflow: 'ellipsis'
         },
@@ -48,7 +47,6 @@ const HelpButtonTooltip = ({ content, children, iconSx }: HelpButtonTooltipProps
         PopperProps={{
           sx: {
             '& .MuiTooltip-tooltip': {
-              py: 1.5,
               px: 2,
               fontSize: '0.875rem',
               background: '#38598A'
@@ -60,10 +58,9 @@ const HelpButtonTooltip = ({ content, children, iconSx }: HelpButtonTooltipProps
         }}>
         <IconButton
           sx={{
-            position: 'absolute',
-            top: '8px',
-            right: '8px',
             color: '#38598A',
+            p: 0,
+            mb: '15px',
             ...iconSx
           }}>
           <Icon path={mdiHelpCircleOutline} size={1} />
