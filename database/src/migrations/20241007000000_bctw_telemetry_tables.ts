@@ -43,7 +43,7 @@ export async function up(knex: Knex): Promise<void> {
     -- Add btree gist extension
     ----------------------------------------------------------------------------------------
     CREATE EXTENSION IF NOT EXISTS btree_gist;
-    
+
     ----------------------------------------------------------------------------------------
     -- Create telemetry_ats table
     ----------------------------------------------------------------------------------------
@@ -51,7 +51,7 @@ export async function up(knex: Knex): Promise<void> {
 
     CREATE TABLE telemetry_ats (
       telemetry_ats_id        uuid DEFAULT public.gen_random_uuid() NOT NULL,
-      device_key              varchar GENERATED ALWAYS AS ('ats:' || collarserialnumber::text) STORED,
+      device_key              varchar GENERATED ALWAYS AS ('ats:' || collarserialnumber::text) STORED NOT NULL,
 
       collarserialnumber      int4 NOT NULL,
       "date"                  timestamptz NULL,
@@ -68,12 +68,12 @@ export async function up(knex: Knex): Promise<void> {
       latitude                float8 NULL,
       longitude               float8 NULL,
       cepradius_km            int4 NULL,
-      geom                    public.geometry(point, 4326) NULL,
       temperature             varchar NULL,
       hdop                    varchar NULL,
       numsats                 varchar NULL,
       fixtime                 varchar NULL,
       activity                varchar NULL,
+      geography               public.geography(point, 4326) GENERATED ALWAYS AS (CASE WHEN latitude IS NOT NULL AND longitude IS NOT NULL THEN public.ST_SetSRID(public.ST_MakePoint(longitude, latitude), 4326) ELSE NULL END) STORED,
 
       create_date       timestamptz(6)     DEFAULT now() NOT NULL,
       create_user       integer            NOT NULL,
@@ -90,6 +90,7 @@ export async function up(knex: Knex): Promise<void> {
     CREATE INDEX telemetry_ats_idx1 ON telemetry_ats(device_key);
     CREATE UNIQUE INDEX telemetry_ats_idx2 ON telemetry_ats(date, collarserialnumber);
     CREATE INDEX telemetry_ats_idx3 ON telemetry_ats(date);
+    CREATE INDEX telemetry_ats_idx4 ON telemetry_ats USING gist(geography);
 
     COMMENT ON TABLE telemetry_ats IS 'Raw telemetry data from the ATS API';
     COMMENT ON COLUMN telemetry_ats.telemetry_ats_id IS 'Primary key for telemetry_ats table. This data should only be updated by the Cronjob.';
@@ -109,12 +110,12 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN telemetry_ats.latitude IS 'North-South position along surface of the Earth. WGS 84.';
     COMMENT ON COLUMN telemetry_ats.longitude IS 'East-West position along the surface of the Earth. WGS 84.';
     COMMENT ON COLUMN telemetry_ats.cepradius_km IS 'Perhaps circular error probable radius, which would indicate the mean radius about the recorded point that the data could be off by.';
-    COMMENT ON COLUMN telemetry_ats.geom IS 'PostGIS human readable geometry point. Created with Latitude and Longitude.';
     COMMENT ON COLUMN telemetry_ats.temperature IS 'Temperature in Celcius';
     COMMENT ON COLUMN telemetry_ats.hdop IS 'Horizontal dilution of precision, another indication of error propagation in satellite tracking.';
     COMMENT ON COLUMN telemetry_ats.numsats IS 'Number of satellites used in achieving GPS fix';
     COMMENT ON COLUMN telemetry_ats.fixtime IS 'Number of seconds needed to achieve GPS fix';
     COMMENT ON COLUMN telemetry_ats.activity IS 'Activity value represents change in the accelerometer value internal to the collar between GPS fixes. Exact numeric meaning varies between models.';
+    COMMENT ON COLUMN telemetry_ats.geography IS 'The latitude and longitude as a PostGIS geography point.';
     COMMENT ON COLUMN telemetry_ats.create_date       IS 'The datetime the record was created.';
     COMMENT ON COLUMN telemetry_ats.create_user       IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN telemetry_ats.update_date       IS 'The datetime the record was updated.';
@@ -133,7 +134,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     CREATE TABLE telemetry_vectronic (
     telemetry_vectronic_id        UUID DEFAULT public.gen_random_uuid() NOT NULL,
-    device_key                    VARCHAR GENERATED ALWAYS AS ('vectronic:' || idcollar::text) STORED,
+    device_key                    VARCHAR GENERATED ALWAYS AS ('vectronic:' || idcollar::text) STORED NOT NULL,
 
     idposition                    INT4 NOT NULL,
     idcollar                      INT4 NOT NULL,
@@ -181,7 +182,7 @@ export async function up(knex: Knex): Promise<void> {
     temperature                   FLOAT8 NULL,
     transformedx                  FLOAT8 NULL,
     transformedy                  FLOAT8 NULL,
-    geom                          public.geometry(point, 4326) NULL,
+    geography                     public.geography(point, 4326) GENERATED ALWAYS AS (CASE WHEN latitude IS NOT NULL AND longitude IS NOT NULL THEN public.ST_SetSRID(public.ST_MakePoint(longitude, latitude), 4326) ELSE NULL END) STORED,
 
     create_date       timestamptz(6)     DEFAULT now() NOT NULL,
     create_user       integer            NOT NULL,
@@ -196,9 +197,9 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     -- Create Indexes
     ----------------------------------------------------------------------------------------
-    CREATE INDEX vectronics_collar_data_idx1 ON telemetry_vectronic(device_key);
-    CREATE INDEX vectronics_collar_data_idx2 ON telemetry_vectronic USING gist (geom);
-    CREATE INDEX vectronics_collar_data_idx3 ON telemetry_vectronic(acquisitiontime);
+    CREATE INDEX telemetry_vectronic_idx1 ON telemetry_vectronic(device_key);
+    CREATE INDEX telemetry_vectronic_idx2 ON telemetry_vectronic USING gist (geography);
+    CREATE INDEX telemetry_vectronic_idx3 ON telemetry_vectronic(acquisitiontime);
 
     COMMENT ON TABLE telemetry_vectronic IS 'The raw telemetry data from Vectronics API. This data should only be updated by the Cronjob.';
     COMMENT ON COLUMN telemetry_vectronic.telemetry_vectronic_id IS 'Primary key for telemetry_vectronic table';
@@ -249,7 +250,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN telemetry_vectronic.temperature IS 'Devices temperature reading in Celsius.';
     COMMENT ON COLUMN telemetry_vectronic.transformedx IS 'No description provided by vendor.';
     COMMENT ON COLUMN telemetry_vectronic.transformedy IS 'No description provided by vendor.';
-    COMMENT ON COLUMN telemetry_vectronic.geom IS 'Telemetry collected by device.';
+    COMMENT ON COLUMN telemetry_vectronic.geography IS 'The latitude and longitude as a PostGIS geography point.';
     COMMENT ON COLUMN telemetry_vectronic.create_date       IS 'The datetime the record was created.';
     COMMENT ON COLUMN telemetry_vectronic.create_user       IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN telemetry_vectronic.update_date       IS 'The datetime the record was updated.';
@@ -268,7 +269,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     CREATE TABLE telemetry_lotek (
     telemetry_lotek_id            UUID DEFAULT public.gen_random_uuid() NOT NULL,
-    device_key                    VARCHAR GENERATED ALWAYS AS ('lotek:' || deviceid::text) STORED,
+    device_key                    VARCHAR GENERATED ALWAYS AS ('lotek:' || deviceid::text) STORED NOT NULL,
 
     channelstatus                 TEXT NULL,
     uploadtimestamp               TIMESTAMPTZ NULL,
@@ -292,7 +293,7 @@ export async function up(knex: Knex): Promise<void> {
     crc                           FLOAT8 NULL,
     deviceid                      INT4 NULL,
     recdatetime                   TIMESTAMPTZ NULL,
-    geom                          public.geometry(point, 4326) NULL,
+    geography                     public.geography(point, 4326) GENERATED ALWAYS AS (CASE WHEN latitude IS NOT NULL AND longitude IS NOT NULL THEN public.ST_SetSRID(public.ST_MakePoint(longitude, latitude), 4326) ELSE NULL END) STORED,
 
     create_date       timestamptz(6)     DEFAULT now() NOT NULL,
     create_user       integer            NOT NULL,
@@ -307,7 +308,7 @@ export async function up(knex: Knex): Promise<void> {
     -- Create Indexes
     ----------------------------------------------------------------------------------------
     CREATE INDEX telemetry_lotek_idx1 ON telemetry_lotek(device_key);
-    CREATE INDEX telemetry_lotek_idx2 ON telemetry_lotek USING gist (geom);
+    CREATE INDEX telemetry_lotek_idx2 ON telemetry_lotek USING gist (geography);
     CREATE INDEX telemetry_lotek_idx3 ON telemetry_lotek(uploadtimestamp);
     CREATE UNIQUE INDEX telemetry_lotek_idx4 ON telemetry_lotek(uploadtimestamp, deviceid);
 
@@ -336,7 +337,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN telemetry_lotek.crc IS 'Applies to Swift Fix collars only; pertains to the handling of location data';
     COMMENT ON COLUMN telemetry_lotek.deviceid IS 'the Lotek device ID';
     COMMENT ON COLUMN telemetry_lotek.recdatetime IS 'timestamp the telemetry was recorded';
-    COMMENT ON COLUMN telemetry_lotek.geom IS 'PostGIS human readable geometry point. Created with Latitude and Longitude.';
+    COMMENT ON COLUMN telemetry_lotek.geography IS 'The latitude and longitude as a PostGIS geography point.';
     COMMENT ON COLUMN telemetry_lotek.create_date       IS 'The datetime the record was created.';
     COMMENT ON COLUMN telemetry_lotek.create_user       IS 'The id of the user who created the record as identified in the system user table.';
     COMMENT ON COLUMN telemetry_lotek.update_date       IS 'The datetime the record was updated.';
