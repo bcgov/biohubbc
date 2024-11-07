@@ -1,3 +1,6 @@
+import { z } from 'zod';
+import { TelemetryLotekRecord } from '../../database-models/telemetry_lotek';
+
 export interface LotekAPIDevice {
   nDeviceID: number;
   strSpecialID: string;
@@ -5,28 +8,10 @@ export interface LotekAPIDevice {
   strSatellite: string;
 }
 
-export interface TelemetryLotekAPIRecord {
-  channelstatus: string;
-  uploadtimestamp: string;
-  latitude: number;
-  longitude: number;
-  altitude: number;
-  ecefx: number;
-  ecefy: number;
-  ecefz: number;
-  rxstatus: number;
-  pdop: number;
-  mainv: number;
-  bkupv: number;
-  temperature: number;
-  fixduration: number;
-  bhastempvoltage: boolean;
-  devname: string | null;
-  deltatime: number;
-  fixtype: number;
-  cepradius: number;
-  crc: number;
-  deviceid: number;
-  recdatetime: string;
-  timeid: string;
-}
+export const TelemetryLotekAPIRecord = TelemetryLotekRecord.omit({
+  telemetry_lotek_id: true,
+  device_key: true,
+  geom: true
+});
+
+export type TelemetryLotekAPIRecord = z.infer<typeof TelemetryLotekAPIRecord>;

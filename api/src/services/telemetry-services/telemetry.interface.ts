@@ -1,14 +1,17 @@
-export interface TelemetryQueueResult {
+export interface ProcessedTelemetry {
   /**
    * The serial number of the telemetry device.
    * @type {number}
    */
   serial: number;
-  new: number;
-  created: number;
   /**
-   * The error that occurred during processing.
-   * @type {Error | undefined}
+   * The number of new telemetry records found.
+   * @type {number}
    */
-  error?: Error;
+  new: number;
+  /**
+   * The number of telemetry records created.
+   * @type {number}
+   */
+  created: number;
 }

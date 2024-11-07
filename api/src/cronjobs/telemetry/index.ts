@@ -18,24 +18,40 @@ async function worker(item: number): Promise<number> {
   });
 }
 
-const run = async () => {
-  const result = await taskQueue([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], worker, 2);
+export const run = async () => {
+  console.time('run');
+  //const queue = fastq.promise(worker, 2);
+  //
+  //const results: any[] = [];
+  //
+  //for (let i = 0; i < 10; i++) {
+  //  queue
+  //    .push(i)
+  //    .then((result) => results.push(result))
+  //    .catch((error) => console.log(error));
+  //}
+  //
+  //await queue.drained();
+  //
+  //console.timeEnd('run');
 
-  console.time('promise');
-
-  const a = new Promise((resolve) => setTimeout(() => resolve('a'), 2000));
-
-  const b = await new Promise((resolve) => setTimeout(() => resolve('b'), 2000));
-
-  await new Promise((resolve) => setTimeout(() => resolve('b'), 2000));
-
-  await a;
-
-  console.log({ a, b });
-
-  console.timeEnd('promise');
-
+  const result = await taskQueue([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], worker, 5);
   console.log({ result });
+  console.timeEnd('run');
+  //
+  //console.log({ result });
+  //console.time('promise');
+  //
+  //const a = new Promise((resolve) => setTimeout(() => resolve('a'), 2000));
+  //
+  //const b = await new Promise((resolve) => setTimeout(() => resolve('b'), 2000));
+  //
+  //await a;
+  //
+  //console.log({ a, b });
+  //
+  //console.timeEnd('promise');
+  //console.log({ result });
 };
 
 /**
@@ -55,11 +71,20 @@ export async function main(): Promise<void> {
   const connection = getAPIUserDBConnection(); // Get the API user database connection
 
   try {
-    //const lotekService = new TelemetryLotekService(connection); // Create a new Lotek telemetry service
+    await connection.open({ noTransaction: true }); // Open a connection to the database without a transaction
 
     await run();
+    //const lotekService = new TelemetryLotekService(connection); // Create a new Lotek telemetry service
 
-    await connection.open({ noTransaction: true }); // Open a connection to the database without a transaction
+    //const devices = await lotekService.fetchDevicesFromLotek();
+    //
+    //const devicesStub = devices.slice(0, 20);
+    //
+    //await lotekService.processTelemetry(
+    //  devicesStub.map((device) => ({ deviceId: device.nDeviceID })),
+    //  args.concurrently,
+    //  args.batchSize
+    //);
 
     defaultLog.info({ message: 'Cronjob completed.' });
   } catch (error) {
@@ -85,20 +110,20 @@ const parseArguments = () => {
       // The number of requests to make concurrently
       concurrently: { type: 'string', default: '10' },
       // The number of items to insert in a single batch
-      batch: { type: 'string', default: '1000' },
+      batchSize: { type: 'string', default: '1000' },
       // The start date for the telemetry data retrieval
-      start: { type: 'string' },
+      startDate: { type: 'string' },
       // The end date for the telemetry data retrieval
-      end: { type: 'string' }
+      endDate: { type: 'string' }
     },
     allowPositionals: true
   });
 
   return {
     concurrently: Number(parsedArgs.values.concurrently),
-    batch: Number(parsedArgs.values.batch),
-    start: parsedArgs.values.start,
-    end: parsedArgs.values.end
+    batchSize: Number(parsedArgs.values.batchSize),
+    startDate: parsedArgs.values.startDate,
+    endDate: parsedArgs.values.endDate
   };
 };
 
@@ -122,12 +147,12 @@ export const processVectronicTelemetry = async (vectronicService: TelemetryVectr
     gtId: credential.max_idposition ? credential.max_idposition.toString() : undefined,
     idcollar: credential.idcollar,
     collarkey: credential.collarkey,
-    beforeAcquisition: args.end,
-    afterAcquisition: args.start
+    beforeAcquisition: args.endDate,
+    afterAcquisition: args.startDate
   }));
 
   // Fetch the telemetry data from the Vectronic API - fetches concurrently using a queue
-  const processedDevices = await vectronicService.processTelemetry(queries, args.concurrently, args.batch);
+  const processedDevices = await vectronicService.processTelemetry(queries, args.concurrently, args.batchSize);
 
   defaultLog.info({
     vendor: 'VECTRONIC',

@@ -7,3 +7,13 @@ export const LotekAPIQuery = z.object({
 });
 
 export type LotekAPIQuery = z.infer<typeof LotekAPIQuery>;
+
+export const LotekTask = z.object({
+  serial: z.number(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  telemetryCount: z.number().optional(),
+  lastAcquisition: z.string().optional()
+});
+
+export type LotekTask = z.infer<typeof LotekTask>;

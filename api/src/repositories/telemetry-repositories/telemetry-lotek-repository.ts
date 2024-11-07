@@ -26,7 +26,7 @@ export class TelemetryLotekRepository extends BaseRepository {
     return result.rowCount ?? 0;
   }
 
-  async getDeviceSerialStats() {
+  async getDeviceActivityStatistics() {
     const sqlStatement = SQL`
       SELECT
         deviceid as serial,

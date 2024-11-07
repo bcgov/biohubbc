@@ -1,16 +1,14 @@
 import axios from 'axios';
-import fastq from 'fastq';
 import { chunk } from 'lodash';
 import { IDBConnection } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
 import { TelemetryLotekRepository } from '../../repositories/telemetry-repositories/telemetry-lotek-repository';
 import { LotekAPIQuery } from '../../repositories/telemetry-repositories/telemetry-lotek-repository.interface';
 import { CreateVectronicTelemetry } from '../../repositories/telemetry-repositories/telemetry-vectronic-repository.interface';
+import { taskQueue } from '../../utils/task-queue';
 import { DBService } from '../db-service';
-import { LotekAPIDevice } from './telemetry-lotek-service.interface';
-import { formatVectronicAPITelemetry } from './telemetry-utils';
+import { LotekAPIDevice, TelemetryLotekAPIRecord } from './telemetry-lotek-service.interface';
 import { TelemetryVectronicAPIRecord } from './telemetry-vectronic-service.interface';
-import { TelemetryQueueResult } from './telemetry.interface';
 
 /**
  * This service is responsible for fetching telemetry data from the Lotek API and storing it in SIMS.
@@ -160,14 +158,14 @@ export class TelemetryLotekService extends DBService {
    * Fetch telemetry data for a single device from Lotek API.
    *
    * @param {LotekAPIQuery} query - Lotek API request query
-   * @returns {Promise<TelemetryVectronicAPIRecord[]>} Raw API telemetry data
+   * @returns {Promise<TelemetryLotekAPIRecord[]>} Raw API telemetry data
    */
-  async fetchTelemetryFromLotek(query: LotekAPIQuery): Promise<TelemetryVectronicAPIRecord[]> {
+  async fetchTelemetryFromLotek(query: LotekAPIQuery): Promise<TelemetryLotekAPIRecord[]> {
     const token = await this.fetchTokenFromLotek();
     const url = this.getLotekTelemetryURL(query);
 
     try {
-      const response = await axios.get<TelemetryVectronicAPIRecord[]>(url.toString(), {
+      const response = await axios.get<TelemetryLotekAPIRecord[]>(url.toString(), {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -180,64 +178,18 @@ export class TelemetryLotekService extends DBService {
   }
 
   /**
-   * Process (fetch and insert) telemetry data for a list of Lotek API queries (device credentials + date ranges).
+   * Get a map of device serials to their telemetry activity statistics.
    *
-   * @param {LotekAPIQuery[]} queries - List of Lotek API queries
-   * @param {number} concurrently - Number of requests to make concurrently
-   * @param {number} batchSize - Number of items to insert in a single batch
-   * @returns {Promise<TelemetryQueueResult[]>} The telemetry processing results
+   * @returns {Promise<Map<number, { telemetryCount: number, lastAcquisition: Date }>} The device activity map
    */
-  async processTelemetry(
-    queries: LotekAPIQuery[],
-    concurrently: number,
-    batchSize: number
-  ): Promise<TelemetryQueueResult[]> {
-    const queueResult: TelemetryQueueResult[] = [];
-
-    const simsTelemetryCount = await this.telemetryLotekRepository.getDeviceSerialStats();
-    const simsTelemetryMap = new Map(
-      simsTelemetryCount.map((value) => [
+  async getDevicesActivitiesMap() {
+    const deviceActivityStats = await this.telemetryLotekRepository.getDeviceActivityStatistics();
+    return new Map(
+      deviceActivityStats.map((value) => [
         value.serial,
-        { count: value.telemetry_count, lastAcquisition: value.last_acquistion }
+        { telemetryCount: value.telemetry_count, lastAcquisition: value.last_acquistion }
       ])
     );
-
-    const queue = fastq.promise(async (task: LotekAPIQuery) => {
-      const created = 0;
-      let newTelemetry = 0;
-
-      //try {
-      const lotekCount = await this.fetchTelemetryCountFromLotek(task);
-      const simsLotekDeviceStats = simsTelemetryMap.get(task.deviceId) ?? { count: 0, lastAcquisition: undefined };
-
-      newTelemetry = lotekCount - simsLotekDeviceStats.count;
-
-      if (!newTelemetry) {
-        return { serial: task.deviceId, new: 0, created: 0 };
-      }
-
-      // 1. Fetch single device telemetry data from Lotek API
-      // Note: If dtstart is not provided, use the last telemetry date from SIMS
-      const deviceTelemetry = await this.fetchTelemetryFromLotek({
-        deviceId: task.deviceId,
-        dtend: task.dtend,
-        dtstart: task.dtstart ?? simsLotekDeviceStats.lastAcquisition
-      });
-
-      // 2. Format telemetry data for SIMS insert
-      const formattedTelemetry = deviceTelemetry.map((telemetry) => formatVectronicAPITelemetry(telemetry));
-
-      // 3. Batch insert telemetry data
-      await this.batchCreateTelemetry(formattedTelemetry, batchSize);
-
-      return { serial: task.deviceId, new: newTelemetry, created };
-    }, concurrently);
-
-    for (const query of queries) {
-      queue.push(query);
-    }
-
-    return queueResult;
   }
 
   /**
@@ -255,5 +207,36 @@ export class TelemetryLotekService extends DBService {
     );
 
     return rowCounts.reduce((acc, count) => acc + count, 0);
+  }
+
+  /**
+   * Process (fetch and insert) telemetry data for a list of Lotek API queries (device credentials + date ranges).
+   *
+   * @param {LotekAPIQuery[]} tasks - List of Lotek API queries
+   * @param {number} concurrently - Number of requests to make concurrently
+   * @param {number} batchSize - Number of items to insert in a single batch
+   * @returns {Promise<TelemetryQueueResult[]>} The telemetry processing results
+   */
+  async processTelemetry(tasks: LotekAPIQuery[], concurrently: number, batchSize: number): Promise<any[]> {
+    const activityMap = await this.getDevicesActivitiesMap();
+
+    const result = await taskQueue(
+      tasks,
+      async (task: LotekAPIQuery) => {
+        const lotekCount = await this.fetchTelemetryCountFromLotek(task);
+        const deviceActivity = activityMap.get(task.deviceId) ?? { telemetryCount: 0, lastAcquisition: undefined };
+        const newTelemetry = lotekCount - deviceActivity.telemetryCount;
+
+        if (!newTelemetry) {
+          return { new: 0, created: 0 };
+        }
+
+        const lotekAPITelemetry = await this.fetchTelemetryFromLotek(task);
+        await this.batchCreateTelemetry(lotekAPITelemetry, batchSize);
+      },
+      concurrently
+    );
+
+    return result;
   }
 }
