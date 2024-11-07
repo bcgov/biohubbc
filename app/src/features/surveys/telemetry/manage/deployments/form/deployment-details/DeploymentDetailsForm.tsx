@@ -68,94 +68,92 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
   const surveyContext = useSurveyContext();
 
   return (
-    <>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <Typography color="textSecondary">
-            You must&nbsp;
-            <Typography
-              sx={{
-                textDecoration: 'none'
-              }}
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}>
-              add the device
-            </Typography>
-            &nbsp;and&nbsp;
-            <Typography
-              sx={{
-                textDecoration: 'none'
-              }}
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`}>
-              animal
-            </Typography>
-            &nbsp;to your Survey before associating the two in a deployment.
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <Typography color="textSecondary">
+          You must&nbsp;
+          <Typography
+            sx={{
+              textDecoration: 'none'
+            }}
+            component={RouterLink}
+            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}>
+            add the device
           </Typography>
-        </Grid>
-        <Grid item xs={12}>
-          <DeviceAutocompleteField
-            formikFieldName="device_id"
-            label="Device"
-            options={surveyDevices}
-            defaultDevice={surveyDevices.find((device) => device.device_id === values.device_id)}
-            required
-            clearOnSelect
-            onSelect={(device: TelemetryDevice) => {
-              if (device) {
-                setFieldValue('device_id', device.device_id);
-              }
+          &nbsp;and&nbsp;
+          <Typography
+            sx={{
+              textDecoration: 'none'
             }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <AnimalAutocompleteField
-            formikFieldName="critter_id"
-            label="Animal"
-            defaultAnimal={surveyAnimals.find((animal) => animal.critter_id === values.critter_id)}
-            required
-            clearOnSelect
-            onSelect={(animal: ICritterSimpleResponse) => {
-              if (animal) {
-                setFieldValue('critter_id', animal.critter_id);
-              }
-            }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Stack direction="row" flex={1}>
-            <TextField
-              name="frequency"
-              label="Device frequency"
-              inputProps={{ 'data-testid': 'frequency' }}
-              onChange={(event) => {
-                // Ensure that the formik value is set to null if the input is empty, and not empty-string
-                setFieldValue('frequency', numberOrNull(event.target.value));
-              }}
-              onBlur={handleBlur}
-              variant="outlined"
-              value={get(values, 'frequency') || ''} // Ensure that the value is an empty string if it is null (controlled component)
-              error={get(touched, 'frequency') && Boolean(get(errors, 'frequency'))}
-              helperText={get(touched, 'frequency') && get(errors, 'frequency')}
-              sx={{
-                flex: 0.8,
-                '& .MuiOutlinedInput-root': { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
-              }}
-            />
-            <AutocompleteField
-              name="frequency_unit_id"
-              id="frequency_unit_id"
-              label={'Unit'}
-              options={frequencyUnits}
-              required={!!(values.frequency || values.frequency_unit_id)}
-              sx={{
-                flex: 0.2,
-                '& .MuiOutlinedInput-root': { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }
-              }}
-            />
-          </Stack>
-        </Grid>
+            component={RouterLink}
+            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`}>
+            animal
+          </Typography>
+          &nbsp;to your Survey before associating the two in a deployment.
+        </Typography>
       </Grid>
-    </>
+      <Grid item xs={12}>
+        <DeviceAutocompleteField
+          formikFieldName="device_id"
+          label="Device"
+          options={surveyDevices}
+          defaultDevice={surveyDevices.find((device) => device.device_id === values.device_id)}
+          required
+          clearOnSelect
+          onSelect={(device: TelemetryDevice) => {
+            if (device) {
+              setFieldValue('device_id', device.device_id);
+            }
+          }}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <AnimalAutocompleteField
+          formikFieldName="critter_id"
+          label="Animal"
+          defaultAnimal={surveyAnimals.find((animal) => animal.critter_id === values.critter_id)}
+          required
+          clearOnSelect
+          onSelect={(animal: ICritterSimpleResponse) => {
+            if (animal) {
+              setFieldValue('critter_id', animal.critter_id);
+            }
+          }}
+        />
+      </Grid>
+      <Grid item xs={12}>
+        <Stack direction="row" flex={1}>
+          <TextField
+            name="frequency"
+            label="Device frequency"
+            inputProps={{ 'data-testid': 'frequency' }}
+            onChange={(event) => {
+              // Ensure that the formik value is set to null if the input is empty, and not empty-string
+              setFieldValue('frequency', numberOrNull(event.target.value));
+            }}
+            onBlur={handleBlur}
+            variant="outlined"
+            value={get(values, 'frequency') || ''} // Ensure that the value is an empty string if it is null (controlled component)
+            error={get(touched, 'frequency') && Boolean(get(errors, 'frequency'))}
+            helperText={get(touched, 'frequency') && get(errors, 'frequency')}
+            sx={{
+              flex: 0.8,
+              '& .MuiOutlinedInput-root': { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
+            }}
+          />
+          <AutocompleteField
+            name="frequency_unit_id"
+            id="frequency_unit_id"
+            label={'Unit'}
+            options={frequencyUnits}
+            required={!!(values.frequency || values.frequency_unit_id)}
+            sx={{
+              flex: 0.2,
+              '& .MuiOutlinedInput-root': { borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }
+            }}
+          />
+        </Stack>
+      </Grid>
+    </Grid>
   );
 };

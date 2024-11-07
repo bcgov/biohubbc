@@ -23,10 +23,7 @@ export const SamplingRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/sampling"
         title={getTitle('Manage Sampling Information')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR,
-          ]}
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <SamplingSiteManagePage />

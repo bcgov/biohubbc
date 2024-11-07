@@ -39,7 +39,6 @@ export const DeploymentFormYupSchema =
 
 interface IDeploymentFormProps {
   isSubmitting: boolean;
-  isEdit?: boolean;
 }
 
 /**

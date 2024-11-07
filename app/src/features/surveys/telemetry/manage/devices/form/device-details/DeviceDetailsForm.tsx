@@ -31,32 +31,30 @@ export const DeviceDetailsForm = (props: IDeviceDetailsFormProps) => {
   const { deviceMakes } = props;
 
   return (
-    <>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <AutocompleteField
-            name="device_make_id"
-            id="device_make_id"
-            label="Make"
-            options={deviceMakes}
-            required={true}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <CustomTextField name="serial" label="Serial Number" maxLength={100} other={{ required: true }} />
-        </Grid>
-        <Grid item xs={12}>
-          <CustomTextField name="model" label="Model (optional)" maxLength={100} />
-        </Grid>
-        <Grid item xs={12}>
-          <CustomTextField
-            name="comment"
-            label="Comments (optional)"
-            maxLength={250}
-            other={{ multiline: true, rows: 4 }}
-          />
-        </Grid>
+    <Grid container spacing={3}>
+      <Grid item xs={12}>
+        <AutocompleteField
+          name="device_make_id"
+          id="device_make_id"
+          label="Make"
+          options={deviceMakes}
+          required={true}
+        />
       </Grid>
-    </>
+      <Grid item xs={12}>
+        <CustomTextField name="serial" label="Serial Number" maxLength={100} other={{ required: true }} />
+      </Grid>
+      <Grid item xs={12}>
+        <CustomTextField name="model" label="Model (optional)" maxLength={100} />
+      </Grid>
+      <Grid item xs={12}>
+        <CustomTextField
+          name="comment"
+          label="Comments (optional)"
+          maxLength={250}
+          other={{ multiline: true, rows: 4 }}
+        />
+      </Grid>
+    </Grid>
   );
 };

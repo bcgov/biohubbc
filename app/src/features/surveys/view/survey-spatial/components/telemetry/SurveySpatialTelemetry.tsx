@@ -2,26 +2,31 @@ import Box from '@mui/material/Box';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import { SurveySpatialMap } from 'features/surveys/view/survey-spatial/components/map/SurveySpatialMap';
-import { SurveySpatialTelemetryPopup } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryPopup';
 import { SurveySpatialTelemetryTable } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetryTable';
-import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo } from 'react';
 
+interface ISurveySpatialTelemetryProps {
+  popup: ((feature: IStaticLayerFeature) => React.ReactElement) | undefined;
+  tooltip: ((feature: IStaticLayerFeature) => React.ReactElement) | undefined;
+}
+
 /**
  * Component to display telemetry data on a map and in a table.
  *
- * @returns {JSX.Element} The rendered component.
+ * @returns {*} The rendered component.
  */
-export const SurveySpatialTelemetry = () => {
-  const biohubAPi = useBiohubApi();
+export const SurveySpatialTelemetry = (props: ISurveySpatialTelemetryProps) => {
+  const { tooltip, popup } = props;
+
+  const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
 
   const telemetrySpatialDataLoader = useDataLoader((projectId: number, surveyId: number) =>
-    biohubAPi.telemetry.getTelemetrySpatialForSurvey(projectId, surveyId)
+    biohubApi.telemetry.getTelemetrySpatialForSurvey(projectId, surveyId)
   );
 
   useEffect(() => {
@@ -59,10 +64,8 @@ export const SurveySpatialTelemetry = () => {
       opacity: 0.75
     },
     features: points,
-    popup: (feature) => {
-      return <SurveySpatialTelemetryPopup feature={feature} />;
-    },
-    tooltip: (feature) => <SurveyMapTooltip title="Telemetry" key={`telemetry-tooltip-${feature.id}`} />
+    popup,
+    tooltip
   };
 
   return (

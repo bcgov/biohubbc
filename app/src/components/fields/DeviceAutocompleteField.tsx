@@ -177,7 +177,7 @@ export const DeviceAutocompleteField = <T extends string | number>(props: IDevic
           error={get(touched, formikFieldName) && Boolean(get(errors, formikFieldName))}
           helperText={get(touched, formikFieldName) && get(errors, formikFieldName)}
           fullWidth
-          placeholder={placeholder || 'Search for a device in the Survey'}
+          placeholder={placeholder ?? 'Search for a device in the Survey'}
           InputProps={{
             ...params.InputProps,
             endAdornment: <>{params.InputProps.endAdornment}</>

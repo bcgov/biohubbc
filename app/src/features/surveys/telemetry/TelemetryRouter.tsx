@@ -30,10 +30,7 @@ export const TelemetryRouter = () => {
         path="/admin/projects/:id/surveys/:survey_id/telemetry/details"
         title={getTitle('Telemetry')}>
         <ProjectRoleRouteGuard
-          validProjectPermissions={[
-            PROJECT_PERMISSION.COORDINATOR,
-            PROJECT_PERMISSION.COLLABORATOR,
-          ]}
+          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <TelemetryPage />

@@ -189,7 +189,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
       renderCell: (params) => {
         const [vendor, serial] = params.row.device_key.split(':');
         return (
-          <Typography variant='body2'>
+          <Typography variant="body2">
             {serial}
             <Typography fontSize="inherit" color="textSecondary">
               {vendor}
@@ -254,7 +254,7 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
           params.row.attachment_end_date &&
           dayjs().isBefore(combineDateTime(params.row.attachment_end_date, params.row.attachment_end_time))
         ) {
-          <ColouredRectangleChip colour={blue} label="Done" />;
+          return <ColouredRectangleChip colour={blue} label="Done" />;
         }
 
         return <ColouredRectangleChip colour={green} label="active" />;

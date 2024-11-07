@@ -168,7 +168,7 @@ export const AnimalAutocompleteField = <T extends string | number>(props: IAnima
           error={get(touched, formikFieldName) && Boolean(get(errors, formikFieldName))}
           helperText={get(touched, formikFieldName) && get(errors, formikFieldName)}
           fullWidth
-          placeholder={placeholder || 'Search for an animal in the Survey'}
+          placeholder={placeholder ?? 'Search for an animal in the Survey'}
           InputProps={{
             ...params.InputProps,
             endAdornment: (
