@@ -29,6 +29,12 @@ export interface IAsyncAutocompleteDataGridEditCell<
    */
   getCurrentOption: (value: ValueType) => Promise<AutocompleteOptionType | null>;
   /**
+   * Initial options to display in the autocomplete, before the user types anything.
+   *
+   * @memberof IAsyncAutocompleteDataGridEditCell
+   */
+  getInitialOptions?: () => AutocompleteOptionType[];
+  /**
    * Search function that returns an array of options to choose from.
    *
    * @memberof IAsyncAutocompleteDataGridEditCell
@@ -68,7 +74,7 @@ const AsyncAutocompleteDataGridEditCell = <
 >(
   props: IAsyncAutocompleteDataGridEditCell<DataGridType, AutocompleteOptionType, ValueType>
 ) => {
-  const { dataGridProps, getCurrentOption, getOptions, error, renderOption, onSelectOption } = props;
+  const { dataGridProps, getCurrentOption, getOptions, getInitialOptions, error, renderOption, onSelectOption } = props;
 
   const ref = useRef<HTMLInputElement>();
 
@@ -78,6 +84,8 @@ const AsyncAutocompleteDataGridEditCell = <
     }
   }, [dataGridProps]);
 
+  const hasRenderedInitialValues = useRef(getInitialOptions ? false : true);
+
   // The current data grid value
   const dataGridValue = dataGridProps.value;
   // The input field value
@@ -85,7 +93,7 @@ const AsyncAutocompleteDataGridEditCell = <
   // The currently selected option
   const [currentOption, setCurrentOption] = useState<AutocompleteOptionType | null>(null);
   // The array of options to choose from
-  const [options, setOptions] = useState<AutocompleteOptionType[]>([]);
+  const [options, setOptions] = useState<AutocompleteOptionType[]>(getInitialOptions?.() ?? []);
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
 
@@ -128,10 +136,18 @@ const AsyncAutocompleteDataGridEditCell = <
     let mounted = true;
 
     if (inputValue === '') {
+      if (hasRenderedInitialValues.current === false) {
+        // No user input value, but we have initial options to display, so don't clear the options
+        return;
+      }
+
       // No input value, nothing to search with
       setOptions(currentOption ? [currentOption] : []);
       return;
     }
+
+    // We've rendered the initial values already, so any changes to the input value should update the options
+    hasRenderedInitialValues.current = true;
 
     // Call async search function
     setIsLoading(true);

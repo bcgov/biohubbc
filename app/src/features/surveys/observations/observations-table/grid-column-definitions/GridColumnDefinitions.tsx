@@ -145,12 +145,12 @@ export const SampleMethodColDef = (props: {
     },
     renderEditCell: (params) => {
       const methodOptions = getMethodsForRow(params, cachedSampleLocationsRef);
+
       return (
         <SampleMethodDataGridEditCell
           dataGridProps={params}
           cachedSampleLocationsRef={cachedSampleLocationsRef}
           methodOptions={methodOptions}
-          onSelectOption={() => {}}
           error={hasError(params)}
         />
       );
@@ -186,12 +186,12 @@ export const SamplePeriodColDef = (props: {
     },
     renderEditCell: (params) => {
       const periodOptions = getPeriodsForRow(params, cachedSampleLocationsRef);
+
       return (
         <SamplePeriodDataGridEditCell
           dataGridProps={params}
           cachedSampleLocationsRef={cachedSampleLocationsRef}
           periodOptions={periodOptions}
-          onSelectOption={() => {}}
           error={hasError(params)}
         />
       );

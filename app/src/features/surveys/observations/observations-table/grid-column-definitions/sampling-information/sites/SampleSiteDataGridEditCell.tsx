@@ -37,6 +37,11 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
 
   const isMounted = useIsMounted();
 
+  /**
+   * Get the current option for the autocomplete, if the field has a value.
+   *
+   * @return {*}  {(Promise<IAutocompleteDataGridSampleSiteOption | null>)}
+   */
   const getCurrentOption = async (): Promise<IAutocompleteDataGridSampleSiteOption | null> => {
     const currentSite = getCurrentSite(dataGridProps, cachedSampleLocationsRef);
 
@@ -51,30 +56,35 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
     };
   };
 
+  /**
+   * Merge the cached sample locations with the new options returned by the async search, removing duplicates.
+   *
+   * @param {IGetSampleLocationNonSpatialDetails[]} cachedOptions
+   * @param {IGetSampleLocationNonSpatialDetails[]} options
+   * @return {*}
+   */
   const mergeOptions = (
     cachedOptions: IGetSampleLocationNonSpatialDetails[],
     options: IGetSampleLocationNonSpatialDetails[]
   ) => {
-    // merge options discarding duplicates based on `survey_sample_site_id`
-    const mergedOptions = [
-      ...cachedOptions.map((item) => ({
+    const mergedOptionsMap = new Map<number, IAutocompleteDataGridSampleSiteOption>();
+
+    // Merge the cached options with the new options, ensuring no duplicates
+    [...cachedOptions, ...options].forEach((item) => {
+      mergedOptionsMap.set(item.survey_sample_site_id, {
         ...item,
         label: item.name,
         value: item.survey_sample_site_id
-      })),
-      ...options.map((item) => ({
-        ...item,
-        label: item.name,
-        value: item.survey_sample_site_id
-      }))
-    ];
+      });
+    });
 
-    // Remove duplicates based on `survey_sample_site_id`
-    const uniqueOptions = Array.from(new Map(mergedOptions.map((item) => [item.survey_sample_site_id, item])).values());
-
-    return uniqueOptions;
+    return Array.from(mergedOptionsMap.values());
   };
 
+  /**
+   * Debounced function to get the options for the autocomplete, based on the search term.
+   * Includes the cached sample locations in the resulting options array.
+   */
   const getOptions = useMemo(
     () =>
       debounce(
@@ -107,7 +117,7 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
               ...item,
               label: item.name,
               value: item.survey_sample_site_id
-            })) || []
+            })) ?? []
           );
         },
         500
@@ -115,12 +125,42 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
     [biohubApi.samplingSite, cachedSampleLocationsRef, isMounted, surveyContext.projectId, surveyContext.surveyId]
   );
 
+  /**
+   * Get the initial options for the autocomplete.
+   *
+   * @return {*}
+   */
+  const getInitialOptions = () => {
+    return (
+      cachedSampleLocationsRef.current?.locations.map((item) => ({
+        ...item,
+        label: item.name,
+        value: item.survey_sample_site_id
+      })) ?? []
+    );
+  };
+
   return (
     <AsyncAutocompleteDataGridEditCell
       dataGridProps={dataGridProps}
       getCurrentOption={getCurrentOption}
+      getInitialOptions={getInitialOptions}
       getOptions={getOptions}
-      onSelectOption={(selectedOption) => onSelectOption?.(selectedOption)}
+      onSelectOption={(selectedOption) => {
+        // If the sample site is changed, clear the sample method and period as they are dependent on the site
+        dataGridProps.api.setEditCellValue({
+          id: dataGridProps.id,
+          field: 'survey_sample_method_id',
+          value: null
+        });
+        dataGridProps.api.setEditCellValue({
+          id: dataGridProps.id,
+          field: 'survey_sample_period_id',
+          value: null
+        });
+
+        onSelectOption?.(selectedOption);
+      }}
       error={error}
       renderOption={(renderProps, renderOption) => (
         <Box

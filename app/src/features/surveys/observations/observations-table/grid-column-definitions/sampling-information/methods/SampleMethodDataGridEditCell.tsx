@@ -61,12 +61,20 @@ const SampleMethodDataGridEditCell = <DataGridType extends GridValidRowModel>(
       }}
       filterOptions={createFilterOptions({ limit: 50 })}
       onChange={(_, selectedOption) => {
-        // Set the data grid cell value with selected options value
+        // Set the sample method value with selected options value
         dataGridProps.api.setEditCellValue({
           id: dataGridProps.id,
           field: dataGridProps.field,
           value: selectedOption?.value
         });
+
+        // If the sample method is changed, clear the sample period as it is dependent on the method
+        dataGridProps.api.setEditCellValue({
+          id: dataGridProps.id,
+          field: 'survey_sample_period_id',
+          value: null
+        });
+
         onSelectOption?.(selectedOption);
       }}
       renderInput={(params) => (

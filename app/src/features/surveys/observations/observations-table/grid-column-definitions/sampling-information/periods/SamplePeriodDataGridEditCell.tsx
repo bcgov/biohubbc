@@ -61,12 +61,13 @@ const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowModel>(
       }}
       filterOptions={createFilterOptions({ limit: 50 })}
       onChange={(_, selectedOption) => {
-        // Set the data grid cell value with selected options value
+        // Set the sample period value with selected options value
         dataGridProps.api.setEditCellValue({
           id: dataGridProps.id,
           field: dataGridProps.field,
           value: selectedOption?.value
         });
+
         onSelectOption?.(selectedOption);
       }}
       renderInput={(params) => (
