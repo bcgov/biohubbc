@@ -23,52 +23,42 @@ import yup from 'utils/YupSchema';
 // Types to know how the deployment ended, determining which form components to display
 type DeploymentEndType = 'capture' | 'mortality' | 'fell_off';
 
-export const DeploymentTimelineFormInitialValues: yup.InferType<typeof DeploymentTimelineFormYupSchema> = {
-  critterbase_start_capture_id: null as unknown as string,
-  critterbase_end_mortality_id: null,
-  critterbase_end_capture_id: null,
+export const DeploymentEndFormInitialValues: yup.InferType<typeof DeploymentEndFormYupSchema> = {
   attachment_end_date: null,
-  attachment_end_time: null
+  attachment_end_time: null,
+  critterbase_end_mortality_id: null,
+  critterbase_end_capture_id: null
 };
 
-export const DeploymentTimelineFormYupSchema = yup.object({
-  critterbase_start_capture_id: yup.string().nullable().required('You must select the initial capture event'),
-  critterbase_end_mortality_id: yup.string().uuid().nullable(),
-  critterbase_end_capture_id: yup.string().uuid().nullable(),
+export const DeploymentEndFormYupSchema = yup.object({
   attachment_end_date: yup.lazy(() =>
     yup
       .string()
       .nullable()
+      .default(null)
       .when('attachment_end_time', {
         is: (attachment_end_time: string | null) => attachment_end_time !== null,
-        then: yup.string().nullable().required('End Date is required'),
-        otherwise: yup.string().nullable()
+        then: yup.string().nullable().required('End date is required'),
+        otherwise: yup.string().nullable().default(null)
       })
   ),
-  attachment_end_time: yup.lazy(() =>
-    yup
-      .string()
-      .nullable()
-      .when('attachment_end_date', {
-        is: (attachment_end_date: string | null) => attachment_end_date !== null,
-        then: yup.string().nullable().required('End time is required'),
-        otherwise: yup.string().nullable()
-      })
-  )
+  attachment_end_time: yup.string().nullable().default(null),
+  critterbase_end_mortality_id: yup.string().uuid().nullable().default(null),
+  critterbase_end_capture_id: yup.string().uuid().nullable().default(null)
 });
 
-interface IDeploymentTimelineFormProps {
+interface IDeploymentEndFormProps {
   captures: ICaptureResponse[];
   mortalities: IMortalityResponse[];
 }
 
 /**
- * Deployment form - deployment timeline section.
+ * Deployment form - end of deployment details
  *
- * @param {IDeploymentTimelineFormProps} props
+ * @param {IDeploymentEndFormProps} props
  * @return {*}
  */
-export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
+export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
   const { captures, mortalities } = props;
 
   const formikProps = useFormikContext<ICreateAnimalDeployment>();
@@ -94,44 +84,9 @@ export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
 
   return (
     <Grid container spacing={3}>
-      <Grid item xs={12}>
-        <Typography component="legend" variant="h5">
-          Start of deployment
-        </Typography>
-        <Typography color="textSecondary" mb={3}>
-          You must&nbsp;
-          {values.critter_id ? (
-            <Typography
-              sx={{
-                textDecoration: 'none'
-              }}
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/${values.critter_id}/capture/create`}>
-              add the capture
-            </Typography>
-          ) : (
-            'add the capture'
-          )}
-          &nbsp;during which the device was deployed before adding the deployment.
-        </Typography>
-        <AutocompleteField
-          name="critterbase_start_capture_id"
-          id="critterbase_start_capture_id"
-          label={'Initial capture event'}
-          options={captures.map((capture) => ({
-            value: capture.capture_id,
-            label: dayjs(capture.capture_date).format(DATE_FORMAT.LongDateTimeFormat)
-          }))}
-          required
-        />
-      </Grid>
-
-      <Grid item xs={12} mt={3} flex="1 1 auto">
-        <Typography component="legend" variant="h5">
-          End of deployment (optional)
-        </Typography>
-        <Typography color="textSecondary" mb={3}>
-          Select how the deployment ended. If due to a mortality, you must&nbsp;
+      <Grid item xs={12} flex="1 1 auto">
+        <Typography color="textSecondary" mb={2}>
+          Select how the deployment ended, if applicable. If due to a mortality, you must&nbsp;
           {values.critter_id ? (
             <Typography
               sx={{
@@ -195,7 +150,6 @@ export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
           <FormControlLabel
             value="mortality"
             control={<Radio color="primary" />}
-            disabled={!mortalities.length}
             label="Mortality"
             onChange={() => {
               setDeploymentEndType('mortality');

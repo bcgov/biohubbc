@@ -1,5 +1,4 @@
 import { mdiEye, mdiPaw, mdiWifiMarker } from '@mdi/js';
-import { TelemetryDataContextProvider } from 'contexts/telemetryDataContext';
 import { SurveySpatialAnimal } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimal';
 import { SurveySpatialObservation } from 'features/surveys/view/survey-spatial/components/observation/SurveySpatialObservation';
 import {
@@ -10,6 +9,8 @@ import { SurveySpatialTelemetry } from 'features/surveys/view/survey-spatial/com
 import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
 import { isEqual } from 'lodash-es';
 import { useEffect, useState } from 'react';
+import SurveyMapTooltip from '../SurveyMapTooltip';
+import { SurveySpatialTelemetryPopup } from './components/telemetry/SurveySpatialTelemetryPopup';
 
 /**
  * Container component for displaying survey spatial data.
@@ -73,9 +74,12 @@ export const SurveySpatialContainer = (): JSX.Element => {
       {/* Display the corresponding dataset view based on the selected active view */}
       {isEqual(SurveySpatialDatasetViewEnum.OBSERVATIONS, activeView) && <SurveySpatialObservation />}
       {isEqual(SurveySpatialDatasetViewEnum.TELEMETRY, activeView) && (
-        <TelemetryDataContextProvider>
-          <SurveySpatialTelemetry />
-        </TelemetryDataContextProvider>
+        <SurveySpatialTelemetry
+          popup={(feature) => {
+            return <SurveySpatialTelemetryPopup feature={feature} />;
+          }}
+          tooltip={(feature) => <SurveyMapTooltip title="Telemetry" key={`telemetry-tooltip-${feature.id}`} />}
+        />
       )}
       {isEqual(SurveySpatialDatasetViewEnum.ANIMALS, activeView) && <SurveySpatialAnimal />}
     </>

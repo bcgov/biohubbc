@@ -10,7 +10,7 @@ import { useFormikContext } from 'formik';
 import { useSurveyContext } from 'hooks/useContext';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { get } from 'lodash-es';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export interface IAnimalAutocompleteFieldProps {
   /**
@@ -86,12 +86,20 @@ export interface IAnimalAutocompleteFieldProps {
 export const AnimalAutocompleteField = <T extends string | number>(props: IAnimalAutocompleteFieldProps) => {
   const { formikFieldName, label, onSelect, defaultAnimal, required, disabled, clearOnSelect, placeholder } = props;
 
-  const { touched, errors, setFieldValue } = useFormikContext<IAutocompleteFieldOption<T>>();
+  const { touched, errors, setFieldValue, values } = useFormikContext<IAutocompleteFieldOption<T>>();
 
   const surveyContext = useSurveyContext();
 
   // The input field value
   const [inputValue, setInputValue] = useState(defaultAnimal?.animal_id ?? '');
+
+  useEffect(() => {
+    if (!defaultAnimal || get(values, formikFieldName)) {
+      return;
+    }
+
+    setInputValue(String(defaultAnimal.animal_id));
+  }, [defaultAnimal, formikFieldName, values]);
 
   // Survey animals to choose from
   const options = surveyContext.critterDataLoader.data;
@@ -160,7 +168,7 @@ export const AnimalAutocompleteField = <T extends string | number>(props: IAnima
           error={get(touched, formikFieldName) && Boolean(get(errors, formikFieldName))}
           helperText={get(touched, formikFieldName) && get(errors, formikFieldName)}
           fullWidth
-          placeholder={placeholder || 'Search for an animal in the Survey'}
+          placeholder={placeholder ?? 'Search for an animal in the Survey'}
           InputProps={{
             ...params.InputProps,
             endAdornment: (
