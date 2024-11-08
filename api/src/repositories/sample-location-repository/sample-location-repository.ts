@@ -3,6 +3,11 @@ import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
+import {
+  IMethodAdvancedFilters,
+  IPeriodAdvancedFilters,
+  ISiteAdvancedFilters
+} from '../../models/sampling-locations-view';
 import { generateGeometryCollectionSQL } from '../../utils/spatial-utils';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { BaseRepository } from '../base-repository';
@@ -10,7 +15,12 @@ import { SampleBlockRecord, UpdateSampleBlockRecord } from '../sample-blocks-rep
 import { SampleMethodRecord, UpdateSampleMethodRecord } from '../sample-method-repository';
 import { SamplePeriodRecord } from '../sample-period-repository';
 import { SampleStratumRecord, UpdateSampleStratumRecord } from '../sample-stratums-repository';
-import { getSamplingLocationBaseQuery } from './utils';
+import {
+  getSamplingLocationBaseQuery,
+  makeFindSamplingMethodBaseQuery,
+  makeFindSamplingPeriodBaseQuery,
+  makeFindSamplingSiteBaseQuery
+} from './utils';
 
 /**
  * An aggregate record of a sample site without spatial data, including all of the child sample methods,
@@ -187,6 +197,7 @@ export class SampleLocationRepository extends BaseRepository {
    * @param {number} surveyId
    * @param {{
    *       keyword?: string;
+   *       sampleSiteIds?: number[];
    *       pagination?: ApiPaginationOptions;
    *     }} [options]
    * @return {*}  {Promise<SampleLocationNonSpatialRecord[]>}
@@ -196,10 +207,11 @@ export class SampleLocationRepository extends BaseRepository {
     surveyId: number,
     options?: {
       keyword?: string;
+      sampleSiteIds?: number[];
       pagination?: ApiPaginationOptions;
     }
   ): Promise<SampleLocationNonSpatialRecord[]> {
-    const { keyword, pagination } = options || {};
+    const { keyword, sampleSiteIds, pagination } = options || {};
 
     const knex = getKnex();
 
@@ -319,6 +331,11 @@ export class SampleLocationRepository extends BaseRepository {
       .leftJoin('w_survey_sample_block as wssb', 'wssb.survey_sample_site_id', 'sss.survey_sample_site_id')
       .leftJoin('w_survey_sample_stratum as wssst', 'wssst.survey_sample_site_id', 'sss.survey_sample_site_id')
       .where('sss.survey_id', surveyId);
+
+    if (sampleSiteIds) {
+      // Filter results by sample site IDs
+      queryBuilder.whereIn('sss.survey_sample_site_id', sampleSiteIds);
+    }
 
     if (keyword) {
       // Filter results by keyword
@@ -523,6 +540,130 @@ export class SampleLocationRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement, SampleSiteGeometryRecord);
+
+    return response.rows;
+  }
+
+  /** Retrieve the list of sites that the user has access to, based on filters and pagination options.
+   *
+   * @param {boolean} isUserAdmin Whether the user is an admin.
+   * @param {number | null} systemUserId The user's ID.
+   * @param {IObservationAdvancedFilters} filterFields The filter fields to apply.
+   * @param {ApiPaginationOptions} [pagination] The pagination options.
+   * @return {Promise<ObservationRecordWithSamplingAndSubcountData[]>} A promise resolving to the list of sites.
+   */
+  async findSites(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISiteAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ) {
+    const query = makeFindSamplingSiteBaseQuery(isUserAdmin, systemUserId, filterFields);
+
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(
+      query,
+      z.object({
+        survey_sample_site_id: z.number(),
+        survey_id: z.number(),
+        name: z.string(),
+        description: z.string().nullable(), // TODO NICK nullable?
+        geometry_type: z.string()
+      })
+    );
+
+    return response.rows;
+  }
+
+  /** Retrieve the list of methods that the user has access to, based on filters and pagination options.
+   *
+   * @param {boolean} isUserAdmin Whether the user is an admin.
+   * @param {number | null} systemUserId The user's ID.
+   * @param {IObservationAdvancedFilters} filterFields The filter fields to apply.
+   * @param {ApiPaginationOptions} [pagination] The pagination options.
+   * @return {Promise<ObservationRecordWithSamplingAndSubcountData[]>} A promise resolving to the list of methods.
+   */
+  async findMethods(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IMethodAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ) {
+    const query = makeFindSamplingMethodBaseQuery(isUserAdmin, systemUserId, filterFields);
+
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(
+      query,
+      z.object({
+        survey_sample_method_id: z.number(),
+        survey_sample_site_id: z.number(),
+        description: z.string().nullable(), // TODO NICK nullable?
+        method_response_metric_id: z.number(),
+        technique: z.object({
+          method_technique_id: z.number(),
+          name: z.string(),
+          description: z.string().nullable(), // TODO NICK nullable?
+          attractants: z.array(
+            z.object({
+              attractant_lookup_id: z.number()
+            })
+          )
+        })
+      })
+    );
+
+    return response.rows;
+  }
+
+  /** Retrieve the list of periods that the user has access to, based on filters and pagination options.
+   *
+   * @param {boolean} isUserAdmin Whether the user is an admin.
+   * @param {number | null} systemUserId The user's ID.
+   * @param {IObservationAdvancedFilters} filterFields The filter fields to apply.
+   * @param {ApiPaginationOptions} [pagination] The pagination options.
+   * @return {Promise<ObservationRecordWithSamplingAndSubcountData[]>} A promise resolving to the list of periods.
+   */
+  async findPeriods(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IPeriodAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ) {
+    const query = makeFindSamplingPeriodBaseQuery(isUserAdmin, systemUserId, filterFields);
+
+    if (pagination) {
+      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        query.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(
+      query,
+      z.object({
+        survey_sample_period_id: z.number(),
+        survey_sample_method_id: z.number(),
+        start_date: z.string(),
+        start_time: z.string().nullable(),
+        end_date: z.string(),
+        end_time: z.string().nullable()
+      })
+    );
 
     return response.rows;
   }

@@ -24,10 +24,7 @@ import {
   InsertObservationSubCountQualitativeMeasurementRecord,
   InsertObservationSubCountQuantitativeMeasurementRecord
 } from '../repositories/observation-subcount-measurement-repository';
-import {
-  SampleLocationBasicRecord,
-  SampleLocationRecord
-} from '../repositories/sample-location-repository/sample-location-repository';
+import { SampleLocationRecord } from '../repositories/sample-location-repository/sample-location-repository';
 import { SamplePeriodHierarchyIds } from '../repositories/sample-period-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
@@ -140,7 +137,7 @@ export type ObservationMeasurementSupplementaryData = {
 };
 
 export type ObservationSamplingSupplementaryData = {
-  sample_sites: SampleLocationBasicRecord[];
+  sample_sites: SampleLocationRecord[];
 };
 
 export type AllObservationSupplementaryData = ObservationCountSupplementaryData &
@@ -329,7 +326,7 @@ export class ObservationService extends DBService {
     const subCountService = new SubCountService(this.connection);
     const measurementTypeDefinitions = await subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId);
     const environmentTypeDefinitions = await subCountService.getEnvironmentTypeDefinitionsForSurvey(surveyId);
-    const sampleLocations = await sampleLocationService.getBasicSurveySampleLocationsBySiteIds(surveyId, sampleSiteIds);
+    const sampleLocations = await sampleLocationService.getSampleLocationsForSurveyId(surveyId, { sampleSiteIds });
 
     return {
       surveyObservations: surveyObservations,

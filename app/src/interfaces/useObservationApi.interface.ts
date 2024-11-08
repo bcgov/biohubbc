@@ -7,7 +7,7 @@ import {
   EnvironmentQuantitativeTypeDefinition
 } from 'interfaces/useReferenceApi.interface';
 import { ApiPaginationResponseParams } from 'types/misc';
-import { IGetBasicSampleLocation } from './useSamplingSiteApi.interface';
+import { IGetSampleLocationNonSpatialDetails } from './useSamplingSiteApi.interface';
 export interface IGetSurveyObservationsResponse {
   surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
   supplementaryObservationData: SupplementaryObservationData;
@@ -68,7 +68,8 @@ export type SupplementaryObservationCountData = {
 };
 
 export type ObservationSamplingSupplementaryData = {
-  sample_sites: IGetBasicSampleLocation[];
+  //   sample_sites: IGetBasicSampleLocation[];
+  sample_sites: IGetSampleLocationNonSpatialDetails[];
 };
 
 export type SupplementaryObservationMeasurementData = {

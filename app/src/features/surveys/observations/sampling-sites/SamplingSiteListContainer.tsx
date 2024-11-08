@@ -419,6 +419,7 @@ export const SamplingSiteListContainer = () => {
         <Paper square sx={{ bottom: 0, marginTop: '-1px', width: '100%', maxWidth: '100%', zIndex: 99 }}>
           <Divider flexItem />
           <TablePagination
+            component="div"
             sx={{
               flex: 1,
               display: 'flex',

@@ -1,4 +1,9 @@
 import { IDBConnection } from '../database/db';
+import {
+  IMethodAdvancedFilters,
+  IPeriodAdvancedFilters,
+  ISiteAdvancedFilters
+} from '../models/sampling-locations-view';
 import { InsertSampleBlockRecord } from '../repositories/sample-blocks-repository';
 import {
   InsertSampleSiteRecord,
@@ -50,6 +55,7 @@ export class SampleLocationService extends DBService {
    * @param {number} surveyId
    * @param {{
    *       keyword?: string;
+   *       sampleSiteIds?: number[];
    *       pagination?: ApiPaginationOptions;
    *     }} [options]
    * @return {*}  {Promise<SampleLocationRecord[]>}
@@ -59,6 +65,7 @@ export class SampleLocationService extends DBService {
     surveyId: number,
     options?: {
       keyword?: string;
+      sampleSiteIds?: number[];
       pagination?: ApiPaginationOptions;
     }
   ): Promise<SampleLocationRecord[]> {
@@ -124,6 +131,66 @@ export class SampleLocationService extends DBService {
    */
   async getSurveySampleLocationBySiteId(surveyId: number, surveySampleSiteId: number): Promise<SampleLocationRecord> {
     return this.sampleLocationRepository.getSurveySampleLocationBySiteId(surveyId, surveySampleSiteId);
+  }
+
+  /**
+   * Retrieves the paginated list of all sites that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ISiteAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}
+   * @memberof ObservationService
+   */
+  async findSites(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISiteAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ) {
+    return this.sampleLocationRepository.findSites(isUserAdmin, systemUserId, filterFields, pagination);
+  }
+
+  /**
+   * Retrieves the paginated list of all methods that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IMethodAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}
+   * @memberof ObservationService
+   */
+  async findMethods(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IMethodAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ) {
+    return this.sampleLocationRepository.findMethods(isUserAdmin, systemUserId, filterFields, pagination);
+  }
+
+  /**
+   * Retrieves the paginated list of all periods that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IPeriodAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}
+   * @memberof ObservationService
+   */
+  async findPeriods(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IPeriodAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ) {
+    return this.sampleLocationRepository.findPeriods(isUserAdmin, systemUserId, filterFields, pagination);
   }
 
   /**

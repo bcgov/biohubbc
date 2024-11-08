@@ -22,16 +22,14 @@ import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
 import { DiscardChangesButton } from 'features/surveys/observations/observations-table/discard-changes/DiscardChangesButton';
 import {
-  ISampleMethodOption,
-  ISamplePeriodOption,
-  ISampleSiteOption,
   ObservationCountColDef,
   ObservationSubcountSignColDef,
   SampleMethodColDef,
   SamplePeriodColDef,
-  SampleSiteColDef2,
+  SampleSiteColDef,
   TaxonomyColDef
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitions';
+import { useSampleLocationsCache } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/useSampleLocationsCache';
 import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-obsevations/ImportObservationsButton';
 import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import {
@@ -40,13 +38,8 @@ import {
   useObservationsPageContext,
   useObservationsTableContext
 } from 'hooks/useContext';
-import {
-  IGetBasicSampleLocation,
-  IGetBasicSampleMethod,
-  IGetSamplePeriodRecord
-} from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect, useMemo } from 'react';
-import { getCodesName } from 'utils/Utils';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
 import { ObservationSubcountCommentDialog } from './grid-column-definitions/comment/ObservationSubcountCommentDialog';
@@ -55,8 +48,13 @@ import {
   getMeasurementColumnDefinitions
 } from './grid-column-definitions/GridColumnDefinitionsUtils';
 
+export type SampleLocationCache = {
+  locations: IGetSampleLocationNonSpatialDetails[];
+};
+
 const ObservationsTableContainer = () => {
   const codesContext = useCodesContext();
+
   const observationsPageContext = useObservationsPageContext();
   const observationsTableContext = useObservationsTableContext();
   const observationsContext = useObservationsContext();
@@ -64,50 +62,6 @@ const ObservationsTableContainer = () => {
   useEffect(() => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
-
-  // Get initial sample site information from the observations records (this only includes the sample sites for the
-  // observations that have been loaded, not all sample sites that exist for the survey)
-  const surveySampleSites: IGetBasicSampleLocation[] = useMemo(
-    () => observationsContext.observationsDataLoader.data?.supplementaryObservationData.sample_sites ?? [],
-    [observationsContext.observationsDataLoader.data?.supplementaryObservationData.sample_sites]
-  );
-
-  const sampleSiteOptions: ISampleSiteOption[] = useMemo(
-    () =>
-      surveySampleSites.map((site) => ({
-        survey_sample_site_id: site.survey_sample_site_id,
-        sample_site_name: site.name
-      })) ?? [],
-    [surveySampleSites]
-  );
-
-  //   const onSelectSampleSite = (x: any) => {};
-
-  // Collect sample methods
-  const surveySampleMethods: IGetBasicSampleMethod[] = surveySampleSites
-    .filter((sampleSite) => Boolean(sampleSite.sample_methods))
-    .map((sampleSite) => sampleSite.sample_methods)
-    .flat(2);
-  const sampleMethodOptions: ISampleMethodOption[] = surveySampleMethods.map((method) => ({
-    survey_sample_method_id: method.survey_sample_method_id,
-    survey_sample_site_id: method.survey_sample_site_id,
-    sample_method_name: method.technique.name,
-    response_metric:
-      getCodesName(codesContext.codesDataLoader.data, 'method_response_metrics', method.method_response_metric_id) ?? ''
-  }));
-
-  // Collect sample periods
-  const samplePeriodOptions: ISamplePeriodOption[] = surveySampleMethods
-    .filter((sampleMethod) => Boolean(sampleMethod.sample_periods))
-    .map((sampleMethod) => sampleMethod.sample_periods as IGetSamplePeriodRecord[])
-    .flat(2)
-    .map((samplePeriod: IGetSamplePeriodRecord) => ({
-      survey_sample_period_id: samplePeriod.survey_sample_period_id,
-      survey_sample_method_id: samplePeriod.survey_sample_method_id,
-      sample_period_name: `${samplePeriod.start_date} ${samplePeriod.start_time ?? ''} - ${samplePeriod.end_date} ${
-        samplePeriod.end_time ?? ''
-      }`
-    }));
 
   const observationSubcountSignOptions = useMemo(
     () =>
@@ -118,58 +72,94 @@ const ObservationsTableContainer = () => {
     [codesContext.codesDataLoader.data?.observation_subcount_signs]
   );
 
+  const sampleLocationsCache = useSampleLocationsCache();
+
+  useEffect(() => {
+    if (!observationsContext.observationsDataLoader.data?.supplementaryObservationData.sample_sites?.length) {
+      return;
+    }
+
+    sampleLocationsCache.updateCachedSampleLocationsRef(
+      observationsContext.observationsDataLoader.data.supplementaryObservationData.sample_sites
+    );
+  }, [
+    observationsContext.observationsDataLoader.data?.supplementaryObservationData.sample_sites,
+    sampleLocationsCache
+  ]);
+
   // The column definitions of the columns to render in the observations table
   const columns: GridColDef<IObservationTableRow>[] = useMemo(
-    () => [
-      // Add standard observation columns to the table
-      TaxonomyColDef({ hasError: observationsTableContext.hasError }),
-      SampleSiteColDef2({ sampleSiteOptions, hasError: observationsTableContext.hasError }),
-      SampleMethodColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
-      SamplePeriodColDef({ samplePeriodOptions, hasError: observationsTableContext.hasError }),
-      ObservationSubcountSignColDef({ observationSubcountSignOptions, hasError: observationsTableContext.hasError }),
-      ObservationCountColDef({ sampleMethodOptions, hasError: observationsTableContext.hasError }),
-      GenericDateColDef({
-        field: 'observation_date',
-        headerName: 'Date',
-        hasError: observationsTableContext.hasError,
-        description: 'The date when the observation was made'
-      }),
-      GenericTimeColDef({
-        field: 'observation_time',
-        headerName: 'Time',
-        hasError: observationsTableContext.hasError,
-        description: 'The time of day when the observation was made'
-      }),
-      GenericLatitudeColDef({
-        field: 'latitude',
-        headerName: 'Latitude',
-        hasError: observationsTableContext.hasError,
-        description: 'The latitude where the observation was made'
-      }),
-      GenericLongitudeColDef({
-        field: 'longitude',
-        headerName: 'Longitude',
-        hasError: observationsTableContext.hasError,
-        description: 'The longitude where the observation was made'
-      }),
-      // Add measurement columns to the table
-      ...getMeasurementColumnDefinitions(
-        observationsTableContext.measurementColumns,
-        observationsTableContext.hasError
-      ),
-      // Add environment columns to the table
-      ...getEnvironmentColumnDefinitions(
-        observationsTableContext.environmentColumns,
-        observationsTableContext.hasError
-      ),
-      GenericCommentColDef({
-        field: 'comment',
-        headerName: '',
-        hasError: observationsTableContext.hasError,
-        handleOpen: (params: GridRenderEditCellParams) => observationsTableContext.setCommentDialogParams(params),
-        handleClose: () => observationsTableContext.setCommentDialogParams(null)
-      })
-    ],
+    () => {
+      return [
+        // Add standard observation columns to the table
+        TaxonomyColDef({ hasError: observationsTableContext.hasError }),
+        SampleSiteColDef({
+          cachedSampleLocationsRef: sampleLocationsCache.cachedSampleLocationsRef,
+          onSelectOption: (selectedSampleSite) => {
+            if (!selectedSampleSite) {
+              return;
+            }
+
+            sampleLocationsCache.updateCachedSampleLocationsRef([selectedSampleSite]);
+          },
+          hasError: observationsTableContext.hasError
+        }),
+        SampleMethodColDef({
+          cachedSampleLocationsRef: sampleLocationsCache.cachedSampleLocationsRef,
+          hasError: observationsTableContext.hasError
+        }),
+        SamplePeriodColDef({
+          cachedSampleLocationsRef: sampleLocationsCache.cachedSampleLocationsRef,
+          hasError: observationsTableContext.hasError
+        }),
+        ObservationSubcountSignColDef({ observationSubcountSignOptions, hasError: observationsTableContext.hasError }),
+        ObservationCountColDef({
+          cachedSampleLocationsRef: sampleLocationsCache.cachedSampleLocationsRef,
+          hasError: observationsTableContext.hasError
+        }),
+        GenericDateColDef({
+          field: 'observation_date',
+          headerName: 'Date',
+          hasError: observationsTableContext.hasError,
+          description: 'The date when the observation was made'
+        }),
+        GenericTimeColDef({
+          field: 'observation_time',
+          headerName: 'Time',
+          hasError: observationsTableContext.hasError,
+          description: 'The time of day when the observation was made'
+        }),
+        GenericLatitudeColDef({
+          field: 'latitude',
+          headerName: 'Latitude',
+          hasError: observationsTableContext.hasError,
+          description: 'The latitude where the observation was made'
+        }),
+        GenericLongitudeColDef({
+          field: 'longitude',
+          headerName: 'Longitude',
+          hasError: observationsTableContext.hasError,
+          description: 'The longitude where the observation was made'
+        }),
+        // Add measurement columns to the table
+        ...getMeasurementColumnDefinitions(
+          observationsTableContext.measurementColumns,
+          observationsTableContext.hasError
+        ),
+        // Add environment columns to the table
+        ...getEnvironmentColumnDefinitions(
+          observationsTableContext.environmentColumns,
+          observationsTableContext.hasError
+        ),
+        GenericCommentColDef({
+          field: 'comment',
+          headerName: '',
+          hasError: observationsTableContext.hasError,
+          handleOpen: (params: GridRenderEditCellParams) => observationsTableContext.setCommentDialogParams(params),
+          handleClose: () => observationsTableContext.setCommentDialogParams(null)
+        })
+      ];
+    },
     // observationsTableContext is listed as a missing dependency
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -177,10 +167,7 @@ const ObservationsTableContainer = () => {
       observationsTableContext.environmentColumns,
       observationsTableContext.hasError,
       observationsTableContext.measurementColumns,
-      observationsTableContext.setCommentDialogParams,
-      sampleMethodOptions,
-      samplePeriodOptions,
-      sampleSiteOptions
+      observationsTableContext.setCommentDialogParams
     ]
   );
 
@@ -279,7 +266,7 @@ const ObservationsTableContainer = () => {
               observationsTableContext.isDisabled ||
               codesContext.codesDataLoader.isLoading
             }
-            columns={columns}
+            columns={[...columns]}
           />
         </Box>
       </Box>

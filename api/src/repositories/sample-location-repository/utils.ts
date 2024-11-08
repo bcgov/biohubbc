@@ -1,4 +1,10 @@
 import { Knex } from 'knex';
+import { getKnex } from '../../database/db';
+import {
+  IMethodAdvancedFilters,
+  IPeriodAdvancedFilters,
+  ISiteAdvancedFilters
+} from '../../models/sampling-locations-view';
 
 /**
  * Get the base query for retrieving survey sample locations
@@ -125,4 +131,283 @@ export function getSamplingLocationBaseQuery(knex: Knex): Knex.QueryBuilder {
       .leftJoin('w_survey_sample_block as wssb', 'wssb.survey_sample_site_id', 'sss.survey_sample_site_id')
       .leftJoin('w_survey_sample_stratum as wssst', 'wssst.survey_sample_site_id', 'sss.survey_sample_site_id')
   );
+}
+/**
+ * Get the base query for retrieving survey sample sites.
+ *
+ * @param {Knex} knex The Knex instance.
+ * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey sample sites
+ */
+export function getSamplingSiteBaseQuery(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
+  const knex = getKnex();
+
+  queryBuilder
+    .select(
+      'sss.survey_sample_site_id',
+      'sss.survey_id',
+      'sss.name',
+      'sss.description',
+      knex.raw(`sss.geojson->'geometry'->>'type' as geometry_type`)
+    )
+    .from({ sss: 'survey_sample_site' });
+
+  return queryBuilder;
+}
+
+/**
+ * Get the base query for retrieving survey sample sites, including blocks and stratums.
+ *
+ * @param {Knex} knex The Knex instance.
+ * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey sample sites
+ */
+export function makeFindSamplingSiteBaseQuery(
+  isUserAdmin: boolean,
+  systemUserId: number | null,
+  filterFields: ISiteAdvancedFilters
+): Knex.QueryBuilder {
+  const knex = getKnex();
+
+  const getSurveyIdsQuery = knex.select<any, { survey_id: number }>(['survey_id']).from('survey');
+
+  // Ensure that users can only see observations that they are participating in, unless they are an administrator.
+  if (!isUserAdmin) {
+    getSurveyIdsQuery.whereIn('survey.project_id', (subqueryBuilder) =>
+      subqueryBuilder
+        .select('project.project_id')
+        .from('project')
+        .leftJoin('project_participation', 'project_participation.project_id', 'project.project_id')
+        .where('project_participation.system_user_id', systemUserId)
+    );
+  }
+
+  if (filterFields.system_user_id) {
+    getSurveyIdsQuery.whereIn('p.project_id', (subQueryBuilder) => {
+      subQueryBuilder
+        .select('project_id')
+        .from('project_participation')
+        .where('system_user_id', filterFields.system_user_id);
+    });
+  }
+
+  const getSamplingSitesQuery = knex.queryBuilder();
+
+  // Add the base query
+  getSamplingSitesQuery.modify(getSamplingSiteBaseQuery);
+
+  // Filter by the survey ids the user has access to
+  getSamplingSitesQuery.whereIn('sss.survey_id', getSurveyIdsQuery);
+
+  if (filterFields.survey_id) {
+    // Filter by a specific survey id
+    getSamplingSitesQuery.andWhere('sss.survey_id', filterFields.survey_id);
+  }
+
+  if (filterFields.keyword) {
+    // Filter by keyword
+    getSamplingSitesQuery.where((subqueryBuilder) => {
+      subqueryBuilder
+        .orWhere('sss.name', 'ilike', `%${filterFields.keyword}%`)
+        .orWhere('sss.description', 'ilike', `%${filterFields.keyword}%`);
+    });
+  }
+
+  return getSamplingSitesQuery;
+}
+
+/**
+ * Get the base query for retrieving survey sample methods, including the technique and attractants.
+ *
+ * @param {Knex} knex The Knex instance.
+ * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey sample methods
+ */
+export function getSamplingMethodBaseQuery(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
+  const knex = getKnex();
+
+  queryBuilder
+    .with('w_method_technique_attractant', (qb) => {
+      // Gather technique attractants
+      qb.select(
+        'mta.method_technique_id',
+        knex.raw(`
+            json_agg(json_build_object(
+              'attractant_lookup_id', mta.attractant_lookup_id
+            )) as attractants`)
+      )
+        .from({ mta: 'method_technique_attractant' })
+        .groupBy('mta.method_technique_id');
+    })
+    .with('w_method_technique', (qb) => {
+      // Gather method techniques
+      qb.select(
+        'mt.method_technique_id',
+        knex.raw(`
+            json_build_object(
+              'method_technique_id', mt.method_technique_id,
+              'name', mt.name,
+              'description', mt.description,
+              'attractants', COALESCE(wmta.attractants, '[]'::json)
+            ) as method_technique`)
+      )
+        .from({ mt: 'method_technique' })
+        .leftJoin('w_method_technique_attractant as wmta', 'wmta.method_technique_id', 'mt.method_technique_id');
+    })
+    .select(
+      'ssm.survey_sample_method_id',
+      'ssm.survey_sample_site_id',
+      'ssm.description',
+      'ssm.method_response_metric_id',
+      'wmt.method_technique as technique'
+    )
+    .from({ ssm: 'survey_sample_method' })
+    .leftJoin('w_method_technique as wmt', 'wmt.method_technique_id', 'ssm.method_technique_id');
+
+  return queryBuilder;
+}
+
+/**
+ * Get the base query for retrieving survey sample methods, including the technique and attractants.
+ *
+ * @param {Knex} knex The Knex instance.
+ * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey sample methods
+ */
+export function makeFindSamplingMethodBaseQuery(
+  isUserAdmin: boolean,
+  systemUserId: number | null,
+  filterFields: IMethodAdvancedFilters
+): Knex.QueryBuilder {
+  const knex = getKnex();
+
+  const getSurveyIdsQuery = knex.select<any, { survey_id: number }>(['survey_id']).from('survey');
+
+  // Ensure that users can only see observations that they are participating in, unless they are an administrator.
+  if (!isUserAdmin) {
+    getSurveyIdsQuery.whereIn('survey.project_id', (subqueryBuilder) =>
+      subqueryBuilder
+        .select('project.project_id')
+        .from('project')
+        .leftJoin('project_participation', 'project_participation.project_id', 'project.project_id')
+        .where('project_participation.system_user_id', systemUserId)
+    );
+  }
+
+  if (filterFields.system_user_id) {
+    getSurveyIdsQuery.whereIn('p.project_id', (subQueryBuilder) => {
+      subQueryBuilder
+        .select('project_id')
+        .from('project_participation')
+        .where('system_user_id', filterFields.system_user_id);
+    });
+  }
+
+  const getSamplingMethodsQuery = knex.queryBuilder();
+
+  // Add the base query
+  getSamplingMethodsQuery.modify(getSamplingMethodBaseQuery);
+
+  // Filter by the survey ids the user has access to
+  getSamplingMethodsQuery.whereIn('ssm.survey_id', getSurveyIdsQuery);
+
+  if (filterFields.survey_id) {
+    // Filter by a specific survey id
+    getSamplingMethodsQuery.andWhere('ssm.survey_id', filterFields.survey_id);
+  }
+
+  if (filterFields.sample_site_id) {
+    // Filter by a specific sample site id
+    getSamplingMethodsQuery.andWhere('ssm.survey_sample_site_id', filterFields.sample_site_id);
+  }
+
+  if (filterFields.keyword) {
+    // Filter by keyword
+    getSamplingMethodsQuery.where((subqueryBuilder) => {
+      subqueryBuilder
+        .orWhere('ssm.description', 'ilike', `%${filterFields.keyword}%`)
+        .orWhere('wmt.technique->name', 'ilike', `%${filterFields.keyword}%`)
+        .orWhere('wmt.technique->description', 'ilike', `%${filterFields.keyword}%`);
+    });
+  }
+
+  return getSamplingMethodsQuery;
+}
+
+/**
+ * Get the base query for retrieving survey sample periods.
+ *
+ * @param {Knex} knex The Knex instance.
+ * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey sample periods
+ */
+export function getSamplingPeriodBaseQuery(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
+  queryBuilder
+    .select(
+      'ssp.survey_sample_period_id',
+      'ssp.survey_sample_method_id',
+      'ssp.start_date',
+      'ssp.start_time',
+      'ssp.end_date',
+      'ssp.end_time'
+    )
+    .from({ ssp: 'survey_sample_period' });
+
+  return queryBuilder;
+}
+
+/**
+ * Get the base query for retrieving survey sample periods.
+ *
+ * @param {Knex} knex The Knex instance.
+ * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey sample periods
+ */
+export function makeFindSamplingPeriodBaseQuery(
+  isUserAdmin: boolean,
+  systemUserId: number | null,
+  filterFields: IPeriodAdvancedFilters
+): Knex.QueryBuilder {
+  const knex = getKnex();
+
+  const getSurveyIdsQuery = knex.select<any, { survey_id: number }>(['survey_id']).from('survey');
+
+  // Ensure that users can only see observations that they are participating in, unless they are an administrator.
+  if (!isUserAdmin) {
+    getSurveyIdsQuery.whereIn('survey.project_id', (subqueryBuilder) =>
+      subqueryBuilder
+        .select('project.project_id')
+        .from('project')
+        .leftJoin('project_participation', 'project_participation.project_id', 'project.project_id')
+        .where('project_participation.system_user_id', systemUserId)
+    );
+  }
+
+  if (filterFields.system_user_id) {
+    getSurveyIdsQuery.whereIn('p.project_id', (subQueryBuilder) => {
+      subQueryBuilder
+        .select('project_id')
+        .from('project_participation')
+        .where('system_user_id', filterFields.system_user_id);
+    });
+  }
+
+  const getSamplingPeriodsQuery = knex.queryBuilder();
+
+  // Add the base query
+  getSamplingPeriodsQuery.modify(getSamplingPeriodBaseQuery);
+
+  // Filter by the survey ids the user has access to
+  getSamplingPeriodsQuery.whereIn('ssp.survey_id', getSurveyIdsQuery);
+
+  if (filterFields.survey_id) {
+    // Filter by a specific survey id
+    getSamplingPeriodsQuery.andWhere('ssp.survey_id', filterFields.survey_id);
+  }
+
+  if (filterFields.sample_site_id) {
+    // Filter by a specific sample site id
+    getSamplingPeriodsQuery.andWhere('ssp.survey_sample_site_id', filterFields.sample_site_id);
+  }
+
+  if (filterFields.sample_method_id) {
+    // Filter by a specific sample method id
+    getSamplingPeriodsQuery.andWhere('ssp.survey_sample_method_id', filterFields.sample_method_id);
+  }
+
+  return getSamplingPeriodsQuery;
 }

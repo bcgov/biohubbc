@@ -39,14 +39,14 @@ export const SamplingSiteListPeriod = (props: ISamplingSiteListPeriodProps) => {
   const sortedSamplePeriods = props.samplePeriods.sort((a, b) => {
     const startDateA = new Date(a.start_date);
     const startDateB = new Date(b.start_date);
-  
+
     if (startDateA === startDateB) {
       if (a.start_time && b.start_time) {
         return a.start_time < b.start_time ? 1 : -1;
       }
       return a.start_time ? -1 : 1;
     }
-  
+
     return startDateA < startDateB ? -1 : 1;
   });
 

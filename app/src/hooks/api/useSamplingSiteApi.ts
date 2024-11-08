@@ -92,6 +92,59 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const findSampleSites = async (filterFieldData?: {
+    survey_id?: number;
+    keyword?: string;
+    system_user_id?: number;
+    pagination?: ApiPaginationRequestOptions;
+  }): Promise<IGetSampleLocationNonSpatialResponse> => {
+    const params = {
+      ...filterFieldData
+    };
+
+    const { data } = await axios.get(`/api/sampling-locations/sites`, {
+      params
+    });
+
+    return data;
+  };
+
+  const findSampleMethods = async (filterFieldData?: {
+    survey_id?: number;
+    sample_site_id: number;
+    keyword?: string;
+    system_user_id?: number;
+    pagination?: ApiPaginationRequestOptions;
+  }): Promise<IGetSampleLocationNonSpatialResponse> => {
+    const params = {
+      ...filterFieldData
+    };
+
+    const { data } = await axios.get(`/api/sampling-locations/methods`, {
+      params
+    });
+
+    return data;
+  };
+
+  const findSamplePeriods = async (filterFieldData?: {
+    survey_id?: number;
+    sample_site_id: number;
+    sample_method_id: number;
+    system_user_id?: number;
+    pagination?: ApiPaginationRequestOptions;
+  }): Promise<IGetSampleLocationNonSpatialResponse> => {
+    const params = {
+      ...filterFieldData
+    };
+
+    const { data } = await axios.get(`/api/sampling-locations/periods`, {
+      params
+    });
+
+    return data;
+  };
+
   /**
    * Edit Sample Site
    *
@@ -143,6 +196,9 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
     getSampleSites,
     getSampleSiteById,
     getSampleSitesGeometry,
+    findSampleSites,
+    findSampleMethods,
+    findSamplePeriods,
     editSampleSite,
     deleteSampleSite,
     deleteSampleSites

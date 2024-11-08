@@ -1,10 +1,12 @@
 import Typography from '@mui/material/Typography';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
-import { ISampleSiteOption } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitions';
+import { getCurrentSite } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/utils';
+import { SampleLocationCache } from 'features/surveys/observations/observations-table/ObservationsTableContainer';
+import { MutableRefObject } from 'react';
 
 export interface IPartialSampleSiteDataGridViewCellProps<DataGridType extends GridValidRowModel> {
   dataGridProps: GridRenderCellParams<DataGridType>;
-  sampleSite?: ISampleSiteOption;
+  cachedSampleLocationsRef: MutableRefObject<SampleLocationCache | undefined>;
   error?: boolean;
 }
 
@@ -15,10 +17,12 @@ export interface IPartialSampleSiteDataGridViewCellProps<DataGridType extends Gr
  * @param {IPartialSampleSiteDataGridViewCellProps<DataGridType>} props
  * @return {*}
  */
-const SampleSiteDataGridViewCell = <DataGridType extends GridValidRowModel>(
+export const SampleSiteDataGridViewCell = <DataGridType extends GridValidRowModel>(
   props: IPartialSampleSiteDataGridViewCellProps<DataGridType>
 ) => {
-  const { sampleSite, error } = props;
+  const { dataGridProps, cachedSampleLocationsRef, error } = props;
+
+  const label = getCurrentSite(dataGridProps, cachedSampleLocationsRef)?.label ?? '';
 
   return (
     <Typography
@@ -37,10 +41,8 @@ const SampleSiteDataGridViewCell = <DataGridType extends GridValidRowModel>(
         }
       }}>
       <Typography component="span" variant="body2">
-        {sampleSite?.sample_site_name ?? ''}
+        {label}
       </Typography>
     </Typography>
   );
 };
-
-export default SampleSiteDataGridViewCell;

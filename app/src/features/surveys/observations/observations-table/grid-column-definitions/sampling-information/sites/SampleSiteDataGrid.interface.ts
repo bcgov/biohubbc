@@ -7,7 +7,7 @@ import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteA
  * @interface IAutocompleteDataGridSampleSiteOption
  * @extends {IPartialSampleSite}
  */
-export interface IAutocompleteDataGridSampleSiteOption extends Partial<IGetSampleLocationNonSpatialDetails> {
+export interface IAutocompleteDataGridSampleSiteOption extends IGetSampleLocationNonSpatialDetails {
   value: number;
   label: string;
 }
