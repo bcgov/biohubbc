@@ -1,14 +1,15 @@
-import { mdiPlus } from '@mdi/js';
+import { mdiEyeCheck, mdiPlus, mdiProgressUpload } from '@mdi/js';
 import Icon from '@mdi/react';
-import { LoadingButton } from '@mui/lab';
+import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from '@mui/material/Typography';
 import { GridColDef, GridRenderEditCellParams } from '@mui/x-data-grid';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
 import {
@@ -32,8 +33,8 @@ import {
   SampleSiteColDef,
   TaxonomyColDef
 } from 'features/surveys/observations/observations-table/grid-column-definitions/GridColumnDefinitions';
+import ObservationsTable from 'features/surveys/observations/observations-table/identified-table/ObservationsTable';
 import { ImportObservationsButton } from 'features/surveys/observations/observations-table/import-obsevations/ImportObservationsButton';
-import ObservationsTable from 'features/surveys/observations/observations-table/ObservationsTable';
 import {
   useCodesContext,
   useObservationsPageContext,
@@ -45,7 +46,7 @@ import {
   IGetSampleMethodDetails,
   IGetSamplePeriodRecord
 } from 'interfaces/useSamplingSiteApi.interface';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { getCodesName } from 'utils/Utils';
 import { ConfigureColumnsButton } from './configure-columns/ConfigureColumnsButton';
 import ExportHeadersButton from './export-button/ExportHeadersButton';
@@ -54,12 +55,24 @@ import {
   getEnvironmentColumnDefinitions,
   getMeasurementColumnDefinitions
 } from './grid-column-definitions/GridColumnDefinitionsUtils';
+import StagedObservationsTable from './staged-table/StagedObservationsTable';
+
+enum ObservationsContainerViewEnum {
+  IDENTIFIED = 'Identified',
+  STAGED = 'Staged'
+}
 
 const ObservationsTableContainer = () => {
   const codesContext = useCodesContext();
   const surveyContext = useSurveyContext();
   const observationsPageContext = useObservationsPageContext();
   const observationsTableContext = useObservationsTableContext();
+  const [activeView, setActiveView] = useState<ObservationsContainerViewEnum>(ObservationsContainerViewEnum.IDENTIFIED);
+
+  const views = [
+    { value: ObservationsContainerViewEnum.IDENTIFIED, label: 'Identified', icon: mdiEyeCheck },
+    { value: ObservationsContainerViewEnum.STAGED, label: 'Staged', icon: mdiProgressUpload }
+  ];
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -193,20 +206,46 @@ const ObservationsTableContainer = () => {
         disableGutters
         sx={{
           pl: 2,
-          pr: 3
+          pr: 3,
+          justifyContent: 'flex-end'
         }}>
-        <Typography
-          sx={{
-            flexGrow: '1',
-            fontSize: '1.125rem',
-            fontWeight: 700
-          }}>
-          Observations &zwnj;
-          <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
-            ({observationsTableContext.observationCount})
-          </Typography>
-        </Typography>
+        <ToggleButtonGroup
+          value={activeView}
+          onChange={(_, view) => {
+            if (!view) {
+              // An active view must be selected at all times
+              return;
+            }
 
+            setActiveView(view);
+          }}
+          exclusive
+          sx={{
+            width: '100%',
+            gap: 1,
+            '& Button': {
+              py: 0.5,
+              px: 1.5,
+              my: 2,
+              border: 'none !important',
+              fontWeight: 700,
+              borderRadius: '4px !important',
+              fontSize: '0.875rem',
+              letterSpacing: '0.02rem'
+            }
+          }}>
+          {views.map((view) => (
+            <ToggleButton
+              key={view.value}
+              value={view.value}
+              sx={{ background: 'rgba(0, 0, 0, 0)' }}
+              component={Button}
+              color="primary"
+              startIcon={<Icon path={view.icon} size={1} />}>
+              {view.label}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
         <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
           <ImportObservationsButton
             disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}
@@ -219,7 +258,11 @@ const ObservationsTableContainer = () => {
             color="primary"
             startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => observationsTableContext.addObservationRecord()}
-            disabled={observationsTableContext.isSaving || observationsTableContext.isDisabled}>
+            disabled={
+              observationsTableContext.isSaving ||
+              observationsTableContext.isDisabled ||
+              activeView === ObservationsContainerViewEnum.STAGED
+            }>
             Add Record
           </Button>
           <Collapse in={observationsTableContext.hasUnsavedChanges} orientation="horizontal" sx={{ mr: -1 }}>
@@ -275,15 +318,30 @@ const ObservationsTableContainer = () => {
 
       <Box display="flex" flexDirection="column" flex="1 1 auto" position="relative">
         <Box position="absolute" width="100%" height="100%">
-          <ObservationsTable
-            isLoading={
-              observationsTableContext.isLoading ||
-              observationsTableContext.isSaving ||
-              observationsTableContext.isDisabled ||
-              codesContext.codesDataLoader.isLoading
-            }
-            columns={columns}
-          />
+          {/* IDENTIFIED RECORDS */}
+          {activeView === ObservationsContainerViewEnum.IDENTIFIED && (
+            <ObservationsTable
+              isLoading={
+                observationsTableContext.isLoading ||
+                observationsTableContext.isSaving ||
+                observationsTableContext.isDisabled ||
+                codesContext.codesDataLoader.isLoading
+              }
+              columns={columns}
+            />
+          )}
+
+          {/* STAGED, UNIDENTIFIED RECORDS */}
+          {activeView === ObservationsContainerViewEnum.STAGED && (
+            <StagedObservationsTable
+              isLoading={
+                observationsTableContext.isLoading ||
+                observationsTableContext.isSaving ||
+                observationsTableContext.isDisabled ||
+                codesContext.codesDataLoader.isLoading
+              }
+            />
+          )}
         </Box>
       </Box>
     </Paper>
