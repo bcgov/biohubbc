@@ -200,7 +200,10 @@ const EditSurveyForm = <
           summary="Indicate whether any data is proprietary"
           component={
             <Box component="fieldset">
+              <Stack direction ="row" spacing={1} alignItems="flex-start">
               <Typography component="legend">Is any data in this survey proprietary?</Typography>
+              <HelpButtonTooltip content="Proprietary data is defined per the SEDIS Policy as Species and ecosystems data and information that is pertinent to private or First Nations lands, where collection of that data has required access to those lands and where the land owners or First Nations have specifically requested the data and information not be distributed; or, Data and information whose ditribution is restricted on a time-limited basis." />
+              </Stack>
               <ProprietaryDataForm
                 proprietary_data_category={
                   codes.proprietor_type?.map((item) => {
