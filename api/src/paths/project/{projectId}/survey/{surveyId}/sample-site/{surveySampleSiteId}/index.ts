@@ -427,6 +427,15 @@ GET.apiDoc = {
         minimum: 1
       },
       required: true
+    },
+    {
+      in: 'path',
+      name: 'surveySampleSiteId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
     }
   ],
   responses: {
@@ -639,13 +648,6 @@ GET.apiDoc = {
  */
 export function getSurveySampleLocationRecord(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required param `surveyId`');
-    }
-    if (!req.params.surveySampleSiteId) {
-      throw new HTTP400('Missing required param `surveySampleSiteId`');
-    }
-
     const connection = getDBConnection(req.keycloak_token);
 
     try {

@@ -2,7 +2,6 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/http-error';
 import { GeoJSONFeature } from '../../../../../../openapi/schemas/geoJson';
 import {
   paginationRequestQueryParamSchema,
@@ -570,10 +569,6 @@ POST.apiDoc = {
 
 export function createSurveySampleSiteRecord(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing required path param `surveyId`');
-    }
-
     const connection = getDBConnection(req.keycloak_token);
 
     try {

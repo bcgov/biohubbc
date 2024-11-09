@@ -94,8 +94,8 @@ describe('ObservationService', () => {
         .stub(SubCountService.prototype, 'getEnvironmentTypeDefinitionsForSurvey')
         .resolves({ qualitative_environments: [], quantitative_environments: [] });
 
-      const getBasicSampleLocationsStub = sinon
-        .stub(SampleLocationService.prototype, 'getBasicSurveySampleLocationsBySiteIds')
+      const getSampleLocationsForSurveyIdStub = sinon
+        .stub(SampleLocationService.prototype, 'getSampleLocationsForSurveyId')
         .resolves([]);
 
       const surveyId = 1;
@@ -110,7 +110,7 @@ describe('ObservationService', () => {
       expect(getSurveyObservationCountStub).to.be.calledOnceWith(surveyId);
       expect(getMeasurementTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
       expect(getEnvironmentTypeDefinitionsForSurveyStub).to.be.calledOnceWith(surveyId);
-      expect(getBasicSampleLocationsStub).to.be.calledOnceWith(surveyId);
+      expect(getSampleLocationsForSurveyIdStub).to.be.calledOnceWith(surveyId);
       expect(response).to.eql({
         surveyObservations: [
           {
