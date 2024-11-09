@@ -36,7 +36,7 @@ export async function main(): Promise<void> {
   const connection = getAPIUserDBConnection(); // Get the API user database connection
 
   try {
-    await connection.open({ noTransaction: true }); // Open a connection to the database without a transaction
+    await connection.open({ transaction: false }); // Open a connection to the database without a transaction
 
     // 1. INITIALIZE SERVICES
     defaultLog.info({ message: 'Initializing services.' });
@@ -44,9 +44,9 @@ export async function main(): Promise<void> {
     const lotekService = new TelemetryLotekService(connection);
 
     // 2. FETCH DEVICES AND CREDENTIALS
-    defaultLog.info({ message: 'Fetching devices and credentials.' });
     const lotekDevices = await lotekService.fetchDevicesFromLotek(); // Fetch the lotek account devices
     const vectronicDevices = await vectronicService.getDeviceCredentials(); // Fetch the vectronic account devices
+    defaultLog.info({ message: 'Fetching devices and credentials.' });
 
     // 3. GENERATE QUEUE TASKS
     defaultLog.info({ message: 'Generating tasks.' });
@@ -55,22 +55,30 @@ export async function main(): Promise<void> {
 
     // 4. PROCESS TELEMETRY (FETCH AND INSERT)
     defaultLog.info({ message: 'Processing telemetry.' });
-    const lotekResult = await lotekService.processTelemetry(lotekTasks.slice(200, 400), args);
-    await vectronicService.processTelemetry(vectronicTasks, args);
+    const lotekResults = await lotekService.processTelemetry(lotekTasks.slice(200, 202), args);
+    const vectronicResults = await vectronicService.processTelemetry(vectronicTasks, args);
 
-    // 5. LOG STATISTICS
-    const statistics = { new: 0, created: 0, errors: 0 };
-    for (const result of lotekResult) {
-      if (result.value) {
-        statistics.new += result.value.new;
-        statistics.created += result.value.created;
-      }
+    const results = lotekResults.concat(vectronicResults);
+
+    // 5. GENERATE LOG INFORMATION
+    const info = { telemetry: { new: 0, created: 0 }, lotekErrors: 0, vectronicErrors: 0 };
+    for (const result of results) {
       if (result.error) {
-        statistics.errors++;
+        'key' in result.task ? info.vectronicErrors++ : info.lotekErrors++;
+      } else {
+        info.telemetry.new += result.value.new;
+        info.telemetry.created += result.value.created;
       }
     }
 
-    defaultLog.info({ message: 'Cronjob completed.', statistics });
+    defaultLog.info({ message: 'Cronjob information', information: info });
+
+    if (info.vectronicErrors === vectronicTasks.length || info.vectronicErrors === vectronicTasks.length) {
+      defaultLog.error({ message: 'Partial failure detected. All tasks from a vendor failed to complete.' });
+      throw lotekResults[0].error ?? vectronicResults[0].error; // Throw the first error to help debug
+    }
+
+    defaultLog.info({ message: 'Cronjob completed.' });
   } catch (error) {
     defaultLog.error({ message: 'Cronjob failed to complete.', error });
     process.exit(1);

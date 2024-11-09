@@ -112,15 +112,15 @@ export interface IDBConnection {
    */
   getClient: () => Promise<pg.PoolClient>;
   /**
-   * Opens a new connection, optionally begins a transaction, and sets the user context.
+   * Opens a new connection, begins a transaction, and sets the user context.
    *
+   * Note: Transaction bypassed if `config.transaction` is `false`.
    * Note: Does nothing if the connection is already open.
-   * Note: Optionally skips the transaction if `config.skipTransaction` is true.
    *
-   * @param {{skipTransaction: true}} [config] Optional configuration object
+   * @param {{transaction: boolean}} [config] Optional configuration object (contains transaction flag)
    * @memberof IDBConnection
    */
-  open: (config?: { noTransaction: true }) => Promise<void>;
+  open: (config?: { transaction: boolean }) => Promise<void>;
   /**
    * Releases (closes) the connection.
    *
@@ -255,13 +255,13 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
   /**
    * Opens a new connection, begins a transaction, and sets the user context.
    *
+   * Note: Transaction bypassed if `config.transaction` is `false`.
    * Note: Does nothing if the connection is already open.
-   * Note: Optionally skips the transaction if `config.skipTransaction` is true.
    *
-   * @param {{skipTransaction: true}} [config] Optional configuration object
+   * @param {{transaction: boolean}} config Configuration object (contains transaction flag)
    * @throws {Error} if called when the DBPool has not been initialized via `initDBPool`
    */
-  const _open = async (config?: { noTransaction: true }) => {
+  const _open = async (config = { transaction: true }) => {
     if (_client || _isOpen) {
       return;
     }
@@ -275,12 +275,13 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
     _client = await pool.connect();
     _isOpen = true;
     _isReleased = false;
+    _isTransaction = config.transaction;
 
     await _setUserContext();
 
-    if (!config?.noTransaction) {
-      _isTransaction = true;
+    if (config.transaction) {
       await _client.query('BEGIN');
+      return;
     }
   };
 
@@ -301,6 +302,7 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
     _client.release();
     _isOpen = false;
     _isReleased = true;
+    _isTransaction = false;
   };
 
   /**
@@ -314,7 +316,7 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
     }
 
     if (!_isTransaction) {
-      throw Error('DBConnection is not in a transaction');
+      throw Error('DBConnection is not a transaction');
     }
 
     await _client.query('COMMIT');
@@ -331,7 +333,7 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
     }
 
     if (!_isTransaction) {
-      throw Error('DBConnection is not in a transaction');
+      throw Error('DBConnection is not a transaction');
     }
 
     await _client.query('ROLLBACK');
