@@ -70,7 +70,7 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
     const mergedOptionsMap = new Map<number, IAutocompleteDataGridSampleSiteOption>();
 
     // Merge the cached options with the new options, ensuring no duplicates
-    [...cachedOptions, ...options].forEach((item) => {
+    [...options, ...cachedOptions].forEach((item) => {
       mergedOptionsMap.set(item.survey_sample_site_id, {
         ...item,
         label: item.name,
@@ -78,7 +78,7 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
       });
     });
 
-    return Array.from(mergedOptionsMap.values());
+    return Array.from(mergedOptionsMap.values()).sort((a, b) => a.name.localeCompare(b.name));
   };
 
   /**

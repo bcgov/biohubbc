@@ -1,5 +1,6 @@
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
+import { grey } from '@mui/material/colors';
 import TextField from '@mui/material/TextField';
 import useEnhancedEffect from '@mui/material/utils/useEnhancedEffect';
 import { GridRenderCellParams, GridValidRowModel } from '@mui/x-data-grid';
@@ -86,8 +87,18 @@ const SamplePeriodDataGridEditCell = <DataGridType extends GridValidRowModel>(
       )}
       renderOption={(renderProps, renderOption) => {
         return (
-          <Box component="li" {...renderProps} key={renderProps.id}>
-            {renderOption.label}
+          <Box
+            component="li"
+            sx={{
+              '& + li': {
+                borderTop: '1px solid' + grey[300]
+              }
+            }}
+            {...renderProps}
+            key={renderProps.id}>
+            <Box py={1} width="100%">
+              {renderOption.label}
+            </Box>
           </Box>
         );
       }}

@@ -84,8 +84,6 @@ const AsyncAutocompleteDataGridEditCell = <
     }
   }, [dataGridProps]);
 
-  const hasRenderedInitialValues = useRef(getInitialOptions ? false : true);
-
   // The current data grid value
   const dataGridValue = dataGridProps.value;
   // The input field value
@@ -136,18 +134,9 @@ const AsyncAutocompleteDataGridEditCell = <
     let mounted = true;
 
     if (inputValue === '') {
-      if (hasRenderedInitialValues.current === false) {
-        // No user input value, but we have initial options to display, so don't clear the options
-        return;
-      }
-
-      // No input value, nothing to search with
-      setOptions(currentOption ? [currentOption] : []);
+      // No search term, do not initiate search
       return;
     }
-
-    // We've rendered the initial values already, so any changes to the input value should update the options
-    hasRenderedInitialValues.current = true;
 
     // Call async search function
     setIsLoading(true);
