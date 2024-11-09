@@ -1,8 +1,9 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { TelemetryCredentialVectronicRecord } from '../../database-models/telemetry_credential_vectronic';
 import { getKnex } from '../../database/db';
 import { BaseRepository } from '../base-repository';
-import { CreateVectronicTelemetry, ExtendedVectronicCredential } from './telemetry-vectronic-repository.interface';
+import { VectronicPayload } from './telemetry-vectronic-repository.interface';
 
 /**
  * A repository class for working with raw vectronic telemetry data.
@@ -12,13 +13,13 @@ import { CreateVectronicTelemetry, ExtendedVectronicCredential } from './telemet
  * @extends {BaseRepository}
  */
 export class TelemetryVectronicRepository extends BaseRepository {
-  async createVectronicTelemetry(telemetry: CreateVectronicTelemetry[]): Promise<number> {
+  async createVectronicTelemetry(telemetry: VectronicPayload[]): Promise<number> {
     const knex = getKnex();
 
     const queryBuilder = knex
       .queryBuilder()
       .insert(telemetry)
-      .into('vectronic_telemetry')
+      .into('telemetry_vectronic')
       .onConflict('idposition')
       .ignore();
 
@@ -30,9 +31,9 @@ export class TelemetryVectronicRepository extends BaseRepository {
   /**
    * Get all Vectronic credentials.
    *
-   * @returns {*} {Promise<ExtendedVectronicCredential[]>}
+   * @returns {*} {Promise<TelemetryCredentialVectronicRecord[]>}
    */
-  async getAllVectronicCredentials(): Promise<ExtendedVectronicCredential[]> {
+  async getAllVectronicCredentials(): Promise<TelemetryCredentialVectronicRecord[]> {
     const sqlStatement = SQL`
       SELECT
         telemetry_credential_vectronic_id,
@@ -44,7 +45,7 @@ export class TelemetryVectronicRepository extends BaseRepository {
         collartype
         FROM telemetry_credential_vectronic;
     `;
-    const result = await this.connection.sql(sqlStatement, ExtendedVectronicCredential);
+    const result = await this.connection.sql(sqlStatement, TelemetryCredentialVectronicRecord);
 
     return result.rows;
   }

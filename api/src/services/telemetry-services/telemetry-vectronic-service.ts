@@ -1,18 +1,20 @@
 import axios from 'axios';
 import { chunk } from 'lodash';
+import { TelemetryCredentialVectronicRecord } from '../../database-models/telemetry_credential_vectronic';
 import { IDBConnection } from '../../database/db';
+import { ApiGeneralError } from '../../errors/api-error';
 import { TelemetryVectronicRepository } from '../../repositories/telemetry-repositories/telemetry-vectronic-repository';
 import {
-  CreateVectronicTelemetry,
-  ExtendedVectronicCredential,
   VectronicAPIQuery,
+  VectronicPayload,
   VectronicTask
 } from '../../repositories/telemetry-repositories/telemetry-vectronic-repository.interface';
 import { getLogger } from '../../utils/logger';
 import { QueueResult, taskQueue } from '../../utils/task-queue';
 import { DBService } from '../db-service';
+import { keysToLowerCase } from './telemetry-utils';
 import { TelemetryProcessingOptions, TelemetryProcessingResult } from './telemetry.interface';
-const defaultLog = getLogger('TelemetryLotekService');
+const defaultLog = getLogger('TelemetryVectronicService');
 
 /**
  * This service is responsible for fetching telemetry data from the Vectronic API and storing it in SIMS.
@@ -39,7 +41,7 @@ export class TelemetryVectronicService extends DBService {
   /**
    * Get the base URL for the Vectronic API.
    *
-   * @returns {URL}
+   * @returns {*} {URL}
    */
   getVectronicBaseURL(): URL {
     return new URL(process.env.VECTRONIC_API_HOST ?? 'https://api.vectronic-wildlife.com');
@@ -49,15 +51,12 @@ export class TelemetryVectronicService extends DBService {
    * Get the URL for fetching Vectronic telemetry data for a specific device.
    *
    * @param {VectronicAPIQuery} query - Vectronic API request query
-   * @returns {URL}
+   * @returns {*} {URL}
    */
   getVectronicTelemetryURL(query: VectronicAPIQuery): URL {
     const url = this.getVectronicBaseURL();
 
-    url.pathname = `v2/${query.idcollar}/gps`;
-
     url.searchParams.append('collarkey', query.collarkey);
-    url.searchParams.append('onlyValid', 'true'); // TODO: Invesitgate this param
 
     if (query.beforeAcquisition) {
       url.searchParams.append('beforeAcquisition', query.beforeAcquisition);
@@ -78,48 +77,65 @@ export class TelemetryVectronicService extends DBService {
    * Fetch vectronic device telemetry data from the Vectronic API.
    *
    * @param {VectronicAPIQuery} query - Vectronic API request query
-   * @returns {Promise<TODO>}
+   * @returns {Promise<VectronicPayload>}
    */
-  async fetchTelemetryFromVectronic(query: VectronicAPIQuery): Promise<any[]> {
+  async fetchTelemetryFromVectronic(query: VectronicAPIQuery): Promise<VectronicPayload[]> {
     const url = this.getVectronicTelemetryURL(query);
+    url.pathname = `v2/collar/${query.idcollar}/gps`;
 
-    const response = await axios.get(url.toString());
+    try {
+      // Note: Vectronic is using SentenceCased keys in their API response
+      const response = await axios.get<VectronicPayload[]>(url.toString());
 
-    return response.data;
+      return response.data.map((record) => keysToLowerCase(record));
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        defaultLog.error({ label: 'fetchTelemetryFromVectronic', message: 'error', error: error.message });
+      }
+
+      throw new ApiGeneralError('Failed to fetch devices from Vectronic.');
+    }
   }
 
   /**
    * Fetch vectronic device telemetry count from the Vectronic API.
    *
    * @param {VectronicAPIQuery} query - Vectronic API request query
-   * @returns {Promise<number>}
+   * @returns {*} {Promise<number>}
    */
   async fetchTelemetryCountFromVectronic(query: VectronicAPIQuery): Promise<number> {
     const url = this.getVectronicTelemetryURL(query);
+    url.pathname = `v2/collar/${query.idcollar}/gps/count`;
 
-    url.pathname = `V2/${query.idcollar}/gps/count`;
+    try {
+      const response = await axios.get(url.toString());
 
-    const response = await axios.get(url.toString());
+      return response.data;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        defaultLog.error({ label: 'fetchTelemetryCountFromVectronic', message: 'error', error: error.message });
+      }
 
-    return response.data;
+      throw new ApiGeneralError('Failed to fetch device count from Vectronic.');
+    }
   }
 
   /**
    * Get all Vectronic credentials from SIMS.
    *
-   * @returns {*} {Promise<ExtendedVectronicCredential[]>}
+   * @returns {*} {Promise<TelemetryCredentialVectronicRecord[]>}
    */
-  async getDeviceCredentials(): Promise<ExtendedVectronicCredential[]> {
+  async getDeviceCredentials(): Promise<TelemetryCredentialVectronicRecord[]> {
     return this.telemetryVectronicRepository.getAllVectronicCredentials();
   }
 
   /**
    * Create Vectronic telemetry records in SIMS in batches.
    *
-   * @param {CreateVectronicTelemetry} telemetry - Vectronic telemetry records
-   * @returns {Promise<TODO>}
+   * @param {VectronicPayload} telemetry - Vectronic telemetry records
+   * @returns {Promise<number>}
    */
-  async batchCreateTelemetry(telemetry: CreateVectronicTelemetry[], batchSize = 1000): Promise<number> {
+  async batchCreateTelemetry(telemetry: VectronicPayload[], batchSize = 1000): Promise<number> {
     const telemetryBatches = chunk(telemetry, batchSize);
 
     // Insert telemetry data in batches
@@ -134,7 +150,7 @@ export class TelemetryVectronicService extends DBService {
   /**
    * Get a map of device serials to their telemetry activity statistics.
    *
-   * @returns {Promise<Map<number, { telemetryCount: number, maxIdposition: number | null }>} The device activity map
+   * @returns {*} {Promise<Map<number, { telemetryCount: number, maxIdposition: number | null}>} The device activity map
    */
   async getDevicesActivitiesMap(): Promise<Map<number, { telemetryCount: number; maxIdposition: number | null }>> {
     const deviceActivityStats = await this.telemetryVectronicRepository.getDeviceActivityStatistics();
@@ -151,7 +167,7 @@ export class TelemetryVectronicService extends DBService {
    *
    * @param {VectronicTask[]} tasks - List of Vectronic tasks
    * @param {TelemetryProcessingOptions} options - Telemetry processing options
-   * @returns {Promise<QueueResult<VectronicTask, TelemetryProcessingResult>[]>}
+   * @returns {*} {Promise<QueueResult<VectronicTask, TelemetryProcessingResult>[]>}
    */
   async processTelemetry(
     tasks: VectronicTask[],
@@ -184,6 +200,7 @@ export class TelemetryVectronicService extends DBService {
             collarkey: task.key,
             afterAcquisition: options.startDate,
             beforeAcquisition: options.endDate,
+            // If no start date provided, use the largest idposition from SIMS
             gtId: options.startDate ? undefined : deviceActivity.maxIdposition ?? undefined
           });
 

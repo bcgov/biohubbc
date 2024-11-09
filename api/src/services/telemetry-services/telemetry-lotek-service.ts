@@ -61,8 +61,6 @@ export class TelemetryLotekService extends DBService {
   getLotekTelemetryURL(query: LotekAPIQuery): URL {
     const url = this.getLotekBaseURL();
 
-    url.pathname = 'API/gps';
-
     url.searchParams.append('deviceId', String(query.deviceId));
 
     if (query.dtStart) {
@@ -89,7 +87,6 @@ export class TelemetryLotekService extends DBService {
     }
 
     const url = this.getLotekBaseURL();
-
     url.pathname = 'API/user/login';
 
     try {
@@ -122,7 +119,6 @@ export class TelemetryLotekService extends DBService {
   async fetchDevicesFromLotek(): Promise<LotekAPIDevice[]> {
     const token = await this.fetchTokenFromLotek();
     const url = this.getLotekBaseURL();
-
     url.pathname = 'API/devices';
 
     try {
@@ -149,7 +145,6 @@ export class TelemetryLotekService extends DBService {
   async fetchTelemetryCountFromLotek(query: LotekAPIQuery): Promise<number> {
     const token = await this.fetchTokenFromLotek();
     const url = this.getLotekTelemetryURL(query);
-
     url.pathname = 'API/gps/count';
 
     try {
@@ -182,6 +177,7 @@ export class TelemetryLotekService extends DBService {
   async fetchTelemetryFromLotek(query: LotekAPIQuery): Promise<LotekPayload[]> {
     const token = await this.fetchTokenFromLotek();
     const url = this.getLotekTelemetryURL(query);
+    url.pathname = 'API/gps';
 
     try {
       // Note: Lotek is using SentenceCased keys in their API response
@@ -262,8 +258,9 @@ export class TelemetryLotekService extends DBService {
           // Fetch telemetry data from Lotek API
           const lotekAPITelemetry = await this.fetchTelemetryFromLotek({
             deviceId: task.serial,
-            dtStart: options.startDate ?? deviceActivity?.lastAcquisition ?? undefined,
-            dtEnd: options.endDate
+            dtEnd: options.endDate,
+            // If no start date is provided, use the last acquisition date from SIMS
+            dtStart: options.startDate ?? deviceActivity?.lastAcquisition ?? undefined
           });
 
           // Batch insert telemetry data into SIMS
