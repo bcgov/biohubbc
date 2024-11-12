@@ -93,11 +93,11 @@ export const ENVSchema = z.object({
 type ENVSchema = z.infer<typeof ENVSchema>;
 
 /**
- * Load Environment Variables and validate them against the schema.
+ * Load Environment Variables and validate them against the Zod schema.
  *
- * @returns void
+ * @returns {*} {void}
  */
-export const loadENV = (): void => {
+export const loadEvironmentVariables = (): void => {
   const parsed = ENVSchema.safeParse(process.env);
 
   if (!parsed.success) {
@@ -106,10 +106,12 @@ export const loadENV = (): void => {
       message: 'Invalid environment configuration',
       errors: parsed.error.flatten().fieldErrors
     });
+
     process.exit(1);
   }
 };
 
+// Extend NodeJS ProcessEnv to include the ENVSchema
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
