@@ -3,7 +3,7 @@ import { combineDateTime, formatTimeDifference } from './datetime';
 describe('combineDateTime', () => {
   it('combines date and time into an ISO string', () => {
     const result = combineDateTime('2024-01-01', '12:30:00');
-    expect(result).toEqual('2024-01-01T19:30:00.000Z');
+    expect(result).toEqual('2024-01-01T12:30:00.000Z');
   });
 
   it('combines date without time into an ISO string', () => {
@@ -13,12 +13,15 @@ describe('combineDateTime', () => {
 
   it('returns ISO string for a different date and time', () => {
     const result = combineDateTime('2023-12-31', '23:59:59');
-    expect(result).toEqual('2023-12-31T23:59:59.000');
+    expect(result).toEqual('2023-12-31T23:59:59.000Z');
   });
 
   it('handles invalid date formats gracefully', () => {
-    const result = combineDateTime('invalid-date', '12:00');
-    expect(result).toBeNaN();
+    const date = combineDateTime('badDate', '12:00');
+    expect(date).toEqual('Invalid Date');
+
+    const time = combineDateTime('2024-01-01', 'badtime');
+    expect(time).toEqual('Invalid Date');
   });
 });
 

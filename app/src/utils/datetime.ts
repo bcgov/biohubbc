@@ -2,6 +2,8 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import { pluralize } from './Utils';
 
+const TIMESTAMP_FORMAT = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]';
+
 dayjs.extend(duration);
 
 /**
@@ -13,9 +15,10 @@ dayjs.extend(duration);
  */
 export const combineDateTime = (date: string, time?: string | null) => {
   if (date && time) {
-    return new Date(`${date}T${time}`).toISOString();
+    return dayjs(`${date} ${time}`).format(TIMESTAMP_FORMAT);
   }
-  return new Date(`${date}T00:00:00`).toISOString();
+
+  return dayjs(`${date}`).format(TIMESTAMP_FORMAT);
 };
 
 /**
@@ -32,7 +35,7 @@ export const formatTimeDifference = (
   startTime: string | null,
   endDate: string,
   endTime: string | null
-) => {
+): string | null => {
   const startDateTime = startTime ? dayjs(`${startDate} ${startTime}`) : dayjs(startDate);
   const endDateTime = endTime ? dayjs(`${endDate} ${endTime}`) : dayjs(endDate);
 
@@ -43,39 +46,19 @@ export const formatTimeDifference = (
   // Calculate the total difference
   const diff = dayjs.duration(endDateTime.diff(startDateTime));
 
-  const years = diff.years();
-  const months = diff.months();
-  const days = diff.days();
-  const hours = diff.hours();
-  const minutes = diff.minutes();
-  const seconds = diff.seconds();
-
   const parts = [];
 
-  if (years > 0) {
-    parts.push(`${years} ${pluralize(years, 'year')}`);
-  }
-  if (months > 0) {
-    parts.push(`${months} ${pluralize(months, 'month')}`);
-  }
-  if (days > 0) {
-    parts.push(`${days} ${pluralize(days, 'day')}`);
-  }
-  if (hours > 0) {
-    parts.push(`${hours} ${pluralize(hours, 'hour')}`);
-  }
-  if (minutes > 0) {
-    parts.push(`${minutes} ${pluralize(minutes, 'minute')}`);
-  }
-  if (seconds > 0) {
-    parts.push(`${seconds} ${pluralize(seconds, 'second')}`);
+  for (const unit of ['year', 'month', 'day', 'hour', 'minute', 'second']) {
+    const value = diff[`${unit}s`]();
+
+    if (value > 0) {
+      parts.push(`${value} ${pluralize(value, unit)}`);
+    }
   }
 
-  if (parts.length > 0) {
-    // Slice to omit unnecessary level of detail. ie. If the duration is > 1 year, hours don't matter.
-    return parts.slice(0, 2).join(' and ');
+  if (!parts.length) {
+    return null;
   }
 
-  // Return null if no time difference
-  return null;
+  return parts.slice(0, 2).join(' and ');
 };
