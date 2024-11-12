@@ -4,6 +4,7 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useCodesContext } from 'hooks/useContext';
+import { formatTimeDifference } from 'utils/datetime';
 import { getCodesName } from 'utils/Utils';
 
 export interface ISamplingSitePeriodRowData {
@@ -82,6 +83,15 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       field: 'end_time',
       headerName: 'End time',
       flex: 1
+    },
+    {
+      field: 'duration',
+      headerName: 'Duration',
+      flex: 1,
+      renderCell: (params) => {
+        const { start_date, start_time, end_date, end_time } = params.row;
+        return formatTimeDifference(start_date, start_time, end_date, end_time);
+      }
     }
   ];
 

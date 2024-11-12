@@ -1,6 +1,7 @@
+import { mdiEye, mdiWifiMarker } from '@mdi/js';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
+import { BreadcrumbNavButton } from 'components/buttons/BreadcrumbNavButton';
 import PageHeader from 'components/layout/PageHeader';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -19,6 +20,20 @@ export interface IAnimalHeaderProps {
  */
 export const AnimalHeader = (props: IAnimalHeaderProps) => {
   const { project_id, project_name, survey_id, survey_name } = props;
+
+  const menuItems = [
+    {
+      label: 'Telemetry',
+      to: `/admin/projects/${project_id}/surveys/${survey_id}/telemetry/details`,
+      icon: mdiWifiMarker
+    },
+    {
+      label: 'Observations',
+      to: `/admin/projects/${project_id}/surveys/${survey_id}/observations`,
+      icon: mdiEye
+    }
+  ];
+
   return (
     <PageHeader
       title="Manage Animals"
@@ -33,9 +48,7 @@ export const AnimalHeader = (props: IAnimalHeaderProps) => {
             to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
             {survey_name}
           </Link>
-          <Typography component="span" variant="inherit" color="textSecondary">
-            Manage Animals
-          </Typography>
+          <BreadcrumbNavButton menuItems={menuItems}>Animals</BreadcrumbNavButton>
         </Breadcrumbs>
       }
     />
