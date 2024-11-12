@@ -15,7 +15,7 @@ import { LotekAPIDevice } from './telemetry-lotek-service.interface';
 import { keysToLowerCase } from './telemetry-utils';
 import { TelemetryProcessingOptions, TelemetryProcessingResult } from './telemetry.interface';
 
-const defaultLog = getLogger('TelemetryLotekService');
+const defaultLog = getLogger('telemetry-lotek-service');
 
 /**
  * This service is responsible for fetching telemetry data from the Lotek API and storing it in SIMS.

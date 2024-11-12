@@ -12,6 +12,12 @@ import { LotekPayload } from './telemetry-lotek-repository.interface';
  * @extends {BaseRepository}
  */
 export class TelemetryLotekRepository extends BaseRepository {
+  /**
+   * Create multiple Lotek telemetry records.
+   *
+   * @param {LotekPayload[]} telemetry - The telemetry records to create.
+   * @returns {Promise<number>} The number of telemetry records created.
+   */
   async createLotekTelemetry(telemetry: LotekPayload[]): Promise<number> {
     const knex = getKnex();
 
@@ -27,6 +33,10 @@ export class TelemetryLotekRepository extends BaseRepository {
     return result.rowCount ?? 0;
   }
 
+  /**
+   * Get the device activity statistics for Lotek telemetry device.
+   * @returns {Promise<{ serial: number, telemetry_count: number, last_acquistion: string | null }[]>} The device activity statistics.
+   */
   async getDeviceActivityStatistics() {
     const sqlStatement = SQL`
       SELECT

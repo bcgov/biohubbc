@@ -14,7 +14,7 @@ import { QueueResult, taskQueue } from '../../utils/task-queue';
 import { DBService } from '../db-service';
 import { keysToLowerCase } from './telemetry-utils';
 import { TelemetryProcessingOptions, TelemetryProcessingResult } from './telemetry.interface';
-const defaultLog = getLogger('TelemetryVectronicService');
+const defaultLog = getLogger('telemetry-vectronic-service');
 
 /**
  * This service is responsible for fetching telemetry data from the Vectronic API and storing it in SIMS.

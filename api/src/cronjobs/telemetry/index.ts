@@ -1,10 +1,13 @@
 import { parseArgs } from 'util';
 import { defaultPoolConfig, getAPIUserDBConnection, initDBPool } from '../../database/db';
+import { ApiGeneralError } from '../../errors/api-error';
 import { TelemetryLotekService } from '../../services/telemetry-services/telemetry-lotek-service';
 import { TelemetryVectronicService } from '../../services/telemetry-services/telemetry-vectronic-service';
+import { TelemetryProcessingResult } from '../../services/telemetry-services/telemetry.interface';
 import { getLogger } from '../../utils/logger';
+import { QueueResult } from '../../utils/task-queue';
 
-const defaultLog = getLogger('TelemetryCronjob');
+const defaultLog = getLogger('telemetry-cronjob');
 
 /**
  * Telemetry Cronjob: Handles fetching Vectronic and Lotek telemetry and inserting it into the database.
@@ -12,14 +15,22 @@ const defaultLog = getLogger('TelemetryCronjob');
  * Information:
  *
  * How to run:
- *  - Default: `npm run telemetry-cronjob` // concurrently = 100 and batchSize = 1000
+ *  - Default: `npm run telemetry-cronjob` // defaults to: concurrently = 100 and batchSize = 1000
  *  - CLI args: `npm run telemetry-cronjob -- --concurrently 100 --batchSize 1000 --startDate 2021-01-01 --endDate 2021-01-31`
  *
- * Date Ranges:
+ * Telemetry device processing flow:
+ *  1. Fetch the telemetry count from the vendor API.
+ *  2. Fetch the telemetry count from the SIMS database.
+ *  3. Compare and check for missing telemetry records.
+ *  4. Fetch the telemetry data from the vendor API. See `Date ranges` section below.
+ *  5. Insert the telemetry data into the SIMS database.
+ *
+ * Date ranges:
  *  If a date range is provided, the cronjob will fetch telemetry for that date range.
  *  If no date range is provided, the cronjob will fetch all telemetry data after the last record in the database.
  *    Lotek: We find the last record in the database and use the timestamp as the start date.
- *    Vectronic: We find the largest idposition (Vectronic PK) and use the gt-id query parameter.
+ *    Vectronic: We find the largest / max idposition (the Vectronic PK ID) and use the `gt-id` query parameter.
+ *
  *
  * Web Services:
  *  - Lotek: https://webservice.lotek.com/API/Help
@@ -28,67 +39,99 @@ const defaultLog = getLogger('TelemetryCronjob');
  * @returns {*} {Promise<void>}
  */
 export async function main(): Promise<void> {
-  // 0. SETUP
-  const args = parseArguments(); // Parse the CLI arguments
+  // 0. SETUP - Parse CLI arguments, initialize the database and get a connection
+  const args = parseArguments();
   defaultLog.info({ message: 'Cronjob starting.', args });
 
-  initDBPool(defaultPoolConfig); // Initialize the database connection pool
-  const connection = getAPIUserDBConnection(); // Get the API user database connection
+  initDBPool(defaultPoolConfig);
+  const connection = getAPIUserDBConnection();
 
   try {
-    await connection.open({ transaction: false }); // Open a connection to the database without a transaction
+    await connection.open({ transaction: false }); // Open a non-transaction database connection
 
-    // 1. INITIALIZE SERVICES
+    // 1. INITIALIZE SERVICES - Lotek + Vectronic
     defaultLog.info({ message: 'Initializing services.' });
     const vectronicService = new TelemetryVectronicService(connection);
     const lotekService = new TelemetryLotekService(connection);
 
-    // 2. FETCH DEVICES AND CREDENTIALS
+    // 2. FETCH DEVICES AND CREDENTIALS - Fetch devices from Lotek and get SIMS Vectronic credentials
+    defaultLog.info({ message: 'Fetching devices and credentials.' });
     const lotekDevices = await lotekService.fetchDevicesFromLotek(); // Fetch the lotek account devices
     const vectronicDevices = await vectronicService.getDeviceCredentials(); // Fetch the vectronic account devices
-    defaultLog.info({ message: 'Fetching devices and credentials.' });
 
-    // 3. GENERATE QUEUE TASKS
+    // 3. GENERATE QUEUEABLE TASKS - Create tasks for each device
     defaultLog.info({ message: 'Generating tasks.' });
     const lotekTasks = lotekDevices.map((device) => ({ serial: device.nDeviceID })); // Create a task for each device
     const vectronicTasks = vectronicDevices.map((device) => ({ serial: device.idcollar, key: device.collarkey }));
 
-    // 4. PROCESS TELEMETRY (FETCH AND INSERT)
+    // 4. PROCESS TELEMETRY - Fetch telemetry from the vendor API and insert it into the SIMS database
     defaultLog.info({ message: 'Processing telemetry.' });
-    const lotekResults = await lotekService.processTelemetry(lotekTasks.slice(200, 202), args);
+    const lotekResults = await lotekService.processTelemetry(lotekTasks, args);
     const vectronicResults = await vectronicService.processTelemetry(vectronicTasks, args);
 
-    const results = lotekResults.concat(vectronicResults);
+    // 5. PARSE RESULTS - Parse the telemetry processing results for logging
+    const parsedLotek = parseResults('Lotek', lotekResults);
+    const parsedVectronic = parseResults('Vectronic', vectronicResults);
 
-    // 5. GENERATE LOG INFORMATION
-    const info = { telemetry: { new: 0, created: 0 }, lotekErrors: 0, vectronicErrors: 0 };
-    for (const result of results) {
-      if (result.error) {
-        'key' in result.task ? info.vectronicErrors++ : info.lotekErrors++;
-      } else {
-        info.telemetry.new += result.value.new;
-        info.telemetry.created += result.value.created;
+    defaultLog.info({
+      message: 'Cronjob completed.',
+      information: {
+        new: parsedLotek.new + parsedVectronic.new,
+        created: parsedLotek.created + parsedVectronic.created,
+        errors: parsedLotek.errors.concat(parsedVectronic.errors)
       }
-    }
-
-    defaultLog.info({ message: 'Cronjob information', information: info });
-
-    if (info.vectronicErrors === vectronicTasks.length || info.vectronicErrors === vectronicTasks.length) {
-      defaultLog.error({ message: 'Partial failure detected. All tasks from a vendor failed to complete.' });
-      throw lotekResults[0].error ?? vectronicResults[0].error; // Throw the first error to help debug
-    }
-
-    defaultLog.info({ message: 'Cronjob completed.' });
+    });
   } catch (error) {
     defaultLog.error({ message: 'Cronjob failed to complete.', error });
     process.exit(1);
   } finally {
     defaultLog.info({ message: 'Cronjob cleaning up open connections.' });
 
-    connection.release(); // No commit or rollback is needed
+    connection.release(); // No commit or rollback is needed (not in a transaction)
     process.exit(0);
   }
 }
+
+/**
+ * Parse the results of the telemetry processing.
+ *
+ * @param {string} vendor The vendor name.
+ * @param {QueueResult<{ serial: number }, TelemetryProcessingResult>[]} results The telemetry processing results.
+ * @returns {*} The parsed telemetry results.
+ */
+const parseResults = (vendor: string, results: QueueResult<{ serial: number }, TelemetryProcessingResult>[]) => {
+  let newTelemetry = 0;
+  let createdTelemetry = 0;
+  const errors = [];
+
+  for (const result of results) {
+    if (result.error) {
+      errors.push(result.error);
+    }
+
+    if (result.value) {
+      newTelemetry += result.value.new;
+      createdTelemetry += result.value.created;
+    }
+  }
+
+  if (errors.length === results.length) {
+    defaultLog.error({
+      label: 'Partial Failure',
+      vendor: vendor,
+      message: 'Partial failure detected. All resolved results contained a thrown error.',
+      firstError: errors[0]
+    });
+
+    throw new ApiGeneralError(`All tasks failed to complete for ${vendor}.`);
+  }
+
+  return {
+    new: newTelemetry,
+    created: createdTelemetry,
+    errors
+  };
+};
 
 /**
  * Parse the CLI arguments.
