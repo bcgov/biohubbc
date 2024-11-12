@@ -31,7 +31,7 @@ export const _getClamAvScanner = async (): Promise<NodeClam> => {
   return new NodeClam().init({
     clamdscan: {
       host: process.env.CLAMAV_HOST,
-      port: Number(process.env.CLAMAV_PORT)
+      port: process.env.CLAMAV_PORT
     }
   });
 };
