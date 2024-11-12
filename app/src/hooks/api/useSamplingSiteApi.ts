@@ -49,7 +49,7 @@ const useSamplingSiteApi = (axios: AxiosInstance) => {
   ): Promise<IGetSampleLocationNonSpatialResponse> => {
     const params = {
       keyword: options?.keyword,
-      pagination: options?.pagination
+      ...options?.pagination
     };
 
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/sample-site`, {

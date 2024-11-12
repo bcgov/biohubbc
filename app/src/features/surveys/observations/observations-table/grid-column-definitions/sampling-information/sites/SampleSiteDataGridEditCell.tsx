@@ -161,22 +161,25 @@ export const SampleSiteDataGridEditCell = <DataGridType extends GridValidRowMode
 
         onSelectOption?.(selectedOption);
       }}
+      placeholder="Search for a site"
       error={error}
-      renderOption={(renderProps, renderOption) => (
-        <Box
-          component="li"
-          sx={{
-            '& + li': {
-              borderTop: '1px solid' + grey[300]
-            }
-          }}
-          {...renderProps}
-          key={`${renderOption.value}-${renderOption.label}`}>
-          <Box py={1} width="100%">
-            {renderOption.label}
+      renderOption={(renderProps, renderOption) => {
+        return (
+          <Box
+            component="li"
+            sx={{
+              '& + li': {
+                borderTop: '1px solid' + grey[300]
+              }
+            }}
+            {...renderProps}
+            key={renderProps.id}>
+            <Box py={1} width="100%">
+              {renderOption.label}
+            </Box>
           </Box>
-        </Box>
-      )}
+        );
+      }}
     />
   );
 };

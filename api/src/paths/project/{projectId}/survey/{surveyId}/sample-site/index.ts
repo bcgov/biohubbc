@@ -43,7 +43,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'Get all survey sample sites.',
+  description: 'Get survey sample sites.',
   tags: ['survey'],
   security: [
     {
@@ -273,14 +273,14 @@ GET.apiDoc = {
  */
 export function getSurveySampleLocationRecord(): RequestHandler {
   return async (req, res) => {
-    const surveyId = Number(req.params.surveyId);
-
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      const paginationOptions = makePaginationOptionsFromRequest(req);
+      const surveyId = Number(req.params.surveyId);
 
       const keyword = req.query.keyword as string | undefined;
+
+      const paginationOptions = makePaginationOptionsFromRequest(req);
 
       await connection.open();
 
