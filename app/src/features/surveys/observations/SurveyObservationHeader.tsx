@@ -1,6 +1,7 @@
+import { mdiPaw, mdiWifiMarker } from '@mdi/js';
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import Link from '@mui/material/Link';
-import Typography from '@mui/material/Typography';
+import { BreadcrumbNavButton } from 'components/buttons/BreadcrumbNavButton';
 import PageHeader from 'components/layout/PageHeader';
 import { Link as RouterLink } from 'react-router-dom';
 
@@ -13,6 +14,20 @@ export interface SurveyObservationHeaderProps {
 
 const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) => {
   const { project_id, project_name, survey_id, survey_name } = props;
+
+  const menuItems = [
+    {
+      label: 'Animals',
+      to: `/admin/projects/${project_id}/surveys/${survey_id}/animals/details`,
+      icon: mdiPaw
+    },
+    {
+      label: 'Telemetry',
+      to: `/admin/projects/${project_id}/surveys/${survey_id}/telemetry`,
+      icon: mdiWifiMarker
+    }
+  ];
+
   return (
     <PageHeader
       title="Manage Observations"
@@ -27,9 +42,7 @@ const SurveyObservationHeader: React.FC<SurveyObservationHeaderProps> = (props) 
             to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}>
             {survey_name}
           </Link>
-          <Typography component="span" variant="inherit" color="textSecondary">
-            Manage Observations
-          </Typography>
+          <BreadcrumbNavButton menuItems={menuItems}>Observations</BreadcrumbNavButton>
         </Breadcrumbs>
       }
     />
