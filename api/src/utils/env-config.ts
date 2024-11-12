@@ -97,7 +97,7 @@ type ENVSchema = z.infer<typeof ENVSchema>;
  *
  * @returns void
  */
-export const loadENV = (): void => {
+export const loadEvironmentVariables = (): void => {
   const parsed = ENVSchema.safeParse(process.env);
 
   if (!parsed.success) {
@@ -110,6 +110,7 @@ export const loadENV = (): void => {
   }
 };
 
+// Extend NodeJS ProcessEnv to include the ENVSchema
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace NodeJS {
