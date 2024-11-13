@@ -32,6 +32,7 @@ import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/participan
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
 import SpeciesForm, { SpeciesYupSchema } from '../components/species/SpeciesForm';
 import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 
 export interface IEditSurveyForm<
   T extends
@@ -135,7 +136,9 @@ const EditSurveyForm = <
           summary="Specify funding sources for this survey"
           component={
             <Box component="fieldset">
+              <HelpButtonStack helpText="this is an input">
               <Typography component="legend">Do any funding agencies require this survey to be submitted?</Typography>
+              </HelpButtonStack>
               <SurveyFundingSourceForm />
             </Box>
           }
