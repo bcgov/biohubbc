@@ -2,6 +2,7 @@ import { mdiHelpCircleOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
 import { ReactNode } from 'react';
@@ -22,9 +23,14 @@ interface HelpButtonTooltipProps {
 //TODO: Update positioning of the tooltip to be more dynamic (Add Animal form)
 const HelpButtonTooltip = ({ content, children, iconSx }: HelpButtonTooltipProps) => {
   return (
+    <Stack direction="row" flexGrow={1}>
     <Box
       sx={{
         position: 'relative',
+        display: 'flex',
+        alignItems: 'center', 
+        justifyContent: 'space-between', 
+        flexGrow: 1,
         '& input': {
           px: 7,
           overflow: 'hidden',
@@ -60,8 +66,6 @@ const HelpButtonTooltip = ({ content, children, iconSx }: HelpButtonTooltipProps
         }}>
         <IconButton
           sx={{
-            top: '8px',
-            right: '8px',
             color: '#38598A',
             ...iconSx
           }}>
@@ -69,6 +73,7 @@ const HelpButtonTooltip = ({ content, children, iconSx }: HelpButtonTooltipProps
         </IconButton>
       </Tooltip>
     </Box>
+    </Stack>
   );
 };
 

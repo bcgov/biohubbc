@@ -119,11 +119,7 @@ const EditSurveyForm = <
           summary="Enter any permits used in this survey"
           component={
             <Box component="fieldset">
-            <Stack direction ="row" spacing={1} alignItems="flex-start"><Typography>Were any permits used in this survey?</Typography>
-            <Box sx={{ display: 'flex', transform: 'translateY(-15px)' }}>
-              <HelpButtonTooltip content="Please include information for any permits granted and executed for the data acquisition purposes of this survey." />
-            </Box>
-            </Stack>
+              <HelpButtonStack helpText='Please include information for any permits granted and executed for the data acquisition purposes of this survey.'><Typography>Were any permits used in this survey?</Typography></HelpButtonStack>
               <SurveyPermitForm />
             </Box>
           }
@@ -136,9 +132,7 @@ const EditSurveyForm = <
           summary="Specify funding sources for this survey"
           component={
             <Box component="fieldset">
-              <HelpButtonStack helpText="this is an input">
               <Typography component="legend">Do any funding agencies require this survey to be submitted?</Typography>
-              </HelpButtonStack>
               <SurveyFundingSourceForm />
             </Box>
           }

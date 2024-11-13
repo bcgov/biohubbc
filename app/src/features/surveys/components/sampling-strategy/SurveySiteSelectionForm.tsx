@@ -1,7 +1,5 @@
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
 import assert from 'assert';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import MultiAutocompleteField from 'components/fields/MultiAutocompleteField';
 import { CodesContext } from 'contexts/codesContext';
@@ -117,37 +115,34 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
         onClose={handleCancelDeleteAllStratums}
         onYes={handleConfirmDeleteAllStratums}
       />
-      <Stack direction="row" gap={1} flexGrow={1}>
-      <Box sx={{ flexGrow: 1 }}>
-      <MultiAutocompleteField
-        id="site_selection.strategies"
-        label="Site selection strategy"
-        options={siteStrategies}
-        selectedOptions={selectedSiteStrategies}
-        required={true}
-        onChange={(_, selectedOptions, reason) => {
-          // If the user clicks to remove the 'Stratified' option and there are Stratums already defined, then show
-          // a warning dialogue asking the user if they are sure they want to remove the option and delete the Stratums
-          if (
-            reason === 'removeOption' &&
-            values.site_selection.strategies.includes('Stratified') &&
-            !selectedOptions.map((item) => item.value).includes('Stratified') &&
-            values.site_selection.stratums.length
-          ) {
-            setShowStratumDeleteConfirmModal(true);
-            return;
-          }
+      <HelpButtonStack helpText="The approach used to determine the locations where biological samples are collected during a survey or study. This strategy may involve selection of sites based on specific criteria such as habitat type, species presence, accessibility, or study objectives.">
+        <MultiAutocompleteField
+          id="site_selection.strategies"
+          label="Site selection strategy"
+          options={siteStrategies}
+          selectedOptions={selectedSiteStrategies}
+          required={true}
+          onChange={(_, selectedOptions, reason) => {
+            // If the user clicks to remove the 'Stratified' option and there are Stratums already defined, then show
+            // a warning dialogue asking the user if they are sure they want to remove the option and delete the Stratums
+            if (
+              reason === 'removeOption' &&
+              values.site_selection.strategies.includes('Stratified') &&
+              !selectedOptions.map((item) => item.value).includes('Stratified') &&
+              values.site_selection.stratums.length
+            ) {
+              setShowStratumDeleteConfirmModal(true);
+              return;
+            }
 
-          // Update selected options
-          setFieldValue(
-            'site_selection.strategies',
-            selectedOptions.map((item) => item.value)
-          );
-        }}
-      />
-      </Box>
-      <HelpButtonTooltip content="The approach used to determine the locations where biological samples are collected during a survey or study. This strategy may involve selection of sites based on specific criteria such as habitat type, species presence, accessibility, or study objectives." />
-      </Stack>
+            // Update selected options
+            setFieldValue(
+              'site_selection.strategies',
+              selectedOptions.map((item) => item.value)
+            );
+          }}
+        />
+      </HelpButtonStack>
     </>
   );
 };
