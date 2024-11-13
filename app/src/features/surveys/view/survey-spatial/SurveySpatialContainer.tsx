@@ -9,10 +9,8 @@ import { SurveySpatialTelemetry } from 'features/surveys/view/survey-spatial/com
 import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
 import { isEqual } from 'lodash-es';
 import { useEffect, useMemo, useState } from 'react';
-import SurveyMapTooltip from '../SurveyMapTooltip';
 import { useSamplingSiteStaticLayer } from './components/map/useSamplingSiteStaticLayer';
 import { useStudyAreaStaticLayer } from './components/map/useStudyAreaStaticLayer';
-import { SurveySpatialTelemetryPopup } from './components/telemetry/SurveySpatialTelemetryPopup';
 
 /**
  * Container component for displaying survey spatial data.
@@ -86,13 +84,7 @@ export const SurveySpatialContainer = (): JSX.Element => {
         <SurveySpatialObservation staticLayers={staticLayers} />
       )}
       {isEqual(SurveySpatialDatasetViewEnum.TELEMETRY, activeView) && (
-        <SurveySpatialTelemetry
-          staticLayers={staticLayers}
-          popup={(feature) => {
-            return <SurveySpatialTelemetryPopup feature={feature} />;
-          }}
-          tooltip={(feature) => <SurveyMapTooltip title="Telemetry" key={`telemetry-tooltip-${feature.id}`} />}
-        />
+        <SurveySpatialTelemetry staticLayers={staticLayers} />
       )}
       {isEqual(SurveySpatialDatasetViewEnum.ANIMALS, activeView) && <SurveySpatialAnimal staticLayers={staticLayers} />}
     </>

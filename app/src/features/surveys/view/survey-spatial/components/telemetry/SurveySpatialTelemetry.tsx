@@ -25,14 +25,6 @@ interface ISurveySpatialTelemetryProps {
 export const SurveySpatialTelemetry = (props: ISurveySpatialTelemetryProps) => {
   const surveyContext = useSurveyContext();
 
-  //   const deploymentDataLoader = telemetryDataContext.deploymentsDataLoader;
-
-  //   // Load deployments data
-  //   useEffect(() => {
-  //     deploymentDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  //     // eslint-disable-next-line react-hooks/exhaustive-deps
-  //   }, [surveyContext.projectId, surveyContext.surveyId]);
-
   const biohubApi = useBiohubApi();
 
   const telemetrySpatialDataLoader = useDataLoader((projectId: number, surveyId: number) =>
