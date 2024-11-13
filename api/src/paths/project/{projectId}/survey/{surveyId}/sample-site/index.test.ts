@@ -16,23 +16,6 @@ describe('getSurveySampleLocationRecord', () => {
     sinon.restore();
   });
 
-  it('should throw a 400 error when no surveyId is provided', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    try {
-      const requestHandler = get_survey_sample_site_record.getSurveySampleLocationRecord();
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required param `surveyId`');
-    }
-  });
-
   it('should catch and re-throw an error if SampleLocationService throws an error', async () => {
     const dbConnectionObj = getMockDBConnection();
 
@@ -109,35 +92,8 @@ describe('getSurveySampleLocationRecord', () => {
 describe('createSurveySampleSiteRecord', () => {
   const dbConnectionObj = getMockDBConnection();
 
-  const sampleReq = {
-    keycloak_token: {},
-    body: {
-      participants: [[1, 1, 'job']]
-    },
-    params: {
-      surveyId: 1
-    }
-  } as any;
-
   afterEach(() => {
     sinon.restore();
-  });
-
-  it('should throw a 400 error when no surveyId in the param', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = create_survey_sample_site_record.createSurveySampleSiteRecord();
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
-        null as unknown as any,
-        null as unknown as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
-    }
   });
 
   it('should work', async () => {

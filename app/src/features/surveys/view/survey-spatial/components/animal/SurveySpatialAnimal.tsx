@@ -4,7 +4,7 @@ import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import { SurveySpatialAnimalCapturePopup } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalCapturePopup';
 import { SurveySpatialAnimalMortalityPopup } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalMortalityPopup';
 import { SurveySpatialAnimalTable } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalTable';
-import { SurveySpatialMap } from 'features/surveys/view/survey-spatial/components/map/SurveySpatialMap';
+import SurveyMap from 'features/surveys/view/SurveyMap';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
@@ -12,11 +12,18 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo } from 'react';
 import { coloredCustomMortalityMarker } from 'utils/mapUtils';
 
+interface ISurveySpatialAnimalProps {
+  /**
+   * Array of additional static layers to be added to the map.
+   */
+  staticLayers: IStaticLayer[];
+}
+
 /**
  * Component for displaying animal capture points on a map and in a table.
  * Retrieves and displays data related to animal captures for a specific survey.
  */
-export const SurveySpatialAnimal = () => {
+export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
   const surveyContext = useSurveyContext();
 
   const crittersApi = useCritterbaseApi();
@@ -91,7 +98,10 @@ export const SurveySpatialAnimal = () => {
     <>
       {/* Display map with animal capture points */}
       <Box height={{ xs: 300, md: 500 }} position="relative">
-        <SurveySpatialMap staticLayers={[captureLayer, mortalityLayer]} isLoading={geometryDataLoader.isLoading} />
+        <SurveyMap
+          staticLayers={[...props.staticLayers, captureLayer, mortalityLayer]}
+          isLoading={geometryDataLoader.isLoading}
+        />
       </Box>
 
       {/* Display data table with animal capture details */}

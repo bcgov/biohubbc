@@ -97,7 +97,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
 
   return (
     <StyledDataGrid
-      autoHeight
+      autoHeight={false}
       getRowHeight={() => 'auto'}
       disableColumnMenu
       rows={periods}
@@ -105,6 +105,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       columns={columns}
       checkboxSelection={false}
       disableRowSelectionOnClick
+      rowCount={periods.length}
       initialState={{
         pagination: {
           paginationModel: { page: 1, pageSize: 10 }
