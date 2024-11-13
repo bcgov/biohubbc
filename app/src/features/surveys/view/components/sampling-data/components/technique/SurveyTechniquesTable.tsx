@@ -1,13 +1,15 @@
 import Box from '@mui/material/Box';
 import blueGrey from '@mui/material/colors/blueGrey';
 import Typography from '@mui/material/Typography';
-import { GridColDef } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ITechniqueRowData } from 'features/surveys/sampling-information/techniques/table/SamplingTechniqueTable';
 import { useCodesContext } from 'hooks/useContext';
-import { TechniqueAttractant } from 'interfaces/useTechniqueApi.interface';
+import { IGetTechniqueResponse, TechniqueAttractant } from 'interfaces/useTechniqueApi.interface';
 import { getCodesName } from 'utils/Utils';
+
+const pageSizeOptions = [10, 25, 50];
 
 export interface ISurveyTechniqueRowData {
   id: number;
@@ -19,13 +21,28 @@ export interface ISurveyTechniqueRowData {
 }
 
 export interface ISurveyTechniquesTableProps {
-  techniques: ISurveyTechniqueRowData[];
+  techniques: IGetTechniqueResponse[];
+  paginationModel: GridPaginationModel;
+  sortModel: GridSortModel;
+  setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+  setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
+  rowCount: number;
 }
 
 export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
-  const { techniques } = props;
+  const { techniques, paginationModel, setPaginationModel, sortModel, setSortModel, rowCount } = props;
 
   const codesContext = useCodesContext();
+
+  const rows: ISurveyTechniqueRowData[] =
+    techniques.map((technique) => ({
+      id: technique.method_technique_id,
+      name: technique.name,
+      method_lookup_id: technique.method_lookup_id,
+      description: technique.description,
+      attractants: technique.attractants,
+      distance_threshold: technique.distance_threshold
+    })) ?? [];
 
   const columns: GridColDef<ITechniqueRowData>[] = [
     {
@@ -100,18 +117,27 @@ export const SurveyTechniquesTable = (props: ISurveyTechniquesTableProps) => {
     <StyledDataGrid
       noRowsMessage={'No Techniques'}
       rowSelection={false}
-      autoHeight
+      autoHeight={false}
       getRowHeight={() => 'auto'}
-      rows={techniques}
+      rows={rows}
       getRowId={(row) => row.id}
       columns={columns}
       disableRowSelectionOnClick
+      onPaginationModelChange={setPaginationModel}
+      onSortModelChange={setSortModel}
+      sortModel={sortModel}
+      paginationModel={paginationModel}
+      // TODO: Enable pagination; saving for a separate PR because it should probably include
+      // removing techniquesDataLoader from the surveyContext
+      paginationMode="server"
+      sortingMode="server"
+      rowCount={rowCount}
       initialState={{
         pagination: {
-          paginationModel: { page: 1, pageSize: 10 }
+          paginationModel
         }
       }}
-      pageSizeOptions={[10, 25, 50]}
+      pageSizeOptions={pageSizeOptions}
     />
   );
 };
