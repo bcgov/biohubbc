@@ -18,6 +18,7 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { CodesContext } from 'contexts/codesContext';
 import { ISurveySampleMethodFormData } from 'features/surveys/sampling-information/methods/components/SamplingMethodForm';
@@ -130,7 +131,9 @@ export const SamplingMethodFormContainer = () => {
 
       <Box component="fieldset">
         <form>
-          <Typography component="legend">Add Sampling Techniques</Typography>
+          <HelpButtonStack helpText="Techniques must be created prior to assignment to sampling sites. Your created techniques will populate below.">
+            <Typography component="legend">Add Sampling Techniques</Typography>
+          </HelpButtonStack>
           <Typography
             variant="body1"
             color="textSecondary"

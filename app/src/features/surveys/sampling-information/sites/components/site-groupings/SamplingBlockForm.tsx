@@ -9,6 +9,7 @@ import { grey } from '@mui/material/colors';
 import IconButton from '@mui/material/IconButton';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import { SurveyContext } from 'contexts/surveyContext';
 import { BlockStratumCard } from 'features/surveys/sampling-information/sites/components/site-groupings/BlockStratumCard';
 import { useFormikContext } from 'formik';
@@ -43,7 +44,9 @@ export const SamplingBlockForm = () => {
 
   return (
     <>
-      <Typography component="legend">Assign to Block</Typography>
+      <HelpButtonStack helpText="Blocks are created at the survey level. If you cannot find your block in this list, please edit your survey to add it.">
+        <Typography component="legend">Assign to Block</Typography>
+      </HelpButtonStack>
       <Typography
         variant="body1"
         color="textSecondary"
