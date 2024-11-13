@@ -4,11 +4,10 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
-import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import HelpButtonBStack from 'components/buttons/HelpButtonBStack';
 import UserCard from 'components/user/UserCard';
 import UserRoleSelector from 'components/user/UserRoleSelector';
 import { useFormikContext } from 'formik';
@@ -121,9 +120,8 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
           <AlertBar severity="error" variant="outlined" title={alertBarText().title} text={alertBarText().text} />
         </Box>
       )}
-        <Stack direction="row" gap={1} flexGrow={1}>
-        <Box sx={{ flexGrow: 1 }}>
-          <Autocomplete
+      <HelpButtonBStack helpText="Please specify the roles of survey participants. If you cannot find one of your team members, you may need to invite them to use SIMS before specifying their role. You can always edit your survey later to add them.">
+        <Autocomplete
           id={'autocomplete-user-role-search'}
           data-testid={'autocomplete-user-role-search'}
           filterSelectedOptions
@@ -194,9 +192,7 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
             );
           }}
         />
-      </Box>
-      <HelpButtonTooltip content="Please specify the roles of survey participants. If you cannot find one of your team members, you may need to invite them to use SIMS before specifying their role. You can always edit your survey later to add them." />
-        </Stack>
+      </HelpButtonBStack>
       <Box>
         <Box
           sx={{
