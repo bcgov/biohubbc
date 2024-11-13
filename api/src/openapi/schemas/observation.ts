@@ -1,5 +1,6 @@
 import { OpenAPIV3 } from 'openapi-types';
 import { paginationResponseSchema } from './pagination';
+import { SampleLocationSchema } from './sample-site';
 
 export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
@@ -225,7 +226,8 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
         'qualitative_measurements',
         'quantitative_measurements',
         'qualitative_environments',
-        'quantitative_environments'
+        'quantitative_environments',
+        'sample_sites'
       ],
       properties: {
         observationCount: {
@@ -412,7 +414,8 @@ export const observervationsWithSubcountDataSchema: OpenAPIV3.SchemaObject = {
               }
             }
           }
-        }
+        },
+        sample_sites: SampleLocationSchema
       }
     },
     pagination: { ...paginationResponseSchema }
