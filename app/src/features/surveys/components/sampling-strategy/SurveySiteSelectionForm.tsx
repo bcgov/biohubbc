@@ -1,5 +1,5 @@
 import assert from 'assert';
-import HelpButtonStack from 'components/buttons/HelpButtonStack';
+import HelpButtonBStack from 'components/buttons/HelpButtonBStack';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import MultiAutocompleteField from 'components/fields/MultiAutocompleteField';
 import { CodesContext } from 'contexts/codesContext';
@@ -115,7 +115,7 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
         onClose={handleCancelDeleteAllStratums}
         onYes={handleConfirmDeleteAllStratums}
       />
-      <HelpButtonStack helpText="The approach used to determine the locations where biological samples are collected during a survey or study. This strategy may involve selection of sites based on specific criteria such as habitat type, species presence, accessibility, or study objectives.">
+      <HelpButtonBStack helpText="The approach used to determine the locations where biological samples are collected during a survey or study. This strategy may involve selection of sites based on specific criteria such as habitat type, species presence, accessibility, or study objectives.">
         <MultiAutocompleteField
           id="site_selection.strategies"
           label="Site selection strategy"
@@ -142,7 +142,7 @@ const SurveySiteSelectionForm = (props: ISurveySiteSelectionFormProps) => {
             );
           }}
         />
-      </HelpButtonStack>
+      </HelpButtonBStack>
     </>
   );
 };
