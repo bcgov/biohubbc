@@ -17,19 +17,24 @@ interface IAlertBarProps extends AlertProps {
 const AlertBar = (props: IAlertBarProps) => {
   const { severity, variant, title, text, ...alertProps } = props;
 
+  const defaultProps = {
+    severity: 'success',
+    variant: 'standard',
+    title: '',
+    text: ''
+  };
+
   return (
-    <Alert {...alertProps} variant={variant} severity={severity} sx={{ flex: '1 1 auto', mb: 1, ...alertProps.sx }}>
+    <Alert
+      {...defaultProps}
+      {...alertProps}
+      variant={variant}
+      severity={severity}
+      sx={{ flex: '1 1 auto', mb: 0, ...alertProps.sx }}>
       <AlertTitle>{title}</AlertTitle>
       {text}
     </Alert>
   );
-};
-
-AlertBar.defaultProps = {
-  severity: 'success',
-  variant: 'standard',
-  title: '',
-  text: ''
 };
 
 export default AlertBar;
