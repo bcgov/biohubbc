@@ -8,7 +8,7 @@ import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { SystemAlertBanner, SystemAlertBannerEnum } from 'features/alert/banner/SystemAlertBanner';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import React, { useContext, useEffect } from 'react';
-import { SurveySamplingContainer } from './components/sampling-data/SurveySamplingContainer';
+import { SurveySamplingTableContainer } from './components/sampling-data/SurveySamplingTableContainer';
 import SurveyStudyArea from './components/SurveyStudyArea';
 import { SurveySpatialContainer } from './survey-spatial/SurveySpatialContainer';
 import SurveyAttachments from './SurveyAttachments';
@@ -38,7 +38,7 @@ const SurveyPage: React.FC = () => {
         <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.SURVEYS]} />
         <Stack gap={3}>
           <Paper>
-            <SurveySamplingContainer />
+            <SurveySamplingTableContainer />
           </Paper>
 
           <Paper>

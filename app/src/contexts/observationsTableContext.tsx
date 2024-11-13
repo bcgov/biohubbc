@@ -338,7 +338,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   // Pagination model
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     page: 0,
-    pageSize: 50
+    pageSize: 25
   });
 
   // Sort model

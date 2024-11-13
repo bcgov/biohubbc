@@ -1,12 +1,19 @@
 import { IDBConnection } from '../database/db';
+import {
+  IMethodAdvancedFilters,
+  IPeriodAdvancedFilters,
+  ISiteAdvancedFilters
+} from '../models/sampling-locations-view';
 import { InsertSampleBlockRecord } from '../repositories/sample-blocks-repository';
 import {
   InsertSampleSiteRecord,
+  SampleLocationBasicRecord,
   SampleLocationRecord,
   SampleLocationRepository,
+  SampleSiteGeometryRecord,
   SampleSiteRecord,
   UpdateSampleLocationRecord
-} from '../repositories/sample-location-repository';
+} from '../repositories/sample-location-repository/sample-location-repository';
 import { InsertSampleMethodRecord } from '../repositories/sample-method-repository';
 import { InsertSampleStratumRecord } from '../repositories/sample-stratums-repository';
 import { getLogger } from '../utils/logger';
@@ -46,15 +53,23 @@ export class SampleLocationService extends DBService {
    * Gets a paginated set of survey Sample Locations for the given survey.
    *
    * @param {number} surveyId
-   * @param {ApiPaginationOptions} [pagination]
+   * @param {{
+   *       keyword?: string;
+   *       sampleSiteIds?: number[];
+   *       pagination?: ApiPaginationOptions;
+   *     }} [options]
    * @return {*}  {Promise<SampleLocationRecord[]>}
    * @memberof SampleLocationService
    */
   async getSampleLocationsForSurveyId(
     surveyId: number,
-    pagination?: ApiPaginationOptions
+    options?: {
+      keyword?: string;
+      sampleSiteIds?: number[];
+      pagination?: ApiPaginationOptions;
+    }
   ): Promise<SampleLocationRecord[]> {
-    return this.sampleLocationRepository.getSampleLocationsForSurveyId(surveyId, pagination);
+    return this.sampleLocationRepository.getSampleLocationsForSurveyId(surveyId, options);
   }
 
   /**
@@ -66,6 +81,17 @@ export class SampleLocationService extends DBService {
    */
   async getSampleLocationsCountBySurveyId(surveyId: number): Promise<number> {
     return this.sampleLocationRepository.getSampleLocationsCountBySurveyId(surveyId);
+  }
+
+  /**
+   * Returns the geometry for all sampling locations in the Survey
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SampleSiteGeometryRecord[]>}
+   * @memberof SampleLocationService
+   */
+  async getSampleLocationsGeometryBySurveyId(surveyId: number): Promise<SampleSiteGeometryRecord[]> {
+    return this.sampleLocationRepository.getSampleLocationsGeometryBySurveyId(surveyId);
   }
 
   /**
@@ -81,6 +107,21 @@ export class SampleLocationService extends DBService {
   }
 
   /**
+   * Gets basic data for survey sample sites for supplementary observations data
+   *
+   * @param {number} surveyId
+   * @param {number[]} surveySampleSiteIds
+   * @return {*}  {Promise<SampleLocationBasicRecord[]>}
+   * @memberof SampleLocationService
+   */
+  async getBasicSurveySampleLocationsBySiteIds(
+    surveyId: number,
+    surveySampleSiteIds: number[]
+  ): Promise<SampleLocationBasicRecord[]> {
+    return this.sampleLocationRepository.getBasicSurveySampleLocationsBySiteIds(surveyId, surveySampleSiteIds);
+  }
+
+  /**
    * Gets a sample location by sample site ID.
    *
    * @param {number} surveyId
@@ -90,6 +131,66 @@ export class SampleLocationService extends DBService {
    */
   async getSurveySampleLocationBySiteId(surveyId: number, surveySampleSiteId: number): Promise<SampleLocationRecord> {
     return this.sampleLocationRepository.getSurveySampleLocationBySiteId(surveyId, surveySampleSiteId);
+  }
+
+  /**
+   * Retrieves the paginated list of all sites that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {ISiteAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}
+   * @memberof ObservationService
+   */
+  async findSites(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ISiteAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ) {
+    return this.sampleLocationRepository.findSites(isUserAdmin, systemUserId, filterFields, pagination);
+  }
+
+  /**
+   * Retrieves the paginated list of all methods that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IMethodAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}
+   * @memberof ObservationService
+   */
+  async findMethods(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IMethodAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ) {
+    return this.sampleLocationRepository.findMethods(isUserAdmin, systemUserId, filterFields, pagination);
+  }
+
+  /**
+   * Retrieves the paginated list of all periods that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IPeriodAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}
+   * @memberof ObservationService
+   */
+  async findPeriods(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IPeriodAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ) {
+    return this.sampleLocationRepository.findPeriods(isUserAdmin, systemUserId, filterFields, pagination);
   }
 
   /**
