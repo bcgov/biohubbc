@@ -93,6 +93,7 @@ const TaxonomyDataGridEditCell = <DataGridType extends GridValidRowModel>(
       dataGridProps={dataGridProps}
       getCurrentOption={getCurrentOption}
       getOptions={getOptions}
+      placeholder="Search for a taxon"
       error={props.error}
       renderOption={(renderProps, renderOption) => (
         <Box

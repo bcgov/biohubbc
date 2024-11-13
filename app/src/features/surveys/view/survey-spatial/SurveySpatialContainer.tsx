@@ -8,8 +8,10 @@ import {
 import { SurveySpatialTelemetry } from 'features/surveys/view/survey-spatial/components/telemetry/SurveySpatialTelemetry';
 import { useObservationsContext, useTaxonomyContext } from 'hooks/useContext';
 import { isEqual } from 'lodash-es';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import SurveyMapTooltip from '../SurveyMapTooltip';
+import { useSamplingSiteStaticLayer } from './components/map/useSamplingSiteStaticLayer';
+import { useStudyAreaStaticLayer } from './components/map/useStudyAreaStaticLayer';
 import { SurveySpatialTelemetryPopup } from './components/telemetry/SurveySpatialTelemetryPopup';
 
 /**
@@ -24,6 +26,14 @@ export const SurveySpatialContainer = (): JSX.Element => {
   const taxonomyContext = useTaxonomyContext();
 
   const [activeView, setActiveView] = useState<SurveySpatialDatasetViewEnum>(SurveySpatialDatasetViewEnum.OBSERVATIONS);
+
+  const studyAreaStaticLayer = useStudyAreaStaticLayer();
+  const samplingSiteStaticLayer = useSamplingSiteStaticLayer();
+
+  const staticLayers = useMemo(
+    () => [studyAreaStaticLayer, samplingSiteStaticLayer],
+    [samplingSiteStaticLayer, studyAreaStaticLayer]
+  );
 
   // Fetch and cache all taxonomic data required for the observations.
   useEffect(() => {
@@ -72,16 +82,19 @@ export const SurveySpatialContainer = (): JSX.Element => {
       />
 
       {/* Display the corresponding dataset view based on the selected active view */}
-      {isEqual(SurveySpatialDatasetViewEnum.OBSERVATIONS, activeView) && <SurveySpatialObservation />}
+      {isEqual(SurveySpatialDatasetViewEnum.OBSERVATIONS, activeView) && (
+        <SurveySpatialObservation staticLayers={staticLayers} />
+      )}
       {isEqual(SurveySpatialDatasetViewEnum.TELEMETRY, activeView) && (
         <SurveySpatialTelemetry
+          staticLayers={staticLayers}
           popup={(feature) => {
             return <SurveySpatialTelemetryPopup feature={feature} />;
           }}
           tooltip={(feature) => <SurveyMapTooltip title="Telemetry" key={`telemetry-tooltip-${feature.id}`} />}
         />
       )}
-      {isEqual(SurveySpatialDatasetViewEnum.ANIMALS, activeView) && <SurveySpatialAnimal />}
+      {isEqual(SurveySpatialDatasetViewEnum.ANIMALS, activeView) && <SurveySpatialAnimal staticLayers={staticLayers} />}
     </>
   );
 };

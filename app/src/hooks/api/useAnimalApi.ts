@@ -20,7 +20,7 @@ const useAnimalApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @return {*}  {Promise<IGetSurveyObservationsGeometryResponse>}
+   * @return {*}  {Promise<IGetCaptureMortalityGeometryResponse>}
    */
   const getCaptureMortalityGeometry = async (
     projectId: number,
