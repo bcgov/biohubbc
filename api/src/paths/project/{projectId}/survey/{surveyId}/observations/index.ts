@@ -9,8 +9,11 @@ import { CritterbaseService, getCritterbaseUser } from '../../../../../../servic
 import { InsertUpdateObservations, ObservationService } from '../../../../../../services/observation-service';
 import { ObservationSubCountEnvironmentService } from '../../../../../../services/observation-subcount-environment-service';
 import { getLogger } from '../../../../../../utils/logger';
-import { ensureCompletePaginationOptions, makePaginationResponse } from '../../../../../../utils/pagination';
-import { ApiPaginationOptions } from '../../../../../../zod-schema/pagination';
+import {
+  ensureCompletePaginationOptions,
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
+} from '../../../../../../utils/pagination';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation');
 
@@ -375,18 +378,10 @@ export function getSurveyObservations(): RequestHandler {
     const surveyId = Number(req.params.surveyId);
     defaultLog.debug({ label: 'getSurveyObservations', surveyId });
 
-    const page: number | undefined = req.query.page ? Number(req.query.page) : undefined;
-    const limit: number | undefined = req.query.limit ? Number(req.query.limit) : undefined;
-    const order: 'asc' | 'desc' | undefined = req.query.order ? (String(req.query.order) as 'asc' | 'desc') : undefined;
-
-    const sortQuery: string | undefined = req.query.sort ? String(req.query.sort) : undefined;
-    let sort = sortQuery;
-
-    if (sortQuery && samplingSiteSortingColumnName[sortQuery]) {
-      sort = samplingSiteSortingColumnName[sortQuery];
+    const paginationOptions = makePaginationOptionsFromRequest(req);
+    if (paginationOptions.sort && samplingSiteSortingColumnName[paginationOptions.sort]) {
+      paginationOptions.sort = samplingSiteSortingColumnName[paginationOptions.sort];
     }
-
-    const paginationOptions: Partial<ApiPaginationOptions> = { page, limit, order, sort };
 
     const connection = getDBConnection(req.keycloak_token);
 

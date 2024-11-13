@@ -26,12 +26,12 @@ describe('importMeasurementsStrategy', () => {
         E1: { t: 's', v: 'skull condition' },
         F1: { t: 's', v: 'unknown' },
         A2: { t: 's', v: 'carl' },
-        B2: { z: 'm/d/yy', t: 'd', v: '2024-10-10T07:00:00.000Z', w: '10/10/24' },
+        B2: { t: 's', v: '2024-10-10' },
         C2: { t: 's', v: '10:10:12' },
         D2: { t: 'n', w: '2', v: 2 },
         E2: { t: 'n', w: '0', v: 'good' },
         A3: { t: 's', v: 'carlita' },
-        B3: { z: 'm/d/yy', t: 'd', v: '2024-10-10T07:00:00.000Z', w: '10/10/24' },
+        B3: { z: 'yyyy-mm-dd', t: 'd', v: new Date('2024-10-10T07:00:00.000Z'), w: '2024-10-10' },
         C3: { t: 's', v: '10:10:12' },
         D3: { t: 'n', w: '2', v: 2 },
         E3: { t: 'n', w: '0', v: 'good' },
@@ -54,7 +54,7 @@ describe('importMeasurementsStrategy', () => {
             critter_id: 'A',
             animal_id: 'carl',
             itis_tsn: 'tsn1',
-            captures: [{ capture_id: 'B', capture_date: '10/10/2024', capture_time: '10:10:12' }]
+            captures: [{ capture_id: 'B', capture_date: '2024-10-10', capture_time: '10:10:12' }]
           } as any
         ],
         [
@@ -63,7 +63,7 @@ describe('importMeasurementsStrategy', () => {
             critter_id: 'B',
             animal_id: 'carlita',
             itis_tsn: 'tsn2',
-            captures: [{ capture_id: 'B', capture_date: '10/10/2024', capture_time: '10:10:12' }]
+            captures: [{ capture_id: 'B', capture_date: '2024-10-10', capture_time: '10:10:12' }]
           } as any
         ]
       ]);
@@ -143,8 +143,8 @@ describe('importMeasurementsStrategy', () => {
             }
           ]
         });
-      } catch (e: any) {
-        expect.fail();
+      } catch (error: any) {
+        expect.fail(error);
       }
     });
   });
@@ -183,7 +183,7 @@ describe('importMeasurementsStrategy', () => {
       const conn = getMockDBConnection();
       const strategy = new ImportMeasurementsStrategy(conn, 1);
 
-      const row = { ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10' };
+      const row = { ALIAS: 'alias', CAPTURE_DATE: '2024-10-10', CAPTURE_TIME: '10:10:10' };
       const critterAliasMap = new Map([
         [
           'alias',
@@ -191,7 +191,7 @@ describe('importMeasurementsStrategy', () => {
             critter_id: 'A',
             animal_id: 'alias',
             itis_tsn: 'tsn1',
-            captures: [{ capture_id: 'B', capture_date: '10/10/2024', capture_time: '10:10:10' }]
+            captures: [{ capture_id: 'B', capture_date: '2024-10-10', capture_time: '10:10:10' }]
           } as any
         ]
       ]);
@@ -205,7 +205,7 @@ describe('importMeasurementsStrategy', () => {
       const conn = getMockDBConnection();
       const strategy = new ImportMeasurementsStrategy(conn, 1);
 
-      const row = { ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10' };
+      const row = { ALIAS: 'alias', CAPTURE_DATE: '2024-10-10', CAPTURE_TIME: '10:10:10' };
       const critterAliasMap = new Map([
         [
           'alias2',
@@ -213,7 +213,7 @@ describe('importMeasurementsStrategy', () => {
             critter_id: 'A',
             animal_id: 'alias2',
             itis_tsn: 'tsn1',
-            captures: [{ capture_id: 'B', capture_date: '10/10/2024', capture_time: '10:10:10' }]
+            captures: [{ capture_id: 'B', capture_date: '2024-10-10', capture_time: '10:10:10' }]
           } as any
         ]
       ]);
@@ -227,7 +227,7 @@ describe('importMeasurementsStrategy', () => {
       const conn = getMockDBConnection();
       const strategy = new ImportMeasurementsStrategy(conn, 1);
 
-      const row = { ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10' };
+      const row = { ALIAS: 'alias', CAPTURE_DATE: '2024-10-10', CAPTURE_TIME: '10:10:10' };
       const critterAliasMap = new Map([
         [
           'alias',
@@ -235,7 +235,7 @@ describe('importMeasurementsStrategy', () => {
             critter_id: 'A',
             animal_id: 'alias',
             itis_tsn: 'tsn1',
-            captures: [{ capture_id: 'B', capture_date: '11/11/2024', capture_time: '10:10:10' }]
+            captures: [{ capture_id: 'B', capture_date: '2024-11-11', capture_time: '10:10:10' }]
           } as any
         ]
       ]);
@@ -344,7 +344,7 @@ describe('importMeasurementsStrategy', () => {
           critter_id: 'A',
           animal_id: 'alias',
           itis_tsn: 'tsn1',
-          captures: [{ capture_id: 'B', capture_date: '10/10/2024', capture_time: '10:10:10' }]
+          captures: [{ capture_id: 'B', capture_date: '2024-10-10', capture_time: '10:10:10' }]
         } as any
       ]
     ]);
@@ -372,7 +372,7 @@ describe('importMeasurementsStrategy', () => {
       );
       validateQualitativeMeasurementCellStub.returns({ error: undefined, optionId: 'C' });
 
-      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
+      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '2024-10-10', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
 
       const result = await strategy.validateRows(rows, {});
 
@@ -408,7 +408,7 @@ describe('importMeasurementsStrategy', () => {
       );
       validateQualitativeMeasurementCellStub.returns({ error: undefined, optionId: 'C' });
 
-      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
+      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '2024-10-10', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
 
       const result = await strategy.validateRows(rows, {});
 
@@ -444,7 +444,7 @@ describe('importMeasurementsStrategy', () => {
       );
       validateQualitativeMeasurementCellStub.returns({ error: undefined, optionId: 'C' });
 
-      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
+      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '2024-10-10', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
 
       const result = await strategy.validateRows(rows, {});
 
@@ -480,7 +480,7 @@ describe('importMeasurementsStrategy', () => {
       );
       validateQualitativeMeasurementCellStub.returns({ error: undefined, optionId: 'C' });
 
-      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
+      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '2024-10-10', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
 
       const result = await strategy.validateRows(rows, {});
 
@@ -514,7 +514,7 @@ describe('importMeasurementsStrategy', () => {
       );
       validateQualitativeMeasurementCellStub.returns({ error: 'qualitative failed', optionId: undefined });
 
-      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
+      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '2024-10-10', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
 
       const result = await strategy.validateRows(rows, {});
 
@@ -548,7 +548,7 @@ describe('importMeasurementsStrategy', () => {
       );
       validateQuantitativeMeasurementCellStub.returns({ error: 'quantitative failed', value: undefined });
 
-      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
+      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '2024-10-10', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
 
       const result = await strategy.validateRows(rows, {});
 
@@ -573,7 +573,7 @@ describe('importMeasurementsStrategy', () => {
       getRowMetaStub.returns({ critter_id: 'A', tsn: 'tsn1', capture_id: 'C' });
       getTsnMeasurementMapStub.resolves(new Map([['tsn1', { quantitative: [], qualitative: [] } as any]]));
 
-      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
+      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '2024-10-10', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
 
       const result = await strategy.validateRows(rows, {});
 
@@ -607,7 +607,7 @@ describe('importMeasurementsStrategy', () => {
         ])
       );
 
-      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '10/10/2024', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
+      const rows = [{ ALIAS: 'alias', CAPTURE_DATE: '2024-10-10', CAPTURE_TIME: '10:10:10', measurement: 'length' }];
 
       const result = await strategy.validateRows(rows, {});
 
