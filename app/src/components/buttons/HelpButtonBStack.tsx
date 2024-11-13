@@ -11,8 +11,8 @@ const HelpButtonBStack = (props: PropsWithChildren<IHelpButtonStackProps>) => {
   const { helpText, children, ...stackProps } = props;
   return (
     <Stack flexDirection="row" alignItems="center" spacing={0.25} flexGrow={1} {...stackProps}>
-      <Box sx={{ flexGrow: 1}} width={'100%'}>
-      {children}
+      <Box sx={{ flexGrow: 1 }} width={'100%'}>
+        {children}
       </Box>
       <HelpButtonTooltip content={helpText} />
     </Stack>
