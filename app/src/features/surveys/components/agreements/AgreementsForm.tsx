@@ -1,12 +1,10 @@
-import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import { useFormikContext } from 'formik';
 import { StringBoolean } from 'types/misc';
 import yup from 'utils/YupSchema';
@@ -62,12 +60,11 @@ const AgreementsForm = () => {
     <form>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-         <Stack direction ="row" spacing={1} alignItems="flex-start">
-          <Typography component="h3" variant="h5">
-            Species and Ecosystems Data and Information Security (SEDIS) Procedures
-          </Typography>
-          <HelpButtonTooltip content="The Species and Ecosystems Data and Information Security procedures ensure that data and information regarding species and ecosystems susceptible to persecution and harm are managed appropriately." />
-          </Stack>
+          <HelpButtonStack helpText="The Species and Ecosystems Data and Information Security procedures ensure that data and information regarding species and ecosystems susceptible to persecution and harm are managed appropriately.">
+            <Typography component="h3" variant="h5">
+              Species and Ecosystems Data and Information Security (SEDIS) Procedures
+            </Typography>
+          </HelpButtonStack>
         </Grid>
         <Grid item xs={12}>
           <FormControl
@@ -97,14 +94,11 @@ const AgreementsForm = () => {
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-        <Stack direction ="row" spacing={1} alignItems="flex-start">
-          <Box>
+          <HelpButtonStack helpText="The purpose of FOIPPA is to promote public sector accountability and to protect personal privacy. To comply with FOIPPA, public sector organizations must prevent the unauthorized collection, use and disclosure of personal information.">
             <Typography component="h3" variant="h5">
               Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements
             </Typography>
-          </Box>
-          <HelpButtonTooltip content="The purpose of FOIPPA is to promote public sector accountability and to protect personal privacy. To comply with FOIPPA, public sector organizations must prevent the unauthorized collection, use and disclosure of personal information." />
-          </Stack>
+          </HelpButtonStack>
         </Grid>
         <Grid item xs={12}>
           <FormControl

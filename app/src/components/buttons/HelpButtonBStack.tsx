@@ -7,7 +7,7 @@ interface IHelpButtonStackProps extends StackProps {
   helpText: string;
 }
 
-const HelpButtonStack = (props: PropsWithChildren<IHelpButtonStackProps>) => {
+const HelpButtonBStack = (props: PropsWithChildren<IHelpButtonStackProps>) => {
   const { helpText, children, ...stackProps } = props;
   return (
     <Stack flexDirection="row" alignItems="center" spacing={0.25} flexGrow={1} {...stackProps}>
@@ -19,4 +19,4 @@ const HelpButtonStack = (props: PropsWithChildren<IHelpButtonStackProps>) => {
   );
 };
 
-export default HelpButtonStack;
+export default HelpButtonBStack;

@@ -6,9 +6,8 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
-import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -207,12 +206,11 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                   required={true}
                   component="fieldset"
                   error={touched.proprietor?.disa_required && Boolean(errors.proprietor?.disa_required)}>
-                 <Stack direction ="row" spacing={1} alignItems="flex-start">
-                  <Typography component="legend" variant="h5">
-                    Data and Information Sharing Agreement (DISA)
-                  </Typography>
-                  <HelpButtonTooltip content="A DISA serves to document the terms and conditions with respect to the ownership, custodianship, storage, sharing, use, and disclosure of data and information." />
-                  </Stack>
+                  <HelpButtonStack helpText="A DISA serves to document the terms and conditions with respect to the ownership, custodianship, storage, sharing, use, and disclosure of data and information.">
+                    <Typography component="legend" variant="h5">
+                      Data and Information Sharing Agreement (DISA)
+                    </Typography>
+                  </HelpButtonStack>
                   <Typography variant="body1" color="textSecondary">
                     Do you require a data and information sharing agreement?
                   </Typography>

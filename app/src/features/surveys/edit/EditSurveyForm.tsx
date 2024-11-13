@@ -4,6 +4,7 @@ import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import FormikErrorSnackbar from 'components/alert/FormikErrorSnackbar';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { CodesContext } from 'contexts/codesContext';
 import { ProjectContext } from 'contexts/projectContext';
@@ -31,8 +32,6 @@ import PurposeAndMethodologyForm, {
 import SurveyUserForm, { SurveyUserJobYupSchema } from '../components/participants/SurveyUserForm';
 import { SurveySiteSelectionYupSchema } from '../components/sampling-strategy/SurveySiteSelectionForm';
 import SpeciesForm, { SpeciesYupSchema } from '../components/species/SpeciesForm';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
-import HelpButtonStack from 'components/buttons/HelpButtonStack';
 
 export interface IEditSurveyForm<
   T extends
@@ -119,7 +118,9 @@ const EditSurveyForm = <
           summary="Enter any permits used in this survey"
           component={
             <Box component="fieldset">
-              <HelpButtonStack helpText='Please include information for any permits granted and executed for the data acquisition purposes of this survey.'><Typography>Were any permits used in this survey?</Typography></HelpButtonStack>
+              <HelpButtonStack helpText="Please include information for any permits granted and executed for the data acquisition purposes of this survey.">
+                <Typography>Were any permits used in this survey?</Typography>
+              </HelpButtonStack>
               <SurveyPermitForm />
             </Box>
           }
@@ -197,10 +198,9 @@ const EditSurveyForm = <
           summary="Indicate whether any data is proprietary"
           component={
             <Box component="fieldset">
-              <Stack direction ="row" spacing={1} alignItems="flex-start">
-              <Typography component="legend">Is any data in this survey proprietary?</Typography>
-              <HelpButtonTooltip content="Proprietary data is defined per the SEDIS Policy as Species and ecosystems data and information that is pertinent to private or First Nations lands, where collection of that data has required access to those lands and where the land owners or First Nations have specifically requested the data and information not be distributed; or, Data and information whose distribution is restricted on a time-limited basis." />
-              </Stack>
+              <HelpButtonStack helpText="Proprietary data is defined per the SEDIS Policy as species and ecosystems data and information that is pertinent to private or First Nations lands, where collection of that data has required access to those lands and where the land owners or First Nations have specifically requested the data and information not be distributed; or, Data and information whose distribution is restricted on a time-limited basis.">
+                <Typography component="legend">Is any data in this survey proprietary?</Typography>
+              </HelpButtonStack>
               <ProprietaryDataForm
                 proprietary_data_category={
                   codes.proprietor_type?.map((item) => {
