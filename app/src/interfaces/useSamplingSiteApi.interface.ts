@@ -40,9 +40,20 @@ export interface IEditSampleSiteRequest {
   };
 }
 
-export interface IGetSampleSiteResponse {
-  sampleSites: IGetSampleLocationDetails[];
+export interface IGetSampleLocationNonSpatialResponse {
+  sampleSites: IGetSampleLocationNonSpatialDetails[];
   pagination: ApiPaginationResponseParams;
+}
+
+export interface IGetSampleLocationNonSpatialDetails {
+  survey_sample_site_id: number;
+  survey_id: number;
+  name: string;
+  description: string;
+  geometry_type: string;
+  sample_methods: IGetSampleMethodDetails[];
+  blocks: IGetSampleBlockDetails[];
+  stratums: IGetSampleStratumDetails[];
 }
 
 export interface IGetSampleLocationRecord {
@@ -58,6 +69,15 @@ export interface IGetSampleLocationRecord {
   revision_count: number;
 }
 
+export interface IGetSampleSiteGeometryResponse {
+  sampleSites: IGetSampleSiteGeometry[];
+}
+
+export interface IGetSampleSiteGeometry {
+  survey_sample_site_id: number;
+  geojson: Feature;
+}
+
 export interface IGetSampleLocationDetails {
   survey_sample_site_id: number;
   survey_id: number;
@@ -67,6 +87,29 @@ export interface IGetSampleLocationDetails {
   sample_methods: IGetSampleMethodDetails[];
   blocks: IGetSampleBlockDetails[];
   stratums: IGetSampleStratumDetails[];
+}
+
+export interface IGetBasicSamplePeriod {
+  survey_sample_period_id: number;
+  survey_sample_method_id: number;
+  start_date: string;
+  end_date: string;
+  start_time: string;
+  end_time: string;
+}
+
+export interface IGetBasicSampleMethod {
+  survey_sample_method_id: number;
+  survey_sample_site_id: number;
+  method_response_metric_id: number;
+  technique: { survey_technique_id: number; name: string };
+  sample_periods: IGetBasicSamplePeriod[];
+}
+
+export interface IGetBasicSampleLocation {
+  survey_sample_site_id: number;
+  name: string;
+  sample_methods: IGetBasicSampleMethod;
 }
 
 export interface IGetSampleLocationDetailsForUpdate {

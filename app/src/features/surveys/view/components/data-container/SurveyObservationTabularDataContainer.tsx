@@ -14,13 +14,7 @@ export enum SurveyObservationTabularDataContainerViewEnum {
   ANALYTICS = 'ANALYTICS'
 }
 
-interface ISurveyObservationTabularDataContainerProps {
-  isLoading: boolean;
-}
-
-const SurveyObservationTabularDataContainer = (props: ISurveyObservationTabularDataContainerProps) => {
-  const { isLoading } = props;
-
+const SurveyObservationTabularDataContainer = () => {
   const [activeDataView, setActiveDataView] = useState<SurveyObservationTabularDataContainerViewEnum>(
     SurveyObservationTabularDataContainerViewEnum.COUNTS
   );
@@ -32,7 +26,7 @@ const SurveyObservationTabularDataContainer = (props: ISurveyObservationTabularD
 
   return (
     <>
-      <Box flex="0 0 auto" pb={2}>
+      <Box flex="0 0 auto" pb={2} px={2}>
         <ToggleButtonGroup
           value={activeDataView}
           onChange={(_, view) => {
@@ -71,9 +65,7 @@ const SurveyObservationTabularDataContainer = (props: ISurveyObservationTabularD
       </Box>
       <Divider />
       <Box flex="1 1 auto" overflow="hidden" mt={1}>
-        {activeDataView === SurveyObservationTabularDataContainerViewEnum.COUNTS && (
-          <SurveySpatialObservationTable isLoading={isLoading} />
-        )}
+        {activeDataView === SurveyObservationTabularDataContainerViewEnum.COUNTS && <SurveySpatialObservationTable />}
         {activeDataView === SurveyObservationTabularDataContainerViewEnum.ANALYTICS && <SurveyObservationAnalytics />}
       </Box>
     </>
