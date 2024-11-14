@@ -21,5 +21,18 @@ export type IAlertUpdateObject = Omit<IAlert, 'status'>;
 export interface IAlertFilterParams {
   expiresBefore?: string;
   expiresAfter?: string;
-  types?: string[];
+  types?: SystemAlertBannerEnum[];
+}
+
+export enum SystemAlertBannerEnum {
+  SUMMARY = 'Summary',
+  TELEMETRY = 'Manage Telemetry',
+  OBSERVATIONS = 'Manage Observations',
+  ANIMALS = 'Manage Animals',
+  SAMPLING = 'Manage Sampling',
+  PROJECTS = 'Project',
+  SURVEYS = 'Survey',
+  STANDARDS = 'Standards',
+  ADMINISTRATOR = 'Administrator',
+  FUNDING = 'Funding'
 }

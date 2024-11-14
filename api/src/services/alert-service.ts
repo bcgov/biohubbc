@@ -35,7 +35,7 @@ export class AlertService extends DBService {
   }
 
   /**
-   * Create and associate alert for survey.
+   * Create a system alert.
    *
    * @param {IAlertCreateObjectt} alert
    * @return {*}  Promise<number>
@@ -46,7 +46,7 @@ export class AlertService extends DBService {
   }
 
   /**
-   * Update a survey alert.
+   * Update a system alert.
    *
    * @param {IAlertUpdateObject} alert
    * @return {*}  Promise<number>
@@ -57,19 +57,7 @@ export class AlertService extends DBService {
   }
 
   /**
-   * Deactive an alert (soft delete by entering a record_end_date)
-   *
-   * @param {number} alertId
-   * @param {number} recordEndDate
-   * @return {*}  Promise<number>
-   * @memberof AlertService
-   */
-  async deactivateAlert(alertId: number, recordEndDate: string): Promise<number> {
-    return this.alertRepository.deactivateAlert(alertId, recordEndDate);
-  }
-
-  /**
-   * Delete a survey alert.
+   * Delete a system alert.
    *
    * @param {number} alertId
    * @return {*}  Promise<number>

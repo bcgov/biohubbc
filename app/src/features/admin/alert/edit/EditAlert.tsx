@@ -50,7 +50,7 @@ const EditAlert = (props: IEditAlertProps) => {
   // Reference: https://react.dev/warnings/invalid-hook-call-warning
   const AlertYupSchema = yup.object().shape({
     name: yup.string().trim().max(50, 'Name cannot exceed 50 characters').required('Name is required'),
-    message: yup.string().max(250, 'Description cannot exceed 250 characters').required('Description is required'),
+    message: yup.string().max(250, 'Message cannot exceed 250 characters').required('Message is required'),
     record_end_date: yup.string().isValidDateString().nullable()
   });
 

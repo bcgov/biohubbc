@@ -45,7 +45,7 @@ const AlertForm = (props: IAlertFormProps) => {
           <AutocompleteField
             id={'alert_type_id'}
             name={'alert_type_id'}
-            label={'Type'}
+            label={'Page'}
             required
             options={alertTypeOptions}
           />
@@ -53,6 +53,7 @@ const AlertForm = (props: IAlertFormProps) => {
             id={'severity'}
             name={'severity'}
             label={'Style'}
+            disableClearable
             required
             options={[
               { value: 'error', label: 'Error' },
@@ -65,13 +66,13 @@ const AlertForm = (props: IAlertFormProps) => {
         <Box component={'fieldset'}>
           <Typography component="legend">Expiry date (optional)</Typography>
           <Box mt={0.5}>
-            <DateField label="End date" name="record_end_date" id="alert-record-end-date" required={false} />
+            <DateField label="End date" name="record_end_date" id="record_end_date" required={false} />
           </Box>
         </Box>
       </form>
       <Box mt={3}>
         <Typography component="legend">Preview</Typography>
-        <AlertBar text={values.message} title={values.name} variant="standard" severity={values.severity} />
+        <AlertBar text={values.message} title={values.name} variant="outlined" severity={values.severity} />
       </Box>
     </>
   );

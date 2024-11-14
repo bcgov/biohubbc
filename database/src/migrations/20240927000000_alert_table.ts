@@ -44,13 +44,15 @@ export async function up(knex: Knex): Promise<void> {
     -- Create new table
     ----------------------------------------------------------------------------------------
 
+    CREATE TYPE alert_severity AS ENUM ('info', 'warning', 'error', 'success');
+
     CREATE TABLE alert (
       alert_id           integer            GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       alert_type_id      integer            NOT NULL,
-      name               varchar(100)       NOT NULL,
+      name               varchar(50)        NOT NULL,
       message            varchar(250)       NOT NULL,
       data               json,
-      severity           varchar(100)       NOT NULL,
+      severity           alert_severity     NOT NULL,
       record_end_date    date,
       create_date        timestamptz(6)     DEFAULT now() NOT NULL,
       create_user        integer            NOT NULL,
@@ -65,6 +67,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN alert.alert_type_id      IS 'The alert_type_id of the alert. Used to categorize/group alerts by type.';
     COMMENT ON COLUMN alert.name               IS 'The name of the alert.';
     COMMENT ON COLUMN alert.message            IS 'The message of the alert.';
+    COMMENT ON COLUMN alert.severity           IS 'The severity of the alert, used for MUI styling.';
     COMMENT ON COLUMN alert.data               IS 'The data of the alert. Should ideally align with the type of the alert.';
     COMMENT ON COLUMN alert.record_end_date    IS 'Record level end date.';
     COMMENT ON COLUMN alert.create_date        IS 'The datetime the record was created.';

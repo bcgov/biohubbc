@@ -13,7 +13,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext } from 'hooks/useContext';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import ReviewAccessRequestForm, {
   IReviewAccessRequestForm,
   ReviewAccessRequestFormInitialValues,
@@ -42,6 +42,10 @@ const AccessRequestPendingList = (props: IAccessRequestPendingListProps) => {
 
   const [showReviewDialog, setShowReviewDialog] = useState<boolean>(false);
   const [activeReview, setActiveReview] = useState<IGetAccessRequestsListResponse | null>(null);
+
+  useEffect(() => {
+    codesContext.codesDataLoader.load();
+  }, [codesContext.codesDataLoader]);
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });

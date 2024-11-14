@@ -4,27 +4,14 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
-import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IAlert } from 'interfaces/useAlertApi.interface';
+import { IAlert, SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 import { useEffect, useState } from 'react';
-
-export enum SystemAlertBannerEnum {
-  SUMMARY = 'Summary',
-  TELEMETRY = 'Manage Telemetry',
-  OBSERVATIONS = 'Manage Observations',
-  ANIMALS = 'Manage Animals',
-  SAMPLING = 'Manage Sampling',
-  PROJECTS = 'Projects',
-  SURVEYS = 'Surveys',
-  STANDARDS = 'Standards',
-  ADMINISTRATOR = 'Administrator',
-  FUNDING = 'Funding'
-}
 
 interface ISystemAlertBannerProps {
   alertTypes?: SystemAlertBannerEnum[];
@@ -71,7 +58,7 @@ export const SystemAlertBanner = (props: ISystemAlertBannerProps) => {
           text={alert.message}
           title={alert.name}
           key={alert.alert_id}
-          variant="standard"
+          variant="outlined"
         />
       );
 
@@ -83,17 +70,16 @@ export const SystemAlertBanner = (props: ISystemAlertBannerProps) => {
     }
 
     return (
-      <Box
+      <Stack
+        gap={1}
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          '& .MuiAlert-root': {
-            mb: 1
-          }
+          mb: 1
         }}>
         {visibleAlerts}
         {collapsedAlerts.length > 0 && <Collapse in={isExpanded}>{collapsedAlerts}</Collapse>}
-      </Box>
+      </Stack>
     );
   };
 
@@ -102,30 +88,28 @@ export const SystemAlertBanner = (props: ISystemAlertBannerProps) => {
   }
 
   return (
-    <Box component={Paper} mb={3}>
-      <Box p={1}>
-        {renderAlerts(alerts)}
-        {numberOfAlerts > NumberOfAlertsShownInitially && (
-          <Button
-            variant="text"
-            onClick={() => setIsExpanded((prev) => !prev)}
-            sx={{ color: grey[700] }}
-            startIcon={<Icon path={(isExpanded && mdiChevronUp) || mdiChevronDown} size={0.8} />}>
-            <Typography>
-              {isExpanded ? (
-                <>{'See fewer alerts'}</>
-              ) : (
-                <>
-                  {'See more alerts'} &zwnj;
-                  <Typography component="span" variant="inherit" color="textSecondary">
-                    ({numberOfAlerts - NumberOfAlertsShownInitially})
-                  </Typography>
-                </>
-              )}
-            </Typography>
-          </Button>
-        )}
-      </Box>
+    <Box mb={3}>
+      {renderAlerts(alerts)}
+      {numberOfAlerts > NumberOfAlertsShownInitially && (
+        <Button
+          variant="text"
+          onClick={() => setIsExpanded((prev) => !prev)}
+          sx={{ color: grey[700] }}
+          startIcon={<Icon path={(isExpanded && mdiChevronUp) || mdiChevronDown} size={0.8} />}>
+          <Typography variant="body2">
+            {isExpanded ? (
+              <>{'See fewer alerts'}</>
+            ) : (
+              <>
+                {'See more alerts'} &zwnj;
+                <Typography component="span" variant="inherit" color="textSecondary">
+                  ({numberOfAlerts - NumberOfAlertsShownInitially})
+                </Typography>
+              </>
+            )}
+          </Typography>
+        </Button>
+      )}
     </Box>
   );
 };

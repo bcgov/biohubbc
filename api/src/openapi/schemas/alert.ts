@@ -6,6 +6,7 @@ import { OpenAPIV3 } from 'openapi-types';
 const baseSystemAlertSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   description: 'Schema defining alerts created by system administrators.',
+  additionalProperties: false,
   properties: {
     name: {
       description: 'Name to display as the title of the alert',
@@ -16,7 +17,7 @@ const baseSystemAlertSchema: OpenAPIV3.SchemaObject = {
       type: 'string'
     },
     alert_type_id: {
-      description: 'Type of the alert, controlling how it is displayed or actioned.',
+      description: 'Type of the alert, controlling how it is displayed.',
       type: 'number'
     },
     severity: {
@@ -38,11 +39,12 @@ const baseSystemAlertSchema: OpenAPIV3.SchemaObject = {
 };
 
 /**
- * Schema for system alerts
+ * Schema for updating system alerts
  */
-export const systemAlertSchema: OpenAPIV3.SchemaObject = {
+export const systemAlertPutSchema: OpenAPIV3.SchemaObject = {
   ...baseSystemAlertSchema,
   required: ['alert_id', 'name', 'message', 'data', 'alert_type_id', 'record_end_date', 'severity'],
+  additionalProperties: false,
   properties: {
     ...baseSystemAlertSchema.properties,
     alert_id: {
@@ -54,9 +56,28 @@ export const systemAlertSchema: OpenAPIV3.SchemaObject = {
 };
 
 /**
+ * Schema for getting system alerts
+ */
+export const systemAlertGetSchema: OpenAPIV3.SchemaObject = {
+  ...baseSystemAlertSchema,
+  required: ['alert_id', 'name', 'message', 'data', 'alert_type_id', 'record_end_date', 'severity', 'status'],
+  additionalProperties: false,
+  properties: {
+    ...systemAlertPutSchema.properties,
+    status: {
+      type: 'string',
+      enum: ['active', 'expired'],
+      description:
+        'Status of the alert based on comparing the current date to record_end_date, calculated in the get query.'
+    }
+  }
+};
+
+/**
  * Schema for creating system alerts
  */
 export const systemAlertCreateSchema: OpenAPIV3.SchemaObject = {
   ...baseSystemAlertSchema,
+  additionalProperties: false,
   required: ['name', 'message', 'data', 'alert_type_id', 'record_end_date', 'severity']
 };

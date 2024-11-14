@@ -31,7 +31,7 @@ describe('getAlerts', () => {
         record_end_date: null
       };
 
-      const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub() });
+      const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
       sinon.stub(AlertService.prototype, 'getAlertById').resolves(mockAlert);
 
@@ -59,6 +59,7 @@ describe('getAlerts', () => {
       expect(mockRes.jsonValue).to.eql(mockAlert);
       expect(mockDBConnection.open).to.have.been.calledOnce;
       expect(mockDBConnection.commit).to.have.been.calledOnce;
+      expect(mockDBConnection.release).to.have.been.calledOnce;
     });
 
     it('handles errors gracefully', async () => {
@@ -130,7 +131,7 @@ describe('deleteAlert', () => {
 
   describe('as a system admin user', () => {
     it('deletes an alert and returns the alert id', async () => {
-      const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub() });
+      const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
       sinon.stub(AlertService.prototype, 'deleteAlert').resolves(1);
 
@@ -158,6 +159,7 @@ describe('deleteAlert', () => {
       expect(mockRes.jsonValue).to.eql({ alert_id: 1 });
       expect(mockDBConnection.open).to.have.been.calledOnce;
       expect(mockDBConnection.commit).to.have.been.calledOnce;
+      expect(mockDBConnection.release).to.have.been.calledOnce;
     });
 
     it('handles errors gracefully', async () => {
@@ -189,7 +191,7 @@ describe('updateAlert', () => {
 
   describe('as a system admin user', () => {
     it('updates an alert', async () => {
-      const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub() });
+      const mockDBConnection = getMockDBConnection({ open: sinon.stub(), commit: sinon.stub(), release: sinon.stub() });
       sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
       sinon.stub(AlertService.prototype, 'updateAlert').resolves(1);
@@ -218,6 +220,7 @@ describe('updateAlert', () => {
       expect(mockRes.jsonValue).to.eql({ alert_id: 1 });
       expect(mockDBConnection.open).to.have.been.calledOnce;
       expect(mockDBConnection.commit).to.have.been.calledOnce;
+      expect(mockDBConnection.release).to.have.been.calledOnce;
     });
 
     it('handles errors gracefully', async () => {

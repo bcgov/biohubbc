@@ -48,7 +48,7 @@ const AlertTable = (props: IAlertTableTableProps) => {
             severity={params.row.severity}
             text={params.row.message}
             title={params.row.name}
-            variant="standard"
+            variant="outlined"
           />
         </Box>
       )

@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { systemAlertSchema } from '../../../openapi/schemas/alert';
+import { systemAlertGetSchema, systemAlertPutSchema } from '../../../openapi/schemas/alert';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { AlertService } from '../../../services/alert-service';
 import { getLogger } from '../../../utils/logger';
@@ -14,7 +14,8 @@ export const GET: Operation = [
     return {
       and: [
         {
-          discriminator: 'SystemUser'
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -33,9 +34,11 @@ GET.apiDoc = {
   parameters: [
     {
       in: 'path',
+      required: true,
       name: 'alertId',
       schema: {
-        type: 'string'
+        type: 'string',
+        description: 'Id of an alert to get'
       }
     }
   ],
@@ -44,7 +47,7 @@ GET.apiDoc = {
       description: 'System alert response object',
       content: {
         'application/json': {
-          schema: systemAlertSchema
+          schema: systemAlertGetSchema
         }
       }
     },
@@ -104,8 +107,8 @@ export const PUT: Operation = [
     return {
       and: [
         {
-          discriminator: 'SystemUser',
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -123,19 +126,21 @@ PUT.apiDoc = {
   ],
   parameters: [
     {
-      in: 'query',
+      in: 'path',
+      required: true,
       name: 'alertId',
       schema: {
-        type: 'string'
+        type: 'string',
+        description: 'Id of an alert to update'
       }
     }
   ],
   requestBody: {
-    description: 'Alert post request object.',
+    description: 'Alert put request object.',
     required: true,
     content: {
       'application/json': {
-        schema: systemAlertSchema
+        schema: systemAlertPutSchema
       }
     }
   },
@@ -214,8 +219,8 @@ export const DELETE: Operation = [
     return {
       and: [
         {
-          discriminator: 'SystemUser',
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -233,10 +238,12 @@ DELETE.apiDoc = {
   ],
   parameters: [
     {
-      in: 'query',
+      in: 'path',
+      required: true,
       name: 'alertId',
       schema: {
-        type: 'string'
+        type: 'string',
+        description: 'Id of an alert to delete'
       }
     }
   ],

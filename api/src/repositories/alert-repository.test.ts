@@ -102,7 +102,7 @@ describe('AlertRepository', () => {
   describe('updateAlert', () => {
     it('should update an alert and return its Id', async () => {
       const mockRows = [{ alert_id: 1 }];
-      const mockQueryResponse = { rows: mockRows } as unknown as QueryResult<any>;
+      const mockQueryResponse = { rows: mockRows, rowCount: 1 } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -128,7 +128,7 @@ describe('AlertRepository', () => {
   describe('createAlert', () => {
     it('should create an alert and return its Id', async () => {
       const mockRows = [{ alert_id: 1 }];
-      const mockQueryResponse = { rows: mockRows } as unknown as QueryResult<any>;
+      const mockQueryResponse = { rows: mockRows, rowCount: 1 } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)
@@ -150,27 +150,10 @@ describe('AlertRepository', () => {
     });
   });
 
-  describe('deactivateAlert', () => {
-    it('should deactivate an alert and return its Id', async () => {
-      const mockRows = [{ alert_id: 1 }];
-      const mockQueryResponse = { rows: mockRows } as unknown as QueryResult<any>;
-
-      const mockDBConnection = getMockDBConnection({
-        sql: sinon.stub().resolves(mockQueryResponse)
-      });
-
-      const alertRepository = new AlertRepository(mockDBConnection);
-
-      const response = await alertRepository.deactivateAlert(1, '2024-01-01');
-
-      expect(response).to.equal(1);
-    });
-  });
-
   describe('deleteAlert', () => {
     it('should delete an alert and return its Id', async () => {
       const mockRows = [{ alert_id: 1 }];
-      const mockQueryResponse = { rows: mockRows } as unknown as QueryResult<any>;
+      const mockQueryResponse = { rows: mockRows, rowCount: 1 } as unknown as QueryResult<any>;
 
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves(mockQueryResponse)

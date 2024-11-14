@@ -15,7 +15,7 @@ interface IDateFieldProps {
 }
 
 export const DateField = <FormikPropsType extends IDateFieldProps>(props: IDateFieldProps) => {
-  const { values, errors, touched, setFieldValue } = useFormikContext<FormikPropsType>();
+  const { values, errors, touched, setFieldValue, setFieldError } = useFormikContext<FormikPropsType>();
   const { label, name, id, required } = props;
 
   const rawDateValue = get(values, name);
@@ -37,7 +37,7 @@ export const DateField = <FormikPropsType extends IDateFieldProps>(props: IDateF
             name: name,
             required: required,
             variant: 'outlined',
-            error: get(touched, name) && Boolean(get(errors, name)),
+            error: Boolean(get(errors, name) && get(touched, name)),
             helperText: get(touched, name) && get(errors, name),
             inputProps: {
               'data-testid': name
@@ -54,7 +54,7 @@ export const DateField = <FormikPropsType extends IDateFieldProps>(props: IDateF
         maxDate={dayjs(DATE_LIMIT.max)}
         value={formattedDateValue}
         onChange={(value) => {
-          if (!value || value === 'Invalid Date') {
+          if (!value || !dayjs(value).isValid()) {
             // The creation input value will be 'Invalid Date' when the date field is cleared (empty), and will
             // contain an actual date string value if the field is not empty but is invalid.
             setFieldValue(name, null);
@@ -62,6 +62,7 @@ export const DateField = <FormikPropsType extends IDateFieldProps>(props: IDateF
           }
 
           setFieldValue(name, dayjs(value).format(DATE_FORMAT.ShortDateFormat));
+          setFieldError(name, undefined);
         }}
       />
     </LocalizationProvider>

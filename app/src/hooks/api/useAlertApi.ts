@@ -16,7 +16,7 @@ import qs from 'qs';
  */
 export const useAlertApi = (axios: AxiosInstance) => {
   /**
-   * Get project alert details based on its ID for viewing purposes.
+   * Get system alert details based on its ID for viewing purposes.
    *
    * @param {IAlertFilterParams} filterObject
    * @return {*} {Promise<IGetAlertsResponse[]>}
@@ -49,7 +49,7 @@ export const useAlertApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Create a new project alert
+   * Create a new system alert
    *
    * @param {IAlertCreateObject} alert
    * @return {*} {Promise<void>}
@@ -61,7 +61,7 @@ export const useAlertApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Create a new project alert
+   * Create a new system alert
    *
    * @param {IAlert} alert
    * @return {*} {Promise<{ alert_id: number }>}
@@ -73,7 +73,7 @@ export const useAlertApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get project alert details based on its ID for viewing purposes.
+   * Get system alert details based on its ID for viewing purposes.
    *
    * @param {number} alertId
    * @return {*} {Promise<{ alert_id: number }>}

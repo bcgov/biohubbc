@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { IAlertFilterObject } from '../../models/alert-view';
-import { systemAlertCreateSchema, systemAlertSchema } from '../../openapi/schemas/alert';
+import { systemAlertCreateSchema, systemAlertGetSchema } from '../../openapi/schemas/alert';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { AlertService } from '../../services/alert-service';
 import { getLogger } from '../../utils/logger';
@@ -15,7 +15,8 @@ export const GET: Operation = [
     return {
       and: [
         {
-          discriminator: 'SystemUser'
+          validSystemRoles: [SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -39,8 +40,7 @@ GET.apiDoc = {
       schema: {
         type: 'array',
         items: {
-          type: 'string',
-          nullable: true
+          type: 'string'
         }
       }
     },
@@ -49,8 +49,7 @@ GET.apiDoc = {
       name: 'expiresBefore',
       required: false,
       schema: {
-        type: 'string',
-        nullable: true
+        type: 'string'
       }
     },
     {
@@ -58,8 +57,7 @@ GET.apiDoc = {
       name: 'expiresAfter',
       required: false,
       schema: {
-        type: 'string',
-        nullable: true
+        type: 'string'
       }
     }
   ],
@@ -73,7 +71,9 @@ GET.apiDoc = {
             description: 'Response object containing system alerts',
             additionalProperties: false,
             required: ['alerts'],
-            properties: { alerts: { type: 'array', description: 'Array of system alerts', items: systemAlertSchema } }
+            properties: {
+              alerts: { type: 'array', description: 'Array of system alerts', items: systemAlertGetSchema }
+            }
           }
         }
       }
@@ -148,8 +148,8 @@ export const POST: Operation = [
     return {
       and: [
         {
-          discriminator: 'SystemUser',
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };

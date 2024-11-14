@@ -1,10 +1,11 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import Stack from '@mui/material/Stack';
 import Box from '@mui/system/Box';
-import { SystemAlertBanner, SystemAlertBannerEnum } from 'features/alert/banner/SystemAlertBanner';
+import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useAnimalPageContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 import { useEffect } from 'react';
 import { AnimalHeader } from './AnimalHeader';
 import { AnimalListContainer } from './list/AnimalListContainer';

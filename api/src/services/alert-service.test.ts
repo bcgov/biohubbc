@@ -116,18 +116,6 @@ describe('AlertService', () => {
     });
   });
 
-  describe('deactivateAlert', () => {
-    it('deactivates an alert and returns its Id', async () => {
-      const mockAlertId = 1;
-      mockAlertRepository.deactivateAlert.resolves(mockAlertId);
-
-      const response = await alertService.deactivateAlert(mockAlertId, '2024-01-01');
-
-      expect(response).to.equal(mockAlertId);
-      expect(mockAlertRepository.deactivateAlert).to.have.been.calledOnceWith(mockAlertId, '2024-01-01');
-    });
-  });
-
   describe('deleteAlert', () => {
     it('deletes an alert and returns its Id', async () => {
       const mockAlertId = 1;

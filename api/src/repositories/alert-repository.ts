@@ -117,16 +117,14 @@ export class AlertRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows?.[0] ?? null;
-
-    if (!result) {
+    if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to update alert', [
         'AlertRepository->updateAlert',
         'row[0] was null or undefined, expected row[0] != null'
       ]);
     }
 
-    return result.alert_id;
+    return response.rows[0].alert_id;
   }
 
   /**
@@ -150,49 +148,14 @@ export class AlertRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows?.[0] ?? null;
-
-    if (!result) {
+    if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to create alert', [
         'AlertRepository->createAlert',
         'row[0] was null or undefined, expected row[0] != null'
       ]);
     }
 
-    return result.alert_id;
-  }
-
-  /**
-   * Deactivate (soft delete) system alert. It is possible to enter a future date to schedule deactivation.
-   *
-   * @param {number} alertId
-   * @param {number} recordEndDate
-   * @return {*}  Promise<number>
-   * @memberof AlertRepository
-   */
-  async deactivateAlert(alertId: number, recordEndDate: string): Promise<number> {
-    const sqlStatement = SQL`
-      UPDATE alert
-      SET
-        record_end_date = ${recordEndDate}
-      WHERE
-        alert_id = ${alertId}
-      RETURNING alert_id
-      ;
-      `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    const result = response?.rows?.[0] ?? null;
-
-    if (!result) {
-      throw new ApiExecuteSQLError('Failed to deactivate alert', [
-        'AlertRepository->deleteAlert',
-        'row[0] was null or undefined, expected row[0] != null'
-      ]);
-    }
-
-    return result.alert_id;
+    return response.rows[0].alert_id;
   }
 
   /**
@@ -214,15 +177,13 @@ export class AlertRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    const result = response?.rows?.[0] ?? null;
-
-    if (!result) {
+    if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to delete alert', [
         'AlertRepository->deleteAlert',
         'row[0] was null or undefined, expected row[0] != null'
       ]);
     }
 
-    return result.alert_id;
+    return response.rows[0].alert_id;
   }
 }

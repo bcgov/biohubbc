@@ -13,8 +13,8 @@ import AlertForm from '../form/AlertForm';
 
 const AlertYupSchema = yup.object().shape({
   name: yup.string().trim().max(50, 'Name cannot exceed 50 characters').required('Name is required'),
-  message: yup.string().max(250, 'Description cannot exceed 250 characters').required('Description is required'),
-  alert_type_id: yup.number().integer().required('Type is required'),
+  message: yup.string().max(250, 'Message cannot exceed 250 characters').required('Message is required'),
+  alert_type_id: yup.number().integer().required('Page is required'),
   severity: yup.string().required('Style is required'),
   record_end_date: yup.string().isValidDateString().nullable()
 });
