@@ -136,8 +136,7 @@ describe('getS3HostUrl', () => {
   });
 
   it('should yield a default S3 host url', () => {
-    delete process.env.OBJECT_STORE_URL;
-    delete process.env.OBJECT_STORE_BUCKET_NAME;
+    Object.assign(process.env, { OBJECT_STORE_URL: undefined, OBJECT_STORE_BUCKET_NAME: undefined });
 
     const result = getS3HostUrl();
 
@@ -193,7 +192,7 @@ describe('_getClamAvScanner', () => {
   it('should return a clamAv scanner client', () => {
     process.env.ENABLE_FILE_VIRUS_SCAN = 'true';
     process.env.CLAMAV_HOST = 'host';
-    process.env.CLAMAV_PORT = '1111';
+    process.env.CLAMAV_PORT = 1111;
 
     const result = _getClamAvScanner();
     expect(result).to.not.be.null;
@@ -215,7 +214,7 @@ describe('_getObjectStoreBucketName', () => {
   });
 
   it('should return its default value', () => {
-    delete process.env.OBJECT_STORE_BUCKET_NAME;
+    Object.assign(process.env, { OBJECT_STORE_BUCKET_NAME: undefined });
 
     const result = _getObjectStoreBucketName();
     expect(result).to.equal('');
@@ -251,7 +250,7 @@ describe('_getObjectStoreUrl', () => {
   });
 
   it('should return its default value', () => {
-    delete process.env.OBJECT_STORE_URL;
+    Object.assign(process.env, { OBJECT_STORE_URL: undefined });
 
     const result = _getObjectStoreUrl();
     expect(result).to.equal('https://nrs.objectstore.gov.bc.ca');
@@ -273,7 +272,7 @@ describe('getS3KeyPrefix', () => {
   });
 
   it('should return its default value', () => {
-    delete process.env.S3_KEY_PREFIX;
+    Object.assign(process.env, { S3_KEY_PREFIX: undefined });
 
     const result = getS3KeyPrefix();
     expect(result).to.equal('sims');

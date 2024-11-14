@@ -14,7 +14,7 @@ import {
   TelemetryTypeColDef
 } from 'features/surveys/telemetry/table/utils/GridColumnDefinitions';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useSurveyContext, useTelemetryDataContext, useTelemetryTableContext } from 'hooks/useContext';
+import { useSurveyContext, useTelemetryTableContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
 import { useEffect, useMemo } from 'react';
@@ -29,10 +29,9 @@ export const TelemetryTable = (props: IManualTelemetryTableProps) => {
   const biohubApi = useBiohubApi();
 
   const surveyContext = useSurveyContext();
-  const telemetryDataContext = useTelemetryDataContext();
   const telemetryTableContext = useTelemetryTableContext();
 
-  const deploymentDataLoader = telemetryDataContext.deploymentsDataLoader;
+  const deploymentDataLoader = useDataLoader(biohubApi.telemetryDeployment.getDeploymentsInSurvey);
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
 
   useEffect(() => {

@@ -13,7 +13,7 @@ import { ISpeciesForm, ITaxonomyWithEcologicalUnits } from 'features/surveys/com
 import { ISurveyPartnershipsForm } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Feature } from 'geojson';
 import { ITaxonomy } from 'interfaces/useTaxonomyApi.interface';
-import { IAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
+import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 import { ApiPaginationResponseParams, StringBoolean } from 'types/misc';
 import { ICritterDetailedResponse, ICritterSimpleResponse } from './useCritterApi.interface';
 
@@ -456,7 +456,7 @@ export interface IDetailedCritterWithInternalId extends ICritterDetailedResponse
 }
 
 export interface IAnimalDeploymentWithCritter {
-  deployment: IAnimalDeployment;
+  deployment: TelemetryDeployment;
   critter: ICritterSimpleResponse;
 }
 

@@ -1,5 +1,7 @@
 import axios from 'axios';
 import useReferenceApi from 'hooks/api/useReferenceApi';
+import { useTelemetryDeploymentApi } from 'hooks/api/useTelemetryDeploymentApi';
+import { useTelemetryDeviceApi } from 'hooks/api/useTelemetryDeviceApi';
 import { useConfigContext } from 'hooks/useContext';
 import { useMemo } from 'react';
 import useAdminApi from './api/useAdminApi';
@@ -72,6 +74,10 @@ export const useBiohubApi = () => {
 
   const telemetry = useTelemetryApi(apiAxios);
 
+  const telemetryDeployment = useTelemetryDeploymentApi(apiAxios);
+
+  const telemetryDevice = useTelemetryDeviceApi(apiAxios);
+
   return useMemo(
     () => ({
       analytics,
@@ -93,7 +99,9 @@ export const useBiohubApi = () => {
       samplingSite,
       standards,
       reference,
-      telemetry
+      telemetry,
+      telemetryDeployment,
+      telemetryDevice
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
