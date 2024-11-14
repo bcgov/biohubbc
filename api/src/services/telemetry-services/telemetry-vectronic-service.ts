@@ -1,8 +1,10 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { chunk } from 'lodash';
+import qs from 'qs';
 import { TelemetryCredentialVectronicRecord } from '../../database-models/telemetry_credential_vectronic';
 import { IDBConnection } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
+import { formatAxiosError } from '../../errors/axios-error';
 import { TelemetryVectronicRepository } from '../../repositories/telemetry-repositories/telemetry-vectronic-repository';
 import {
   VectronicAPIQuery,
@@ -26,6 +28,8 @@ const defaultLog = getLogger('telemetry-vectronic-service');
  * @extends {DBService}
  */
 export class TelemetryVectronicService extends DBService {
+  vectronicClient: AxiosInstance;
+
   telemetryVectronicRepository: TelemetryVectronicRepository;
 
   /**
@@ -35,42 +39,13 @@ export class TelemetryVectronicService extends DBService {
    */
   constructor(connection: IDBConnection) {
     super(connection);
+
+    this.vectronicClient = axios.create({
+      paramsSerializer: (params) => qs.stringify(params),
+      baseURL: `${process.env.VECTRONIC_API_HOST ?? 'https://api.vectronic-wildlife.com'}/v2`
+    });
+
     this.telemetryVectronicRepository = new TelemetryVectronicRepository(connection);
-  }
-
-  /**
-   * Get the base URL for the Vectronic API.
-   *
-   * @returns {*} {URL}
-   */
-  getVectronicBaseURL(): URL {
-    return new URL(process.env.VECTRONIC_API_HOST ?? 'https://api.vectronic-wildlife.com');
-  }
-
-  /**
-   * Get the URL for fetching Vectronic telemetry data for a specific device.
-   *
-   * @param {VectronicAPIQuery} query - Vectronic API request query
-   * @returns {*} {URL}
-   */
-  getVectronicTelemetryURL(query: VectronicAPIQuery): URL {
-    const url = this.getVectronicBaseURL();
-
-    url.searchParams.append('collarkey', query.collarkey);
-
-    if (query.beforeAcquisition) {
-      url.searchParams.append('beforeAcquisition', query.beforeAcquisition);
-    }
-
-    if (query.afterAcquisition) {
-      url.searchParams.append('afterAcquisition', query.afterAcquisition);
-    }
-
-    if (query.gtId) {
-      url.searchParams.append('gt-id', String(query.gtId));
-    }
-
-    return url;
   }
 
   /**
@@ -80,20 +55,20 @@ export class TelemetryVectronicService extends DBService {
    * @returns {Promise<VectronicPayload>}
    */
   async fetchTelemetryFromVectronic(query: VectronicAPIQuery): Promise<VectronicPayload[]> {
-    const url = this.getVectronicTelemetryURL(query);
-    url.pathname = `v2/collar/${query.idcollar}/gps`;
-
     try {
       // Note: Vectronic is using SentenceCased keys in their API response
-      const response = await axios.get<VectronicPayload[]>(url.toString());
+      const response = await this.vectronicClient.get<VectronicPayload[]>(`/collar/${query.idcollar}/gps`, {
+        params: {
+          collarkey: query.collarkey,
+          beforeAcquisition: query.beforeAcquisition,
+          afterAcquisition: query.afterAcquisition,
+          ['gt-id']: query.gtId
+        }
+      });
 
       return response.data.map((record) => keysToLowerCase(record));
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        defaultLog.error({ label: 'fetchTelemetryFromVectronic', message: 'error', error: error.message });
-      }
-
-      throw new ApiGeneralError('Failed to fetch devices from Vectronic.');
+      throw new ApiGeneralError('Failed to fetch devices from Vectronic.', [formatAxiosError(error)]);
     }
   }
 
@@ -104,19 +79,19 @@ export class TelemetryVectronicService extends DBService {
    * @returns {*} {Promise<number>}
    */
   async fetchTelemetryCountFromVectronic(query: VectronicAPIQuery): Promise<number> {
-    const url = this.getVectronicTelemetryURL(query);
-    url.pathname = `v2/collar/${query.idcollar}/gps/count`;
-
     try {
-      const response = await axios.get(url.toString());
+      const response = await this.vectronicClient.get(`/collar/${query.idcollar}/gps/count`, {
+        params: {
+          collarkey: query.collarkey,
+          beforeAcquisition: query.beforeAcquisition,
+          afterAcquisition: query.afterAcquisition,
+          ['gt-id']: query.gtId
+        }
+      });
 
       return response.data;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        defaultLog.error({ label: 'fetchTelemetryCountFromVectronic', message: 'error', error: error.message });
-      }
-
-      throw new ApiGeneralError('Failed to fetch device count from Vectronic.');
+      throw new ApiGeneralError('Failed to fetch device count from Vectronic.', [formatAxiosError(error)]);
     }
   }
 

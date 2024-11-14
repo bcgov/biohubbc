@@ -8,7 +8,7 @@ import * as cronjob from './cronjob';
 
 chai.use(sinonChai);
 
-describe.only('Telemetry Cronjob', () => {
+describe('Telemetry Cronjob', () => {
   beforeEach(() => {
     sinon.restore();
   });

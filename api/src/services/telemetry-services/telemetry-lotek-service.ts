@@ -1,7 +1,9 @@
-import axios from 'axios';
+import axios, { AxiosInstance } from 'axios';
 import { chunk } from 'lodash';
+import qs from 'qs';
 import { IDBConnection } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
+import { formatAxiosError } from '../../errors/axios-error';
 import { TelemetryLotekRepository } from '../../repositories/telemetry-repositories/telemetry-lotek-repository';
 import {
   LotekAPIQuery,
@@ -27,6 +29,8 @@ const defaultLog = getLogger('telemetry-lotek-service');
  * @extends {DBService}
  */
 export class TelemetryLotekService extends DBService {
+  lotekClient: AxiosInstance;
+
   token: string | undefined;
 
   telemetryLotekRepository: TelemetryLotekRepository;
@@ -39,39 +43,14 @@ export class TelemetryLotekService extends DBService {
   constructor(connection: IDBConnection) {
     super(connection);
 
+    this.lotekClient = axios.create({
+      paramsSerializer: (params) => qs.stringify(params),
+      baseURL: `${process.env.LOTEK_API_HOST ?? 'https://webservice.lotek.com'}/API`
+    });
+
     this.token = undefined;
+
     this.telemetryLotekRepository = new TelemetryLotekRepository(connection);
-  }
-
-  /**
-   * Get the base URL for the Lotek API.
-   *
-   * @returns {URL}
-   */
-  getLotekBaseURL(): URL {
-    return new URL(process.env.LOTEK_API_HOST ?? 'https://webservice.lotek.com');
-  }
-
-  /**
-   * Get the URL for fetching Lotek telemetry data for a specific device.
-   *
-   * @param {LotekAPIQuery} query - Lotek API request query
-   * @returns {URL}
-   */
-  getLotekTelemetryURL(query: LotekAPIQuery): URL {
-    const url = this.getLotekBaseURL();
-
-    url.searchParams.append('deviceId', String(query.deviceId));
-
-    if (query.dtStart) {
-      url.searchParams.append('dtStart', query.dtStart);
-    }
-
-    if (query.dtEnd) {
-      url.searchParams.append('dtend', query.dtEnd);
-    }
-
-    return url;
   }
 
   /**
@@ -86,12 +65,9 @@ export class TelemetryLotekService extends DBService {
       return this.token;
     }
 
-    const url = this.getLotekBaseURL();
-    url.pathname = 'API/user/login';
-
     try {
-      const response = await axios.post(
-        url.toString(),
+      const response = await this.lotekClient.post(
+        `/user/login`,
         {
           username: process.env.LOTEK_ACCOUNT_USERNAME,
           password: process.env.LOTEK_ACCOUNT_PASSWORD,
@@ -105,8 +81,7 @@ export class TelemetryLotekService extends DBService {
 
       return response.data.access_token;
     } catch (error) {
-      defaultLog.error({ label: 'fetchTokenFromLotek', message: 'error', error });
-      throw new ApiGeneralError('Failed to authenticate with Lotek.');
+      throw new ApiGeneralError('Failed to authenticate with Lotek.', [formatAxiosError(error)]);
     }
   }
 
@@ -118,11 +93,8 @@ export class TelemetryLotekService extends DBService {
    */
   async fetchDevicesFromLotek(): Promise<LotekAPIDevice[]> {
     const token = await this.fetchTokenFromLotek();
-    const url = this.getLotekBaseURL();
-    url.pathname = 'API/devices';
-
     try {
-      const response = await axios.get<LotekAPIDevice[]>(url.toString(), {
+      const response = await this.lotekClient.get<LotekAPIDevice[]>(`/devices`, {
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -130,8 +102,7 @@ export class TelemetryLotekService extends DBService {
 
       return response.data;
     } catch (error) {
-      defaultLog.error({ label: 'fetchDevicesFromLotek', message: 'error', error });
-      throw new ApiGeneralError('Failed to fetch devices from Lotek.');
+      throw new ApiGeneralError('Failed to fetch devices from Lotek.', [formatAxiosError(error)]);
     }
   }
 
@@ -143,12 +114,14 @@ export class TelemetryLotekService extends DBService {
    * @returns {Promise<number>} The number of telemetry records
    */
   async fetchTelemetryCountFromLotek(query: LotekAPIQuery): Promise<number> {
-    const token = await this.fetchTokenFromLotek();
-    const url = this.getLotekTelemetryURL(query);
-    url.pathname = 'API/gps/count';
-
     try {
-      const response = await axios.get<string>(url.toString(), {
+      const token = await this.fetchTokenFromLotek();
+      const response = await this.lotekClient.get<string>(`/gps/count`, {
+        params: {
+          deviceId: query.deviceId,
+          dtStart: query.dtStart,
+          dtEnd: query.dtEnd
+        },
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -163,8 +136,7 @@ export class TelemetryLotekService extends DBService {
 
       return count;
     } catch (error) {
-      defaultLog.error({ label: 'fetchTelemetryCountFromLotek', message: 'error', error });
-      throw new ApiGeneralError('Failed to fetch device telemetry count from Lotek.');
+      throw new ApiGeneralError('Failed to fetch device telemetry count from Lotek.', [formatAxiosError(error)]);
     }
   }
 
@@ -175,13 +147,15 @@ export class TelemetryLotekService extends DBService {
    * @returns {Promise<TelemetryLotekAPIRecord[]>} Raw API telemetry data
    */
   async fetchTelemetryFromLotek(query: LotekAPIQuery): Promise<LotekPayload[]> {
-    const token = await this.fetchTokenFromLotek();
-    const url = this.getLotekTelemetryURL(query);
-    url.pathname = 'API/gps';
-
     try {
+      const token = await this.fetchTokenFromLotek();
       // Note: Lotek is using SentenceCased keys in their API response
-      const response = await axios.get<LotekPayload[]>(url.toString(), {
+      const response = await this.lotekClient.get<LotekPayload[]>(`/gps`, {
+        params: {
+          deviceId: query.deviceId,
+          dtStart: query.dtStart,
+          dtEnd: query.dtEnd
+        },
         headers: {
           Authorization: `Bearer ${token}`
         }
@@ -189,8 +163,7 @@ export class TelemetryLotekService extends DBService {
 
       return response.data.map((record) => keysToLowerCase(record));
     } catch (error) {
-      defaultLog.error({ label: 'fetchTelemetryFromLotek', message: 'error', error });
-      throw new ApiGeneralError('Failed to fetch device telemetry from Lotek.');
+      throw new ApiGeneralError('Failed to fetch device telemetry from Lotek.', [formatAxiosError(error)]);
     }
   }
 

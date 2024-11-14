@@ -106,7 +106,7 @@ export const parseResults = (vendor: string, results: QueueResult<{ serial: numb
     }
   }
 
-  if (errors.length === results.length) {
+  if (results.length && errors.length === results.length) {
     defaultLog.error({
       label: 'Partial Failure',
       vendor: vendor,
