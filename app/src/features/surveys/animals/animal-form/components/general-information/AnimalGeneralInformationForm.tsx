@@ -1,6 +1,7 @@
 import Collapse from '@mui/material/Collapse';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/system/Box';
+import HelpButtonBStack from 'components/buttons/HelpButtonBStack';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
@@ -44,43 +45,47 @@ export const AnimalGeneralInformationForm = (props: IAnimalGeneralInformationFor
     <Box component="fieldset">
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <SpeciesAutocompleteField
-            formikFieldName="species"
-            label="Species"
-            required={false}
-            disabled={isEdit}
-            defaultSpecies={values.species ?? undefined}
-            handleSpecies={(species) => {
-              setFieldValue('species', species);
-              setFieldValue('ecological_units', []);
-              if (species) {
-                measurementsDataLoader.refresh(species.tsn);
-                return;
-              }
-              measurementsDataLoader.clearData();
-            }}
-            clearOnSelect={true}
-            error={errors.species}
-          />
-          {values.species && (
-            <Collapse in={Boolean(values.species)} key={values.species.tsn}>
-              <SelectedAnimalSpecies
-                selectedSpecies={[values.species]}
-                // Disable remove button if editing
-                handleRemoveSpecies={isEdit ? undefined : () => setFieldValue('species', null)}
-              />
-            </Collapse>
-          )}
+          <HelpButtonBStack helpText="SIMS is currently using the Integrated Taxonomic Information System (ITIS) for species references. More information about species codes can be found on the ITIS site.">
+            <SpeciesAutocompleteField
+              formikFieldName="species"
+              label="Species"
+              required={false}
+              disabled={isEdit}
+              defaultSpecies={values.species ?? undefined}
+              handleSpecies={(species) => {
+                setFieldValue('species', species);
+                setFieldValue('ecological_units', []);
+                if (species) {
+                  measurementsDataLoader.refresh(species.tsn);
+                  return;
+                }
+                measurementsDataLoader.clearData();
+              }}
+              clearOnSelect={true}
+              error={errors.species}
+            />
+            {values.species && (
+              <Collapse in={Boolean(values.species)} key={values.species.tsn}>
+                <SelectedAnimalSpecies
+                  selectedSpecies={[values.species]}
+                  // Disable remove button if editing
+                  handleRemoveSpecies={isEdit ? undefined : () => setFieldValue('species', null)}
+                />
+              </Collapse>
+            )}
+          </HelpButtonBStack>
         </Grid>
         <Grid item xs={12}>
-          <CustomTextField
-            name="nickname"
-            label="Nickname"
-            maxLength={200}
-            other={{
-              required: true
-            }}
-          />
+          <HelpButtonBStack helpText="Please enter your reference name for your animal. This may include names listed on capture forms, or informal names that the animal is referred to within your project team.">
+            <CustomTextField
+              name="nickname"
+              label="Nickname"
+              maxLength={200}
+              other={{
+                required: true
+              }}
+            />
+          </HelpButtonBStack>
         </Grid>
         <Grid item xs={12}>
           <AutocompleteField
