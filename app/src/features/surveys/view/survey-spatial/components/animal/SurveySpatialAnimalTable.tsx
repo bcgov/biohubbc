@@ -19,6 +19,7 @@ interface IAnimalData {
   id: number;
   animal_id: string;
   scientificName: string;
+  sex: any;
 }
 
 /**
@@ -55,7 +56,8 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
       id: item.critter_id,
       animal_id: item.animal_id ?? '',
       scientificName: item.itis_scientific_name,
-      status: !!item.mortality?.length
+      status: !!item.mortality?.length,
+      sex: item.sex ?? 'Unknown'
     })) ?? [];
 
   // Define columns for the data grid
@@ -70,7 +72,11 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
       headerName: 'Species',
       flex: 1,
       renderCell: (params) => <ScientificNameTypography name={params.value} /> // Render scientific name with custom typography component
-    }
+    },
+    { field: 'sex', 
+      headerName: 'Sex', 
+      flex: 1,
+      renderCell: (params) => <span>{params.value || 'Unknown'}</span> }
   ];
 
   return (
