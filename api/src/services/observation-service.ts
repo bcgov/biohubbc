@@ -24,7 +24,7 @@ import {
   InsertObservationSubCountQualitativeMeasurementRecord,
   InsertObservationSubCountQuantitativeMeasurementRecord
 } from '../repositories/observation-subcount-measurement-repository';
-import { SampleLocationRecord } from '../repositories/sample-location-repository';
+import { SampleLocationRecord } from '../repositories/sample-location-repository/sample-location-repository';
 import { SamplePeriodHierarchyIds } from '../repositories/sample-period-repository';
 import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
@@ -136,8 +136,13 @@ export type ObservationMeasurementSupplementaryData = {
   quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
 };
 
+export type ObservationSamplingSupplementaryData = {
+  sample_sites: SampleLocationRecord[];
+};
+
 export type AllObservationSupplementaryData = ObservationCountSupplementaryData &
-  ObservationMeasurementSupplementaryData;
+  ObservationMeasurementSupplementaryData &
+  ObservationSamplingSupplementaryData;
 
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
@@ -306,16 +311,22 @@ export class ObservationService extends DBService {
     surveyObservations: ObservationRecordWithSamplingAndSubcountData[];
     supplementaryObservationData: AllObservationSupplementaryData;
   }> {
+    const sampleLocationService = new SampleLocationService(this.connection);
     const surveyObservations = await this.observationRepository.getSurveyObservationsWithSamplingDataWithAttributesData(
       surveyId,
       pagination
     );
+
+    const sampleSiteIds = surveyObservations
+      .filter((obs) => obs.survey_sample_site_id)
+      .map((observation) => observation.survey_sample_site_id!);
 
     // Get supplementary observation data
     const observationCount = await this.observationRepository.getSurveyObservationCount(surveyId);
     const subCountService = new SubCountService(this.connection);
     const measurementTypeDefinitions = await subCountService.getMeasurementTypeDefinitionsForSurvey(surveyId);
     const environmentTypeDefinitions = await subCountService.getEnvironmentTypeDefinitionsForSurvey(surveyId);
+    const sampleLocations = await sampleLocationService.getSampleLocationsForSurveyId(surveyId, { sampleSiteIds });
 
     return {
       surveyObservations: surveyObservations,
@@ -324,7 +335,8 @@ export class ObservationService extends DBService {
         qualitative_measurements: measurementTypeDefinitions.qualitative_measurements,
         quantitative_measurements: measurementTypeDefinitions.quantitative_measurements,
         qualitative_environments: environmentTypeDefinitions.qualitative_environments,
-        quantitative_environments: environmentTypeDefinitions.quantitative_environments
+        quantitative_environments: environmentTypeDefinitions.quantitative_environments,
+        sample_sites: sampleLocations
       }
     };
   }

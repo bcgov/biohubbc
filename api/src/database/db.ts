@@ -18,14 +18,14 @@ import { asyncErrorWrapper, getGenericizedKeycloakUserInformation, syncErrorWrap
 const defaultLog = getLogger('database/db');
 
 const getDbHost = () => process.env.DB_HOST;
-const getDbPort = () => Number(process.env.DB_PORT);
+const getDbPort = () => process.env.DB_PORT;
 const getDbUsername = () => process.env.DB_USER_API;
 const getDbPassword = () => process.env.DB_USER_API_PASS;
 const getDbDatabase = () => process.env.DB_DATABASE;
 
-const DB_POOL_SIZE: number = Number(process.env.DB_POOL_SIZE) || 20;
-const DB_CONNECTION_TIMEOUT: number = Number(process.env.DB_CONNECTION_TIMEOUT) || 0;
-const DB_IDLE_TIMEOUT: number = Number(process.env.DB_IDLE_TIMEOUT) || 10000;
+const DB_POOL_SIZE = 20;
+const DB_CONNECTION_TIMEOUT = 0;
+const DB_IDLE_TIMEOUT = 10000;
 
 export const DB_CLIENT = 'pg';
 

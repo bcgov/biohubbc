@@ -4,6 +4,7 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import { useCodesContext } from 'hooks/useContext';
+import { formatTimeDifference } from 'utils/datetime';
 import { getCodesName } from 'utils/Utils';
 
 export interface ISamplingSitePeriodRowData {
@@ -82,12 +83,21 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       field: 'end_time',
       headerName: 'End time',
       flex: 1
+    },
+    {
+      field: 'duration',
+      headerName: 'Duration',
+      flex: 1,
+      renderCell: (params) => {
+        const { start_date, start_time, end_date, end_time } = params.row;
+        return formatTimeDifference(start_date, start_time, end_date, end_time);
+      }
     }
   ];
 
   return (
     <StyledDataGrid
-      autoHeight
+      autoHeight={false}
       getRowHeight={() => 'auto'}
       disableColumnMenu
       rows={periods}
@@ -95,6 +105,7 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       columns={columns}
       checkboxSelection={false}
       disableRowSelectionOnClick
+      rowCount={periods.length}
       initialState={{
         pagination: {
           paginationModel: { page: 1, pageSize: 10 }
