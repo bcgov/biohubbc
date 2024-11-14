@@ -31,7 +31,7 @@ interface ISystemAlertBannerProps {
 }
 
 // The number of alerts to show on initial page load
-const NumberAlertsShownInitially = 2;
+const NumberOfAlertsShownInitially = 2;
 
 /**
  * Stack of system alerts created by system administrators
@@ -42,7 +42,6 @@ const NumberAlertsShownInitially = 2;
 export const SystemAlertBanner = (props: ISystemAlertBannerProps) => {
   const { alertTypes } = props;
 
-  const [isExpanded, setIsExpanded] = useState<boolean>(false);
   const biohubApi = useBiohubApi();
 
   const alertDataLoader = useDataLoader(() =>
@@ -53,33 +52,33 @@ export const SystemAlertBanner = (props: ISystemAlertBannerProps) => {
     alertDataLoader.load();
   }, [alertDataLoader]);
 
+  const [isExpanded, setIsExpanded] = useState<boolean>(false);
+
   const alerts = alertDataLoader.data?.alerts ?? [];
+
+  const numberOfAlerts = alerts.length;
 
   const renderAlerts = (alerts: IAlert[]) => {
     const visibleAlerts = [];
     const collapsedAlerts = [];
 
-    for (let index = 0; index < alerts.length; index++) {
-      if (index < NumberAlertsShownInitially) {
-        visibleAlerts.push(
-          <AlertBar
-            severity={alerts[index].severity}
-            text={alerts[index].message}
-            title={alerts[index].name}
-            key={alerts[index].alert_id}
-            variant="standard"
-          />
-        );
+    for (let index = 0; index < numberOfAlerts; index++) {
+      const alert = alerts[index];
+
+      const alertComponent = (
+        <AlertBar
+          severity={alert.severity}
+          text={alert.message}
+          title={alert.name}
+          key={alert.alert_id}
+          variant="standard"
+        />
+      );
+
+      if (index < NumberOfAlertsShownInitially) {
+        visibleAlerts.push(alertComponent);
       } else {
-        collapsedAlerts.push(
-          <AlertBar
-            severity={alerts[index].severity}
-            text={alerts[index].message}
-            title={alerts[index].name}
-            key={alerts[index].alert_id}
-            variant="standard"
-          />
-        );
+        collapsedAlerts.push(alertComponent);
       }
     }
 
@@ -98,7 +97,7 @@ export const SystemAlertBanner = (props: ISystemAlertBannerProps) => {
     );
   };
 
-  if (!alerts.length) {
+  if (!numberOfAlerts) {
     return null;
   }
 
@@ -106,13 +105,12 @@ export const SystemAlertBanner = (props: ISystemAlertBannerProps) => {
     <Box component={Paper} mb={3}>
       <Box p={1}>
         {renderAlerts(alerts)}
-        {alerts.length > NumberAlertsShownInitially && (
+        {numberOfAlerts > NumberOfAlertsShownInitially && (
           <Button
             variant="text"
             onClick={() => setIsExpanded((prev) => !prev)}
             sx={{ color: grey[700] }}
             startIcon={<Icon path={(isExpanded && mdiChevronUp) || mdiChevronDown} size={0.8} />}>
-            {/* {isExpanded ? 'See fewer alerts' : 'See more alerts'} */}
             <Typography>
               {isExpanded ? (
                 <>{'See fewer alerts'}</>
@@ -120,7 +118,7 @@ export const SystemAlertBanner = (props: ISystemAlertBannerProps) => {
                 <>
                   {'See more alerts'} &zwnj;
                   <Typography component="span" variant="inherit" color="textSecondary">
-                    ({alerts.length - NumberAlertsShownInitially})
+                    ({numberOfAlerts - NumberOfAlertsShownInitially})
                   </Typography>
                 </>
               )}
