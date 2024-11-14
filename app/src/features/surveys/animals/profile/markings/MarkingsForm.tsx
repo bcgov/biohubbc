@@ -7,6 +7,7 @@ import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Stack } from '@mui/system';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import { MarkingsDialog } from 'features/surveys/animals/profile/markings/MarkingsDialog';
 import { FieldArray, FieldArrayRenderProps, useFormikContext } from 'formik';
 import { useAnimalPageContext } from 'hooks/useContext';
@@ -16,7 +17,6 @@ import { IMarkings } from 'interfaces/useCritterApi.interface';
 import { useEffect, useState } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import { MarkingCard } from './MarkingCard';
-import HelpButtonStack from 'components/buttons/HelpButtonStack';
 
 /**
  * Returns the control for applying markings to an animal on the animal form
@@ -164,15 +164,15 @@ export const MarkingsForm = <FormikValuesType extends IMarkings>() => {
             </TransitionGroup>
           </Stack>
           <HelpButtonStack helpText='Please note that markings in SIMS do not include telemetry collars. Use the "Telemetry" page of your survey to deploy your device on your animal and associate it to this capture event.'>
-          <Button
-            sx={{ mt: 2 }}
-            color="primary"
-            variant="outlined"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            aria-label="add marking"
-            onClick={() => setIsDialogOpen(true)}>
-            Add Marking
-          </Button>
+            <Button
+              sx={{ mt: 2 }}
+              color="primary"
+              variant="outlined"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              aria-label="add marking"
+              onClick={() => setIsDialogOpen(true)}>
+              Add Marking
+            </Button>
           </HelpButtonStack>
         </>
       )}
