@@ -17,10 +17,10 @@ import { loadEvironmentVariables } from './utils/env-config';
 import { scanFileForVirus } from './utils/file-utils';
 import { getLogger } from './utils/logger';
 
-const defaultLog = getLogger('app');
-
 // Load and validate the environment variables
 loadEvironmentVariables();
+
+const defaultLog = getLogger('app');
 
 const HOST = process.env.API_HOST;
 const PORT = process.env.API_PORT;
