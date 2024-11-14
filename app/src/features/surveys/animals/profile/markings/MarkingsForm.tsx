@@ -163,7 +163,7 @@ export const MarkingsForm = <FormikValuesType extends IMarkings>() => {
               ))}
             </TransitionGroup>
           </Stack>
-          <HelpButtonStack helpText='Please note that markings in SIMS do not include telemetry collars. Use the "Telemetry" page of your survey to deploy your device on your animal and associate it to this capture event.'>
+          <HelpButtonStack helpText='Please note that markings in SIMS do not include telemetry collars. Use the "Telemetry" page of your survey to manage your device on your animal and associate its status to this event.'>
             <Button
               sx={{ mt: 2 }}
               color="primary"
