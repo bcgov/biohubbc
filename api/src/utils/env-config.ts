@@ -3,8 +3,8 @@ import { getLogger } from './logger';
 
 const defaultLog = getLogger('src/utils/env-config.ts');
 
-// Custom Zod string type for environment variables ie: '' or ' ' are invalid
-const ZodEnvString = z.string().trim().min(1, { message: 'Required' });
+const ZodEnvString = z.string().trim().min(1, { message: 'Required' }); // '' or ' ' are invalid
+const ZodEnvNumber = z.coerce.number().min(1, { message: 'Required and must be a positive value.' }); // -1 is invalid
 
 // Schema for environment configuration
 export const EnvSchema = z.object({
@@ -15,11 +15,11 @@ export const EnvSchema = z.object({
 
   // API server
   API_HOST: ZodEnvString,
-  API_PORT: z.coerce.number(),
+  API_PORT: ZodEnvNumber,
 
   // Database
   DB_HOST: ZodEnvString,
-  DB_PORT: z.coerce.number(),
+  DB_PORT: ZodEnvNumber,
   DB_USER_API: ZodEnvString,
   DB_USER_API_PASS: ZodEnvString,
   DB_DATABASE: ZodEnvString,
@@ -49,9 +49,9 @@ export const EnvSchema = z.object({
   DATABASE_RESPONSE_VALIDATION_ENABLED: z.enum(['true', 'false']),
 
   // File upload limits
-  MAX_REQ_BODY_SIZE: z.coerce.number(),
-  MAX_UPLOAD_NUM_FILES: z.coerce.number(),
-  MAX_UPLOAD_FILE_SIZE: z.coerce.number(),
+  MAX_REQ_BODY_SIZE: ZodEnvNumber,
+  MAX_UPLOAD_NUM_FILES: ZodEnvNumber,
+  MAX_UPLOAD_FILE_SIZE: ZodEnvNumber,
 
   // External Services
   CB_API_HOST: ZodEnvString,
@@ -82,12 +82,12 @@ export const EnvSchema = z.object({
   GCNOTIFY_SMS_URL: ZodEnvString,
 
   // ClamAV
-  CLAMAV_PORT: z.coerce.number(),
+  CLAMAV_PORT: ZodEnvNumber,
   CLAMAV_HOST: ZodEnvString,
   ENABLE_FILE_VIRUS_SCAN: z.enum(['true', 'false']),
 
   // Extra
-  FEATURE_FLAGS: ZodEnvString.optional() // flagA,flagB,flagC
+  FEATURE_FLAGS: z.string().trim().optional() // flagA,flagB,flagC
 });
 
 type Env = z.infer<typeof EnvSchema>;
@@ -102,8 +102,8 @@ export const loadEvironmentVariables = (): Env => {
 
   if (!parsed.success) {
     defaultLog.error({
-      label: 'loadENV',
-      message: 'Invalid environment configuration',
+      label: 'loadEvironmentVariables',
+      message: 'Environment variables validation check failed',
       errors: parsed.error.flatten().fieldErrors
     });
 
