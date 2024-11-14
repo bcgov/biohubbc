@@ -6,7 +6,7 @@ import { TelemetryVectronicService } from './telemetry-vectronic-service';
 
 chai.use(sinonChai);
 
-describe.only('TelemetryVectronicService', () => {
+describe('TelemetryVectronicService', () => {
   beforeEach(() => {
     sinon.restore();
   });
