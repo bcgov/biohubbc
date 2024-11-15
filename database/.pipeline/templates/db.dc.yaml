@@ -199,18 +199,12 @@ objects:
               volumeMounts:
                 - name: '${DATABASE_SERVICE_NAME}-data'
                   mountPath: '/var/lib/postgresql/data'
-                - name: '${DATABASE_SERVICE_NAME}-data'
-                  mountPath: '/var/lib/pgsql/data'
-                # - name: '${DATABASE_SERVICE_NAME}-run'
-                #   mountPath: '/var/run/postgresql'
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           volumes:
             - name: '${DATABASE_SERVICE_NAME}-data'
               persistentVolumeClaim:
                 claimName: '${DATABASE_SERVICE_NAME}'
-            # - name: '${DATABASE_SERVICE_NAME}-run'
-            #   emptyDir: {}
       triggers:
         - imageChangeParams:
             automatic: true
