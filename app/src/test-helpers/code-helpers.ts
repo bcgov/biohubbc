@@ -66,5 +66,9 @@ export const codes: IGetAllCodeSetsResponse = {
   observation_subcount_signs: [
     { id: 1, name: 'Scat', description: 'Scat left by the species.' },
     { id: 2, name: 'Direct sighting', description: 'A direct sighting of the species.' }
+  ],
+  alert_types: [
+    { id: 1, name: 'Survey', description: 'Alert about surveys.' },
+    { id: 2, name: 'General', description: 'General alert.' }
   ]
 };

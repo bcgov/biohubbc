@@ -21,7 +21,7 @@ describe('Header', () => {
     );
 
     expect(getByText('Projects')).toBeVisible();
-    expect(getByText('Manage Users')).toBeVisible();
+    expect(getByText('Admin')).toBeVisible();
     expect(getByText('Standards')).toBeVisible();
   });
 
@@ -40,7 +40,7 @@ describe('Header', () => {
     );
 
     expect(getByText('Projects')).toBeVisible();
-    expect(getByText('Manage Users')).toBeVisible();
+    expect(getByText('Admin')).toBeVisible();
     expect(getByText('Standards')).toBeVisible();
   });
 
@@ -59,7 +59,7 @@ describe('Header', () => {
     );
 
     expect(getByText('Projects')).toBeVisible();
-    expect(getByText('Manage Users')).toBeVisible();
+    expect(getByText('Admin')).toBeVisible();
     expect(getByText('Standards')).toBeVisible();
   });
 

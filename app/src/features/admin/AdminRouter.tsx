@@ -2,31 +2,31 @@ import React from 'react';
 import { Redirect, Route, Switch } from 'react-router';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
-import ManageUsersPage from './users/ManageUsersPage';
+import AdminManagePage from './AdminManagePage';
 import UsersDetailPage from './users/projects/UsersDetailPage';
 
 /**
- * Router for all `/admin/users/*` pages.
+ * Router for all `/admin/manage/*` pages.
  *
  * @return {*}
  */
-const AdminUsersRouter: React.FC = () => {
+const AdminRouter: React.FC = () => {
   return (
     <Switch>
-      <RouteWithTitle exact path="/admin/users" title={getTitle('Manage Users')}>
-        <ManageUsersPage />
+      <RouteWithTitle exact path="/admin/manage" title={getTitle('Manage')}>
+        <AdminManagePage />
       </RouteWithTitle>
 
-      <Route exact path="/admin/users/:id">
+      <Route exact path="/admin/manage/users/:id">
         <UsersDetailPage />
       </Route>
 
       {/*  Catch any unknown routes, and re-direct to the not found page */}
-      <Route path="/admin/users/*">
+      <Route path="/admin/manage/users/*">
         <Redirect to="/page-not-found" />
       </Route>
     </Switch>
   );
 };
 
-export default AdminUsersRouter;
+export default AdminRouter;
