@@ -63,16 +63,13 @@ export function getVantageModes(): RequestHandler {
     const connection = getAPIUserDBConnection();
 
     try {
-      const methodLookupIds: number[] = (req.query.methodLookupId as string[]).map(Number);
+      const methodLookupIds = (req.query.methodLookupId as string[]).map(Number);
 
       await connection.open();
 
       const vantageModeService = new VantageModeService(connection);
 
       const response = await vantageModeService.getVantageModesByMethodLookupIds(methodLookupIds);
-
-      // Allow browsers to cache this response for 300 seconds (5 minutes)
-      res.setHeader('Cache-Control', 'private, max-age=300');
 
       await connection.commit();
 

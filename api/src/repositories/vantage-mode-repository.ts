@@ -23,7 +23,7 @@ export class VantageModeRepository extends BaseRepository {
    * @memberof VantageModeRepository
    */
   async getVantageModesByMethodLookupIds(methodLookupIds: number[]): Promise<VantageMode[]> {
-    defaultLog.debug({ label: 'getAttributesForMethodLookupId', methodLookupIds });
+    defaultLog.debug({ label: 'getVantageModesByMethodLookupIds', methodLookupIds });
 
     const knex = getKnex();
 
