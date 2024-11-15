@@ -120,7 +120,7 @@ export class AlertRepository extends BaseRepository {
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to update alert', [
         'AlertRepository->updateAlert',
-        'row[0] was null or undefined, expected row[0] != null'
+        'rowCount was !== 1, expected rowCount === 1'
       ]);
     }
 
@@ -151,7 +151,7 @@ export class AlertRepository extends BaseRepository {
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to create alert', [
         'AlertRepository->createAlert',
-        'row[0] was null or undefined, expected row[0] != null'
+        'rowCount was !== 1, expected rowCount === 1'
       ]);
     }
 
@@ -180,7 +180,7 @@ export class AlertRepository extends BaseRepository {
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to delete alert', [
         'AlertRepository->deleteAlert',
-        'row[0] was null or undefined, expected row[0] != null'
+        'rowCount was !== 1, expected rowCount === 1'
       ]);
     }
 
