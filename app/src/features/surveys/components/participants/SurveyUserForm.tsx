@@ -7,7 +7,7 @@ import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
-import HelpButtonBStack from 'components/buttons/HelpButtonBStack';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import UserCard from 'components/user/UserCard';
 import UserRoleSelector from 'components/user/UserRoleSelector';
 import { useFormikContext } from 'formik';
@@ -120,7 +120,7 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
           <AlertBar severity="error" variant="outlined" title={alertBarText().title} text={alertBarText().text} />
         </Box>
       )}
-      <HelpButtonBStack helpText="Please specify the roles of survey participants. If you cannot find one of your team members, you may need to invite them to use SIMS before specifying their role. You can always edit your survey later to add them.">
+      <HelpButtonStack helpText="Please specify the roles of survey participants. If you cannot find one of your team members, you may need to invite them to use SIMS before specifying their role. You can always edit your survey later to add them.">
         <Autocomplete
           id={'autocomplete-user-role-search'}
           data-testid={'autocomplete-user-role-search'}
@@ -192,7 +192,7 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
             );
           }}
         />
-      </HelpButtonBStack>
+      </HelpButtonStack>
       <Box>
         <Box
           sx={{

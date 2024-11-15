@@ -2,7 +2,7 @@ import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import HelpButtonBStack from 'components/buttons/HelpButtonBStack';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCard';
 import { FocalSpeciesAlert } from 'features/surveys/components/species/components/FocalSpeciesAlert';
@@ -31,7 +31,7 @@ export const FocalSpeciesForm = () => {
           <Stack gap={2}>
             <FocalSpeciesAlert />
 
-            <HelpButtonBStack helpText="Select the species that this Survey targets. If you targetted multiple related species, you can select a higher taxon, such as Mammalia. The taxonomomic data source is the Integrated Taxonomic Information System.">
+            <HelpButtonStack helpText="Select the species that this Survey targets. If you targetted multiple related species, you can select a higher taxon, such as Mammalia. The taxonomomic data source is the Integrated Taxonomic Information System.">
               <SpeciesAutocompleteField
                 formikFieldName={'species.focal_species'}
                 label={'Species'}
@@ -46,7 +46,7 @@ export const FocalSpeciesForm = () => {
                 }}
                 clearOnSelect={true}
               />
-            </HelpButtonBStack>
+            </HelpButtonStack>
 
             <TransitionGroup>
               {selectedSpecies.map((species, index) => (

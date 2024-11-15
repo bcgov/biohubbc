@@ -112,9 +112,10 @@ export const AnimalFormContainer = (props: IAnimalFormProps) => {
           summary="Enter information to identify the animal"
           component={<AnimalGeneralInformationForm isEdit={isEdit} />}
         />
+        <Divider/>
         <HorizontalSplitFormComponent
           title="Ecological Units"
-          summary="Enter ecological units that the animal belongs to"
+          summary="Select populations, subpopulations, or other ecological units that the animal belongs to."
           component={<EcologicalUnitsForm />}
         />
         <Divider />

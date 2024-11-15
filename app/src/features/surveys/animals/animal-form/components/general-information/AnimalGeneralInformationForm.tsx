@@ -1,7 +1,7 @@
 import Collapse from '@mui/material/Collapse';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/system/Box';
-import HelpButtonBStack from 'components/buttons/HelpButtonBStack';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
@@ -45,11 +45,11 @@ export const AnimalGeneralInformationForm = (props: IAnimalGeneralInformationFor
     <Box component="fieldset">
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <HelpButtonBStack helpText="SIMS is currently using the Integrated Taxonomic Information System (ITIS) for species references. More information about species codes can be found on the ITIS site.">
+          <HelpButtonStack helpText="Taxonomy data is provided by the Integrated Taxonomic Information System.">
             <SpeciesAutocompleteField
               formikFieldName="species"
               label="Species"
-              required={false}
+              required
               disabled={isEdit}
               defaultSpecies={values.species ?? undefined}
               handleSpecies={(species) => {
@@ -64,19 +64,19 @@ export const AnimalGeneralInformationForm = (props: IAnimalGeneralInformationFor
               clearOnSelect={true}
               error={errors.species}
             />
-            {values.species && (
-              <Collapse in={Boolean(values.species)} key={values.species.tsn}>
-                <SelectedAnimalSpecies
-                  selectedSpecies={[values.species]}
-                  // Disable remove button if editing
-                  handleRemoveSpecies={isEdit ? undefined : () => setFieldValue('species', null)}
-                />
-              </Collapse>
-            )}
-          </HelpButtonBStack>
+          </HelpButtonStack>
+          {values.species && (
+            <Collapse in={Boolean(values.species)} key={values.species.tsn}>
+              <SelectedAnimalSpecies
+                selectedSpecies={[values.species]}
+                // Disable remove button if editing
+                handleRemoveSpecies={isEdit ? undefined : () => setFieldValue('species', null)}
+              />
+            </Collapse>
+          )}
         </Grid>
         <Grid item xs={12}>
-          <HelpButtonBStack helpText="Please enter your reference name for your animal. This may include names listed on capture forms, or informal names that the animal is referred to within your project team.">
+          <HelpButtonStack helpText="Nicknames can be a Wildlife Health ID, a number from a tag, or an informal name that you chose.">
             <CustomTextField
               name="nickname"
               label="Nickname"
@@ -85,24 +85,28 @@ export const AnimalGeneralInformationForm = (props: IAnimalGeneralInformationFor
                 required: true
               }}
             />
-          </HelpButtonBStack>
+          </HelpButtonStack>
         </Grid>
         <Grid item xs={12}>
-          <AutocompleteField
-            id="sex_qualitative_option_id"
-            name="sex_qualitative_option_id"
-            label="Sex"
-            options={sexOptions}
-            disabled={!sexOptions.length}
-          />
+          <HelpButtonStack helpText="A species must first be selected to determine the sex options.">
+            <AutocompleteField
+              id="sex_qualitative_option_id"
+              name="sex_qualitative_option_id"
+              label="Sex"
+              options={sexOptions}
+              disabled={!sexOptions.length}
+            />
+          </HelpButtonStack>
         </Grid>
         <Grid item xs={12}>
-          <CustomTextField
-            name="critter_comment"
-            label="Description"
-            maxLength={1000}
-            other={{ multiline: true, rows: 4 }}
-          />
+          <HelpButtonStack helpText="Enter notable information about the animal, such as alternative nicknames.">
+            <CustomTextField
+              name="critter_comment"
+              label="Description of animal"
+              maxLength={1000}
+              other={{ multiline: true, rows: 4 }}
+            />
+          </HelpButtonStack>
         </Grid>
       </Grid>
     </Box>

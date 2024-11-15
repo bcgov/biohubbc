@@ -2,7 +2,6 @@ import { mdiHelpCircleOutline } from '@mdi/js';
 import { Icon } from '@mdi/react';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
-import Stack from '@mui/material/Stack';
 import Tooltip from '@mui/material/Tooltip';
 import Zoom from '@mui/material/Zoom';
 import { ReactNode } from 'react';
@@ -20,60 +19,57 @@ interface HelpButtonTooltipProps {
  * @param {HelpButtonTooltipProps}
  * @return {*}
  */
-//TODO: Update positioning of the tooltip to be more dynamic (Add Animal form)
 const HelpButtonTooltip = ({ content, children, iconSx }: HelpButtonTooltipProps) => {
   return (
-    <Stack direction="row" flexGrow={1}>
-      <Box
-        sx={{
-          position: 'relative',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexGrow: 1,
-          '& input': {
-            px: 7,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
-          },
-          '& .MuiSelect-select': {
-            pr: '80px !important',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis'
-          },
-          '& .MuiSelect-icon': {
-            right: '52px'
+    <Box
+      sx={{
+        position: 'relative',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        flexGrow: 1,
+        '& input': {
+          px: 7,
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        },
+        '& .MuiSelect-select': {
+          pr: '80px !important',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
+        },
+        '& .MuiSelect-icon': {
+          right: '52px'
+        }
+      }}>
+      {children}
+      <Tooltip
+        arrow
+        title={content}
+        placement={'right-start'}
+        TransitionComponent={Zoom}
+        PopperProps={{
+          sx: {
+            '& .MuiTooltip-tooltip': {
+              py: 1.5,
+              px: 2,
+              fontSize: '0.875rem',
+              background: '#38598A'
+            },
+            '& .MuiTooltip-arrow::before': {
+              background: '#38598A'
+            }
           }
         }}>
-        {children}
-        <Tooltip
-          arrow
-          title={content}
-          placement={'right-start'}
-          TransitionComponent={Zoom}
-          PopperProps={{
-            sx: {
-              '& .MuiTooltip-tooltip': {
-                py: 1.5,
-                px: 2,
-                fontSize: '0.875rem',
-                background: '#38598A'
-              },
-              '& .MuiTooltip-arrow::before': {
-                background: '#38598A'
-              }
-            }
+        <IconButton
+          sx={{
+            color: '#38598A',
+            ...iconSx
           }}>
-          <IconButton
-            sx={{
-              color: '#38598A',
-              ...iconSx
-            }}>
-            <Icon path={mdiHelpCircleOutline} size={1} />
-          </IconButton>
-        </Tooltip>
-      </Box>
-    </Stack>
+          <Icon path={mdiHelpCircleOutline} size={1} />
+        </IconButton>
+      </Tooltip>
+    </Box>
   );
 };
 

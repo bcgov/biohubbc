@@ -63,6 +63,7 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
       blurOnSelect
       handleHomeEndKeys
       id={props.id}
+      fullWidth
       data-testid={props.id}
       value={getExistingValue(get(values, props.name))}
       options={props.options}

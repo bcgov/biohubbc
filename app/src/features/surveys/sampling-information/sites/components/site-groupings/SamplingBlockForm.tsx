@@ -44,8 +44,10 @@ export const SamplingBlockForm = () => {
 
   return (
     <>
-      <HelpButtonStack helpText="Blocks are created at the survey level. If you cannot find your block in this list, please edit your survey to add it.">
-        <Typography component="legend">Assign to Block</Typography>
+      <HelpButtonStack
+        helpText="After adding blocks to the Survey, you can assign sampling sites to those blocks."
+        mb={1}>
+        <Typography fontWeight={700}>Assign to Block</Typography>
       </HelpButtonStack>
       <Typography
         variant="body1"

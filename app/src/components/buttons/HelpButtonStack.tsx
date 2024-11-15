@@ -9,7 +9,7 @@ interface IHelpButtonStackProps extends StackProps {
 const HelpButtonStack = (props: PropsWithChildren<IHelpButtonStackProps>) => {
   const { helpText, children, ...stackProps } = props;
   return (
-    <Stack flexDirection="row" alignItems="center" spacing={0.25} flexGrow={1} {...stackProps}>
+    <Stack flexDirection="row" alignItems="center" gap={0.75} flexGrow={1} mt={-1} {...stackProps}>
       {children}
       <HelpButtonTooltip content={helpText} />
     </Stack>

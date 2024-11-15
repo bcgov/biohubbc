@@ -131,8 +131,10 @@ export const SamplingMethodFormContainer = () => {
 
       <Box component="fieldset">
         <form>
-          <HelpButtonStack helpText="Techniques must be created prior to assignment to sampling sites. Your created techniques will populate below.">
-            <Typography component="legend">Add Sampling Techniques</Typography>
+          <HelpButtonStack
+            helpText="Techniques must be created prior to assignment to sampling sites. Your created techniques will populate below."
+            mb={1}>
+            <Typography fontWeight={700}>Add Sampling Techniques</Typography>
           </HelpButtonStack>
           <Typography
             variant="body1"

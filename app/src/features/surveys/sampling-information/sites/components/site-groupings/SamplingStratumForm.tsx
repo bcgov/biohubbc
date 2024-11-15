@@ -43,8 +43,10 @@ export const SamplingStratumForm = () => {
 
   return (
     <>
-      <HelpButtonStack helpText="Strata are created at the survey level. If you cannot find your stratum in this list, please edit your survey to add it.">
-        <Typography component="legend">Assign to Stratum</Typography>
+      <HelpButtonStack
+        helpText="After adding strata to the Survey, you can assign sampling sites to those strata."
+        mb={1}>
+        <Typography fontWeight={700}>Assign to Strata</Typography>
       </HelpButtonStack>
       <Typography
         variant="body1"
