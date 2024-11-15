@@ -281,7 +281,6 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
 
     if (config.transaction) {
       await _client.query('BEGIN');
-      return;
     }
   };
 

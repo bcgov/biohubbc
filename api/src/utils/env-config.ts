@@ -59,7 +59,7 @@ export const EnvSchema = z.object({
   LOTEK_API_HOST: ZodEnvString,
   LOTEK_ACCOUNT_USERNAME: ZodEnvString,
   LOTEK_ACCOUNT_PASSWORD: ZodEnvString,
-  VECTORNIC_API_HOST: ZodEnvString,
+  VECTRONIC_API_HOST: ZodEnvString,
 
   // Biohub
   BACKBONE_INTERNAL_API_HOST: ZodEnvString,
@@ -101,12 +101,12 @@ type Env = z.infer<typeof EnvSchema>;
  *
  * @returns {*} {Env} Validated environment variables
  */
-export const loadEvironmentVariables = (): Env => {
+export const loadEnvironmentVariables = (): Env => {
   const parsed = EnvSchema.safeParse(process.env);
 
   if (!parsed.success) {
     defaultLog.error({
-      label: 'loadEvironmentVariables',
+      label: 'loadEnvironmentVariables',
       message: 'Environment variables validation check failed',
       errors: parsed.error.flatten().fieldErrors
     });

@@ -1,4 +1,5 @@
 import { parseArgs } from 'util';
+import { z } from 'zod';
 import { defaultPoolConfig, getAPIUserDBConnection, initDBPool } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
 import { TelemetryLotekService } from '../../services/telemetry-services/telemetry-lotek-service';
@@ -44,6 +45,7 @@ export async function telemetryCronjob() {
   defaultLog.info({ message: 'Cronjob starting.', args });
 
   initDBPool(defaultPoolConfig);
+
   const connection = getAPIUserDBConnection();
 
   try {
@@ -56,8 +58,14 @@ export async function telemetryCronjob() {
 
     // 2. FETCH DEVICES AND CREDENTIALS - Fetch devices from Lotek and get SIMS Vectronic credentials
     defaultLog.info({ message: 'Fetching devices and credentials.' });
-    const lotekDevices = await lotekService.fetchDevicesFromLotek(); // Fetch the lotek account devices
-    const vectronicDevices = await vectronicService.getDeviceCredentials(); // Fetch the vectronic account devices
+    let lotekDevices = await lotekService.fetchDevicesFromLotek(); // Fetch the lotek account devices
+    let vectronicDevices = await vectronicService.getDeviceCredentials(); // Fetch the vectronic account devices
+
+    // For testing purposes, limit the number of devices to process
+    if (args.$testMaxDevices) {
+      lotekDevices = lotekDevices.slice(0, args.$testMaxDevices);
+      vectronicDevices = vectronicDevices.slice(0, args.$testMaxDevices);
+    }
 
     // 3. GENERATE QUEUEABLE TASKS - Create tasks for each device
     defaultLog.info({ message: 'Generating tasks.' });
@@ -134,21 +142,27 @@ export const parseArguments = () => {
     args: process.argv,
     options: {
       // The number of requests to make concurrently
-      concurrently: { type: 'string', default: '10' },
+      concurrently: { type: 'string', default: '100' },
       // The number of items to insert in a single batch
       batchSize: { type: 'string', default: '1000' },
       // The start date for fetching telemetry data
       startDate: { type: 'string' },
       // The end date for fetching telemetry data
-      endDate: { type: 'string' }
+      endDate: { type: 'string' },
+      // The maximum number of devices to process (for testing)
+      $testMaxDevices: { type: 'string' }
     },
     allowPositionals: true
   });
 
-  return {
-    concurrently: Number(parsedArgs.values.concurrently),
-    batchSize: Number(parsedArgs.values.batchSize),
-    startDate: parsedArgs.values.startDate,
-    endDate: parsedArgs.values.endDate
-  };
+  return z
+    .object({
+      concurrently: z.coerce.number(),
+      batchSize: z.coerce.number(),
+      startDate: z.string().optional(),
+      endDate: z.string().optional(),
+      $testMaxDevices: z.coerce.number().optional()
+    })
+    .strict()
+    .parse(parsedArgs.values);
 };

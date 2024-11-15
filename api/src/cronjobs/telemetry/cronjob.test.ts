@@ -4,11 +4,12 @@ import sinonChai from 'sinon-chai';
 import * as db from '../../database/db';
 import { TelemetryLotekService } from '../../services/telemetry-services/telemetry-lotek-service';
 import { TelemetryVectronicService } from '../../services/telemetry-services/telemetry-vectronic-service';
+import { getMockDBConnection } from '../../__mocks__/db';
 import * as cronjob from './cronjob';
 
 chai.use(sinonChai);
 
-describe('Telemetry Cronjob', () => {
+describe.only('Telemetry Cronjob', () => {
   beforeEach(() => {
     sinon.restore();
   });
@@ -22,6 +23,13 @@ describe('Telemetry Cronjob', () => {
         endDate: undefined
       });
 
+      const mockConnection = getMockDBConnection({
+        open: sinon.stub(),
+        release: sinon.stub()
+      });
+
+      sinon.stub(db, 'getAPIUserDBConnection').returns(mockConnection);
+
       const lotekFetchStub = sinon.stub(TelemetryLotekService.prototype, 'fetchDevicesFromLotek');
       const vectronicFetchStub = sinon.stub(TelemetryVectronicService.prototype, 'getDeviceCredentials');
 
@@ -31,20 +39,54 @@ describe('Telemetry Cronjob', () => {
       lotekFetchStub.resolves([{ nDeviceID: 1 }] as any);
       vectronicFetchStub.resolves([{ idcollar: 1, collarkey: 'test-collar-key' }] as any);
 
-      const poolStub = sinon.stub(db, 'initDBPool');
+      lotekProcessStub.resolves([{ task: { serial: 1 }, value: { new: 1, created: 1 } }]);
+      vectronicProcessStub.resolves([{ task: { serial: 1, key: 'test-collar-key' }, value: { new: 1, created: 1 } }]);
 
       await cronjob.telemetryCronjob();
+
+      expect(mockConnection.open).to.have.been.calledOnceWithExactly({ transaction: false });
 
       expect(lotekFetchStub).to.have.been.calledOnce;
       expect(vectronicFetchStub).to.have.been.calledOnce;
 
-      expect(lotekProcessStub).to.have.been.calledOnceWithExactly([{ serial: 1 }], { concurrently: 2, batchSize: 4 });
-      expect(vectronicProcessStub).to.have.been.calledOnceWithExactly([{ serial: 1 }], {
+      expect(lotekProcessStub).to.have.been.calledOnceWithExactly([{ serial: 1 }], {
         concurrently: 2,
-        batchSize: 4
+        batchSize: 4,
+        startDate: undefined,
+        endDate: undefined
       });
 
-      expect(poolStub).to.have.been.calledOnce;
+      expect(vectronicProcessStub).to.have.been.calledOnceWithExactly([{ serial: 1, key: 'test-collar-key' }], {
+        concurrently: 2,
+        batchSize: 4,
+        startDate: undefined,
+        endDate: undefined
+      });
+    });
+
+    it('should always release the connection', async () => {
+      sinon.stub(cronjob, 'parseArguments').returns({
+        concurrently: 2,
+        batchSize: 4,
+        startDate: undefined,
+        endDate: undefined
+      });
+
+      const mockConnection = getMockDBConnection({
+        open: sinon.stub(),
+        release: sinon.stub()
+      });
+
+      sinon.stub(db, 'getAPIUserDBConnection').returns(mockConnection);
+
+      const lotekFetchStub = sinon.stub(TelemetryLotekService.prototype, 'fetchDevicesFromLotek');
+
+      lotekFetchStub.throws('error');
+
+      await cronjob.telemetryCronjob();
+
+      expect(mockConnection.open).to.have.been.calledOnce;
+      expect(mockConnection.release).to.have.been.calledOnce;
     });
   });
 });

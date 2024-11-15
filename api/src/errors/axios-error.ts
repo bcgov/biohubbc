@@ -7,14 +7,19 @@ interface FormattedAxiosError extends Error {
    */
   status: number;
   /**
-   * The content of the error.
+   * The status text of the response.
+   * @type {string}
+   */
+  statusText: string;
+  /**
+   * The Axios error response.
    * @type {unknown}
    */
-  content: unknown;
+  response: unknown;
 }
 
 /**
- * Format an Axios error into a simplified object.
+ * Attempts to format an Axios error into a simplified object.
  *
  * @param {unknown} error - The error to format
  * @returns {*} {FormattedAxiosError} The formatted error
@@ -22,10 +27,11 @@ interface FormattedAxiosError extends Error {
 export const formatAxiosError = (error: unknown): FormattedAxiosError => {
   if (axios.isAxiosError(error)) {
     return {
-      name: error.name,
+      name: 'AxiosError',
       message: error.message,
       status: error.response?.status ?? 500,
-      content: error.response?.data ?? error.request
+      statusText: error.response?.statusText ?? 'Internal Server Error',
+      response: error.response?.data
     };
   }
 
