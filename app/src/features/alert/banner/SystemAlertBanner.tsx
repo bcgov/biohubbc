@@ -71,11 +71,12 @@ export const SystemAlertBanner = (props: ISystemAlertBannerProps) => {
 
     return (
       <Stack
-        gap={1}
         sx={{
           display: 'flex',
           flexDirection: 'column',
-          mb: 1
+          '& .MuiAlert-root': {
+            mb: 1
+          }
         }}>
         {visibleAlerts}
         {collapsedAlerts.length > 0 && <Collapse in={isExpanded}>{collapsedAlerts}</Collapse>}

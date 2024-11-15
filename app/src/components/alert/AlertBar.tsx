@@ -30,7 +30,7 @@ const AlertBar = (props: IAlertBarProps) => {
       {...alertProps}
       variant={variant}
       severity={severity}
-      sx={{ flex: '1 1 auto', mb: 0, ...alertProps.sx }}>
+      sx={{ flex: '1 1 auto', ...alertProps.sx }}>
       <AlertTitle>{title}</AlertTitle>
       {text}
     </Alert>
