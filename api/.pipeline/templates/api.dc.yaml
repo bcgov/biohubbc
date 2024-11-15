@@ -350,7 +350,7 @@ objects:
                 # - name: MAX_REQ_BODY_SIZE
                 #   value: ${MAX_REQ_BODY_SIZE}
                 - name: MAX_UPLOAD_NUM_FILES
-                  value: MAX_UPLOAD_NUM_FILES
+                  value: ${MAX_UPLOAD_NUM_FILES}
                 - name: MAX_UPLOAD_FILE_SIZE
                   value: ${MAX_UPLOAD_FILE_SIZE}
                 # Object Store (S3)
