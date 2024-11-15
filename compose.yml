@@ -23,11 +23,11 @@ services:
       - POSTGRES_PASSWORD=${DB_ADMIN_PASS}
       - POSTGRES_DB=${DB_DATABASE}
       - PORT=5432
-      - PGDATA=${PG_DATA}/${POSTGRES_VERSION}
+      - PGDATA=${PGDATA}/${POSTGRES_VERSION}
     networks:
       - sims-network
     volumes:
-      - postgres:${PG_DATA}
+      - postgres:${PGDATA}
 
   ## Build the api docker image
   api:

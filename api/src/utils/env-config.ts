@@ -18,13 +18,11 @@ export const EnvSchema = z.object({
   API_PORT: ZodEnvNumber,
 
   // Database
-  POSTGRES_VERSION: ZodEnvString,
   DB_HOST: ZodEnvString,
   DB_PORT: ZodEnvNumber,
   DB_USER_API: ZodEnvString,
   DB_USER_API_PASS: ZodEnvString,
   DB_DATABASE: ZodEnvString,
-  PG_DATA: ZodEnvString,
 
   // Keycloak
   KEYCLOAK_HOST: ZodEnvString,
