@@ -29,18 +29,12 @@ interface ITelemetryData {
   itis_scientific_name: string;
 }
 
-interface ISurveyDataTelemetryTableProps {
-  isLoading: boolean;
-}
-
 /**
  * Component to display telemetry data in a table format.
  *
- * @param {ISurveyDataTelemetryTableProps} props - The component props.
- * @param {boolean} props.isLoading - Indicates if the data is currently loading.
- * @returns {JSX.Element} The rendered component.
+ * @returns {*} The rendered component.
  */
-export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProps) => {
+export const SurveySpatialTelemetryTable = () => {
   const surveyContext = useContext(SurveyContext);
   const telemetryDataContext = useTelemetryDataContext();
 
@@ -170,7 +164,7 @@ export const SurveySpatialTelemetryTable = (props: ISurveyDataTelemetryTableProp
 
   return (
     <LoadingGuard
-      isLoading={props.isLoading}
+      isLoading={deploymentDataLoader.isLoading}
       isLoadingFallback={<SkeletonTable />}
       isLoadingFallbackDelay={100}
       hasNoData={!rows.length}

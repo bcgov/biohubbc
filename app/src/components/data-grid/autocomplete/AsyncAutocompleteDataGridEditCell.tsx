@@ -29,6 +29,12 @@ export interface IAsyncAutocompleteDataGridEditCell<
    */
   getCurrentOption: (value: ValueType) => Promise<AutocompleteOptionType | null>;
   /**
+   * Initial options to display in the autocomplete, before the user types anything.
+   *
+   * @memberof IAsyncAutocompleteDataGridEditCell
+   */
+  getInitialOptions?: () => AutocompleteOptionType[];
+  /**
    * Search function that returns an array of options to choose from.
    *
    * @memberof IAsyncAutocompleteDataGridEditCell
@@ -46,6 +52,17 @@ export interface IAsyncAutocompleteDataGridEditCell<
    * Optional function to render the autocomplete option.
    */
   renderOption?: AutocompleteProps<AutocompleteOptionType, false, false, false>['renderOption'];
+  /**
+   * Optional callback fired when an option is selected.
+   */
+  onSelectOption?: (selectedOption: AutocompleteOptionType | null) => void;
+  /**
+   * Placeholder text for the input field.
+   *
+   * @type {string}
+   * @memberof IAsyncAutocompleteDataGridEditCell
+   */
+  placeholder?: string;
 }
 
 /**
@@ -64,7 +81,16 @@ const AsyncAutocompleteDataGridEditCell = <
 >(
   props: IAsyncAutocompleteDataGridEditCell<DataGridType, AutocompleteOptionType, ValueType>
 ) => {
-  const { dataGridProps, getCurrentOption, getOptions, error, renderOption } = props;
+  const {
+    dataGridProps,
+    getCurrentOption,
+    getOptions,
+    getInitialOptions,
+    error,
+    renderOption,
+    onSelectOption,
+    placeholder
+  } = props;
 
   const ref = useRef<HTMLInputElement>();
 
@@ -80,13 +106,20 @@ const AsyncAutocompleteDataGridEditCell = <
   const [inputValue, setInputValue] = useState<AutocompleteOptionType['label']>('');
   // The currently selected option
   const [currentOption, setCurrentOption] = useState<AutocompleteOptionType | null>(null);
+  // Reference to disable search (used when selecting an option to prevent a redundant search)
+  const isSearchDisabled = useRef(false);
   // The array of options to choose from
-  const [options, setOptions] = useState<AutocompleteOptionType[]>([]);
+  const [options, setOptions] = useState<AutocompleteOptionType[]>(getInitialOptions?.() ?? []);
   // Is control loading (search in progress)
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     let mounted = true;
+
+    if (isSearchDisabled.current) {
+      // Search is disabled
+      return;
+    }
 
     if (!dataGridValue) {
       // No current value
@@ -123,14 +156,20 @@ const AsyncAutocompleteDataGridEditCell = <
   useEffect(() => {
     let mounted = true;
 
-    if (inputValue === '') {
-      // No input value, nothing to search with
-      setOptions(currentOption ? [currentOption] : []);
+    if (isSearchDisabled.current) {
+      // Search is disabled
       return;
     }
 
-    // Call async search function
+    if (inputValue === '') {
+      // No search term, do not initiate search, cancel any existing search
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
+
+    // Call async search function
     getOptions(inputValue, (searchResults) => {
       if (!mounted) {
         return;
@@ -166,8 +205,13 @@ const AsyncAutocompleteDataGridEditCell = <
       }}
       filterOptions={(item) => item}
       onChange={(_, selectedOption) => {
-        setOptions(selectedOption ? [selectedOption, ...options] : options);
+        // Disable search when selecting an option, to prevent a redundant search when the input field is updated
+        // with the user's selection
+        isSearchDisabled.current = true;
+
         setCurrentOption(selectedOption);
+        onSelectOption?.(selectedOption);
+        setIsLoading(false);
 
         // Set the data grid cell value with selected options value
         dataGridProps.api.setEditCellValue({
@@ -176,7 +220,13 @@ const AsyncAutocompleteDataGridEditCell = <
           value: selectedOption?.value
         });
       }}
-      onInputChange={(_, newInputValue) => {
+      onInputChange={(_, newInputValue, reason) => {
+        if (reason === 'clear' || reason === 'input') {
+          // Enable search when the user interacts with the input field
+          // A 'reset' event is created when the user selects an option, which should not trigger a search
+          isSearchDisabled.current = false;
+        }
+
         setInputValue(newInputValue);
       }}
       renderInput={(params) => (
@@ -187,6 +237,7 @@ const AsyncAutocompleteDataGridEditCell = <
           variant="outlined"
           fullWidth
           error={error}
+          placeholder={placeholder}
           InputProps={{
             color: error ? 'error' : undefined,
             ...params.InputProps,

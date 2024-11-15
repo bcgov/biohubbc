@@ -6,9 +6,11 @@ import Paper from '@mui/material/Paper';
 import PageHeader from 'components/layout/PageHeader';
 import { SystemRoleGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
+import { SystemAlertBanner } from 'features/alert/banner/SystemAlertBanner';
+import { ListDataTableContainer } from 'features/summary/list-data/ListDataTableContainer';
+import { TabularDataTableContainer } from 'features/summary/tabular-data/TabularDataTableContainer';
+import { SystemAlertBannerEnum } from 'interfaces/useAlertApi.interface';
 import { Link as RouterLink } from 'react-router-dom';
-import { ListDataTableContainer } from './list-data/ListDataTableContainer';
-import { TabularDataTableContainer } from './tabular-data/TabularDataTableContainer';
 
 /**
  * Page to display a summary of a user's field data.
@@ -36,6 +38,8 @@ const SummaryPage = () => {
       />
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
+        <SystemAlertBanner alertTypes={[SystemAlertBannerEnum.SUMMARY]} />
+
         <Paper>
           <ListDataTableContainer />
         </Paper>
