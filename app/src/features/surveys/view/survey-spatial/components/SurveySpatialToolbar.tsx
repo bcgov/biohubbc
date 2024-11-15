@@ -12,9 +12,10 @@ import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import HelpButtonDialog, { MarkdownTypeNameEnum } from 'components/buttons/HelpButtonDialog';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 

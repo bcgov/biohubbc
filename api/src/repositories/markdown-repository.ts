@@ -1,5 +1,5 @@
 import SQL from 'sql-template-strings';
-import { MarkdownObject, markdownQueryObject, MarkdownUserObject } from '../models/markdown-view';
+import { MarkdownObject, MarkdownQueryObject, MarkdownUserObject } from '../models/markdown-view';
 import { BaseRepository } from './base-repository';
 
 /**
@@ -13,11 +13,11 @@ export class MarkdownRepository extends BaseRepository {
   /**
    * Gets the active markdown record for a given markdown type
    *
-   * @param {markdownQueryObject} markdownQueryObject
+   * @param {MarkdownQueryObject} MarkdownQueryObject
    * @return {*}  {Promise<MarkdownObject>}
    * @memberof MarkdownRepository
    */
-  async getMarkdownByTypeName(markdownQueryObject: markdownQueryObject): Promise<MarkdownObject> {
+  async getMarkdownByTypeName(MarkdownQueryObject: MarkdownQueryObject): Promise<MarkdownObject> {
     const sqlStatement = SQL`
         SELECT
           m.markdown_id,
@@ -28,9 +28,9 @@ export class MarkdownRepository extends BaseRepository {
         FROM
           markdown m
         LEFT JOIN markdown_type mt ON mt.markdown_type_id = m.markdown_type_id
-        LEFT JOIN markdown_user mu ON mu.markdown_id = m.markdown_id AND mu.system_user_id = ${markdownQueryObject.system_user_id}
+        LEFT JOIN markdown_user mu ON mu.markdown_id = m.markdown_id AND mu.system_user_id = ${MarkdownQueryObject.system_user_id}
         WHERE
-          mt.name = ${markdownQueryObject.markdown_type_name}
+          mt.name = ${MarkdownQueryObject.markdown_type_name}
         AND m.record_end_date IS NULL
       ;
       `;
@@ -41,14 +41,14 @@ export class MarkdownRepository extends BaseRepository {
   }
 
   /**
-   * Update the score of a markdown record. Only updates if the user hasn't voted before.
+   * Update the score of a markdown record.
    *
    * @param {number} markdownId
-   * @param {number} systemUserId
+   * @param {number} delta
    * @return {*}  {Promise<number>}
    * @memberof MarkdownRepository
    */
-  async updateScore(markdownId: number, systemUserId: number, delta: number): Promise<number> {
+  async updateScore(markdownId: number, delta: number): Promise<number> {
     const sqlStatement = SQL`
        UPDATE markdown
        SET score = score + ${delta}

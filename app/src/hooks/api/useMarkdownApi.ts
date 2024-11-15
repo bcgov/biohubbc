@@ -12,8 +12,8 @@ export const useMarkdownApi = (axios: AxiosInstance) => {
   /**
    * Get observations for a system user id.
    *
-   * @param {IObservationsAdvancedFilters} filterObject
-   * @return {*} {Promise<IFindProjectsResponse>}
+   * @param {IMarkdownFilterObject} filterObject
+   * @return {Promise<IFindProjectsResponse>}
    */
   const getMarkdown = async (filterObject: IMarkdownFilterObject): Promise<IGetMarkdownResponse> => {
     const params = {
@@ -29,7 +29,7 @@ export const useMarkdownApi = (axios: AxiosInstance) => {
    * Vote to increase or decrease the score of the markdown
    *
    * @param {MarkdownScoreObject} markdownScoreObject
-   * @return {*} {Promise<void>}
+   * @return {Promise<void>}
    */
   const insertScore = async (markdownScoreObject: MarkdownScoreObject): Promise<void> => {
     const { data } = await axios.post(`/api/markdown/${markdownScoreObject.markdownId}`, {

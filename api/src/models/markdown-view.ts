@@ -17,7 +17,7 @@ export const MarkdownUserObject = z.object({
 
 export type MarkdownUserObject = z.infer<typeof MarkdownUserObject>;
 
-export interface markdownQueryObject {
+export interface MarkdownQueryObject {
   system_user_id: number;
   markdown_type_name: string;
 }

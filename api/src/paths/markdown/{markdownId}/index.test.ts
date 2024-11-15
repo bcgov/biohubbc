@@ -75,7 +75,12 @@ describe('scoreMarkdown', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail('Expected error was not thrown');
     } catch (actualError) {
+      expect(mockDBConnection.open).to.have.been.calledOnce;
       expect(mockGetUserParticipation).to.have.been.calledOnceWith(1, 20);
+      expect(mockDBConnection.rollback).to.have.been.calledOnce;
+      expect(mockDBConnection.release).to.have.been.calledOnce;
+      
+      expect((actualError as Error).message).to.equal('a test error');
     }
   });
 

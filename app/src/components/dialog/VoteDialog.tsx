@@ -59,7 +59,7 @@ export interface IVoteDialogProps {
   hasSubmitted?: boolean;
 
   /**
-   * Callback fired if the user votes on the dialog content
+   * Callback fired if the user scores dialog content
    *
    * @memberof IVoteDialogProps
    */
@@ -111,8 +111,7 @@ export interface IVoteDialogProps {
 }
 
 /**
- * A dialog for displaying a title + message (typically a question), and giving the user the option to say
- * `Ok` or `No`.
+ * A dialog for displaying content and letting the user upvote or downvote to content.
  *
  * @param {*} props
  * @return {*}

@@ -4,9 +4,10 @@ import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import HelpButtonDialog, { MarkdownTypeNameEnum } from 'components/buttons/HelpButtonDialog';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { Link as RouterLink } from 'react-router-dom';
 
 export const SurveySamplingHeader = () => {

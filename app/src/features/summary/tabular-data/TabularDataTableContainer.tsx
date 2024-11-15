@@ -7,11 +7,12 @@ import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
-import HelpButtonDialog, { MarkdownTypeNameEnum } from 'components/buttons/HelpButtonDialog';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import AnimalsListContainer from 'features/summary/tabular-data/animal/AnimalsListContainer';
 import ObservationsListContainer from 'features/summary/tabular-data/observation/ObservationsListContainer';
 import TelemetryListContainer from 'features/summary/tabular-data/telemetry/TelemetryListContainer';
 import { useSearchParams } from 'hooks/useSearchParams';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 
 export const ACTIVE_VIEW_KEY = 'tavk';

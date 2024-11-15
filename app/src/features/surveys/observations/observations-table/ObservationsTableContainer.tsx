@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridRenderEditCellParams } from '@mui/x-data-grid';
-import HelpButtonDialog, { MarkdownTypeNameEnum } from 'components/buttons/HelpButtonDialog';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import DataGridValidationAlert from 'components/data-grid/DataGridValidationAlert';
 import {
   GenericCommentColDef,
@@ -41,6 +41,7 @@ import {
   useObservationsTableContext,
   useSurveyContext
 } from 'hooks/useContext';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import {
   IGetSampleLocationDetails,
   IGetSampleMethodDetails,

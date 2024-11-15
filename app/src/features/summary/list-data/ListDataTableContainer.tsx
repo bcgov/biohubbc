@@ -6,10 +6,11 @@ import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Toolbar from '@mui/material/Toolbar';
-import HelpButtonDialog, { MarkdownTypeNameEnum } from 'components/buttons/HelpButtonDialog';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import ProjectsListContainer from 'features/summary/list-data/project/ProjectsListContainer';
 import SurveysListContainer from 'features/summary/list-data/survey/SurveysListContainer';
 import { useSearchParams } from 'hooks/useSearchParams';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 
 export const ACTIVE_VIEW_KEY = 'lvk';

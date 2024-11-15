@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { MarkdownObject, markdownQueryObject, MarkdownUserObject } from '../models/markdown-view';
+import { MarkdownObject, MarkdownQueryObject, MarkdownUserObject } from '../models/markdown-view';
 import { MarkdownRepository } from '../repositories/markdown-repository';
 import { DBService } from './db-service';
 
@@ -14,12 +14,12 @@ export class MarkdownService extends DBService {
   /**
    * Gets the active markdown record for a given markdown type
    *
-   * @param {markdownQueryObject} markdownQueryObject
+   * @param {MarkdownQueryObject} MarkdownQueryObject
    * @return {*} Promise<MarkdownObject>
    * @memberof MarkdownService
    */
-  async getMarkdownByTypeName(markdownQueryObject: markdownQueryObject): Promise<MarkdownObject> {
-    const response = await this.markdownRepository.getMarkdownByTypeName(markdownQueryObject);
+  async getMarkdownByTypeName(MarkdownQueryObject: MarkdownQueryObject): Promise<MarkdownObject> {
+    const response = await this.markdownRepository.getMarkdownByTypeName(MarkdownQueryObject);
 
     return response;
   }
@@ -42,7 +42,7 @@ export class MarkdownService extends DBService {
       return false;
     }
 
-    await this.updateScore(markdownId, systemUserId, delta);
+    await this.updateScore(markdownId, delta);
 
     await this.insertUserParticipation(markdownId, systemUserId);
 
@@ -53,15 +53,12 @@ export class MarkdownService extends DBService {
    * Update the score of a markdown record
    *
    * @param {number} markdownId
-   * @param {number} systemUserId
    * @param {number} delta - The amount to change the score by (positive for increase, negative for decrease)
    * @return {*} Promise<number>
    * @memberof MarkdownService
    */
-  async updateScore(markdownId: number, systemUserId: number, delta: number): Promise<number> {
-    const response = await this.markdownRepository.updateScore(markdownId, systemUserId, delta);
-
-    return response;
+  async updateScore(markdownId: number, delta: number): Promise<number> {
+    return this.markdownRepository.updateScore(markdownId, delta);
   }
 
   /**
@@ -73,9 +70,7 @@ export class MarkdownService extends DBService {
    * @memberof MarkdownService
    */
   async getUserParticipation(markdownId: number, systemUserId: number): Promise<MarkdownUserObject> {
-    const response = await this.markdownRepository.getUserParticipation(markdownId, systemUserId);
-
-    return response;
+    return this.markdownRepository.getUserParticipation(markdownId, systemUserId);
   }
 
   /**

@@ -12,7 +12,7 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
-import HelpButtonDialog, { MarkdownTypeNameEnum } from 'components/buttons/HelpButtonDialog';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonMap, SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
@@ -28,6 +28,7 @@ import {
 } from 'features/surveys/sampling-information/sites/table/SamplingSiteTabs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 
