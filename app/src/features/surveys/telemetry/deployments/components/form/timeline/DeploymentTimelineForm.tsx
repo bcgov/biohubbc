@@ -243,14 +243,12 @@ export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
                     name="attachment_end_date"
                     label="End date"
                     required={values.attachment_end_time !== null}
-                    formikProps={formikProps}
                   />
                   <TimeField
                     id="attachment_end_time"
                     name="attachment_end_time"
                     label="End time"
                     required={values.attachment_end_date !== null}
-                    formikProps={formikProps}
                   />
                 </Box>
               )}

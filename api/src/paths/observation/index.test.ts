@@ -104,7 +104,8 @@ describe('findObservations', () => {
       qualitative_measurements: [],
       quantitative_measurements: [],
       qualitative_environments: [],
-      quantitative_environments: []
+      quantitative_environments: [],
+      sample_sites: []
     });
     expect(mockRes.jsonValue.pagination).not.to.be.null;
 

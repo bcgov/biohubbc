@@ -2,17 +2,29 @@ import Typography from '@mui/material/Typography';
 import { GridCellParams, GridColDef } from '@mui/x-data-grid';
 import AutocompleteDataGridEditCell from 'components/data-grid/autocomplete/AutocompleteDataGridEditCell';
 import AutocompleteDataGridViewCell from 'components/data-grid/autocomplete/AutocompleteDataGridViewCell';
-import ConditionalAutocompleteDataGridEditCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridEditCell';
-import ConditionalAutocompleteDataGridViewCell from 'components/data-grid/conditional-autocomplete/ConditionalAutocompleteDataGridViewCell';
 import TaxonomyDataGridEditCell from 'components/data-grid/taxonomy/TaxonomyDataGridEditCell';
 import TaxonomyDataGridViewCell from 'components/data-grid/taxonomy/TaxonomyDataGridViewCell';
 import TextFieldDataGrid from 'components/data-grid/TextFieldDataGrid';
 import { IObservationTableRow } from 'contexts/observationsTableContext';
+import { ObservationCountDataGridEditCell } from 'features/surveys/observations/observations-table/grid-column-definitions/count/ObservationCountDataGridEditCell';
+import SampleMethodDataGridEditCell from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/methods/SampleMethodDataGridEditCell';
+import { SampleMethodDataGridViewCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/methods/SampleMethodDataGridViewCell';
+import SamplePeriodDataGridEditCell from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/periods/SamplePeriodDataGridEditCell';
+import { SamplePeriodDataGridViewCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/periods/SamplePeriodDataGridViewCell';
+import { SampleSiteDataGridEditCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/sites/SampleSiteDataGridEditCell';
+import { SampleSiteDataGridViewCell } from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/sites/SampleSiteDataGridViewCell';
+import {
+  getMethodsForRow,
+  getPeriodsForRow
+} from 'features/surveys/observations/observations-table/grid-column-definitions/sampling-information/utils';
+import { SampleLocationCache } from 'features/surveys/observations/observations-table/ObservationsTableContainer';
 import { CBMeasurementType, CBQualitativeOption } from 'interfaces/useCritterApi.interface';
 import {
   EnvironmentQualitativeTypeDefinition,
   EnvironmentQuantitativeTypeDefinition
 } from 'interfaces/useReferenceApi.interface';
+import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { MutableRefObject } from 'react';
 
 export type ISampleSiteOption = {
   survey_sample_site_id: number;
@@ -66,10 +78,11 @@ export const TaxonomyColDef = (props: {
 };
 
 export const SampleSiteColDef = (props: {
-  sampleSiteOptions: ISampleSiteOption[];
+  cachedSampleLocationsRef: MutableRefObject<SampleLocationCache | undefined>;
+  onSelectOption: (selectedSampleSite: IGetSampleLocationNonSpatialDetails | null) => void;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
-  const { sampleSiteOptions, hasError } = props;
+  const { cachedSampleLocationsRef, onSelectOption, hasError } = props;
 
   return {
     field: 'survey_sample_site_id',
@@ -84,24 +97,19 @@ export const SampleSiteColDef = (props: {
     align: 'left',
     renderCell: (params) => {
       return (
-        <AutocompleteDataGridViewCell<IObservationTableRow, number>
+        <SampleSiteDataGridViewCell
           dataGridProps={params}
-          options={sampleSiteOptions.map((item) => ({
-            label: item.sample_site_name,
-            value: item.survey_sample_site_id
-          }))}
+          cachedSampleLocationsRef={cachedSampleLocationsRef}
           error={hasError(params)}
         />
       );
     },
     renderEditCell: (params) => {
       return (
-        <AutocompleteDataGridEditCell<IObservationTableRow, number>
+        <SampleSiteDataGridEditCell
           dataGridProps={params}
-          options={sampleSiteOptions.map((item) => ({
-            label: item.sample_site_name,
-            value: item.survey_sample_site_id
-          }))}
+          cachedSampleLocationsRef={cachedSampleLocationsRef}
+          onSelectOption={(selectedSampleSite) => onSelectOption(selectedSampleSite)}
           error={hasError(params)}
         />
       );
@@ -110,10 +118,10 @@ export const SampleSiteColDef = (props: {
 };
 
 export const SampleMethodColDef = (props: {
-  sampleMethodOptions: ISampleMethodOption[];
+  cachedSampleLocationsRef: MutableRefObject<SampleLocationCache | undefined>;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
-  const { sampleMethodOptions, hasError } = props;
+  const { cachedSampleLocationsRef, hasError } = props;
 
   return {
     field: 'survey_sample_method_id',
@@ -128,28 +136,21 @@ export const SampleMethodColDef = (props: {
     align: 'left',
     renderCell: (params) => {
       return (
-        <ConditionalAutocompleteDataGridViewCell<IObservationTableRow, ISampleMethodOption, number>
+        <SampleMethodDataGridViewCell
           dataGridProps={params}
-          optionsGetter={(row, allOptions) => {
-            return allOptions
-              .filter((item) => item.survey_sample_site_id === row.survey_sample_site_id)
-              .map((item) => ({ label: item.sample_method_name, value: item.survey_sample_method_id }));
-          }}
-          allOptions={sampleMethodOptions}
+          cachedSampleLocationsRef={cachedSampleLocationsRef}
           error={hasError(params)}
         />
       );
     },
     renderEditCell: (params) => {
+      const methodOptions = getMethodsForRow(params, cachedSampleLocationsRef);
+
       return (
-        <ConditionalAutocompleteDataGridEditCell<IObservationTableRow, ISampleMethodOption, number>
+        <SampleMethodDataGridEditCell
           dataGridProps={params}
-          optionsGetter={(row, allOptions) => {
-            return allOptions
-              .filter((item) => item.survey_sample_site_id === row.survey_sample_site_id)
-              .map((item) => ({ label: item.sample_method_name, value: item.survey_sample_method_id }));
-          }}
-          allOptions={sampleMethodOptions}
+          cachedSampleLocationsRef={cachedSampleLocationsRef}
+          methodOptions={methodOptions}
           error={hasError(params)}
         />
       );
@@ -158,10 +159,10 @@ export const SampleMethodColDef = (props: {
 };
 
 export const SamplePeriodColDef = (props: {
-  samplePeriodOptions: ISamplePeriodOption[];
+  cachedSampleLocationsRef: MutableRefObject<SampleLocationCache | undefined>;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
-  const { samplePeriodOptions, hasError } = props;
+  const { cachedSampleLocationsRef, hasError } = props;
 
   return {
     field: 'survey_sample_period_id',
@@ -169,41 +170,28 @@ export const SamplePeriodColDef = (props: {
     description: 'The sampling period in which the observation was made',
     editable: true,
     hideable: true,
-    flex: 0,
+    flex: 1,
     minWidth: 180,
     disableColumnMenu: true,
     headerAlign: 'left',
     align: 'left',
     renderCell: (params) => {
       return (
-        <ConditionalAutocompleteDataGridViewCell<IObservationTableRow, ISamplePeriodOption, number>
+        <SamplePeriodDataGridViewCell
           dataGridProps={params}
-          optionsGetter={(row, allOptions) => {
-            return allOptions
-              .filter((item) => item.survey_sample_method_id === row.survey_sample_method_id)
-              .map((item) => ({
-                label: item.sample_period_name,
-                value: item.survey_sample_period_id
-              }));
-          }}
-          allOptions={samplePeriodOptions}
+          cachedSampleLocationsRef={cachedSampleLocationsRef}
           error={hasError(params)}
         />
       );
     },
     renderEditCell: (params) => {
+      const periodOptions = getPeriodsForRow(params, cachedSampleLocationsRef);
+
       return (
-        <ConditionalAutocompleteDataGridEditCell<IObservationTableRow, ISamplePeriodOption, number>
+        <SamplePeriodDataGridEditCell
           dataGridProps={params}
-          optionsGetter={(row, allOptions) => {
-            return allOptions
-              .filter((item) => item.survey_sample_method_id === row.survey_sample_method_id)
-              .map((item) => ({
-                label: item.sample_period_name,
-                value: item.survey_sample_period_id
-              }));
-          }}
-          allOptions={samplePeriodOptions}
+          cachedSampleLocationsRef={cachedSampleLocationsRef}
+          periodOptions={periodOptions}
           error={hasError(params)}
         />
       );
@@ -212,10 +200,10 @@ export const SamplePeriodColDef = (props: {
 };
 
 export const ObservationCountColDef = (props: {
-  sampleMethodOptions: ISampleMethodOption[];
+  cachedSampleLocationsRef: MutableRefObject<SampleLocationCache | undefined>;
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
-  const { hasError } = props;
+  const { cachedSampleLocationsRef, hasError } = props;
 
   return {
     field: 'count',
@@ -234,39 +222,11 @@ export const ObservationCountColDef = (props: {
       </Typography>
     ),
     renderEditCell: (params) => {
-      const error: boolean = hasError(params);
-
-      const maxCount =
-        props.sampleMethodOptions.find(
-          (option) => option.survey_sample_method_id === params.row.survey_sample_method_id
-        )?.response_metric === 'Presence-absence'
-          ? 1
-          : undefined;
-
       return (
-        <TextFieldDataGrid
+        <ObservationCountDataGridEditCell
           dataGridProps={params}
-          textFieldProps={{
-            type: 'number',
-            inputProps: {
-              max: maxCount,
-              inputMode: 'numeric'
-            },
-            name: params.field,
-            onChange: (event) => {
-              if (!/^\d{0,7}$/.test(event.target.value)) {
-                // If the value is not a number, return
-                return;
-              }
-
-              params.api.setEditCellValue({
-                id: params.id,
-                field: params.field,
-                value: event.target.value
-              });
-            },
-            error
-          }}
+          cachedSampleLocationsRef={cachedSampleLocationsRef}
+          error={hasError(params)}
         />
       );
     }
@@ -278,6 +238,7 @@ export const ObservationSubcountSignColDef = (props: {
   hasError: (params: GridCellParams) => boolean;
 }): GridColDef<IObservationTableRow> => {
   const { observationSubcountSignOptions, hasError } = props;
+
   const signOptions = observationSubcountSignOptions.map((item) => ({
     label: item.name,
     value: item.observation_subcount_sign_id

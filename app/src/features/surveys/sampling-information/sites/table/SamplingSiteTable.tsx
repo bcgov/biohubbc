@@ -8,13 +8,12 @@ import ListItemText from '@mui/material/ListItemText';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
-import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
+import { GridColDef, GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { Feature } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
-import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
@@ -23,15 +22,21 @@ export interface ISamplingSiteRowData {
   id: number;
   name: string;
   description: string;
-  geojson: Feature;
+  geometry_type: string;
   blocks: string[];
   stratums: string[];
 }
 
 interface ISamplingSiteTableProps {
-  sites: IGetSampleLocationDetails[];
+  sites: IGetSampleLocationNonSpatialDetails[];
   bulkActionSites: GridRowSelectionModel;
   setBulkActionSites: (selection: GridRowSelectionModel) => void;
+  paginationModel: GridPaginationModel;
+  setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
+  setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
+  sortModel: GridSortModel;
+  pageSizeOptions: number[];
+  rowCount: number;
 }
 
 /**
@@ -41,7 +46,17 @@ interface ISamplingSiteTableProps {
  * @returns {*}
  */
 export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
-  const { sites, bulkActionSites, setBulkActionSites } = props;
+  const {
+    sites,
+    bulkActionSites,
+    setBulkActionSites,
+    paginationModel,
+    setPaginationModel,
+    sortModel,
+    setSortModel,
+    pageSizeOptions,
+    rowCount
+  } = props;
 
   const biohubApi = useBiohubApi();
   const surveyContext = useSurveyContext();
@@ -60,7 +75,6 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setActionMenuAnchorEl(null);
-        surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
@@ -108,8 +122,8 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
   const rows: ISamplingSiteRowData[] = sites.map((site) => ({
     id: site.survey_sample_site_id,
     name: site.name,
+    geometry_type: site.geometry_type,
     description: site.description || '',
-    geojson: site.geojson,
     blocks: site.blocks.map((block) => block.name),
     stratums: site.stratums.map((stratum) => stratum.name)
   }));
@@ -127,7 +141,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
       renderCell: (params) => (
         <Box>
           <ColouredRectangleChip
-            label={getSamplingSiteSpatialType(params.row.geojson) ?? 'Unknown'}
+            label={getSamplingSiteSpatialType(params.row.geometry_type) ?? 'Unknown'}
             colour={blueGrey}
           />
         </Box>
@@ -235,7 +249,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
 
       {/* DATA TABLE */}
       <StyledDataGrid
-        autoHeight
+        autoHeight={false}
         getRowHeight={() => 'auto'}
         disableColumnMenu
         rows={rows}
@@ -244,12 +258,19 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
         rowSelectionModel={bulkActionSites}
         onRowSelectionModelChange={setBulkActionSites}
         checkboxSelection
+        rowCount={rowCount}
+        paginationMode="server"
+        sortingMode="server"
+        sortModel={sortModel}
+        paginationModel={paginationModel}
+        onPaginationModelChange={setPaginationModel}
+        onSortModelChange={setSortModel}
         initialState={{
           pagination: {
-            paginationModel: { page: 1, pageSize: 10 }
+            paginationModel
           }
         }}
-        pageSizeOptions={[10, 25, 50]}
+        pageSizeOptions={pageSizeOptions}
       />
     </>
   );
