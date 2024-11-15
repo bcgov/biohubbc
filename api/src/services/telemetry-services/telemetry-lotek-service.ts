@@ -10,6 +10,7 @@ import {
   LotekPayload,
   LotekTask
 } from '../../repositories/telemetry-repositories/telemetry-lotek-repository.interface';
+import { getEnvironmentVariable } from '../../utils/env-config';
 import { getLogger } from '../../utils/logger';
 import { QueueResult, taskQueue } from '../../utils/task-queue';
 import { DBService } from '../db-service';
@@ -45,7 +46,7 @@ export class TelemetryLotekService extends DBService {
 
     this.lotekClient = axios.create({
       paramsSerializer: (params) => qs.stringify(params),
-      baseURL: `${process.env.LOTEK_API_HOST ?? 'https://webservice.lotek.com'}/API`
+      baseURL: `${getEnvironmentVariable('LOTEK_API_HOST')}/API`
     });
 
     this.token = undefined;
@@ -69,8 +70,8 @@ export class TelemetryLotekService extends DBService {
       const response = await this.lotekClient.post(
         `/user/login`,
         {
-          username: process.env.LOTEK_ACCOUNT_USERNAME,
-          password: process.env.LOTEK_ACCOUNT_PASSWORD,
+          username: getEnvironmentVariable('LOTEK_ACCOUNT_USERNAME'),
+          password: getEnvironmentVariable('LOTEK_ACCOUNT_PASSWORD'),
           grant_type: 'password'
         },
         { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
@@ -127,14 +128,14 @@ export class TelemetryLotekService extends DBService {
         }
       });
 
-      const match = response.data.match(/\d+/)?.[0]; // response.data = 'Number of Positions: 123' -> match = '123'
-      const count = match ? parseInt(match, 10) : NaN; // -> count = 123 or NaN
+      // response.data = 'Number of Positions: 10'
+      const count = response.data.replace(/\D/g, ''); // ie: '10'
 
-      if (isNaN(count)) {
-        throw new ApiGeneralError('Failed to parse count from Lotek response');
+      if (!count || isNaN(Number(count))) {
+        throw new ApiGeneralError(`Failed to parse count from Lotek response`, [response.data]);
       }
 
-      return count;
+      return Number(count);
     } catch (error) {
       throw new ApiGeneralError('Failed to fetch device telemetry count from Lotek.', [formatAxiosError(error)]);
     }
@@ -177,7 +178,7 @@ export class TelemetryLotekService extends DBService {
     return new Map(
       deviceActivityStats.map((value) => [
         value.serial,
-        { telemetryCount: value.telemetry_count, lastAcquisition: value.last_acquistion }
+        { telemetryCount: value.telemetry_count, lastAcquisition: value.last_acquisition }
       ])
     );
   }

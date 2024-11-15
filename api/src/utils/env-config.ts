@@ -56,6 +56,10 @@ export const EnvSchema = z.object({
   // External Services
   CB_API_HOST: ZodEnvString,
   APP_HOST: ZodEnvString,
+  LOTEK_API_HOST: ZodEnvString,
+  LOTEK_ACCOUNT_USERNAME: ZodEnvString,
+  LOTEK_ACCOUNT_PASSWORD: ZodEnvString,
+  VECTORNIC_API_HOST: ZodEnvString,
 
   // Biohub
   BACKBONE_INTERNAL_API_HOST: ZodEnvString,
@@ -111,6 +115,17 @@ export const loadEvironmentVariables = (): Env => {
   }
 
   return parsed.data;
+};
+
+/**
+ * Get an environment variable by name.
+ *
+ * @description Allows testing of environment variables without directly accessing process.env.
+ * @param {keyof Env} envVariable The environment variable to get
+ * @returns {*} {Env[keyof Env]} The environment variable value
+ */
+export const getEnvironmentVariable = (envVariable: keyof Env): Env[keyof Env] => {
+  return process.env[envVariable];
 };
 
 // Extend NodeJS ProcessEnv to include the EnvSchema

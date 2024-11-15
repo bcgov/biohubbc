@@ -35,21 +35,21 @@ export class TelemetryLotekRepository extends BaseRepository {
 
   /**
    * Get the device activity statistics for Lotek telemetry device.
-   * @returns {Promise<{ serial: number, telemetry_count: number, last_acquistion: string | null }[]>} The device activity statistics.
+   * @returns {Promise<{ serial: number, telemetry_count: number, last_acquisition: string | null }[]>} The device activity statistics.
    */
   async getDeviceActivityStatistics() {
     const sqlStatement = SQL`
       SELECT
         deviceid as serial,
         COUNT(*)::int AS telemetry_count,
-        MAX(recdatetime) as last_acquistion
+        MAX(recdatetime) as last_acquisition
       FROM telemetry_lotek
       GROUP BY serial;
     `;
 
     const result = await this.connection.sql(
       sqlStatement,
-      z.object({ serial: z.number(), telemetry_count: z.number(), last_acquistion: z.string().nullable() })
+      z.object({ serial: z.number(), telemetry_count: z.number(), last_acquisition: z.string().nullable() })
     );
 
     return result.rows;

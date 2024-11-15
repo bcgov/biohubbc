@@ -11,6 +11,7 @@ import {
   VectronicPayload,
   VectronicTask
 } from '../../repositories/telemetry-repositories/telemetry-vectronic-repository.interface';
+import { getEnvironmentVariable } from '../../utils/env-config';
 import { getLogger } from '../../utils/logger';
 import { QueueResult, taskQueue } from '../../utils/task-queue';
 import { DBService } from '../db-service';
@@ -42,7 +43,7 @@ export class TelemetryVectronicService extends DBService {
 
     this.vectronicClient = axios.create({
       paramsSerializer: (params) => qs.stringify(params),
-      baseURL: `${process.env.VECTRONIC_API_HOST ?? 'https://api.vectronic-wildlife.com'}/v2`
+      baseURL: `${getEnvironmentVariable('VECTORNIC_API_HOST')}/v2`
     });
 
     this.telemetryVectronicRepository = new TelemetryVectronicRepository(connection);
