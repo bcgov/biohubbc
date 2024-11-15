@@ -124,7 +124,7 @@ export const SurveySpatialToolbar = (props: ISurveySpatialToolbarProps) => {
             Survey Data
           </Typography>
           <Stack gap={1} direction="row">
-            <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_DATA}/>
+            <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_DATA} />
             <ProjectRoleGuard
               validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>

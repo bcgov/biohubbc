@@ -66,10 +66,10 @@ export class MarkdownRepository extends BaseRepository {
    *
    * @param {number} markdownId
    * @param {number} systemUserId
-   * @return {*}  {Promise<MarkdownUserObject>}
+   * @return {*}  {Promise<MarkdownUserObject | null>}
    * @memberof MarkdownRepository
    */
-  async getUserParticipation(markdownId: number, systemUserId: number): Promise<MarkdownUserObject> {
+  async getUserParticipation(markdownId: number, systemUserId: number): Promise<MarkdownUserObject | null> {
     const sqlStatement = SQL`
         SELECT 
           markdown_user_id,
@@ -85,7 +85,7 @@ export class MarkdownRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, MarkdownUserObject);
 
-    return response.rows[0];
+    return response.rows?.[0] ?? null;
   }
 
   /**

@@ -24,32 +24,29 @@ describe('scoreMarkdown', () => {
 
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockGetUserParticipation = sinon.stub(MarkdownService.prototype, 'getUserParticipation').resolves();
-
-    const mockUpdateScore = sinon.stub(MarkdownService.prototype, 'updateScore').resolves();
-
-    const mockInsertUserParticipation = sinon.stub(MarkdownService.prototype, 'insertUserParticipation').resolves();
+    const handleScoreChangeStub = sinon.stub(MarkdownService.prototype, 'handleScoreChange').resolves(10);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
     mockReq.params = { markdownId: '1' };
-    mockReq.body = { score: 1 };
+    mockReq.body = { score: -1 };
     mockReq.keycloak_token = {} as KeycloakUserInformation;
 
     const requestHandler = scoreMarkdown();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(mockDBConnection.open).to.have.been.calledOnce;
-    expect(mockDBConnection.commit).to.have.been.calledOnce;
-    expect(mockGetUserParticipation).to.have.been.calledOnceWith(1, 20);
-    expect(mockUpdateScore).to.have.been.calledOnceWith(1, 20, 1);
-    expect(mockInsertUserParticipation).to.have.been.calledOnceWith(1, 20);
+    expect(handleScoreChangeStub).to.have.been.calledOnceWith(1, 20, -1);
+
     expect(mockRes.status).to.have.been.calledWith(200);
     expect(mockRes.json).to.have.been.calledOnce;
+
+    expect(mockDBConnection.open).to.have.been.calledOnce;
+    expect(mockDBConnection.commit).to.have.been.calledOnce;
     expect(mockDBConnection.release).to.have.been.calledOnce;
   });
 
-  it('throws an error if the user has already voted', async () => {
+  it('returns a 500 error if the user has already scored the markdown record', async () => {
     const mockDBConnection = getMockDBConnection({
       open: sinon.stub(),
       commit: sinon.stub(),
@@ -60,28 +57,26 @@ describe('scoreMarkdown', () => {
 
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockGetUserParticipation = sinon
-      .stub(MarkdownService.prototype, 'getUserParticipation')
-      .resolves({ markdown_user_id: 1, system_user_id: 20, markdown_id: 1 });
+    const handleScoreChangeStub = sinon.stub(MarkdownService.prototype, 'handleScoreChange').resolves(null);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
     mockReq.params = { markdownId: '1' };
-    mockReq.body = { score: 1 };
+    mockReq.body = { score: -1 };
     mockReq.keycloak_token = {} as KeycloakUserInformation;
 
     const requestHandler = scoreMarkdown();
 
-    try {
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail('Expected error was not thrown');
-    } catch (actualError) {
-      expect(mockDBConnection.open).to.have.been.calledOnce;
-      expect(mockGetUserParticipation).to.have.been.calledOnceWith(1, 20);
-      expect(mockDBConnection.rollback).to.have.been.calledOnce;
-      expect(mockDBConnection.release).to.have.been.calledOnce;
-      
-      expect((actualError as Error).message).to.equal('a test error');
-    }
+    await requestHandler(mockReq, mockRes, mockNext);
+
+    expect(handleScoreChangeStub).to.have.been.calledOnceWith(1, 20, -1);
+
+    expect(mockRes.status).to.have.been.calledWith(500);
+    expect(mockRes.json).to.have.been.calledOnce;
+
+    expect(mockDBConnection.open).to.have.been.calledOnce;
+    expect(mockDBConnection.commit).to.have.been.calledOnce;
+    expect(mockDBConnection.release).to.have.been.calledOnce;
   });
 
   it('handles errors gracefully', async () => {
@@ -95,8 +90,8 @@ describe('scoreMarkdown', () => {
 
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockGetUserParticipation = sinon
-      .stub(MarkdownService.prototype, 'getUserParticipation')
+    const handleScoreChangeStub = sinon
+      .stub(MarkdownService.prototype, 'handleScoreChange')
       .rejects(new Error('a test error'));
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -110,8 +105,9 @@ describe('scoreMarkdown', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail('Expected error was not thrown');
     } catch (actualError) {
+      expect(handleScoreChangeStub).to.have.been.calledOnceWith(1, 20, 1);
+
       expect(mockDBConnection.open).to.have.been.calledOnce;
-      expect(mockGetUserParticipation).to.have.been.calledOnceWith(1, 20);
       expect(mockDBConnection.rollback).to.have.been.calledOnce;
       expect(mockDBConnection.release).to.have.been.calledOnce;
 

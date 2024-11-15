@@ -46,10 +46,9 @@ describe('MarkdownRepository', () => {
 
       const markdownRepository = new MarkdownRepository(mockDBConnection);
       const markdownId = 1;
-      const systemUserId = 2;
       const delta = 1;
 
-      const response = await markdownRepository.updateScore(markdownId, systemUserId, delta);
+      const response = await markdownRepository.updateScore(markdownId, delta);
 
       expect(response).to.eql({ score: 5 });
     });
@@ -66,10 +65,9 @@ describe('MarkdownRepository', () => {
 
       const markdownRepository = new MarkdownRepository(mockDBConnection);
       const markdownId = 1;
-      const systemUserId = 2;
       const delta = 1;
 
-      const response = await markdownRepository.updateScore(markdownId, systemUserId, delta);
+      const response = await markdownRepository.updateScore(markdownId, delta);
 
       expect(response).to.be.undefined;
     });
@@ -108,7 +106,7 @@ describe('MarkdownRepository', () => {
 
     it('should not insert if participation already exists', async () => {
       const mockMarkdownUserId = 1;
-      
+
       const mockDBConnection = getMockDBConnection({
         sql: sinon.stub().resolves({ rowCount: 1, rows: [mockMarkdownUserId] })
       });

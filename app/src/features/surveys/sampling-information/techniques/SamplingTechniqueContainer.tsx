@@ -136,7 +136,7 @@ export const SamplingTechniqueContainer = () => {
           </Typography>
         </Typography>
         <Stack gap={1} direction="row">
-          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.TECHNIQUES}/>
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.TECHNIQUES} />
           <Button
             variant="contained"
             color="primary"

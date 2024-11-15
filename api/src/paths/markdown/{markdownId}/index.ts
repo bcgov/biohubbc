@@ -100,14 +100,14 @@ export function scoreMarkdown(): RequestHandler {
 
       const markdownService = new MarkdownService(connection);
 
-      const success = await markdownService.handleMarkdownScore(markdownId, systemUserId, score);
-
-      // If the user has already voted, return a 500 error
-      if (!success) {
-        res.status(500).json();
-      }
+      const success = await markdownService.handleScoreChange(markdownId, systemUserId, score);
 
       await connection.commit();
+
+      // If the user has already scored, return a 500 error
+      if (!success) {
+        return res.status(500).json();
+      }
 
       return res.status(200).json();
     } catch (error) {

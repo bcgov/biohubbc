@@ -29,10 +29,10 @@ const HelpButtonDialog = (props: PropsWithChildren<IHelpButtonDialogProps>) => {
     hasSubmitted: markdown.participated,
     onSubmit: async (score: number) => {
       await biohubApi.markdown.insertScore({ markdownId: markdown.markdown_id, score });
-      dialogContext.setVoteDialog({ hasSubmitted: true });
+      dialogContext.setScoreDialog({ hasSubmitted: true });
     },
     onOk: () => {
-      dialogContext.setVoteDialog({ open: false });
+      dialogContext.setScoreDialog({ open: false });
     }
   });
 
@@ -41,7 +41,7 @@ const HelpButtonDialog = (props: PropsWithChildren<IHelpButtonDialogProps>) => {
     const { markdown } = await biohubApi.markdown.getMarkdown({ typeName: markdownType });
 
     if (markdown) {
-      dialogContext.setVoteDialog(createDialogConfig(markdown));
+      dialogContext.setScoreDialog(createDialogConfig(markdown));
     }
   };
 

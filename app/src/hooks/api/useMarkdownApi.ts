@@ -26,7 +26,7 @@ export const useMarkdownApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Vote to increase or decrease the score of the markdown
+   * Score to increase or decrease the score of the markdown
    *
    * @param {MarkdownScoreObject} markdownScoreObject
    * @return {Promise<void>}

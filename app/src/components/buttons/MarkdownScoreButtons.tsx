@@ -3,19 +3,19 @@ import Icon from '@mdi/react';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
-interface IMarkdownVoteButtonsProps {
+interface IMarkdownScoreButtonsProps {
   positiveText: string;
   negativeText: string;
   handleSubmit: (score: number) => void;
 }
 
 /**
- * Returns buttons to up-vote or down-vote
- * 
- * @param {IMarkdownVoteButtonsProps} props 
- * @returns 
+ * Returns buttons to up-score or down-score
+ *
+ * @param {IMarkdownScoreButtonsProps} props
+ * @returns
  */
-export const MarkdownVoteButtons = (props: IMarkdownVoteButtonsProps) => {
+export const MarkdownScoreButtons = (props: IMarkdownScoreButtonsProps) => {
   const { positiveText, negativeText, handleSubmit } = props;
 
   return (

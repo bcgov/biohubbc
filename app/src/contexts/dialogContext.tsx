@@ -2,7 +2,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Snackbar from '@mui/material/Snackbar';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import VoteDialog, { IVoteDialogProps } from 'components/dialog/VoteDialog';
+import ScoreDialog, { IScoreDialogProps } from 'components/dialog/ScoreDialog';
 import YesNoDialog, { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
 import React, { createContext, ReactNode, useState } from 'react';
 
@@ -53,20 +53,20 @@ export interface IDialogContext {
    */
   snackbarProps: ISnackbarProps;
   /**
-   * Set the vote dialog props.
+   * Set the score dialog props.
    *
    * Note: Any props that are not provided, will default to whatever value was previously set (or the default value)
    *
    * @memberof IDialogContext
    */
-  setVoteDialog: (props: Partial<IVoteDialogProps>) => void;
+  setScoreDialog: (props: Partial<IScoreDialogProps>) => void;
   /**
-   * The current vote dialog props.
+   * The current score dialog props.
    *
-   * @type {IVoteDialogProps}
+   * @type {IScoreDialogProps}
    * @memberof IDialogContext
    */
-  voteDialogProps: IVoteDialogProps;
+  scoreDialogProps: IScoreDialogProps;
 }
 
 export interface ISnackbarProps {
@@ -108,7 +108,7 @@ export const defaultSnackbarProps: ISnackbarProps = {
   open: false
 };
 
-export const defaultVoteDialogProps: IVoteDialogProps = {
+export const defaultScoreDialogProps: IScoreDialogProps = {
   dialogTitle: '',
   dialogText: '',
   dialogContent: <></>,
@@ -137,10 +137,10 @@ export const DialogContext = createContext<IDialogContext>({
     // default do nothing
   },
   snackbarProps: defaultSnackbarProps,
-  setVoteDialog: () => {
+  setScoreDialog: () => {
     // default do nothing
   },
-  voteDialogProps: defaultVoteDialogProps
+  scoreDialogProps: defaultScoreDialogProps
 });
 
 /**
@@ -154,7 +154,7 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>(defaultErrorDialogProps);
 
-  const [voteDialogProps, setVoteDialogProps] = useState<IVoteDialogProps>(defaultVoteDialogProps);
+  const [scoreDialogProps, setScoreDialogProps] = useState<IScoreDialogProps>(defaultScoreDialogProps);
 
   const [snackbarProps, setSnackbarProps] = useState<ISnackbarProps>(defaultSnackbarProps);
 
@@ -170,8 +170,8 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
     setErrorDialogProps({ ...errorDialogProps, ...partialProps });
   };
 
-  const setVoteDialog = function (partialProps: Partial<IVoteDialogProps>) {
-    setVoteDialogProps((prev) => ({ ...prev, ...partialProps }));
+  const setScoreDialog = function (partialProps: Partial<IScoreDialogProps>) {
+    setScoreDialogProps((prev) => ({ ...prev, ...partialProps }));
   };
 
   return (
@@ -183,13 +183,13 @@ export const DialogContextProvider: React.FC<React.PropsWithChildren> = (props) 
         errorDialogProps,
         setSnackbar,
         snackbarProps,
-        setVoteDialog,
-        voteDialogProps
+        setScoreDialog,
+        scoreDialogProps
       }}>
       {props.children}
       <YesNoDialog {...yesNoDialogProps} />
       <ErrorDialog {...errorDialogProps} />
-      <VoteDialog {...voteDialogProps} />
+      <ScoreDialog {...scoreDialogProps} />
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',

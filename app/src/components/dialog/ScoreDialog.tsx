@@ -6,62 +6,62 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import Typography from '@mui/material/Typography';
-import { MarkdownVoteButtons } from 'components/buttons/MarkdownVoteButtons';
+import { MarkdownScoreButtons } from 'components/buttons/MarkdownScoreButtons';
 import { ReactNode } from 'react';
 
-export interface IVoteDialogProps {
+export interface IScoreDialogProps {
   /**
    * optional component to render underneath the dialog text.
    *
    * @type {ReactNode}
-   * @memberof IVoteDialogProps
+   * @memberof IScoreDialogProps
    */
   dialogContent?: ReactNode;
   /**
    * The dialog window title text.
    *
    * @type {string}
-   * @memberof IVoteDialogProps
+   * @memberof IScoreDialogProps
    */
   dialogTitle: string;
   /**
    * The dialog window body text.
    *
    * @type {string}
-   * @memberof IVoteDialogProps
+   * @memberof IScoreDialogProps
    */
   dialogText: string;
   /**
    * Set to `true` to open the dialog, `false` to close the dialog.
    *
    * @type {boolean}
-   * @memberof IVoteDialogProps
+   * @memberof IScoreDialogProps
    */
   open: boolean;
   /**
    * Callback fired if the dialog is closed.
    *
-   * @memberof IVoteDialogProps
+   * @memberof IScoreDialogProps
    */
   onClose: () => void;
   /**
    * Callback fired if the 'Ok' button is clicked.
    *
-   * @memberof IVoteDialogProps
+   * @memberof IScoreDialogProps
    */
   onOk: () => Promise<void> | void;
 
   /**
    * Indicates whether the user has already submitted before, in which case they cannot submit again
    *
-   * @memberof IVoteDialogProps
+   * @memberof IScoreDialogProps
    */
   hasSubmitted?: boolean;
 
   /**
    * Callback fired if the user scores dialog content
    *
-   * @memberof IVoteDialogProps
+   * @memberof IScoreDialogProps
    */
   onSubmit?: (score: number) => Promise<void> | void;
 
@@ -69,7 +69,7 @@ export interface IVoteDialogProps {
    * The ok button label.
    *
    * @type {string}
-   * @memberof IVoteDialogProps
+   * @memberof IScoreDialogProps
    */
   okButtonLabel?: string;
 
@@ -77,7 +77,7 @@ export interface IVoteDialogProps {
    * The no button label.
    *
    * @type {string}
-   * @memberof IVoteDialogProps
+   * @memberof IScoreDialogProps
    */
   noButtonLabel?: string;
 
@@ -105,18 +105,18 @@ export interface IVoteDialogProps {
    * Optional Boolean to state if button should be loading
    *
    * @type {boolean}
-   * @memberof IVoteDialogProps
+   * @memberof IScoreDialogProps
    */
   isLoading?: boolean;
 }
 
 /**
- * A dialog for displaying content and letting the user upvote or downvote to content.
+ * A dialog for displaying content and letting the user upscore or downscore to content.
  *
  * @param {*} props
  * @return {*}
  */
-const VoteDialog = (props: IVoteDialogProps) => {
+const ScoreDialog = (props: IScoreDialogProps) => {
   if (!props.open) {
     return <></>;
   }
@@ -139,11 +139,9 @@ const VoteDialog = (props: IVoteDialogProps) => {
         {props.onSubmit && (
           <Box mr={3}>
             {props.hasSubmitted ? (
-              <Typography color="textSecondary">
-                Thanks for your feedback!
-              </Typography>
+              <Typography color="textSecondary">Thanks for your feedback!</Typography>
             ) : (
-              <MarkdownVoteButtons
+              <MarkdownScoreButtons
                 positiveText="This is helpful"
                 negativeText="This is confusing"
                 handleSubmit={props.onSubmit}
@@ -165,4 +163,4 @@ const VoteDialog = (props: IVoteDialogProps) => {
   );
 };
 
-export default VoteDialog;
+export default ScoreDialog;

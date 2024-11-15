@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { getMarkdown } from '.';
+import { getMarkdownByTypeName } from '.';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { MarkdownService } from '../../services/markdown-service';
@@ -40,7 +40,7 @@ describe('getMarkdown', () => {
     mockReq.query = { typeName: 'help' };
     mockReq.keycloak_token = {} as KeycloakUserInformation;
 
-    const requestHandler = getMarkdown();
+    const requestHandler = getMarkdownByTypeName();
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -73,7 +73,7 @@ describe('getMarkdown', () => {
     mockReq.query = { typeName: 'help' };
     mockReq.keycloak_token = {} as KeycloakUserInformation;
 
-    const requestHandler = getMarkdown();
+    const requestHandler = getMarkdownByTypeName();
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);
