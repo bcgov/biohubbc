@@ -61,10 +61,10 @@ export async function telemetryCronjob() {
     let lotekDevices = await lotekService.fetchDevicesFromLotek(); // Fetch the lotek account devices
     let vectronicDevices = await vectronicService.getDeviceCredentials(); // Fetch the vectronic account devices
 
-    // For testing purposes, limit the number of devices to process
-    if (args.$testMaxDevices) {
-      lotekDevices = lotekDevices.slice(0, args.$testMaxDevices);
-      vectronicDevices = vectronicDevices.slice(0, args.$testMaxDevices);
+    // Optional device limit for testing
+    if (args._test_maxDevices) {
+      lotekDevices = lotekDevices.slice(0, args._test_maxDevices);
+      vectronicDevices = vectronicDevices.slice(0, args._test_maxDevices);
     }
 
     // 3. GENERATE QUEUEABLE TASKS - Create tasks for each device
@@ -150,7 +150,7 @@ export const parseArguments = () => {
       // The end date for fetching telemetry data
       endDate: { type: 'string' },
       // The maximum number of devices to process (for testing)
-      $testMaxDevices: { type: 'string' }
+      _test_maxDevices: { type: 'string' }
     },
     allowPositionals: true
   });
@@ -161,7 +161,7 @@ export const parseArguments = () => {
       batchSize: z.coerce.number(),
       startDate: z.string().optional(),
       endDate: z.string().optional(),
-      $testMaxDevices: z.coerce.number().optional()
+      _test_maxDevices: z.coerce.number().optional()
     })
     .strict()
     .parse(parsedArgs.values);

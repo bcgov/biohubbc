@@ -149,7 +149,7 @@ api-container: ## Executes into the api container.
 ## ------------------------------------------------------------------------------
 ## Cronjob commands
 ## - You can include additional CLI arguments by appending the `args` param
-## - Ex: `make telemetry-cronjob args="--concurrently 100 --batchSize 1000 --_testMaxDevices 4"`
+## - Ex: `make telemetry-cronjob args="--concurrently 100 --batchSize 1000"`
 ## ------------------------------------------------------------------------------
 telemetry-cronjob: ## Run the telemetry cronjob
 	@echo "==============================================="
