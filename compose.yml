@@ -23,7 +23,7 @@ services:
       - POSTGRES_PASSWORD=${DB_ADMIN_PASS}
       - POSTGRES_DB=${DB_DATABASE}
       - PORT=5432
-      - PGDATA=${PG_DATA}/${PG_VERSION}
+      - PGDATA=${PG_DATA}/${POSTGRES_VERSION}
     networks:
       - sims-network
     volumes:
