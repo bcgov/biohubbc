@@ -79,7 +79,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
         open: true
       });
 
-      history.push('/admin/users');
+      history.push('/admin/manage/users');
     } catch (error) {
       openErrorDialog({
         dialogTitle: SystemUserI18N.removeUserErrorTitle,
@@ -93,8 +93,8 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
     <PageHeader
       breadCrumbJSX={
         <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
-          <Link component={RouterLink} underline="hover" to={`/admin/users`} aria-label="Back to Manage Users">
-            Manage Users
+          <Link component={RouterLink} underline="hover" to={`/admin/manage/users`} aria-label="Back to Admin">
+            Admin
           </Link>
           <Typography component="a" variant="inherit" color="textSecondary" aria-current="page">
             {userDetails.display_name}
