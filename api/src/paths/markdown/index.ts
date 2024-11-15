@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { markdownSchema } from '../../openapi/schemas/markdown';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
@@ -13,16 +14,17 @@ export const GET: Operation = [
     return {
       and: [
         {
-          discriminator: 'SystemUser'
+          validSystemRoles: [SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
   }),
-  getMarkdown()
+  getMarkdownByTypeName()
 ];
 
 GET.apiDoc = {
-  description: 'Gets a markdown record to display in a help dialog',
+  description: 'Gets a markdown record to display in a help dialog.',
   tags: ['markdown'],
   security: [
     {
@@ -33,17 +35,16 @@ GET.apiDoc = {
     {
       in: 'query',
       name: 'typeName',
-      description: 'Name of a markdown_type record',
-      required: false,
+      description: 'The name of a markdown type to retrieve the latest markdown record for',
+      required: true,
       schema: {
-        type: 'string',
-        nullable: true
+        type: 'string'
       }
     }
   ],
   responses: {
     200: {
-      description: 'Observation response object.',
+      description: 'Markdown response object.',
       content: {
         'application/json': {
           schema: markdownSchema
@@ -69,13 +70,13 @@ GET.apiDoc = {
 };
 
 /**
- * Get markdown for the current user, based on their permissions and filter criteria.
+ * Get the latest markdown text for a given markdown type
  *
  * @returns {RequestHandler}
  */
-export function getMarkdown(): RequestHandler {
+export function getMarkdownByTypeName(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getObservations' });
+    defaultLog.debug({ label: 'getMarkdownByTypeName' });
 
     const connection = getDBConnection(req.keycloak_token);
 
@@ -84,7 +85,7 @@ export function getMarkdown(): RequestHandler {
 
       const systemUserId = connection.systemUserId();
 
-      const markdownTypeName = (req.query.typeName as string) ?? '';
+      const markdownTypeName = req.query.typeName as string;
 
       const markdownService = new MarkdownService(connection);
 
@@ -97,7 +98,7 @@ export function getMarkdown(): RequestHandler {
 
       return res.status(200).json({ markdown });
     } catch (error) {
-      defaultLog.error({ label: 'getObservations', message: 'error', error });
+      defaultLog.error({ label: 'getMarkdown', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

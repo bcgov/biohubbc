@@ -9,6 +9,12 @@ interface IMarkdownVoteButtonsProps {
   handleSubmit: (score: number) => void;
 }
 
+/**
+ * Returns buttons to up-vote or down-vote
+ * 
+ * @param {IMarkdownVoteButtonsProps} props 
+ * @returns 
+ */
 export const MarkdownVoteButtons = (props: IMarkdownVoteButtonsProps) => {
   const { positiveText, negativeText, handleSubmit } = props;
 

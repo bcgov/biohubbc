@@ -4,37 +4,24 @@ import { Button } from '@mui/material';
 import { CustomMarkdown } from 'components/markdown/CustomMarkdown';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext } from 'hooks/useContext';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { PropsWithChildren } from 'react';
 
 interface IHelpButtonDialogProps {
   markdownType: MarkdownTypeNameEnum;
 }
 
-export enum MarkdownTypeNameEnum {
-  PROJECTS_AND_SURVEYS = 'Projects and Surveys',
-  SUMMARY_DATA = 'Summary Data',
-  SAMPLING_INFORMATION = 'Sampling Information',
-  SURVEY_DATA = 'Survey Data',
-  PROJECT_DETAILS = 'Project Details',
-  SURVEYS = 'Surveys',
-  SURVEY_PAGE = 'Survey Page',
-  TECHNIQUES = 'Techniques',
-  SAMPLING_SITES = 'Sampling Sites',
-  SURVEY_METADATA = 'Survey Metadata',
-  OBSERVATIONS = 'Observations'
-}
+/**
+ * Returns a button that opens a dialog containing markdown, allowing the user to score the markdown text if they haven't scored it yet.
+ *
+ * @param {PropsWithChildren<IHelpButtonDialogProps>} props
+ * @returns {*}
+ */
+const HelpButtonDialog = (props: PropsWithChildren<IHelpButtonDialogProps>) => {
+  const { markdownType, children } = props;
 
-const HelpButtonDialog = ({ markdownType, children }: PropsWithChildren<IHelpButtonDialogProps>) => {
   const dialogContext = useDialogContext();
   const biohubApi = useBiohubApi();
-
-  const handleOpenDialog = async () => {
-    const { markdown } = await biohubApi.markdown.getMarkdown({ typeName: markdownType });
-
-    if (markdown) {
-      dialogContext.setVoteDialog(createDialogConfig(markdown));
-    }
-  };
 
   const createDialogConfig = (markdown: any) => ({
     open: true,
@@ -48,6 +35,15 @@ const HelpButtonDialog = ({ markdownType, children }: PropsWithChildren<IHelpBut
       dialogContext.setVoteDialog({ open: false });
     }
   });
+
+  // Open the markdown dialog
+  const handleOpenDialog = async () => {
+    const { markdown } = await biohubApi.markdown.getMarkdown({ typeName: markdownType });
+
+    if (markdown) {
+      dialogContext.setVoteDialog(createDialogConfig(markdown));
+    }
+  };
 
   return (
     <Button variant="outlined" startIcon={<Icon path={mdiHelpCircleOutline} size={1} />} onClick={handleOpenDialog}>

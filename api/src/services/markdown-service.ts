@@ -25,7 +25,32 @@ export class MarkdownService extends DBService {
   }
 
   /**
-   * Change the score of a markdown record
+   * Handle a score change for a markdown record, succeeding only if the user has not already voted on the markdown record.
+   *
+   * @param {number} markdownId
+   * @param {number} systemUserId
+   * @param {number} delta - The amount to change the score by (positive for increase, negative for decrease)
+   * @return {*} Promise<number>
+   * @memberof MarkdownService
+   */
+  async handleMarkdownScore(markdownId: number, systemUserId: number, delta: number): Promise<boolean> {
+    // Confirm that the user has not already scored the markdown record
+    const participation = await this.getUserParticipation(markdownId, systemUserId);
+
+    // Return false if the user already scored
+    if (participation?.system_user_id) {
+      return false;
+    }
+
+    await this.updateScore(markdownId, systemUserId, delta);
+
+    await this.insertUserParticipation(markdownId, systemUserId);
+
+    return true;
+  }
+
+  /**
+   * Update the score of a markdown record
    *
    * @param {number} markdownId
    * @param {number} systemUserId

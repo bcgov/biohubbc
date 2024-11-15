@@ -1,9 +1,7 @@
 import { OpenAPIV3 } from 'openapi-types';
 
 /**
- * Schema for markdown records for versioned help dialogs
- *
- * @see MIME types: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+ * Schema for markdown records used in versioned help dialogs
  *
  */
 export const markdownSchema: OpenAPIV3.SchemaObject = {

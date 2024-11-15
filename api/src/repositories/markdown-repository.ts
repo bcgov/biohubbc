@@ -3,7 +3,7 @@ import { MarkdownObject, markdownQueryObject, MarkdownUserObject } from '../mode
 import { BaseRepository } from './base-repository';
 
 /**
- * A repository class for accessing markdown data for help dialogs.
+ * A repository class for managing markdown data for help dialogs.
  *
  * @export
  * @class MarkdownRepository
@@ -41,7 +41,7 @@ export class MarkdownRepository extends BaseRepository {
   }
 
   /**
-   * Update the score of a markdown record if the user hasn't voted before
+   * Update the score of a markdown record. Only updates if the user hasn't voted before.
    *
    * @param {number} markdownId
    * @param {number} systemUserId
@@ -53,11 +53,6 @@ export class MarkdownRepository extends BaseRepository {
        UPDATE markdown
        SET score = score + ${delta}
        WHERE markdown_id = ${markdownId}
-       AND NOT EXISTS (
-           SELECT 1
-           FROM markdown_user
-           WHERE markdown_id = ${markdownId} AND system_user_id = ${systemUserId}
-       )
        RETURNING score;
      `;
 

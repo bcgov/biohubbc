@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { MarkdownService } from '../../../services/markdown-service';
@@ -12,7 +13,8 @@ export const POST: Operation = [
     return {
       and: [
         {
-          discriminator: 'SystemUser'
+          validSystemRoles: [SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -30,9 +32,10 @@ POST.apiDoc = {
   ],
   parameters: [
     {
-      in: 'query',
+      in: 'path',
       name: 'markdownId',
       description: 'Primary key of a markdown record to submit a score for',
+      required: true,
       schema: {
         type: 'integer'
       }
@@ -77,7 +80,7 @@ POST.apiDoc = {
 };
 
 /**
- * Get markdown for the current user, based on their permissions and filter criteria.
+ * Apply a score to a markdown record
  *
  * @returns {RequestHandler}
  */
@@ -97,25 +100,18 @@ export function scoreMarkdown(): RequestHandler {
 
       const markdownService = new MarkdownService(connection);
 
-      // Confirm that the user has not already voted on the markdown record
-      const participation = await markdownService.getUserParticipation(markdownId, systemUserId);
+      const success = await markdownService.handleMarkdownScore(markdownId, systemUserId, score);
 
-      // Throw 500 error if the user has already voted
-      if (participation?.system_user_id) {
-        return res.status(500).json();
+      // If the user has already voted, return a 500 error
+      if (!success) {
+        res.status(500).json();
       }
-
-      // Increase or decrease the score of a markdown record
-      await markdownService.updateScore(markdownId, systemUserId, score);
-
-      // Record that the user has scored the markdown record
-      await markdownService.insertUserParticipation(markdownId, systemUserId);
 
       await connection.commit();
 
       return res.status(200).json();
     } catch (error) {
-      defaultLog.error({ label: 'getObservations', message: 'error', error });
+      defaultLog.error({ label: 'scoreMarkdown', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
