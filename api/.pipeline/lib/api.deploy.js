@@ -37,6 +37,7 @@ const apiDeploy = async (settings) => {
         // Persistent Volume
         VOLUME_CAPACITY: phases[phase].volumeCapacity,
         // BioHub Platform (aka: Backbone)
+        BACKBONE_PUBLIC_API_HOST: phases[phase].backbonePublicApiHost,
         BACKBONE_INTERNAL_API_HOST: phases[phase].backboneInternalApiHost,
         BACKBONE_INTAKE_PATH: phases[phase].backboneIntakePath,
         BACKBONE_ARTIFACT_INTAKE_PATH: phases[phase].backboneArtifactIntakePath,

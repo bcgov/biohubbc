@@ -121,6 +121,16 @@ parameters:
     description: S3 key optional prefix
     required: false
     value: 'sims'
+  # Request limits
+  - name: MAX_REQ_BODY_SIZE
+    description: Maximum request body size in bytes
+    value: 52428800
+  - name: MAX_UPLOAD_NUM_FILES
+    description: Maximum number of files uploaded in a single request
+    value: 10
+  - name: MAX_UPLOAD_FILE_SIZE
+    description: Maximum upload file size in bytes
+    value: 52428800
   # Logging
   - name: LOG_LEVEL
     value: 'silent'
@@ -162,6 +172,9 @@ parameters:
   - name: GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE
     description: gcnotify email template id
     value: 7779a104-b863-40ac-902f-1aa607d2071a
+  - name: GCNOTIFY_REQUEST_RESUBMIT_TEMPLATE
+    description: gcnotify email resubmit template id
+    value: c973da33-1f2b-435a-9429-d8ab4fd273c5
   - name: GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE
     description: gcnotify sms template id
     value: af2f1e40-bd72-4612-9c5a-567ee5b26ca5
@@ -336,6 +349,13 @@ objects:
                   value: ${KEYCLOAK_API_HOST}
                 - name: KEYCLOAK_API_ENVIRONMENT
                   value: ${KEYCLOAK_API_ENVIRONMENT}
+                # Request limits
+                - name: MAX_REQ_BODY_SIZE
+                  value: ${MAX_REQ_BODY_SIZE}
+                - name: MAX_UPLOAD_NUM_FILES
+                  value: MAX_UPLOAD_NUM_FILES
+                - name: MAX_UPLOAD_FILE_SIZE
+                  value: ${MAX_UPLOAD_FILE_SIZE}
                 # Object Store (S3)
                 - name: OBJECT_STORE_URL
                   valueFrom:
@@ -357,6 +377,8 @@ objects:
                     secretKeyRef:
                       key: object_store_bucket_name
                       name: ${OBJECT_STORE_SECRETS}
+                - name: S3_KEY_PREFIX
+                  value: ${S3_KEY_PREFIX}
                 # Logging
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
@@ -387,6 +409,8 @@ objects:
                   value: ${GCNOTIFY_ADMIN_EMAIL}
                 - name: GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE
                   value: ${GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE}
+                - name: GCNOTIFY_REQUEST_RESUBMIT_TEMPLATE
+                  value: ${GCNOTIFY_REQUEST_RESUBMIT_TEMPLATE}
                 - name: GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE
                   value: ${GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE}
                 - name: GCNOTIFY_EMAIL_URL
