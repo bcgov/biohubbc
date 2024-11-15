@@ -52,13 +52,16 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
 
   // Map fetched data to table data structure
   const rows: IAnimalData[] =
-    animalsDataLoader.data?.map((item) => ({
-      id: item.critter_id,
-      animal_id: item.animal_id ?? '',
-      scientificName: item.itis_scientific_name,
-      status: !!item.mortality?.length,
-      sex: typeof item.sex === 'string' ? item.sex : item.sex?.label ?? 'Unknown'
-    })) ?? [];
+    animalsDataLoader.data?.map((item) => {
+      const capitalizeFirstLetter = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+      return {
+        id: item.critter_id,
+        animal_id: item.animal_id ?? '',
+        scientificName: item.itis_scientific_name,
+        status: !!item.mortality?.length,
+        sex: typeof item.sex === 'string' ? capitalizeFirstLetter(item.sex) : item.sex?.label ?? 'Unknown'
+      };
+    }) ?? [];
 
   // Define columns for the data grid
   const columns: GridColDef<IAnimalData>[] = [
