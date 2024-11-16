@@ -1,0 +1,8 @@
+kind: Secret
+apiVersion: v1
+metadata:
+  name: biohubbc-telemetry
+data:
+  lotek_account_username: <fill in values>
+  lotek_account_password: <fill in values>
+type: Opaque

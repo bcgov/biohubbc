@@ -76,6 +76,10 @@ parameters:
   - name: DB_SERVICE_NAME
     description: 'Database service name associated with deployment'
     required: true
+  - name: DB_PORT
+    description: 'Database port'
+    required: true
+    value: '5432'
   # Keycloak
   - name: KEYCLOAK_HOST
     description: Key clock login url
@@ -185,6 +189,16 @@ parameters:
     value: '1'
   - name: REPLICAS_MAX
     value: '1'
+  # Telemetry
+  - name: TELEMETRY_SECRET
+    description: The name of the Openshift Biohubbc telemetry secret
+    value: biohubbc-telemetry
+  - name: LOTEK_API_HOST
+    description: The host URL for Lotek webservice API
+    value: https://webservice.lotek.com
+  - name: VECTRONIC_API_HOST
+    description: The host URL for Vectronic webservice API
+    value: https://api.vectronic-wildlife.com
 objects:
   - kind: ImageStream
     apiVersion: image.openshift.io/v1
@@ -306,7 +320,7 @@ objects:
                       key: database-name
                       name: ${DB_SERVICE_NAME}
                 - name: DB_PORT
-                  value: '5432'
+                  value: ${DB_PORT}
                 # Keycloak
                 - name: KEYCLOAK_HOST
                   value: ${KEYCLOAK_HOST}
@@ -515,6 +529,95 @@ objects:
       wildcardPolicy: None
     status:
       ingress: null
+
+  - kind: CronJob
+    apiVersion: batch/v1
+    metadata:
+      name: biohubbc-telemetry-cronjob-${SUFFIX}
+      labels:
+        role: telemetry-cronjob
+    spec:
+      schedule: '0 0 * * *' # Runs every day at 12:00am
+      concurrencyPolicy: "Replace"
+      successfulJobsHistoryLimit: 1
+      failedJobsHistoryLimit: 1
+      jobTemplate:
+        spec:
+          template:
+            spec:
+              containers:
+                - name: api
+                  env:
+                    - name: VERSION
+                      value: ${VERSION}
+                    - name: CHANGE_VERSION
+                      value: ${CHANGE_ID}
+                    - name: NODE_ENV
+                      value: ${NODE_ENV}
+                    - name: NODE_OPTIONS
+                      value: ${NODE_OPTIONS}
+                    # Database
+                    - name: TZ
+                      value: ${TZ}
+                    - name: DB_HOST
+                      value: ${DB_SERVICE_NAME}
+                    - name: DB_USER_API
+                      valueFrom:
+                        secretKeyRef:
+                          key: database-user-api
+                          name: ${DB_SERVICE_NAME}
+                    - name: DB_USER_API_PASS
+                      valueFrom:
+                        secretKeyRef:
+                          key: database-user-api-password
+                          name: ${DB_SERVICE_NAME}
+                    - name: DB_DATABASE
+                      valueFrom:
+                        secretKeyRef:
+                          key: database-name
+                          name: ${DB_SERVICE_NAME}
+                    - name: DB_PORT
+                      value: ${DB_PORT}
+                    # Telemetry
+                    - name: LOTEK_API_HOST
+                      value: ${LOTEK_API_HOST}
+                    - name: LOTEK_ACCOUNT_USERNAME
+                      valueFrom:
+                        secretKeyRef:
+                          key: lotek_account_username
+                          name: ${TELEMETRY_SECRET}
+                    - name: LOTEK_ACCOUNT_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                          key: lotek_account_password
+                          name: ${TELEMETRY_SECRET}
+                    - name: VECTRONIC_API_HOST
+                      value: ${VECTRONIC_API_HOST}
+                    # Logging
+                    - name: LOG_LEVEL
+                      value: ${LOG_LEVEL}
+                    - name: LOG_LEVEL_FILE
+                      value: ${LOG_LEVEL_FILE}
+                    - name: LOG_FILE_DIR
+                      value: ${LOG_FILE_DIR}
+                    - name: LOG_FILE_NAME
+                      value: ${LOG_FILE_NAME}
+                    - name: LOG_FILE_DATE_PATTERN
+                      value: ${LOG_FILE_DATE_PATTERN}
+                    - name: LOG_FILE_MAX_SIZE
+                      value: ${LOG_FILE_MAX_SIZE}
+                    - name: LOG_FILE_MAX_FILES
+                      value: ${LOG_FILE_MAX_FILES}
+                    # Api Validation
+                    - name: API_RESPONSE_VALIDATION_ENABLED
+                      value: ${API_RESPONSE_VALIDATION_ENABLED}
+                    - name: DATABASE_RESPONSE_VALIDATION_ENABLED
+                      value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
+                  image: ${NAME}:${VERSION}
+                  command: ["npm", "run"]
+                  #command: ["npm", "run", "telemetry-cronjob", "--", "--batchSize 1000", "--concurrently 100"]
+              restartPolicy: Never
+
 
   # Disable the HPA for now, as it is preferrable to run an exact number of pods (e.g. min:2, max:2)
   # - kind: HorizontalPodAutoscaler
