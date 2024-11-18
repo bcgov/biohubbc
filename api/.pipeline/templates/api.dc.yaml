@@ -5,6 +5,12 @@ metadata:
   labels:
     build: biohubbc-api
 parameters:
+  - name: NAMESPACE
+    description: Openshift namespace name
+    value: ''
+  - name: BASE_IMAGE_REGISTRY_URL
+    description: The base image registry URL
+    value: image-registry.openshift-image-registry.svc:5000
   - name: NAME
     value: biohubbc-api
   - name: SUFFIX
@@ -568,7 +574,7 @@ objects:
             spec:
               containers:
                 - name: api
-                  image: ${NAME}:${SUFFIX}
+                  image: ${BASE_IMAGE_REGISTRY_URL}/${NAMESPACE}/${NAME}:${VERSION}
                   imagePullPolicy: Always
                   env:
                     - name: VERSION

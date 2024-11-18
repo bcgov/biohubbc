@@ -25,6 +25,7 @@ const apiDeploy = async (settings) => {
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api.dc.yaml`, {
       param: {
+        NAMESPACE: phases[phase].namespace,
         NAME: phases[phase].name,
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
