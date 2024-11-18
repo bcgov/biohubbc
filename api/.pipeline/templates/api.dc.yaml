@@ -554,7 +554,7 @@ objects:
   - kind: CronJob
     apiVersion: batch/v1
     metadata:
-      name: biohubbc-telemetry-cronjob-${SUFFIX}
+      name: biohubbc-telemetry-cronjob${SUFFIX}
       labels:
         role: telemetry-cronjob
     spec:
@@ -635,6 +635,7 @@ objects:
                     - name: DATABASE_RESPONSE_VALIDATION_ENABLED
                       value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
                   image: ${NAME}:${VERSION}
+                  imagePullPolicy: Always
                   command: ["npm", "run"]
                   #command: ["npm", "run", "telemetry-cronjob", "--", "--batchSize 1000", "--concurrently 100"]
               restartPolicy: Never
