@@ -568,6 +568,18 @@ objects:
             spec:
               containers:
                 - name: api
+                  image: ' '
+                  imagePullPolicy: Always
+                  triggers:
+                    - imageChangeParams:
+                        automatic: true
+                        containerNames:
+                          - api
+                        from:
+                          kind: ImageStreamTag
+                          name: ${NAME}:${VERSION}
+                      type: ImageChange
+                    - type: ConfigChange
                   env:
                     - name: VERSION
                       value: ${VERSION}
@@ -634,8 +646,6 @@ objects:
                       value: ${API_RESPONSE_VALIDATION_ENABLED}
                     - name: DATABASE_RESPONSE_VALIDATION_ENABLED
                       value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
-                  image: ' '
-                  imagePullPolicy: Always
                   command: ["npm", "run"]
                   #command: ["npm", "run", "telemetry-cronjob", "--", "--batchSize 1000", "--concurrently 100"]
               restartPolicy: Never
