@@ -4,6 +4,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import TextField, { TextFieldProps } from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import { SyntheticEvent } from 'react';
@@ -27,6 +28,7 @@ export interface IAutocompleteField<T extends string | number> {
   showValue?: boolean;
   disableClearable?: boolean;
   optionFilter?: 'value' | 'label'; // used to filter existing/ set data for the AutocompleteField, defaults to value in getExistingValue function
+  helpText?: string;
   getOptionDisabled?: (option: IAutocompleteFieldOption<T>) => boolean;
   onChange?: (event: SyntheticEvent<Element, Event>, option: IAutocompleteFieldOption<T> | null) => void;
   renderOption?: (params: React.HTMLAttributes<HTMLLIElement>, option: IAutocompleteFieldOption<T>) => React.ReactNode;
@@ -138,6 +140,7 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
               endAdornment: (
                 <>
                   {props.loading ? <CircularProgress color="inherit" size={20} /> : null}
+                  {props.helpText && <HelpButtonTooltip content={props.helpText} />}
                   {params.InputProps.endAdornment}
                 </>
               )

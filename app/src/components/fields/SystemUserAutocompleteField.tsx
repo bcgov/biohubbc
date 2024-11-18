@@ -5,6 +5,7 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import grey from '@mui/material/colors/grey';
 import TextField from '@mui/material/TextField';
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import UserCard from 'components/user/UserCard';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
@@ -27,6 +28,13 @@ interface ISystemUserAutocompleteFieldProps {
    * @memberof ISystemUserAutocompleteFieldProps
    */
   label: string;
+  /**
+   * Users to filter from the options because they have already been selected
+   *
+   * @type {number[]}
+   * @memberof ISystemUserAutocompleteFieldProps
+   */
+  selectedUsers?: number[];
   /**
    * Callback fired on option selection.
    *
@@ -62,6 +70,13 @@ interface ISystemUserAutocompleteFieldProps {
    */
   clearOnSelect?: boolean;
   /**
+   * Optional help text to be displayed in a tooltip
+   *
+   * @type {string}
+   * @memberof  ISystemUserAutocompleteFieldProps
+   */
+  helpText?: string;
+  /**
    * Whether to show start adornment magnifying glass or not
    * Defaults to false
    *
@@ -85,7 +100,18 @@ interface ISystemUserAutocompleteFieldProps {
  * @return {*}
  */
 export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldProps) => {
-  const { formikFieldName, disabled, label, showStartAdornment, placeholder, onSelect, onClear, clearOnSelect } = props;
+  const {
+    formikFieldName,
+    disabled,
+    label,
+    showStartAdornment,
+    placeholder,
+    onSelect,
+    onClear,
+    clearOnSelect,
+    helpText,
+    selectedUsers
+  } = props;
 
   const biohubApi = useBiohubApi();
   const isMounted = useIsMounted();
@@ -121,7 +147,12 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
       isOptionEqualToValue={(option, value) => {
         return option.system_user_id === value.system_user_id;
       }}
-      filterOptions={(item) => item}
+      filterOptions={(options) => {
+        if (selectedUsers) {
+          return options.filter((item) => selectedUsers && !selectedUsers.includes(item.system_user_id));
+        }
+        return options;
+      }}
       inputValue={inputValue}
       // Text field value changed
       onInputChange={(_, value, reason) => {
@@ -211,6 +242,7 @@ export const SystemUserAutocompleteField = (props: ISystemUserAutocompleteFieldP
             endAdornment: (
               <>
                 {isLoading ? <CircularProgress color="inherit" size={20} /> : null}
+                {helpText && <HelpButtonTooltip content={helpText} />}
                 {params.InputProps.endAdornment}
               </>
             )

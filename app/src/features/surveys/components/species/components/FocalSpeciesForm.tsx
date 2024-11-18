@@ -2,7 +2,6 @@ import Collapse from '@mui/material/Collapse';
 import { grey } from '@mui/material/colors';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
-import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import SpeciesAutocompleteField from 'components/species/components/SpeciesAutocompleteField';
 import SpeciesSelectedCard from 'components/species/components/SpeciesSelectedCard';
 import { FocalSpeciesAlert } from 'features/surveys/components/species/components/FocalSpeciesAlert';
@@ -31,22 +30,21 @@ export const FocalSpeciesForm = () => {
           <Stack gap={2}>
             <FocalSpeciesAlert />
 
-            <HelpButtonStack helpText="Select the species that this Survey targets. If you targetted multiple related species, you can select a higher taxon, such as Mammalia. The taxonomomic data source is the Integrated Taxonomic Information System.">
-              <SpeciesAutocompleteField
-                formikFieldName={'species.focal_species'}
-                label={'Species'}
-                required={true}
-                handleSpecies={(species) => {
-                  if (values.species.focal_species.some((focalSpecies) => focalSpecies.tsn === species.tsn)) {
-                    // Species was already added, do not add again
-                    return;
-                  }
+            <SpeciesAutocompleteField
+              formikFieldName={'species.focal_species'}
+              label={'Species'}
+              helpText={'If you focused on multiple related species, you can select a higher taxon (eg. birds, bats).'}
+              required={true}
+              handleSpecies={(species) => {
+                if (values.species.focal_species.some((focalSpecies) => focalSpecies.tsn === species.tsn)) {
+                  // Species was already added, do not add again
+                  return;
+                }
 
-                  arrayHelpers.push({ ...species, ecological_units: [] });
-                }}
-                clearOnSelect={true}
-              />
-            </HelpButtonStack>
+                arrayHelpers.push({ ...species, ecological_units: [] });
+              }}
+              clearOnSelect={true}
+            />
 
             <TransitionGroup>
               {selectedSpecies.map((species, index) => (

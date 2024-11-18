@@ -4,6 +4,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import BaseLayerControls from 'components/map/components/BaseLayerControls';
 import { SetMapBounds } from 'components/map/components/Bounds';
 import DrawControls, { IDrawControlsRef } from 'components/map/components/DrawControls';
@@ -74,18 +75,17 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
         sx={{
           px: 2
         }}>
-        <Typography
-          data-testid="map-control-title"
-          component="div"
-          fontWeight="700"
-          sx={{
-            flex: '1 1 auto'
-          }}>
-          Study Areas
-          <Typography component="span" color="textSecondary" sx={{ ml: 0.5, flex: '1 1 auto' }}>
-            ({values.locations.length})
+        <HelpButtonStack helpText="Study areas are general areas of interest where you went or are extrapolating findings to.">
+          <Typography
+            data-testid="map-control-title"
+            component="div"
+            fontWeight="700">
+            Study Areas
+            <Typography component="span" color="textSecondary" sx={{ ml: 0.5, flex: '1 1 auto' }}>
+              ({values.locations.length})
+            </Typography>
           </Typography>
-        </Typography>
+        </HelpButtonStack>
         <Box display="flex">
           <Button
             color="primary"

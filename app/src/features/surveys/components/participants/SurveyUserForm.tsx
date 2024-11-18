@@ -4,10 +4,11 @@ import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
+import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import AlertBar from 'components/alert/AlertBar';
-import HelpButtonStack from 'components/buttons/HelpButtonStack';
+import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
 import UserCard from 'components/user/UserCard';
 import UserRoleSelector from 'components/user/UserRoleSelector';
 import { useFormikContext } from 'formik';
@@ -120,79 +121,82 @@ const SurveyUserForm = (props: ISurveyUserFormProps) => {
           <AlertBar severity="error" variant="outlined" title={alertBarText().title} text={alertBarText().text} />
         </Box>
       )}
-      <HelpButtonStack helpText="Please specify the roles of survey participants. If you cannot find one of your team members, you may need to invite them to use SIMS before specifying their role. You can always edit your survey later to add them.">
-        <Autocomplete
-          id={'autocomplete-user-role-search'}
-          data-testid={'autocomplete-user-role-search'}
-          filterSelectedOptions
-          noOptionsText="No records found"
-          options={sortedUsers}
-          filterOptions={(options, state) => {
-            const searchFilter = createFilterOptions<ISystemUser>({ ignoreCase: true });
-            const unselectedOptions = options.filter(
-              (item) => !values.participants.some((existing) => existing.system_user_id === item.system_user_id)
-            );
-            return searchFilter(unselectedOptions, state);
-          }}
-          getOptionLabel={(option) => option.display_name}
-          inputValue={searchText}
-          onInputChange={(_, value, reason) => {
-            if (reason === 'reset') {
-              setSearchText('');
-            } else {
-              setSearchText(value);
+      <Autocomplete
+        id={'autocomplete-user-role-search'}
+        data-testid={'autocomplete-user-role-search'}
+        filterSelectedOptions
+        noOptionsText="No records found"
+        options={sortedUsers}
+        filterOptions={(options, state) => {
+          const searchFilter = createFilterOptions<ISystemUser>({ ignoreCase: true });
+          const unselectedOptions = options.filter(
+            (item) => !values.participants.some((existing) => existing.system_user_id === item.system_user_id)
+          );
+          return searchFilter(unselectedOptions, state);
+        }}
+        getOptionLabel={(option) => option.display_name}
+        inputValue={searchText}
+        onInputChange={(_, value, reason) => {
+          if (reason === 'reset') {
+            setSearchText('');
+          } else {
+            setSearchText(value);
 
-              if (value.length >= 3) {
-                // Only search if the search text is at least 3 characters long
-                searchUserDataLoader.refresh(value);
-              }
+            if (value.length >= 3) {
+              // Only search if the search text is at least 3 characters long
+              searchUserDataLoader.refresh(value);
             }
-          }}
-          onChange={(_, option) => {
-            if (option) {
-              handleAddUser(option);
-            }
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              variant="outlined"
-              placeholder={'Find people'}
-              fullWidth
-              InputProps={{
-                ...params.InputProps,
-                startAdornment: (
-                  <Box mx={1} mt="6px">
-                    <Icon path={mdiMagnify} size={1}></Icon>
-                  </Box>
-                )
-              }}
-            />
-          )}
-          renderOption={(renderProps, renderOption) => {
-            return (
-              <Box
-                component="li"
-                sx={{
-                  '& + li': {
-                    borderTop: '1px solid' + grey[300]
-                  }
-                }}
-                {...renderProps}
-                key={renderOption.system_user_id}>
-                <Box py={0.5} width="100%">
-                  <UserCard
-                    name={renderOption.display_name}
-                    email={renderOption.email}
-                    agency={renderOption.agency}
-                    type={renderOption.identity_source}
-                  />
+          }
+        }}
+        onChange={(_, option) => {
+          if (option) {
+            handleAddUser(option);
+          }
+        }}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            placeholder={'Find people'}
+            fullWidth
+            InputProps={{
+              ...params.InputProps,
+              startAdornment: (
+                <Box mx={1} mt="6px">
+                  <Icon path={mdiMagnify} size={1}></Icon>
                 </Box>
+              ),
+              endAdornment: (
+                <InputAdornment position="end">
+                  <HelpButtonTooltip content="Only active users who have gained access can be selected." />
+                </InputAdornment>
+              )
+            }}
+          />
+        )}
+        renderOption={(renderProps, renderOption) => {
+          return (
+            <Box
+              component="li"
+              sx={{
+                '& + li': {
+                  borderTop: '1px solid' + grey[300]
+                }
+              }}
+              {...renderProps}
+              key={renderOption.system_user_id}>
+              <Box py={0.5} width="100%">
+                <UserCard
+                  name={renderOption.display_name}
+                  email={renderOption.email}
+                  agency={renderOption.agency}
+                  type={renderOption.identity_source}
+                />
               </Box>
-            );
-          }}
-        />
-      </HelpButtonStack>
+            </Box>
+          );
+        }}
+      />
       <Box>
         <Box
           sx={{

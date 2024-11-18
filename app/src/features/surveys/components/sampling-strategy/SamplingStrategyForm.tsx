@@ -16,7 +16,7 @@ const SamplingStrategyForm = () => {
       <Collapse in={showStratumForm}>
         <Box component="fieldset" mt={5}>
           <HelpButtonStack helpText="Strata provide a framework to focus effort and minimize variability. Each stratum is homogeneous within, but distinct from, others.">
-            <Typography component="legend">Add Stratum</Typography>
+            <Typography fontWeight={700}>Add Stratum</Typography>
           </HelpButtonStack>
           <Typography
             sx={{
@@ -31,13 +31,7 @@ const SamplingStrategyForm = () => {
       </Collapse>
       <Box component="fieldset" mt={5}>
         <HelpButtonStack helpText="Blocks are defined areas within your study area that enhance structured sampling and reduce variability. As a higher-level organizational unit, blocks contain sampling sites and help distribute sampling effort systematically across a large area, supporting randomization and reducing potential bias.">
-          <Typography
-            component="legend"
-            sx={{
-              mb: 0
-            }}>
-            Add Blocks (optional)
-          </Typography>
+          <Typography fontWeight={700}>Add Blocks (optional)</Typography>
         </HelpButtonStack>
         <Typography
           sx={{

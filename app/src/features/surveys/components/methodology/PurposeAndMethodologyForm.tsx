@@ -51,6 +51,7 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
             <MultiAutocompleteFieldVariableSize
               id={'survey_details.survey_types'}
               label={'Collected data'}
+              helpText="Data"
               options={props.type}
               required={true}
             />
@@ -59,6 +60,7 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
             <MultiAutocompleteField
               id="purpose_and_methodology.intended_outcome_ids"
               label="Ecological concepts of interest"
+              helpText="Data"
               options={props.intended_outcomes}
               required={true}
             />
@@ -67,6 +69,7 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
             <CustomTextField
               name="purpose_and_methodology.additional_details"
               label="Objectives"
+              helpText="Objectives help give context to the data in this Survey"
               other={{ multiline: true, rows: 5, required: true }}
             />
           </Grid>

@@ -60,7 +60,7 @@ const AgreementsForm = () => {
     <form>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <HelpButtonStack helpText="The Species and Ecosystems Data and Information Security procedures ensure that data and information regarding species and ecosystems susceptible to persecution and harm are managed appropriately.">
+          <HelpButtonStack helpText="The SEDIS procedures ensure that data and information regarding species and ecosystems susceptible to persecution and harm are managed appropriately.">
             <Typography component="h3" variant="h5">
               Species and Ecosystems Data and Information Security (SEDIS) Procedures
             </Typography>
@@ -94,7 +94,7 @@ const AgreementsForm = () => {
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <HelpButtonStack helpText="The purpose of FOIPPA is to promote public sector accountability and to protect personal privacy. To comply with FOIPPA, public sector organizations must prevent the unauthorized collection, use and disclosure of personal information.">
+          <HelpButtonStack helpText="You must not upload personal information and are responsible for responding to Freedom of Information Requests with relevant information, excluding information that meets the exemption criteria.">
             <Typography component="h3" variant="h5">
               Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements
             </Typography>
