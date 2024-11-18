@@ -27,6 +27,9 @@ parameters:
   - name: CHANGE_ID
     description: Change id of the project. This will help to pull image stream
     required: true
+  - name: CRONJOB_SCHEDULE
+    description: The
+    required: true
     value: '0'
   - name: NODE_ENV
     description: Application Environment type variable
@@ -206,6 +209,9 @@ parameters:
   - name: REPLICAS_MAX
     value: '1'
   # Telemetry
+  - name: TELEMETRY_CRONJOB_SCHEDULE
+    description: The schedule for the telemetry cronjob
+    value: '0 0 0 * *' # This will never run - see `config.js` - Phase injects valid schedules for static deployments only
   - name: TELEMETRY_SECRET
     description: The name of the Openshift Biohubbc telemetry secret
     value: biohubbc-telemetry
@@ -564,8 +570,8 @@ objects:
       labels:
         role: telemetry-cronjob
     spec:
-      schedule: '0 0 * * *' # Runs every day at 12:00am
-      concurrencyPolicy: "Replace"
+      schedule: ${TELEMETRY_CRONJOB_SCHEDULE}
+      concurrencyPolicy: "Forbid"
       successfulJobsHistoryLimit: 1
       failedJobsHistoryLimit: 1
       jobTemplate:
@@ -577,10 +583,6 @@ objects:
                   image: ${BASE_IMAGE_REGISTRY_URL}/${NAMESPACE}/${NAME}:${VERSION}
                   imagePullPolicy: Always
                   env:
-                    - name: VERSION
-                      value: ${VERSION}
-                    - name: CHANGE_VERSION
-                      value: ${CHANGE_ID}
                     - name: NODE_ENV
                       value: ${NODE_ENV}
                     - name: NODE_OPTIONS
@@ -627,10 +629,10 @@ objects:
                       value: ${LOG_LEVEL}
                     - name: LOG_LEVEL_FILE
                       value: ${LOG_LEVEL_FILE}
-                    - name: LOG_FILE_DIR
+                    - name: data/cronjob-logs
                       value: ${LOG_FILE_DIR}
                     - name: LOG_FILE_NAME
-                      value: ${LOG_FILE_NAME}
+                      value: sims-telemetry-cronjob-%DATE%.log
                     - name: LOG_FILE_DATE_PATTERN
                       value: ${LOG_FILE_DATE_PATTERN}
                     - name: LOG_FILE_MAX_SIZE
