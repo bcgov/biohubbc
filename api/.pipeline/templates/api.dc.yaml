@@ -568,18 +568,8 @@ objects:
             spec:
               containers:
                 - name: api
-                  image: ' '
+                  image: ${NAME}:${SUFFIX}
                   imagePullPolicy: Always
-                  triggers:
-                    - imageChangeParams:
-                        automatic: true
-                        containerNames:
-                          - api
-                        from:
-                          kind: ImageStreamTag
-                          name: ${NAME}:${VERSION}
-                      type: ImageChange
-                    - type: ConfigChange
                   env:
                     - name: VERSION
                       value: ${VERSION}
