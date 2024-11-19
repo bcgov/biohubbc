@@ -53,13 +53,16 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
   // Map fetched data to table data structure
   const rows: IAnimalData[] =
     animalsDataLoader.data?.map((item) => {
-      const capitalizeFirstLetter = (str: string) => str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+      const capitalizeFirstLetter = (value: unknown) => {
+        const str = typeof value === 'string' ? value : (value as { label?: string })?.label ?? 'Unknown';
+        return str.trim().charAt(0).toUpperCase() + str.trim().slice(1).toLowerCase();
+      };
       return {
         id: item.critter_id,
         animal_id: item.animal_id ?? '',
         scientificName: item.itis_scientific_name,
         status: !!item.mortality?.length,
-        sex: typeof item.sex === 'string' ? capitalizeFirstLetter(item.sex) : item.sex?.label ?? 'Unknown'
+        sex: capitalizeFirstLetter(item.sex || 'Unknown') // Normalize and capitalize here
       };
     }) ?? [];
 
