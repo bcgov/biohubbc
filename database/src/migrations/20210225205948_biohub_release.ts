@@ -122,7 +122,7 @@ export async function up(knex: Knex): Promise<void> {
     -- Grant postgres user full access to biohub schema
     GRANT ALL ON SCHEMA biohub TO postgres;
     -- Set search path for postgres user
-    SET search_path = "$user", biohub, public;
+    SET search_path = biohub, public;
 
     -- Set up biohub API schema
     CREATE SCHEMA IF NOT EXISTS biohub_dapi_v1;
@@ -132,7 +132,7 @@ export async function up(knex: Knex): Promise<void> {
     ALTER SCHEMA biohub_dapi_v1 OWNER TO biohub_api;
     GRANT USAGE ON SCHEMA biohub TO biohub_api;
     -- Set search path for biohub_api user
-    ALTER ROLE biohub_api SET search_path TO "$user", biohub, public, biohub_dapi_v1;
+    ALTER ROLE biohub_api SET search_path TO biohub, public, biohub_dapi_v1;
 
     -- Grant postgres user full access to biohub_dapi_v1 schema
     GRANT ALL ON SCHEMA biohub_dapi_v1 TO biohub_api;
