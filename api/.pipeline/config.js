@@ -207,7 +207,7 @@ const phases = {
     phase: 'prod',
     changeId: deployChangeId,
     telemetryCronjobSchedule: '0 0 * * *',
-    telemetryCronjobSuspended: !isStaticDeployment,
+    telemetryCronjobSuspend: !isStaticDeployment,
     suffix: `-prod`,
     instance: `${name}-prod`,
     version: `${version}`,

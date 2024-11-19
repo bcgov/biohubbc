@@ -575,11 +575,12 @@ objects:
     spec:
       schedule: ${TELEMETRY_CRONJOB_SCHEDULE}
       suspend: ${TELEMETRY_CRONJOB_SUSPENDED}
-      concurrencyPolicy: Forbid
+      concurrencyPolicy: 'Forbid'
       successfulJobsHistoryLimit: 1
       failedJobsHistoryLimit: 1
       jobTemplate:
         spec:
+          backoffLimit: 0
           template:
             spec:
               containers:
