@@ -574,7 +574,7 @@ objects:
         role: telemetry-cronjob
     spec:
       schedule: ${TELEMETRY_CRONJOB_SCHEDULE}
-      suspend: !!bool "${TELEMETRY_CRONJOB_DISABLED}"
+      suspend: ${{TELEMETRY_CRONJOB_DISABLED}}
       concurrencyPolicy: 'Forbid'
       successfulJobsHistoryLimit: 1
       failedJobsHistoryLimit: 1
