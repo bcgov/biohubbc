@@ -34,6 +34,7 @@ const apiDeploy = async (settings) => {
         CHANGE_ID: phases.build.changeId || changeId,
         // Cronjobs
         TELEMETRY_CRONJOB_SCHEDULE: phases[phase].telemetryCronjobSchedule,
+        TELEMETRY_CRONJOB_SUSPENDED: phases[phase].telemetryCronjobSuspended,
         // Node
         NODE_ENV: phases[phase].nodeEnv,
         NODE_OPTIONS: phases[phase].nodeOptions,

@@ -21,9 +21,6 @@ const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
 const branch = (isStaticDeployment && options.branch) || null;
 const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
 
-// The telemetry cronjob schedule - dev/test/prod runs at midnight, PR's NEVER run
-const telemetryCronjobSchedule = (isStaticDeployment && '0 0 * * *') || '0 0 0 * *';
-
 const staticUrlsAPI = config.staticUrlsAPI;
 const staticUrls = config.staticUrls;
 
@@ -74,7 +71,8 @@ const phases = {
     dbName: `${dbName}`,
     phase: 'dev',
     changeId: deployChangeId,
-    telemetryCronjobSchedule: telemetryCronjobSchedule,
+    telemetryCronjobSchedule: '0 0 * * *',
+    telemetryCronjobSuspended: !isStaticDeployment,
     suffix: `-dev-${deployChangeId}`,
     instance: `${name}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
@@ -118,7 +116,8 @@ const phases = {
     dbName: `${dbName}`,
     phase: 'test',
     changeId: deployChangeId,
-    telemetryCronjobSchedule: telemetryCronjobSchedule,
+    telemetryCronjobSchedule: '0 0 * * *',
+    telemetryCronjobSuspended: !isStaticDeployment,
     suffix: `-test`,
     instance: `${name}-test`,
     version: `${version}`,
@@ -162,7 +161,8 @@ const phases = {
     dbName: `${dbName}-spi`,
     phase: 'test-spi',
     changeId: deployChangeId,
-    telemetryCronjobSchedule: telemetryCronjobSchedule,
+    telemetryCronjobSchedule: '0 0 * * *',
+    telemetryCronjobSuspended: !isStaticDeployment,
     suffix: `-test-spi`,
     instance: `${name}-spi-test-spi`,
     version: `${version}`,
@@ -206,7 +206,8 @@ const phases = {
     dbName: `${dbName}`,
     phase: 'prod',
     changeId: deployChangeId,
-    telemetryCronjobSchedule: telemetryCronjobSchedule,
+    telemetryCronjobSchedule: '0 0 * * *',
+    telemetryCronjobSuspended: !isStaticDeployment,
     suffix: `-prod`,
     instance: `${name}-prod`,
     version: `${version}`,

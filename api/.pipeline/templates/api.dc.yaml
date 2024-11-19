@@ -211,7 +211,10 @@ parameters:
   # Telemetry
   - name: TELEMETRY_CRONJOB_SCHEDULE
     description: The schedule for the telemetry cronjob
-    value: '0 0 0 * *' # This will never run - see `config.js` - Phase injects valid schedules for static deployments only
+    value: '0 0 * * *' # 12am
+  - name: TELEMETRY_CRONJOB_SUSPENDED
+    description: Boolean flag if the cronjob is suspended. ie. PR's
+    value: 'false'
   - name: TELEMETRY_SECRET
     description: The name of the Openshift Biohubbc telemetry secret
     value: biohubbc-telemetry
@@ -571,7 +574,8 @@ objects:
         role: telemetry-cronjob
     spec:
       schedule: ${TELEMETRY_CRONJOB_SCHEDULE}
-      concurrencyPolicy: "Forbid"
+      suspend: ${TELEMETRY_CRONJOB_SUSPENDED}
+      concurrencyPolicy: Forbid
       successfulJobsHistoryLimit: 1
       failedJobsHistoryLimit: 1
       jobTemplate:
@@ -582,6 +586,9 @@ objects:
                 - name: api
                   image: ${BASE_IMAGE_REGISTRY_URL}/${NAMESPACE}/${NAME}:${VERSION}
                   imagePullPolicy: Always
+                  restartPolicy: 'Never'
+                  terminationGracePeriodSeconds: 30
+                  activeDeadlineSeconds: 220
                   env:
                     - name: NODE_ENV
                       value: ${NODE_ENV}
@@ -629,7 +636,7 @@ objects:
                       value: ${LOG_LEVEL}
                     - name: LOG_LEVEL_FILE
                       value: ${LOG_LEVEL_FILE}
-                    - name: data/cronjob-logs
+                    - name: data/cronjobLogs
                       value: ${LOG_FILE_DIR}
                     - name: LOG_FILE_NAME
                       value: sims-telemetry-cronjob-%DATE%.log
