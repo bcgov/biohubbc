@@ -43,10 +43,19 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
             borderBottom: 'none'
           }
         },
-        '& .MuiDataGrid-columnHeader:first-of-type, .MuiDataGrid-cell:first-of-type': {
+        '& .MuiDataGrid-columnHeader:first-of-type > .MuiDataGrid-columnHeaderDraggableContainer': {
           pl: 2
         },
-        '& .MuiDataGrid-columnHeader:last-of-type, .MuiDataGrid-cell:last-of-type': {
+        '& .MuiDataGrid-columnHeader:last-of-type > .MuiDataGrid-columnHeaderDraggableContainer': {
+          pr: 2
+        },
+        '& .MuiDataGrid-columnHeaderDraggableContainer': {
+          minWidth: '50px'
+        },
+        '& .MuiDataGrid-cell:first-of-type > *': {
+          pl: 2
+        },
+        '& .MuiDataGrid-cell:last-of-type > *': {
           pr: 2
         },
         '&.MuiDataGrid-root--densityCompact .MuiDataGrid-cell': {
@@ -60,9 +69,6 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
         '&.MuiDataGrid-root--densityComfortable .MuiDataGrid-cell': {
           py: '22px',
           wordWrap: 'anywhere'
-        },
-        '& .MuiDataGrid-columnHeaderDraggableContainer': {
-          minWidth: '50px'
         },
         ...props.sx
       }}
