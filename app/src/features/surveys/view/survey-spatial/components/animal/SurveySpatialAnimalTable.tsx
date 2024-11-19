@@ -76,7 +76,7 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
       flex: 1,
       renderCell: (params) => <ScientificNameTypography name={params.value} /> // Render scientific name with custom typography component
     },
-    { field: 'sex', headerName: 'Sex', flex: 1, renderCell: (params) => <span>{params.value || 'Unknown'}</span> }
+    { field: 'sex', headerName: 'Sex', flex: 1, renderCell: (params) => <>{params.value ?? 'Unknown'}</> }
   ];
 
   return (
