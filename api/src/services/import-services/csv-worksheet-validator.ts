@@ -1,6 +1,5 @@
 import { difference, xor } from 'lodash';
 import { WorkSheet } from 'xlsx';
-import { z } from 'zod';
 import { getWorksheetRowObjects } from '../../utils/xlsx-utils/worksheet-utils';
 import { Row } from './import-csv.interface';
 
@@ -154,60 +153,4 @@ export class ValidateCSVService {
 
     return { template, errors };
   }
-}
-
-const getZodErrors = (value: unknown, schema: z.ZodSchema): { errors: string[] } => {
-  const parsedValue = schema.safeParse(value);
-
-  if (parsedValue.error) {
-    return { errors: parsedValue.error.issues.map((issue) => issue.message) };
-  }
-
-  return { errors: [] };
-};
-
-export class ImportCritter implements CSVImportStrategy {
-  async getCSVConfig(): Promise<CSVConfig> {
-    const surveyAliases = new Set(['ANIMAL_NAME', 'CRITTER_NAME']);
-
-    return {
-      standardColumns: {
-        NAME: {
-          aliases: ['ANIMAL_NAME', 'CRITTER_NAME'],
-          parseCell: (value) => `${value} critter`,
-          validateCell: (value) => getZodErrors(value, z.string())
-        },
-        AGE: {
-          aliases: ['ANIMAL_AGE', 'CRITTER_AGE'],
-          validateCell: (value) => getZodErrors(value, z.number().min(0).max(100)),
-          setCell: (value) => value + 'blah'
-        },
-        ALIAS: {
-          aliases: ['ANIMAL_ALIAS', 'CRITTER_ALIAS'],
-          validateCell: (value) => {
-            const errors: string[] = [];
-
-            if (surveyAliases.has(value as string)) {
-              errors.push('Value already exists in Survey. Duplicates are not allowed.');
-            }
-
-            return { errors };
-          }
-        }
-      },
-      unknownColumns: {
-        validateCell: () => ({ errors: ['Unknown column'] })
-      }
-    };
-  }
-
-  async importCSVTemplate(template: CSVTemplate): Promise<any> {
-    console.log(template);
-    // Import critters
-  }
-}
-
-export interface CSVImportStrategy {
-  getCSVConfig(worksheet: WorkSheet): Promise<CSVConfig>;
-  importCSVTemplate(template: CSVTemplate[]): Promise<any>;
 }
