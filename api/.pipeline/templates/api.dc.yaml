@@ -214,7 +214,7 @@ parameters:
     value: '0 0 * * *' # 12am
   - name: TELEMETRY_CRONJOB_DISABLED
     description: Boolean flag to disable the cronjob. ie. PR's
-    value: ''
+    value: 'false'
   - name: TELEMETRY_SECRET
     description: The name of the Openshift Biohubbc telemetry secret
     value: biohubbc-telemetry
@@ -574,7 +574,7 @@ objects:
         role: telemetry-cronjob
     spec:
       schedule: ${TELEMETRY_CRONJOB_SCHEDULE}
-      suspend: true
+      suspend: "${TELEMETRY_CRONJOB_DISABLED}"
       concurrencyPolicy: 'Forbid'
       successfulJobsHistoryLimit: 1
       failedJobsHistoryLimit: 1
@@ -636,8 +636,8 @@ objects:
                     - name: LOG_LEVEL
                       value: ${LOG_LEVEL}
                     - name: LOG_LEVEL_FILE
-                      value: ${LOG_LEVEL_FILE}
-                    - name: data/cronjobLogs
+                      value: data/cronjob-logs
+                    - name: LOG_FILE_DIR
                       value: ${LOG_FILE_DIR}
                     - name: LOG_FILE_NAME
                       value: sims-telemetry-cronjob-%DATE%.log
