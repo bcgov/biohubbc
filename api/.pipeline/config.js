@@ -21,7 +21,7 @@ const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
 const branch = (isStaticDeployment && options.branch) || null;
 const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
 
-const prCronSchedule = '* * 31 2 0'; // Cronjob schedule that never runs (Feb 31st is an invalid date)
+const prCronSchedule = '* * 31 2 *'; // Cronjob schedule that never runs (Feb 31st is an invalid date)
 
 const staticUrlsAPI = config.staticUrlsAPI;
 const staticUrls = config.staticUrls;
@@ -73,7 +73,8 @@ const phases = {
     dbName: `${dbName}`,
     phase: 'dev',
     changeId: deployChangeId,
-    telemetryCronjobSchedule: (isStaticDeployment && '0 0 * * *') || prCronSchedule,
+    telemetryCronjobSchedule: '0 0 * * *', // Daily at midnight
+    telemetryCronjobDisabled: !isStaticDeployment,
     suffix: `-dev-${deployChangeId}`,
     instance: `${name}-dev-${deployChangeId}`,
     version: `${deployChangeId}-${changeId}`,
@@ -117,7 +118,8 @@ const phases = {
     dbName: `${dbName}`,
     phase: 'test',
     changeId: deployChangeId,
-    telemetryCronjobSchedule: (isStaticDeployment && '0 0 * * *') || prCronSchedule,
+    telemetryCronjobSchedule: '0 0 * * *', // Daily at midnight
+    telemetryCronjobDisabled: !isStaticDeployment,
     suffix: `-test`,
     instance: `${name}-test`,
     version: `${version}`,
@@ -161,7 +163,8 @@ const phases = {
     dbName: `${dbName}-spi`,
     phase: 'test-spi',
     changeId: deployChangeId,
-    telemetryCronjobSchedule: (isStaticDeployment && '0 0 * * *') || prCronSchedule,
+    telemetryCronjobSchedule: '0 0 * * *', // Daily at midnight
+    telemetryCronjobDisabled: !isStaticDeployment,
     suffix: `-test-spi`,
     instance: `${name}-spi-test-spi`,
     version: `${version}`,
@@ -205,7 +208,8 @@ const phases = {
     dbName: `${dbName}`,
     phase: 'prod',
     changeId: deployChangeId,
-    telemetryCronjobSchedule: (isStaticDeployment && '0 0 * * *') || prCronSchedule,
+    telemetryCronjobSchedule: '0 0 * * *', // Daily at midnight
+    telemetryCronjobDisabled: !isStaticDeployment,
     suffix: `-prod`,
     instance: `${name}-prod`,
     version: `${version}`,

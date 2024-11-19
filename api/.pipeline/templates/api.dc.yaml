@@ -212,6 +212,9 @@ parameters:
   - name: TELEMETRY_CRONJOB_SCHEDULE
     description: The schedule for the telemetry cronjob
     value: '0 0 * * *' # 12am
+  - name: TELEMETRY_CRONJOB_DISABLED
+    description: Boolean flag to disable the cronjob, only static deployments should run on schedule.
+    value: 'true'
   - name: TELEMETRY_SECRET
     description: The name of the Openshift Biohubbc telemetry secret
     value: biohubbc-telemetry
@@ -571,6 +574,7 @@ objects:
         role: telemetry-cronjob
     spec:
       schedule: ${TELEMETRY_CRONJOB_SCHEDULE}
+      suspend: !!bool ${TELEMETRY_CRONJOB_DISABLED}
       concurrencyPolicy: 'Forbid'
       successfulJobsHistoryLimit: 1
       failedJobsHistoryLimit: 1
