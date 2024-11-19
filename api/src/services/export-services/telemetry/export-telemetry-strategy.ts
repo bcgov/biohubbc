@@ -2,7 +2,7 @@ import { Readable } from 'stream';
 import { IDBConnection } from '../../../database/db';
 import { getLogger } from '../../../utils/logger';
 import { DBService } from '../../db-service';
-import { TelemetryService } from '../../telemetry-service';
+import { TelemetryVendorService } from '../../telemetry-services/telemetry-vendor-service';
 import { ExportDataStreamOptions, ExportStrategy, ExportStrategyConfig } from '../export-strategy';
 
 const defaultLog = getLogger('services/export-telemetry-strategy');
@@ -63,7 +63,7 @@ export class ExportTelemetryStrategy extends DBService implements ExportStrategy
    * @memberof ExportTelemetryStrategy
    */
   _getStream = (_options: ExportDataStreamOptions): Readable => {
-    const telemetryService = new TelemetryService(this.connection);
+    const telemetryVendorService = new TelemetryVendorService(this.connection);
 
     const isUserAdmin = this.config.isUserAdmin;
     const systemUserId = this.connection.systemUserId();
@@ -74,7 +74,7 @@ export class ExportTelemetryStrategy extends DBService implements ExportStrategy
     const stream = new Readable({
       objectMode: true,
       read() {
-        telemetryService
+        telemetryVendorService
           .findTelemetry(isUserAdmin, systemUserId, filterFields)
           .then((telemetry) => {
             for (const item of telemetry) {
