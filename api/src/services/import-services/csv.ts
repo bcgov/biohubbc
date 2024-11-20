@@ -1,14 +1,12 @@
 import { WorkSheet } from 'xlsx';
 import { z } from 'zod';
 import { getWorksheetRowObjects } from '../../utils/xlsx-utils/worksheet-utils';
-import { Row } from './import-csv.interface';
 
 interface CSVError {
   row: number;
   header?: string;
   error: string;
   solution?: string;
-  meta?: Record<string, unknown>;
 }
 
 interface CSVParams {
@@ -19,11 +17,10 @@ interface CSVParams {
 }
 
 interface CSVHeader {
-  name: string;
-  aliases?: string[];
+  headerName: string[];
 
   cellSchema: z.ZodSchema;
-  cellUnique: boolean;
+  unique: boolean;
   validateCell?: (params: CSVParams) => CSVError[];
   getCellValue?: (params: CSVParams) => unknown;
 }
@@ -34,125 +31,23 @@ interface CSVConfig {
   validateUnknownCell?: (params: CSVParams) => CSVError[] | unknown;
 }
 
-type CSVWorksheet = Record<string, { cellValue: unknown; headerAlias?: string }>[];
-
-const getCSVHeader = (
-  header: string,
-  row: Row,
-  config: CSVConfig
-): { header: string; isAlias: boolean; isUnknown: boolean } => {
-  for (const headerConfig of config.headers) {
-    for (const alias of headerConfig.aliases ?? []) {
-      if (alias in row) {
-        return { header: headerConfig.name, isAlias: true, isUnknown: false };
-      }
-    }
-  }
-};
-
-export const getCSVWorksheet = (worksheet: WorkSheet, config: CSVConfig): CSVWorksheet => {
-  const csvWorksheet: CSVWorksheet = [];
-
-  const worksheetRows = getWorksheetRowObjects(worksheet);
-
-  for (const worksheetRow of worksheetRows) {
-    const csvRow: Record<string, { cellValue: unknown; headerAlias?: string }> = {};
-
-    for (const header of config.headers) {
-      if (header.name in worksheetRow) {
-        csvRow[header.name] = { cellValue: worksheetRow[header.name], headerAlias: undefined };
-      }
-    }
-
-    csvWorksheet.push(csvRow);
-  }
-
-  return csvWorksheet;
-};
-
-export const validateCSVWorksheet = (worksheet: WorkSheet, config: CSVConfig) => {
-  const errors: CSVError[] = [];
-  const headers = Object.keys(worksheet[0]);
-};
-
-//export type CSVTemplate = {
-//  errors: CSVError[];
-//  headers: string[];
-//  unknownHeaders: string[];
-//  rows: CSVTemplateRow[];
-//};
-
-//
-//const getCSVTemplate = (worksheet: WorkSheet, config: CSVConfig) => {
-//  const template: CSVTemplate = [];
-//  const worksheetRows = getWorksheetRowObjects(worksheet);
-//
-//  for (const worksheetRow of worksheetRows) {
-//    const templateRow: CSVTemplateRow = {};
-//
-//    for (const headerOrAlias of Object.keys(worksheetRow)) {
-//      if (headerOrAlias in config.headers) {
-//      }
-//    }
-//
-//    template.push(templateRow);
-//  }
-//
-//  return template;
-//};
-
-//export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSVError[] => {
-//  const csvErrors: CSVError[] = [];
-//
-//  const worksheetHeaders = Object.keys(worksheet[0]);
-//  const configHeaders = config.headers.map((header) => header.name);
-//
-//  if (!worksheetHeaders.length) {
-//    return [{ row: 0, error: 'CSV is empty', solution: 'Fill in missing CSV data', meta: { headers: configHeaders } }];
-//  }
-//
-//  const missingHeaders = difference(configHeaders, worksheetHeaders);
-//  const unknownHeaders = xor(worksheetHeaders, configHeaders);
-//
-//  missingHeaders.forEach((header) => {
-//    csvErrors.push({ row: 0, error: `CSV missing required header`, solution: `Add missing header: '${header}'` });
-//  });
-//
-//  if (!config.allowUnknownHeaders) {
-//    unknownHeaders.forEach((header) => {
-//      csvErrors.push({ row: 0, error: `CSV unknown header detected`, solution: `Remove unknown header: '${header}'` });
-//    });
-//  }
-//
-//  return csvErrors;
-//};
-//
-//export const validateCSVCells = () => {};
-////
-////export const validateCSVUnknownCells = () => {};
-//
-//export const validateCSV = () => {};
-
 export const getCritterCSVConfig = async (): Promise<CSVConfig> => {
   return {
     headers: [
       {
-        name: 'NAME',
-        aliases: ['FULL_NAME'],
+        headerName: ['NAME'],
         cellSchema: z.string(),
-        cellUnique: true
+        unique: true
       },
       {
-        name: 'NICKNAME',
-        aliases: ['ALIAS'],
+        headerName: ['NICKNAME', 'NICK', 'ALIAS'],
         cellSchema: z.string(),
-        cellUnique: true
+        unique: true
       },
       {
-        name: 'AGE',
-        aliases: ['YEARS_OLD'],
+        headerName: ['AGE', 'YEARS'],
         cellSchema: z.number().optional(),
-        cellUnique: false
+        unique: false
       }
     ],
     allowUnknownHeaders: true,
@@ -160,4 +55,119 @@ export const getCritterCSVConfig = async (): Promise<CSVConfig> => {
       return 'string';
     }
   };
+};
+
+/**
+ * Get the configuration map for the CSV headers.
+ *
+ * @param {CSVConfig} config - The CSV configuration
+ * @returns {Map<string, CSVHeader>} - The header config Map
+ */
+const getCSVConfigMap = (config: CSVConfig) => {
+  const headerMap = new Map<string, CSVHeader>();
+
+  for (const header of config.headers) {
+    for (const headerName of header.headerName) {
+      if (headerMap.has(headerName)) {
+        throw new Error(`Duplicate header name in config: ${headerName}`);
+      }
+      headerMap.set(headerName, header);
+    }
+  }
+
+  return headerMap;
+};
+
+const getCSVWorksheetKnownHeaders = (worksheet: WorkSheet, config: CSVConfig) => {
+  const configMap = getCSVConfigMap(config);
+  return Object.keys(worksheet[0]).filter((header) => configMap.has(header));
+};
+
+const getCSVWorksheetUnknownHeaders = (worksheet: WorkSheet, config: CSVConfig) => {
+  const configMap = getCSVConfigMap(config);
+  return Object.keys(worksheet[0]).filter((header) => !configMap.has(header));
+};
+
+const _validateCSVCellValue = (params: CSVParams, headerConfig: CSVHeader) => {
+  const cellErrors: CSVError[] = [];
+
+  const parsed = headerConfig.cellSchema.safeParse(params.value);
+
+  if (!parsed.success) {
+    return [
+      {
+        row: params.rowIndex,
+        header: params.header,
+        error: `Invalid cell value. ${parsed.error.message}`,
+        solution: `Cell value must be of type ${headerConfig.cellSchema._def.description}`
+      }
+    ];
+  }
+
+  if (headerConfig.validateCell) {
+    const customErrors = headerConfig.validateCell(params);
+
+    if (customErrors) {
+      cellErrors.push(...customErrors);
+    }
+  }
+
+  return cellErrors;
+};
+
+export const validateCSVRows = (worksheet: WorkSheet, config: CSVConfig) => {
+  const csvErrors: CSVError[] = [];
+
+  const configMap = getCSVConfigMap(config);
+  const worksheetRows = getWorksheetRowObjects(worksheet);
+
+  for (let i = 1; i < worksheetRows.length; i++) {
+    const worksheetRow = worksheetRows[i];
+
+    for (const header in worksheetRow) {
+      const headerConfig = configMap.get(header);
+      const cellValue = worksheetRow[header];
+
+      if (!headerConfig) {
+        continue;
+      }
+
+      // TODO: Validate unique cell values
+
+      _validateCSVCellValue({ value: cellValue, header, rowIndex: i, worksheet }, headerConfig);
+    }
+  }
+
+  return csvErrors;
+};
+
+export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSVError[] => {
+  const csvErrors: CSVError[] = [];
+
+  const knownWorksheetHeaders = getCSVWorksheetKnownHeaders(worksheet, config);
+  const unknownWorksheetHeaders = getCSVWorksheetUnknownHeaders(worksheet, config);
+
+  if (config.headers.length !== knownWorksheetHeaders.length) {
+    return [
+      {
+        row: 0,
+        error: 'CSV missing required headers',
+        solution: `Add missing required headers. Supported headers: ${config.headers.map(
+          (header) => header.headerName[0]
+        )}`
+      }
+    ];
+  }
+
+  if (!config.allowUnknownHeaders && unknownWorksheetHeaders.length) {
+    for (const unknownHeader of unknownWorksheetHeaders) {
+      csvErrors.push({
+        row: 0,
+        error: `CSV unknown header detected`,
+        solution: `Remove header '${unknownHeader}' from CSV`
+      });
+    }
+  }
+
+  return csvErrors;
 };
