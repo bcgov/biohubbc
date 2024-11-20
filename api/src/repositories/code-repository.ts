@@ -517,7 +517,7 @@ export class CodeRepository extends BaseRepository {
     return response.rows;
   }
 
-    /**
+  /**
    * Fetch alert type codes
    *
    * @return {*}

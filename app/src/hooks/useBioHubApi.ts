@@ -78,7 +78,7 @@ export const useBiohubApi = () => {
   const telemetryDeployment = useTelemetryDeploymentApi(apiAxios);
 
   const telemetryDevice = useTelemetryDeviceApi(apiAxios);
-  
+
   const alert = useAlertApi(apiAxios);
 
   return useMemo(
