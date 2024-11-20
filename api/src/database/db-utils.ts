@@ -81,6 +81,14 @@ const parseError = (error: any) => {
       // error thrown by DB when query fails due to foreign key constraint
       throw new ApiExecuteSQLError('Failed to delete record due to foreign key constraint', [error]);
     }
+
+    if (error.constraint === 'check_no_device_attachment_date_overlap') {
+      // error thrown by DB when constraint 'check_no_device_attachment_date_overlap' fails
+      throw new ApiExecuteSQLError(
+        'This device is already being used in another deployment, and the dates overlap. Please update the conflicting deployment or adjust the deployment dates.',
+        [error]
+      );
+    }
   }
 
   // Generic error thrown if not captured above

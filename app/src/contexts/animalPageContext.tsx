@@ -53,7 +53,7 @@ export const AnimalPageContextProvider = (props: PropsWithChildren<Record<never,
   }
 
   const critterDataLoader = useDataLoader((projectId: number, surveyId: number, critterId: number) =>
-    biohubApi.survey.getCritterById(projectId, surveyId, critterId)
+    biohubApi.survey.getCritterById(projectId, surveyId, critterId, ['attachments'])
   );
 
   // The currently selected animal

@@ -37,7 +37,8 @@ GET.apiDoc = {
               'site_selection_strategies',
               'survey_progress',
               'method_response_metrics',
-              'attractants'
+              'attractants',
+              'telemetry_device_makes'
             ],
             properties: {
               management_action_type: {
@@ -383,6 +384,27 @@ GET.apiDoc = {
                   }
                 }
               },
+              telemetry_device_makes: {
+                type: 'array',
+                description: 'Active telemetry device manufacturers / makes / vendors.',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
               alert_types: {
                 type: 'array',
                 description: 'Alert type options for system administrators managing alert messages.',
@@ -390,6 +412,27 @@ GET.apiDoc = {
                   type: 'object',
                   additionalProperties: false,
                   required: ['id', 'name', 'description'],
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              frequency_units: {
+                type: 'array',
+                description: 'Frequency unit types.',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name'],
                   properties: {
                     id: {
                       type: 'integer',

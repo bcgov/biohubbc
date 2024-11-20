@@ -1,27 +1,13 @@
-import dayjs from 'dayjs';
-import { DefaultDateFormat, DefaultTimeFormat } from '../constants/dates';
 import { IDBConnection } from '../database/db';
-import { ApiGeneralError } from '../errors/api-error';
 import { IAllTelemetryAdvancedFilters } from '../models/telemetry-view';
 import { SurveyCritterRecord } from '../repositories/survey-critter-repository';
-import { Deployment, TelemetryRepository, TelemetrySubmissionRecord } from '../repositories/telemetry-repository';
-import { generateS3FileKey, getFileFromS3 } from '../utils/file-utils';
-import { parseS3File } from '../utils/media/media-utils';
-import { CSV_COLUMN_ALIASES } from '../utils/xlsx-utils/column-aliases';
-import {
-  constructXLSXWorkbook,
-  getDefaultWorksheet,
-  getWorksheetRowObjects,
-  IXLSXCSVValidator,
-  validateCsvFile
-} from '../utils/xlsx-utils/worksheet-utils';
+import { Deployment, TelemetryRepository } from '../repositories/telemetry-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { AttachmentService } from './attachment-service';
 import { BctwDeploymentRecord, BctwDeploymentService } from './bctw-service/bctw-deployment-service';
-import { BctwTelemetryService, IAllTelemetry, ICreateManualTelemetry } from './bctw-service/bctw-telemetry-service';
-import { ICritter, ICritterbaseUser } from './critterbase-service';
+import { BctwTelemetryService, IAllTelemetry } from './bctw-service/bctw-telemetry-service';
+import { ICritter } from './critterbase-service';
 import { DBService } from './db-service';
-import { DeploymentService } from './deployment-service';
 import { SurveyCritterService } from './survey-critter-service';
 
 export type FindTelemetryResponse = { telemetry_id: string } & Pick<
@@ -33,14 +19,10 @@ export type FindTelemetryResponse = { telemetry_id: string } & Pick<
   Pick<SurveyCritterRecord, 'critterbase_critter_id'> &
   Pick<ICritter, 'animal_id'>;
 
-const telemetryCSVColumnValidator: IXLSXCSVValidator = {
-  DEVICE_ID: { type: 'number' },
-  DATE: { type: 'date' },
-  TIME: { type: 'string' },
-  LATITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LATITUDE },
-  LONGITUDE: { type: 'number', aliases: CSV_COLUMN_ALIASES.LONGITUDE }
-};
-
+/**
+ *
+ * @deprecated Dropped after BCTW migration
+ */
 export class TelemetryService extends DBService {
   telemetryRepository: TelemetryRepository;
 
@@ -52,162 +34,6 @@ export class TelemetryService extends DBService {
     this.telemetryRepository = new TelemetryRepository(connection);
 
     this.attachmentService = new AttachmentService(connection);
-  }
-
-  /**
-   *
-   * Inserts a survey telemetry submission record into the database and returns the key
-   *
-   * @param {Express.Multer.File} file
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @return {*}  {Promise<{ key: string }>}
-   * @memberof ObservationService
-   */
-  async insertSurveyTelemetrySubmission(
-    file: Express.Multer.File,
-    projectId: number,
-    surveyId: number
-  ): Promise<{ submission_id: number; key: string }> {
-    const submissionId = await this.telemetryRepository.getNextSubmissionId();
-    const key = generateS3FileKey({ projectId, surveyId, submissionId, fileName: file.originalname });
-    const result = await this.telemetryRepository.insertSurveyTelemetrySubmission(
-      submissionId,
-      key,
-      surveyId,
-      file.originalname
-    );
-    return { submission_id: result.survey_telemetry_submission_id, key };
-  }
-
-  async processTelemetryCsvSubmission(submissionId: number, user: ICritterbaseUser): Promise<any[]> {
-    // step 1 get submission record
-    const submission = await this.getTelemetrySubmissionById(submissionId);
-
-    // step 2 get s3 record for given key
-    const s3Object = await getFileFromS3(submission.key);
-
-    // step 3 parse the file
-    const mediaFile = await parseS3File(s3Object);
-
-    // step 4 validate csv
-    if (mediaFile.mimetype !== 'text/csv') {
-      throw new ApiGeneralError(
-        `Failed to process file for importing telemetry. Incorrect file type. Expected CSV received ${mediaFile.mimetype}`
-      );
-    }
-
-    // step 5 construct workbook/ setup
-    const xlsxWorkBook = constructXLSXWorkbook(mediaFile);
-    // Get the default XLSX worksheet
-    const xlsxWorksheet = getDefaultWorksheet(xlsxWorkBook);
-
-    // step 6 validate columns
-    if (!validateCsvFile(xlsxWorksheet, telemetryCSVColumnValidator)) {
-      throw new ApiGeneralError('Failed to process file for importing telemetry. Invalid CSV file.');
-    }
-
-    const worksheetRowObjects = getWorksheetRowObjects(xlsxWorksheet);
-
-    // step 7 fetch survey deployments
-    const deploymentService = new DeploymentService(this.connection);
-    const bctwDeploymentService = new BctwDeploymentService(user);
-
-    const surveyDeployments = await deploymentService.getDeploymentsForSurveyId(submission.survey_id);
-    const deployments = await bctwDeploymentService.getDeploymentsByIds(
-      surveyDeployments.map((deployment) => deployment.bctw_deployment_id)
-    );
-
-    // step 8 parse file data and find deployment ids based on device id and attachment dates
-    const itemsToAdd: ICreateManualTelemetry[] = [];
-    worksheetRowObjects.forEach((row) => {
-      const deviceId = Number(row['DEVICE_ID']);
-      const start = row['DATE'];
-      const time = row['TIME'];
-      const dateTime = dayjs(`${start} ${time}`);
-
-      const foundDeployment = deployments.find((item) => {
-        const currentStart = dayjs(item.attachment_start);
-        const currentEnd = dayjs(item.attachment_end);
-        // check the device ids match
-        if (item.device_id === deviceId) {
-          // check the date is same or after the device deployment start date
-          if (dateTime.isAfter(currentStart) || dateTime.isSame(currentStart)) {
-            if (item.attachment_end) {
-              // check if the date is same or before the device was removed
-              if (dateTime.isBefore(currentEnd) || dateTime.isSame(currentEnd)) {
-                return true;
-              }
-            } else {
-              // no attachment end date means the device is still active and is a match
-              return true;
-            }
-          }
-        }
-        return false;
-      });
-
-      if (foundDeployment) {
-        itemsToAdd.push({
-          deployment_id: foundDeployment.deployment_id,
-          acquisition_date: dateTime.format(`${DefaultDateFormat} ${DefaultTimeFormat}`),
-          latitude: row['LATITUDE'],
-          longitude: row['LONGITUDE']
-        });
-      } else {
-        throw new ApiGeneralError(
-          `No deployment was found for device: ${deviceId} on: ${dateTime.format(
-            `${DefaultDateFormat} ${DefaultTimeFormat}`
-          )}`
-        );
-      }
-    });
-
-    // step 9 create telemetries
-
-    const bctwTelemetryService = new BctwTelemetryService(user);
-
-    if (itemsToAdd.length > 0) {
-      try {
-        return await bctwTelemetryService.createManualTelemetry(itemsToAdd);
-      } catch (error) {
-        throw new ApiGeneralError('Error adding Manual Telemetry');
-      }
-    }
-
-    return [];
-  }
-
-  async getTelemetrySubmissionById(submissionId: number): Promise<TelemetrySubmissionRecord> {
-    return this.telemetryRepository.getTelemetrySubmissionById(submissionId);
-  }
-
-  /**
-   * Get deployments for the given critter ids.
-   *
-   * Note: SIMS does not store deployment information, beyond an ID. Deployment details must be fetched from the
-   * external BCTW API.
-   *
-   * @param {number[]} critterIds
-   * @return {*}  {Promise<Deployment[]>}
-   * @memberof TelemetryService
-   */
-  async getDeploymentsByCritterIds(critterIds: number[]): Promise<Deployment[]> {
-    return this.telemetryRepository.getDeploymentsByCritterIds(critterIds);
-  }
-
-  /**
-   * Get deployments for the provided survey id.
-   *
-   * Note: SIMS does not store deployment information, beyond an ID. Deployment details must be fetched from the
-   * external BCTW API.
-   *
-   * @param {number} surveyId
-   * @return {*}  {Promise<Deployment[]>}
-   * @memberof TelemetryService
-   */
-  async getDeploymentsBySurveyId(surveyId: number): Promise<Deployment[]> {
-    return this.telemetryRepository.getDeploymentsBySurveyId(surveyId);
   }
 
   /**
