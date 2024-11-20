@@ -9,16 +9,20 @@ import { CSVError, CSVParams } from './csv-utils.interface';
  * @returns {CSVError[]} - The cell validation errors
  */
 export const validateZodCell = (params: CSVParams, schema: z.ZodSchema): CSVError[] => {
+  const errors: CSVError[] = [];
+
   const parsed = schema.safeParse(params.cell);
+
   if (!parsed.success) {
-    return [
-      {
-        error: `Invalid cell type: ${parsed.error.message}`,
+    parsed.error.errors.forEach((error) => {
+      errors.push({
+        error: error.message,
         solution: 'Please enter a valid value',
         rowIndex: params.rowIndex,
         header: params.header
-      }
-    ];
+      });
+    });
   }
-  return [];
+
+  return errors;
 };

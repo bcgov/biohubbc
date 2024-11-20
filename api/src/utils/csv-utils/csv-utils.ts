@@ -1,5 +1,5 @@
 import { WorkSheet } from 'xlsx';
-import { getWorksheetRowObjects } from '../../utils/xlsx-utils/worksheet-utils';
+import { getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
 import { CSVConfig, CSVError, CSVHeader, CSVParams, CSVRow } from './csv-utils.interface';
 
 /**
@@ -73,63 +73,11 @@ export const forEachCSVCell = (
     for (const header in worksheetRow) {
       const csvHeaderConfig = configMap.get(header);
       const cell = worksheetRow[header];
-      const params = { cell, header, row: worksheetRow, rowIndex: i, worksheet };
+      const params = { cell, header, row: worksheetRow, rowIndex: i + 1, worksheet };
 
       callback(params, csvHeaderConfig);
     }
   }
-};
-
-/**
- * Set the cell values for the CSV worksheet.
- *
- * @param {WorkSheet} worksheet - The worksheet
- * @param {CSVConfig} config - The CSV configuration
- * @returns {CSVRow[]} - The CSV rows
- */
-export const setCSVCellValues = (worksheet: WorkSheet, config: CSVConfig): CSVRow[] => {
-  const rows: CSVRow[] = [];
-
-  forEachCSVCell(worksheet, config, (params, csvHeaderConfig) => {
-    const row = params.row;
-    let cellValue = params.cell;
-
-    if (csvHeaderConfig) {
-      cellValue = csvHeaderConfig.setCellValue ? csvHeaderConfig.setCellValue(params) : params.cell;
-
-      delete row[params.header];
-      row[csvHeaderConfig.$property] = cellValue;
-    } else {
-      cellValue = config.setUnknownCellValue ? config.setUnknownCellValue(params) : params.cell;
-
-      row[params.header] = cellValue;
-    }
-  });
-
-  return rows;
-};
-
-/**
- * Validate the CSV cells against the CSV config.
- *
- * @param {WorkSheet} worksheet - The worksheet
- * @param {CSVConfig} config - The CSV configuration
- * @returns {CSVError[]} - The CSV errors
- */
-export const validateCSVCells = (worksheet: WorkSheet, config: CSVConfig): CSVError[] => {
-  const csvErrors: CSVError[] = [];
-
-  forEachCSVCell(worksheet, config, (params, csvHeaderConfig) => {
-    if (csvHeaderConfig) {
-      csvErrors.push(...csvHeaderConfig.validateCell(params));
-    }
-
-    if (!csvHeaderConfig && config.validateUnknownCell) {
-      csvErrors.push(...config.validateUnknownCell(params));
-    }
-  });
-
-  return csvErrors;
 };
 
 /**
@@ -175,4 +123,85 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
   }
 
   return csvErrors;
+};
+
+/**
+ * Validate the CSV cells against the CSV config.
+ *
+ * @param {WorkSheet} worksheet - The worksheet
+ * @param {CSVConfig} config - The CSV configuration
+ * @returns {CSVError[]} - The CSV errors
+ */
+export const validateCSVCells = (worksheet: WorkSheet, config: CSVConfig): CSVError[] => {
+  const csvErrors: CSVError[] = [];
+
+  forEachCSVCell(worksheet, config, (params, csvHeaderConfig) => {
+    if (csvHeaderConfig) {
+      csvErrors.push(...csvHeaderConfig.validateCell(params));
+    }
+
+    if (!csvHeaderConfig && config.validateUnknownCell) {
+      csvErrors.push(...config.validateUnknownCell(params));
+    }
+  });
+
+  return csvErrors;
+};
+
+/**
+ * Set the cell values for the CSV worksheet.
+ *
+ * @param {WorkSheet} worksheet - The worksheet
+ * @param {CSVConfig} config - The CSV configuration
+ * @returns {CSVRow[]} - The CSV rows
+ */
+export const setCSVCellValues = (worksheet: WorkSheet, config: CSVConfig): CSVRow[] => {
+  const rows: CSVRow[] = [];
+
+  forEachCSVCell(worksheet, config, (params, csvHeaderConfig) => {
+    const row = params.row;
+    let cellValue = params.cell;
+
+    if (csvHeaderConfig) {
+      cellValue = csvHeaderConfig.setCellValue ? csvHeaderConfig.setCellValue(params) : params.cell;
+
+      delete row[params.header];
+      row[csvHeaderConfig.$property] = cellValue;
+    } else {
+      cellValue = config.setUnknownCellValue ? config.setUnknownCellValue(params) : params.cell;
+
+      row[params.header] = cellValue;
+    }
+  });
+
+  return rows;
+};
+
+/**
+ * Validate the CSV worksheet against the CSV config.
+ * Note: This function is a helpful wrapper for the `normal` flow of the validation process.
+ *
+ * @param {WorkSheet} worksheet - The worksheet
+ * @param {CSVConfig} config - The CSV configuration
+ * @returns {{ errors: CSVError[]; rows: CSVRow[] }} - The CSV errors and rows
+ */
+export const validateCSVWorksheet = (
+  worksheet: WorkSheet,
+  config: CSVConfig
+): { errors: CSVError[]; rows: CSVRow[] } => {
+  const headerErrors = validateCSVHeaders(worksheet, config);
+
+  if (headerErrors.length) {
+    return { errors: headerErrors, rows: [] };
+  }
+
+  const cellErrors = validateCSVCells(worksheet, config);
+
+  if (cellErrors.length) {
+    return { errors: cellErrors, rows: [] };
+  }
+
+  const mutatedRows = setCSVCellValues(worksheet, config);
+
+  return { errors: [], rows: mutatedRows };
 };
