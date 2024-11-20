@@ -47,7 +47,8 @@ describe('CodeService', () => {
         'method_response_metrics',
         'observation_subcount_signs',
         'telemetry_device_makes',
-        'frequency_units'
+        'frequency_units',
+        'alert_types'
       );
     });
   });

@@ -46,7 +46,8 @@ export class CodeService extends DBService {
       attractants,
       observation_subcount_signs,
       telemetry_device_makes,
-      frequency_units
+      frequency_units,
+      alert_types
     ] = await Promise.all([
       await this.codeRepository.getManagementActionType(),
       await this.codeRepository.getFirstNations(),
@@ -69,7 +70,8 @@ export class CodeService extends DBService {
       await this.codeRepository.getAttractants(),
       await this.codeRepository.getObservationSubcountSigns(),
       await this.codeRepository.getActiveTelemetryDeviceMakes(),
-      await this.codeRepository.getFrequencyUnits()
+      await this.codeRepository.getFrequencyUnits(),
+      await this.codeRepository.getAlertTypes()
     ]);
 
     return {
@@ -94,7 +96,8 @@ export class CodeService extends DBService {
       attractants,
       observation_subcount_signs,
       telemetry_device_makes,
-      frequency_units
+      frequency_units,
+      alert_types
     };
   }
 

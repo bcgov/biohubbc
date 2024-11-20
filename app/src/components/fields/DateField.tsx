@@ -4,25 +4,19 @@ import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
-import { FormikContextType } from 'formik';
+import { useFormikContext } from 'formik';
 import { get } from 'lodash-es';
 
-interface IDateFieldProps<FormikPropsType> {
+interface IDateFieldProps {
   label: string;
   name: string;
   id: string;
   required: boolean;
-  formikProps: FormikContextType<FormikPropsType>;
 }
 
-export const DateField = <FormikPropsType,>(props: IDateFieldProps<FormikPropsType>) => {
-  const {
-    formikProps: { values, errors, touched, setFieldValue },
-    label,
-    name,
-    id,
-    required
-  } = props;
+export const DateField = <FormikPropsType extends IDateFieldProps>(props: IDateFieldProps) => {
+  const { values, errors, touched, setFieldValue, setFieldError } = useFormikContext<FormikPropsType>();
+  const { label, name, id, required } = props;
 
   const rawDateValue = get(values, name);
   const formattedDateValue =
@@ -34,12 +28,6 @@ export const DateField = <FormikPropsType,>(props: IDateFieldProps<FormikPropsTy
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
-        sx={{
-          '& .MuiOutlinedInput-root': {
-            borderTopRightRadius: 0,
-            borderBottomRightRadius: 0
-          }
-        }}
         slots={{
           openPickerIcon: () => <Icon path={mdiCalendar} size={1} />
         }}
@@ -49,7 +37,7 @@ export const DateField = <FormikPropsType,>(props: IDateFieldProps<FormikPropsTy
             name: name,
             required: required,
             variant: 'outlined',
-            error: get(touched, name) && Boolean(get(errors, name)),
+            error: Boolean(get(errors, name) && get(touched, name)),
             helperText: get(touched, name) && get(errors, name),
             inputProps: {
               'data-testid': name
@@ -66,7 +54,7 @@ export const DateField = <FormikPropsType,>(props: IDateFieldProps<FormikPropsTy
         maxDate={dayjs(DATE_LIMIT.max)}
         value={formattedDateValue}
         onChange={(value) => {
-          if (!value || value === 'Invalid Date') {
+          if (!value || !dayjs(value).isValid()) {
             // The creation input value will be 'Invalid Date' when the date field is cleared (empty), and will
             // contain an actual date string value if the field is not empty but is invalid.
             setFieldValue(name, null);
@@ -74,6 +62,7 @@ export const DateField = <FormikPropsType,>(props: IDateFieldProps<FormikPropsTy
           }
 
           setFieldValue(name, dayjs(value).format(DATE_FORMAT.ShortDateFormat));
+          setFieldError(name, undefined);
         }}
       />
     </LocalizationProvider>
