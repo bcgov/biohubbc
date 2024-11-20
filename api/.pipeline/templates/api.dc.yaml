@@ -27,9 +27,6 @@ parameters:
   - name: CHANGE_ID
     description: Change id of the project. This will help to pull image stream
     required: true
-  - name: CRONJOB_SCHEDULE
-    description: The
-    required: true
     value: '0'
   - name: NODE_ENV
     description: Application Environment type variable

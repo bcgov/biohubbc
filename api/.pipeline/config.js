@@ -21,8 +21,6 @@ const deployChangeId = (isStaticDeployment && 'deploy') || changeId;
 const branch = (isStaticDeployment && options.branch) || null;
 const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${version}-${changeId}`;
 
-const prCronSchedule = '* * 31 2 *'; // Cronjob schedule that never runs (Feb 31st is an invalid date)
-
 const staticUrlsAPI = config.staticUrlsAPI;
 const staticUrls = config.staticUrls;
 
