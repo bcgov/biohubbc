@@ -1,9 +1,11 @@
 import { WorkSheet } from 'xlsx';
-import { getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
+import { getHeadersUpperCase, getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
 import { CSVConfig, CSVError, CSVHeader, CSVParams, CSVRow } from './csv-utils.interface';
 
 /**
  * Get the config map for the CSV headers.
+ *
+ * Note: This function returns a Map of header names (UPPERCASED) to header config objects.
  *
  * @param {CSVConfig} config - The CSV configuration
  * @returns {Map<string, CSVHeader>} - The header config Map
@@ -13,42 +15,17 @@ export const getCSVConfigMap = (config: CSVConfig) => {
 
   for (const headerConfig of config.headers) {
     for (const header of headerConfig.headerNames) {
-      if (headerMap.has(header.toUpperCase())) {
-        throw new Error(`Duplicate header in CSV config: ${header}`);
+      const uppercasedHeader = header.toUpperCase();
+
+      if (headerMap.has(uppercasedHeader)) {
+        throw new Error(`Duplicate header in CSV config: ${uppercasedHeader}`);
       }
-      headerMap.set(header.toUpperCase(), headerConfig);
+
+      headerMap.set(uppercasedHeader, headerConfig);
     }
   }
 
   return headerMap;
-};
-
-/**
- * Get the worksheet headers that are known to the CSV config.
- *
- * ie: config: A,B,C - worksheet: A,B,D - known: A,B
- *
- * @param {WorkSheet} worksheet - The worksheet
- * @param {CSVConfig} config - The CSV configuration
- * @returns {string[]} - The known worksheet headers
- */
-export const getCSVWorksheetKnownHeaders = (worksheet: WorkSheet, config: CSVConfig) => {
-  const configMap = getCSVConfigMap(config);
-  return Object.keys(worksheet[0]).filter((header) => configMap.has(header));
-};
-
-/**
- * Get the worksheet headers that are unknown to the CSV config.
- *
- * ie: config: A,B,C - worksheet: A,D,E - known: D,E
- *
- * @param {WorkSheet} worksheet - The worksheet
- * @param {CSVConfig} config - The CSV configuration
- * @returns {string[]} - The known worksheet headers
- */
-export const getCSVWorksheetUnknownHeaders = (worksheet: WorkSheet, config: CSVConfig) => {
-  const configMap = getCSVConfigMap(config);
-  return Object.keys(worksheet[0]).filter((header) => !configMap.has(header));
 };
 
 /**
@@ -90,11 +67,13 @@ export const forEachCSVCell = (
 export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSVError[] => {
   const csvErrors: CSVError[] = [];
 
-  const allHeaders = Object.keys(worksheet[0]);
-  const knownHeaders = getCSVWorksheetKnownHeaders(worksheet, config);
-  const unknownHeaders = getCSVWorksheetUnknownHeaders(worksheet, config);
+  const configMap = getCSVConfigMap(config);
 
-  if (!allHeaders.length) {
+  const headers = getHeadersUpperCase(worksheet);
+  const knownHeaders = headers.filter((header) => configMap.has(header));
+  const unknownHeaders = headers.filter((header) => !configMap.has(header));
+
+  if (!headers.length) {
     return [{ rowIndex: 0, error: 'CSV is empty', solution: 'Add headers and data to CSV' }];
   }
 
@@ -159,19 +138,16 @@ export const setCSVCellValues = (worksheet: WorkSheet, config: CSVConfig): CSVRo
   const rows: CSVRow[] = [];
 
   forEachCSVCell(worksheet, config, (params, csvHeaderConfig) => {
-    const row = params.row;
-    let cellValue = params.cell;
-
-    if (csvHeaderConfig) {
-      cellValue = csvHeaderConfig.setCellValue ? csvHeaderConfig.setCellValue(params) : params.cell;
-
-      delete row[params.header];
-      row[csvHeaderConfig.$property] = cellValue;
-    } else {
-      cellValue = config.setUnknownCellValue ? config.setUnknownCellValue(params) : params.cell;
-
-      row[params.header] = cellValue;
+    if (csvHeaderConfig && csvHeaderConfig.setCellValue) {
+      params.row[csvHeaderConfig.$property] = csvHeaderConfig.setCellValue(params);
+      delete params.row[params.header];
     }
+
+    if (!csvHeaderConfig && config.setUnknownCellValue) {
+      params.row[params.header] = config.setUnknownCellValue(params);
+    }
+
+    rows[params.rowIndex] = params.row;
   });
 
   return rows;
