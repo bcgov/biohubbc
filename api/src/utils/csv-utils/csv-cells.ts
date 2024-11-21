@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CSVError, CSVParams } from './csv-utils.interface';
+import { CSVError, CSVParams } from './csv-config-utils.interface';
 
 /**
  * Validate a cell using a Zod schema.

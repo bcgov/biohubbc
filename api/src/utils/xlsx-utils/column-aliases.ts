@@ -1,4 +1,4 @@
-export const CSV_COLUMN_ALIASES: Record<Uppercase<string>, Uppercase<string>[]> = {
+export const CSV_COLUMN_ALIASES = {
   ITIS_TSN: ['TAXON', 'SPECIES', 'TSN'],
   LATITUDE: ['LAT'],
   LONGITUDE: ['LON', 'LONG', 'LNG'],
@@ -7,4 +7,4 @@ export const CSV_COLUMN_ALIASES: Record<Uppercase<string>, Uppercase<string>[]> 
   MARKING_TYPE: ['TYPE'],
   OBSERVATION_SUBCOUNT_SIGN: ['SIGN'],
   COMMENT: ['COMMENTS', 'NOTE', 'NOTES']
-};
+} as const;

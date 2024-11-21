@@ -1,6 +1,6 @@
 import { WorkSheet } from 'xlsx';
 import { getHeadersUpperCase, getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
-import { CSVConfig, CSVError, CSVHeader, CSVParams, CSVRow } from './csv-utils.interface';
+import { CSVConfig, CSVError, CSVHeader, CSVParams, CSVRow } from './csv-config-utils.interface';
 
 /**
  * Get the config map for the CSV headers.
