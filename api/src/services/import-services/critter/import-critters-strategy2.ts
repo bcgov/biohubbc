@@ -1,14 +1,14 @@
-import { get, toUpper } from 'lodash';
+import { toUpper } from 'lodash';
 import { v4 as uuid } from 'uuid';
 import { WorkSheet } from 'xlsx';
 import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
 import { ApiGeneralError } from '../../../errors/api-error';
 import { validateZodCell } from '../../../utils/csv-utils/csv-cells';
-import { CSVConfig, CSVHeader, CSVRow } from '../../../utils/csv-utils/csv-config-utils.interface';
+import { getCSVCellValue } from '../../../utils/csv-utils/csv-config-utils';
+import { CSVConfig, CSVHeaderConfig, CSVRow } from '../../../utils/csv-utils/csv-config-utils.interface';
 import { getLogger } from '../../../utils/logger';
 import { getTsnMeasurementTypeDefinitionMap } from '../../../utils/observation-xlsx-utils/measurement-column-utils';
-import { CSV_COLUMN_ALIASES } from '../../../utils/xlsx-utils/column-aliases';
 import { generateColumnCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { getWorksheetRowObjects } from '../../../utils/xlsx-utils/worksheet-utils';
 import {
@@ -25,6 +25,8 @@ import { CsvCritter, PartialCsvCritter } from './import-critters-strategy.interf
 
 const defaultLog = getLogger('services/import/import-critters-service');
 
+type CritterHeaders = 'ITIS_TSN' | 'SEX' | 'ALIAS' | 'WLH_ID' | 'DESCRIPTION';
+
 /**
  *
  * ImportCrittersStrategy - Injected into CSVImportStrategy as the CSV import dependency
@@ -36,13 +38,15 @@ const defaultLog = getLogger('services/import/import-critters-service');
  *
  */
 export class ImportCSVCritters extends DBService {
-  platformService: PlatformService;
-  critterbaseService: CritterbaseService;
-  surveyCritterService: SurveyCritterService;
+  _config: CSVConfig<CritterHeaders>;
 
   surveyId: number;
   worksheet: WorkSheet;
   worksheetRows: CSVRow[];
+
+  platformService: PlatformService;
+  critterbaseService: CritterbaseService;
+  surveyCritterService: SurveyCritterService;
 
   /**
    * Instantiates an instance of ImportCrittersStrategy
@@ -52,6 +56,17 @@ export class ImportCSVCritters extends DBService {
    */
   constructor(connection: IDBConnection, worksheet: WorkSheet, surveyId: number) {
     super(connection);
+
+    this._config = {
+      staticHeadersMap: {
+        ITIS_TSN: ['TAXON', 'SPECIES', 'TSN'],
+        ALIAS: ['NICKNAME', 'NAME', 'ANIMAL_ID'],
+        SEX: [],
+        WLH_ID: ['WILDLIFE_HEALTH_ID'],
+        DESCRIPTION: ['COMMENTS', 'COMMENT', 'NOTES']
+      },
+      ignoreDynamicHeaders: false
+    };
 
     this.surveyId = surveyId;
     this.worksheet = worksheet;
@@ -65,41 +80,46 @@ export class ImportCSVCritters extends DBService {
     });
   }
 
+  async getCSVConfig(): Promise<CSVConfig<CritterHeaders>> {
+    const [tsnHeaderConfig, aliasHeaderConfig] = await Promise.all([
+      this._getTsnHeaderConfig(),
+      this._getAliasHeaderConfig()
+    ]);
+
+    return {
+      staticHeadersConfig: {
+        ITIS_TSN: tsnHeaderConfig,
+        SEX: this._getSexHeaderConfig(),
+        ALIAS: aliasHeaderConfig,
+        WLH_ID: this._getWlhIdHeaderConfig(),
+        DESCRIPTION: {
+          validateCell: (params) => validateZodCell(params, z.string().max(250).optional())
+        }
+      },
+      ...this._config
+    };
+  }
+
   /**
    * Get the TSN header config.
    *
-   * Rules:
-   *  1. TSN must be a number.
-   *  2. TSN must be valid and known by ITIS.
-   *
-   * @returns {Promise<CSVHeader>} The TSN header config
+   * @returns {Promise<CSVHeaderConfig>} The TSN header config
    */
-  async _getTsnHeaderConfig(): Promise<CSVHeader> {
-    const headerNames: Uppercase<string>[] = ['ITIS_TSN', ...CSV_COLUMN_ALIASES.ITIS_TSN];
+  async _getTsnHeaderConfig(): Promise<CSVHeaderConfig> {
+    const allRowTsns = this.worksheetRows.map((row) => String(getCSVCellValue('ITIS_TSN', row, this._config)));
 
-    const rowTsns: string[] = [];
-    for (const row of this.worksheetRows) {
-      const tsn = get(row, headerNames);
-      if (tsn) {
-        rowTsns.push(String(tsn));
-      }
-    }
-
-    const taxonomy = await this.platformService.getTaxonomyByTsns(rowTsns);
+    const taxonomy = await this.platformService.getTaxonomyByTsns(allRowTsns);
     const tsnSet = new Set(taxonomy.map((t) => t.tsn));
 
     return {
-      $property: 'itis_tsn',
-      headerNames: headerNames,
       validateCell: (params) => {
         const cellErrors = validateZodCell(params, z.number().min(0));
 
         if (!tsnSet.has(Number(params.cell))) {
           cellErrors.push({
-            error: `Invalid TSN`,
-            solution: `ITIS has no reference to TSN: ${params.cell}`,
-            header: params.header,
-            rowIndex: params.rowIndex
+            error: `ITIS has no reference of this TSN`,
+            solution: `Use valid ITIS TSN`,
+            ...params
           });
         }
 
@@ -111,22 +131,29 @@ export class ImportCSVCritters extends DBService {
   /**
    * Get the CSV Sex header config.
    *
-   * @returns {CSVHeader} The sex header config
+   * @returns {CSVHeaderConfig} The sex header config
    */
-  _getSexHeaderConfig(): CSVHeader {
+  _getSexHeaderConfig(): CSVHeaderConfig {
     return {
-      $property: 'sex',
-      headerNames: ['SEX'],
-      validateCell: (params) => validateZodCell(params, z.string().optional())
+      validateCell: (params) => validateZodCell(params, z.string())
     };
   }
 
-  _getAliasHeaderConfig(): CSVHeader {
+  async _getAliasHeaderConfig(): Promise<CSVHeaderConfig> {
+    const surveyAliases = await this.surveyCritterService.getUniqueSurveyCritterAliases(this.surveyId);
+
     return {
-      $property: 'alias',
-      headerNames: ['ALIAS', ...CSV_COLUMN_ALIASES.ALIAS],
       validateCell: (params) => {
         const cellErrors = validateZodCell(params, z.string().max(50));
+
+        if (surveyAliases.has(String(params.cell))) {
+          cellErrors.push({
+            error: `Critter alias already exists in the Survey`,
+            solution: `Update the alias to be unique`,
+            ...params
+          });
+        }
+
         return cellErrors;
       }
     };
@@ -139,55 +166,22 @@ export class ImportCSVCritters extends DBService {
    *  1. Wildlife Health ID must be a string.
    *  2. Wildlife Health ID must be in the format 'XX-XXXX'.
    *
-   * @returns {CSVHeader} The Wildlife Health ID header config
+   * @returns {CSVHeaderConfig} The Wildlife Health ID header config
    */
-  _getWlhIdHeaderConfig(): CSVHeader {
+  _getWlhIdHeaderConfig(): CSVHeaderConfig {
     return {
-      $property: 'wlh_id',
-      headerNames: ['WLH_ID'],
       validateCell: (params) => {
         const cellErrors = validateZodCell(params, z.string().optional());
 
         if (!/^\d{2}-.+/.exec(String(params.cell))) {
           cellErrors.push({
-            error: `Invalid Wildlife Health ID`,
+            error: `Invalid Wildlife Health ID format`,
             solution: `Wildlife Health ID must be in the format 'XX-XXXX'`,
-            header: params.header,
-            rowIndex: params.rowIndex
+            ...params
           });
         }
 
         return cellErrors;
-      }
-    };
-  }
-
-  /**
-   * Get the description header config.
-   *
-   * @returns {CSVHeader} The description header config
-   */
-  _getDescriptionHeaderConfig(): CSVHeader {
-    return {
-      $property: 'description',
-      headerNames: ['DESCRIPTION', ...CSV_COLUMN_ALIASES.DESCRIPTION],
-      validateCell: (params) => validateZodCell(params, z.string().max(250).optional())
-    };
-  }
-
-  async getCSVConfig(): Promise<CSVConfig> {
-    return {
-      headers: [
-        await this._getTsnHeaderConfig(),
-        this._getSexHeaderConfig(),
-        this._getAliasHeaderConfig(),
-        this._getWlhIdHeaderConfig(),
-        this._getDescriptionHeaderConfig()
-      ],
-      ignoreUnknownHeaders: false,
-      validateUnknownCell: (params) => {
-        const unknownCellErrors = validateZodCell(params, z.string().optional());
-        return unknownCellErrors;
       }
     };
   }

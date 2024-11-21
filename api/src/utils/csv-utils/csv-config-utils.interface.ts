@@ -1,56 +1,31 @@
 import { WorkSheet } from 'xlsx';
-
 /**
  * The CSV configuration interface
  *
  */
-export interface CSVConfig {
+export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>> {
+  staticHeadersMap: Record<THeader, string[]>;
   /**
-   * The CSV headers configs.
-   * @type {CSVHeader[]}
+   * Boolean to ignore dynamic headers.
+   * @type {boolean}
    */
-  headers: CSVHeader[];
-  /**
-   * Boolean to ignore unknown headers.
-   * @type {boolean | undefined}
-   */
-  ignoreUnknownHeaders?: boolean;
-  /**
-   * Callback to fire when validating an unknown cell.
-   * @type {(params: CSVParams) => CSVError[] | undefined}
-   */
-  validateUnknownCell?: (params: CSVParams) => CSVError[];
-  /**
-   * Callback to fire when setting an unknown cell value (after validation). Uses unknown `header` as the key.
-   * @type {(params: CSVParams) => any | undefined}
-   */
-  setUnknownCellValue?: (params: CSVParams) => any;
+  ignoreDynamicHeaders: boolean;
+  staticHeadersConfig?: Record<THeader, CSVHeaderConfig>;
+  dynamicHeadersConfig?: CSVHeaderConfig;
 }
 
 /**
- * The CSV header interface
+ * The CSV header configuration interface
  *
  */
-export interface CSVHeader {
-  /**
-   * The property name to use when mutating the row.
-   * @example 'age'
-   * @type {string}
-   */
-  $property: string;
-  /**
-   * The header name and aliases.
-   * @example ['AGE', 'YEARS']
-   * @type {Uppercase<string>[]}
-   */
-  headerNames: Uppercase<string>[];
+export interface CSVHeaderConfig {
   /**
    * Callback to fire when validating the cell.
    * @type {(params: CSVParams) => CSVError[]}
    */
   validateCell: (params: CSVParams) => CSVError[];
   /**
-   * Callback to fire when setting the cell (after validation). Uses `$property` as the key.
+   * Callback to fire when setting the cell (after validation).
    * @type {(params: CSVParams) => any | undefined}
    */
   setCellValue?: (params: CSVParams) => any;
@@ -81,6 +56,11 @@ export interface CSVError {
    * @type {string | undefined}
    */
   header?: string | undefined;
+  /**
+   * The cell value.
+   *
+   */
+  cell?: unknown;
 }
 
 /**

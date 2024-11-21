@@ -1,6 +1,20 @@
 import { WorkSheet } from 'xlsx';
 import { getHeadersUpperCase, getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
-import { CSVConfig, CSVError, CSVHeader, CSVParams, CSVRow } from './csv-config-utils.interface';
+import { CSVConfig, CSVError, CSVHeaderConfig, CSVParams, CSVRow } from './csv-config-utils.interface';
+
+export const _getCSVHeaderAliases = (staticHeader: ) => {};
+
+export const getCSVCellValue = <T extends CSVConfig>(header: keyof T['staticHeadersMap'], row: CSVRow, config: T) => {
+  if (header in row) {
+    return row[header as Uppercase<string>];
+  }
+
+  for (const alias of config.staticHeadersMap[header as Uppercase<string>]) {
+    if (alias in row) {
+      return row[alias];
+    }
+  }
+};
 
 /**
  * Get the config map for the CSV headers.
@@ -8,13 +22,19 @@ import { CSVConfig, CSVError, CSVHeader, CSVParams, CSVRow } from './csv-config-
  * Note: This function returns a Map of header names (UPPERCASED) to header config objects.
  *
  * @param {CSVConfig} config - The CSV configuration
- * @returns {Map<string, CSVHeader>} - The header config Map
+ * @returns {Map<string, CSVHeaderConfig>} - The header config Map
  */
 export const getCSVConfigMap = (config: CSVConfig) => {
-  const headerMap = new Map<string, CSVHeader>();
+  const headerMap = new Map<string, CSVHeaderConfig>();
 
-  for (const headerConfig of config.headers) {
-    for (const header of headerConfig.headerNames) {
+  for (const staticHeader in Object.keys(config.staticHeadersMap)) {
+    const headerConfig = config.staticHeadersConfig?.[staticHeader as Uppercase<string>];
+
+    if (!headerConfig) {
+      throw new Error(`Missing header config for header: ${staticHeader}`);
+    }
+
+    for (const header of [staticHeader, ...config.staticHeadersMap[staticHeader]]) {
       const uppercasedHeader = header.toUpperCase();
 
       if (headerMap.has(uppercasedHeader)) {
@@ -33,13 +53,13 @@ export const getCSVConfigMap = (config: CSVConfig) => {
  *
  * @param {WorkSheet} worksheet - The worksheet
  * @param {CSVConfig} config - The CSV configuration
- * @param {(params: CSVParams, csvHeaderConfig?: CSVHeader) => void} callback - The callback function
+ * @param {(params: CSVParams, csvHeaderConfig?: CSVHeaderConfig) => void} callback - The callback function
  * @returns {void}
  */
 export const forEachCSVCell = (
   worksheet: WorkSheet,
   config: CSVConfig,
-  callback: (params: CSVParams, csvHeaderConfig?: CSVHeader) => void
+  callback: (params: CSVParams, csvHeaderConfig?: CSVHeaderConfig) => void
 ): void => {
   const configMap = getCSVConfigMap(config);
   const worksheetRows = getWorksheetRowObjects(worksheet);
@@ -77,7 +97,9 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
     return [{ rowIndex: 0, error: 'CSV is empty', solution: 'Add headers and data to CSV' }];
   }
 
-  for (const headerConfig of config.headers) {
+  for (const staticHeader in Object.keys(config.staticHeadersMap)) {
+    const headerConfig = config.headers[$property];
+
     for (const header of headerConfig.headerNames) {
       if (!knownHeaders.includes(header)) {
         csvErrors.push({
@@ -90,7 +112,7 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
     }
   }
 
-  if (config.ignoreUnknownHeaders && unknownHeaders.length) {
+  if (config.ignoreDynamicHeaders && unknownHeaders.length) {
     for (const unknownHeader of unknownHeaders) {
       csvErrors.push({
         rowIndex: 0,
@@ -114,13 +136,13 @@ export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSV
 export const validateCSVCells = (worksheet: WorkSheet, config: CSVConfig): CSVError[] => {
   const csvErrors: CSVError[] = [];
 
-  forEachCSVCell(worksheet, config, (params, csvHeaderConfig) => {
-    if (csvHeaderConfig) {
-      csvErrors.push(...csvHeaderConfig.validateCell(params));
+  forEachCSVCell(worksheet, config, (params, staticHeaderConfig) => {
+    if (staticHeaderConfig) {
+      csvErrors.push(...staticHeaderConfig.validateCell(params));
     }
 
-    if (!csvHeaderConfig && config.validateUnknownCell) {
-      csvErrors.push(...config.validateUnknownCell(params));
+    if (!staticHeaderConfig && config.dynamicHeadersConfig?.validateCell) {
+      csvErrors.push(...config.dynamicHeadersConfig.validateCell(params));
     }
   });
 
@@ -137,14 +159,14 @@ export const validateCSVCells = (worksheet: WorkSheet, config: CSVConfig): CSVEr
 export const setCSVCellValues = (worksheet: WorkSheet, config: CSVConfig): CSVRow[] => {
   const rows: CSVRow[] = [];
 
-  forEachCSVCell(worksheet, config, (params, csvHeaderConfig) => {
-    if (csvHeaderConfig && csvHeaderConfig.setCellValue) {
-      params.row[csvHeaderConfig.$property] = csvHeaderConfig.setCellValue(params);
+  forEachCSVCell(worksheet, config, (params, staticHeaderConfig) => {
+    if (staticHeaderConfig && staticHeaderConfig.setCellValue) {
+      params.row[staticHeaderConfig.$property] = staticHeaderConfig.setCellValue(params);
       delete params.row[params.header];
     }
 
-    if (!csvHeaderConfig && config.setUnknownCellValue) {
-      params.row[params.header] = config.setUnknownCellValue(params);
+    if (!staticHeaderConfig && config.dynamicHeadersConfig?.setCellValue) {
+      params.row[params.header] = config.dynamicHeadersConfig.setCellValue(params);
     }
 
     rows[params.rowIndex] = params.row;
