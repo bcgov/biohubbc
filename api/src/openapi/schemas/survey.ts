@@ -483,7 +483,7 @@ export const surveyBlockSchema: OpenAPIV3.SchemaObject = {
   title: 'Survey Block',
   type: 'object',
   additionalProperties: false,
-  required: ['name', 'description', 'survey_id', 'geojson'],
+  required: ['name', 'description', 'geojson'],
   properties: {
     survey_block_id: {
       description: 'Survey block id',
