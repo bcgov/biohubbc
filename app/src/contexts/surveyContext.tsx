@@ -2,7 +2,6 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetSurveyAttachmentsResponse, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import { IGetTechniquesResponse } from 'interfaces/useTechniqueApi.interface';
 import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
 import { useParams } from 'react-router';
 
@@ -28,14 +27,6 @@ export interface ISurveyContext {
    * @memberof ISurveyContext
    */
   artifactDataLoader: DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>;
-
-  /**
-   * The Data Loader used to load survey techniques
-   *
-   * @type {DataLoader<[project_id: number, survey_id: number], IGetTechniquesResponse, unknown>}
-   * @memberof ISurveyContext
-   */
-  techniqueDataLoader: DataLoader<[project_id: number, survey_id: number], IGetTechniquesResponse, unknown>;
 
   /**
    * The Data Loader used to load critters for a given survey
@@ -65,7 +56,6 @@ export interface ISurveyContext {
 export const SurveyContext = createContext<ISurveyContext>({
   surveyDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyForViewResponse, unknown>,
   artifactDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetSurveyAttachmentsResponse, unknown>,
-  techniqueDataLoader: {} as DataLoader<[project_id: number, survey_id: number], IGetTechniquesResponse, unknown>,
   critterDataLoader: {} as DataLoader<[project_id: number, survey_id: number], ICritterSimpleResponse[], unknown>,
   projectId: -1,
   surveyId: -1
@@ -76,7 +66,6 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
   const surveyDataLoader = useDataLoader(biohubApi.survey.getSurveyForView);
   const artifactDataLoader = useDataLoader(biohubApi.survey.getSurveyAttachments);
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
-  const techniqueDataLoader = useDataLoader(biohubApi.technique.getTechniquesForSurvey);
 
   const urlParams: Record<string, string | number | undefined> = useParams();
 
@@ -122,11 +111,10 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
       surveyDataLoader,
       artifactDataLoader,
       critterDataLoader,
-      techniqueDataLoader,
       projectId,
       surveyId
     };
-  }, [surveyDataLoader, artifactDataLoader, critterDataLoader, techniqueDataLoader, projectId, surveyId]);
+  }, [surveyDataLoader, artifactDataLoader, critterDataLoader, projectId, surveyId]);
 
   return <SurveyContext.Provider value={surveyContext}>{props.children}</SurveyContext.Provider>;
 };

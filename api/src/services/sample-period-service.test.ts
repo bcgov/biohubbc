@@ -1,10 +1,10 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { SurveySamplePeriodModel } from '../database-models/survey_sample_period';
 import {
   InsertSamplePeriodRecord,
   SamplePeriodHierarchyIds,
-  SamplePeriodRecord,
   SamplePeriodRepository,
   UpdateSamplePeriodRecord
 } from '../repositories/sample-period-repository';
@@ -31,7 +31,7 @@ describe('SamplePeriodService', () => {
     it('Gets a sample period by survey method ID', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockSamplePeriodRecords: SamplePeriodRecord[] = [
+      const mockSamplePeriodRecords: SurveySamplePeriodModel[] = [
         {
           survey_sample_period_id: 1,
           survey_sample_method_id: 2,
@@ -97,7 +97,7 @@ describe('SamplePeriodService', () => {
     it('Deletes a sample period record', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockSamplePeriodRecord: SamplePeriodRecord = {
+      const mockSamplePeriodRecord: SurveySamplePeriodModel = {
         survey_sample_period_id: 1,
         survey_sample_method_id: 2,
         start_date: '2023-10-02',
@@ -132,7 +132,7 @@ describe('SamplePeriodService', () => {
     it('Inserts a sample period successfully', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockSamplePeriodRecord: SamplePeriodRecord = {
+      const mockSamplePeriodRecord: SurveySamplePeriodModel = {
         survey_sample_period_id: 1,
         survey_sample_method_id: 2,
         start_date: '2023-10-02',
@@ -172,7 +172,7 @@ describe('SamplePeriodService', () => {
     it('Updates a sample period successfully', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockSamplePeriodRecord: SamplePeriodRecord = {
+      const mockSamplePeriodRecord: SurveySamplePeriodModel = {
         survey_sample_period_id: 1,
         survey_sample_method_id: 2,
         start_date: '2023-10-02',
@@ -211,7 +211,7 @@ describe('SamplePeriodService', () => {
     it('should delete sample sites not in array successfully', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockSamplePeriodRecords: SamplePeriodRecord[] = [
+      const mockSamplePeriodRecords: SurveySamplePeriodModel[] = [
         {
           survey_sample_period_id: 1,
           survey_sample_method_id: 2,
@@ -242,7 +242,7 @@ describe('SamplePeriodService', () => {
       const surveySampleMethodId = 1;
       const samplePeriodService = new SamplePeriodService(mockDBConnection);
       const response = await samplePeriodService.deleteSamplePeriodsNotInArray(mockSurveyId, surveySampleMethodId, [
-        { survey_sample_period_id: 2 } as SamplePeriodRecord
+        { survey_sample_period_id: 2 } as SurveySamplePeriodModel
       ]);
 
       expect(getSamplePeriodsForSurveyMethodIdStub).to.be.calledOnceWith(mockSurveyId, surveySampleMethodId);
