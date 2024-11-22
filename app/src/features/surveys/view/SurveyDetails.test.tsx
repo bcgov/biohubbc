@@ -52,7 +52,6 @@ describe('SurveyDetails', () => {
   } as DataLoader<any, IGetSurveyForViewResponse, any>;
   const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
   const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
-  const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
   it('renders correctly', async () => {
     const { getByText } = render(
@@ -63,8 +62,6 @@ describe('SurveyDetails', () => {
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
-
-            techniqueDataLoader: mockTechniqueDataLoader,
             critterDataLoader: mockCritterDataLoader
           }}>
           <CodesContext.Provider value={mockCodesContext}>

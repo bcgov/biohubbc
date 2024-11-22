@@ -879,7 +879,7 @@ export class SampleLocationRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement, SurveySampleSiteModel);
 
     if (!response?.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete survey block record', [
+      throw new ApiExecuteSQLError('Failed to delete survey sample site record', [
         'SampleLocationRepository->deleteSampleSiteRecord',
         'rows was null or undefined, expected rows != null'
       ]);

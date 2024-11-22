@@ -47,6 +47,5 @@ export interface IGetTechniqueResponse {
 
 export interface IGetTechniquesResponse {
   techniques: IGetTechniqueResponse[];
-  count: number;
   pagination: ApiPaginationResponseParams;
 }

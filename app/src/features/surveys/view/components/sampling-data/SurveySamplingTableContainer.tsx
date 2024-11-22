@@ -7,7 +7,7 @@ import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
-import { SamplingPeriodTable } from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
+import { SurveyPeriodsTable } from 'features/surveys/view/components/sampling-data/components/period/SurveyPeriodsTable';
 import { SurveyTechniquesCardContainer } from 'features/surveys/view/components/sampling-data/components/technique/SurveyTechniqueCardContainer';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
@@ -30,6 +30,7 @@ export const SurveySamplingTableContainer = () => {
   const surveyContext = useSurveyContext();
   const biohubApi = useBiohubApi();
 
+  // Views
   const [activeView, setActiveView] = useState<SurveySamplingView>(SurveySamplingView.TECHNIQUES);
 
   const views = [
@@ -38,36 +39,36 @@ export const SurveySamplingTableContainer = () => {
     { value: SurveySamplingView.PERIODS, label: 'Sampling Periods', icon: mdiCalendarRange }
   ];
 
-  // Pagination and sorting for techniques
+  // Techniques
   const [techniquesPaginationModel, setTechniquesPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: pageSizeOptions[0]
   });
+
   const [techniquesSortModel, setTechniquesSortModel] = useState<GridSortModel>([]);
 
-  // Pagination and sorting for sites
+  const techniquesPagination: ApiPaginationRequestOptions = useMemo(() => {
+    const sort = firstOrNull(techniquesSortModel);
+    return {
+      limit: techniquesPaginationModel.pageSize,
+      sort: sort?.field || undefined,
+      order: sort?.sort || undefined,
+      page: techniquesPaginationModel.page + 1
+    };
+  }, [techniquesSortModel, techniquesPaginationModel]);
+
+  const techniquesDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
+    biohubApi.technique.getTechniquesForSurvey(surveyContext.projectId, surveyContext.surveyId, pagination)
+  );
+
+  // Sites
   const [sitesPaginationModel, setSitesPaginationModel] = useState<GridPaginationModel>({
     page: 0,
     pageSize: pageSizeOptions[0]
   });
+
   const [sitesSortModel, setSitesSortModel] = useState<GridSortModel>([]);
 
-  // Pagination and sorting for periods
-  const [periodsPaginationModel, setPeriodsPaginationModel] = useState<GridPaginationModel>({
-    page: 0,
-    pageSize: pageSizeOptions[0]
-  });
-  const [periodsSortModel, setPeriodsSortModel] = useState<GridSortModel>([]);
-
-  // Sampling sites data loader and pagination
-  const samplingSitesDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
-    biohubApi.samplingSite.findSampleSites(
-      {
-        survey_id: surveyContext.surveyId
-      },
-      pagination
-    )
-  );
   const sitesPagination: ApiPaginationRequestOptions = useMemo(() => {
     const sort = firstOrNull(sitesSortModel);
     return {
@@ -78,15 +79,18 @@ export const SurveySamplingTableContainer = () => {
     };
   }, [sitesSortModel, sitesPaginationModel]);
 
-  // Sampling periods data loader and pagination
-  const samplingPeriodsDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
-    biohubApi.samplingSite.findSamplePeriods(
-      {
-        survey_id: surveyContext.surveyId
-      },
-      pagination
-    )
+  const samplingSitesDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
+    biohubApi.samplingSite.findSampleSites({ survey_id: surveyContext.surveyId }, pagination)
   );
+
+  // Periods
+  const [periodsPaginationModel, setPeriodsPaginationModel] = useState<GridPaginationModel>({
+    page: 0,
+    pageSize: pageSizeOptions[0]
+  });
+
+  const [periodsSortModel, setPeriodsSortModel] = useState<GridSortModel>([]);
+
   const periodsPagination: ApiPaginationRequestOptions = useMemo(() => {
     const sort = firstOrNull(periodsSortModel);
     return {
@@ -97,48 +101,55 @@ export const SurveySamplingTableContainer = () => {
     };
   }, [periodsSortModel, periodsPaginationModel]);
 
-  // Refresh data if there is data
+  const samplingPeriodsDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
+    biohubApi.samplingSite.findSamplePeriods({ survey_id: surveyContext.surveyId }, pagination)
+  );
+
   useEffect(() => {
-    if (
-      activeView === SurveySamplingView.TECHNIQUES &&
-      Number(surveyContext.techniqueDataLoader.data?.pagination.total) !== 0
-    ) {
-      surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    // Refresh active view data loader when switching to the view for the first time
+    if (activeView === SurveySamplingView.TECHNIQUES && !techniquesDataLoader.data) {
+      techniquesDataLoader.load(techniquesPagination);
     }
-    if (
-      [SurveySamplingView.SITES, SurveySamplingView.PERIODS].includes(activeView) &&
-      Number(samplingSitesDataLoader.data?.pagination.total) !== 0
-    ) {
+
+    if (activeView === SurveySamplingView.SITES && !samplingSitesDataLoader.data) {
       samplingSitesDataLoader.refresh(sitesPagination);
     }
-    if (
-      activeView === SurveySamplingView.PERIODS &&
-      Number(surveyContext.techniqueDataLoader.data?.pagination.total) !== 0
-    ) {
+
+    if (activeView === SurveySamplingView.PERIODS && !samplingPeriodsDataLoader.data) {
       samplingPeriodsDataLoader.refresh(periodsPagination);
     }
-    // Including data loaders in the dependency cause infinite reloads
+    // Including data loaders in the dependency array causes infinite reloads
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeView, sitesPagination]);
+  }, [activeView]);
 
-  const techniques = surveyContext.techniqueDataLoader.data?.techniques ?? [];
-  const sampleSites = useMemo(() => samplingSitesDataLoader.data?.sites ?? [], [samplingSitesDataLoader.data?.sites]);
-  const samplePeriods = useMemo(
-    () =>
-      samplingPeriodsDataLoader.data?.periods.map((item) => {
-        return {
-          id: item.survey_sample_period_id,
-          sample_site: item.sample_site.name,
-          sample_method: item.method_technique.name,
-          method_response_metric_id: item.sample_method.method_response_metric_id,
-          start_date: item.start_date,
-          end_date: item.end_date,
-          start_time: item.start_time,
-          end_time: item.end_time
-        };
-      }) ?? [],
-    [samplingPeriodsDataLoader.data?.periods]
-  );
+  useEffect(() => {
+    if (activeView === SurveySamplingView.TECHNIQUES && Number(techniquesDataLoader.data?.pagination.total) !== 0) {
+      techniquesDataLoader.refresh(techniquesPagination);
+    }
+    // Including data loaders in the dependency array causes infinite reloads
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [techniquesPagination]);
+
+  useEffect(() => {
+    if (activeView === SurveySamplingView.SITES && Number(samplingSitesDataLoader.data?.pagination.total) !== 0) {
+      samplingSitesDataLoader.refresh(sitesPagination);
+    }
+    // Including data loaders in the dependency array causes infinite reloads
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sitesPagination]);
+
+  useEffect(() => {
+    if (activeView === SurveySamplingView.PERIODS && Number(samplingPeriodsDataLoader.data?.pagination.total) !== 0) {
+      samplingPeriodsDataLoader.refresh(periodsPagination);
+    }
+    // Including data loaders in the dependency array causes infinite reloads
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [periodsPagination]);
+
+  // Data
+  const techniques = techniquesDataLoader.data?.techniques ?? [];
+  const sampleSites = samplingSitesDataLoader.data?.sites ?? [];
+  const samplePeriods = samplingPeriodsDataLoader.data?.periods ?? [];
 
   return (
     <Box>
@@ -146,7 +157,7 @@ export const SurveySamplingTableContainer = () => {
 
       <Divider />
 
-      <Stack display="flex" direction="row" minHeight="400px">
+      <Stack display="flex" direction="row" height="400px">
         <Box flex="0 0 auto" flexDirection="column" justifyContent="space-between" p={2} width="250px">
           <CustomToggleButtonGroup views={views} activeView={activeView} onViewChange={setActiveView} />
         </Box>
@@ -157,8 +168,7 @@ export const SurveySamplingTableContainer = () => {
           {activeView === SurveySamplingView.TECHNIQUES && (
             <LoadingGuard
               isLoading={
-                !surveyContext.techniqueDataLoader.data &&
-                (surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady)
+                !techniquesDataLoader.data && (techniquesDataLoader.isLoading || !techniquesDataLoader.isReady)
               }
               isLoadingFallback={
                 <Box width="100%" height="100%">
@@ -176,14 +186,14 @@ export const SurveySamplingTableContainer = () => {
                 />
               }
               hasNoDataFallbackDelay={100}>
-              <Box height="100%" width="100%">
+              <Box display="flex" flexDirection="column" width="100%">
                 <SurveyTechniquesCardContainer
                   techniques={techniques}
                   paginationModel={techniquesPaginationModel}
                   setPaginationModel={setTechniquesPaginationModel}
                   sortModel={techniquesSortModel}
                   setSortModel={setTechniquesSortModel}
-                  rowCount={surveyContext.techniqueDataLoader.data?.pagination.total ?? 0}
+                  rowCount={techniquesDataLoader.data?.pagination.total ?? 0}
                 />
               </Box>
             </LoadingGuard>
@@ -247,7 +257,7 @@ export const SurveySamplingTableContainer = () => {
               }
               hasNoDataFallbackDelay={100}>
               <Box height="100%" width="100%">
-                <SamplingPeriodTable
+                <SurveyPeriodsTable
                   periods={samplePeriods}
                   paginationModel={periodsPaginationModel}
                   setPaginationModel={setPeriodsPaginationModel}

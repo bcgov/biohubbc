@@ -18,6 +18,12 @@ export interface ISurveySitesTableProps {
   rowCount: number;
 }
 
+/**
+ * Renders a table of survey sampling sites.
+ *
+ * @param {ISurveySitesTableProps} props
+ * @return {*}
+ */
 export const SurveySitesTable = (props: ISurveySitesTableProps) => {
   const { sites, paginationModel, setPaginationModel, sortModel, setSortModel, rowCount } = props;
 
@@ -39,7 +45,7 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
     {
       field: 'geometry_type',
       headerName: 'Geometry',
-      flex: 1,
+      flex: 0.75,
       renderCell: (params) => (
         <Box>
           <ColouredRectangleChip
@@ -57,7 +63,7 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
     {
       field: 'blocks',
       headerName: 'Blocks',
-      flex: 1,
+      flex: 0.75,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
           {params.row.blocks.map((block) => (
@@ -71,7 +77,7 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
     {
       field: 'stratums',
       headerName: 'Strata',
-      flex: 1,
+      flex: 0.75,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
           {params.row.stratums.map((stratum) => (

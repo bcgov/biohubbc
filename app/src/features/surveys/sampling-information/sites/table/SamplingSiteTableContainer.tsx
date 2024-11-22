@@ -47,7 +47,7 @@ export const SamplingSiteTableContainer = () => {
   const dialogContext = useDialogContext();
 
   const [headerAnchorEl, setHeaderAnchorEl] = useState<null | HTMLElement>(null);
-  const [siteSelection, setSiteSelection] = useState<GridRowSelectionModel>([]);
+  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
   // Controls whether sites, methods, or periods are shown
   const [activeView, setActiveView] = useState<SamplingSiteManageTableView>(SamplingSiteManageTableView.SITES);
@@ -114,14 +114,14 @@ export const SamplingSiteTableContainer = () => {
       await biohubApi.samplingSite.deleteSampleSites(
         surveyContext.projectId,
         surveyContext.surveyId,
-        siteSelection.map((site) => Number(site)) // Convert GridRowId to number[]
+        selectedRows.map((site) => Number(site)) // Convert GridRowId to number[]
       );
       dialogContext.setYesNoDialog({ open: false }); // Close confirmation dialog
-      setSiteSelection([]); // Clear selection
+      setSelectedRows([]); // Clear selection
       samplingSitesDataLoader.refresh(pagination); // Refresh data
     } catch (error) {
       dialogContext.setYesNoDialog({ open: false }); // Close confirmation dialog on error
-      setSiteSelection([]); // Clear selection
+      setSelectedRows([]); // Clear selection
       // Show snackbar with error message
       dialogContext.setSnackbar({
         snackbarMessage: (
@@ -137,6 +137,11 @@ export const SamplingSiteTableContainer = () => {
         open: true
       });
     }
+  };
+
+  const handleDelete = async (sampleSiteId: number) => {
+    await biohubApi.samplingSite.deleteSampleSite(surveyContext.projectId, surveyContext.surveyId, sampleSiteId);
+    samplingSitesDataLoader.refresh(pagination); // Refresh data
   };
 
   // Handler for clicking on header menu (bulk actions)
@@ -196,7 +201,7 @@ export const SamplingSiteTableContainer = () => {
           edge="end"
           sx={{ ml: 1 }}
           aria-label="header-settings"
-          disabled={!siteSelection.length || activeView === SamplingSiteManageTableView.PERIODS}
+          disabled={!selectedRows.length || activeView === SamplingSiteManageTableView.PERIODS}
           onClick={handleHeaderMenuClick}
           title="Bulk Actions">
           <Icon path={mdiDotsVertical} size={1} />
@@ -209,7 +214,9 @@ export const SamplingSiteTableContainer = () => {
       <Box height="400px">
         {activeView === SamplingSiteManageTableView.SITES && (
           <LoadingGuard
-            isLoading={samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady}
+            isLoading={
+              !samplingSitesDataLoader.data && (samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady)
+            }
             isLoadingFallback={<SkeletonTable />}
             isLoadingFallbackDelay={100}
             hasNoData={!sampleSites.length}
@@ -230,15 +237,18 @@ export const SamplingSiteTableContainer = () => {
               setSortModel={setSortModel}
               rowCount={samplingSitesDataLoader.data?.pagination.total ?? 0}
               pageSizeOptions={pageSizeOptions}
-              bulkActionSites={siteSelection}
-              setBulkActionSites={setSiteSelection}
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
+              onDelete={handleDelete}
             />
           </LoadingGuard>
         )}
 
         {activeView === SamplingSiteManageTableView.PERIODS && (
           <LoadingGuard
-            isLoading={samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady}
+            isLoading={
+              !samplingSitesDataLoader.data && (samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady)
+            }
             isLoadingFallback={<SkeletonTable />}
             isLoadingFallbackDelay={100}
             hasNoData={!samplePeriods.length}
