@@ -85,8 +85,6 @@ export const SamplingSiteTableContainer = () => {
 
   const sampleSites = useMemo(() => samplingSitesDataLoader.data?.sampleSites ?? [], [samplingSitesDataLoader.data]);
 
-  console.log(sampleSites);
-
   const samplePeriods: ISamplingSitePeriodRowData[] = useMemo(() => {
     const data: ISamplingSitePeriodRowData[] = [];
 

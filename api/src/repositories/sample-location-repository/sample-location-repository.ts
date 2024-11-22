@@ -623,9 +623,6 @@ export class SampleLocationRepository extends BaseRepository {
       }
     }
 
-    console.log(query.toSQL().toNative().sql);
-    console.log(query.toSQL().toNative().bindings);
-
     const response = await this.connection.knex(query, FindSampleSiteRecord);
 
     return response.rows;

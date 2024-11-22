@@ -93,8 +93,13 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
       field: 'duration',
       headerName: 'Duration',
       flex: 1,
-      renderCell: (params) => {
+      valueGetter: (params) => {
         const { start_date, start_time, end_date, end_time } = params.row;
+
+        if (!start_date || !end_date) {
+          return null;
+        }
+
         return formatTimeDifference(start_date, start_time, end_date, end_time);
       }
     }

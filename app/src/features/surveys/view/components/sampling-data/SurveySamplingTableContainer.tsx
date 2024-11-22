@@ -8,7 +8,7 @@ import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import CustomToggleButtonGroup from 'components/toolbar/CustomToggleButtonGroup';
 import { SamplingPeriodTable } from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
-import { SurveyTechniquesCardContainer } from 'features/surveys/view/components/sampling-data/table/technique/SurveyTechniqueCardContainer';
+import { SurveyTechniquesCardContainer } from 'features/surveys/view/components/sampling-data/components/technique/SurveyTechniqueCardContainer';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
@@ -227,7 +227,8 @@ export const SurveySamplingTableContainer = () => {
           {activeView === SurveySamplingView.PERIODS && (
             <LoadingGuard
               isLoading={
-                !samplingSitesDataLoader.data && (samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady)
+                !samplingPeriodsDataLoader.data &&
+                (samplingPeriodsDataLoader.isLoading || !samplingPeriodsDataLoader.isReady)
               }
               isLoadingFallback={
                 <Box width="100%" height="100%">

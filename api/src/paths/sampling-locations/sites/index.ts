@@ -229,8 +229,6 @@ export function findSites(): RequestHandler {
       // Allow browsers to cache this response for 30 seconds
       res.setHeader('Cache-Control', 'private, max-age=30');
 
-      console.log('response', response);
-
       return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'findSites', message: 'error', error });
