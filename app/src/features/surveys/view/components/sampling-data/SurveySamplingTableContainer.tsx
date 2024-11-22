@@ -146,7 +146,7 @@ export const SurveySamplingTableContainer = () => {
 
       <Divider />
 
-      <Stack display="flex" direction="row" height="400px">
+      <Stack display="flex" direction="row" minHeight="400px">
         <Box flex="0 0 auto" flexDirection="column" justifyContent="space-between" p={2} width="250px">
           <CustomToggleButtonGroup views={views} activeView={activeView} onViewChange={setActiveView} />
         </Box>
@@ -176,7 +176,7 @@ export const SurveySamplingTableContainer = () => {
                 />
               }
               hasNoDataFallbackDelay={100}>
-              <Box position="absolute" height="100%" width="100%">
+              <Box height="100%" width="100%">
                 <SurveyTechniquesCardContainer
                   techniques={techniques}
                   paginationModel={techniquesPaginationModel}
@@ -246,7 +246,7 @@ export const SurveySamplingTableContainer = () => {
                 />
               }
               hasNoDataFallbackDelay={100}>
-              <Box position="absolute" height="100%" width="100%">
+              <Box height="100%" width="100%">
                 <SamplingPeriodTable
                   periods={samplePeriods}
                   paginationModel={periodsPaginationModel}
