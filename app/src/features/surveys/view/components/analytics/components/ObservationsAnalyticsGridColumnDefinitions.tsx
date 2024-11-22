@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import { ScientificNameTypography } from 'features/surveys/animals/components/ScientificNameTypography';
 import { IObservationAnalyticsRow } from 'features/surveys/view/components/analytics/components/ObservationAnalyticsDataTableContainer';
 import { IGroupByOption } from 'features/surveys/view/components/analytics/SurveyObservationAnalytics';
-import { IGetSampleLocationDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { IPartialTaxonomy } from 'interfaces/useTaxonomyApi.interface';
 import isEqual from 'lodash-es/isEqual';
 
@@ -92,11 +92,11 @@ export const getSpeciesColDef = (
 /**
  * Get the column definition for the sampling site.
  *
- * @param {IGetSampleLocationDetails[]} sampleSites
+ * @param {IGetSampleLocationNonSpatialDetails[]} sampleSites
  * @return {*}  {GridColDef<IObservationAnalyticsRow>}
  */
 export const getSamplingSiteColDef = (
-  sampleSites: IGetSampleLocationDetails[]
+  sampleSites: IGetSampleLocationNonSpatialDetails[]
 ): GridColDef<IObservationAnalyticsRow> => ({
   headerAlign: 'left',
   align: 'left',
@@ -122,11 +122,11 @@ export const getSamplingSiteColDef = (
 /**
  * Get the column definition for the sampling method.
  *
- * @param {IGetSampleLocationDetails[]} sampleSites
+ * @param {IGetSampleLocationNonSpatialDetails[]} sampleSites
  * @return {*}  {GridColDef<IObservationAnalyticsRow>}
  */
 export const getSamplingMethodColDef = (
-  sampleSites: IGetSampleLocationDetails[]
+  sampleSites: IGetSampleLocationNonSpatialDetails[]
 ): GridColDef<IObservationAnalyticsRow> => ({
   headerAlign: 'left',
   align: 'left',
@@ -154,11 +154,11 @@ export const getSamplingMethodColDef = (
 /**
  * Get the column definition for the sampling period.
  *
- * @param {IGetSampleLocationDetails[]} sampleSites
+ * @param {IGetSampleLocationNonSpatialDetails[]} sampleSites
  * @return {*}  {GridColDef<IObservationAnalyticsRow>}
  */
 export const getSamplingPeriodColDef = (
-  sampleSites: IGetSampleLocationDetails[]
+  sampleSites: IGetSampleLocationNonSpatialDetails[]
 ): GridColDef<IObservationAnalyticsRow> => ({
   headerAlign: 'left',
   align: 'left',

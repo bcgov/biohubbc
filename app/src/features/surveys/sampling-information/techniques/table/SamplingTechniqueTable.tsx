@@ -273,6 +273,7 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
           rows={rows}
           columns={columns}
           getRowHeight={() => 'auto'}
+          autoHeight={false}
           disableRowSelectionOnClick
           disableColumnMenu
           checkboxSelection

@@ -2,6 +2,7 @@ import { AxiosError } from 'axios';
 import dayjs from 'dayjs';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { DefaultDateFormat, DefaultTimeFormat } from '../../../../../../../constants/dates';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/http-error';
@@ -211,16 +212,16 @@ export function getDeploymentById(): RequestHandler {
         assignment_id: matchingBctwDeployments[0].assignment_id,
         collar_id: matchingBctwDeployments[0].collar_id,
         attachment_start_date: matchingBctwDeployments[0].attachment_start
-          ? dayjs(matchingBctwDeployments[0].attachment_start).format('YYYY-MM-DD')
+          ? dayjs(matchingBctwDeployments[0].attachment_start).format(DefaultDateFormat)
           : null,
         attachment_start_time: matchingBctwDeployments[0].attachment_start
-          ? dayjs(matchingBctwDeployments[0].attachment_start).format('HH:mm:ss')
+          ? dayjs(matchingBctwDeployments[0].attachment_start).format(DefaultTimeFormat)
           : null,
         attachment_end_date: matchingBctwDeployments[0].attachment_end
-          ? dayjs(matchingBctwDeployments[0].attachment_end).format('YYYY-MM-DD')
+          ? dayjs(matchingBctwDeployments[0].attachment_end).format(DefaultDateFormat)
           : null,
         attachment_end_time: matchingBctwDeployments[0].attachment_end
-          ? dayjs(matchingBctwDeployments[0].attachment_end).format('HH:mm:ss')
+          ? dayjs(matchingBctwDeployments[0].attachment_end).format(DefaultTimeFormat)
           : null,
         bctw_deployment_id: matchingBctwDeployments[0].deployment_id,
         device_id: matchingBctwDeployments[0].device_id,

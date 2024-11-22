@@ -10,6 +10,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IObservationCountByGroup } from 'interfaces/useAnalyticsApi.interface';
+import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
 import { useEffect, useMemo } from 'react';
 import {
   getBasicGroupByColDefs,
@@ -101,10 +102,9 @@ export const ObservationAnalyticsDataTableContainer = (props: IObservationAnalyt
     [analyticsDataLoader?.data]
   );
 
-  const sampleSites = useMemo(
-    () => surveyContext.sampleSiteDataLoader.data?.sampleSites ?? [],
-    [surveyContext.sampleSiteDataLoader.data?.sampleSites]
-  );
+  // TODO: Include sampling information in the analytics response / otherwise get sampling information,
+  // which is now more complicated because sample sites are paginated.
+  const sampleSites: IGetSampleLocationNonSpatialDetails[] = [];
 
   const allGroupByColumns = useMemo(
     () => [...groupByColumns, ...groupByQualitativeMeasurements, ...groupByQuantitativeMeasurements],
@@ -152,7 +152,7 @@ export const ObservationAnalyticsDataTableContainer = (props: IObservationAnalyt
     <Box display="flex" flex="1 1 auto" position="relative">
       <Box position="absolute" width="100%" height="100%">
         <LoadingGuard
-          isLoading={surveyContext.sampleSiteDataLoader.isLoading || !surveyContext.sampleSiteDataLoader.isReady}
+          isLoading={analyticsDataLoader.isLoading || !analyticsDataLoader.isReady}
           isLoadingFallback={<SkeletonTable />}
           isLoadingFallbackDelay={100}
           hasNoData={!analyticsDataLoader.data?.length}

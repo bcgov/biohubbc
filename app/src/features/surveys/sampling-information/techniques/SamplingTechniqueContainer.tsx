@@ -160,7 +160,7 @@ export const SamplingTechniqueContainer = () => {
         isLoading={surveyContext.techniqueDataLoader.isLoading || !surveyContext.techniqueDataLoader.isReady}
         isLoadingFallback={<SkeletonTable />}
         isLoadingFallbackDelay={100}>
-        <Box p={2}>
+        <Box height="400px">
           <SamplingTechniqueTable
             techniques={techniques}
             bulkActionTechniques={bulkActionTechniques}

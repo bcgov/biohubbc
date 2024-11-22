@@ -28,17 +28,12 @@ interface IObservationTableRow {
   longitude: number | null;
 }
 
-interface ISurveyDataObservationTableProps {
-  isLoading: boolean;
-}
-
 /**
  * Component to display observation data in a table with server-side pagination and sorting.
  *
- * @param {ISurveyDataObservationTableProps} props - Component properties.
- * @returns {JSX.Element} The rendered component.
+ * @returns {*}
  */
-export const SurveySpatialObservationTable = (props: ISurveyDataObservationTableProps) => {
+export const SurveySpatialObservationTable = () => {
   const biohubApi = useBiohubApi();
   const surveyContext = useContext(SurveyContext);
   const taxonomyContext = useTaxonomyContext();
@@ -160,7 +155,7 @@ export const SurveySpatialObservationTable = (props: ISurveyDataObservationTable
 
   return (
     <LoadingGuard
-      isLoading={props.isLoading || paginatedDataLoader.isLoading || !paginatedDataLoader.isReady}
+      isLoading={paginatedDataLoader.isLoading || !paginatedDataLoader.isReady}
       isLoadingFallback={<SkeletonTable />}
       isLoadingFallbackDelay={100}
       hasNoData={!rows.length}

@@ -16,8 +16,9 @@ interface IAccordionStandardCardProps extends PaperProps {
 
 /**
  * Returns a collapsible paper component for displaying lookup values
- * @param props
- * @returns
+ *
+ * @param {PropsWithChildren<IAccordionStandardCardProps>} props
+ * @return {*}
  */
 export const AccordionStandardCard = (props: PropsWithChildren<IAccordionStandardCardProps>) => {
   const { label, subtitle, children, colour, ornament, disableCollapse, ...paperProps } = props;
@@ -33,27 +34,26 @@ export const AccordionStandardCard = (props: PropsWithChildren<IAccordionStandar
   };
 
   return (
-    <Paper elevation={0} {...paperProps} sx={{ bgcolor: colour, flex: '1 1 auto', ...paperProps.sx }}>
+    <Paper elevation={0} {...paperProps} sx={{ bgcolor: colour, ...paperProps.sx }}>
       <Box
         display="flex"
         justifyContent="space-between"
-        flex="1 1 auto"
         alignItems="center"
         sx={{ cursor: expandable ? 'pointer' : 'default', px: 3, py: 2 }}
         onClick={handleHeaderClick}>
-        <Box display="flex" justifyContent="space-between" flex={0.975}>
-          <Typography
-            variant="h5"
-            sx={{
-              '&::first-letter': {
-                textTransform: 'capitalize'
-              }
-            }}>
-            {label}
-          </Typography>
+        <Typography
+          variant="h5"
+          sx={{
+            '&::first-letter': {
+              textTransform: 'capitalize'
+            }
+          }}>
+          {label}
+        </Typography>
+        <Box display="flex" alignItems="center">
           {ornament}
+          <Box ml={4}>{expandable && <Icon path={isCollapsed ? mdiChevronDown : mdiChevronUp} size={1} />}</Box>
         </Box>
-        {expandable && <Icon path={isCollapsed ? mdiChevronDown : mdiChevronUp} size={1} />}
       </Box>
       <Box sx={{ px: 3 }}>
         <Collapse in={!isCollapsed || disableCollapse}>
