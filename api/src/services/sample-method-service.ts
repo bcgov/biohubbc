@@ -1,8 +1,8 @@
+import { SurveySampleMethodModel } from '../database-models/survey_sample_method';
 import { IDBConnection } from '../database/db';
 import { HTTP409 } from '../errors/http-error';
 import {
   InsertSampleMethodRecord,
-  SampleMethodRecord,
   SampleMethodRepository,
   UpdateSampleMethodRecord
 } from '../repositories/sample-method-repository';
@@ -30,13 +30,13 @@ export class SampleMethodService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} surveySampleSiteId
-   * @return {*}  {Promise<SampleMethodRecord[]>}
+   * @return {*}  {Promise<SurveySampleMethodModel[]>}
    * @memberof SampleMethodService
    */
   async getSampleMethodsForSurveySampleSiteId(
     surveyId: number,
     surveySampleSiteId: number
-  ): Promise<SampleMethodRecord[]> {
+  ): Promise<SurveySampleMethodModel[]> {
     return this.sampleMethodRepository.getSampleMethodsForSurveySampleSiteId(surveyId, surveySampleSiteId);
   }
 
@@ -56,10 +56,10 @@ export class SampleMethodService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} surveySampleMethodId
-   * @return {*}  {Promise<SampleMethodRecord>}
+   * @return {*}  {Promise<SurveySampleMethodModel>}
    * @memberof SampleMethodService
    */
-  async deleteSampleMethodRecord(surveyId: number, surveySampleMethodId: number): Promise<SampleMethodRecord> {
+  async deleteSampleMethodRecord(surveyId: number, surveySampleMethodId: number): Promise<SurveySampleMethodModel> {
     const samplePeriodService = new SamplePeriodService(this.connection);
 
     // Collect list of periods to delete
@@ -78,10 +78,10 @@ export class SampleMethodService extends DBService {
    * Inserts survey Sample Method and associated Sample Periods.
    *
    * @param {InsertSampleMethodRecord} sampleMethod
-   * @return {*}  {Promise<SampleMethodRecord>}
+   * @return {*}  {Promise<SurveySampleMethodModel>}
    * @memberof SampleMethodService
    */
-  async insertSampleMethod(sampleMethod: InsertSampleMethodRecord): Promise<SampleMethodRecord> {
+  async insertSampleMethod(sampleMethod: InsertSampleMethodRecord): Promise<SurveySampleMethodModel> {
     // Create new sample method
     const sampleMethodRecord = await this.sampleMethodRepository.insertSampleMethod(sampleMethod);
 
@@ -156,10 +156,10 @@ export class SampleMethodService extends DBService {
    *
    * @param {number} surveyId
    * @param {InsertSampleMethodRecord} sampleMethod
-   * @return {*}  {Promise<SampleMethodRecord>}
+   * @return {*}  {Promise<SurveySampleMethodModel>}
    * @memberof SampleMethodService
    */
-  async updateSampleMethod(surveyId: number, sampleMethod: UpdateSampleMethodRecord): Promise<SampleMethodRecord> {
+  async updateSampleMethod(surveyId: number, sampleMethod: UpdateSampleMethodRecord): Promise<SurveySampleMethodModel> {
     const samplePeriodService = new SamplePeriodService(this.connection);
 
     // Check for any sample periods to delete

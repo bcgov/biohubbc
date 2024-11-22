@@ -22,7 +22,6 @@ describe('SurveyGeneralInformation', () => {
   it('renders correctly with end date', () => {
     const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, IGetSurveyForViewResponse, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-    const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const { getByTestId } = render(
@@ -33,7 +32,6 @@ describe('SurveyGeneralInformation', () => {
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
-            techniqueDataLoader: mockTechniqueDataLoader,
             critterDataLoader: mockCritterDataLoader
           }}>
           <SurveyGeneralInformation />
@@ -58,7 +56,6 @@ describe('SurveyGeneralInformation', () => {
       }
     } as DataLoader<any, IGetSurveyForViewResponse, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-    const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const { getByTestId } = render(
@@ -69,8 +66,7 @@ describe('SurveyGeneralInformation', () => {
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
-            critterDataLoader: mockCritterDataLoader,
-            techniqueDataLoader: mockTechniqueDataLoader
+            critterDataLoader: mockCritterDataLoader
           }}>
           <SurveyGeneralInformation />
         </SurveyContext.Provider>
@@ -83,7 +79,6 @@ describe('SurveyGeneralInformation', () => {
   it('renders an empty fragment if survey data has not loaded or is undefined', () => {
     const mockSurveyDataLoader = { data: undefined } as DataLoader<any, IGetSurveyForViewResponse, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
-    const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const { container } = render(
@@ -94,7 +89,6 @@ describe('SurveyGeneralInformation', () => {
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
-            techniqueDataLoader: mockTechniqueDataLoader,
             critterDataLoader: mockCritterDataLoader
           }}>
           <SurveyGeneralInformation />

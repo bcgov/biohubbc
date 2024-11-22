@@ -36,7 +36,6 @@ export const SurveyObservationPage = () => {
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
-
       <ObservationsPageContextProvider>
         <Stack
           direction="row"

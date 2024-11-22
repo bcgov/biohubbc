@@ -3,11 +3,15 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { ISiteAdvancedFilters } from '../../../models/sampling-locations-view';
-import { paginationRequestQueryParamSchema } from '../../../openapi/schemas/pagination';
+import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../../openapi/schemas/pagination';
 import { authorizeRequestHandler, userHasValidRole } from '../../../request-handlers/security/authorization';
 import { SampleLocationService } from '../../../services/sample-location-service';
 import { getLogger } from '../../../utils/logger';
-import { ensureCompletePaginationOptions, makePaginationOptionsFromRequest } from '../../../utils/pagination';
+import {
+  ensureCompletePaginationOptions,
+  makePaginationOptionsFromRequest,
+  makePaginationResponse
+} from '../../../utils/pagination';
 import { getSystemUserFromRequest } from '../../../utils/request';
 
 const defaultLog = getLogger('paths/site/index');
@@ -98,10 +102,61 @@ GET.apiDoc = {
                     },
                     geometry_type: {
                       type: 'string'
+                    },
+                    blocks: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        required: ['survey_sample_block_id', 'survey_sample_site_id', 'survey_block_id'],
+                        properties: {
+                          survey_sample_block_id: {
+                            type: 'number'
+                          },
+                          survey_sample_site_id: {
+                            type: 'number'
+                          },
+                          survey_block_id: {
+                            type: 'number'
+                          },
+                          name: {
+                            type: 'string'
+                          },
+                          description: {
+                            type: 'string'
+                          }
+                        }
+                      }
+                    },
+                    stratums: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        required: ['survey_sample_stratum_id', 'survey_sample_site_id', 'survey_stratum_id'],
+                        properties: {
+                          survey_sample_stratum_id: {
+                            type: 'number'
+                          },
+                          survey_sample_site_id: {
+                            type: 'number'
+                          },
+                          survey_stratum_id: {
+                            type: 'number'
+                          },
+                          name: {
+                            type: 'string'
+                          },
+                          description: {
+                            type: 'string'
+                          }
+                        }
+                      }
                     }
                   }
                 }
-              }
+              },
+              pagination: paginationResponseSchema
             }
           }
         }
@@ -154,18 +209,21 @@ export function findSites(): RequestHandler {
 
       const sampleLocationService = new SampleLocationService(connection);
 
-      const sites = await sampleLocationService.findSites(
-        isUserAdmin,
-        systemUserId,
-        filterFields,
-        ensureCompletePaginationOptions(paginationOptions)
-      );
+      const [sites, sitesCount] = await Promise.all([
+        sampleLocationService.findSites(
+          isUserAdmin,
+          systemUserId,
+          filterFields,
+          ensureCompletePaginationOptions(paginationOptions)
+        ),
+        sampleLocationService.findSitesCount(isUserAdmin, systemUserId, filterFields)
+      ]);
 
       await connection.commit();
 
       const response = {
-        sites: sites
-        // TODO NICK add count and pagination to response and openapi schema?
+        sites: sites,
+        pagination: makePaginationResponse(sitesCount, paginationOptions)
       };
 
       // Allow browsers to cache this response for 30 seconds
@@ -173,7 +231,7 @@ export function findSites(): RequestHandler {
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'getSites', message: 'error', error });
+      defaultLog.error({ label: 'findSites', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
