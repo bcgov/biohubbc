@@ -22,7 +22,6 @@ describe('SurveyPurposeAndMethodologyData', () => {
     const mockSurveyDataLoader = { data: getSurveyForViewResponse } as DataLoader<any, any, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
-    const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const { getByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -32,8 +31,7 @@ describe('SurveyPurposeAndMethodologyData', () => {
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
-            critterDataLoader: mockCritterDataLoader,
-            techniqueDataLoader: mockTechniqueDataLoader
+            critterDataLoader: mockCritterDataLoader
           }}>
           <SurveyPurposeAndMethodologyData />
         </SurveyContext.Provider>
@@ -65,7 +63,6 @@ describe('SurveyPurposeAndMethodologyData', () => {
     } as DataLoader<any, IGetSurveyForViewResponse, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
-    const mockTechniqueDataLoader = { data: [] } as DataLoader<any, any, any>;
 
     const { getByTestId, queryByTestId } = render(
       <CodesContext.Provider value={mockCodesContext}>
@@ -75,8 +72,7 @@ describe('SurveyPurposeAndMethodologyData', () => {
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
-            critterDataLoader: mockCritterDataLoader,
-            techniqueDataLoader: mockTechniqueDataLoader
+            critterDataLoader: mockCritterDataLoader
           }}>
           <SurveyPurposeAndMethodologyData />
         </SurveyContext.Provider>
