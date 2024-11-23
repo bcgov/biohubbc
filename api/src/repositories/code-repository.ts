@@ -52,7 +52,6 @@ export const IAllCodeSets = z.object({
   observation_subcount_signs: CodeSet(ObservationSubcountSignCode.shape),
   telemetry_device_makes: CodeSet(DeviceMakeCode.shape),
   frequency_units: CodeSet(FrequencyUnitCode.shape),
-  observation_subcount_signs: CodeSet(ObservationSubcountSignCode.shape),
   alert_types: CodeSet(AlertTypeCode.shape)
 });
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
