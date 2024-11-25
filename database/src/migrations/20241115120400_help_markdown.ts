@@ -9,8 +9,7 @@ import { Knex } from 'knex';
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`--sql
-    
-     SET SEARCH_PATH=biohub, public;
+    SET SEARCH_PATH=biohub, public;
 
     ----------------------------------------------------------------------------------------
     -- Create markdown_type table
@@ -72,11 +71,11 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN markdown.update_date IS 'The datetime the record was last updated.';
     COMMENT ON COLUMN markdown.update_user IS 'The id of the user who last updated the record.';
     COMMENT ON COLUMN markdown.revision_count IS 'Revision count used for concurrency control.';
-    
+
     ALTER TABLE markdown ADD CONSTRAINT markdown_fk1 FOREIGN KEY (markdown_type_id) REFERENCES markdown_type(markdown_type_id);
 
     CREATE INDEX markdown_idx1 ON markdown(markdown_type_id);
-    
+
     -- Add unique end-date index
     CREATE UNIQUE INDEX markdown_nuk1 ON markdown(markdown_type_id, (record_end_date is NULL)) where record_end_date is null;
 
@@ -107,7 +106,7 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN markdown_user.update_date IS 'The datetime the record was last updated.';
     COMMENT ON COLUMN markdown_user.update_user IS 'The id of the user who last updated the record.';
     COMMENT ON COLUMN markdown_user.revision_count IS 'Revision count used for concurrency control.';
-    
+
     ALTER TABLE markdown_user ADD CONSTRAINT markdown_user_fk1 FOREIGN KEY (markdown_id) REFERENCES markdown(markdown_id);
     ALTER TABLE markdown_user ADD CONSTRAINT markdown_user_fk2 FOREIGN KEY (system_user_id) REFERENCES system_user(system_user_id);
 
@@ -122,9 +121,9 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
     -- Insert markdown for dialogs
     ----------------------------------------------------------------------------------------
-    INSERT INTO 
-        markdown_type (name, description) 
-    VALUES 
+    INSERT INTO
+        markdown_type (name, description)
+    VALUES
         ('Projects and Surveys', 'Help text about Projects and Surveys'),
         ('Summary Data', 'Help text about all the data that a user has access to'),
         ('Sampling Information', 'Help text about sampling methods and information.'),

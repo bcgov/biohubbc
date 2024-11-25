@@ -136,6 +136,7 @@ export interface IGetSurveyLocation {
 
 export interface IGetSurveyBlock {
   survey_block_id: number;
+  survey_id?: number;
   name: string;
   description: string;
   revision_count: number;
