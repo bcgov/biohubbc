@@ -12,6 +12,7 @@ import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import useExternalApi from './api/useExternalApi';
 import useFundingSourceApi from './api/useFundingSourceApi';
+import { useMarkdownApi } from './api/useMarkdownApi';
 import useObservationApi from './api/useObservationApi';
 import useProjectApi from './api/useProjectApi';
 import useProjectParticipationApi from './api/useProjectParticipationApi';
@@ -79,6 +80,8 @@ export const useBiohubApi = () => {
 
   const telemetryDevice = useTelemetryDeviceApi(apiAxios);
 
+  const markdown = useMarkdownApi(apiAxios);
+
   const alert = useAlertApi(apiAxios);
 
   return useMemo(
@@ -105,6 +108,7 @@ export const useBiohubApi = () => {
       telemetry,
       telemetryDeployment,
       telemetryDevice,
+      markdown,
       alert
     }),
 
