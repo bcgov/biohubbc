@@ -1,4 +1,5 @@
 import { mdiArrowTopRight } from '@mdi/js';
+import Chip from '@mui/material/Chip';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -20,6 +21,7 @@ interface IAnimalData {
   animal_id: string;
   scientificName: string;
   sex: string;
+  marking:JSX.Element;
 }
 
 /**
@@ -62,7 +64,13 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
         animal_id: item.animal_id ?? '',
         scientificName: item.itis_scientific_name,
         status: !!item.mortality?.length,
-        sex: capitalizeFirstLetter(item.sex || 'Unknown') // Normalize and capitalize here
+        sex: capitalizeFirstLetter(item.sex || 'Unknown'), // Normalize and capitalize here
+        marking:(<Chip
+        label={item.animal_id ?? 'N/A'}
+        variant="filled"
+        onClick={() => console.log(`Clicked: ${item.animal_id}`)} // Example click handler
+      />
+        )
       };
     }) ?? [];
 
@@ -79,7 +87,8 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
       flex: 1,
       renderCell: (params) => <ScientificNameTypography name={params.value} /> // Render scientific name with custom typography component
     },
-    { field: 'sex', headerName: 'Sex', flex: 1, renderCell: (params) => <>{params.value ?? 'Unknown'}</> }
+    {field: 'sex', headerName: 'Sex', flex: 1, renderCell: (params) => <>{params.value ?? 'Unknown'}</> },
+    {field: 'marking', headerName: 'Marking', flex: 1, renderCell: (params) => params.value}
   ];
 
   return (
