@@ -4,11 +4,12 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ImportCrittersStrategy } from '../../../../../../services/import-services/critter/import-critters-strategy';
-import { importCSV } from '../../../../../../services/import-services/import-csv';
+import { ImportCSVCritters } from '../../../../../../services/import-services/critter/import-critters-strategy2';
+import { validateCSVWorksheet } from '../../../../../../utils/csv-utils/csv-config-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../utils/request';
+import { constructXLSXWorkbook, getDefaultWorksheet } from '../../../../../../utils/xlsx-utils/worksheet-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/critters/import');
 
@@ -133,19 +134,27 @@ export function importCsv(): RequestHandler {
 
     const connection = getDBConnection(req.keycloak_token);
 
+    const mediaFile = parseMulterFile(rawFile);
+    const worksheet = getDefaultWorksheet(constructXLSXWorkbook(mediaFile));
+
     try {
       await connection.open();
 
-      // Critter CSV import strategy - child of CSVImportStrategy
-      const importCsvCritters = new ImportCrittersStrategy(connection, surveyId);
+      const importCSVCritters = new ImportCSVCritters(connection, worksheet, surveyId);
 
-      const surveyCritterIds = await importCSV(parseMulterFile(rawFile), importCsvCritters);
+      const critterCSVConfig = await importCSVCritters.getCSVConfig();
 
-      defaultLog.info({ label: 'importCritterCsv', message: 'result', survey_critter_ids: surveyCritterIds });
+      const { errors, rows } = validateCSVWorksheet(worksheet, critterCSVConfig);
+
+      const data = await importCSVCritters.importCSVRows(rows);
+
+      console.log({ errors });
+
+      defaultLog.info({ label: 'importCritterCsv', message: 'result', survey_critter_ids: data });
 
       await connection.commit();
 
-      return res.status(200).json({ survey_critter_ids: surveyCritterIds });
+      return res.status(200).json({ survey_critter_ids: data });
     } catch (error) {
       defaultLog.error({ label: 'importCritterCsv', message: 'error', error });
       await connection.rollback();

@@ -1,15 +1,14 @@
-import { toUpper } from 'lodash';
-import { v4 as uuid } from 'uuid';
+import { merge, toUpper } from 'lodash';
+import { v4 } from 'uuid';
 import { WorkSheet } from 'xlsx';
 import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
 import { ApiGeneralError } from '../../../errors/api-error';
 import { validateZodCell } from '../../../utils/csv-utils/csv-cells';
-import { getCSVCellValue } from '../../../utils/csv-utils/csv-config-utils';
+import { getCSVCellValue, getCSVWorksheetDynamicHeaders } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVConfig, CSVHeaderConfig, CSVRow } from '../../../utils/csv-utils/csv-config-utils.interface';
 import { getLogger } from '../../../utils/logger';
 import { getTsnMeasurementTypeDefinitionMap } from '../../../utils/observation-xlsx-utils/measurement-column-utils';
-import { generateColumnCellGetterFromColumnValidator } from '../../../utils/xlsx-utils/column-validator-utils';
 import { getWorksheetRowObjects } from '../../../utils/xlsx-utils/worksheet-utils';
 import {
   CBQualitativeOption,
@@ -20,8 +19,6 @@ import {
 import { DBService } from '../../db-service';
 import { PlatformService } from '../../platform-service';
 import { SurveyCritterService } from '../../survey-critter-service';
-import { Row, Validation, ValidationError } from '../import-csv.interface';
-import { CsvCritter, PartialCsvCritter } from './import-critters-strategy.interface';
 
 const defaultLog = getLogger('services/import/import-critters-service');
 
@@ -29,11 +26,9 @@ type CritterHeaders = 'ITIS_TSN' | 'SEX' | 'ALIAS' | 'WLH_ID' | 'DESCRIPTION';
 
 /**
  *
- * ImportCrittersStrategy - Injected into CSVImportStrategy as the CSV import dependency
+ * ImportCSVCritters
  *
- * @example new CSVImportStrategy(new ImportCrittersStrategy(connection, surveyId)).import(file);
- *
- * @class ImportCrittersStrategy
+ * @class ImportCSVCritters
  * @extends DBService
  *
  */
@@ -49,7 +44,7 @@ export class ImportCSVCritters extends DBService {
   surveyCritterService: SurveyCritterService;
 
   /**
-   * Instantiates an instance of ImportCrittersStrategy
+   * Instantiates an instance of ImportCSVCritters
    *
    * @param {IDBConnection} connection - Database connection
    * @param {number} surveyId - Survey identifier
@@ -58,12 +53,12 @@ export class ImportCSVCritters extends DBService {
     super(connection);
 
     this._config = {
-      staticHeadersMap: {
-        ITIS_TSN: ['TAXON', 'SPECIES', 'TSN'],
-        ALIAS: ['NICKNAME', 'NAME', 'ANIMAL_ID'],
-        SEX: [],
-        WLH_ID: ['WILDLIFE_HEALTH_ID'],
-        DESCRIPTION: ['COMMENTS', 'COMMENT', 'NOTES']
+      staticHeadersConfig: {
+        ITIS_TSN: { aliases: ['TAXON', 'SPECIES', 'TSN'] },
+        ALIAS: { aliases: ['NICKNAME', 'NAME', 'ANIMAL_ID'] },
+        SEX: { aliases: [] },
+        WLH_ID: { aliases: ['WILDLIFE_HEALTH_ID'] },
+        DESCRIPTION: { aliases: ['COMMENTS', 'COMMENT', 'NOTES'] }
       },
       ignoreDynamicHeaders: false
     };
@@ -80,24 +75,35 @@ export class ImportCSVCritters extends DBService {
     });
   }
 
+  /**
+   * Get the Critter CSV config asynchonously.
+   *
+   * @returns {Promise<CSVConfig<CritterHeaders>>} The Critter CSV config
+   */
   async getCSVConfig(): Promise<CSVConfig<CritterHeaders>> {
-    const [tsnHeaderConfig, aliasHeaderConfig] = await Promise.all([
+    const [tsnHeaderConfig, aliasHeaderConfig, sexHeaderConfig, dynamicHeadersConfig] = await Promise.all([
       this._getTsnHeaderConfig(),
-      this._getAliasHeaderConfig()
+      this._getAliasHeaderConfig(),
+      this._getSexHeaderConfig(),
+      this._getCollectionUnitDynamicHeaderConfig()
     ]);
 
-    return {
+    const wlhIdHeaderConfig = this._getWlhIdHeaderConfig();
+    const descriptionHeaderConfig = this._getDescriptionHeaderConfig();
+
+    // Recursively merges the default config with the async header configs
+    const newConfig = merge(this._config, {
       staticHeadersConfig: {
         ITIS_TSN: tsnHeaderConfig,
-        SEX: this._getSexHeaderConfig(),
         ALIAS: aliasHeaderConfig,
-        WLH_ID: this._getWlhIdHeaderConfig(),
-        DESCRIPTION: {
-          validateCell: (params) => validateZodCell(params, z.string().max(250).optional())
-        }
+        SEX: sexHeaderConfig,
+        WLH_ID: wlhIdHeaderConfig,
+        DESCRIPTION: descriptionHeaderConfig
       },
-      ...this._config
-    };
+      dynamicHeadersConfig: dynamicHeadersConfig
+    });
+
+    return newConfig;
   }
 
   /**
@@ -119,7 +125,9 @@ export class ImportCSVCritters extends DBService {
           cellErrors.push({
             error: `ITIS has no reference of this TSN`,
             solution: `Use valid ITIS TSN`,
-            ...params
+            cell: params.cell,
+            header: params.header,
+            rowIndex: params.rowIndex
           });
         }
 
@@ -133,9 +141,47 @@ export class ImportCSVCritters extends DBService {
    *
    * @returns {CSVHeaderConfig} The sex header config
    */
-  _getSexHeaderConfig(): CSVHeaderConfig {
+  async _getSexHeaderConfig(): Promise<CSVHeaderConfig> {
+    const allRowTsns = this.worksheetRows.map((row) => String(getCSVCellValue('ITIS_TSN', row, this._config)));
+
+    const sexMap = await this._getSpeciesSexMap(allRowTsns);
+
     return {
-      validateCell: (params) => validateZodCell(params, z.string())
+      validateCell: (params) => {
+        const cellErrors = validateZodCell(params, z.string());
+
+        const rowTsn = Number(getCSVCellValue('ITIS_TSN', params.row, this._config));
+        const sexOptionMatch = sexMap.get(rowTsn);
+
+        if (!sexOptionMatch) {
+          cellErrors.push({
+            error: `Sex is not a supported attribute for TSN: ${rowTsn}`,
+            solution: `Use a valid TSN that supports sex, or contact a system administrator to add additional sex values.`,
+            cell: params.cell,
+            header: params.header,
+            rowIndex: params.rowIndex
+          });
+        }
+
+        if (sexOptionMatch) {
+          const sexOption = sexOptionMatch.sexes.find(
+            (option) => option.option_label.toLowerCase() === String(params.cell).toLowerCase()
+          );
+
+          if (!sexOption) {
+            cellErrors.push({
+              error: `Sex option not found for TSN: ${rowTsn}`,
+              solution: `Use valid sex option`,
+              values: sexOptionMatch.sexes.map((option) => option.option_label),
+              cell: params.cell,
+              header: params.header,
+              rowIndex: params.rowIndex
+            });
+          }
+        }
+
+        return cellErrors;
+      }
     };
   }
 
@@ -150,7 +196,9 @@ export class ImportCSVCritters extends DBService {
           cellErrors.push({
             error: `Critter alias already exists in the Survey`,
             solution: `Update the alias to be unique`,
-            ...params
+            cell: params.cell,
+            header: params.header,
+            rowIndex: params.rowIndex
           });
         }
 
@@ -177,7 +225,9 @@ export class ImportCSVCritters extends DBService {
           cellErrors.push({
             error: `Invalid Wildlife Health ID format`,
             solution: `Wildlife Health ID must be in the format 'XX-XXXX'`,
-            ...params
+            cell: params.cell,
+            header: params.header,
+            rowIndex: params.rowIndex
           });
         }
 
@@ -186,28 +236,72 @@ export class ImportCSVCritters extends DBService {
     };
   }
 
-  /**
-   * Get list of collection units from row.
-   *
-   * @param {CsvCritter} row - Row object as a CsvCritter
-   * @returns {ICollection[]} Array of collection units
-   */
-  _getCollectionUnitsFromRow(row: CsvCritter): ICollection[] {
-    const critterId = row.critter_id;
+  _getDescriptionHeaderConfig(): CSVHeaderConfig {
+    return {
+      validateCell: (params) => validateZodCell(params, z.string().max(250).optional())
+    };
+  }
 
-    // Get portion of row object that is not a critter
-    const partialRow: { [key: keyof ICreateCritter | keyof CsvCritter]: any } = omit(row, [
-      ...keys(this._getCritterFromRow(row)),
-      'sex' as keyof CsvCritter
-    ]);
+  async _getCollectionUnitDynamicHeaderConfig(): Promise<CSVHeaderConfig> {
+    const allRowTsns = this.worksheetRows.map((row) => String(getCSVCellValue('ITIS_TSN', row, this._config)));
 
-    // Keys of collection units
-    const collectionUnitKeys = keys(partialRow);
+    const collectionUnitMap = await this._getCollectionUnitMap(this.worksheet, allRowTsns);
 
-    // Return an array of formatted collection units for bulk create
-    return collectionUnitKeys
-      .filter((key) => partialRow[key])
-      .map((key) => ({ collection_unit_id: partialRow[key], critter_id: critterId }));
+    return {
+      validateCell: (params) => {
+        const cellErrors = validateZodCell(params, z.string().max(50).optional());
+
+        const collectionUnit = collectionUnitMap.get(params.header);
+
+        if (!collectionUnit) {
+          cellErrors.push({
+            error: `Invalid collection unit category header`,
+            solution: `Use valid collection unit category header`,
+            cell: params.cell,
+            header: params.header,
+            rowIndex: params.rowIndex
+          });
+        }
+
+        if (collectionUnit && collectionUnit.tsn !== Number(getCSVCellValue('ITIS_TSN', params.row, this._config))) {
+          cellErrors.push({
+            error: `Collection unit not allowed for TSN`,
+            solution: `Use collection unit allowed for TSN`,
+            values: collectionUnit.collectionUnits.map((unit) => unit.unit_name),
+            cell: params.cell,
+            header: params.header,
+            rowIndex: params.rowIndex
+          });
+        }
+
+        if (
+          collectionUnit &&
+          !collectionUnit.collectionUnits.find(
+            (unit) => unit.unit_name.toLowerCase() === String(params.cell).toLowerCase()
+          )
+        ) {
+          cellErrors.push({
+            error: `Invalid collection unit`,
+            solution: `Use valid collection unit`,
+            values: collectionUnit.collectionUnits.map((unit) => unit.unit_name),
+            cell: params.cell,
+            header: params.header,
+            rowIndex: params.rowIndex
+          });
+        }
+
+        return cellErrors;
+      },
+      setCellValue: (params) => {
+        const collectionUnit = collectionUnitMap.get(params.header);
+
+        const collectionUnitId = collectionUnit?.collectionUnits.find(
+          (unit) => unit.unit_name.toLowerCase() === String(params.cell).toLowerCase()
+        )?.collection_unit_id;
+
+        return collectionUnitId;
+      }
+    };
   }
 
   /**
@@ -224,7 +318,7 @@ export class ImportCSVCritters extends DBService {
   async _getCollectionUnitMap(worksheet: WorkSheet, tsns: string[]) {
     const collectionUnitMap = new Map<string, { collectionUnits: ICollectionUnitWithCategory[]; tsn: number }>();
 
-    const collectionUnitColumns = this._getNonStandardColumns(worksheet);
+    const collectionUnitColumns = getCSVWorksheetDynamicHeaders(worksheet, this._config);
 
     // If no collection unit columns return empty Map
     if (!collectionUnitColumns.length) {
@@ -238,8 +332,10 @@ export class ImportCSVCritters extends DBService {
 
     tsnCollectionUnits.forEach((collectionUnits, index) => {
       if (collectionUnits.length) {
-        // TODO: Is this correct?
-        collectionUnitMap.set(toUpper(collectionUnits[0].category_name), { collectionUnits, tsn: Number(tsns[index]) });
+        collectionUnitMap.set(toUpper(collectionUnits[0].category_name), {
+          collectionUnits: collectionUnits,
+          tsn: Number(tsns[index])
+        });
       }
     });
 
@@ -281,200 +377,33 @@ export class ImportCSVCritters extends DBService {
   }
 
   /**
-   * Parse the CSV rows into the Critterbase critter format.
-   *
-   * @param {Row[]} rows - CSV rows
-   * @param {string[]} collectionUnitColumns - Non standard columns
-   * @returns {PartialCsvCritter[]} CSV critters before validation
-   */
-  _getRowsToValidate(rows: Row[], collectionUnitColumns: string[]): PartialCsvCritter[] {
-    const getColumnCell = generateColumnCellGetterFromColumnValidator(this.columnValidator);
-
-    return rows.map((row) => {
-      // Standard critter properties from CSV
-      const standardCritterRow = {
-        critter_id: uuid(), // Generate a uuid for each critter for convienence
-        sex: getColumnCell(row, 'SEX').cell,
-        itis_tsn: getColumnCell(row, 'ITIS_TSN').cell,
-        wlh_id: getColumnCell(row, 'WLH_ID').cell,
-        animal_id: getColumnCell(row, 'ALIAS').cell,
-        critter_comment: getColumnCell(row, 'DESCRIPTION').cell
-      };
-
-      // All other properties must be collection units ie: `population unit` or `herd unit` etc...
-      collectionUnitColumns.forEach((categoryHeader) => {
-        standardCritterRow[categoryHeader] = row[categoryHeader];
-      });
-
-      return standardCritterRow;
-    });
-  }
-
-  /**
-   * Validate CSV worksheet rows against reference data.
-   *
-   * @async
-   * @param {Row[]} rows - Invalidated CSV rows
-   * @param {WorkSheet} worksheet - Xlsx worksheet
-   * @returns {Promise<Validation<CsvCritter>>} Conditional validation object
-   */
-  async validateRows(rows: Row[], worksheet: WorkSheet): Promise<Validation<CsvCritter>> {
-    const nonStandardColumns = this._getNonStandardColumns(worksheet);
-    const rowsToValidate = this._getRowsToValidate(rows, nonStandardColumns);
-
-    // Retrieve the dynamic validation config
-    const [validRowTsns, surveyCritterAliases] = await Promise.all([
-      this._getValidTsns(rowsToValidate),
-      this.surveyCritterService.getUniqueSurveyCritterAliases(this.surveyId)
-    ]);
-    const collectionUnitMap = await this._getCollectionUnitMap(worksheet, validRowTsns);
-
-    // Get sex options for each species being imported
-    const sexMap = await this._getSpeciesSexMap(validRowTsns);
-
-    // Parse reference data for validation
-    const tsnSet = new Set(validRowTsns.map((tsn) => Number(tsn)));
-    const csvCritterAliases = rowsToValidate.map((row) => row.animal_id);
-
-    // Track the row validation errors
-    const errors: ValidationError[] = [];
-
-    const csvCritters = rowsToValidate.map((row, index) => {
-      const tsn = row.itis_tsn;
-
-      /**
-       * --------------------------------------------------------------------
-       *                      STANDARD ROW VALIDATION
-       * --------------------------------------------------------------------
-       */
-
-      // WLH_ID must follow regex pattern
-      const invalidWlhId = row.wlh_id && !/^\d{2}-.+/.exec(row.wlh_id);
-      // ITIS_TSN is required and be a valid TSN
-      const invalidTsn = !tsn || !tsnSet.has(tsn);
-      // ALIAS is required and must not already exist in Survey or CSV
-      const invalidAlias =
-        !row.animal_id ||
-        surveyCritterAliases.has(row.animal_id) ||
-        csvCritterAliases.filter((value) => value === row.animal_id).length > 1;
-
-      if (invalidWlhId) {
-        errors.push({
-          row: index,
-          message: `Wildlife health ID ${row.wlh_id} is incorrectly formatted. Expected a 2-digit hyphenated prefix like '18-98491'.`
-        });
-      }
-      if (invalidTsn) {
-        errors.push({ row: index, message: `Species TSN ${tsn} does not exist.` });
-      }
-      if (invalidAlias) {
-        errors.push({
-          row: index,
-          message: `Animal ${row.animal_id} already exists in the Survey. Duplicate names are not allowed.`
-        });
-      }
-
-      /**
-       * --------------------------------------------------------------------
-       *                      SEX VALIDATION
-       * --------------------------------------------------------------------
-       */
-      if (tsn) {
-        // Get the sex options from the sexMap
-        const sexOptionsForTsn = sexMap.get(tsn);
-
-        // If no sex value is given, delete the sex column
-        if (!row.sex) {
-          delete row.sex;
-        }
-
-        // If a sex value is given but sex is not allowed for the tsn, add an error message
-        if (!sexOptionsForTsn && row.sex) {
-          errors.push({
-            row: index,
-            message: `Sex is not a supported attribute for TSN ${tsn}. Please contact a system administrator if it should be.`
-          });
-        }
-
-        // If sex is allowed and a value is given, look for a matching quantitative_option_id
-        if (sexOptionsForTsn && row.sex) {
-          const sexMatch = sexOptionsForTsn.sexes.find(
-            (sex) => sex.option_label.toLowerCase() === row.sex?.toLowerCase()
-          );
-
-          // If the given value is not valid, add an error message
-          if (!sexMatch) {
-            errors.push({
-              row: index,
-              message: `${sexMatch} is not a valid sex option for TSN ${tsn}. Did you mean one of ${sexOptionsForTsn.sexes.join(
-                ','
-              )}`
-            });
-          } else {
-            // If the value is valid, update the cell with the qualitative_option_id
-            row.sex = sexMatch.qualitative_option_id;
-          }
-        }
-      }
-
-      /**
-       * --------------------------------------------------------------------
-       *                      NON-STANDARD ROW VALIDATION
-       * --------------------------------------------------------------------
-       */
-
-      nonStandardColumns.forEach((column) => {
-        const collectionUnitColumn = collectionUnitMap.get(column);
-        // Remove property if undefined or not a collection unit
-        if (!collectionUnitColumn || !row[column]) {
-          delete row[column];
-          return;
-        }
-        // Attempt to find the collection unit with the cell value from the mapping
-        const collectionUnitMatch = collectionUnitColumn.collectionUnits.find(
-          (unit) => unit.unit_name.toLowerCase() === String(row[column]).toLowerCase()
-        );
-        // Collection unit must be a valid value
-        if (!collectionUnitMatch) {
-          errors.push({ row: index, message: `Invalid ${column}. Cell value is not valid.` });
-        }
-        // Collection unit must have correct TSN mapping
-        else if (row.itis_tsn !== collectionUnitColumn.tsn) {
-          errors.push({ row: index, message: `Invalid ${column}. Cell value not allowed for TSN.` });
-        } else {
-          // Update the cell to be the collection unit id
-          row[column] = collectionUnitMatch.collection_unit_id;
-        }
-      });
-
-      return row;
-    });
-
-    // If validation successful the rows should all be CsvCritters
-    if (!errors.length) {
-      return { success: true, data: csvCritters as CsvCritter[] };
-    }
-
-    return { success: false, error: { issues: errors } };
-  }
-
-  /**
    * Insert CSV critters into Critterbase and SIMS.
    *
    * @async
-   * @param {CsvCritter[]} critterRows - CSV row critters
+   * @param {CSVRow[]} validatedRows - Validated rows
    * @throws {ApiGeneralError} - If unable to fully insert records into Critterbase
    * @returns {Promise<number[]>} List of inserted survey critter ids
    */
-  async insert(critterRows: CsvCritter[]): Promise<number[]> {
+  async importCSVRows(validatedRows: CSVRow[]) {
     const simsPayload: string[] = [];
     const critterbasePayload: IBulkCreate = { critters: [], collections: [] };
 
     // Convert rows to Critterbase and SIMS payloads
-    for (const row of critterRows) {
-      simsPayload.push(row.critter_id);
-      critterbasePayload.critters?.push(this._getCritterFromRow(row));
-      critterbasePayload.collections = critterbasePayload.collections?.concat(this._getCollectionUnitsFromRow(row));
+    for (const row of validatedRows) {
+      const critterId = v4();
+
+      simsPayload.push(critterId);
+
+      critterbasePayload.critters?.push({
+        critter_id: critterId,
+        sex_qualitative_option_id: getCSVCellValue('SEX', row, this._config),
+        itis_tsn: getCSVCellValue('ITIS_TSN', row, this._config),
+        animal_id: getCSVCellValue('ALIAS', row, this._config),
+        wlh_id: getCSVCellValue('WLH_ID', row, this._config),
+        critter_comment: getCSVCellValue('DESCRIPTION', row, this._config)
+      });
+
+      //critterbasePayload.collections = critterbasePayload.collections?.concat(this._getCollectionUnitsFromRow(row));
     }
 
     defaultLog.debug({ label: 'critter import payloads', simsPayload, critterbasePayload });

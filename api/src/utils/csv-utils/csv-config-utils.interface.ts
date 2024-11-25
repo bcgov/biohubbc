@@ -4,14 +4,14 @@ import { WorkSheet } from 'xlsx';
  *
  */
 export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>> {
-  staticHeadersMap: Record<THeader, string[]>;
+  //staticHeadersMap: Record<THeader, string[]>;
+  staticHeadersConfig: Record<THeader, { aliases: Uppercase<string> } & CSVHeaderConfig>;
+  dynamicHeadersConfig?: CSVHeaderConfig;
   /**
    * Boolean to ignore dynamic headers.
    * @type {boolean}
    */
   ignoreDynamicHeaders: boolean;
-  staticHeadersConfig?: Record<THeader, CSVHeaderConfig>;
-  dynamicHeadersConfig?: CSVHeaderConfig;
 }
 
 /**
@@ -23,7 +23,7 @@ export interface CSVHeaderConfig {
    * Callback to fire when validating the cell.
    * @type {(params: CSVParams) => CSVError[]}
    */
-  validateCell: (params: CSVParams) => CSVError[];
+  validateCell?: (params: CSVParams) => CSVError[];
   /**
    * Callback to fire when setting the cell (after validation).
    * @type {(params: CSVParams) => any | undefined}
@@ -51,6 +51,11 @@ export interface CSVError {
    * @type {string | undefined}
    */
   solution?: string | undefined;
+  /**
+   * The allowed values.
+   * @type {(string[] | number[]) | undefined}
+   */
+  values?: string[] | number[];
   /**
    * The header name.
    * @type {string | undefined}

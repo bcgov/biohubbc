@@ -1,15 +1,23 @@
 import { WorkSheet } from 'xlsx';
 import { getHeadersUpperCase, getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
 import { CSVConfig, CSVError, CSVHeaderConfig, CSVParams, CSVRow } from './csv-config-utils.interface';
+/**
+ * Some notes:
+ *
+ * Static Headers: Headers that are defined in the CSV configuration.
+ * Dynamic Headers: Headers that are not defined in the CSV configuration. ie: additional headers in the CSV.
+ */
 
-export const _getCSVHeaderAliases = (staticHeader: ) => {};
-
-export const getCSVCellValue = <T extends CSVConfig>(header: keyof T['staticHeadersMap'], row: CSVRow, config: T) => {
+export const getCSVCellValue = <T extends CSVConfig>(
+  header: keyof T['staticHeadersConfig'],
+  row: CSVRow,
+  config: T
+) => {
   if (header in row) {
     return row[header as Uppercase<string>];
   }
 
-  for (const alias of config.staticHeadersMap[header as Uppercase<string>]) {
+  for (const alias of config.staticHeadersConfig[header as Uppercase<string>].aliases) {
     if (alias in row) {
       return row[alias];
     }
@@ -17,31 +25,49 @@ export const getCSVCellValue = <T extends CSVConfig>(header: keyof T['staticHead
 };
 
 /**
- * Get the config map for the CSV headers.
+ * Get the static headers for the CSV worksheet.
+ *
+ * @param {WorkSheet} worksheet - The worksheet
+ * @param {CSVConfig} config - The CSV configuration
+ */
+export const getCSVWorksheetStaticHeaders = (worksheet: WorkSheet, config: CSVConfig) => {
+  const worksheetHeaders = getHeadersUpperCase(worksheet);
+  const configMap = getCSVConfigMap(config);
+  return worksheetHeaders.filter((header) => configMap.has(header));
+};
+
+/**
+ * Get the dynamic headers for the CSV worksheet.
+ *
+ * @param {WorkSheet} worksheet - The worksheet
+ * @param {CSVConfig} config - The CSV configuration
+ */
+export const getCSVWorksheetDynamicHeaders = (worksheet: WorkSheet, config: CSVConfig) => {
+  const worksheetHeaders = getHeadersUpperCase(worksheet);
+  const configMap = getCSVConfigMap(config);
+  return worksheetHeaders.filter((header) => !configMap.has(header));
+};
+
+/**
+ * Get the config map for the CSV worksheet staticHeaders and aliases.
  *
  * Note: This function returns a Map of header names (UPPERCASED) to header config objects.
  *
  * @param {CSVConfig} config - The CSV configuration
- * @returns {Map<string, CSVHeaderConfig>} - The header config Map
+ * @returns {Map<string, CSVHeaderConfig & { staticHeader: string }>} - The header config Map
  */
 export const getCSVConfigMap = (config: CSVConfig) => {
-  const headerMap = new Map<string, CSVHeaderConfig>();
+  const headerMap = new Map<string, CSVHeaderConfig & { staticHeader: string }>();
 
-  for (const staticHeader in Object.keys(config.staticHeadersMap)) {
-    const headerConfig = config.staticHeadersConfig?.[staticHeader as Uppercase<string>];
-
-    if (!headerConfig) {
-      throw new Error(`Missing header config for header: ${staticHeader}`);
-    }
-
-    for (const header of [staticHeader, ...config.staticHeadersMap[staticHeader]]) {
+  for (const [staticHeader, headerConfig] of Object.entries(config.staticHeadersConfig)) {
+    for (const header of [staticHeader, ...headerConfig.aliases]) {
       const uppercasedHeader = header.toUpperCase();
 
       if (headerMap.has(uppercasedHeader)) {
         throw new Error(`Duplicate header in CSV config: ${uppercasedHeader}`);
       }
 
-      headerMap.set(uppercasedHeader, headerConfig);
+      headerMap.set(uppercasedHeader, { ...headerConfig, staticHeader });
     }
   }
 
@@ -53,13 +79,13 @@ export const getCSVConfigMap = (config: CSVConfig) => {
  *
  * @param {WorkSheet} worksheet - The worksheet
  * @param {CSVConfig} config - The CSV configuration
- * @param {(params: CSVParams, csvHeaderConfig?: CSVHeaderConfig) => void} callback - The callback function
+ * @param {(params: CSVParams, staticHeaderConfig?: CSVHeaderConfig & { staticHeaderConfig: string }) => void} callback - The callback function
  * @returns {void}
  */
 export const forEachCSVCell = (
   worksheet: WorkSheet,
   config: CSVConfig,
-  callback: (params: CSVParams, csvHeaderConfig?: CSVHeaderConfig) => void
+  callback: (params: CSVParams, staticHeaderConfig?: CSVHeaderConfig & { staticHeader: string }) => void
 ): void => {
   const configMap = getCSVConfigMap(config);
   const worksheetRows = getWorksheetRowObjects(worksheet);
@@ -68,17 +94,17 @@ export const forEachCSVCell = (
     const worksheetRow = worksheetRows[i];
 
     for (const header in worksheetRow) {
-      const csvHeaderConfig = configMap.get(header);
+      const staticHeaderConfig = configMap.get(header);
       const cell = worksheetRow[header];
       const params = { cell, header, row: worksheetRow, rowIndex: i + 1, worksheet };
 
-      callback(params, csvHeaderConfig);
+      callback(params, staticHeaderConfig);
     }
   }
 };
 
 /**
- * Validate the CSV headers against the CSV config.
+ * Validate the CSV static and dynamic headers against the CSV config.
  *
  * @param {WorkSheet} worksheet - The worksheet
  * @param {CSVConfig} config - The CSV configuration
@@ -87,33 +113,31 @@ export const forEachCSVCell = (
 export const validateCSVHeaders = (worksheet: WorkSheet, config: CSVConfig): CSVError[] => {
   const csvErrors: CSVError[] = [];
 
-  const configMap = getCSVConfigMap(config);
+  const worksheetHeaders = getHeadersUpperCase(worksheet);
+  const worksheetStaticHeaders = getCSVWorksheetStaticHeaders(worksheet, config);
+  const worksheetDynamicHeaders = getCSVWorksheetDynamicHeaders(worksheet, config);
 
-  const headers = getHeadersUpperCase(worksheet);
-  const knownHeaders = headers.filter((header) => configMap.has(header));
-  const unknownHeaders = headers.filter((header) => !configMap.has(header));
-
-  if (!headers.length) {
-    return [{ rowIndex: 0, error: 'CSV is empty', solution: 'Add headers and data to CSV' }];
+  if (!worksheetHeaders.length) {
+    return [{ rowIndex: 0, error: 'CSV is empty', solution: 'Add worksheetHeaders and data to CSV' }];
   }
 
-  for (const staticHeader in Object.keys(config.staticHeadersMap)) {
-    const headerConfig = config.headers[$property];
+  for (const [staticHeader, headerConfig] of Object.entries(config.staticHeadersConfig)) {
+    const worksheetHasStaticHeader = worksheetStaticHeaders.some((header) =>
+      [staticHeader, ...headerConfig.aliases].includes(header)
+    );
 
-    for (const header of headerConfig.headerNames) {
-      if (!knownHeaders.includes(header)) {
-        csvErrors.push({
-          rowIndex: 0,
-          error: 'CSV missing required header',
-          header: header,
-          solution: `Add header '${header}' to CSV`
-        });
-      }
+    if (!worksheetHasStaticHeader) {
+      csvErrors.push({
+        rowIndex: 0,
+        error: 'CSV missing required header',
+        header: staticHeader,
+        solution: `Add header '${staticHeader}' to CSV`
+      });
     }
   }
 
-  if (config.ignoreDynamicHeaders && unknownHeaders.length) {
-    for (const unknownHeader of unknownHeaders) {
+  if (!config.ignoreDynamicHeaders && !config.dynamicHeadersConfig && worksheetDynamicHeaders.length) {
+    for (const unknownHeader of worksheetDynamicHeaders) {
       csvErrors.push({
         rowIndex: 0,
         error: 'Unknown header in CSV',
@@ -137,7 +161,7 @@ export const validateCSVCells = (worksheet: WorkSheet, config: CSVConfig): CSVEr
   const csvErrors: CSVError[] = [];
 
   forEachCSVCell(worksheet, config, (params, staticHeaderConfig) => {
-    if (staticHeaderConfig) {
+    if (staticHeaderConfig?.validateCell) {
       csvErrors.push(...staticHeaderConfig.validateCell(params));
     }
 
@@ -161,7 +185,7 @@ export const setCSVCellValues = (worksheet: WorkSheet, config: CSVConfig): CSVRo
 
   forEachCSVCell(worksheet, config, (params, staticHeaderConfig) => {
     if (staticHeaderConfig && staticHeaderConfig.setCellValue) {
-      params.row[staticHeaderConfig.$property] = staticHeaderConfig.setCellValue(params);
+      params.row[staticHeaderConfig.staticHeader] = staticHeaderConfig.setCellValue(params);
       delete params.row[params.header];
     }
 
@@ -176,8 +200,7 @@ export const setCSVCellValues = (worksheet: WorkSheet, config: CSVConfig): CSVRo
 };
 
 /**
- * Validate the CSV worksheet against the CSV config.
- * Note: This function is a helpful wrapper for the `normal` flow of the validation process.
+ * Validate the CSV worksheet with the CSV config.
  *
  * @param {WorkSheet} worksheet - The worksheet
  * @param {CSVConfig} config - The CSV configuration
@@ -187,19 +210,25 @@ export const validateCSVWorksheet = (
   worksheet: WorkSheet,
   config: CSVConfig
 ): { errors: CSVError[]; rows: CSVRow[] } => {
+  console.time('validateCSVWorksheet');
   const headerErrors = validateCSVHeaders(worksheet, config);
+  console.timeEnd('validateCSVWorksheet');
 
   if (headerErrors.length) {
     return { errors: headerErrors, rows: [] };
   }
 
+  console.time('validateCSVCells');
   const cellErrors = validateCSVCells(worksheet, config);
+  console.timeEnd('validateCSVCells');
 
   if (cellErrors.length) {
     return { errors: cellErrors, rows: [] };
   }
 
+  console.time('setCSVCellValues');
   const mutatedRows = setCSVCellValues(worksheet, config);
+  console.timeEnd('setCSVCellValues');
 
   return { errors: [], rows: mutatedRows };
 };
