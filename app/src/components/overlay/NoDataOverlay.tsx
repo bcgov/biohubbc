@@ -17,7 +17,7 @@ interface INoDataOverlayProps extends BoxProps {
 export const NoDataOverlay = (props: INoDataOverlayProps) => {
   const { title, subtitle, icon } = props;
   return (
-    <Box justifyContent="center" display="flex" flexDirection="column" {...props}>
+    <Box justifyContent="center" display="flex" flexDirection="column" height="100%" {...props}>
       <Typography mb={1} variant="h4" color="textSecondary" textAlign="center">
         {title}
         {icon && <Icon path={icon} size={1} style={{ marginLeft: '8px' }} />}

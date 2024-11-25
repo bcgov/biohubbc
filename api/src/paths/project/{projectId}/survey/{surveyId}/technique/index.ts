@@ -193,18 +193,14 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
-            required: ['techniques', 'count'],
+            required: ['techniques', 'pagination'],
             additionalProperties: false,
             properties: {
               techniques: {
                 type: 'array',
                 items: techniqueViewSchema
               },
-              count: {
-                type: 'number',
-                description: 'Count of method techniques in the respective survey.'
-              },
-              pagination: { ...paginationResponseSchema }
+              pagination: paginationResponseSchema
             }
           }
         }
@@ -254,7 +250,6 @@ export function getTechniques(): RequestHandler {
 
       return res.status(200).json({
         techniques,
-        count: techniquesCount,
         pagination: makePaginationResponse(techniquesCount, paginationOptions)
       });
     } catch (error) {

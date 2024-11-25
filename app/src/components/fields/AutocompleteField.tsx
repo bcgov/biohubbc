@@ -25,6 +25,7 @@ export interface IAutocompleteField<T extends string | number> {
   required?: boolean;
   filterLimit?: number;
   showValue?: boolean;
+  disableClearable?: boolean;
   optionFilter?: 'value' | 'label'; // used to filter existing/ set data for the AutocompleteField, defaults to value in getExistingValue function
   getOptionDisabled?: (option: IAutocompleteFieldOption<T>) => boolean;
   onChange?: (event: SyntheticEvent<Element, Event>, option: IAutocompleteFieldOption<T> | null) => void;
@@ -67,6 +68,7 @@ const AutocompleteField = <T extends string | number>(props: IAutocompleteField<
       value={getExistingValue(get(values, props.name))}
       options={props.options}
       getOptionLabel={(option) => option.label}
+      disableClearable={props.disableClearable}
       isOptionEqualToValue={handleGetOptionSelected}
       getOptionDisabled={props.getOptionDisabled}
       filterOptions={createFilterOptions({ limit: props.filterLimit })}

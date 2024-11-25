@@ -7,10 +7,12 @@ import Stack from '@mui/material/Stack';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Typography from '@mui/material/Typography';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import AnimalsListContainer from 'features/summary/tabular-data/animal/AnimalsListContainer';
 import ObservationsListContainer from 'features/summary/tabular-data/observation/ObservationsListContainer';
 import TelemetryListContainer from 'features/summary/tabular-data/telemetry/TelemetryListContainer';
 import { useSearchParams } from 'hooks/useSearchParams';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 
 export const ACTIVE_VIEW_KEY = 'tavk';
@@ -73,30 +75,34 @@ export const TabularDataTableContainer = () => {
 
   return (
     <Stack direction="row">
-      <ToggleButtonGroup
-        orientation="vertical"
-        value={activeView}
-        onChange={onChangeView}
-        exclusive
-        sx={{
-          display: 'flex',
-          gap: 1,
-          '& Button': buttonSx,
-          width: '225px',
-          m: 2
-        }}>
-        <Typography component="legend">Data</Typography>
-        {views.map((view) => (
-          <ToggleButton
-            key={view.label}
-            component={Button}
-            color="primary"
-            startIcon={<Icon path={view.icon} size={0.75} />}
-            value={view.value}>
-            {view.label}
-          </ToggleButton>
-        ))}
-      </ToggleButtonGroup>
+      <Stack mx={2} my={1} width="225px" gap={1}>
+        <Box display="flex" justifyContent="space-between" alignItems="center" minHeight="75px">
+          <Typography variant="h4">Data</Typography>
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SUMMARY_DATA} />
+        </Box>
+        <ToggleButtonGroup
+          orientation="vertical"
+          value={activeView}
+          onChange={onChangeView}
+          exclusive
+          sx={{
+            display: 'flex',
+            gap: 1,
+            '& Button': buttonSx
+          }}>
+          {views.map((view) => (
+            <ToggleButton
+              key={view.label}
+              component={Button}
+              color="primary"
+              startIcon={<Icon path={view.icon} size={0.75} />}
+              value={view.value}>
+              {view.label}
+            </ToggleButton>
+          ))}
+        </ToggleButtonGroup>
+      </Stack>
+
       <Divider flexItem orientation="vertical" />
       <Box flex="1 1 auto" overflow="hidden">
         {activeView === ACTIVE_VIEW_VALUE.observations && <ObservationsListContainer showSearch={showSearch} />}

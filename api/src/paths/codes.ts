@@ -384,6 +384,27 @@ GET.apiDoc = {
                   }
                 }
               },
+              alert_types: {
+                type: 'array',
+                description: 'Alert type options for system administrators managing alert messages.',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
               vantages: {
                 type: 'array',
                 description: 'Vantages that vantage modes belong to.',

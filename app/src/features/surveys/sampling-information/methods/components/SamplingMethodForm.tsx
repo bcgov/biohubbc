@@ -5,7 +5,9 @@ import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/A
 import CustomTextField from 'components/fields/CustomTextField';
 import { CodesContext } from 'contexts/codesContext';
 import { useFormikContext } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 import { v4 } from 'uuid';
@@ -62,6 +64,8 @@ export const SamplingMethodForm = () => {
   const codesContext = useContext(CodesContext);
   const surveyContext = useSurveyContext();
 
+  const biohubApi = useBiohubApi();
+
   const { setFieldValue } = useFormikContext<ISurveySampleMethodFormData>();
 
   const methodResponseMetricOptions: IAutocompleteFieldOption<number>[] =
@@ -75,7 +79,13 @@ export const SamplingMethodForm = () => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const techniques = surveyContext.techniqueDataLoader.data?.techniques;
+  const techniquesDataLoader = useDataLoader(() =>
+    biohubApi.technique.getTechniquesForSurvey(surveyContext.projectId, surveyContext.surveyId)
+  );
+
+  useEffect(() => {
+    techniquesDataLoader.load();
+  }, [techniquesDataLoader]);
 
   if (!codesContext.codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -91,7 +101,7 @@ export const SamplingMethodForm = () => {
             label="Technique"
             name="technique.method_technique_id"
             options={
-              techniques?.map((option) => ({
+              techniquesDataLoader.data?.techniques.map((option) => ({
                 value: option.method_technique_id,
                 label: option.name,
                 subText: option.description ?? undefined

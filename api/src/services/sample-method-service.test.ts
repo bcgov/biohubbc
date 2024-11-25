@@ -1,13 +1,13 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { SurveySampleMethodModel } from '../database-models/survey_sample_method';
+import { SurveySamplePeriodModel, SurveySamplePeriodRecord } from '../database-models/survey_sample_period';
 import {
   InsertSampleMethodRecord,
-  SampleMethodRecord,
   SampleMethodRepository,
   UpdateSampleMethodRecord
 } from '../repositories/sample-method-repository';
-import { SamplePeriodRecord } from '../repositories/sample-period-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ObservationService } from './observation-service';
 import { SampleMethodService } from './sample-method-service';
@@ -32,7 +32,7 @@ describe('SampleMethodService', () => {
     it('Gets a sample method by survey sample site ID', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockSampleMethodRecords: SampleMethodRecord[] = [
+      const mockSampleMethodRecords: SurveySampleMethodModel[] = [
         {
           survey_sample_method_id: 1,
           survey_sample_site_id: 2,
@@ -98,7 +98,7 @@ describe('SampleMethodService', () => {
       const mockSamplePeriodId = 1;
       const mockSampleMethodId = 1;
 
-      const mockSampleMethodRecord: SampleMethodRecord = {
+      const mockSampleMethodRecord: SurveySampleMethodModel = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_technique_id: 3,
@@ -116,7 +116,7 @@ describe('SampleMethodService', () => {
 
       sinon
         .stub(SamplePeriodService.prototype, 'getSamplePeriodsForSurveyMethodId')
-        .resolves([{ survey_sample_period_id: mockSamplePeriodId } as SamplePeriodRecord]);
+        .resolves([{ survey_sample_period_id: mockSamplePeriodId } as SurveySamplePeriodModel]);
       const deleteSamplePeriodRecordStub = sinon
         .stub(SamplePeriodService.prototype, 'deleteSamplePeriodRecords')
         .resolves();
@@ -138,7 +138,7 @@ describe('SampleMethodService', () => {
     it('Inserts a sample method successfully', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockSampleMethodRecord: SampleMethodRecord = {
+      const mockSampleMethodRecord: SurveySampleMethodModel = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_technique_id: 3,
@@ -154,7 +154,7 @@ describe('SampleMethodService', () => {
         .stub(SampleMethodRepository.prototype, 'insertSampleMethod')
         .resolves(mockSampleMethodRecord);
 
-      const mockSamplePeriodRecord: SamplePeriodRecord = {
+      const mockSamplePeriodRecord: SurveySamplePeriodModel = {
         survey_sample_method_id: 1,
         survey_sample_period_id: 2,
         start_date: '2023-10-04',
@@ -223,7 +223,7 @@ describe('SampleMethodService', () => {
     it('Updates a sample method successfully', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      const mockSampleMethodRecord: SampleMethodRecord = {
+      const mockSampleMethodRecord: SurveySampleMethodModel = {
         survey_sample_method_id: 1,
         survey_sample_site_id: 2,
         method_technique_id: 3,
@@ -265,7 +265,7 @@ describe('SampleMethodService', () => {
             start_time: '12:00:00',
             end_time: '13:00:00',
             survey_sample_method_id: 1
-          } as SamplePeriodRecord
+          } as SurveySamplePeriodRecord
         ]
       };
       const sampleMethodService = new SampleMethodService(mockDBConnection);
@@ -287,7 +287,7 @@ describe('SampleMethodService', () => {
       const mockSampleMethodId = 1;
       const surveySampleSiteId = 1;
 
-      const mockSampleMethodRecord: SampleMethodRecord = {
+      const mockSampleMethodRecord: SurveySampleMethodModel = {
         survey_sample_method_id: mockSampleMethodId,
         survey_sample_site_id: 2,
         method_technique_id: 3,
@@ -300,7 +300,7 @@ describe('SampleMethodService', () => {
         revision_count: 0
       };
 
-      const mockSampleMethodRecords: SampleMethodRecord[] = [mockSampleMethodRecord];
+      const mockSampleMethodRecords: SurveySampleMethodModel[] = [mockSampleMethodRecord];
       const getSampleMethodsForSurveySampleSiteIdStub = sinon
         .stub(SampleMethodRepository.prototype, 'getSampleMethodsForSurveySampleSiteId')
         .resolves(mockSampleMethodRecords);

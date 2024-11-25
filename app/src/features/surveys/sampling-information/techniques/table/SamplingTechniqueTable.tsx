@@ -15,7 +15,6 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DeleteTechniqueI18N } from 'constants/i18n';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { IGetTechniqueResponse, TechniqueAttractant } from 'interfaces/useTechniqueApi.interface';
 import { useEffect, useState } from 'react';
@@ -33,8 +32,9 @@ export interface ITechniqueRowData {
 
 interface ISamplingTechniqueTable {
   techniques: IGetTechniqueResponse[];
-  bulkActionTechniques: GridRowSelectionModel;
-  setBulkActionTechniques: (selection: GridRowSelectionModel) => void;
+  selectedRows: GridRowSelectionModel;
+  setSelectedRows: (selection: GridRowSelectionModel) => void;
+  onDelete: (techniqueId: number) => Promise<void>;
 }
 
 /**
@@ -43,16 +43,17 @@ interface ISamplingTechniqueTable {
  * @returns
  */
 export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamplingTechniqueTable) => {
-  const { techniques, bulkActionTechniques, setBulkActionTechniques } = props;
+  const { techniques, selectedRows, setSelectedRows, onDelete } = props;
 
   // Individual row action menu
-  const [actionMenuTechnique, setActionMenuTechnique] = useState<number | null>(null);
-  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<MenuProps['anchorEl']>(null);
+  const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<{
+    anchor: MenuProps['anchorEl'];
+    techniqueId: number;
+  } | null>(null);
 
   const surveyContext = useSurveyContext();
   const dialogContext = useDialogContext();
   const codesContext = useCodesContext();
-  const biohubApi = useBiohubApi();
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -63,12 +64,14 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
    *
    */
   const handleDeleteTechnique = async () => {
-    await biohubApi.technique
-      .deleteTechnique(surveyContext.projectId, surveyContext.surveyId, Number(actionMenuTechnique))
+    if (!actionMenuAnchorEl) {
+      return;
+    }
+
+    await onDelete(actionMenuAnchorEl.techniqueId)
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setActionMenuAnchorEl(null);
-        surveyContext.techniqueDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
@@ -124,7 +127,11 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
     })) || [];
 
   const columns: GridColDef<T>[] = [
-    { field: 'name', headerName: 'Name', flex: 0.4 },
+    {
+      field: 'name',
+      headerName: 'Name',
+      flex: 0.4
+    },
     {
       field: 'method_lookup_id',
       flex: 0.4,
@@ -190,19 +197,16 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
       field: 'actions',
       type: 'actions',
       sortable: false,
-      flex: 0.3,
+      width: 10,
       align: 'right',
       renderCell: (params) => {
         return (
-          <Box display="flex" position="fixed">
-            <IconButton
-              onClick={(event) => {
-                setActionMenuTechnique(params.row.id);
-                setActionMenuAnchorEl(event.currentTarget);
-              }}>
-              <Icon path={mdiDotsVertical} size={1} />
-            </IconButton>
-          </Box>
+          <IconButton
+            onClick={(event) => {
+              setActionMenuAnchorEl({ anchor: event.currentTarget, techniqueId: params.row.id });
+            }}>
+            <Icon path={mdiDotsVertical} size={1} />
+          </IconButton>
         );
       }
     }
@@ -214,7 +218,7 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
         sx={{ pb: 2 }}
         open={Boolean(actionMenuAnchorEl)}
         onClose={() => setActionMenuAnchorEl(null)}
-        anchorEl={actionMenuAnchorEl}
+        anchorEl={actionMenuAnchorEl?.anchor}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'right'
@@ -239,7 +243,7 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
             }
           }}>
           <RouterLink
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/techniques/${actionMenuTechnique}/edit`}>
+            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/techniques/${actionMenuAnchorEl?.techniqueId}/edit`}>
             <ListItemIcon>
               <Icon path={mdiPencilOutline} size={1} />
             </ListItemIcon>
@@ -272,13 +276,13 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
         <StyledDataGrid
           rows={rows}
           columns={columns}
-          autoHeight
           getRowHeight={() => 'auto'}
+          autoHeight={false}
           disableRowSelectionOnClick
           disableColumnMenu
           checkboxSelection
-          rowSelectionModel={bulkActionTechniques}
-          onRowSelectionModelChange={setBulkActionTechniques}
+          rowSelectionModel={selectedRows}
+          onRowSelectionModelChange={setSelectedRows}
           initialState={{
             pagination: {
               paginationModel: { page: 1, pageSize: 10 }

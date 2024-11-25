@@ -46,6 +46,7 @@ describe('CodeService', () => {
         'survey_progress',
         'method_response_metrics',
         'observation_subcount_signs',
+        'alert_types',
         'vantages'
       );
     });

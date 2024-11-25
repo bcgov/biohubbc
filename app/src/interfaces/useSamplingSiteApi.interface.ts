@@ -40,9 +40,20 @@ export interface IEditSampleSiteRequest {
   };
 }
 
-export interface IGetSampleSiteResponse {
-  sampleSites: IGetSampleLocationDetails[];
+export interface IGetSampleLocationNonSpatialResponse {
+  sampleSites: IGetSampleLocationNonSpatialDetails[];
   pagination: ApiPaginationResponseParams;
+}
+
+export interface IGetSampleLocationNonSpatialDetails {
+  survey_sample_site_id: number;
+  survey_id: number;
+  name: string;
+  description: string;
+  geometry_type: string;
+  sample_methods: IGetSampleMethodDetails[];
+  blocks: IGetSampleBlockDetails[];
+  stratums: IGetSampleStratumDetails[];
 }
 
 export interface IGetSampleLocationRecord {
@@ -58,6 +69,42 @@ export interface IGetSampleLocationRecord {
   revision_count: number;
 }
 
+export interface IGetSampleSiteGeometryResponse {
+  sampleSites: IGetSampleSiteGeometry[];
+}
+
+export interface IFindSampleSiteResponse {
+  sites: {
+    survey_sample_site_id: number;
+    survey_id: number;
+    name: string;
+    description: string | null;
+    geometry_type: string;
+    blocks: IGetSampleBlockDetails[];
+    stratums: IGetSampleStratumDetails[];
+  }[];
+  pagination: ApiPaginationResponseParams;
+}
+
+export interface IFindSampleSiteRecord {
+  survey_sample_site_id: number;
+  survey_id: number;
+  name: string;
+  description: string | null;
+  geometry_type: string;
+  blocks: IGetSampleBlockDetails[];
+  stratums: IGetSampleStratumDetails[];
+}
+export interface IFindSampleSiteResponse {
+  sites: IFindSampleSiteRecord[];
+  pagination: ApiPaginationResponseParams;
+}
+
+export interface IGetSampleSiteGeometry {
+  survey_sample_site_id: number;
+  geojson: Feature;
+}
+
 export interface IGetSampleLocationDetails {
   survey_sample_site_id: number;
   survey_id: number;
@@ -67,6 +114,29 @@ export interface IGetSampleLocationDetails {
   sample_methods: IGetSampleMethodDetails[];
   blocks: IGetSampleBlockDetails[];
   stratums: IGetSampleStratumDetails[];
+}
+
+export interface IGetBasicSamplePeriod {
+  survey_sample_period_id: number;
+  survey_sample_method_id: number;
+  start_date: string;
+  end_date: string;
+  start_time: string;
+  end_time: string;
+}
+
+export interface IGetBasicSampleMethod {
+  survey_sample_method_id: number;
+  survey_sample_site_id: number;
+  method_response_metric_id: number;
+  technique: { survey_technique_id: number; name: string };
+  sample_periods: IGetBasicSamplePeriod[];
+}
+
+export interface IGetBasicSampleLocation {
+  survey_sample_site_id: number;
+  name: string;
+  sample_methods: IGetBasicSampleMethod;
 }
 
 export interface IGetSampleLocationDetailsForUpdate {
@@ -84,11 +154,11 @@ export interface IGetSampleBlockDetails {
   survey_sample_block_id: number;
   survey_sample_site_id: number | null;
   survey_block_id: number;
-  create_date: string;
-  create_user: number;
-  update_date: string | null;
-  update_user: number | null;
-  revision_count: number;
+  //   create_date: string;
+  //   create_user: number;
+  //   update_date: string | null;
+  //   update_user: number | null;
+  //   revision_count: number;
   name: string;
   description: string;
 }
@@ -97,11 +167,11 @@ export interface IGetSampleStratumDetails {
   survey_sample_stratum_id: number;
   survey_sample_site_id: number;
   survey_stratum_id: number;
-  create_date: string;
-  create_user: number;
-  update_date: string | null;
-  update_user: number | null;
-  revision_count: number;
+  //   create_date: string;
+  //   create_user: number;
+  //   update_date: string | null;
+  //   update_user: number | null;
+  //   revision_count: number;
   name: string;
   description: string;
 }
@@ -136,4 +206,29 @@ export interface IGetSamplePeriodRecord {
   update_date: string | null;
   update_user: number | null;
   revision_count: number;
+}
+
+export interface IFindSamplePeriodRecord {
+  survey_sample_period_id: number;
+  survey_sample_method_id: number;
+  survey_id: number;
+  start_date: string | null;
+  end_date: string | null;
+  start_time: string | null;
+  end_time: string | null;
+  sample_method: {
+    method_response_metric_id: number;
+  };
+  method_technique: {
+    method_technique_id: number;
+    name: string;
+  };
+  sample_site: {
+    survey_sample_site_id: number;
+    name: string;
+  };
+}
+export interface IFindSamplePeriodResponse {
+  periods: IFindSamplePeriodRecord[];
+  pagination: ApiPaginationResponseParams;
 }

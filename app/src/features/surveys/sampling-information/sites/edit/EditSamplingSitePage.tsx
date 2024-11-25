@@ -33,7 +33,7 @@ export interface IEditSampleSiteFormData {
   survey_sample_site_id: number | null;
   survey_id: number;
   name: string;
-  description: string;
+  description: string | null;
   geojson: Feature;
   sample_methods: (IGetSampleMethodDetails | ISurveySampleMethodFormData)[];
   blocks: IGetSampleBlockDetails[];
@@ -105,7 +105,7 @@ export const EditSamplingSitePage = () => {
       const editSampleSite: IEditSampleSiteRequest = {
         sampleSite: {
           name: values.name,
-          description: values.description,
+          description: values.description ?? '',
           survey_id: values.survey_id,
           survey_sample_sites: [values.geojson as Feature],
           geojson: values.geojson,
@@ -128,15 +128,11 @@ export const EditSamplingSitePage = () => {
         .then(() => {
           setIsSubmitting(false);
 
-          // Refresh the context, so the next page loads with the latest data
-          surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
-
           // create complete, navigate back to observations page
           history.push(
             `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`,
             SKIP_CONFIRMATION_DIALOG
           );
-          surveyContext.sampleSiteDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
         })
         .catch((error: any) => {
           dialogContext.setYesNoDialog({ open: false });

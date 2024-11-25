@@ -3,12 +3,14 @@ import useReferenceApi from 'hooks/api/useReferenceApi';
 import { useConfigContext } from 'hooks/useContext';
 import { useMemo } from 'react';
 import useAdminApi from './api/useAdminApi';
+import { useAlertApi } from './api/useAlertApi';
 import useAnalyticsApi from './api/useAnalyticsApi';
 import useAnimalApi from './api/useAnimalApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import useExternalApi from './api/useExternalApi';
 import useFundingSourceApi from './api/useFundingSourceApi';
+import { useMarkdownApi } from './api/useMarkdownApi';
 import useObservationApi from './api/useObservationApi';
 import useProjectApi from './api/useProjectApi';
 import useProjectParticipationApi from './api/useProjectParticipationApi';
@@ -72,6 +74,10 @@ export const useBiohubApi = () => {
 
   const telemetry = useTelemetryApi(apiAxios);
 
+  const markdown = useMarkdownApi(apiAxios);
+
+  const alert = useAlertApi(apiAxios);
+
   return useMemo(
     () => ({
       analytics,
@@ -93,7 +99,9 @@ export const useBiohubApi = () => {
       samplingSite,
       standards,
       reference,
-      telemetry
+      telemetry,
+      markdown,
+      alert
     }),
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

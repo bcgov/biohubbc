@@ -68,8 +68,30 @@ describe('SurveyBlockService', () => {
       const updateBlock = sinon.stub(SurveyBlockRepository.prototype, 'updateSurveyBlock').resolves();
 
       const blocks: PostSurveyBlock[] = [
-        { survey_block_id: null, survey_id: 1, name: 'Old Block', description: 'Updated' },
-        { survey_block_id: null, survey_id: 1, name: 'New Block', description: 'block' }
+        {
+          survey_block_id: null,
+          survey_id: 1,
+          name: 'Old Block',
+          description: 'Updated',
+          geojson: {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [0, 0] },
+            properties: {},
+            id: 'testid1'
+          }
+        },
+        {
+          survey_block_id: null,
+          survey_id: 1,
+          name: 'New Block',
+          description: 'block',
+          geojson: {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [0, 0] },
+            properties: {},
+            id: 'testid1'
+          }
+        }
       ];
       await service.upsertSurveyBlocks(1, blocks);
 
@@ -106,8 +128,30 @@ describe('SurveyBlockService', () => {
       const updateBlock = sinon.stub(SurveyBlockRepository.prototype, 'updateSurveyBlock').resolves();
 
       const blocks: PostSurveyBlock[] = [
-        { survey_block_id: 10, survey_id: 1, name: 'Old Block', description: 'Updated' },
-        { survey_block_id: null, survey_id: 1, name: 'New Block', description: 'block' }
+        {
+          survey_block_id: 10,
+          survey_id: 1,
+          name: 'Old Block',
+          description: 'Updated',
+          geojson: {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [0, 0] },
+            properties: {},
+            id: 'testid1'
+          }
+        },
+        {
+          survey_block_id: null,
+          survey_id: 1,
+          name: 'New Block',
+          description: 'block',
+          geojson: {
+            type: 'Feature',
+            geometry: { type: 'Point', coordinates: [0, 0] },
+            properties: {},
+            id: 'testid1'
+          }
+        }
       ];
       await service.upsertSurveyBlocks(1, blocks);
 
