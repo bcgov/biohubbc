@@ -34,11 +34,16 @@ GET.apiDoc = {
               'project_roles',
               'administrative_activity_status_type',
               'intended_outcomes',
+              'survey_jobs',
               'site_selection_strategies',
+              'sample_methods',
               'survey_progress',
               'method_response_metrics',
               'attractants',
-              'telemetry_device_makes'
+              'observation_subcount_signs',
+              'telemetry_device_makes',
+              'frequency_units',
+              'alert_types'
             ],
             properties: {
               management_action_type: {
