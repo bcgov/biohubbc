@@ -66,7 +66,7 @@ export const SurveySpatialAnimalTable = (props: ISurveyDataAnimalTableProps) => 
         status: !!item.mortality?.length,
         sex: capitalizeFirstLetter(item.sex || 'Unknown'), // Normalize and capitalize here
         marking:(<Chip
-        label={item.animal_id ?? 'N/A'}
+        label={'Click for Markings'}
         variant="filled"
         onClick={() => console.log(`Clicked: ${item.animal_id}`)} // Example click handler
       />
