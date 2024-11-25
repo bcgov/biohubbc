@@ -1,5 +1,10 @@
 export interface IGetMarkdownResponse {
-  markdown: { markdown_id: number; markdown_type_id: number; data: string; participated: string };
+  markdown: {
+    markdown_id: number;
+    markdown_type_id: number;
+    data: string;
+    participated: boolean;
+  };
 }
 export interface IMarkdownFilterObject {
   typeName: string;
