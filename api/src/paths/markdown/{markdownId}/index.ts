@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { MarkdownService } from '../../../services/markdown-service';
@@ -13,8 +12,7 @@ export const POST: Operation = [
     return {
       and: [
         {
-          validSystemRoles: [SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          discriminator: 'SystemRole'
+          discriminator: 'SystemUser'
         }
       ]
     };
@@ -37,7 +35,8 @@ POST.apiDoc = {
       description: 'Primary key of a markdown record to submit a score for',
       required: true,
       schema: {
-        type: 'integer'
+        type: 'integer',
+        minimum: 1
       }
     }
   ],
@@ -51,7 +50,11 @@ POST.apiDoc = {
           additionalProperties: false,
           required: ['score'],
           properties: {
-            score: { type: 'number', description: 'Score to add to the markdown record', enum: [-1, 1] }
+            score: {
+              type: 'number',
+              description: 'Score to add to the markdown record',
+              enum: [-1, 1]
+            }
           }
         }
       }

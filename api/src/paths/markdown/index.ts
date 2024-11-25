@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { markdownSchema } from '../../openapi/schemas/markdown';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
@@ -14,8 +13,7 @@ export const GET: Operation = [
     return {
       and: [
         {
-          validSystemRoles: [SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          discriminator: 'SystemRole'
+          discriminator: 'SystemUser'
         }
       ]
     };

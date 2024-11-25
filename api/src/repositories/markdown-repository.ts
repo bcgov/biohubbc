@@ -1,5 +1,6 @@
 import SQL from 'sql-template-strings';
-import { MarkdownObject, MarkdownQueryObject, MarkdownUserObject } from '../models/markdown-view';
+import { MarkdownUserRecord } from '../database-models/markdown_user';
+import { MarkdownObject, MarkdownQueryObject } from '../models/markdown-view';
 import { BaseRepository } from './base-repository';
 
 /**
@@ -66,10 +67,10 @@ export class MarkdownRepository extends BaseRepository {
    *
    * @param {number} markdownId
    * @param {number} systemUserId
-   * @return {*}  {Promise<MarkdownUserObject | null>}
+   * @return {*}  {Promise<MarkdownUserRecord | null>}
    * @memberof MarkdownRepository
    */
-  async getUserParticipation(markdownId: number, systemUserId: number): Promise<MarkdownUserObject | null> {
+  async getUserParticipation(markdownId: number, systemUserId: number): Promise<MarkdownUserRecord | null> {
     const sqlStatement = SQL`
         SELECT 
           markdown_user_id,
@@ -83,7 +84,7 @@ export class MarkdownRepository extends BaseRepository {
           system_user_id = ${systemUserId};
       `;
 
-    const response = await this.connection.sql(sqlStatement, MarkdownUserObject);
+    const response = await this.connection.sql(sqlStatement, MarkdownUserRecord);
 
     return response.rows?.[0] ?? null;
   }

@@ -1,21 +1,15 @@
 import { z } from 'zod';
+import { MarkdownRecord } from '../database-models/markdown';
 
-export const MarkdownObject = z.object({
-  markdown_id: z.number(),
-  markdown_type_id: z.number(),
-  data: z.string(),
+export const MarkdownObject = MarkdownRecord.pick({
+  markdown_id: true,
+  markdown_type_id: true,
+  data: true
+}).extend({
   participated: z.boolean()
 });
 
 export type MarkdownObject = z.infer<typeof MarkdownObject>;
-
-export const MarkdownUserObject = z.object({
-  markdown_user_id: z.number(),
-  system_user_id: z.number(),
-  markdown_id: z.number()
-});
-
-export type MarkdownUserObject = z.infer<typeof MarkdownUserObject>;
 
 export interface MarkdownQueryObject {
   system_user_id: number;

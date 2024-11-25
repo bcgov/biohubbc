@@ -1,5 +1,6 @@
+import { MarkdownUserRecord } from '../database-models/markdown_user';
 import { IDBConnection } from '../database/db';
-import { MarkdownObject, MarkdownQueryObject, MarkdownUserObject } from '../models/markdown-view';
+import { MarkdownObject, MarkdownQueryObject } from '../models/markdown-view';
 import { MarkdownRepository } from '../repositories/markdown-repository';
 import { DBService } from './db-service';
 
@@ -66,10 +67,10 @@ export class MarkdownService extends DBService {
    *
    * @param {number} markdownId
    * @param {number} systemUserId
-   * @return {*} Promise<MarkdownUserObject | null>
+   * @return {*} Promise<MarkdownUserRecord | null>
    * @memberof MarkdownService
    */
-  async getUserParticipation(markdownId: number, systemUserId: number): Promise<MarkdownUserObject | null> {
+  async getUserParticipation(markdownId: number, systemUserId: number): Promise<MarkdownUserRecord | null> {
     return this.markdownRepository.getUserParticipation(markdownId, systemUserId);
   }
 
