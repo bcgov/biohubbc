@@ -48,7 +48,8 @@ describe('CodeService', () => {
         'observation_subcount_signs',
         'telemetry_device_makes',
         'frequency_units',
-        'alert_types'
+        'alert_types',
+        'vantages'
       );
     });
   });

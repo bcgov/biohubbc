@@ -114,15 +114,20 @@ export class TechniqueAttributeRepository extends BaseRepository {
             'method_lookup_attribute_qualitative_id',
             knex.raw(`
               json_agg(json_build_object(
-                'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id,
-                'name', name,
-                'description', description
+                'method_lookup_attribute_qualitative_option_id', mlaqo.method_lookup_attribute_qualitative_option_id,
+                'name', taqo.name,
+                'description', taqo.description
               )) as options
             `)
           )
-          .from('method_lookup_attribute_qualitative_option')
-          .where('record_end_date', null)
-          .groupBy('method_lookup_attribute_qualitative_id')
+          .from('method_lookup_attribute_qualitative_option as mlaqo')
+          .join(
+            'technique_attribute_qualitative_option as taqo',
+            'taqo.technique_attribute_qualitative_option_id',
+            'mlaqo.technique_attribute_qualitative_option_id'
+          )
+          .where('mlaqo.record_end_date', null)
+          .groupBy('mlaqo.method_lookup_attribute_qualitative_id')
       )
       .with(
         'w_qualitative_attributes',
@@ -212,14 +217,19 @@ export class TechniqueAttributeRepository extends BaseRepository {
             'method_lookup_attribute_qualitative_id',
             knex.raw(`
               json_agg(json_build_object(
-                'method_lookup_attribute_qualitative_option_id', method_lookup_attribute_qualitative_option_id,
-                'name', name,
-                'description', description
+                'method_lookup_attribute_qualitative_option_id', mlaqo.method_lookup_attribute_qualitative_option_id,
+                'name', taqo.name,
+                'description', taqo.description
               )) as options
             `)
           )
-          .from('method_lookup_attribute_qualitative_option')
-          .where('record_end_date', null)
+          .from('method_lookup_attribute_qualitative_option as mlaqo')
+          .join(
+            'technique_attribute_qualitative_option as taqo',
+            'taqo.technique_attribute_qualitative_option_id',
+            'mlaqo.technique_attribute_qualitative_option_id'
+          )
+          .where('mlaqo.record_end_date', null)
           .groupBy('method_lookup_attribute_qualitative_id')
       )
       .with(
@@ -476,13 +486,13 @@ export class TechniqueAttributeRepository extends BaseRepository {
     defaultLog.debug({ label: 'deleteQualitativeAttributesForTechnique', methodTechniqueId });
 
     const queryBuilder = getKnex()
-      .del()
+      .delete()
       .from('method_technique_attribute_qualitative as mtaq')
       .leftJoin('method_technique as mt', 'mt.method_technique_id', 'mtaq.method_technique_id')
-      .whereIn('method_technique_attribute_qualitative_id', methodTechniqueAttributeQualitativeIds)
+      .whereIn('mtaq.method_technique_attribute_qualitative_id', methodTechniqueAttributeQualitativeIds)
       .andWhere('mtaq.method_technique_id', methodTechniqueId)
       .andWhere('mt.survey_id', surveyId)
-      .returning('method_technique_attribute_qualitative.method_technique_attribute_qualitative_id');
+      .returning('mtaq.method_technique_attribute_qualitative_id');
 
     const response = await this.connection.knex(
       queryBuilder,
@@ -518,13 +528,13 @@ export class TechniqueAttributeRepository extends BaseRepository {
     defaultLog.debug({ label: 'deleteQuantitativeAttributesForTechnique', methodTechniqueId });
 
     const queryBuilder = getKnex()
-      .del()
+      .delete()
       .from('method_technique_attribute_quantitative as mtaq')
       .leftJoin('method_technique as mt', 'mt.method_technique_id', 'mtaq.method_technique_id')
-      .whereIn('method_technique_attribute_quantitative_id', methodTechniqueAttributeQuantitativeIds)
+      .whereIn('mtaq.method_technique_attribute_quantitative_id', methodTechniqueAttributeQuantitativeIds)
       .andWhere('mtaq.method_technique_id', methodTechniqueId)
       .andWhere('mt.survey_id', surveyId)
-      .returning('method_technique_attribute_quantitative.method_technique_attribute_quantitative_id');
+      .returning('mtaq.method_technique_attribute_quantitative_id');
 
     const response = await this.connection.knex(
       queryBuilder,

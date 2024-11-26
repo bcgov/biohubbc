@@ -28,6 +28,7 @@ const ObservationSubcountSignCode = ICode.extend({ description: z.string() });
 const DeviceMakeCode = ICode.extend({ description: z.string() });
 const FrequencyUnitCode = ICode.extend({ description: z.string() });
 const AlertTypeCode = ICode.extend({ description: z.string() });
+const VantageCode = ICode.extend({ description: z.string() });
 
 export const IAllCodeSets = z.object({
   management_action_type: CodeSet(),
@@ -52,7 +53,8 @@ export const IAllCodeSets = z.object({
   observation_subcount_signs: CodeSet(ObservationSubcountSignCode.shape),
   telemetry_device_makes: CodeSet(DeviceMakeCode.shape),
   frequency_units: CodeSet(FrequencyUnitCode.shape),
-  alert_types: CodeSet(AlertTypeCode.shape)
+  alert_types: CodeSet(AlertTypeCode.shape),
+  vantages: CodeSet(VantageCode.shape)
 });
 export type IAllCodeSets = z.infer<typeof IAllCodeSets>;
 
@@ -535,6 +537,27 @@ export class CodeRepository extends BaseRepository {
     `;
 
     const response = await this.connection.sql(sqlStatement, AlertTypeCode);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetch vantages associated with vantage modes
+   *
+   * @return {*}
+   * @memberof CodeRepository
+   */
+  async getVantages() {
+    const sqlStatement = SQL`
+      SELECT
+        vantage_id AS id,
+        name,
+        description
+      FROM vantage
+      WHERE record_end_date IS null;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, VantageCode);
 
     return response.rows;
   }
