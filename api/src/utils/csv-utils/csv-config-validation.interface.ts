@@ -1,10 +1,8 @@
-import { WorkSheet } from 'xlsx';
 /**
  * The CSV configuration interface
  *
  */
 export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>> {
-  //staticHeadersMap: Record<THeader, string[]>;
   staticHeadersConfig: Record<THeader, { aliases: Uppercase<string> } & CSVHeaderConfig>;
   dynamicHeadersConfig?: CSVHeaderConfig;
   /**
@@ -93,11 +91,6 @@ export interface CSVParams {
    * @type {number}
    */
   rowIndex: number;
-  /**
-   * The full worksheet.
-   * @type {WorkSheet}
-   */
-  worksheet: WorkSheet;
 }
 
 export type CSVRow = Record<string, any>;

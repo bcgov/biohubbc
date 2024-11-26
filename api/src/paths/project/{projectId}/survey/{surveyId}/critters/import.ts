@@ -5,7 +5,7 @@ import { getDBConnection } from '../../../../../../database/db';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { ImportCSVCritters } from '../../../../../../services/import-services/critter/import-critters-strategy2';
-import { validateCSVWorksheet } from '../../../../../../utils/csv-utils/csv-config-utils';
+import { validateCSVWorksheet } from '../../../../../../utils/csv-utils/csv-config-validation';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../utils/request';
@@ -84,28 +84,55 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Import OK',
+      description: 'Import OK'
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    422: {
+      description: 'CSV validation errors',
       content: {
         'application/json': {
           schema: {
             type: 'object',
             additionalProperties: false,
-            required: ['survey_critter_ids'],
+            required: ['validation_errors'],
             properties: {
-              survey_critter_ids: {
+              validation_errors: {
                 type: 'array',
                 items: {
-                  type: 'integer',
-                  minimum: 1
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['error', 'solution', 'rowIndex', 'header'],
+                  properties: {
+                    error: {
+                      type: 'string'
+                    },
+                    solution: {
+                      type: 'string'
+                    },
+                    cell: {
+                      oneOf: [{ type: 'string' }, { type: 'number' }]
+                    },
+                    header: {
+                      type: 'string'
+                    },
+                    rowIndex: {
+                      type: 'number'
+                    },
+                    values: {
+                      type: 'array',
+                      items: {
+                        oneOf: [{ type: 'string' }, { type: 'number' }]
+                      }
+                    }
+                  }
                 }
               }
             }
           }
         }
       }
-    },
-    400: {
-      $ref: '#/components/responses/400'
     },
     401: {
       $ref: '#/components/responses/401'
@@ -146,15 +173,17 @@ export function importCsv(): RequestHandler {
 
       const { errors, rows } = validateCSVWorksheet(worksheet, critterCSVConfig);
 
+      if (errors.length) {
+        return res.status(422).json({ validation_errors: errors });
+      }
+
       const data = await importCSVCritters.importCSVRows(rows);
 
-      console.log({ errors });
-
-      defaultLog.info({ label: 'importCritterCsv', message: 'result', survey_critter_ids: data });
+      defaultLog.info({ label: 'importCSVCritters', message: 'result', survey_critter_ids: data });
 
       await connection.commit();
 
-      return res.status(200).json({ survey_critter_ids: data });
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'importCritterCsv', message: 'error', error });
       await connection.rollback();

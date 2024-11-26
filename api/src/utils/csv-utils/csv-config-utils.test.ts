@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { validateZodCell } from './csv-cells';
+import { validateZodCell } from './csv-config-utils';
 
 describe('validateZodCell', () => {
   it.only('should return an empty array if the cell is valid', () => {
