@@ -7,6 +7,7 @@ import {
   paginationRequestQueryParamSchema,
   paginationResponseSchema
 } from '../../../../../../openapi/schemas/pagination';
+import { surveyBlockSchema } from '../../../../../../openapi/schemas/survey';
 import { techniqueSimpleViewSchema } from '../../../../../../openapi/schemas/technique';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { PostSampleLocations, SampleLocationService } from '../../../../../../services/sample-location-service';
@@ -437,47 +438,7 @@ POST.apiDoc = {
             },
             blocks: {
               type: 'array',
-              items: {
-                type: 'object',
-                additionalProperties: false,
-                required: ['survey_block_id'],
-                properties: {
-                  survey_block_id: {
-                    type: 'number'
-                  },
-                  survey_id: {
-                    type: 'integer'
-                  },
-                  name: {
-                    type: 'string'
-                  },
-                  description: {
-                    type: 'string'
-                  },
-                  sample_block_count: {
-                    type: 'number'
-                  },
-                  create_date: {
-                    type: 'string',
-                    nullable: true
-                  },
-                  create_user: {
-                    type: 'integer',
-                    nullable: true
-                  },
-                  update_date: {
-                    type: 'string',
-                    nullable: true
-                  },
-                  update_user: {
-                    type: 'integer',
-                    nullable: true
-                  },
-                  revision_count: {
-                    type: 'number'
-                  }
-                }
-              }
+              items: surveyBlockSchema
             },
             stratums: {
               type: 'array',

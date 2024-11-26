@@ -1,9 +1,10 @@
 import { Color } from '@mui/material';
 import Chip, { ChipProps } from '@mui/material/Chip';
+import { ReactElement } from 'react';
 
 export interface IColouredRectangleChipProps extends ChipProps {
   colour: Color;
-  label: string | JSX.Element;
+  label: string | ReactElement;
 }
 
 /**
@@ -26,7 +27,9 @@ const ColouredRectangleChip = (props: IColouredRectangleChipProps) => {
           fontWeight: 700,
           fontSize: '0.75rem',
           p: 1,
-          textTransform: 'uppercase'
+          textTransform: 'uppercase',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis'
         },
         ...props.sx
       }}

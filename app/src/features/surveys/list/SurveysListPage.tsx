@@ -2,12 +2,14 @@ import { mdiArrowTopRight, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import { grey } from '@mui/material/colors';
+import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Link from '@mui/material/Link';
+import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
@@ -16,6 +18,7 @@ import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { ProjectContext } from 'contexts/projectContext';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -138,20 +141,23 @@ const SurveysListPage = () => {
             ({Number(projectContext.surveysListDataLoader.data?.pagination?.total ?? 0).toLocaleString()})
           </Typography>
         </Typography>
-        <ProjectRoleGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
-          validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            // TODO fix filters
-            // onClick={() => setIsFiltersOpen(!isFiltersOpen)}
-            component={RouterLink}
-            to={`/admin/projects/${projectContext.projectId}/survey/create`}>
-            Create Survey
-          </Button>
-        </ProjectRoleGuard>
+        <Stack gap={1} direction="row">
+          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEYS} />
+          <ProjectRoleGuard
+            validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+            validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              // TODO fix filters
+              // onClick={() => setIsFiltersOpen(!isFiltersOpen)}
+              component={RouterLink}
+              to={`/admin/projects/${projectContext.projectId}/survey/create`}>
+              Create Survey
+            </Button>
+          </ProjectRoleGuard>
+        </Stack>
       </Toolbar>
 
       <Divider />

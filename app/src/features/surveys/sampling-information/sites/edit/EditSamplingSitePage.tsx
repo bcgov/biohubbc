@@ -33,7 +33,7 @@ export interface IEditSampleSiteFormData {
   survey_sample_site_id: number | null;
   survey_id: number;
   name: string;
-  description: string;
+  description: string | null;
   geojson: Feature;
   sample_methods: (IGetSampleMethodDetails | ISurveySampleMethodFormData)[];
   blocks: IGetSampleBlockDetails[];
@@ -105,7 +105,7 @@ export const EditSamplingSitePage = () => {
       const editSampleSite: IEditSampleSiteRequest = {
         sampleSite: {
           name: values.name,
-          description: values.description,
+          description: values.description ?? '',
           survey_id: values.survey_id,
           survey_sample_sites: [values.geojson as Feature],
           geojson: values.geojson,

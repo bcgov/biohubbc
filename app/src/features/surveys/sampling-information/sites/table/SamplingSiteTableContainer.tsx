@@ -13,17 +13,28 @@ import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import { SamplingPeriodTable } from 'features/surveys/sampling-information/periods/table/SamplingPeriodTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import { ISamplingSitePeriodRowData, SamplingPeriodTable } from '../../periods/table/SamplingPeriodTable';
 import { SamplingSiteTable } from './SamplingSiteTable';
 import { SamplingSiteManageTableView, SamplingSiteTableView } from './view/SamplingSiteTableView';
 
 const pageSizeOptions = [10, 25, 50];
+
+export interface ISamplingSitePeriodRowData {
+  id: number;
+  sample_site: string;
+  sample_method: string;
+  method_response_metric_id: number;
+  start_date: string;
+  end_date: string;
+  start_time: string | null;
+  end_time: string | null;
+}
 
 /**
  * Returns a table of sampling sites with edit actions
@@ -36,7 +47,7 @@ export const SamplingSiteTableContainer = () => {
   const dialogContext = useDialogContext();
 
   const [headerAnchorEl, setHeaderAnchorEl] = useState<null | HTMLElement>(null);
-  const [siteSelection, setSiteSelection] = useState<GridRowSelectionModel>([]);
+  const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
   // Controls whether sites, methods, or periods are shown
   const [activeView, setActiveView] = useState<SamplingSiteManageTableView>(SamplingSiteManageTableView.SITES);
@@ -103,14 +114,14 @@ export const SamplingSiteTableContainer = () => {
       await biohubApi.samplingSite.deleteSampleSites(
         surveyContext.projectId,
         surveyContext.surveyId,
-        siteSelection.map((site) => Number(site)) // Convert GridRowId to number[]
+        selectedRows.map((site) => Number(site)) // Convert GridRowId to number[]
       );
       dialogContext.setYesNoDialog({ open: false }); // Close confirmation dialog
-      setSiteSelection([]); // Clear selection
+      setSelectedRows([]); // Clear selection
       samplingSitesDataLoader.refresh(pagination); // Refresh data
     } catch (error) {
       dialogContext.setYesNoDialog({ open: false }); // Close confirmation dialog on error
-      setSiteSelection([]); // Clear selection
+      setSelectedRows([]); // Clear selection
       // Show snackbar with error message
       dialogContext.setSnackbar({
         snackbarMessage: (
@@ -126,6 +137,11 @@ export const SamplingSiteTableContainer = () => {
         open: true
       });
     }
+  };
+
+  const handleDelete = async (sampleSiteId: number) => {
+    await biohubApi.samplingSite.deleteSampleSite(surveyContext.projectId, surveyContext.surveyId, sampleSiteId);
+    samplingSitesDataLoader.refresh(pagination); // Refresh data
   };
 
   // Handler for clicking on header menu (bulk actions)
@@ -174,7 +190,7 @@ export const SamplingSiteTableContainer = () => {
         disableGutters
         sx={{
           flex: '1 1 auto',
-          pl: 3,
+          pl: 2,
           pr: 5.5,
           width: '100%'
         }}>
@@ -185,7 +201,7 @@ export const SamplingSiteTableContainer = () => {
           edge="end"
           sx={{ ml: 1 }}
           aria-label="header-settings"
-          disabled={!siteSelection.length}
+          disabled={!selectedRows.length || activeView === SamplingSiteManageTableView.PERIODS}
           onClick={handleHeaderMenuClick}
           title="Bulk Actions">
           <Icon path={mdiDotsVertical} size={1} />
@@ -195,10 +211,12 @@ export const SamplingSiteTableContainer = () => {
       <Divider flexItem />
 
       {/* Data tables */}
-      <Box p={2} height="500px">
+      <Box height="400px">
         {activeView === SamplingSiteManageTableView.SITES && (
           <LoadingGuard
-            isLoading={samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady}
+            isLoading={
+              !samplingSitesDataLoader.data && (samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady)
+            }
             isLoadingFallback={<SkeletonTable />}
             isLoadingFallbackDelay={100}
             hasNoData={!sampleSites.length}
@@ -213,21 +231,24 @@ export const SamplingSiteTableContainer = () => {
             hasNoDataFallbackDelay={100}>
             <SamplingSiteTable
               sites={sampleSites}
-              setBulkActionSites={setSiteSelection}
-              setPaginationModel={setPaginationModel}
-              setSortModel={setSortModel}
-              bulkActionSites={siteSelection}
               paginationModel={paginationModel}
-              pageSizeOptions={pageSizeOptions}
-              rowCount={samplingSitesDataLoader.data?.pagination.total ?? 0}
+              setPaginationModel={setPaginationModel}
               sortModel={sortModel}
+              setSortModel={setSortModel}
+              rowCount={samplingSitesDataLoader.data?.pagination.total ?? 0}
+              pageSizeOptions={pageSizeOptions}
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
+              onDelete={handleDelete}
             />
           </LoadingGuard>
         )}
 
         {activeView === SamplingSiteManageTableView.PERIODS && (
           <LoadingGuard
-            isLoading={samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady}
+            isLoading={
+              !samplingSitesDataLoader.data && (samplingSitesDataLoader.isLoading || !samplingSitesDataLoader.isReady)
+            }
             isLoadingFallback={<SkeletonTable />}
             isLoadingFallbackDelay={100}
             hasNoData={!samplePeriods.length}
@@ -240,7 +261,17 @@ export const SamplingSiteTableContainer = () => {
               />
             }
             hasNoDataFallbackDelay={100}>
-            <SamplingPeriodTable periods={samplePeriods} />
+            <SamplingPeriodTable
+              periods={samplePeriods}
+              paginationModel={{
+                page: 0,
+                pageSize: pageSizeOptions[0]
+              }}
+              setPaginationModel={() => {}}
+              sortModel={[]}
+              setSortModel={() => {}}
+              rowCount={samplePeriods.length}
+            />
           </LoadingGuard>
         )}
       </Box>

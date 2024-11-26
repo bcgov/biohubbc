@@ -142,14 +142,53 @@ export function getSamplingSiteBaseQuery(queryBuilder: Knex.QueryBuilder): Knex.
   const knex = getKnex();
 
   queryBuilder
+    .with('w_survey_sample_block', (qb) => {
+      // Aggregate sample blocks into an array of objects
+      qb.select(
+        'ssb.survey_sample_site_id',
+        knex.raw(`
+        json_agg(json_build_object(
+          'survey_sample_block_id', ssb.survey_sample_block_id,
+          'survey_sample_site_id', ssb.survey_sample_site_id,
+          'survey_block_id', ssb.survey_block_id,
+          'name', sb.name,
+          'description', sb.description
+        )) as blocks`)
+      )
+        .from({ ssb: 'survey_sample_block' })
+        .leftJoin('survey_block as sb', 'sb.survey_block_id', 'ssb.survey_block_id')
+        .groupBy('ssb.survey_sample_site_id');
+    })
+    .with('w_survey_sample_stratum', (qb) => {
+      // Aggregate sample stratums into an array of objects
+      qb.select(
+        'ssst.survey_sample_site_id',
+        knex.raw(`
+        json_agg(json_build_object(
+          'survey_sample_stratum_id', ssst.survey_sample_stratum_id,
+          'survey_sample_site_id', ssst.survey_sample_site_id,
+          'survey_stratum_id', ssst.survey_stratum_id,
+          'name', ss.name,
+          'description', ss.description
+        )) as stratums`)
+      )
+        .from({ ssst: 'survey_sample_stratum' })
+        .leftJoin('survey_stratum as ss', 'ss.survey_stratum_id', 'ssst.survey_stratum_id')
+        .groupBy('ssst.survey_sample_site_id');
+    })
     .select(
       'sss.survey_sample_site_id',
       'sss.survey_id',
       'sss.name',
       'sss.description',
-      knex.raw(`sss.geojson->'geometry'->>'type' as geometry_type`)
+      knex.raw(`sss.geojson->'geometry'->>'type' as geometry_type`),
+      knex.raw(`
+        COALESCE(wssb.blocks, '[]'::json) as blocks,
+        COALESCE(wssst.stratums, '[]'::json) as stratums`)
     )
-    .from({ sss: 'survey_sample_site' });
+    .from({ sss: 'survey_sample_site' })
+    .leftJoin('w_survey_sample_block as wssb', 'wssb.survey_sample_site_id', 'sss.survey_sample_site_id')
+    .leftJoin('w_survey_sample_stratum as wssst', 'wssst.survey_sample_site_id', 'sss.survey_sample_site_id');
 
   return queryBuilder;
 }
@@ -337,6 +376,8 @@ export function makeFindSamplingMethodBaseQuery(
  * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey sample periods
  */
 export function getSamplingPeriodBaseQuery(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
+  const knex = getKnex();
+
   queryBuilder
     .select(
       'ssp.survey_sample_period_id',
@@ -344,9 +385,26 @@ export function getSamplingPeriodBaseQuery(queryBuilder: Knex.QueryBuilder): Kne
       'ssp.start_date',
       'ssp.start_time',
       'ssp.end_date',
-      'ssp.end_time'
+      'ssp.end_time',
+      knex.raw(`
+        json_build_object(
+          'method_response_metric_id', ssm.method_response_metric_id
+        ) as sample_method`),
+      knex.raw(`
+        json_build_object(
+          'method_technique_id', mt.method_technique_id,
+          'name', mt.name
+        ) as method_technique`),
+      knex.raw(`
+        json_build_object(
+           'survey_sample_site_id', sss.survey_sample_site_id,
+           'name', sss.name
+        ) as sample_site`)
     )
-    .from({ ssp: 'survey_sample_period' });
+    .from({ ssp: 'survey_sample_period' })
+    .join('survey_sample_method as ssm', 'ssm.survey_sample_method_id', 'ssp.survey_sample_method_id')
+    .join('method_technique as mt', 'mt.method_technique_id', 'ssm.method_technique_id')
+    .join('survey_sample_site as sss', 'sss.survey_sample_site_id', 'ssm.survey_sample_site_id');
 
   return queryBuilder;
 }
@@ -392,11 +450,11 @@ export function makeFindSamplingPeriodBaseQuery(
   getSamplingPeriodsQuery.modify(getSamplingPeriodBaseQuery);
 
   // Filter by the survey ids the user has access to
-  getSamplingPeriodsQuery.whereIn('ssp.survey_id', getSurveyIdsQuery);
+  getSamplingPeriodsQuery.whereIn('sss.survey_id', getSurveyIdsQuery);
 
   if (filterFields.survey_id) {
     // Filter by a specific survey id
-    getSamplingPeriodsQuery.andWhere('ssp.survey_id', filterFields.survey_id);
+    getSamplingPeriodsQuery.andWhere('sss.survey_id', filterFields.survey_id);
   }
 
   if (filterFields.sample_site_id) {

@@ -4,7 +4,9 @@ import useTheme from '@mui/material/styles/useTheme';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import assert from 'assert';
+import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { ProjectContext } from 'contexts/projectContext';
+import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useContext } from 'react';
 import ProjectObjectives from './components/ProjectObjectives';
 import TeamMembers from './components/TeamMember';
@@ -62,9 +64,10 @@ const ProjectDetails = () => {
   return (
     <Box>
       <Toolbar>
-        <Typography variant="h4" component="h2">
+        <Typography variant="h4" component="h2" flex="1 1 auto">
           Project Details
         </Typography>
+        <HelpButtonDialog markdownType={MarkdownTypeNameEnum.PROJECT_DETAILS} />
       </Toolbar>
       <Divider />
       <Box p={3} sx={classes.projectMetadata}>

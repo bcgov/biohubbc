@@ -4,22 +4,13 @@ import { GridColDef, GridPaginationModel, GridSortModel } from '@mui/x-data-grid
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { ISamplingSiteRowData } from 'features/surveys/sampling-information/sites/table/SamplingSiteTable';
-import { IGetSampleLocationNonSpatialDetails } from 'interfaces/useSamplingSiteApi.interface';
+import { IFindSampleSiteRecord } from 'interfaces/useSamplingSiteApi.interface';
 import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
 
 const pageSizeOptions = [10, 25, 50];
 
-export interface ISurveySitesRowData {
-  id: number;
-  name: string;
-  description: string;
-  geometry_type: string;
-  blocks: string[];
-  stratums: string[];
-}
-
 export interface ISurveySitesTableProps {
-  sites: IGetSampleLocationNonSpatialDetails[];
+  sites: IFindSampleSiteRecord[];
   paginationModel: GridPaginationModel;
   setPaginationModel: React.Dispatch<React.SetStateAction<GridPaginationModel>>;
   setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
@@ -27,6 +18,12 @@ export interface ISurveySitesTableProps {
   rowCount: number;
 }
 
+/**
+ * Renders a table of survey sampling sites.
+ *
+ * @param {ISurveySitesTableProps} props
+ * @return {*}
+ */
 export const SurveySitesTable = (props: ISurveySitesTableProps) => {
   const { sites, paginationModel, setPaginationModel, sortModel, setSortModel, rowCount } = props;
 
@@ -48,7 +45,7 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
     {
       field: 'geometry_type',
       headerName: 'Geometry',
-      flex: 1,
+      flex: 0.75,
       renderCell: (params) => (
         <Box>
           <ColouredRectangleChip
@@ -66,7 +63,7 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
     {
       field: 'blocks',
       headerName: 'Blocks',
-      flex: 1,
+      flex: 0.75,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
           {params.row.blocks.map((block) => (
@@ -80,11 +77,11 @@ export const SurveySitesTable = (props: ISurveySitesTableProps) => {
     {
       field: 'stratums',
       headerName: 'Strata',
-      flex: 1,
+      flex: 0.75,
       renderCell: (params) => (
         <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
           {params.row.stratums.map((stratum) => (
-            <Box key={stratum} mr={1} mb={1}>
+            <Box key={stratum} mr={1} mb={1} sx={{ maxWidth: '14ch' }}>
               <ColouredRectangleChip label={stratum} colour={blueGrey} />
             </Box>
           ))}
