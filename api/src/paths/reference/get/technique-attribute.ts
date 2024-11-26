@@ -4,7 +4,7 @@ import { getAPIUserDBConnection } from '../../../database/db';
 import { TechniqueAttributeService } from '../../../services/technique-attributes-service';
 import { getLogger } from '../../../utils/logger';
 
-const defaultLog = getLogger('paths/reference');
+const defaultLog = getLogger('paths/reference/get/technique-attribute');
 
 export const GET: Operation = [getTechniqueAttributes()];
 

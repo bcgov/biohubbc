@@ -38,7 +38,8 @@ GET.apiDoc = {
               'survey_progress',
               'method_response_metrics',
               'attractants',
-              'telemetry_device_makes'
+              'telemetry_device_makes',
+              'vantages'
             ],
             properties: {
               management_action_type: {
@@ -433,6 +434,27 @@ GET.apiDoc = {
                   type: 'object',
                   additionalProperties: false,
                   required: ['id', 'name'],
+                  properties: {
+                    id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    description: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              vantages: {
+                type: 'array',
+                description: 'Vantages that vantage modes belong to.',
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  required: ['id', 'name', 'description'],
                   properties: {
                     id: {
                       type: 'integer',
