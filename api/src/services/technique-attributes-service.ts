@@ -207,17 +207,13 @@ export class TechniqueAttributeService extends DBService {
     // If the incoming data does have method_technique_attribute_quantitative_id, record is for update
     const attributesForUpdate = attributes.filter((attribute) => attribute.method_technique_attribute_quantitative_id);
 
-    const promises = [];
-
     if (attributesForUpdate.length > 0) {
-      promises.push(
+      await Promise.all(
         attributesForUpdate.map((attribute) =>
           this.techniqueAttributeRepository.updateQuantitativeAttributeForTechnique(methodTechniqueId, attribute)
         )
       );
     }
-
-    await Promise.all(promises);
   }
 
   /**
