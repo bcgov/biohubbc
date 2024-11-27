@@ -43,7 +43,7 @@ export class TelemetryVectronicService extends DBService {
 
     this.vectronicClient = axios.create({
       paramsSerializer: (params) => qs.stringify(params),
-      baseURL: `${getEnvironmentVariable('VECTRONIC_API_HOST')}/v2`
+      baseURL: getEnvironmentVariable('VECTRONIC_API_HOST')
     });
 
     this.telemetryVectronicRepository = new TelemetryVectronicRepository(connection);

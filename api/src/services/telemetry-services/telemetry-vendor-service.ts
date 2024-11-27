@@ -15,8 +15,6 @@ import { TelemetryDeploymentService } from './telemetry-deployment-service';
 /**
  * A service class for working with telemetry vendor data.
  *
- * @see https://api.vectronic-wildlife.com/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#//getPositions_2
- *
  * @export
  * @class TelemetryVendorService
  * @extends {DBService}

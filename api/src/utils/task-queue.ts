@@ -3,14 +3,14 @@ import { getLogger } from './logger';
 
 const defaultLog = getLogger('TaskQueue');
 
-export type QueueResult<T, J> =
+export type QueueResult<TaskType, WorkerResultType> =
   | {
-      task: T;
-      value: J;
+      task: TaskType;
+      value: WorkerResultType;
       error?: never;
     }
   | {
-      task: T;
+      task: TaskType;
       value?: never;
       error: Error;
     };
@@ -22,23 +22,23 @@ export type QueueResult<T, J> =
  * @example
  *  const taskArrays = [[promiseA, promiseB], [promiseC, promiseD]];
  *  for (const tasks of taskArrays) {
- *    const results = Promise.all(task)
+ *    const results = Promise.all(tasks)
  *  }
  *
- * @template T - The type of the tasks to process via `asyncWorker`
- * @template J - The type of the resolved value from `asyncWorker`
- * @param {T[]} tasks - The tasks to process
- * @param {asyncWorker<unknown, T, J>} asyncWorker - The worker function that processes each task
+ * @template TaskType - The type of the tasks to process via `asyncWorker`
+ * @template WorkerResultType - The type of the resolved value from `asyncWorker`
+ * @param {TaskType[]} tasks - The tasks to process
+ * @param {asyncWorker<unknown, TaskType, WorkerResultType>} asyncWorker - The worker function that processes each task
  * @param {number} concurrently - The number of tasks to process concurrently
- * @returns {Promise<QueueResult<T,J>[]>}
+ * @returns {Promise<QueueResult<TaskType, WorkerResultType>[]>}
  */
-export const taskQueue = async <T, J>(
-  tasks: T[],
-  asyncWorker: asyncWorker<unknown, T, J>,
+export const taskQueue = async <TaskType, WorkerResultType>(
+  tasks: TaskType[],
+  asyncWorker: asyncWorker<unknown, TaskType, WorkerResultType>,
   concurrently: number
-): Promise<QueueResult<T, J>[]> => {
+): Promise<QueueResult<TaskType, WorkerResultType>[]> => {
   const start = performance.now();
-  const results: QueueResult<T, J>[] = []; // The resolved values are pushed into this array
+  const results: QueueResult<TaskType, WorkerResultType>[] = []; // The resolved values are pushed into this array
 
   const queue = fastq.promise(asyncWorker, concurrently);
 

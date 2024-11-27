@@ -119,12 +119,14 @@ export const loadEnvironmentVariables = (): Env => {
 /**
  * Get an environment variable by name.
  *
- * @description Allows testing of environment variables without directly accessing process.env.
- * @param {keyof Env} envVariable The environment variable to get
- * @returns {*} {Env[keyof Env]} The environment variable value
+ * Tests can mock this function to return a specific value to prevent direct access to process.env.
+ *
+ * @template EnvKey
+ * @param {EnvKey} envVariable The environment variable to get
+ * @returns {*} {Env[EnvKey]} The environment variable value
  */
-export const getEnvironmentVariable = (envVariable: keyof Env): Env[keyof Env] => {
-  return process.env[envVariable];
+export const getEnvironmentVariable = <EnvKey extends keyof Env>(envVariable: EnvKey): Env[EnvKey] => {
+  return process.env[envVariable] as Env[EnvKey];
 };
 
 // Extend NodeJS ProcessEnv to include the EnvSchema

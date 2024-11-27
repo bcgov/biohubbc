@@ -7,7 +7,7 @@ import { TelemetryLotekService } from './telemetry-lotek-service';
 
 chai.use(sinonChai);
 
-describe.only('TelemetryLotekService', () => {
+describe('TelemetryLotekService', () => {
   beforeEach(() => {
     sinon.restore();
   });

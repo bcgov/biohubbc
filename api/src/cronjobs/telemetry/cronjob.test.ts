@@ -23,6 +23,8 @@ describe('Telemetry Cronjob', () => {
         endDate: undefined
       });
 
+      sinon.stub(db, 'initDBPool').returns(undefined);
+
       const mockConnection = getMockDBConnection({
         open: sinon.stub(),
         release: sinon.stub()
@@ -72,6 +74,8 @@ describe('Telemetry Cronjob', () => {
         endDate: undefined
       });
 
+      sinon.stub(db, 'initDBPool').returns(undefined);
+
       const mockConnection = getMockDBConnection({
         open: sinon.stub(),
         release: sinon.stub()
@@ -79,14 +83,15 @@ describe('Telemetry Cronjob', () => {
 
       sinon.stub(db, 'getAPIUserDBConnection').returns(mockConnection);
 
-      const lotekFetchStub = sinon.stub(TelemetryLotekService.prototype, 'fetchDevicesFromLotek');
+      sinon.stub(TelemetryLotekService.prototype, 'fetchDevicesFromLotek').rejects('failed');
 
-      lotekFetchStub.throws('error');
-
-      await cronjob.telemetryCronjob();
-
-      expect(mockConnection.open).to.have.been.calledOnce;
-      expect(mockConnection.release).to.have.been.calledOnce;
+      try {
+        await cronjob.telemetryCronjob();
+        expect.fail();
+      } catch (err) {
+        expect(mockConnection.open).to.have.been.calledOnce;
+        expect(mockConnection.release).to.have.been.calledOnce;
+      }
     });
   });
 });

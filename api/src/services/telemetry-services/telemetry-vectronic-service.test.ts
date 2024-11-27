@@ -1,6 +1,7 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import * as env from '../../utils/env-config';
 import { getMockDBConnection } from '../../__mocks__/db';
 import { TelemetryVectronicService } from './telemetry-vectronic-service';
 
@@ -13,6 +14,8 @@ describe('TelemetryVectronicService', () => {
 
   describe('vectronicClient', () => {
     it('should create a new Axios client with the correct base URL', () => {
+      sinon.stub(env, 'getEnvironmentVariable').returns('https://api.vectronic-wildlife.com/v2');
+
       const service = new TelemetryVectronicService(getMockDBConnection());
 
       expect(service.vectronicClient.defaults.baseURL).to.equal('https://api.vectronic-wildlife.com/v2');

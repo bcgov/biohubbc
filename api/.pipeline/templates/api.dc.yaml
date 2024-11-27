@@ -220,7 +220,7 @@ parameters:
     value: https://webservice.lotek.com
   - name: VECTRONIC_API_HOST
     description: The host URL for Vectronic webservice API
-    value: https://api.vectronic-wildlife.com
+    value: https://api.vectronic-wildlife.com/v2
 objects:
   - kind: ImageStream
     apiVersion: image.openshift.io/v1
