@@ -72,15 +72,15 @@ let DBPool: pg.Pool | undefined;
  * If the pool cannot be created successfully, `process.exit(1)` is called to terminate the API.
  * Why? The API is of no use if the database can't be reached.
  *
- * @param {pg.PoolConfig} [poolConfig]
+ * @param {pg.PoolConfig} poolConfig
  */
-export const initDBPool = function (poolConfig?: pg.PoolConfig): void {
+export const initDBPool = function (poolConfig: pg.PoolConfig): void {
   if (DBPool) {
     // the pool has already been initialized, do nothing
     return;
   }
 
-  defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig });
+  defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig: { ...poolConfig, password: '***' } });
 
   try {
     DBPool = new pg.Pool(poolConfig);
