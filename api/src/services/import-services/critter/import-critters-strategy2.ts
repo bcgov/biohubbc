@@ -1,15 +1,24 @@
 import { merge, set } from 'lodash';
 import { v4 } from 'uuid';
 import { WorkSheet } from 'xlsx';
-import { z } from 'zod';
 import { IDBConnection } from '../../../database/db';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVConfig, CSVHeaderConfig, CSVRow } from '../../../utils/csv-utils/csv-config-validation.interface';
+import {
+  getDescriptionHeaderConfig,
+  getTsnHeaderConfig,
+  getWlhIDHeaderConfig
+} from '../../../utils/csv-utils/csv-header-configs';
 import { getLogger } from '../../../utils/logger';
 import { CritterbaseService, IBulkCreate } from '../../critterbase-service';
 import { DBService } from '../../db-service';
 import { PlatformService } from '../../platform-service';
 import { SurveyCritterService } from '../../survey-critter-service';
+import {
+  getCritterAliasHeaderConfig,
+  getCritterCollectionUnitHeaderConfig,
+  getCritterSexHeaderConfig
+} from './critter-header-configs';
 
 const defaultLog = getLogger('services/import/import-critters-service');
 
@@ -51,8 +60,8 @@ export class ImportCSVCritters extends DBService {
         ITIS_TSN: { aliases: ['TAXON', 'SPECIES', 'TSN'] },
         ALIAS: { aliases: ['NICKNAME', 'NAME', 'ANIMAL_ID'] },
         SEX: { aliases: ['TEST'] },
-        WLH_ID: { aliases: ['WILDLIFE_HEALTH_ID'] },
-        DESCRIPTION: { aliases: ['COMMENTS', 'COMMENT', 'NOTES'] }
+        WLH_ID: { aliases: ['WILDLIFE_HEALTH_ID'], ...getWlhIDHeaderConfig() },
+        DESCRIPTION: { aliases: ['COMMENTS', 'COMMENT', 'NOTES'], ...getDescriptionHeaderConfig() }
       },
       ignoreDynamicHeaders: false
     };
@@ -76,38 +85,22 @@ export class ImportCSVCritters extends DBService {
    * @returns {Promise<CSVConfig<CritterHeaders>>} The Critter CSV config
    */
   async getCSVConfig(): Promise<CSVConfig<CritterHeaders>> {
-    const [tsnHeaderConfig, aliasHeaderConfig, sexHeaderConfig, dynamicHeadersConfig] = await Promise.allSettled([
+    const [tsnHeaderConfig, aliasHeaderConfig, sexHeaderConfig, dynamicHeadersConfig] = await Promise.all([
       this._getTsnHeaderConfig(),
       this._getAliasHeaderConfig(),
       this._getSexHeaderConfig(),
       this._getCollectionUnitDynamicHeaderConfig()
     ]);
 
-    if (tsnHeaderConfig.status === 'fulfilled') {
-      merge(this._config.staticHeadersConfig.ITIS_TSN, tsnHeaderConfig.value);
-    }
-
-    if (aliasHeaderConfig.status === 'fulfilled') {
-      merge(this._config.staticHeadersConfig.ALIAS, aliasHeaderConfig.value);
-    }
-
-    if (sexHeaderConfig.status === 'fulfilled') {
-      merge(this._config.staticHeadersConfig.SEX, sexHeaderConfig.value);
-
-      if (dynamicHeadersConfig.status === 'fulfilled') {
-        this._config.dynamicHeadersConfig = dynamicHeadersConfig.value;
-        this._config.ignoreDynamicHeaders = true;
-      }
-    }
-
-    merge(this._config.staticHeadersConfig.WLH_ID, this._getWlhIdHeaderConfig());
-    merge(this._config.staticHeadersConfig.DESCRIPTION, this._getDescriptionHeaderConfig());
-
-    this._config.ignoreDynamicHeaders = true;
-
-    console.log(this._config);
-
-    return this._config;
+    return merge(this._config, {
+      staticHeadersConfig: {
+        ITIS_TSN: tsnHeaderConfig,
+        ALIAS: aliasHeaderConfig,
+        SEX: sexHeaderConfig
+      },
+      dynamicHeadersConfig: dynamicHeadersConfig,
+      ignoreDynamicHeaders: dynamicHeadersConfig ? false : true
+    });
   }
 
   /**
@@ -180,29 +173,10 @@ export class ImportCSVCritters extends DBService {
    */
   async _getTsnHeaderConfig(): Promise<CSVHeaderConfig> {
     const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
-
     const taxonomy = await this.platformService.getTaxonomyByTsns(rowTsns);
-    const tsnSet = new Set(taxonomy.map((taxon) => taxon.tsn));
+    const allowedTsns = new Set(taxonomy.map((taxon) => taxon.tsn));
 
-    return {
-      validateCell: (params) => {
-        const cellErrors = this.configUtils.validateZodCell(params, z.number().min(0));
-
-        if (cellErrors.length) {
-          return cellErrors;
-        }
-
-        if (!tsnSet.has(Number(params.cell))) {
-          cellErrors.push({
-            error: `ITIS has no reference of this TSN`,
-            solution: `Use valid ITIS TSN`,
-            ...this.configUtils.getParamsError(params)
-          });
-        }
-
-        return cellErrors;
-      }
-    };
+    return getTsnHeaderConfig(allowedTsns);
   }
 
   /**
@@ -214,62 +188,30 @@ export class ImportCSVCritters extends DBService {
    *
    * @returns {CSVHeaderConfig} The sex header config
    */
-  async _getSexHeaderConfig(): Promise<CSVHeaderConfig> {
-    const sexRecord: { [tsn: number]: { [sex: string]: string } } = {};
+  async _getSexHeaderConfig(): Promise<CSVHeaderConfig | undefined> {
+    try {
+      const rowDictionary: { [tsn: number]: { [sex: string]: string } } = {};
+      const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
+      const measurements = await Promise.all(rowTsns.map((tsn) => this.critterbaseService.getTaxonMeasurements(tsn)));
 
-    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
+      measurements.forEach((measurement, index) => {
+        const sexMeasurement = measurement.qualitative.find(
+          (measurement) => measurement.measurement_name.toLowerCase() === SEX_MEASUREMENT_NAME
+        );
 
-    const measurements = await Promise.all(rowTsns.map((tsn) => this.critterbaseService.getTaxonMeasurements(tsn)));
-
-    measurements.forEach((measurement, index) => {
-      const sexMeasurement = measurement.qualitative.find(
-        (measurement) => measurement.measurement_name.toLowerCase() === SEX_MEASUREMENT_NAME
-      );
-
-      if (sexMeasurement) {
-        sexMeasurement.options.forEach((option) => {
-          const tsn = Number(rowTsns[index]);
-          const sexLabel = option.option_label.toLowerCase();
-          set(sexRecord, `${tsn}.${sexLabel}`, option.qualitative_option_id);
-        });
-      }
-    });
-
-    return {
-      validateCell: (params) => {
-        const cellErrors = this.configUtils.validateZodCell(params, z.string());
-
-        if (cellErrors.length) {
-          return cellErrors;
-        }
-
-        const rowTsn = Number(this.configUtils.getCellValue('ITIS_TSN', params.row));
-        const cellValue = String(params.cell).toLowerCase();
-
-        if (!sexRecord?.[rowTsn]) {
-          cellErrors.push({
-            error: `Sex is not a supported attribute for TSN: ${rowTsn}`,
-            solution: `Use a valid TSN that supports sex, or contact a system administrator to add additional sex values.`,
-            ...this.configUtils.getParamsError(params)
-          });
-        } else if (!sexRecord[rowTsn]?.[cellValue]) {
-          cellErrors.push({
-            error: `Sex option invalid`,
-            solution: `Use valid sex option`,
-            values: Object.keys(sexRecord[rowTsn]),
-            ...this.configUtils.getParamsError(params)
+        if (sexMeasurement) {
+          sexMeasurement.options.forEach((option) => {
+            const tsn = Number(rowTsns[index]);
+            const sexLabel = option.option_label.toLowerCase();
+            set(rowDictionary, `${tsn}.${sexLabel}`, option.qualitative_option_id);
           });
         }
+      });
 
-        return cellErrors;
-      },
-      setCellValue: (params) => {
-        const rowTsn = Number(this.configUtils.getCellValue('ITIS_TSN', params.row));
-        const cellValue = String(params.cell).toLowerCase();
-
-        return sexRecord[rowTsn][cellValue];
-      }
-    };
+      return getCritterSexHeaderConfig(rowDictionary, this.configUtils);
+    } catch (err) {
+      return undefined;
+    }
   }
 
   /**
@@ -285,81 +227,7 @@ export class ImportCSVCritters extends DBService {
   async _getAliasHeaderConfig(): Promise<CSVHeaderConfig> {
     const surveyAliases = await this.surveyCritterService.getUniqueSurveyCritterAliases(this.surveyId);
 
-    const rowAliases = this.configUtils.getCellValues('ALIAS');
-    const uniqueRowAliases = [...new Set(rowAliases)];
-
-    return {
-      validateCell: (params) => {
-        const cellErrors = this.configUtils.validateZodCell(params, z.string().max(50));
-
-        if (cellErrors.length) {
-          return cellErrors;
-        }
-
-        if (surveyAliases.has(String(params.cell))) {
-          cellErrors.push({
-            error: `Critter alias already exists in the Survey`,
-            solution: `Update the alias to be unique`,
-            ...this.configUtils.getParamsError(params)
-          });
-        }
-
-        if (uniqueRowAliases.length !== rowAliases.length) {
-          cellErrors.push({
-            error: `Critter alias already exists in the CSV`,
-            solution: `Update the alias to be unique`,
-            ...this.configUtils.getParamsError(params)
-          });
-        }
-
-        return cellErrors;
-      }
-    };
-  }
-
-  /**
-   * Get the CSV Wildlife Health ID header config.
-   *
-   * Validation rules:
-   *  1. Wildlife Health ID must be a string or undefined.
-   *  2. Wildlife Health ID must be in the format 'XX-XXXX'.
-   *
-   * @returns {CSVHeaderConfig} The Wildlife Health ID header config
-   */
-  _getWlhIdHeaderConfig(): CSVHeaderConfig {
-    return {
-      validateCell: (params) => {
-        const cellErrors = this.configUtils.validateZodCell(params, z.string().optional());
-
-        if (cellErrors.length || !params.cell) {
-          return cellErrors;
-        }
-
-        if (!/^\d{2}-.+/.exec(String(params.cell))) {
-          cellErrors.push({
-            error: `Invalid Wildlife Health ID format`,
-            solution: `Wildlife Health ID must be in the format 'XX-XXXX'`,
-            ...this.configUtils.getParamsError(params)
-          });
-        }
-
-        return cellErrors;
-      }
-    };
-  }
-
-  /**
-   * Get the CSV Description header config.
-   *
-   * Validation rules:
-   *  1. Description must be a string or undefined.
-   *
-   * @returns {CSVHeaderConfig} The Description header config
-   */
-  _getDescriptionHeaderConfig(): CSVHeaderConfig {
-    return {
-      validateCell: (params) => this.configUtils.validateZodCell(params, z.string().max(250).optional())
-    };
+    return getCritterAliasHeaderConfig(surveyAliases, this.configUtils);
   }
 
   /**
@@ -367,71 +235,29 @@ export class ImportCSVCritters extends DBService {
    *
    * @returns {Promise<CSVHeaderConfig>} The Collection Unit dynamic header config
    */
-  async _getCollectionUnitDynamicHeaderConfig(): Promise<CSVHeaderConfig> {
-    const unitRecord: { [tsn: string]: { [header: number]: { [unit: string]: string } } } = {};
+  async _getCollectionUnitDynamicHeaderConfig(): Promise<CSVHeaderConfig | undefined> {
+    try {
+      const rowDictionary: { [tsn: number]: { [header: string]: { [unit: string]: string } } } = {};
 
-    const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
+      const rowTsns = this.configUtils.getUniqueCellValues('ITIS_TSN');
+      // Get the collection units for all the tsns in the worksheet
+      const collectionUnits = await Promise.all(
+        rowTsns.map((tsn) => this.critterbaseService.findTaxonCollectionUnits(tsn))
+      );
 
-    // Get the collection units for all the tsns in the worksheet
-    const tsnCollectionUnits = await Promise.all(
-      rowTsns.map((tsn) => this.critterbaseService.findTaxonCollectionUnits(tsn))
-    ).catch(() => []);
-
-    tsnCollectionUnits.forEach((collectionUnits, index) => {
-      collectionUnits.forEach((unit) => {
-        const category = unit.category_name.toUpperCase();
-        const tsn = Number(rowTsns[index]);
-        const unitName = unit.unit_name.toLowerCase();
-        // Using lodash to easily set nested object properties without worrying about undefined
-        set(unitRecord, `${tsn}.${category}.${unitName}`, unit.collection_unit_id);
+      collectionUnits.forEach((collectionUnits, index) => {
+        collectionUnits.forEach((unit) => {
+          const category = unit.category_name.toUpperCase();
+          const tsn = Number(rowTsns[index]);
+          const unitName = unit.unit_name.toLowerCase();
+          // Using lodash to easily set nested object properties without worrying about undefined
+          set(rowDictionary, `${tsn}.${category}.${unitName}`, unit.collection_unit_id);
+        });
       });
-    });
 
-    return {
-      validateCell: (params) => {
-        const cellErrors = this.configUtils.validateZodCell(params, z.string().max(50).optional());
-
-        if (cellErrors.length || !params.cell) {
-          return cellErrors;
-        }
-
-        const tsn = Number(this.configUtils.getCellValue('ITIS_TSN', params.row));
-        const unit = String(params.cell).toLowerCase();
-
-        if (!unitRecord?.[tsn]) {
-          cellErrors.push({
-            error: `TSN ${tsn} has no collection units`,
-            solution: `Validate TSN is correct and has collection units`,
-            ...this.configUtils.getParamsError(params)
-          });
-        } else if (!unitRecord[tsn]?.[params.header]) {
-          cellErrors.push({
-            error: `Invalid collection category header`,
-            solution: `Use valid collection unit category header`,
-            values: Object.keys(unitRecord[tsn]),
-            ...this.configUtils.getParamsError(params)
-          });
-        } else if (!unitRecord[tsn][params.header]?.[unit]) {
-          cellErrors.push({
-            error: `Invalid collection unit cell value`,
-            solution: `Use valid collection unit cell value`,
-            values: Object.keys(unitRecord[params.header][unit]),
-            ...this.configUtils.getParamsError(params)
-          });
-        }
-
-        return cellErrors;
-      },
-      setCellValue: (params) => {
-        if (!params.cell) {
-          return undefined;
-        }
-
-        const tsn = Number(this.configUtils.getCellValue('ITIS_TSN', params.row));
-        const cellValue = String(params.cell).toLowerCase();
-
-        return unitRecord[tsn][params.header][cellValue];
-      }
-    };
+      return getCritterCollectionUnitHeaderConfig(rowDictionary, this.configUtils);
+    } catch (err) {
+      return undefined;
+    }
   }
 }

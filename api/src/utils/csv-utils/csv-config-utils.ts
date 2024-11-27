@@ -1,8 +1,7 @@
 import { difference } from 'lodash';
 import { WorkSheet } from 'xlsx';
-import { z } from 'zod';
 import { getHeadersUpperCase, getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
-import { CSVConfig, CSVError, CSVParams, CSVRow } from './csv-config-validation.interface';
+import { CSVConfig, CSVRow } from './csv-config-validation.interface';
 
 /**
  * CSV Config Utils - A collection of methods useful when building CSVConfigs
@@ -10,7 +9,7 @@ import { CSVConfig, CSVError, CSVParams, CSVRow } from './csv-config-validation.
  * @exports
  * @class CSVConfigUtils
  */
-export class CSVConfigUtils<T extends CSVConfig> {
+export class CSVConfigUtils<T extends CSVConfig = CSVConfig> {
   _config: T;
   worksheet: WorkSheet;
   worksheetRows: CSVRow[];
@@ -89,38 +88,5 @@ export class CSVConfigUtils<T extends CSVConfig> {
    */
   getUniqueCellValues(header: keyof T['staticHeadersConfig']) {
     return [...new Set(this.getCellValues(header))];
-  }
-
-  /**
-   * Validate a cell using a Zod schema.
-   *
-   * @param {CSVParams} params - The cell parameters
-   * @param {z.ZodSchema} schema - The Zod schema
-   * @returns {CSVError[]} - The cell validation errors
-   */
-  validateZodCell(params: CSVParams, schema: z.ZodSchema): CSVError[] {
-    const errors: CSVError[] = [];
-
-    const parsed = schema.safeParse(params.cell);
-
-    if (!parsed.success) {
-      parsed.error.errors.forEach((error) => {
-        errors.push({
-          error: error.message,
-          solution: 'Update the cell value to match the expected type',
-          ...this.getParamsError(params)
-        });
-      });
-    }
-
-    return errors;
-  }
-
-  getParamsError(params: CSVParams): Pick<CSVError, 'cell' | 'header' | 'rowIndex'> {
-    return {
-      cell: params.cell,
-      header: params.header,
-      rowIndex: params.rowIndex
-    };
   }
 }
