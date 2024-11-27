@@ -5,6 +5,12 @@ metadata:
   labels:
     build: biohubbc-api
 parameters:
+  - name: NAMESPACE
+    description: Openshift namespace name
+    value: ''
+  - name: BASE_IMAGE_REGISTRY_URL
+    description: The base image registry URL
+    value: image-registry.openshift-image-registry.svc:5000
   - name: NAME
     value: biohubbc-api
   - name: SUFFIX
@@ -76,6 +82,10 @@ parameters:
   - name: DB_SERVICE_NAME
     description: 'Database service name associated with deployment'
     required: true
+  - name: DB_PORT
+    description: 'Database port'
+    required: true
+    value: '5432'
   # Keycloak
   - name: KEYCLOAK_HOST
     description: Key clock login url
@@ -121,6 +131,16 @@ parameters:
     description: S3 key optional prefix
     required: false
     value: 'sims'
+  # Request limits
+  - name: MAX_REQ_BODY_SIZE
+    description: Maximum request body size in bytes
+    value: '52428800'
+  - name: MAX_UPLOAD_NUM_FILES
+    description: Maximum number of files uploaded in a single request
+    value: '10'
+  - name: MAX_UPLOAD_FILE_SIZE
+    description: Maximum upload file size in bytes
+    value: '52428800'
   # Logging
   - name: LOG_LEVEL
     value: 'silent'
@@ -162,12 +182,12 @@ parameters:
   - name: GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE
     description: gcnotify email template id
     value: 7779a104-b863-40ac-902f-1aa607d2071a
+  - name: GCNOTIFY_REQUEST_RESUBMIT_TEMPLATE
+    description: gcnotify email resubmit template id
+    value: c973da33-1f2b-435a-9429-d8ab4fd273c5
   - name: GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE
     description: gcnotify sms template id
     value: af2f1e40-bd72-4612-9c5a-567ee5b26ca5
-  - name: GCNOTIFY_REQUEST_RESUBMIT_TEMPLATE
-    description: gcnotify request resubmit email template
-    value: c973da33-1f2b-435a-9429-d8ab4fd273c5
   - name: GCNOTIFY_EMAIL_URL
     value: https://api.notification.canada.ca/v2/notifications/email
   - name: GCNOTIFY_SMS_URL
@@ -185,6 +205,22 @@ parameters:
     value: '1'
   - name: REPLICAS_MAX
     value: '1'
+  # Telemetry
+  - name: TELEMETRY_CRONJOB_SCHEDULE
+    description: The schedule for the telemetry cronjob
+    value: '0 0 * * *' # 12am
+  - name: TELEMETRY_CRONJOB_DISABLED
+    description: Boolean flag to disable the cronjob, only static deployments should run on schedule.
+    value: 'true'
+  - name: TELEMETRY_SECRET
+    description: The name of the Openshift Biohubbc telemetry secret
+    value: biohubbc-telemetry
+  - name: LOTEK_API_HOST
+    description: The host URL for Lotek webservice API
+    value: https://webservice.lotek.com
+  - name: VECTRONIC_API_HOST
+    description: The host URL for Vectronic webservice API
+    value: https://api.vectronic-wildlife.com
 objects:
   - kind: ImageStream
     apiVersion: image.openshift.io/v1
@@ -306,7 +342,7 @@ objects:
                       key: database-name
                       name: ${DB_SERVICE_NAME}
                 - name: DB_PORT
-                  value: '5432'
+                  value: ${DB_PORT}
                 # Keycloak
                 - name: KEYCLOAK_HOST
                   value: ${KEYCLOAK_HOST}
@@ -336,6 +372,13 @@ objects:
                   value: ${KEYCLOAK_API_HOST}
                 - name: KEYCLOAK_API_ENVIRONMENT
                   value: ${KEYCLOAK_API_ENVIRONMENT}
+                # Request limits
+                - name: MAX_REQ_BODY_SIZE
+                  value: ${MAX_REQ_BODY_SIZE}
+                - name: MAX_UPLOAD_NUM_FILES
+                  value: ${MAX_UPLOAD_NUM_FILES}
+                - name: MAX_UPLOAD_FILE_SIZE
+                  value: ${MAX_UPLOAD_FILE_SIZE}
                 # Object Store (S3)
                 - name: OBJECT_STORE_URL
                   valueFrom:
@@ -357,6 +400,8 @@ objects:
                     secretKeyRef:
                       key: object_store_bucket_name
                       name: ${OBJECT_STORE_SECRETS}
+                - name: S3_KEY_PREFIX
+                  value: ${S3_KEY_PREFIX}
                 # Logging
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
@@ -387,6 +432,8 @@ objects:
                   value: ${GCNOTIFY_ADMIN_EMAIL}
                 - name: GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE
                   value: ${GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE}
+                - name: GCNOTIFY_REQUEST_RESUBMIT_TEMPLATE
+                  value: ${GCNOTIFY_REQUEST_RESUBMIT_TEMPLATE}
                 - name: GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE
                   value: ${GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE}
                 - name: GCNOTIFY_EMAIL_URL
@@ -515,6 +562,96 @@ objects:
       wildcardPolicy: None
     status:
       ingress: null
+
+  - kind: CronJob
+    apiVersion: batch/v1
+    metadata:
+      name: biohubbc-telemetry-cronjob${SUFFIX}
+      labels:
+        role: telemetry-cronjob
+    spec:
+      schedule: ${TELEMETRY_CRONJOB_SCHEDULE}
+      suspend: ${{TELEMETRY_CRONJOB_DISABLED}}
+      concurrencyPolicy: 'Forbid'
+      successfulJobsHistoryLimit: 1
+      failedJobsHistoryLimit: 1
+      jobTemplate:
+        spec:
+          backoffLimit: 0
+          template:
+            spec:
+              containers:
+                - name: api
+                  image: ${BASE_IMAGE_REGISTRY_URL}/${NAMESPACE}/${NAME}:${VERSION}
+                  imagePullPolicy: Always
+                  restartPolicy: 'Never'
+                  terminationGracePeriodSeconds: 30
+                  activeDeadlineSeconds: 220
+                  env:
+                    - name: NODE_ENV
+                      value: ${NODE_ENV}
+                    - name: NODE_OPTIONS
+                      value: ${NODE_OPTIONS}
+                    # Database
+                    - name: TZ
+                      value: ${TZ}
+                    - name: DB_HOST
+                      value: ${DB_SERVICE_NAME}
+                    - name: DB_USER_API
+                      valueFrom:
+                        secretKeyRef:
+                          key: database-user-api
+                          name: ${DB_SERVICE_NAME}
+                    - name: DB_USER_API_PASS
+                      valueFrom:
+                        secretKeyRef:
+                          key: database-user-api-password
+                          name: ${DB_SERVICE_NAME}
+                    - name: DB_DATABASE
+                      valueFrom:
+                        secretKeyRef:
+                          key: database-name
+                          name: ${DB_SERVICE_NAME}
+                    - name: DB_PORT
+                      value: ${DB_PORT}
+                    # Telemetry
+                    - name: LOTEK_API_HOST
+                      value: ${LOTEK_API_HOST}
+                    - name: LOTEK_ACCOUNT_USERNAME
+                      valueFrom:
+                        secretKeyRef:
+                          key: lotek_account_username
+                          name: ${TELEMETRY_SECRET}
+                    - name: LOTEK_ACCOUNT_PASSWORD
+                      valueFrom:
+                        secretKeyRef:
+                          key: lotek_account_password
+                          name: ${TELEMETRY_SECRET}
+                    - name: VECTRONIC_API_HOST
+                      value: ${VECTRONIC_API_HOST}
+                    # Logging
+                    - name: LOG_LEVEL
+                      value: ${LOG_LEVEL}
+                    - name: LOG_LEVEL_FILE
+                      value: data/cronjob-logs
+                    - name: LOG_FILE_DIR
+                      value: ${LOG_FILE_DIR}
+                    - name: LOG_FILE_NAME
+                      value: sims-telemetry-cronjob-%DATE%.log
+                    - name: LOG_FILE_DATE_PATTERN
+                      value: ${LOG_FILE_DATE_PATTERN}
+                    - name: LOG_FILE_MAX_SIZE
+                      value: ${LOG_FILE_MAX_SIZE}
+                    - name: LOG_FILE_MAX_FILES
+                      value: ${LOG_FILE_MAX_FILES}
+                    # Api Validation
+                    - name: API_RESPONSE_VALIDATION_ENABLED
+                      value: ${API_RESPONSE_VALIDATION_ENABLED}
+                    - name: DATABASE_RESPONSE_VALIDATION_ENABLED
+                      value: ${DATABASE_RESPONSE_VALIDATION_ENABLED}
+                  command: ["npm", "run", "telemetry-cronjob", "--", "--batchSize 1000", "--concurrently 100"]
+              restartPolicy: Never
+
 
   # Disable the HPA for now, as it is preferrable to run an exact number of pods (e.g. min:2, max:2)
   # - kind: HorizontalPodAutoscaler

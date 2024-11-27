@@ -253,7 +253,6 @@ describe('getTechniques', () => {
 
     expect(mockRes.jsonValue).to.eql({
       techniques: [techniqueRecord],
-      count: 1,
       pagination: {
         total: 1,
         per_page: 1,

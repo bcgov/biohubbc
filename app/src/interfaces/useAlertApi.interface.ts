@@ -1,0 +1,38 @@
+export interface IGetAlertsResponse {
+  alerts: IAlert[];
+}
+
+export type AlertSeverity = 'info' | 'success' | 'error' | 'warning';
+export interface IAlert {
+  alert_id: number;
+  alert_type_id: number;
+  severity: AlertSeverity;
+  name: string;
+  message: string;
+  data: object | null;
+  record_end_date: string | null;
+  status: 'expired' | 'active';
+}
+
+export type IAlertCreateObject = Omit<IAlert, 'alert_id' | 'status'>;
+
+export type IAlertUpdateObject = Omit<IAlert, 'status'>;
+
+export interface IAlertFilterParams {
+  expiresBefore?: string;
+  expiresAfter?: string;
+  types?: SystemAlertBannerEnum[];
+}
+
+export enum SystemAlertBannerEnum {
+  SUMMARY = 'Summary',
+  TELEMETRY = 'Manage Telemetry',
+  OBSERVATIONS = 'Manage Observations',
+  ANIMALS = 'Manage Animals',
+  SAMPLING = 'Manage Sampling',
+  PROJECTS = 'Project',
+  SURVEYS = 'Survey',
+  STANDARDS = 'Standards',
+  ADMINISTRATOR = 'Administrator',
+  FUNDING = 'Funding'
+}

@@ -74,5 +74,9 @@ export const codes: IGetAllCodeSetsResponse = {
   frequency_units: [
     { id: 1, name: 'Hz', description: 'Hertz' },
     { id: 2, name: 'Mhz', description: 'Megahertz' }
+  ],
+  alert_types: [
+    { id: 1, name: 'Survey', description: 'Alert about surveys.' },
+    { id: 2, name: 'General', description: 'General alert.' }
   ]
 };

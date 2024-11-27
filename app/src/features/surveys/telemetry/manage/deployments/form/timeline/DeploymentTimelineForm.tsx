@@ -138,15 +138,8 @@ export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
             name="attachment_start_date"
             label="Start date"
             required={values.attachment_start_time !== null}
-            formikProps={formikProps}
           />
-          <TimeField
-            id="attachment_start_time"
-            name="attachment_start_time"
-            label="Start time"
-            required={false}
-            formikProps={formikProps}
-          />
+          <TimeField id="attachment_start_time" name="attachment_start_time" label="Start time" required={false} />
         </Stack>
       </Grid>
 
@@ -266,14 +259,12 @@ export const DeploymentTimelineForm = (props: IDeploymentTimelineFormProps) => {
                     name="attachment_end_date"
                     label="End date"
                     required={values.attachment_end_time !== null}
-                    formikProps={formikProps}
                   />
                   <TimeField
                     id="attachment_end_time"
                     name="attachment_end_time"
                     label="End time"
                     required={values.attachment_end_date !== null}
-                    formikProps={formikProps}
                   />
                 </Box>
               )}

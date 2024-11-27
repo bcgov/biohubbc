@@ -64,7 +64,7 @@ const SurveyObservationTabularDataContainer = () => {
         </ToggleButtonGroup>
       </Box>
       <Divider />
-      <Box flex="1 1 auto" overflow="hidden" mt={1}>
+      <Box flex="1 1 auto" overflow="hidden">
         {activeDataView === SurveyObservationTabularDataContainerViewEnum.COUNTS && <SurveySpatialObservationTable />}
         {activeDataView === SurveyObservationTabularDataContainerViewEnum.ANALYTICS && <SurveyObservationAnalytics />}
       </Box>

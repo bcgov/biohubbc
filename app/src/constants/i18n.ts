@@ -509,3 +509,27 @@ export const SurveyExportI18N = {
   exportErrorText:
     'An error has occurred while attempting to export survey data. Please try again. If the error persists, please contact your system administrator.'
 };
+
+export const AlertI18N = {
+  cancelTitle: 'Discard changes and exit?',
+  cancelText: 'Any changes you have made will not be saved. Do you want to proceed?',
+
+  createAlertDialogTitle: 'Create Alert',
+  createAlertDialogText:
+    'Enter a name, message, and type for the alert. The name and message will be displayed on the alert banner.',
+  createErrorTitle: 'Error Creating Alert',
+  createErrorText:
+    'An error has occurred while attempting to create your alert, please try again. If the error persists, please contact your system administrator.',
+
+  updateAlertDialogTitle: 'Edit Alert Details',
+  updateAlertDialogText: 'Edit the name, description and effective dates for this alert.',
+  updateErrorTitle: 'Error Updating Alert',
+  updateErrorText:
+    'An error has occurred while attempting to update your Alert, please try again. If the error persists, please contact your system administrator.',
+
+  deleteAlertErrorTitle: 'Error Deleting a Alert',
+  deleteAlertErrorText:
+    'An error has occurred while attempting to delete the Alerts, please try again. If the error persists, please contact your system administrator.',
+  deleteAlertDialogTitle: 'Delete Alert?',
+  deleteAlertDialogText: 'Are you sure you want to permanently delete this alert? This action cannot be undone.'
+};

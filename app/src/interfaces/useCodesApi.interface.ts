@@ -43,4 +43,5 @@ export interface IGetAllCodeSetsResponse {
   observation_subcount_signs: CodeSet<{ id: number; name: string; description: string }>;
   telemetry_device_makes: CodeSet<{ id: number; name: string; description: string }>;
   frequency_units: CodeSet<{ id: number; name: string; description: string }>;
+  alert_types: CodeSet<{ id: number; name: string; description: string }>;
 }
