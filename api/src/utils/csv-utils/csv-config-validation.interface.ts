@@ -3,10 +3,22 @@
  *
  */
 export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>> {
+  /**
+   * Record containing the static headers, their aliases, and the `validateCell` and `setCellValue` callbacks
+   * to be called for each static cell.
+   *
+   * @type {Record<THeader, { aliases: Uppercase<string> } & CSVHeaderConfig>}
+   */
   staticHeadersConfig: Record<THeader, { aliases: Uppercase<string> } & CSVHeaderConfig>;
+  /**
+   * Contains the `validateCell` and `setCellValue` callbacks to be called for each dynamic cell.
+   *
+   * @type {CSVHeaderConfig | undefined}
+   */
   dynamicHeadersConfig?: CSVHeaderConfig;
   /**
    * Boolean to ignore dynamic headers.
+   *
    * @type {boolean}
    */
   ignoreDynamicHeaders: boolean;

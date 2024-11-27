@@ -5,9 +5,9 @@ import { IDBConnection } from '../../../database/db';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVConfig, CSVHeaderConfig, CSVRow } from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
-  getDescriptionHeaderConfig,
-  getTsnHeaderConfig,
-  getWlhIDHeaderConfig
+  getDescriptionCellValidator,
+  getTsnCellValidator,
+  getWlhIDCellValidator
 } from '../../../utils/csv-utils/csv-header-configs';
 import { getLogger } from '../../../utils/logger';
 import { CritterbaseService, IBulkCreate } from '../../critterbase-service';
@@ -15,15 +15,18 @@ import { DBService } from '../../db-service';
 import { PlatformService } from '../../platform-service';
 import { SurveyCritterService } from '../../survey-critter-service';
 import {
-  getCritterAliasHeaderConfig,
-  getCritterCollectionUnitHeaderConfig,
-  getCritterSexHeaderConfig
+  getAliasCellValidator,
+  getCollectionUnitCellSetter,
+  getCollectionUnitCellValidator,
+  getSexCellSetter,
+  getSexCellValidator
 } from './critter-header-configs';
 
 const defaultLog = getLogger('services/import/import-critters-service');
 
 const SEX_MEASUREMENT_NAME = 'sex';
 
+// Critter CSV static headers
 type CritterHeaders = 'ITIS_TSN' | 'SEX' | 'ALIAS' | 'WLH_ID' | 'DESCRIPTION';
 
 /**
@@ -60,8 +63,8 @@ export class ImportCSVCritters extends DBService {
         ITIS_TSN: { aliases: ['TAXON', 'SPECIES', 'TSN'] },
         ALIAS: { aliases: ['NICKNAME', 'NAME', 'ANIMAL_ID'] },
         SEX: { aliases: ['TEST'] },
-        WLH_ID: { aliases: ['WILDLIFE_HEALTH_ID'], ...getWlhIDHeaderConfig() },
-        DESCRIPTION: { aliases: ['COMMENTS', 'COMMENT', 'NOTES'], ...getDescriptionHeaderConfig() }
+        WLH_ID: { aliases: ['WILDLIFE_HEALTH_ID'], validateCell: getWlhIDCellValidator() },
+        DESCRIPTION: { aliases: ['COMMENTS', 'COMMENT', 'NOTES'], validateCell: getDescriptionCellValidator() }
       },
       ignoreDynamicHeaders: false
     };
@@ -176,7 +179,27 @@ export class ImportCSVCritters extends DBService {
     const taxonomy = await this.platformService.getTaxonomyByTsns(rowTsns);
     const allowedTsns = new Set(taxonomy.map((taxon) => taxon.tsn));
 
-    return getTsnHeaderConfig(allowedTsns);
+    return {
+      validateCell: getTsnCellValidator(allowedTsns)
+    };
+  }
+
+  /**
+   * Get the CSV Alias header config.
+   *
+   * Validation rules:
+   *  1. Alias must be a string
+   *  2. Alias must be unique in the SIMS Survey
+   *  3. Alias must be unique in the CSV
+   *
+   * @returns {Promise<CSVHeaderConfig>} The alias header config
+   */
+  async _getAliasHeaderConfig(): Promise<CSVHeaderConfig> {
+    const surveyAliases = await this.surveyCritterService.getUniqueSurveyCritterAliases(this.surveyId);
+
+    return {
+      validateCell: getAliasCellValidator(surveyAliases, this.configUtils)
+    };
   }
 
   /**
@@ -208,30 +231,20 @@ export class ImportCSVCritters extends DBService {
         }
       });
 
-      return getCritterSexHeaderConfig(rowDictionary, this.configUtils);
+      return {
+        validateCell: getSexCellValidator(rowDictionary, this.configUtils),
+        setCellValue: getSexCellSetter(rowDictionary, this.configUtils)
+      };
     } catch (err) {
       return undefined;
     }
   }
 
   /**
-   * Get the CSV Alias header config.
-   *
-   * Validation rules:
-   *  1. Alias must be a string
-   *  2. Alias must be unique in the SIMS Survey
-   *  3. Alias must be unique in the CSV
-   *
-   * @returns {Promise<CSVHeaderConfig>} The alias header config
-   */
-  async _getAliasHeaderConfig(): Promise<CSVHeaderConfig> {
-    const surveyAliases = await this.surveyCritterService.getUniqueSurveyCritterAliases(this.surveyId);
-
-    return getCritterAliasHeaderConfig(surveyAliases, this.configUtils);
-  }
-
-  /**
    * Get the CSV Collection Unit dynamic header config.
+   *
+   * Note: Catches errors and returns undefined when unable to fetch collection units.
+   * This is to prevent the entire import from failing when invalid TSNs are provided.
    *
    * @returns {Promise<CSVHeaderConfig>} The Collection Unit dynamic header config
    */
@@ -255,7 +268,10 @@ export class ImportCSVCritters extends DBService {
         });
       });
 
-      return getCritterCollectionUnitHeaderConfig(rowDictionary, this.configUtils);
+      return {
+        validateCell: getCollectionUnitCellValidator(rowDictionary, this.configUtils),
+        setCellValue: getCollectionUnitCellSetter(rowDictionary, this.configUtils)
+      };
     } catch (err) {
       return undefined;
     }
