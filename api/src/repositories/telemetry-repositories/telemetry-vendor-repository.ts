@@ -2,6 +2,8 @@ import { Knex } from 'knex';
 import { z } from 'zod';
 import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
+import { IAllTelemetryAdvancedFilters } from '../../models/telemetry-view';
+import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { BaseRepository } from '../base-repository';
 import {
   Telemetry,
@@ -47,19 +49,19 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Get normalized `Lotek` telemetry data for a survey ID.
+   * Add where clause to filter `Lotek` telemetry data by device attachment date range.
    *
-   * TODO: Add check for credentials (same method or different method?)
+   * Note: Joins the `deployment2` table.
    *
    * @param {Knex.QueryBuilder} queryBuilder
-   * @param {number} surveyId
+   * @param {string} startDate
+   * @param {string} endDate
    * @return {*}  {Knex.QueryBuilder}
    * @memberof TelemetryVendorRepository
    */
-  getLotekTelemetryBySurveyIdClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
+  getLotekTelemetryByAttachmentDateRangeClause(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
     return queryBuilder
       .join('deployment2', 'telemetry_lotek.device_key', 'deployment2.device_key')
-      .andWhere('deployment2.survey_id', surveyId)
       .andWhereRaw('telemetry_lotek.recdatetime >= deployment2.attachment_start_timestamp')
       .andWhere((qb) =>
         qb
@@ -69,7 +71,21 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Get normalized `Lotek` telemetry data for list of deployment IDs.
+   * Add where clause to filter `Lotek` telemetry data by a survey ID.
+   *
+   * TODO: Add check for credentials (same method or different method?)
+   *
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {number} surveyId
+   * @return {*}  {Knex.QueryBuilder}
+   * @memberof TelemetryVendorRepository
+   */
+  getLotekTelemetryBySurveyIdClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
+    return queryBuilder.andWhere('deployment2.survey_id', surveyId);
+  }
+
+  /**
+   * Add where clause to filter `Lotek` telemetry data by a list of deployment IDs.
    *
    * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
    * @param {Knex.QueryBuilder} queryBuilder
@@ -81,7 +97,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Get normalized `Lotek` telemetry data for a single telemetry ID.
+   * Add where clause to filter `Lotek` telemetry data by a telemetry ID.
    *
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {string} telemetryId
@@ -90,6 +106,66 @@ export class TelemetryVendorRepository extends BaseRepository {
    */
   getLotekTelemetryByTelemetryIdClause(queryBuilder: Knex.QueryBuilder, telemetryId: string): Knex.QueryBuilder {
     return queryBuilder.andWhere('telemetry_lotek.telemetry_lotek_id', telemetryId);
+  }
+
+  /**
+   * Find `Lotek` telemetry data records the user has access to, based on filters and pagination options.
+   *
+   * TODO: Add check for credentials (same method or different method?)
+   *
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IAllTelemetryAdvancedFilters} filterFields
+   * @return {*}  {Knex.QueryBuilder}
+   * @memberof TelemetryVendorRepository
+   */
+  findLotekTelemetryClause(
+    queryBuilder: Knex.QueryBuilder,
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IAllTelemetryAdvancedFilters
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    queryBuilder.join('survey', 'deployment2.survey_id', 'survey.survey_id');
+
+    if (!isUserAdmin) {
+      // If the user is not an admin, filter results by the projects/surveys they have access to
+      queryBuilder
+        .join('project_participation', 'survey.project_id', 'project_participation.project_id')
+        .where('project_participation.system_user_id', systemUserId);
+    }
+
+    if (filterFields.keyword) {
+      // Keyword Search filter
+      const keywordMatch = `%${filterFields.keyword}%`;
+      queryBuilder.where((subQueryBuilder) => {
+        subQueryBuilder
+          .where(knex.raw(`'${TelemetryVendorEnum.LOTEK}'`), 'ilike', keywordMatch)
+          .orWhere(knex.raw('telemetry_lotek.deviceid::text'), 'ilike', keywordMatch);
+      });
+    }
+
+    if (filterFields.start_date) {
+      queryBuilder.where('telemetry_lotek.uploadtimestamp', '>=', filterFields.start_date);
+    }
+
+    if (filterFields.end_date) {
+      queryBuilder.where('telemetry_lotek.uploadtimestamp', '<=', filterFields.end_date);
+    }
+
+    if (filterFields.system_user_id) {
+      // If a system user ID is provided, filter results by the projects/surveys that user has access to
+      queryBuilder.whereIn('survey.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
+      });
+    }
+
+    return queryBuilder;
   }
 
   /**
@@ -119,17 +195,19 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Get normalized `Vectronic` telemetry data for a survey ID.
+   * Add where clause to filter `Vectronic` telemetry data by device attachment date range.
+   *
+   * Note: Joins the `deployment2` table.
    *
    * @param {Knex.QueryBuilder} queryBuilder
-   * @param {number} surveyId
+   * @param {string} startDate
+   * @param {string} endDate
    * @return {*}  {Knex.QueryBuilder}
    * @memberof TelemetryVendorRepository
    */
-  getVectronicTelemetryBySurveyIdClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
+  getVectronicTelemetryByAttachmentDateRangeClause(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
     return queryBuilder
       .join('deployment2', 'telemetry_vectronic.device_key', 'deployment2.device_key')
-      .andWhere('deployment2.survey_id', surveyId)
       .andWhereRaw('telemetry_vectronic.acquisitiontime >= deployment2.attachment_start_timestamp')
       .andWhere((qb) =>
         qb
@@ -139,7 +217,19 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Get normalized `Vectronic` telemetry data for list of deployment IDs.
+   * Get normalized `Vectronic` telemetry data for a survey ID.
+   *
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {number} surveyId
+   * @return {*}  {Knex.QueryBuilder}
+   * @memberof TelemetryVendorRepository
+   */
+  getVectronicTelemetryBySurveyIdClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
+    return queryBuilder.andWhere('deployment2.survey_id', surveyId);
+  }
+
+  /**
+   * Add where clause to filter `Vectronic` telemetry data by a list of deployment IDs.
    *
    * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
    * @param {Knex.QueryBuilder} queryBuilder
@@ -154,7 +244,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Get normalized `Vectronic` telemetry data for a single telemetry ID.
+   * Add where clause to filter `Vectronic` telemetry data by a telemetry ID.
    *
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {string} telemetryId
@@ -163,6 +253,66 @@ export class TelemetryVendorRepository extends BaseRepository {
    */
   getVectronicTelemetryByTelemetryIdClause(queryBuilder: Knex.QueryBuilder, telemetryId: string): Knex.QueryBuilder {
     return queryBuilder.andWhere('telemetry_vectronic.telemetry_vectronic_id', telemetryId);
+  }
+
+  /**
+   * Find `Vectronic` telemetry data records the user has access to, based on filters and pagination options.
+   *
+   * TODO: Add check for credentials (same method or different method?)
+   *
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IAllTelemetryAdvancedFilters} filterFields
+   * @return {*}  {Knex.QueryBuilder}
+   * @memberof TelemetryVendorRepository
+   */
+  findVectronicTelemetryClause(
+    queryBuilder: Knex.QueryBuilder,
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IAllTelemetryAdvancedFilters
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    queryBuilder.join('survey', 'deployment2.survey_id', 'survey.survey_id');
+
+    if (!isUserAdmin) {
+      // If the user is not an admin, filter results by the projects/surveys they have access to
+      queryBuilder
+        .join('project_participation', 'survey.project_id', 'project_participation.project_id')
+        .where('project_participation.system_user_id', systemUserId);
+    }
+
+    if (filterFields.keyword) {
+      // Keyword Search filter
+      const keywordMatch = `%${filterFields.keyword}%`;
+      queryBuilder.where((subQueryBuilder) => {
+        subQueryBuilder
+          .where(knex.raw(`'${TelemetryVendorEnum.VECTRONIC}'`), 'ilike', keywordMatch)
+          .orWhere(knex.raw('telemetry_vectronic.idcollar::text'), 'ilike', keywordMatch);
+      });
+    }
+
+    if (filterFields.start_date) {
+      queryBuilder.where('telemetry_vectronic.acquisitiontime', '>=', filterFields.start_date);
+    }
+
+    if (filterFields.end_date) {
+      queryBuilder.where('telemetry_vectronic.acquisitiontime', '<=', filterFields.end_date);
+    }
+
+    if (filterFields.system_user_id) {
+      // If a system user ID is provided, filter results by the projects/surveys that user has access to
+      queryBuilder.whereIn('survey.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
+      });
+    }
+
+    return queryBuilder;
   }
 
   /**
@@ -192,17 +342,19 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Get normalized `ATS` telemetry data for a survey ID.
+   * Add where clause to filter `ATS` telemetry data by device attachment date range.
+   *
+   * Note: Joins the `deployment2` table.
    *
    * @param {Knex.QueryBuilder} queryBuilder
-   * @param {number} surveyId
+   * @param {string} startDate
+   * @param {string} endDate
    * @return {*}  {Knex.QueryBuilder}
    * @memberof TelemetryVendorRepository
    */
-  getATSTelemetryBySurveyIdClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
+  getATSTelemetryByAttachmentDateRangeClause(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
     return queryBuilder
       .join('deployment2', 'telemetry_ats.device_key', 'deployment2.device_key')
-      .andWhere('deployment2.survey_id', surveyId)
       .andWhereRaw('telemetry_ats.date >= deployment2.attachment_start_timestamp')
       .andWhere((qb) =>
         qb
@@ -212,7 +364,19 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Get normalized `ATS` telemetry data for list of deployment IDs.
+   * Add where clause to filter `ATS` telemetry data by device attachment date range.
+   *
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {number} surveyId
+   * @return {*}  {Knex.QueryBuilder}
+   * @memberof TelemetryVendorRepository
+   */
+  getATSTelemetryBySurveyIdClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
+    return queryBuilder.andWhere('deployment2.survey_id', surveyId);
+  }
+
+  /**
+   * Add where clause to filter `ATS` telemetry data by a telemetry ID.
    *
    * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
    * @param {Knex.QueryBuilder} queryBuilder
@@ -236,7 +400,69 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
+   * Find `ATS` telemetry data records the user has access to, based on filters and pagination options.
+   *
+   * TODO: Add check for credentials (same method or different method?)
+   *
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IAllTelemetryAdvancedFilters} filterFields
+   * @return {*}  {Knex.QueryBuilder}
+   * @memberof TelemetryVendorRepository
+   */
+  findATSTelemetryClause(
+    queryBuilder: Knex.QueryBuilder,
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IAllTelemetryAdvancedFilters
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    queryBuilder.join('survey', 'deployment2.survey_id', 'survey.survey_id');
+
+    if (!isUserAdmin) {
+      // If the user is not an admin, filter results by the projects/surveys they have access to
+      queryBuilder
+        .join('project_participation', 'survey.project_id', 'project_participation.project_id')
+        .where('project_participation.system_user_id', systemUserId);
+    }
+
+    if (filterFields.keyword) {
+      // Keyword Search filter
+      const keywordMatch = `%${filterFields.keyword}%`;
+      queryBuilder.where((subQueryBuilder) => {
+        subQueryBuilder
+          .where(knex.raw(`'${TelemetryVendorEnum.ATS}'`), 'ilike', keywordMatch)
+          .orWhere(knex.raw('telemetry_ats.collarserialnumber::text'), 'ilike', keywordMatch);
+      });
+    }
+
+    if (filterFields.start_date) {
+      queryBuilder.where('telemetry_ats.date', '>=', filterFields.start_date);
+    }
+
+    if (filterFields.end_date) {
+      queryBuilder.where('telemetry_ats.date', '<=', filterFields.end_date);
+    }
+
+    if (filterFields.system_user_id) {
+      // If a system user ID is provided, filter results by the projects/surveys that user has access to
+      queryBuilder.whereIn('survey.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
+      });
+    }
+
+    return queryBuilder;
+  }
+
+  /**
    * Get normalized `Manual` telemetry base query.
+   *
+   * Note: Joins the `deployment2`, `device` tables.
    *
    * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
    * @param {Knex.QueryBuilder} queryBuilder
@@ -264,7 +490,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Get normalized `Manual` telemetry data for a survey ID.
+   * Add where clause to filter `Manual` telemetry data by device attachment date range.
    *
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {number} surveyId
@@ -272,8 +498,20 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @memberof TelemetryVendorRepository
    */
   getManualTelemetryBySurveyIdClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
+    return queryBuilder.andWhere('deployment2.survey_id', surveyId);
+  }
+
+  /**
+   * Add where clause to filter `Manual` telemetry data by device attachment date range.
+   *
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {string} startDate
+   * @param {string} endDate
+   * @return {*}  {Knex.QueryBuilder}
+   * @memberof TelemetryVendorRepository
+   */
+  getManualTelemetryByAttachmentDateRangeClause(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
     return queryBuilder
-      .andWhere('deployment2.survey_id', surveyId)
       .andWhereRaw('telemetry_manual.acquisition_date >= deployment2.attachment_start_timestamp')
       .andWhere((qb) =>
         qb
@@ -283,7 +521,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Get normalized `Manual` telemetry data for list of deployment IDs.
+   * Add where clause to filter `Manual` telemetry data by a list of deployment IDs.
    *
    * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
    * @param {Knex.QueryBuilder} queryBuilder
@@ -295,7 +533,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Get normalized `Manual` telemetry data for a single telemetry ID.
+   * Add where clause to filter `Manual` telemetry data by a telemetry ID.
    *
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {string} telemetryId
@@ -304,6 +542,64 @@ export class TelemetryVendorRepository extends BaseRepository {
    */
   getManualTelemetryByTelemetryIdClause(queryBuilder: Knex.QueryBuilder, telemetryId: string): Knex.QueryBuilder {
     return queryBuilder.andWhere('telemetry_manual.telemetry_manual_id', telemetryId);
+  }
+
+  /**
+   * Find `Manual` telemetry data records the user has access to, based on filters and pagination options.
+   *
+   * TODO: Add check for credentials (same method or different method?)
+   *
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IAllTelemetryAdvancedFilters} filterFields
+   * @return {*}  {Knex.QueryBuilder}
+   * @memberof TelemetryVendorRepository
+   */
+  findManualTelemetryClause(
+    queryBuilder: Knex.QueryBuilder,
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IAllTelemetryAdvancedFilters
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    queryBuilder.join('survey', 'deployment2.survey_id', 'survey.survey_id');
+
+    if (!isUserAdmin) {
+      // If the user is not an admin, filter results by the projects/surveys they have access to
+      queryBuilder
+        .join('project_participation', 'survey.project_id', 'project_participation.project_id')
+        .where('project_participation.system_user_id', systemUserId);
+    }
+
+    if (filterFields.keyword) {
+      // Keyword Search filter
+      const keywordMatch = `%${filterFields.keyword}%`;
+      queryBuilder.where((subQueryBuilder) => {
+        subQueryBuilder.where(knex.raw(`'${TelemetryVendorEnum.MANUAL}'`), 'ilike', keywordMatch);
+      });
+    }
+
+    if (filterFields.start_date) {
+      queryBuilder.where('telemetry_manual.acquisition_date', '>=', filterFields.start_date);
+    }
+
+    if (filterFields.end_date) {
+      queryBuilder.where('telemetry_manual.acquisition_date', '<=', filterFields.end_date);
+    }
+
+    if (filterFields.system_user_id) {
+      // If the user is not an admin, filter results by the projects/surveys they have access to
+      queryBuilder.whereIn('survey.project_id', (subQueryBuilder) => {
+        subQueryBuilder
+          .select('project_id')
+          .from('project_participation')
+          .where('system_user_id', filterFields.system_user_id);
+      });
+    }
+
+    return queryBuilder;
   }
 
   /**
@@ -327,24 +623,28 @@ export class TelemetryVendorRepository extends BaseRepository {
        * LOTEK Telemetry
        */
       this.getLotekTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getLotekTelemetryByAttachmentDateRangeClause)
         .modify(this.getLotekTelemetryBySurveyIdClause, surveyId)
         .modify(this.getLotekTelemetryByDeploymentIdsClause, deploymentIds),
       /**
        * VECTRONIC Telemetry
        */
       this.getVectronicTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getVectronicTelemetryByAttachmentDateRangeClause)
         .modify(this.getVectronicTelemetryBySurveyIdClause, surveyId)
         .modify(this.getVectronicTelemetryByDeploymentIdsClause, deploymentIds),
       /**
        * ATS Telemetry
        */
       this.getATSTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getATSTelemetryByAttachmentDateRangeClause)
         .modify(this.getATSTelemetryBySurveyIdClause, surveyId)
         .modify(this.getATSTelemetryByDeploymentIdsClause, deploymentIds),
       /**
        * MANUAL Telemetry
        */
       this.getManualTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getManualTelemetryByAttachmentDateRangeClause)
         .modify(this.getManualTelemetryBySurveyIdClause, surveyId)
         .modify(this.getManualTelemetryByDeploymentIdsClause, deploymentIds)
     ]);
@@ -478,24 +778,28 @@ export class TelemetryVendorRepository extends BaseRepository {
            * LOTEK Telemetry
            */
           this.getLotekTelemetryBaseQuery(knex.queryBuilder())
+            .modify(this.getLotekTelemetryByAttachmentDateRangeClause)
             .modify(this.getLotekTelemetryBySurveyIdClause, surveyId)
             .modify(this.getLotekTelemetryByTelemetryIdClause, telemetryId),
           /**
            * VECTRONIC Telemetry
            */
           this.getVectronicTelemetryBaseQuery(knex.queryBuilder())
+            .modify(this.getVectronicTelemetryByAttachmentDateRangeClause)
             .modify(this.getVectronicTelemetryBySurveyIdClause, surveyId)
             .modify(this.getVectronicTelemetryByTelemetryIdClause, telemetryId),
           /**
            * ATS Telemetry
            */
           this.getATSTelemetryBaseQuery(knex.queryBuilder())
+            .modify(this.getATSTelemetryByAttachmentDateRangeClause)
             .modify(this.getATSTelemetryBySurveyIdClause, surveyId)
             .modify(this.getATSTelemetryByTelemetryIdClause, telemetryId),
           /**
            * MANUAL Telemetry
            */
           this.getManualTelemetryBaseQuery(knex.queryBuilder())
+            .modify(this.getManualTelemetryByAttachmentDateRangeClause)
             .modify(this.getManualTelemetryBySurveyIdClause, surveyId)
             .modify(this.getManualTelemetryByTelemetryIdClause, telemetryId)
         ]);
@@ -513,5 +817,173 @@ export class TelemetryVendorRepository extends BaseRepository {
     }
 
     return response.rows[0];
+  }
+
+  /**
+   * Get normalized telemetry for all telemetry records the user has access to, based on filters and pagination options.
+   *
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IAllTelemetryAdvancedFilters} filterFields
+   * @return {*}  {Knex.QueryBuilder}
+   * @memberof TelemetryVendorRepository
+   */
+  findTelemetryBaseQuery(
+    queryBuilder: Knex.QueryBuilder,
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IAllTelemetryAdvancedFilters
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    return queryBuilder.unionAll([
+      /**
+       * LOTEK Telemetry
+       */
+      this.getLotekTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getLotekTelemetryByAttachmentDateRangeClause)
+        .modify(this.findLotekTelemetryClause, isUserAdmin, systemUserId, filterFields),
+      /**
+       * VECTRONIC Telemetry
+       */
+      this.getVectronicTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getVectronicTelemetryByAttachmentDateRangeClause)
+        .modify(this.findVectronicTelemetryClause, isUserAdmin, systemUserId, filterFields),
+      /**
+       * ATS Telemetry
+       */
+      this.getATSTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getATSTelemetryByAttachmentDateRangeClause)
+        .modify(this.findATSTelemetryClause, isUserAdmin, systemUserId, filterFields),
+      /**
+       * MANUAL Telemetry
+       */
+      this.getManualTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getManualTelemetryByAttachmentDateRangeClause)
+        .modify(this.findManualTelemetryClause, isUserAdmin, systemUserId, filterFields)
+    ]);
+  }
+
+  /**
+   * Retrieves the paginated list of all surveys that are available to the user.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IAllTelemetryAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<Telemetry[]>}
+   * @memberof TelemetryVendorRepository
+   */
+  async findTelemetry(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IAllTelemetryAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<Telemetry[]> {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .queryBuilder()
+      .with('telemetry', (qb) => {
+        this.findTelemetryBaseQuery(qb, isUserAdmin, systemUserId, filterFields);
+      })
+      .select('*')
+      .from('telemetry');
+
+    // Inject pagination / sorting if provided
+    if (pagination) {
+      queryBuilder.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+      if (pagination.sort && pagination.order) {
+        queryBuilder.orderBy(pagination.sort, pagination.order);
+      }
+    }
+
+    const response = await this.connection.knex(queryBuilder, TelemetrySchema);
+
+    return response.rows;
+  }
+
+  /**
+   * Get telemetry count for all telemetry records the user has access to, based on filters and pagination options.
+   *
+   * @param {Knex.QueryBuilder} queryBuilder
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IAllTelemetryAdvancedFilters} filterFields
+   * @return {*}  {Knex.QueryBuilder}
+   * @memberof TelemetryVendorRepository
+   */
+  findTelemetryCountBaseQuery(
+    queryBuilder: Knex.QueryBuilder,
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IAllTelemetryAdvancedFilters
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
+
+    return queryBuilder.unionAll([
+      /**
+       * LOTEK Telemetry
+       */
+      this.getLotekTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getLotekTelemetryByAttachmentDateRangeClause)
+        .modify(this.findLotekTelemetryClause, isUserAdmin, systemUserId, filterFields),
+      /**
+       * VECTRONIC Telemetry
+       */
+      this.getVectronicTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getVectronicTelemetryByAttachmentDateRangeClause)
+        .modify(this.findVectronicTelemetryClause, isUserAdmin, systemUserId, filterFields),
+      /**
+       * ATS Telemetry
+       */
+      this.getATSTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getATSTelemetryByAttachmentDateRangeClause)
+        .modify(this.findATSTelemetryClause, isUserAdmin, systemUserId, filterFields),
+      /**
+       * MANUAL Telemetry
+       */
+      this.getManualTelemetryBaseQuery(knex.queryBuilder())
+        .modify(this.getManualTelemetryByAttachmentDateRangeClause)
+        .modify(this.findManualTelemetryClause, isUserAdmin, systemUserId, filterFields)
+    ]);
+  }
+
+  /**
+   * Returns the total number of surveys that the user has access to
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof SurveyService
+   */
+  async findTelemetryCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IAllTelemetryAdvancedFilters
+  ): Promise<number> {
+    const knex = getKnex();
+
+    const queryBuilder = knex
+      .queryBuilder()
+      .with('telemetry', (qb) => {
+        this.findTelemetryCountBaseQuery(qb, isUserAdmin, systemUserId, filterFields);
+      })
+      .select(knex.raw('count(*)::integer as count'))
+      .from('telemetry');
+
+    const response = await this.connection.knex(queryBuilder, z.object({ count: z.number() }));
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get telemetry count', [
+        'TelemetryVendorRepository->findTelemetryCount',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0].count;
   }
 }

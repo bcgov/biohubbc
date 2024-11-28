@@ -19,16 +19,15 @@ describe('useTelemetryApi', () => {
       telemetry: [
         {
           telemetry_id: '123',
+          deployment_id: 3,
+          critter_id: 2,
+          vendor: 'lotek',
+          serial: '12345',
           acquisition_date: '2021-01-01',
           latitude: 49.123,
           longitude: -126.123,
-          telemetry_type: 'vendor',
-          device_id: 12345,
-          bctw_deployment_id: '123-123-123',
-          critter_id: 2,
-          deployment_id: 3,
-          critterbase_critter_id: '345-345-345-',
-          animal_id: '567234-234'
+          elevation: 100,
+          temperature: null
         }
       ],
       pagination: {

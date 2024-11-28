@@ -476,7 +476,7 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
-   * Get active telemetry device makes
+   * Get active telemetry device makes.
    *
    * @return {*}
    * @memberof CodeRepository

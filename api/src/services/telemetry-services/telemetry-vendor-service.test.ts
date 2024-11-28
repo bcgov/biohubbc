@@ -1,11 +1,17 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { ExtendedDeploymentRecord } from '../../repositories/telemetry-repositories/telemetry-deployment-repository.interface';
 import { TelemetryManualRepository } from '../../repositories/telemetry-repositories/telemetry-manual-repository';
 import { TelemetryVendorRepository } from '../../repositories/telemetry-repositories/telemetry-vendor-repository';
-import { TelemetryVendorEnum } from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
+import {
+  Telemetry,
+  TelemetrySpatial,
+  TelemetryVendorEnum
+} from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { getMockDBConnection } from '../../__mocks__/db';
+import { TelemetryDeploymentService } from './telemetry-deployment-service';
 import { TelemetryVendorService } from './telemetry-vendor-service';
 
 chai.use(sinonChai);
@@ -155,6 +161,160 @@ describe('TelemetryVendorService', () => {
         expect(getTelemetryByDeploymentIdsStub).to.have.been.calledWith(surveyId, [8], undefined);
         expect(data).to.deep.equal([mockTelemetry, 1]);
       });
+    });
+  });
+
+  describe('getTelemetrySpatialForSurvey', () => {
+    it('should return telemetry data for a survey', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      const mockDeployment: ExtendedDeploymentRecord[] = [
+        {
+          deployment2_id: 1,
+          survey_id: 2,
+          critter_id: 3,
+          device_id: 4,
+          device_key: 'lotek:123456',
+          frequency: 123,
+          frequency_unit_id: 1,
+          attachment_start_date: '2021-01-01',
+          attachment_start_time: '00:00:00',
+          attachment_start_timestamp: '2021-01-01T00:00:00.000Z',
+          attachment_end_date: '2021-01-01',
+          attachment_end_time: '00:00:00',
+          attachment_end_timestamp: '2021-01-01T00:00:00.000Z',
+          critterbase_start_capture_id: null,
+          critterbase_end_capture_id: null,
+          critterbase_end_mortality_id: null,
+          device_make_id: 1,
+          model: 'V2',
+          critterbase_critter_id: '1111111111'
+        }
+      ];
+
+      const mockTelemetry: TelemetrySpatial[] = [
+        {
+          telemetry_id: '22222222222',
+          geometry: {
+            type: 'Point',
+            coordinates: [125, -49]
+          }
+        }
+      ];
+
+      const getDeploymentsForSurveyIdStub = sinon
+        .stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurveyId')
+        .resolves(mockDeployment);
+
+      const getTelemetrySpatialByDeploymentIdsStub = sinon
+        .stub(TelemetryVendorRepository.prototype, 'getTelemetrySpatialByDeploymentIds')
+        .resolves(mockTelemetry);
+
+      const surveyId = 1;
+
+      const service = new TelemetryVendorService(mockDBConnection);
+      const data = await service.getTelemetrySpatialForSurvey(surveyId);
+
+      expect(getDeploymentsForSurveyIdStub).to.have.been.calledWith(surveyId);
+      expect(getTelemetrySpatialByDeploymentIdsStub).to.have.been.calledWith(surveyId, [1]);
+
+      expect(data).to.eql([mockTelemetry, 1]);
+    });
+  });
+
+  describe('getTelemetryRecordById', () => {
+    it('should return telemetry data for a survey', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      const mockTelemetry: Telemetry = {
+        telemetry_id: '123-456-789',
+        deployment_id: 8,
+        critter_id: 3,
+        vendor: TelemetryVendorEnum.VECTRONIC,
+        serial: '123456',
+        acquisition_date: '2021-01-01T00:00:00.000Z',
+        latitude: -49,
+        longitude: 125,
+        elevation: null,
+        temperature: null
+      };
+
+      const getTelemetryRecordByIdStub = sinon
+        .stub(TelemetryVendorRepository.prototype, 'getTelemetryRecordById')
+        .resolves(mockTelemetry);
+
+      const surveyId = 1;
+      const telemetryId = '22222222222';
+
+      const service = new TelemetryVendorService(mockDBConnection);
+      const data = await service.getTelemetryRecordById(surveyId, telemetryId);
+
+      expect(getTelemetryRecordByIdStub).to.have.been.calledWith(surveyId, telemetryId);
+
+      expect(data).to.eql(mockTelemetry);
+    });
+  });
+
+  describe('findTelemetry', () => {
+    it('should return telemetry data for a survey', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      const mockTelemetry: Telemetry[] = [
+        {
+          telemetry_id: '123-456-789',
+          deployment_id: 8,
+          critter_id: 3,
+          vendor: TelemetryVendorEnum.VECTRONIC,
+          serial: '123456',
+          acquisition_date: '2021-01-01T00:00:00.000Z',
+          latitude: -49,
+          longitude: 125,
+          elevation: null,
+          temperature: null
+        }
+      ];
+
+      const findTelemetryStub = sinon
+        .stub(TelemetryVendorRepository.prototype, 'findTelemetry')
+        .resolves(mockTelemetry);
+
+      const isUserAdmin = false;
+      const systemUserId = null;
+      const filterFields = {
+        keyword: 'lotek'
+      };
+      const pagination = {
+        page: 1,
+        limit: 10
+      };
+
+      const service = new TelemetryVendorService(mockDBConnection);
+      const data = await service.findTelemetry(isUserAdmin, systemUserId, filterFields, pagination);
+
+      expect(findTelemetryStub).to.have.been.calledWith(isUserAdmin, systemUserId, filterFields, pagination);
+
+      expect(data).to.eql(mockTelemetry);
+    });
+  });
+
+  describe('findTelemetryCount', () => {
+    it('should return telemetry data for a survey', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      const findTelemetryCountStub = sinon.stub(TelemetryVendorRepository.prototype, 'findTelemetryCount').resolves(1);
+
+      const isUserAdmin = false;
+      const systemUserId = null;
+      const filterFields = {
+        keyword: 'lotek'
+      };
+
+      const service = new TelemetryVendorService(mockDBConnection);
+      const data = await service.findTelemetryCount(isUserAdmin, systemUserId, filterFields);
+
+      expect(findTelemetryCountStub).to.have.been.calledWith(isUserAdmin, systemUserId, filterFields);
+
+      expect(data).to.equal(1);
     });
   });
 

@@ -1,6 +1,7 @@
 import { TelemetryManualRecord } from '../../database-models/telemetry_manual';
 import { IDBConnection } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
+import { IAllTelemetryAdvancedFilters } from '../../models/telemetry-view';
 import { TelemetryManualRepository } from '../../repositories/telemetry-repositories/telemetry-manual-repository';
 import { CreateManualTelemetry } from '../../repositories/telemetry-repositories/telemetry-manual-repository.interface';
 import { TelemetryVendorRepository } from '../../repositories/telemetry-repositories/telemetry-vendor-repository';
@@ -9,6 +10,7 @@ import {
   TelemetryOptions,
   TelemetrySpatial
 } from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
+import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
 import { TelemetryDeploymentService } from './telemetry-deployment-service';
 
@@ -126,6 +128,44 @@ export class TelemetryVendorService extends DBService {
 
   async getTelemetryRecordById(surveyId: number, telemetryId: string): Promise<Telemetry> {
     return this.vendorRepository.getTelemetryRecordById(surveyId, telemetryId);
+  }
+
+  /**
+   * Retrieves the paginated list of all telemetry records that are available to the user, based on their permissions
+   * and provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IAllTelemetryAdvancedFilters} filterFields
+   * @param {ApiPaginationOptions} [pagination]
+   * @return {*}  {Promise<Telemetry[]>}
+   * @memberof TelemetryVendorService
+   */
+  async findTelemetry(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IAllTelemetryAdvancedFilters,
+    pagination?: ApiPaginationOptions
+  ): Promise<Telemetry[]> {
+    return this.vendorRepository.findTelemetry(isUserAdmin, systemUserId, filterFields, pagination);
+  }
+
+  /**
+   * Retrieves the count of all telemetry records that are available to the user, based on their permissions and
+   * provided filter criteria.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId
+   * @param {IAllTelemetryAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
+   * @memberof TelemetryVendorService
+   */
+  async findTelemetryCount(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: IAllTelemetryAdvancedFilters
+  ): Promise<number> {
+    return this.vendorRepository.findTelemetryCount(isUserAdmin, systemUserId, filterFields);
   }
 
   /**
