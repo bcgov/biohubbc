@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVError, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { getCSVParamsError, validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
-import { CritterCSVConfig } from './import-critters-strategy2';
+import { CritterCSVConfig } from './import-critters-service';
 
 /**
  * Get the critter alias cell validator.

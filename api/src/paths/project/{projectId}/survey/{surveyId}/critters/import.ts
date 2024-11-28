@@ -4,8 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/rol
 import { getDBConnection } from '../../../../../../database/db';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ImportCSVCritters } from '../../../../../../services/import-services/critter/import-critters-strategy2';
-import { validateCSVWorksheet } from '../../../../../../utils/csv-utils/csv-config-validation';
+import { ImportCrittersService } from '../../../../../../services/import-services/critter/import-critters-service';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
 import { getFileFromRequest } from '../../../../../../utils/request';
@@ -167,19 +166,13 @@ export function importCsv(): RequestHandler {
     try {
       await connection.open();
 
-      const importCSVCritters = new ImportCSVCritters(connection, worksheet, surveyId);
+      const importService = new ImportCrittersService(connection, worksheet, surveyId);
 
-      const critterCSVConfig = await importCSVCritters.getCSVConfig();
-
-      const { errors, rows } = validateCSVWorksheet(worksheet, critterCSVConfig);
+      const errors = await importService.importCSVWorksheet();
 
       if (errors.length) {
         return res.status(422).json({ validation_errors: errors });
       }
-
-      const data = await importCSVCritters.importCSVRows(rows);
-
-      defaultLog.info({ label: 'importCSVCritters', message: 'result', survey_critter_ids: data });
 
       await connection.commit();
 
