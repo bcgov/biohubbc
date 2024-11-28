@@ -267,6 +267,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
         rowSelectionModel={selectedRows}
         onRowSelectionModelChange={setSelectedRows}
         checkboxSelection
+        disableRowSelectionOnClick
         rowCount={rowCount}
         paginationMode="server"
         sortingMode="server"
