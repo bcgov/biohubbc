@@ -25,12 +25,16 @@ const apiDeploy = async (settings) => {
   objects.push(
     ...oc.processDeploymentTemplate(`${templatesLocalBaseUrl}/api.dc.yaml`, {
       param: {
+        NAMESPACE: phases[phase].namespace,
         NAME: phases[phase].name,
         SUFFIX: phases[phase].suffix,
         VERSION: phases[phase].tag,
         HOST: phases[phase].host,
         APP_HOST: phases[phase].appHost,
         CHANGE_ID: phases.build.changeId || changeId,
+        // Cronjobs
+        TELEMETRY_CRONJOB_SCHEDULE: phases[phase].telemetryCronjobSchedule,
+        TELEMETRY_CRONJOB_DISABLED: phases[phase].telemetryCronjobDisabled,
         // Node
         NODE_ENV: phases[phase].nodeEnv,
         NODE_OPTIONS: phases[phase].nodeOptions,

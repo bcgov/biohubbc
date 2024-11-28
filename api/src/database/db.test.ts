@@ -32,7 +32,7 @@ describe('db', () => {
     });
 
     it('returns a defined database pool instance if it has been initialized', () => {
-      initDBPool();
+      initDBPool({});
 
       const pool = getDBPool();
 

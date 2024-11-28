@@ -28,3 +28,16 @@ interface IDeviceKey {
 export const getTelemetryDeviceKey = ({ vendor, serial }: IDeviceKey): string => {
   return `${vendor.trim().toLowerCase()}:${String(serial).trim().toLowerCase()}`;
 };
+
+/**
+ * Convert an object's keys to lowercase.
+ *
+ * @param {Record<string, any>} obj - Object to convert
+ * @returns {Record<string, any>} - Object with lowercase keys
+ */
+export const keysToLowerCase = <T>(obj: Record<string, any>): T => {
+  return Object.keys(obj).reduce((acc, key) => {
+    acc[key.toLowerCase()] = obj[key];
+    return acc;
+  }, {} as T);
+};

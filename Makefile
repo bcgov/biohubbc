@@ -147,6 +147,16 @@ api-container: ## Executes into the api container.
 	@docker compose exec api bash
 
 ## ------------------------------------------------------------------------------
+## Cronjob commands
+## - You can include additional CLI arguments by appending the `args` param
+## - Ex: `make telemetry-cronjob args="--concurrently 100 --batchSize 1000"`
+## ------------------------------------------------------------------------------
+telemetry-cronjob: ## Run the telemetry cronjob
+	@echo "==============================================="
+	@echo "Telemetry Cronjob"
+	@echo "==============================================="
+	@docker compose exec api npm run telemetry-cronjob -- $(args)
+## ------------------------------------------------------------------------------
 ## Database migration commands
 ## ------------------------------------------------------------------------------
 

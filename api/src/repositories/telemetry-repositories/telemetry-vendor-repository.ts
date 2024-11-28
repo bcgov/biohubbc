@@ -39,7 +39,7 @@ export class TelemetryVendorRepository extends BaseRepository {
         'deployment2.critter_id as critter_id',
         knex.raw(`'${TelemetryVendorEnum.LOTEK}' as vendor`),
         knex.raw('telemetry_lotek.deviceid::text as serial'),
-        knex.raw('telemetry_lotek.uploadtimestamp as acquisition_date'),
+        knex.raw('telemetry_lotek.recdatetime as acquisition_date'),
         'telemetry_lotek.latitude',
         'telemetry_lotek.longitude',
         'telemetry_lotek.altitude as elevation',
@@ -62,10 +62,10 @@ export class TelemetryVendorRepository extends BaseRepository {
   getLotekTelemetryByAttachmentDateRangeClause(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
     return queryBuilder
       .join('deployment2', 'telemetry_lotek.device_key', 'deployment2.device_key')
-      .andWhereRaw('telemetry_lotek.uploadtimestamp >= deployment2.attachment_start_timestamp')
+      .andWhereRaw('telemetry_lotek.recdatetime >= deployment2.attachment_start_timestamp')
       .andWhere((qb) =>
         qb
-          .orWhereRaw('telemetry_lotek.uploadtimestamp <= deployment2.attachment_end_timestamp')
+          .orWhereRaw('telemetry_lotek.recdatetime <= deployment2.attachment_end_timestamp')
           .orWhereRaw('deployment2.attachment_end_timestamp IS NULL')
       );
   }
@@ -89,7 +89,6 @@ export class TelemetryVendorRepository extends BaseRepository {
    *
    * @see TelemetrySchema ./telemetry-vendor-repository.interface.ts
    * @param {Knex.QueryBuilder} queryBuilder
-   * @param {number} surveyId
    * @param {number[]} deploymentIds
    * @returns {Knex.QueryBuilder}
    */
@@ -101,7 +100,6 @@ export class TelemetryVendorRepository extends BaseRepository {
    * Add where clause to filter `Lotek` telemetry data by a telemetry ID.
    *
    * @param {Knex.QueryBuilder} queryBuilder
-   * @param {number} surveyId
    * @param {string} telemetryId
    * @return {*}  {Knex.QueryBuilder}
    * @memberof TelemetryVendorRepository
@@ -723,8 +721,8 @@ export class TelemetryVendorRepository extends BaseRepository {
       .select(
         'telemetry.telemetry_id',
         knex.raw(`
-          CASE WHEN telemetry.longitude IS NULL OR telemetry.latitude IS NULL THEN NULL 
-          ELSE JSON_BUILD_OBJECT('type', 'Point', 'coordinates', JSON_BUILD_ARRAY(telemetry.longitude, telemetry.latitude)) 
+          CASE WHEN telemetry.longitude IS NULL OR telemetry.latitude IS NULL THEN NULL
+          ELSE JSON_BUILD_OBJECT('type', 'Point', 'coordinates', JSON_BUILD_ARRAY(telemetry.longitude, telemetry.latitude))
           END as geometry
         `)
       )
