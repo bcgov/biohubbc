@@ -4,7 +4,7 @@ import { Knex } from 'knex';
  * Fixes duplicate system_user_ids AND references to duplicate system_user_ids
  *
  * Updates the following tables:
- * - system_user: Update/end-dates duplicate "system_user" records.
+ * - system_user: Update/end-dates duplicate system_user records.
  * - system_user_role: Delete duplicate system_user_role records.
  * - project_participation: Update system_user_id to the canonical system_user_id, and delete duplicate records.
  * - survey_participation: Update system_user_id to the canonical system_user_id, and delete duplicate records.
@@ -45,7 +45,7 @@ export async function up(knex: Knex): Promise<void> {
     ----------------------------------------------------------------------------------------
 
     WITH
-    -- Get all "system_user" records with a unique user_identifier (case-insensitive) and user_identity_source_id,
+    -- Get all system_user records with a unique user_identifier (case-insensitive) and user_identity_source_id,
     -- preferring the lowest system_user_id WHERE record_end_date is null
     w_system_user_1 AS (
       SELECT
@@ -65,7 +65,7 @@ export async function up(knex: Knex): Promise<void> {
         system_user_id
     ),
     w_system_user_2 AS (
-      -- Get all "system_user" records with a unique user_identifier (case-insensitive) and user_identity_source_id,
+      -- Get all system_user records with a unique user_identifier (case-insensitive) and user_identity_source_id,
       -- aggregating all additional duplicate system_user_ids into an array
       SELECT
         LOWER("system_user".user_identifier) AS user_identifier,
@@ -186,7 +186,7 @@ export async function up(knex: Knex): Promise<void> {
       USING w_system_user_3 wsu3
       WHERE system_user_role.system_user_id = ANY(wsu3.duplicate_system_user_ids)
     ),
-    -- Delete duplicate "system_user" records for duplicate system_user_ids
+    -- Delete duplicate system_user records for duplicate system_user_ids
     w_delete_duplicate_system_user AS (
       DELETE FROM "system_user" su
       USING w_system_user_3 wsu3
@@ -252,7 +252,7 @@ export async function up(knex: Knex): Promise<void> {
     ALTER TABLE biohub.survey_participation ADD CONSTRAINT survey_participation_uk1 UNIQUE (system_user_id, survey_id);
 
     -- Don't allow duplicate user_guid values
-    CREATE UNIQUE INDEX system_user_uk1 ON "system_user" (user_guid);
+    CREATE UNIQUE INDEX system_user_uk1 ON "system_user"(user_guid);
   `);
 }
 
