@@ -220,7 +220,7 @@ parameters:
     value: https://webservice.lotek.com
   - name: VECTRONIC_API_HOST
     description: The host URL for Vectronic webservice API
-    value: https://api.vectronic-wildlife.com
+    value: https://api.vectronic-wildlife.com/v2
 objects:
   - kind: ImageStream
     apiVersion: image.openshift.io/v1
@@ -343,6 +343,21 @@ objects:
                       name: ${DB_SERVICE_NAME}
                 - name: DB_PORT
                   value: ${DB_PORT}
+                # Telemetry
+                - name: LOTEK_API_HOST
+                  value: ${LOTEK_API_HOST}
+                - name: LOTEK_ACCOUNT_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: lotek_account_username
+                      name: ${TELEMETRY_SECRET}
+                - name: LOTEK_ACCOUNT_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: lotek_account_password
+                      name: ${TELEMETRY_SECRET}
+                - name: VECTRONIC_API_HOST
+                  value: ${VECTRONIC_API_HOST}
                 # Keycloak
                 - name: KEYCLOAK_HOST
                   value: ${KEYCLOAK_HOST}

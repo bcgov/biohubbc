@@ -259,8 +259,7 @@ const getLotekTelemetry = (deviceSerial: number, numRecords: number) => {
       fixtype: faker.number.int({ min: 0, max: 3 }),
       cepradius: faker.number.float({ min: 0, max: 10 }),
       crc: null,
-      recdatetime: telemetryDate,
-      geom: `POINT(${longitude} ${latitude})`
+      recdatetime: telemetryDate
     });
   }
 
@@ -302,8 +301,7 @@ const getVectronicTelemetry = (deviceSerial: number, numRecords: number, generat
       backupvoltage: faker.number.float({ min: 0, max: 10 }),
       temperature: faker.number.float({ min: -20, max: 40 }),
       transformedx: faker.number.float({ min: 0, max: 10 }),
-      transformedy: faker.number.float({ min: 0, max: 10 }),
-      geom: `POINT(${longitude} ${latitude})`
+      transformedy: faker.number.float({ min: 0, max: 10 })
     });
   }
 
@@ -342,8 +340,7 @@ const getAtsTelemetry = (deviceSerial: number, numRecords: number) => {
       hdop: faker.string.alpha({ length: { min: 0, max: 10 } }),
       numsats: faker.number.int({ min: 0, max: 10 }),
       fixtime: faker.string.numeric({ length: { min: 0, max: 10 } }),
-      activity: faker.string.alpha({ length: { min: 0, max: 10 } }),
-      geom: `POINT(${longitude} ${latitude})`
+      activity: faker.string.alpha({ length: { min: 0, max: 10 } })
     });
   }
 

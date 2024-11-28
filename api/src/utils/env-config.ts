@@ -56,6 +56,10 @@ export const EnvSchema = z.object({
   // External Services
   CB_API_HOST: ZodEnvString,
   APP_HOST: ZodEnvString,
+  LOTEK_API_HOST: ZodEnvString,
+  LOTEK_ACCOUNT_USERNAME: ZodEnvString,
+  LOTEK_ACCOUNT_PASSWORD: ZodEnvString,
+  VECTRONIC_API_HOST: ZodEnvString,
 
   // Biohub
   BACKBONE_INTERNAL_API_HOST: ZodEnvString,
@@ -96,12 +100,12 @@ type Env = z.infer<typeof EnvSchema>;
  *
  * @returns {*} {Env} Validated environment variables
  */
-export const loadEvironmentVariables = (): Env => {
+export const loadEnvironmentVariables = (): Env => {
   const parsed = EnvSchema.safeParse(process.env);
 
   if (!parsed.success) {
     defaultLog.error({
-      label: 'loadEvironmentVariables',
+      label: 'loadEnvironmentVariables',
       message: 'Environment variables validation check failed',
       errors: parsed.error.flatten().fieldErrors
     });
@@ -110,6 +114,19 @@ export const loadEvironmentVariables = (): Env => {
   }
 
   return parsed.data;
+};
+
+/**
+ * Get an environment variable by name.
+ *
+ * Tests can mock this function to return a specific value to prevent direct access to process.env.
+ *
+ * @template EnvKey
+ * @param {EnvKey} envVariable The environment variable to get
+ * @returns {*} {Env[EnvKey]} The environment variable value
+ */
+export const getEnvironmentVariable = <EnvKey extends keyof Env>(envVariable: EnvKey): Env[EnvKey] => {
+  return process.env[envVariable] as Env[EnvKey];
 };
 
 // Extend NodeJS ProcessEnv to include the EnvSchema

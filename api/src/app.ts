@@ -13,12 +13,12 @@ import {
 } from './middleware/critterbase-proxy';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest, authenticateRequestOptional } from './request-handlers/security/authentication';
-import { loadEvironmentVariables } from './utils/env-config';
+import { loadEnvironmentVariables } from './utils/env-config';
 import { scanFileForVirus } from './utils/file-utils';
 import { getLogger } from './utils/logger';
 
 // Load and validate the environment variables
-loadEvironmentVariables();
+loadEnvironmentVariables();
 
 const defaultLog = getLogger('app');
 
