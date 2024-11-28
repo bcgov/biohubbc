@@ -1,7 +1,21 @@
 import { z } from 'zod';
 import { CSVError, CSVParams } from './csv-config-validation.interface';
 /**
- * Utility function to validate a cell using a Zod schema.
+ * Utility function to strip the CSV parameters down to the error properties.
+ *
+ * @param {CSVParams} params - The cell parameters
+ * @returns {*} {Pick<CSVError, 'cell' | 'header' | 'rowIndex'>} - The error properties
+ */
+export const getCSVParamsError = (params: CSVParams): Pick<CSVError, 'cell' | 'header' | 'rowIndex'> => {
+  return {
+    cell: params.cell,
+    header: params.header,
+    rowIndex: params.rowIndex
+  };
+};
+
+/**
+ * Utility function to validate a CSV cell using a Zod schema.
  *
  * @param {CSVParams} params - The cell parameters
  * @param {z.ZodSchema} schema - The Zod schema
@@ -17,9 +31,7 @@ export const validateZodCell = (params: CSVParams, schema: z.ZodSchema): CSVErro
       errors.push({
         error: error.message,
         solution: 'Update the cell value to match the expected type',
-        cell: params.cell,
-        header: params.header,
-        rowIndex: params.rowIndex
+        ...getCSVParamsError(params)
       });
     });
   }
@@ -49,9 +61,7 @@ export const getTsnCellValidator = (tsns: Set<number>): ((params: CSVParams) => 
       cellErrors.push({
         error: `ITIS has no reference of this TSN`,
         solution: `Use valid ITIS TSN`,
-        cell: params.cell,
-        header: params.header,
-        rowIndex: params.rowIndex
+        ...getCSVParamsError(params)
       });
     }
 
@@ -94,9 +104,7 @@ export const getWlhIDCellValidator = (): ((params: CSVParams) => CSVError[]) => 
       cellErrors.push({
         error: `Invalid Wildlife Health ID format`,
         solution: `Wildlife Health ID must be in the format 'XX-XXXX'`,
-        cell: params.cell,
-        header: params.header,
-        rowIndex: params.rowIndex
+        ...getCSVParamsError(params)
       });
     }
 

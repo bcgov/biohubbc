@@ -1,13 +1,21 @@
 import { expect } from 'chai';
 import { z } from 'zod';
 import {
+  getCSVParamsError,
   getDescriptionCellValidator,
   getTsnCellValidator,
   getWlhIDCellValidator,
   validateZodCell
 } from './csv-header-configs';
 
-describe.only('CSVHeaderConfigs', () => {
+describe('CSVHeaderConfigs', () => {
+  describe('getCSVParamsError', () => {
+    it('should return an object with the cell, header, and rowIndex', () => {
+      const result = getCSVParamsError({ cell: 'hi', header: 'HEADER', rowIndex: 0, row: {} });
+
+      expect(result).to.be.deep.equal({ cell: 'hi', header: 'HEADER', rowIndex: 0 });
+    });
+  });
   describe('validateZodCell', () => {
     it('should return an empty array if the cell is valid', () => {
       const result = validateZodCell({ cell: 123 } as any, z.number());

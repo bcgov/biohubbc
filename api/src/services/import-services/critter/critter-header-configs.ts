@@ -1,25 +1,26 @@
-import { countBy } from 'lodash';
+import { countBy, get } from 'lodash';
 import { z } from 'zod';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVError, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
-import { validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
+import { getCSVParamsError, validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
+import { CritterCSVConfig } from './import-critters-strategy2';
 
 /**
  * Get the critter alias cell validator.
  *
  * @param {Set<string>} surveyAliases The survey aliases.
- * @param {CSVConfigUtils} configUtils The CSV config utils.
+ * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
  * @returns {*} {(params: CSVParams) => CSVError[]} The validate cell callback
  */
-export const getAliasCellValidator = (
+export const getCritterAliasCellValidator = (
   surveyAliases: Set<string>,
-  configUtils: CSVConfigUtils
+  configUtils: CSVConfigUtils<CritterCSVConfig>
 ): ((params: CSVParams) => CSVError[]) => {
   const rowAliases = configUtils.getCellValues('ALIAS');
   const rowAliasCounts = countBy(rowAliases.map((alias) => String(alias).toLowerCase()));
 
   return (params: CSVParams) => {
-    const cellErrors = validateZodCell(params, z.string().max(50));
+    const cellErrors = validateZodCell(params, z.string().trim().min(1).max(50));
 
     if (cellErrors.length) {
       return cellErrors;
@@ -29,9 +30,7 @@ export const getAliasCellValidator = (
       cellErrors.push({
         error: `Critter alias already exists in the Survey`,
         solution: `Update the alias to be unique`,
-        cell: params.cell,
-        header: params.header,
-        rowIndex: params.rowIndex
+        ...getCSVParamsError(params)
       });
     }
 
@@ -39,9 +38,7 @@ export const getAliasCellValidator = (
       cellErrors.push({
         error: `Critter alias already exists in the CSV`,
         solution: `Update the alias to be unique`,
-        cell: params.cell,
-        header: params.header,
-        rowIndex: params.rowIndex
+        ...getCSVParamsError(params)
       });
     }
 
@@ -53,48 +50,46 @@ export const getAliasCellValidator = (
  * Get the critter collection unit cell validator.
  *
  * @param {Object} rowDictionary The row dictionary.
- * @param {CSVConfigUtils} configUtils The CSV config utils.
+ * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
  * @returns {*} {(params: CSVParams) => CSVError[]} The validate cell callback
  */
-export const getCollectionUnitCellValidator = (
+export const getCritterCollectionUnitCellValidator = (
   rowDictionary: { [tsn: number]: { [header: string]: { [unit: string]: string } } },
-  configUtils: CSVConfigUtils
+  configUtils: CSVConfigUtils<CritterCSVConfig>
 ): ((params: CSVParams) => CSVError[]) => {
   return (params: CSVParams) => {
-    const cellErrors = validateZodCell(params, z.string().max(50).optional());
+    const cellErrors = validateZodCell(params, z.string().trim().min(1).max(50).optional());
 
     if (cellErrors.length || !params.cell) {
       return cellErrors;
     }
 
-    const tsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
-    const unit = String(params.cell).toLowerCase();
+    const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
+    const cellValue = String(params.cell).toLowerCase();
 
-    if (!rowDictionary?.[tsn]) {
+    const rowDictionaryTsn = get(rowDictionary, rowTsn);
+    const rowDictionaryHeader = get(rowDictionary, [rowTsn, params.header]);
+    const rowDictionaryUnit = get(rowDictionary, [rowTsn, params.header, cellValue]);
+
+    if (!rowDictionaryTsn) {
       cellErrors.push({
-        error: `TSN: ${tsn} has no collection units`,
+        error: `Collection units not found for TSN: ${rowTsn}`,
         solution: `Validate TSN is correct and has collection units`,
-        cell: params.cell,
-        header: params.header,
-        rowIndex: params.rowIndex
+        ...getCSVParamsError(params)
       });
-    } else if (!rowDictionary[tsn]?.[params.header]) {
+    } else if (!rowDictionaryHeader) {
       cellErrors.push({
         error: `Invalid collection category header`,
         solution: `Use valid collection unit category header`,
-        values: Object.keys(rowDictionary[tsn]),
-        cell: params.cell,
-        header: params.header,
-        rowIndex: params.rowIndex
+        values: Object.keys(rowDictionaryTsn),
+        ...getCSVParamsError(params)
       });
-    } else if (!rowDictionary[tsn][params.header]?.[unit]) {
+    } else if (!rowDictionaryUnit) {
       cellErrors.push({
         error: `Invalid collection unit cell value`,
         solution: `Use valid collection unit cell value`,
-        values: Object.keys(rowDictionary[tsn][params.header]),
-        cell: params.cell,
-        header: params.header,
-        rowIndex: params.rowIndex
+        values: Object.keys(rowDictionaryHeader),
+        ...getCSVParamsError(params)
       });
     }
 
@@ -106,12 +101,12 @@ export const getCollectionUnitCellValidator = (
  * Get the collection unit cell setter.
  *
  * @param {Object} rowDictionary The row dictionary.
- * @param {CSVConfigUtils} configUtils The CSV config utils.
+ * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
  * @returns {*} {(params: CSVParams) => string | undefined} The set cell value callback
  */
-export const getCollectionUnitCellSetter = (
+export const getCritterCollectionUnitCellSetter = (
   rowDictionary: { [tsn: number]: { [header: string]: { [unit: string]: string } } },
-  configUtils: CSVConfigUtils
+  configUtils: CSVConfigUtils<CritterCSVConfig>
 ): ((params: CSVParams) => string | undefined) => {
   return (params: CSVParams) => {
     if (!params.cell) {
@@ -121,7 +116,7 @@ export const getCollectionUnitCellSetter = (
     const tsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
     const unit = String(params.cell).toLowerCase();
 
-    return String(rowDictionary[tsn][params.header][unit]);
+    return get(rowDictionary, [tsn, params.header, unit]);
   };
 };
 
@@ -129,15 +124,15 @@ export const getCollectionUnitCellSetter = (
  * Get the critter sex cell validator.
  *
  * @param {Object} rowDictionary The row dictionary.
- * @param {CSVConfigUtils} configUtils The CSV config utils.
+ * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
  * @returns {*} {(params: CSVParams) => CSVError[]} The validate cell callback
  */
-export const getSexCellValidator = (
+export const getCritterSexCellValidator = (
   rowDictionary: { [tsn: number]: { [sex: string]: string } },
-  configUtils: CSVConfigUtils
+  configUtils: CSVConfigUtils<CritterCSVConfig>
 ): ((params: CSVParams) => CSVError[]) => {
   return (params: CSVParams) => {
-    const cellErrors = validateZodCell(params, z.string());
+    const cellErrors = validateZodCell(params, z.string().trim().min(1).max(50));
 
     if (cellErrors.length) {
       return cellErrors;
@@ -146,22 +141,21 @@ export const getSexCellValidator = (
     const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
     const cellValue = String(params.cell).toLowerCase();
 
-    if (!rowDictionary?.[rowTsn]) {
+    const rowDictionaryTsn = get(rowDictionary, rowTsn);
+    const rowDictionarySex = get(rowDictionary, [rowTsn, cellValue]);
+
+    if (!rowDictionaryTsn) {
       cellErrors.push({
         error: `Sex is not a supported attribute for TSN: ${rowTsn}`,
         solution: `Use a valid TSN that supports sex, or contact a system administrator to add additional sex values.`,
-        cell: params.cell,
-        header: params.header,
-        rowIndex: params.rowIndex
+        ...getCSVParamsError(params)
       });
-    } else if (!rowDictionary[rowTsn]?.[cellValue]) {
+    } else if (!rowDictionarySex) {
       cellErrors.push({
-        error: `Sex option invalid`,
+        error: `Sex cell value is invalid`,
         solution: `Use valid sex option`,
-        values: Object.keys(rowDictionary[rowTsn]),
-        cell: params.cell,
-        header: params.header,
-        rowIndex: params.rowIndex
+        values: Object.keys(rowDictionaryTsn),
+        ...getCSVParamsError(params)
       });
     }
 
@@ -173,17 +167,17 @@ export const getSexCellValidator = (
  * Get the critter sex cell setter.
  *
  * @param {Object} rowDictionary The row dictionary.
- * @param {CSVConfigUtils} configUtils The CSV config utils.
+ * @param {CSVConfigUtils<CrittterCSVConfig>} configUtils The CSV config utils.
  * @returns {*} {(params: CSVParams) => string} The validate cell callback
  */
-export const getSexCellSetter = (
+export const getCritterSexCellSetter = (
   rowDictionary: { [tsn: number]: { [sex: string]: string } },
-  configUtils: CSVConfigUtils
+  configUtils: CSVConfigUtils<CritterCSVConfig>
 ): ((params: CSVParams) => string) => {
   return (params: CSVParams) => {
     const tsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
     const cellValue = String(params.cell).toLowerCase();
 
-    return rowDictionary[tsn][cellValue];
+    return get(rowDictionary, [tsn, cellValue]);
   };
 };
