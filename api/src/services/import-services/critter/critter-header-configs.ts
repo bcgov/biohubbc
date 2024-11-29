@@ -1,7 +1,7 @@
 import { get } from 'lodash';
 import { z } from 'zod';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
-import { CSVError, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVCellSetter, CSVCellValidator, CSVParams } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { validateZodCell } from '../../../utils/csv-utils/csv-header-configs';
 import { CritterCSVConfig } from './import-critters-service';
 
@@ -15,12 +15,12 @@ import { CritterCSVConfig } from './import-critters-service';
  *
  * @param {Set<string>} surveyAliases The survey aliases.
  * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
- * @returns {*} {(params: CSVParams) => CSVError[]} The validate cell callback
+ * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getCritterAliasCellValidator = (
   surveyAliases: Set<string>,
   configUtils: CSVConfigUtils<CritterCSVConfig>
-): ((params: CSVParams) => CSVError[]) => {
+): CSVCellValidator => {
   return (params: CSVParams) => {
     const cellErrors = validateZodCell(params, z.string().trim().min(1).max(50));
     const isAliasUnique = configUtils.isCellUnique('ALIAS', params.cell);
@@ -58,12 +58,12 @@ export const getCritterAliasCellValidator = (
  *
  * @param {Object} rowDictionary The row dictionary.
  * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
- * @returns {*} {(params: CSVParams) => CSVError[]} The validate cell callback
+ * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getCritterCollectionUnitCellValidator = (
   rowDictionary: { [tsn: number]: { [header: string]: { [unit: string]: string } } },
   configUtils: CSVConfigUtils<CritterCSVConfig>
-): ((params: CSVParams) => CSVError[]) => {
+): CSVCellValidator => {
   return (params: CSVParams) => {
     if (params.cell === undefined) {
       return [];
@@ -125,12 +125,12 @@ export const getCritterCollectionUnitCellValidator = (
  *
  * @param {Object} rowDictionary The row dictionary.
  * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
- * @returns {*} {(params: CSVParams) => string | undefined} The set cell value callback
+ * @returns {*} {CSVCellSetter} The set cell value callback
  */
 export const getCritterCollectionUnitCellSetter = (
   rowDictionary: { [tsn: number]: { [header: string]: { [unit: string]: string } } },
   configUtils: CSVConfigUtils<CritterCSVConfig>
-): ((params: CSVParams) => string | undefined) => {
+): CSVCellSetter => {
   return (params: CSVParams) => {
     if (params.cell === undefined) {
       return undefined;
@@ -152,12 +152,12 @@ export const getCritterCollectionUnitCellSetter = (
  *
  * @param {Object} rowDictionary The row dictionary.
  * @param {CSVConfigUtils<CritterCSVConfig>} configUtils The CSV config utils.
- * @returns {*} {(params: CSVParams) => CSVError[]} The validate cell callback
+ * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getCritterSexCellValidator = (
   rowDictionary: { [tsn: number]: { [sex: string]: string } },
   configUtils: CSVConfigUtils<CritterCSVConfig>
-): ((params: CSVParams) => CSVError[]) => {
+): CSVCellValidator => {
   return (params: CSVParams) => {
     const rowTsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
     const sexCellValue = String(params.cell).toLowerCase();
@@ -196,12 +196,12 @@ export const getCritterSexCellValidator = (
  *
  * @param {Object} rowDictionary The row dictionary.
  * @param {CSVConfigUtils<CrittterCSVConfig>} configUtils The CSV config utils.
- * @returns {*} {(params: CSVParams) => string} The validate cell callback
+ * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getCritterSexCellSetter = (
   rowDictionary: { [tsn: number]: { [sex: string]: string } },
   configUtils: CSVConfigUtils<CritterCSVConfig>
-): ((params: CSVParams) => string) => {
+): CSVCellSetter => {
   return (params: CSVParams) => {
     const tsn = Number(configUtils.getCellValue('ITIS_TSN', params.row));
     const cellValue = String(params.cell).toLowerCase();

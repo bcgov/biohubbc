@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { CSVError, CSVParams } from './csv-config-validation.interface';
+import { CSVCellValidator, CSVError, CSVParams } from './csv-config-validation.interface';
 
 /**
  * Utility function to validate a CSV cell using a Zod schema.
@@ -34,9 +34,9 @@ export const validateZodCell = (params: CSVParams, schema: z.ZodSchema, solution
  *  2. The cell must be a real ITIS TSN (from the provided set)
  *
  * @param {Set<number>} tsns Set of allowed ITIS TSNs
- * @returns {*} {(params: CSVParams) => CSVError[]} The validate cell callback
+ * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getTsnCellValidator = (tsns: Set<number>): ((params: CSVParams) => CSVError[]) => {
+export const getTsnCellValidator = (tsns: Set<number>): CSVCellValidator => {
   return (params: CSVParams) => {
     if (tsns.has(Number(params.cell))) {
       return [];
@@ -57,9 +57,9 @@ export const getTsnCellValidator = (tsns: Set<number>): ((params: CSVParams) => 
  * Rules:
  *  1. The cell must be a string or undefined with a maximum length of 250
  *
- * @returns {*} {(params: CSVParams) => CSVError[]} The validate cell callback
+ * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getDescriptionCellValidator = (): ((params: CSVParams) => CSVError[]) => {
+export const getDescriptionCellValidator = (): CSVCellValidator => {
   return (params: CSVParams) => {
     return validateZodCell(params, z.string().trim().max(250).optional());
   };
@@ -71,9 +71,9 @@ export const getDescriptionCellValidator = (): ((params: CSVParams) => CSVError[
  * Rules:
  *  1. The Wildlife Health ID must be in the format 'XX-XXXX' or undefined
  *
- * @returns {*} {(params: CSVParams) => CSVError[]} The validate cell callback
+ * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getWlhIDCellValidator = (): ((params: CSVParams) => CSVError[]) => {
+export const getWlhIDCellValidator = (): CSVCellValidator => {
   return (params: CSVParams) => {
     if (params.cell === undefined || String(params.cell).match(/^\d{2}-.+/)) {
       return [];

@@ -34,6 +34,22 @@ export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>
 }
 
 /**
+ * The CSV header config cell validator function
+ *
+ * @param {CSVParams} params - The CSV parameters
+ * @returns {CSVError[]} - The list of CSV errors
+ */
+export type CSVCellValidator = (params: CSVParams) => CSVError[];
+
+/**
+ * The CSV header config cell setter function
+ *
+ * @param {CSVParams} params - The CSV parameters
+ * @returns {*} {any} - The new cell value
+ */
+export type CSVCellSetter = (params: CSVParams) => any;
+
+/**
  * The CSV header configuration interface
  *
  */
@@ -41,17 +57,17 @@ export interface CSVHeaderConfig {
   /**
    * Callback to fire when validating the cell. Returns a list of CSVErrors.
    *
-   * @type {(params: CSVParams) => CSVError[]}
+   * @type {CSVCellValidator | undefined} The cell validator function
    */
-  validateCell?: (params: CSVParams) => CSVError[];
+  validateCell?: CSVCellValidator;
   /**
    * Callback to fire when setting the cell (after validation). Returns the new cell value.
    *
    * ie: Convert a string to a number, or find a the matching UUID for a string.
    *
-   * @type {(params: CSVParams) => any | undefined}
+   * @type {CSVCellSetter | undefined} The cell setter function
    */
-  setCellValue?: (params: CSVParams) => any;
+  setCellValue?: CSVCellSetter;
 }
 
 /**
@@ -138,6 +154,14 @@ export interface CSVError {
   errorRowIndex?: number;
 }
 
+/**
+ * The raw unvalidated CSV row
+ *
+ */
 export type CSVRow = Record<string, any>;
 
+/**
+ * The validated CSV row keyed by the static headers
+ *
+ */
 export type CSVRowValidated<CSVConfigType extends CSVConfig> = Record<keyof CSVConfigType['staticHeadersConfig'], any>;
