@@ -187,7 +187,16 @@ export const executeValidateCell = (
   const cellErrors = headerConfig.validateCell(params);
 
   if (cellErrors.length) {
-    mutableErrors.push(...cellErrors);
+    cellErrors.forEach((error) => {
+      mutableErrors.push({
+        error: error.error,
+        solution: error.solution,
+        values: error.values,
+        cell: error.cell ?? params.cell,
+        header: error.header ?? params.header,
+        rowIndex: error.rowIndex ?? params.rowIndex
+      });
+    });
   }
 };
 

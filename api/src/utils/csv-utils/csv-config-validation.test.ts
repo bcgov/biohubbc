@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import xlsx, { WorkSheet } from 'xlsx';
-import { forEachCSVCell, validateCSVHeaders } from './csv-config-validation';
+import { executeValidateCell, forEachCSVCell, validateCSVHeaders } from './csv-config-validation';
 import { CSVConfig } from './csv-config-validation.interface';
 chai.use(sinonChai);
 
@@ -203,6 +203,36 @@ describe.only('csv-config-validation', () => {
           setCellValue: setCellValueDynamicStub
         }
       ]);
+    });
+  });
+
+  describe('executeValidateCell', () => {
+    it('should call the validateCell callback and mutate errors array', () => {
+      const errors: any[] = [];
+
+      const validateCellStub = sinon.stub().returns([{ error: 'error', solution: 'solution' }]);
+
+      const params = {
+        cell: 'cellValue',
+        header: 'TEST',
+        rowIndex: 1,
+        row: { TEST: 'cellValue' },
+        staticHeader: 'TEST'
+      };
+
+      const headerConfig = {
+        validateCell: validateCellStub
+      };
+
+      executeValidateCell(params, headerConfig, errors);
+      expect(validateCellStub).to.have.been.calledOnceWithExactly(params);
+      console.log(errors);
+      //expect(errors[0]).to.deep.equal({
+      //  error: 'error',
+      //  solution: 'solution',
+      //  header: 'TEST',
+      //  rowIndex: 1
+      //});
     });
   });
 });

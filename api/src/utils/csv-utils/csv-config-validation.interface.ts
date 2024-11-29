@@ -77,7 +77,7 @@ export interface CSVParams {
    *
    * @type {string | undefined}
    */
-  staticHeader?: string;
+  staticHeader?: string | undefined;
 }
 
 /**
@@ -92,37 +92,37 @@ export interface CSVError {
    */
   error: string;
   /**
+   * The solution message.
+   *
+   * @type {string}
+   */
+  solution: string;
+  /**
    * The row index.
    *
    * @type {number}
    */
-  rowIndex: number;
+  rowIndex?: number;
   /**
-   * The solution message.
-   *
-   * @type {string | undefined}
-   */
-  solution?: string | undefined;
-  /**
-   * The allowed values.
+   * The list of allowed values if applicable.
    *
    * @type {(string[] | number[]) | undefined}
    */
-  values?: string[] | number[];
+  values?: string[] | number[] | undefined;
   /**
-   * The header name.
+   * The optionally overridable cell value.
+   *
+   * @type {unknown | undefined}
+   */
+  cell?: unknown | undefined;
+  /**
+   * The optionally overridable header name.
    *
    * @type {string | undefined}
    */
   header?: string | undefined;
-  /**
-   * The cell value.
-   *
-   * @type {unknown}
-   */
-  cell?: unknown;
 }
 
-export type CSVRowValidated<CSVConfigType extends CSVConfig> = Record<keyof CSVConfigType['staticHeadersConfig'], any>;
-
 export type CSVRow = Record<string, any>;
+
+export type CSVRowValidated<CSVConfigType extends CSVConfig> = Record<keyof CSVConfigType['staticHeadersConfig'], any>;

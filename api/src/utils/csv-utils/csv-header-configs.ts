@@ -1,18 +1,5 @@
 import { z } from 'zod';
 import { CSVError, CSVParams } from './csv-config-validation.interface';
-/**
- * Utility function to strip the CSV parameters down to the error properties.
- *
- * @param {CSVParams} params - The cell parameters
- * @returns {*} {Pick<CSVError, 'cell' | 'header' | 'rowIndex'>} - The error properties
- */
-export const getCSVParamsError = (params: CSVParams): Pick<CSVError, 'cell' | 'header' | 'rowIndex'> => {
-  return {
-    cell: params.cell,
-    header: params.header,
-    rowIndex: params.rowIndex
-  };
-};
 
 /**
  * Utility function to validate a CSV cell using a Zod schema.
@@ -31,8 +18,7 @@ export const validateZodCell = (params: CSVParams, schema: z.ZodSchema, solution
     parsed.error.errors.forEach((error) => {
       errors.push({
         error: error.message,
-        solution: solution ?? 'Update the cell value to match the expected type',
-        ...getCSVParamsError(params)
+        solution: solution ?? 'Update the cell value to match the expected type'
       });
     });
   }
@@ -61,8 +47,7 @@ export const getTsnCellValidator = (tsns: Set<number>): ((params: CSVParams) => 
     if (!tsns.has(Number(params.cell))) {
       cellErrors.push({
         error: `ITIS has no reference of this TSN`,
-        solution: `Use valid ITIS TSN`,
-        ...getCSVParamsError(params)
+        solution: `Use valid ITIS TSN`
       });
     }
 
