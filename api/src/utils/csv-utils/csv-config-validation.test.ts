@@ -6,7 +6,7 @@ import { executeValidateCell, forEachCSVCell, validateCSVHeaders } from './csv-c
 import { CSVConfig } from './csv-config-validation.interface';
 chai.use(sinonChai);
 
-describe.only('csv-config-validation', () => {
+describe('csv-config-validation', () => {
   afterEach(() => {
     sinon.restore();
   });

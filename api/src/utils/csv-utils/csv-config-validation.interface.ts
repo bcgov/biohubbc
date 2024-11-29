@@ -11,7 +11,7 @@ export interface CSVConfig<THeader extends Uppercase<string> = Uppercase<string>
    *
    * @type {Record<THeader, { aliases: Uppercase<string> } & CSVHeaderConfig>}
    */
-  staticHeadersConfig: Record<THeader, { aliases: Uppercase<string> } & CSVHeaderConfig>;
+  staticHeadersConfig: Record<THeader, { aliases: Uppercase<string>[] } & CSVHeaderConfig>;
   /**
    * Contains the `validateCell` and `setCellValue` callbacks to be called for each dynamic cell.
    *

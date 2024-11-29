@@ -59,11 +59,13 @@ export class CSVConfigUtils<T extends CSVConfig = CSVConfig> {
    * @returns {unknown} - The cell value
    */
   getCellValue(header: keyof T['staticHeadersConfig'], row: CSVRow) {
+    // Static header or dynamic header exact match
     if (header in row) {
       return row[header as Uppercase<string>];
     }
 
-    for (const alias of this._config.staticHeadersConfig[header as Uppercase<string>].aliases) {
+    // Attempt to find the cell value from the header aliases
+    for (const alias of this._config.staticHeadersConfig[header as Uppercase<string>]?.aliases ?? []) {
       if (alias in row) {
         return row[alias];
       }
